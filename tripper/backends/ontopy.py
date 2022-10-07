@@ -3,13 +3,14 @@ import tempfile
 from typing import TYPE_CHECKING
 
 from ontopy.ontology import Ontology, _unabbreviate, get_ontology
-from triplestore import Literal
+
+from tripper.triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
     from typing import Generator, Union
 
-    from triplestore import Triple
+    from tripper.triplestore import Triple
 
 
 class OntopyStrategy:

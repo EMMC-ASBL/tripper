@@ -374,7 +374,7 @@ class Triplestore:
                 method.
         """
         module = import_module(
-            backend if "." in backend else f"triplestore.backends.{backend}"
+            backend if "." in backend else f"tripper.backends.{backend}"
         )
         cls = getattr(module, backend.title() + "Strategy")
         self.base_iri = base_iri
