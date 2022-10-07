@@ -95,7 +95,7 @@ class RdflibStrategy:
         destination=None,
         format="turtle",  # pylint: disable=redefined-builtin
         **kwargs,
-    ):
+    ) -> "Union[None, str]":
         """Serialise to destination.
 
         Parameters:

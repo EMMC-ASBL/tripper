@@ -403,8 +403,8 @@ class Triplestore:
     # Methods optionally implemented by backend
     # -----------------------------------------
     def parse(
-        self, source=None, format=None, **kwargs
-    ):  # pylint: disable=redefined-builtin
+        self, source=None, format=None, **kwargs  # pylint: disable=redefined-builtin
+    ):
         """Parse source and add the resulting triples to triplestore.
 
         Parameters:
@@ -424,8 +424,11 @@ class Triplestore:
                     self.namespaces[prefix] = Namespace(namespace)
 
     def serialize(
-        self, destination=None, format="turtle", **kwargs
-    ):  # pylint: disable=redefined-builtin
+        self,
+        destination=None,
+        format="turtle",  # pylint: disable=redefined-builtin
+        **kwargs,
+    ) -> "Union[None, str]":
         """Serialise triplestore.
 
         Parameters:

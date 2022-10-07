@@ -169,8 +169,11 @@ class OntopyStrategy:
             raise ValueError("either `source`, `location` or `data` must be given")
 
     def serialize(
-        self, destination=None, format="turtle", **kwargs
-    ):  # pylint: disable=redefined-builtin
+        self,
+        destination=None,
+        format="turtle",  # pylint: disable=redefined-builtin
+        **kwargs,
+    ) -> "Union[None, str]":
         """Serialise to destination.
 
         Parameters:
