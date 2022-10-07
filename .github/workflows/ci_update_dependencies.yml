@@ -1,0 +1,26 @@
+name: CI - Update accummulated dependencies PR
+
+on:
+  schedule:
+    # At 6:30 UTC on the first in the month
+    - cron: "30 6 1 * *"
+  workflow_dispatch:
+
+jobs:
+  create-collected-pr:
+    name: External
+    uses: SINTEF/ci-cd/.github/workflows/ci_update_dependencies.yml@v1
+    if: github.repository_owner == 'EMMC-ASBL'
+    with:
+      git_username: "TEAM 4.0[bot]"
+      git_email: "Team4.0@SINTEF.no"
+      permanent_dependencies_branch: "ci/dependency-updates"
+      default_repo_branch: main
+      pr_labels: "CI/CD,skip_changelog"
+      extra_to_dos: "- [ ] Make sure that the PR is **squash** merged, with a sensible commit message."
+      update_pre-commit: true
+      python_version: "3.9"
+      install_extras: "[pre-commit]"
+      skip_pre-commit_hooks: "pylint,pylint-tests"
+    secrets:
+      PAT: ${{ secrets.RELEASE_PAT }}

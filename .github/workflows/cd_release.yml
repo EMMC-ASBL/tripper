@@ -1,0 +1,26 @@
+name: CD - Publish
+
+on:
+  release:
+    types:
+    - published
+
+jobs:
+  publish-package-and-docs:
+    name: External
+    uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v1
+    if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')
+    with:
+      git_username: "TEAM 4.0[bot]"
+      git_email: "Team4.0@SINTEF.no"
+      package_dirs: tripper
+      release_branch: main
+      install_extras: "[dev]"
+      python_version: "3.9"
+      build_cmd: "pip install -U flit && flit build"
+      update_docs: true
+      doc_extras: "[docs]"
+      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
+    secrets:
+      PyPI_token: ${{ secrets.PYPI_TOKEN }}
+      PAT: ${{ secrets.RELEASE_PAT }}

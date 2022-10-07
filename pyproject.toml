@@ -1,0 +1,87 @@
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "tripper"
+authors = [
+    {name = "Jesper Friis", email = "jesper.friis@sintef.no"},
+    {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
+    {name = "Thomas Hagelien", email = "thomas.hagelien@sintef.no"},
+]
+description = "A triplestore wrapper for Python."
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Environment :: Plugins",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+]
+keywords = ["triplestore", "ontology", "RDF"]
+requires-python = "~=3.9"
+dynamic = ["version"]
+
+dependencies = []
+
+[project.optional-dependencies]
+docs = [
+    "mike ~=1.1",
+    "mkdocs ~=1.3",
+    "mkdocs-awesome-pages-plugin ~=2.8",
+    "mkdocs-material ~=8.5",
+    "mkdocstrings[python-legacy] ~=0.19.0",
+]
+pre-commit = [
+    "pre-commit ~=2.20",
+    "pylint ~=2.15",
+]
+testing = [
+    "pytest ~=7.1",
+    "pytest-cov ~=4.0",
+]
+dev = [
+    "mike ~=1.1",
+    "mkdocs ~=1.3",
+    "mkdocs-awesome-pages-plugin ~=2.8",
+    "mkdocs-material ~=8.5",
+    "mkdocstrings[python-legacy] ~=0.19.0",
+    "pre-commit ~=2.20",
+    "pylint ~=2.15",
+    "pytest ~=7.1",
+    "pytest-cov ~=4.0",
+]
+
+[project.urls]
+Home = "https://github.com/EMMC-ASBL/tripper"
+Documentation = "https://EMMC-ASBL.github.io/tripper"
+Source = "https://github.com/EMMC-ASBL/tripper"
+"Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"
+Changelog = "https://github.com/EMMC-ASBL/tripper/blob/main/CHANGELOG.md"
+Package = "https://pypi.org/project/tripper"
+
+[tool.flit.module]
+name = "tripper"
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+scripts_are_modules = true
+warn_unused_configs = true
+show_error_codes = true
+allow_redefinition = true
+
+[tool.pylint.messages_control]
+max-line-length = 88
+disable = []
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-rs --cov=tripper --cov-report=term"
+filterwarnings = [
+    "ignore:.*imp module.*:DeprecationWarning",
+]

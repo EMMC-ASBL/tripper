@@ -1,0 +1,87 @@
+site_name: "Tripper"
+site_description: Documentation for the Tripper package
+site_url: https://EMMC-ASBL.github.io/tripper
+copyright: Copyright &copy; 2022 European Material Modelling Council
+
+theme:
+  name: material
+  palette:
+    scheme: default
+    primary: cyan
+    accent: teal
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/library-shelves
+  favicon: assets/images/favicon.png
+  language: en
+  features:
+    - navigation.instant
+    - navigation.top
+    - content.tabs.link
+
+repo_name: "tripper"
+repo_url: "https://github.com/EMMC-ASBL/tripper"
+edit_uri: ""
+
+extra:
+  social:
+    - icon: fontawesome/brands/square-github
+      link: https://github.com/EMMC-ASBL
+      name: "EMMC-ASBL on GitHub"
+  version:
+    provider: mike
+    default: latest
+
+extra_css:
+  - css/reference.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.caret
+  - pymdownx.tilde
+  - pymdownx.keys
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: en
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_root_heading: false
+            show_root_toc_entry: true
+            show_root_full_path: true
+            show_object_full_path: false
+            show_category_heading: false
+            show_if_no_docstring: false
+            show_source: true
+            show_bases: true
+            group_by_category: true
+            heading_level: 2
+            filters:
+              - "!^_[^_]"
+              - "^__init__$"
+            members: null
+            inherited_members: false
+            docstring_style: google
+            docstring_options:
+              replace_admonitions: true
+  - awesome-pages
+
+nav:
+  - Home: index.md
+  - License: LICENSE.md
+  - Changelog: CHANGELOG.md
+  - ... | api_reference/**
+
+watch:
+  - tripper

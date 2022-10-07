@@ -1,0 +1,11 @@
+version: 2
+updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "05:24"
+  target-branch: ci/dependency-updates
+  labels:
+    - CI/CD
+    - skip_changelog
