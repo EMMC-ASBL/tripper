@@ -7,7 +7,7 @@ from triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator
+    from typing import Generator, Union
 
     from triplestore import Triple
 
@@ -77,6 +77,8 @@ class OntopyStrategy:
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
+        if TYPE_CHECKING:  # pragma: no cover
+            d: "Union[int, str]"
         for s, p, o in triples:
             if isinstance(o, Literal):
                 if o.lang:

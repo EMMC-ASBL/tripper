@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Callable, Generator, Tuple, Union
+    from typing import Callable, Dict, Generator, Tuple, Union
 
     Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
 
@@ -378,12 +378,12 @@ class Triplestore:
         )
         cls = getattr(module, backend.title() + "Strategy")
         self.base_iri = base_iri
-        self.namespaces = {}
+        self.namespaces: "Dict[str, Namespace]" = {}
         self.backend_name = backend
         self.backend = cls(base_iri=base_iri, **kwargs)
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
-        self.function_repo = {}
+        self.function_repo: "Dict[str, Union[float, Callable[[], float]]]" = {}
         for prefix, ns in self.default_namespaces.items():
             self.bind(prefix, ns)
 
@@ -601,7 +601,7 @@ class Triplestore:
     def add_mapsTo(
         self,
         target: str,
-        source: "Union[str, dlite.Instance, dataclass]",
+        source: str,
         property_name: str = None,
         cost: "Union[float, Callable]" = None,
         target_cost: bool = True,
@@ -610,7 +610,7 @@ class Triplestore:
 
         Parameters:
             target: IRI of target ontological concept.
-            source: Source IRI or entity object.
+            source: Source IRI (or entity object).
             property_name: Name of property if `source` is an entity or
                 an entity IRI.
             cost: User-defined cost of following this mapping relation
@@ -681,7 +681,7 @@ class Triplestore:
 
         return func_iri
 
-    def _add_cost(self, cost, dest_iri):
+    def _add_cost(self, cost: "Union[float, Callable[[], float]]", dest_iri):
         """Help function that adds `cost` to destination IRI `dest_iri`.
 
         `cost` should be either a float or a Callable returning a float.
