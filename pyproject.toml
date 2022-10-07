@@ -7,7 +7,7 @@ name = "tripper"
 authors = [
     {name = "Jesper Friis", email = "jesper.friis@sintef.no"},
     {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
-    {name = "Thomas Hagelien", email = "thomas.hagelien@sintef.no"},
+    {name = "Thomas F. Hagelien", email = "thomas.f.hagelien@sintef.no"},
 ]
 description = "A triplestore wrapper for Python."
 readme = "README.md"

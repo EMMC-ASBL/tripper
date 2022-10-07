@@ -14,6 +14,8 @@ from .triplestore import (
 if TYPE_CHECKING:  # pragma: no cover
     from .triplestore import Triple
 
+__version__ = "0.1.0"
+
 
 __all__ = (
     "Literal",
