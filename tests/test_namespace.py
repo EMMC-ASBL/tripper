@@ -1,5 +1,5 @@
 """Test namespaces."""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,duplicate-code
 from typing import TYPE_CHECKING
 
 import pytest
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 def test_namespaces(get_ontology_path: "Callable[[str], Path]") -> None:
     """Test namespaces."""
-    from tripper.triplestore import NoSuchIRIError, RDF, Namespace
+    from tripper.triplestore import RDF, Namespace, NoSuchIRIError
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"

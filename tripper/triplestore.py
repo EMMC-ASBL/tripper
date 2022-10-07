@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Callable, Dict, Generator, Tuple, Union
+    from typing import Any, Callable, Dict, Generator, Tuple, Union
 
     Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
 
@@ -224,6 +224,9 @@ DM = Namespace("http://emmo.info/datamodel#")
 
 class Literal(str):
     """A literal RDF value."""
+
+    lang: str
+    datatype: "Any"
 
     def __new__(cls, value, lang=None, datatype=None):
         string = super().__new__(cls, value)

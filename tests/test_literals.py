@@ -1,5 +1,5 @@
 """Test RDF literals."""
-# pylint: disable=no-member
+
 
 def test_string() -> None:
     """Test creating a string literal."""

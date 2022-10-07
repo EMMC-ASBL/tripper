@@ -31,11 +31,11 @@ def get_ontology_path() -> "Callable[[str], Path]":
 def example_function() -> "Callable[[Any, Any], Any]":
     """Return an example function to be used to test the Triplestore."""
 
-    def sum(a: "Any", b: "Any") -> "Any":
+    def sum_(first_param: "Any", second_param: "Any") -> "Any":
         """Returns the sum of `a` and `b`."""
-        return a + b
+        return first_param + second_param
 
-    return sum
+    return sum_
 
 
 @pytest.fixture
