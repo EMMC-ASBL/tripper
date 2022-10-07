@@ -3,10 +3,8 @@
 from pathlib import Path
 
 import pytest
-
-from triplestore import en, Namespace, Triplestore, RDF
-from triplestore.triplestore import function_id, NoSuchIRIError
-
+from triplestore import RDF, Namespace, Triplestore, en
+from triplestore.triplestore import NoSuchIRIError, function_id
 
 thisdir = Path(__file__).absolute().parent
 ontopath_family = thisdir / "ontologies" / "family.ttl"

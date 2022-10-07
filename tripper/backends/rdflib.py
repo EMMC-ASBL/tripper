@@ -1,7 +1,9 @@
 import warnings
 from typing import TYPE_CHECKING
 
-from rdflib import BNode, Graph, URIRef, Literal as rdflibLiteral
+from rdflib import BNode, Graph
+from rdflib import Literal as rdflibLiteral
+from rdflib import URIRef
 
 from tripper.triplestore import Literal
 
@@ -38,9 +40,13 @@ class RdflibStrategy:
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
         for s, p, o in self.graph.triples(astriple(triple)):
-            yield (str(s), str(p),
-                   Literal(o.value, lang=o.language, datatype=o.datatype)
-                   if isinstance(o, rdflibLiteral) else str(o))
+            yield (
+                str(s),
+                str(p),
+                Literal(o.value, lang=o.language, datatype=o.datatype)
+                if isinstance(o, rdflibLiteral)
+                else str(o),
+            )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
@@ -52,8 +58,7 @@ class RdflibStrategy:
         self.graph.remove(astriple(triple))
 
     # Optional methods
-    def parse(self, source=None, location=None, data=None, format=None,
-              **kwargs):
+    def parse(self, source=None, location=None, data=None, format=None, **kwargs):
         """Parse source and add the resulting triples to triplestore.
 
         The source is specified using one of `source`, `location` or `data`.
@@ -66,10 +71,11 @@ class RdflibStrategy:
             kwargs: Additional less used keyword arguments.
                 See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.parse
         """
-        self.graph.parse(source=source, location=location, data=data,
-                         format=format, **kwargs)
+        self.graph.parse(
+            source=source, location=location, data=data, format=format, **kwargs
+        )
 
-    def serialize(self, destination=None, format='turtle', **kwargs):
+    def serialize(self, destination=None, format="turtle", **kwargs):
         """Serialise to destination.
 
         Parameters:
@@ -83,8 +89,7 @@ class RdflibStrategy:
         Returns:
             Serialised string if `destination` is None.
         """
-        s = self.graph.serialize(destination=destination, format=format,
-                                 **kwargs)
+        s = self.graph.serialize(destination=destination, format=format, **kwargs)
         if destination is None:
             # Depending on the version of rdflib the return value of
             # graph.serialize() man either be a string or a bytes object...
@@ -108,8 +113,7 @@ class RdflibStrategy:
         if namespace:
             self.graph.bind(prefix, namespace, replace=True)
         else:
-            warnings.warn(
-                "rdflib does not support removing namespace prefixes")
+            warnings.warn("rdflib does not support removing namespace prefixes")
 
     def namespaces(self) -> dict:
         """Returns a dict mapping prefixes to namespaces.

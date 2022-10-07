@@ -2,9 +2,7 @@ import os
 import tempfile
 from typing import TYPE_CHECKING
 
-from ontopy.ontology import get_ontology, Ontology, _unabbreviate
-
-
+from ontopy.ontology import Ontology, _unabbreviate, get_ontology
 from triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -27,12 +25,13 @@ class OntopyStrategy:
 
     Either the `base_iri` or `onto` argument must be provided.
     """
+
     def __init__(
-            self,
-            base_iri: str = None,
-            onto: Ontology = None,
-            load: bool = False,
-            kwargs: dict = {}
+        self,
+        base_iri: str = None,
+        onto: Ontology = None,
+        load: bool = False,
+        kwargs: dict = {},
     ):
         if onto is None:
             if base_iri is None:
@@ -69,7 +68,7 @@ class OntopyStrategy:
                 _unabbreviate(self.onto, p),
                 _unabbreviate(self.onto, o),
             )
-        for s, p, o, d in self.onto._get_data_triples_spod_spod(*abb, d=''):
+        for s, p, o, d in self.onto._get_data_triples_spod_spod(*abb, d=""):
             yield (
                 _unabbreviate(self.onto, s),
                 _unabbreviate(self.onto, p),
@@ -102,11 +101,13 @@ class OntopyStrategy:
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
         s, p, o = triple
-        to_remove = list(self.onto._get_triples_spod_spod(
-            self.onto._abbreviate(s) if s is not None else None,
-            self.onto._abbreviate(p) if s is not None else None,
-            self.onto._abbreviate(o) if s is not None else None,
-        ))
+        to_remove = list(
+            self.onto._get_triples_spod_spod(
+                self.onto._abbreviate(s) if s is not None else None,
+                self.onto._abbreviate(p) if s is not None else None,
+                self.onto._abbreviate(o) if s is not None else None,
+            )
+        )
         for s, p, o, d in to_remove:
             if d:
                 self.onto._del_data_triple_spod(s, p, o, d)
@@ -114,8 +115,15 @@ class OntopyStrategy:
                 self.onto._del_obj_triple_spo(s, p, o)
 
     # Optional methods
-    def parse(self, source=None, location=None, data=None, format=None,
-              encoding=None, **kwargs):
+    def parse(
+        self,
+        source=None,
+        location=None,
+        data=None,
+        format=None,
+        encoding=None,
+        **kwargs,
+    ):
         """Parse source and add the resulting triples to triplestore.
 
         The source is specified using one of `source`, `location` or `data`.
@@ -133,8 +141,8 @@ class OntopyStrategy:
         elif location:
             self.onto.load(filename=location, format=format, **kwargs)
         elif data:
-            #s = io.StringIO(data)
-            #self.onto.load(filename=s, format=format, **kwargs)
+            # s = io.StringIO(data)
+            # self.onto.load(filename=s, format=format, **kwargs)
 
             # Could have been done much nicer if it hasn't been for Windows
             filename = None
@@ -151,11 +159,9 @@ class OntopyStrategy:
                     os.remove(filename)
 
         else:
-            raise ValueError(
-                "either `source`, `location` or `data` must be given"
-            )
+            raise ValueError("either `source`, `location` or `data` must be given")
 
-    def serialize(self, destination=None, format='turtle', **kwargs):
+    def serialize(self, destination=None, format="turtle", **kwargs):
         """Serialise to destination.
 
         Parameters:
@@ -177,7 +183,7 @@ class OntopyStrategy:
                 with tempfile.NamedTemporaryFile(delete=False) as f:
                     filename = f.name
                     self.onto.save(filename, format=format, **kwargs)
-                with open(filename, 'rt') as f:
+                with open(filename, "rt") as f:
                     return f.read()
             finally:
                 if filename:
