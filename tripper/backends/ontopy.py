@@ -1,7 +1,5 @@
-import io
 import os
 import tempfile
-import warnings
 from typing import TYPE_CHECKING
 
 from ontopy.ontology import get_ontology, Ontology, _unabbreviate

@@ -16,6 +16,8 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Environment :: Plugins",
@@ -23,10 +25,13 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 keywords = ["triplestore", "ontology", "RDF"]
-requires-python = "~=3.9"
+requires-python = "~=3.7"
 dynamic = ["version"]
 
-dependencies = []
+dependencies = [
+    "EMMOntoPy ~=0.4",
+    "rdflib ~=6.2",
+]
 
 [project.optional-dependencies]
 docs = [

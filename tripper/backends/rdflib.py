@@ -1,16 +1,15 @@
 import warnings
 from typing import TYPE_CHECKING
 
-import rdflib
-from rdflib import BNode, Graph, URIRef
+from rdflib import BNode, Graph, URIRef, Literal as rdflibLiteral
 
-from triplestore import Literal
+from tripper.triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
     from typing import Generator
 
-    from triplestore import Triple
+    from tripper.triplestore import Triple
 
 
 def asuri(v):
@@ -18,7 +17,7 @@ def asuri(v):
     if v is None:
         return None
     if isinstance(v, Literal):
-        return rdflib.Literal(v.value, lang=v.lang, datatype=v.datatype)
+        return rdflibLiteral(v.value, lang=v.lang, datatype=v.datatype)
     if v.startswith("_:"):
         return BNode(v)
     return URIRef(v)
@@ -41,7 +40,7 @@ class RdflibStrategy:
         for s, p, o in self.graph.triples(astriple(triple)):
             yield (str(s), str(p),
                    Literal(o.value, lang=o.language, datatype=o.datatype)
-                   if isinstance(o, rdflib.Literal) else str(o))
+                   if isinstance(o, rdflibLiteral) else str(o))
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""

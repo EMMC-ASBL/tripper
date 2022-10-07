@@ -16,7 +16,7 @@ jobs:
       package_dirs: tripper
       release_branch: main
       install_extras: "[dev]"
-      python_version: "3.9"
+      python_version: "3.7"
       build_cmd: "pip install -U flit && flit build"
       update_docs: true
       doc_extras: "[docs]"

@@ -17,11 +17,11 @@ jobs:
 
       # pre-commit
       run_pre-commit: true
-      python_version_pre-commit: "3.9"
+      python_version_pre-commit: "3.7"
       skip_pre-commit_hooks: pylint,pylint-tests
 
       # pylint & safety
-      python_version_pylint_safety: "3.9"
+      python_version_pylint_safety: "3.7"
       run_pylint: true
       pylint_runs: |
         --rcfile=pyproject.toml tripper
@@ -30,13 +30,13 @@ jobs:
 
       # Build package
       run_build_package: true
-      python_version_package: "3.9"
+      python_version_package: "3.7"
       build_libs: flit
       build_cmd: flit build
 
       # Build documentation
       run_build_docs: true
-      python_version_docs: "3.9"
+      python_version_docs: "3.7"
       update_python_api_ref: true
       update_docs_landing_page: true
       package_dirs: tripper
@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
     - name: Checkout tripper
