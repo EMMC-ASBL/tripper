@@ -13,7 +13,8 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
 
-@pytest.mark.parametrize("backend", ["ontopy", "rdflib"])
+# @pytest.mark.parametrize("backend", ["ontopy", "rdflib"])
+@pytest.mark.parametrize("backend", ["rdflib"])
 def test_triplestore(
     backend: str,
     example_function: "Callable[[Any, Any], Any]",
