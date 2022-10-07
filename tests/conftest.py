@@ -32,7 +32,7 @@ def example_function() -> "Callable[[Any, Any], Any]":
     """Return an example function to be used to test the Triplestore."""
 
     def sum_(first_param: "Any", second_param: "Any") -> "Any":
-        """Returns the sum of `a` and `b`."""
+        """Returns the sum of `first_param` and `second_param`."""
         return first_param + second_param
 
     return sum_
@@ -54,10 +54,10 @@ def expected_function_triplestore(example_function: "Callable[[Any, Any], Any]")
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-ex:sum_{fid} a fno:Function ;
-    dcterms:description "Returns the sum of `a` and `b`."@en ;
-    fno:expects ( ex:sum_{fid}_parameter1_a ex:sum_{fid}_parameter2_b ) ;
-    fno:returns ( ex:sum_{fid}_output1 ) .
+ex:sum__{fid} a fno:Function ;
+    dcterms:description "Returns the sum of `first_param` and `second_param`."@en ;
+    fno:expects ( ex:sum__{fid}_parameter1_first_param ex:sum__{fid}_parameter2_second_param ) ;
+    fno:returns ( ex:sum__{fid}_output1 ) .
 
 <http://onto-ns.com/meta/0.1/MyEntity#myprop> map:mapsTo ex:MyConcept .
 
@@ -65,15 +65,15 @@ ex:AnotherConcept rdfs:subClassOf owl:Thing .
 
 ex:Sum rdfs:subClassOf owl:Thing .
 
-ex:sum_{fid}_output1 a fno:Output ;
+ex:sum__{fid}_output1 a fno:Output ;
     map:mapsTo ex:Sum .
 
-ex:sum_{fid}_parameter1_a a fno:Parameter ;
-    rdfs:label "a"@en ;
+ex:sum__{fid}_parameter1_first_param a fno:Parameter ;
+    rdfs:label "first_param"@en ;
     map:mapsTo ex:MyConcept .
 
-ex:sum_{fid}_parameter2_b a fno:Parameter ;
-    rdfs:label "b"@en ;
+ex:sum__{fid}_parameter2_second_param a fno:Parameter ;
+    rdfs:label "second_param"@en ;
     map:mapsTo ex:AnotherConcept .
 
 ex:MyConcept rdfs:subClassOf owl:Thing .

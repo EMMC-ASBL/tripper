@@ -36,7 +36,7 @@ def astriple(triple: "Triple"):
 class RdflibStrategy:
     """Triplestore strategy for rdflib."""
 
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:  # pylint: disable=unused-argument
         self.graph = Graph()
 
     def triples(self, triple: "Triple") -> "Generator":
