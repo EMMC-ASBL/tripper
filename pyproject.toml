@@ -73,7 +73,7 @@ Package = "https://pypi.org/project/tripper"
 name = "tripper"
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.7"
 ignore_missing_imports = true
 scripts_are_modules = true
 warn_unused_configs = true
@@ -82,7 +82,12 @@ allow_redefinition = true
 
 [tool.pylint.messages_control]
 max-line-length = 88
-disable = []
+max-args = 10
+max-public-methods = 25
+max-locals = 20
+disable = [
+    "fixme",
+]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
