@@ -1,6 +1,6 @@
 """Test RDF literals."""
 # pylint: disable=no-member
-from triplestore import en, Literal, XSD
+from tripper import en, Literal, XSD
 
 
 l1 = Literal("Hello world!")

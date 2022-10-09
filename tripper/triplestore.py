@@ -344,7 +344,7 @@ class Triplestore:
                 method.
         """
         module = import_module(backend if "." in backend
-                      else "triplestore.backends." + backend)
+                      else "tripper.backends." + backend)
         cls = getattr(module, backend.title() + "Strategy")
         self.base_iri = base_iri
         self.namespaces = {}
@@ -359,11 +359,22 @@ class Triplestore:
     # Methods implemented by backend
     # ------------------------------
     def triples(self, triple: "Triple") -> "Generator":
-        """Returns a generator over matching triples."""
+        """Returns a generator over matching triples.
+
+        Arguments:
+            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should
+                either be None (matching anything) or an exact IRI to
+                match.
+        """
         return self.backend.triples(triple)
 
     def add_triples(self, triples: "Sequence[Triple]"):
-        """Add a sequence of triples."""
+        """Add a sequence of triples.
+
+        Arguments:
+            triples: A sequence of `(s, p, o)` tuples to add to the
+                triplestore.
+        """
         self.backend.add_triples(triples)
 
     def remove(self, triple: "Triple"):
@@ -409,12 +420,33 @@ class Triplestore:
                                       format=format, **kwargs)
 
     def query(self, query_object, **kwargs):
-        """SPARQL query."""
+        """SPARQL query.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to the backend query() method.
+
+        Returns:
+            List of tuples of IRIs for each matching row.
+
+        Note:
+            This method is intended for SELECT queries.  Use
+            the update() method for INSERT and DELETE  queries.
+        """
         self._check_method("query")
         return self.backend.query(query_object=query_object, **kwargs)
 
     def update(self, update_object, **kwargs):
-        """Update triplestore with SPARQL."""
+        """Update triplestore with SPARQL.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to the backend update() method.
+
+        Note:
+            This method is intended for INSERT and DELETE queries.  Use
+            the query() method for SELECT queries.
+        """
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
 

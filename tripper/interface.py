@@ -50,10 +50,27 @@ class ITriplestore(Protocol):
         """
 
     def query(self, query_object, **kwargs)
-        """SPARQL query."""
+        """SPARQL query.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Additional backend-specific keyword arguments.
+
+        Returns:
+            List of tuples of IRIs for each matching row.
+        """
 
     def update(self, update_object, **kwargs)
-        """Update triplestore with SPARQL."""
+        """Update triplestore with SPARQL.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Additional backend-specific keyword arguments.
+
+        Note:
+            This method is intended for INSERT and DELETE queries.  Use
+            the query() method for SELECT queries.
+        """
 
     def bind(self, prefix: str, namespace: str)
         """Bind prefix to namespace.
@@ -72,10 +89,21 @@ class ITriplestore(Protocol):
     '''
 
     def triples(self, triple: "Triple") -> "Generator":
-        """Returns a generator over matching triples."""
+        """Returns a generator over matching triples.
+
+        Arguments:
+            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should
+                either be None (matching anything) or an exact IRI to
+                match.
+        """
 
     def add_triples(self, triples: "Sequence[Triple]"):
-        """Add a sequence of triples."""
+        """Add a sequence of triples.
+
+        Arguments:
+            triples: A sequence of `(s, p, o)` tuples to add to the
+                triplestore.
+        """
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""

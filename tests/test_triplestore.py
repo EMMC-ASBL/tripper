@@ -6,14 +6,15 @@ If backend is given, only that backend will be tested.  Otherwise all
 installed backends are tested one by one.
 """
 import argparse
+import os
 import subprocess
 import sys
 import textwrap
 from pathlib import Path
 
-from triplestore import Triplestore, RDF, RDFS, XSD, OWL, SKOS
-from triplestore.triplestore import function_id
-from triplestore.backends import get_backends
+from tripper import Triplestore, RDF, RDFS, XSD, OWL, SKOS
+from tripper.triplestore import function_id
+from tripper.backends import get_backends
 
 
 thisdir = Path(__file__).absolute().parent
@@ -28,7 +29,8 @@ parser.add_argument("backend", nargs="?", help="backend to test")
 args = parser.parse_args()
 if args.backend is None:
     for backend in get_backends(only_available=True):
-        subprocess.call([sys.executable, __file__, backend])
+        subprocess.call([sys.executable, __file__, backend],
+                        env=os.environ, cwd=os.getcwd())
     sys.exit(0)
 
 
@@ -94,6 +96,20 @@ ex:MyConcept rdfs:subClassOf owl:Thing .
 """)
 assert s == expected
 
+
+# Test SPARQL query
+rows = ts.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
+assert len(rows) == 3
+rows.sort()  # ensure consistent ordering of rows
+assert rows[0] ==  ('http://example.com/onto#AnotherConcept',
+                    'http://www.w3.org/2002/07/owl#Thing')
+assert rows[1] == ('http://example.com/onto#MyConcept',
+                   'http://www.w3.org/2002/07/owl#Thing')
+assert rows[2] == ('http://example.com/onto#Sum',
+                   'http://www.w3.org/2002/07/owl#Thing')
+
+
+# Test adding mappings and functions
 ts2 = Triplestore("rdflib")
 ts2.parse(format="turtle", data=s)
 assert ts2.serialize(format="turtle") == s
