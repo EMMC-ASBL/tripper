@@ -339,7 +339,7 @@ class Triplestore:
         Parameters:
             backend: Name of the backend module.
             base_iri: Base IRI used by the add_function() method when adding
-                new triples.
+                new triples.  May also be used by the backend.
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
         """
