@@ -136,4 +136,3 @@ ts.add_function(
     - Apache Jena Fuseki
     - Allegrograph
     - Wikidata
-
