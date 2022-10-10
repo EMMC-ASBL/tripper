@@ -22,7 +22,7 @@ jobs:
       package_dirs: tripper
       python_version_build: "3.7"
       build_cmd: "pip install -U flit && flit build"
-      publish_on_pypi: false
+      publish_on_pypi: true
 
       # Build & publish documentation
       update_docs: true
@@ -30,5 +30,5 @@ jobs:
       doc_extras: "[docs]"
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
     secrets:
-      # PyPI_token: ${{ secrets.PYPI_TOKEN }}
+      PyPI_token: ${{ secrets.PYPI_TOKEN }}
       PAT: ${{ secrets.RELEASE_PAT }}
