@@ -3,7 +3,7 @@ requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "tripper"
+name = "tripperpy"
 authors = [
     {name = "Jesper Friis", email = "jesper.friis@sintef.no"},
     {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
