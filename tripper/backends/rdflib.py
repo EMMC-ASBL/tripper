@@ -3,14 +3,15 @@ from typing import TYPE_CHECKING
 
 import rdflib
 from rdflib import BNode, Graph, URIRef
+from rdflib.util import guess_format
 
-from triplestore import Literal
+from tripper import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
     from typing import Generator
 
-    from triplestore import Triple
+    from tripper import Triple
 
 
 def asuri(v):
@@ -31,17 +32,34 @@ def astriple(t):
 
 
 class RdflibStrategy:
-    """Triplestore strategy for rdflib."""
+    """Triplestore strategy for rdflib.
 
-    def __init__(self, base_iri):
+    Arguments:
+        base_iri: If given, initialise the triplestore from this storage.
+            When `close()` is called, the storage will be overwritten
+            with the current content of the triplestore.
+        format: Format of storage specified with `base_iri`.
+    """
+
+    def __init__(self, base_iri: str = None, format: str = None):
         self.graph = Graph()
+        self.base_iri = base_iri
+        if base_iri is not None:
+            if format is None:
+                format = guess_format(base_iri)
+            self.parse(location=base_iri, format=format)
+        self.base_format = format
 
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
         for s, p, o in self.graph.triples(astriple(triple)):
-            yield (str(s), str(p),
-                   Literal(o.value, lang=o.language, datatype=o.datatype)
-                   if isinstance(o, rdflib.Literal) else str(o))
+            yield (
+                str(s),
+                str(p),
+                Literal(o.value, lang=o.language, datatype=o.datatype)
+                if isinstance(o, rdflib.Literal)
+                else str(o),
+            )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
@@ -53,8 +71,12 @@ class RdflibStrategy:
         self.graph.remove(astriple(triple))
 
     # Optional methods
-    def parse(self, source=None, location=None, data=None, format=None,
-              **kwargs):
+    def close(self):
+        if self.base_iri:
+            self.serialize(destination=self.base_iri, format=self.base_format)
+        self.graph.close()
+
+    def parse(self, source=None, location=None, data=None, format=None, **kwargs):
         """Parse source and add the resulting triples to triplestore.
 
         The source is specified using one of `source`, `location` or `data`.
@@ -67,10 +89,11 @@ class RdflibStrategy:
             kwargs: Additional less used keyword arguments.
                 See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.parse
         """
-        self.graph.parse(source=source, location=location, data=data,
-                         format=format, **kwargs)
+        self.graph.parse(
+            source=source, location=location, data=data, format=format, **kwargs
+        )
 
-    def serialize(self, destination=None, format='turtle', **kwargs):
+    def serialize(self, destination=None, format="turtle", **kwargs):
         """Serialise to destination.
 
         Parameters:
@@ -84,8 +107,7 @@ class RdflibStrategy:
         Returns:
             Serialised string if `destination` is None.
         """
-        s = self.graph.serialize(destination=destination, format=format,
-                                 **kwargs)
+        s = self.graph.serialize(destination=destination, format=format, **kwargs)
         if destination is None:
             # Depending on the version of rdflib the return value of
             # graph.serialize() man either be a string or a bytes object...
@@ -109,8 +131,7 @@ class RdflibStrategy:
         if namespace:
             self.graph.bind(prefix, namespace, replace=True)
         else:
-            warnings.warn(
-                "rdflib does not support removing namespace prefixes")
+            warnings.warn("rdflib does not support removing namespace prefixes")
 
     def namespaces(self) -> dict:
         """Returns a dict mapping prefixes to namespaces.

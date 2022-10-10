@@ -1,4 +1,4 @@
-'''A module encapsulating different triplestores using the strategy design
+"""A module encapsulating different triplestores using the strategy design
 pattern.
 
 See
@@ -7,7 +7,7 @@ for an introduction.
 
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
-'''
+"""
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import hashlib
@@ -33,11 +33,14 @@ _MATCH_PREFIXED_IRI = re.compile(r"^([a-z]+):([^/]{2}.*)$")
 class TriplestoreError(Exception):
     """Base exception for triplestore errors."""
 
+
 class UniquenessError(TriplestoreError):
     """More than one matching triple."""
 
+
 class NamespaceError(TriplestoreError):
     """Namespace error."""
+
 
 class NoSuchIRIError(NamespaceError):
     """Namespace has no such IRI."""
@@ -70,16 +73,28 @@ class Namespace:
         triplestore_url: Alternative URL to use for loading the underlying
             ontology if `triplestore` is not given.  Defaults to `iri`.
     """
+
     NO_CACHE = 0
     USE_CACHE = 1
     ONLY_CACHE = 2
 
     __slots__ = (
-        "_iri", "_label_annotations", "_check", "_cache", "_triplestore",
+        "_iri",
+        "_label_annotations",
+        "_check",
+        "_cache",
+        "_triplestore",
     )
 
-    def __init__(self, iri, label_annotations=(), check=False, cachemode=-1,
-                 triplestore=None, triplestore_url=None):
+    def __init__(
+        self,
+        iri,
+        label_annotations=(),
+        check=False,
+        cachemode=-1,
+        triplestore=None,
+        triplestore_url=None,
+    ):
         if label_annotations is True:
             label_annotations = (SKOS.prefLabel, RDF.label, SKOS.altLabel)
 
@@ -89,9 +104,7 @@ class Namespace:
 
         need_triplestore = True if check or label_annotations else False
         if cachemode == -1:
-            cachemode = (
-                Namespace.ONLY_CACHE if need_triplestore else Namespace.NO_CACHE
-            )
+            cachemode = Namespace.ONLY_CACHE if need_triplestore else Namespace.NO_CACHE
 
         if need_triplestore and triplestore is None:
             url = triplestore_url if triplestore_url else iri
@@ -105,9 +118,9 @@ class Namespace:
         # ONLY_CACHE when we figure out a good way to pre-populate the
         # cache with IRIs from the triplestore.
         #
-        #self._triplestore = (
+        # self._triplestore = (
         #    triplestore if cachemode != Namespace.ONLY_CACHE else None
-        #)
+        # )
         self._triplestore = triplestore if need_triplestore else None
 
         if cachemode != Namespace.NO_CACHE:
@@ -118,16 +131,15 @@ class Namespace:
         if not triplestore:
             triplestore = self._triplestore
         if not triplestore:
-            raise NamespaceError(
-                "`triplestore` argument needed for updating the cache"
-            )
+            raise NamespaceError("`triplestore` argument needed for updating the cache")
         if self._cache is None:
             self._cache = {}
 
         # Add (label, full_iri) pairs to cache
         for la in reversed(self._label_annotations):
             self._cache.update(
-                (o, s) for s, o in triplestore.subject_objects(la)
+                (o, s)
+                for s, o in triplestore.subject_objects(la)
                 if s.startswith(self._iri)
             )
 
@@ -137,8 +149,8 @@ class Namespace:
         # Is there an efficient way to loop over all IRIs in this namespace?
         n = len(self._iri)
         self._cache.update(
-            (s[n:], s) for s in triplestore.subjects(
-                RDFS.isDefinedBy, self._iri)
+            (s[n:], s)
+            for s in triplestore.subjects(RDFS.isDefinedBy, self._iri)
             if s.startswith(self._iri)
         )
 
@@ -212,12 +224,14 @@ DM = Namespace("http://emmo.info/datamodel#")
 
 class Literal(str):
     """A literal RDF value."""
+
     def __new__(cls, value, lang=None, datatype=None):
         string = super().__new__(cls, value)
         if lang:
             if datatype:
-                raise TypeError("A literal can only have one of `lang` or "
-                                "`datatype`.")
+                raise TypeError(
+                    "A literal can only have one of `lang` or " "`datatype`."
+                )
             string.lang = str(lang)
             string.datatype = None
         else:
@@ -270,29 +284,47 @@ class Literal(str):
 
         if self.datatype == XSD.boolean:
             v = bool(self)
-        elif self.datatype in (XSD.integer, XSD.int, XSD.short, XSD.long,
-                               XSD.nonPositiveInteger,
-                               XSD.negativeInteger, XSD.nonNegativeInteger,
-                               XSD.unsignedInt, XSD.unsignedShort,
-                               XSD.unsignedLong,
-                               XSD.byte, XSD.unsignedByte,
-                               ):
+        elif self.datatype in (
+            XSD.integer,
+            XSD.int,
+            XSD.short,
+            XSD.long,
+            XSD.nonPositiveInteger,
+            XSD.negativeInteger,
+            XSD.nonNegativeInteger,
+            XSD.unsignedInt,
+            XSD.unsignedShort,
+            XSD.unsignedLong,
+            XSD.byte,
+            XSD.unsignedByte,
+        ):
             v = int(self)
-        elif self.datatype in (XSD.double, XSD.decimal, XSD.dataTimeStamp,
-                               OWL.real, OWL.rational):
+        elif self.datatype in (
+            XSD.double,
+            XSD.decimal,
+            XSD.dataTimeStamp,
+            OWL.real,
+            OWL.rational,
+        ):
             v = float(self)
         elif self.datatype == XSD.hexBinary:
             v = self.encode()
         elif self.datatype == XSD.dateTime:
             v = datetime.fromisoformat(self)
         elif self.datatype and self.datatype not in (
-                RDF.PlainLiteral, RDF.XMLLiteral, RDFS.Literal,
-                XSD.anyURI, XSD.language, XSD.Name, XSD.NMName,
-                XSD.normalizedString, XSD.string, XSD.token, XSD.NMTOKEN,
+            RDF.PlainLiteral,
+            RDF.XMLLiteral,
+            RDFS.Literal,
+            XSD.anyURI,
+            XSD.language,
+            XSD.Name,
+            XSD.NMName,
+            XSD.normalizedString,
+            XSD.string,
+            XSD.token,
+            XSD.NMTOKEN,
         ):
-            warnings.warn(
-                f"unknown datatype: {self.datatype} - assuming string"
-            )
+            warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
         return v
 
     def n3(self):
@@ -343,11 +375,13 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
         """
-        module = import_module(backend if "." in backend
-                      else "triplestore.backends." + backend)
+        module = import_module(
+            backend if "." in backend else "tripper.backends." + backend
+        )
         cls = getattr(module, backend.title() + "Strategy")
         self.base_iri = base_iri
         self.namespaces = {}
+        self.closed = False
         self.backend_name = backend
         self.backend = cls(base_iri=base_iri, **kwargs)
         # Keep functions in the triplestore for convienence even though
@@ -372,6 +406,16 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
+    def close(self):
+        """Calls the backend close() method if it is implemented.
+        Otherwise, this method has no effect.
+        """
+        # It should be ok to call close() regardless of whether the backend
+        # implements this method or not.  Hence, don't call _check_method().
+        if not self.closed and hasattr(self.backend, "close"):
+            self.backend.close()
+        self.closed = True
+
     def parse(self, source=None, format=None, **kwargs):
         """Parse source and add the resulting triples to triplestore.
 
@@ -405,8 +449,7 @@ class Triplestore:
             Serialized string if `destination` is None.
         """
         self._check_method("serialize")
-        return self.backend.serialize(destination=destination,
-                                      format=format, **kwargs)
+        return self.backend.serialize(destination=destination, format=format, **kwargs)
 
     def query(self, query_object, **kwargs):
         """SPARQL query."""
@@ -430,8 +473,11 @@ class Triplestore:
             del self.namespaces[prefix]
             ns = None
         else:
-            ns = namespace if isinstance(namespace, Namespace) else Namespace(
-                namespace, **kwargs)
+            ns = (
+                namespace
+                if isinstance(namespace, Namespace)
+                else Namespace(namespace, **kwargs)
+            )
             self.namespaces[prefix] = ns
 
         if hasattr(self.backend, "bind"):
@@ -449,14 +495,14 @@ class Triplestore:
         if not hasattr(self.backend, name):
             raise NotImplementedError(
                 f'Triplestore backend "{self.backend_name}" do not '
-                f'implement a "{name}()" method.')
+                f'implement a "{name}()" method.'
+            )
 
     def add(self, triple: "Triple"):
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(self, subject=None, predicate=None, object=None, default=None,
-              any=False):
+    def value(self, subject=None, predicate=None, object=None, default=None, any=False):
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
@@ -536,7 +582,6 @@ class Triplestore:
             return False
         return True
 
-
     # Methods providing additional functionality
     # ------------------------------------------
     def expand_iri(self, iri: str):
@@ -567,12 +612,12 @@ class Triplestore:
         return iri
 
     def add_mapsTo(
-            self,
-            target: str,
-            source: "Union[str, dlite.Instance, dataclass]",
-            property_name: str = None,
-            cost: "Union[float, Callable]" = None,
-            target_cost: bool = True,
+        self,
+        target: str,
+        source: "Union[str, dlite.Instance, dataclass]",
+        property_name: str = None,
+        cost: "Union[float, Callable]" = None,
+        target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to triplestore.
 
@@ -592,7 +637,8 @@ class Triplestore:
 
         if not property_name and not isinstance(source, str):
             raise TriplestoreError(
-                "`property_name` is required when `target` is not a string.")
+                "`property_name` is required when `target` is not a string."
+            )
 
         target = self.expand_iri(target)
         source = self.expand_iri(infer_iri(source))
@@ -604,13 +650,13 @@ class Triplestore:
             self._add_cost(cost, dest)
 
     def add_function(
-            self,
-            func: Callable,
-            expects: "Union[str, Sequence, Mapping]" = (),
-            returns: "Union[str, Sequence]" = (),
-            base_iri: str = None,
-            standard: str = 'fno',
-            cost: "Union[float, Callable]" = None,
+        self,
+        func: Callable,
+        expects: "Union[str, Sequence, Mapping]" = (),
+        returns: "Union[str, Sequence]" = (),
+        base_iri: str = None,
+        standard: str = "fno",
+        cost: "Union[float, Callable]" = None,
     ):
         """Inspect function and add triples describing it to the triplestore.
 
@@ -692,8 +738,7 @@ class Triplestore:
         if isinstance(expects, Sequence):
             items = list(zip(expects, signature.parameters))
         else:
-            items = [(expects[par], par)
-                     for par in signature.parameters.keys()]
+            items = [(expects[par], par) for par in signature.parameters.keys()]
         lst = parlist
         for i, (iri, parname) in enumerate(items):
             lst_next = f"{parlist}{i+2}" if i < len(items) - 1 else RDF.nil
@@ -731,7 +776,7 @@ def infer_iri(obj):
     if hasattr(obj, "schema") and callable(obj.schema):
         # pydantic.BaseModel
         schema = obj.schema()
-        properties = schema['properties']
+        properties = schema["properties"]
         if "uri" in properties and properties["uri"]:
             return properties["uri"]
         if "uuid" in properties and properties["uuid"]:
@@ -748,6 +793,5 @@ def function_id(func, length=4):
     the current implementation is based on the shake_128 algorithm,
     it make no sense to set `length` larger than 32 bytes.
     """
-    #return hex(crc32(inspect.getsource(func).encode())).lstrip('0x')
-    return hashlib.shake_128(
-        inspect.getsource(func).encode()).hexdigest(length)
+    # return hex(crc32(inspect.getsource(func).encode())).lstrip('0x')
+    return hashlib.shake_128(inspect.getsource(func).encode()).hexdigest(length)

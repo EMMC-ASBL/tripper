@@ -11,10 +11,9 @@ import sys
 import textwrap
 from pathlib import Path
 
-from triplestore import Triplestore, RDF, RDFS, XSD, OWL, SKOS
-from triplestore.triplestore import function_id
-from triplestore.backends import get_backends
-
+from tripper import OWL, RDF, RDFS, SKOS, XSD, Triplestore
+from tripper.backends import get_backends
+from tripper.triplestore import function_id
 
 thisdir = Path(__file__).absolute().parent
 ontopath_family = thisdir / "ontologies" / "family.ttl"
@@ -36,11 +35,10 @@ print(f"Testing backend: {args.backend}")
 
 ts = Triplestore(args.backend)
 assert ts.expand_iri("xsd:integer") == XSD.integer
-assert ts.prefix_iri(RDF.type) == 'rdf:type'
+assert ts.prefix_iri(RDF.type) == "rdf:type"
 EX = ts.bind("ex", "http://example.com/onto#")
 assert str(EX) == "http://example.com/onto#"
-ts.add_mapsTo(
-    EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop")
+ts.add_mapsTo(EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop")
 ts.add((EX.MyConcept, RDFS.subClassOf, OWL.Thing))
 ts.add((EX.AnotherConcept, RDFS.subClassOf, OWL.Thing))
 ts.add((EX.Sum, RDFS.subClassOf, OWL.Thing))
@@ -53,12 +51,15 @@ def sum(a, b):
     """Returns the sum of `a` and `b`."""
     return a + b
 
-ts.add_function(sum, expects=(EX.MyConcept, EX.AnotherConcept),
-                returns=EX.Sum, base_iri=EX)
+
+ts.add_function(
+    sum, expects=(EX.MyConcept, EX.AnotherConcept), returns=EX.Sum, base_iri=EX
+)
 
 s = ts.serialize(format="turtle")
 fid = function_id(sum)
-expected = textwrap.dedent(f"""\
+expected = textwrap.dedent(
+    f"""\
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ex: <http://example.com/onto#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -91,7 +92,8 @@ ex:sum_{fid}_parameter2_b a fno:Parameter ;
 
 ex:MyConcept rdfs:subClassOf owl:Thing .
 
-""")
+"""
+)
 assert s == expected
 
 ts2 = Triplestore("rdflib")
@@ -99,35 +101,61 @@ ts2.parse(format="turtle", data=s)
 assert ts2.serialize(format="turtle") == s
 ts2.set((EX.AnotherConcept, RDFS.subClassOf, EX.MyConcept))
 
-def cost(x):
-    return 2*x
 
-ts2.add_mapsTo(EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum",
-               cost=cost)
+def cost(x):
+    return 2 * x
+
+
+ts2.add_mapsTo(EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost)
 assert list(ts2.function_repo.values())[0] == cost
 
+
 def func(x):
-    return x+1
+    return x + 1
+
 
 ts2.add_function(func, expects=EX.Sum, returns=EX.OneMore, cost=cost)
 assert list(ts2.function_repo.values())[1] == func
 assert len(ts2.function_repo) == 2  # cost is only added once
 
+
 def func2(x):
-    return x+2
+    return x + 2
+
 
 def cost2(x):
-    return 2*x+1
+    return 2 * x + 1
+
 
 ts2.add_function(func2, expects=EX.Sum, returns=EX.EvenMore, cost=cost2)
 assert len(ts2.function_repo) == 4
 
-    #print(ts2.serialize(format="turtle"))
+# print(ts2.serialize(format="turtle"))
+
+
+# Test rdflib with `base_iri`
+import shutil
+
+tmpdir = thisdir / "tmp"
+tmponto = tmpdir / "family.ttl"
+tmpdir.mkdir(exist_ok=True)
+shutil.copy(ontopath_family, tmponto)
+
+ts3 = Triplestore(backend="rdflib", base_iri=f"file://{tmponto}")
+FAM = ts3.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
+ts3.add_triples(
+    [
+        (":Nils", RDF.type, FAM.Father),
+        (":Anna", RDF.type, FAM.Dauther),
+        (":Nils", FAM.hasChild, ":Anna"),
+    ]
+)
+ts3.close()
 
 
 ## Test ontopy triplestore backend
 ## -------------------------------
-#if ontopy:
+# if ontopy:
 #    ts3 = Triplestore("ontopy", base_iri="emmo", load=True)
 #    onto = ts3.backend.onto
 #    triples = list(ts3.triples((None, None, None)))
