@@ -1,14 +1,19 @@
-import warnings
+"""Backend for RDFLib.
+
+For developers: The usage of `s`, `p`, and `o` represent the different parts of an
+RDF Triple: subject, predicate, and object.
+"""
 from typing import TYPE_CHECKING
 
-from SPARQLWrapper import SPARQLWrapper, GET, POST, JSON, RDFXML
+from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
 
 from tripper import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, Optional
+    from typing import Dict, Generator
 
+    from SPARQLWrapper import QueryResult
     from triplestore import Triple
 
 
@@ -18,46 +23,57 @@ class SparqlwrapperStrategy:
     Arguments:
         base_iri: URI of SPARQL endpoint.
         kwargs: Additional arguments passed to the SPARQLWrapper constructor.
+
     """
 
-    def __init__(
-            self,
-            base_iri: str,
-            **kwargs
-    ):
+    def __init__(self, base_iri: str, **kwargs) -> None:
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
 
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
-        variables = [f"?{v}" for v, t in zip("spo", triple) if t is None]
+        variables = [
+            f"?{triple_name}"
+            for triple_name, triple_value in zip("spo", triple)
+            if triple_value is None
+        ]
         where_spec = " ".join(
-            f"?{v}" if t is None else t if t.startswith("<") else f"<{t}>"
-            for v, t in zip("spo", triple)
+            f"?{triple_name}"
+            if triple_value is None
+            else triple_value
+            if triple_value.startswith("<")
+            else f"<{triple_value}>"
+            for triple_name, triple_value in zip("spo", triple)
         )
-        query = "\n".join([
+        query = "\n".join(
+            [
                 f"SELECT {' '.join(variables)} WHERE {{",
                 f"  {where_spec} .",
-                f"}}",
-        ])
+                "}",
+            ]
+        )
         self.sparql.setReturnFormat(JSON)
         self.sparql.setMethod(GET)
         self.sparql.setQuery(query)
         ret = self.sparql.queryAndConvert()
-        for d in ret['results']['bindings']:
+        for binding in ret["results"]["bindings"]:
             yield tuple(
-                convert_json_entrydict(d[v]) if v in d else t
-                for v, t in zip("spo", triple)
+                convert_json_entrydict(binding.get(triple_name, triple_value))
+                for triple_name, triple_value in zip("spo", triple)
             )
 
-    def add_triples(self, triples: "Sequence[Triple]"):
+    def add_triples(self, triples: "Sequence[Triple]") -> "QueryResult":
         """Add a sequence of triples."""
         spec = "\n".join(
-            "  " + " ".join(
-                t.n3() if isinstance(t, Literal) else
-                t if t.startswith("<") else
-                f"<{t}>"
-                for t in triple
-            ) + " ."
+            "  "
+            + " ".join(
+                value.n3()
+                if isinstance(value, Literal)
+                else value
+                if value.startswith("<")
+                else f"<{value}>"
+                for value in triple
+            )
+            + " ."
             for triple in triples
         )
         query = f"INSERT DATA {{\n{spec}\n}}"
@@ -66,14 +82,17 @@ class SparqlwrapperStrategy:
         self.sparql.setQuery(query)
         return self.sparql.query()
 
-    def remove(self, triple: "Triple"):
+    def remove(self, triple: "Triple") -> "QueryResult":
         """Remove all matching triples from the backend."""
         spec = " ".join(
-            f"?{v}" if t is None else
-            t.n3() if isinstance(t, Literal) else
-            t if t.startswith("<") else
-            f"<{t}>"
-            for v, t in zip("spo", triple)
+            f"?{name}"
+            if value is None
+            else value.n3()
+            if isinstance(value, Literal)
+            else value
+            if value.startswith("<")
+            else f"<{value}>"
+            for name, value in zip("spo", triple)
         )
         query = f"DELETE {{ {spec} }}"
         self.sparql.setReturnFormat(RDFXML)
@@ -82,21 +101,24 @@ class SparqlwrapperStrategy:
         return self.sparql.query()
 
 
-
-def convert_json_entrydict(entrydict):
+def convert_json_entrydict(entrydict: "Dict[str, str]") -> str:
     """Convert SPARQLWrapper json entry dict (representing a single IRI or
     literal) to a tripper type."""
-    type = entrydict["type"]
-    value = entrydict["value"]
-    if type == "uri":
-        return value
-    elif type == "literal":
-            return Literal(
-                value,
-                lang=entrydict.get("xml:lang"),
-                datatype=entrydict.get("datatype"),
-            )
-    elif type == "bnode":
-        return value if value.startswith("_:") else f"_:{value}"
-    else:
-        raise ValueError(f"unexpected type in entrydict: {entrydict}")
+    if entrydict["type"] == "uri":
+        return entrydict["value"]
+
+    if entrydict["type"] == "literal":
+        return Literal(
+            entrydict["value"],
+            lang=entrydict.get("xml:lang"),
+            datatype=entrydict.get("datatype"),
+        )
+
+    if entrydict["type"] == "bnode":
+        return (
+            entrydict["value"]
+            if entrydict["value"].startswith("_:")
+            else f"_:{entrydict['value']}"
+        )
+
+    raise ValueError(f"unexpected type in entrydict: {entrydict}")

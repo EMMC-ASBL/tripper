@@ -31,6 +31,7 @@ dynamic = ["version"]
 dependencies = [
     "EMMOntoPy ~=0.4",
     "rdflib ~=6.2",
+    "SPARQLWrapper ~=2.0",
     "typing-extensions ~=4.4 ; python_version<'3.8'",
 ]
 
