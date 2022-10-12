@@ -1,4 +1,4 @@
-'''A module encapsulating different triplestores using the strategy design
+"""A module encapsulating different triplestores using the strategy design
 pattern.
 
 See
@@ -7,7 +7,10 @@ for an introduction.
 
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
-'''
+
+For developers: The usage of `s`, `p`, and `o` represent the different parts of an
+RDF Triple: subject, predicate, and object.
+"""
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import hashlib
@@ -21,7 +24,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Callable, Generator, Tuple, Union
+    from typing import Any, Callable, Dict, Generator, Tuple, Union
 
     Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
 
@@ -33,11 +36,14 @@ _MATCH_PREFIXED_IRI = re.compile(r"^([a-z]+):([^/]{2}.*)$")
 class TriplestoreError(Exception):
     """Base exception for triplestore errors."""
 
+
 class UniquenessError(TriplestoreError):
     """More than one matching triple."""
 
+
 class NamespaceError(TriplestoreError):
     """Namespace error."""
+
 
 class NoSuchIRIError(NamespaceError):
     """Namespace has no such IRI."""
@@ -70,16 +76,28 @@ class Namespace:
         triplestore_url: Alternative URL to use for loading the underlying
             ontology if `triplestore` is not given.  Defaults to `iri`.
     """
+
     NO_CACHE = 0
     USE_CACHE = 1
     ONLY_CACHE = 2
 
     __slots__ = (
-        "_iri", "_label_annotations", "_check", "_cache", "_triplestore",
+        "_iri",
+        "_label_annotations",
+        "_check",
+        "_cache",
+        "_triplestore",
     )
 
-    def __init__(self, iri, label_annotations=(), check=False, cachemode=-1,
-                 triplestore=None, triplestore_url=None):
+    def __init__(
+        self,
+        iri,
+        label_annotations=(),
+        check=False,
+        cachemode=-1,
+        triplestore=None,
+        triplestore_url=None,
+    ):
         if label_annotations is True:
             label_annotations = (SKOS.prefLabel, RDF.label, SKOS.altLabel)
 
@@ -87,11 +105,9 @@ class Namespace:
         self._label_annotations = tuple(label_annotations)
         self._check = bool(check)
 
-        need_triplestore = True if check or label_annotations else False
+        need_triplestore = bool(check or label_annotations)
         if cachemode == -1:
-            cachemode = (
-                Namespace.ONLY_CACHE if need_triplestore else Namespace.NO_CACHE
-            )
+            cachemode = Namespace.ONLY_CACHE if need_triplestore else Namespace.NO_CACHE
 
         if need_triplestore and triplestore is None:
             url = triplestore_url if triplestore_url else iri
@@ -105,9 +121,9 @@ class Namespace:
         # ONLY_CACHE when we figure out a good way to pre-populate the
         # cache with IRIs from the triplestore.
         #
-        #self._triplestore = (
+        # self._triplestore = (
         #    triplestore if cachemode != Namespace.ONLY_CACHE else None
-        #)
+        # )
         self._triplestore = triplestore if need_triplestore else None
 
         if cachemode != Namespace.NO_CACHE:
@@ -118,16 +134,15 @@ class Namespace:
         if not triplestore:
             triplestore = self._triplestore
         if not triplestore:
-            raise NamespaceError(
-                "`triplestore` argument needed for updating the cache"
-            )
+            raise NamespaceError("`triplestore` argument needed for updating the cache")
         if self._cache is None:
             self._cache = {}
 
         # Add (label, full_iri) pairs to cache
-        for la in reversed(self._label_annotations):
+        for label in reversed(self._label_annotations):
             self._cache.update(
-                (o, s) for s, o in triplestore.subject_objects(la)
+                (o, s)
+                for s, o in triplestore.subject_objects(label)
                 if s.startswith(self._iri)
             )
 
@@ -135,15 +150,14 @@ class Namespace:
         # Currently we only check concepts that defines RDFS.isDefinedBy
         # relations.
         # Is there an efficient way to loop over all IRIs in this namespace?
-        n = len(self._iri)
         self._cache.update(
-            (s[n:], s) for s in triplestore.subjects(
-                RDFS.isDefinedBy, self._iri)
+            (s[len(self._iri) :], s)
+            for s in triplestore.subjects(RDFS.isDefinedBy, self._iri)
             if s.startswith(self._iri)
         )
 
     def __getattr__(self, name):
-        if self._cache is not None and name in self._cache:
+        if self._cache and name in self._cache:
             return self._cache[name]
 
         if self._triplestore:
@@ -153,9 +167,9 @@ class Namespace:
             # We only need to check that generator returned by
             # `self._triplestore.predicate_objects(iri)` is non-empty.
             iri = self._iri + name
-            g = self._triplestore.predicate_objects(iri)
+            predicate_object = self._triplestore.predicate_objects(iri)
             try:
-                g.__next__()
+                predicate_object.__next__()
             except StopIteration:
                 pass
             else:
@@ -164,8 +178,8 @@ class Namespace:
                 return iri
 
             # Check for label annotations matching `name`.
-            for la in self._label_annotations:
-                for s, o in self._triplestore.subject_objects(la):
+            for label in self._label_annotations:
+                for s, o in self._triplestore.subject_objects(label):
                     if o == name and s.startswith(self._iri):
                         if self._cache is not None:
                             self._cache[name] = s
@@ -173,8 +187,7 @@ class Namespace:
 
         if self._check:
             raise NoSuchIRIError(self._iri + name)
-        else:
-            return self._iri + name
+        return self._iri + name
 
     def __getitem__(self, key):
         return self.__getattr__(key)
@@ -212,18 +225,21 @@ DM = Namespace("http://emmo.info/datamodel#")
 
 class Literal(str):
     """A literal RDF value."""
+
+    lang: str
+    datatype: "Any"
+
     def __new__(cls, value, lang=None, datatype=None):
         string = super().__new__(cls, value)
         if lang:
             if datatype:
-                raise TypeError("A literal can only have one of `lang` or "
-                                "`datatype`.")
+                raise TypeError("A literal can only have one of `lang` or `datatype`.")
             string.lang = str(lang)
             string.datatype = None
         else:
             string.lang = None
             if datatype:
-                d = {
+                string.datatype = {
                     str: XSD.string,
                     bool: XSD.boolean,
                     int: XSD.integer,
@@ -231,8 +247,7 @@ class Literal(str):
                     bytes: XSD.hexBinary,
                     bytearray: XSD.hexBinary,
                     datetime: XSD.dateTime,
-                }
-                string.datatype = d.get(datatype, datatype)
+                }.get(datatype, datatype)
             elif isinstance(value, str):
                 string.datatype = None
             elif isinstance(value, bool):
@@ -266,46 +281,63 @@ class Literal(str):
     def to_python(self):
         """Returns an appropriate python datatype derived from this RDF
         literal."""
-        v = str(self)
+        value = str(self)
 
         if self.datatype == XSD.boolean:
-            v = bool(self)
-        elif self.datatype in (XSD.integer, XSD.int, XSD.short, XSD.long,
-                               XSD.nonPositiveInteger,
-                               XSD.negativeInteger, XSD.nonNegativeInteger,
-                               XSD.unsignedInt, XSD.unsignedShort,
-                               XSD.unsignedLong,
-                               XSD.byte, XSD.unsignedByte,
-                               ):
-            v = int(self)
-        elif self.datatype in (XSD.double, XSD.decimal, XSD.dataTimeStamp,
-                               OWL.real, OWL.rational):
-            v = float(self)
-        elif self.datatype == XSD.hexBinary:
-            v = self.encode()
-        elif self.datatype == XSD.dateTime:
-            v = datetime.fromisoformat(self)
-        elif self.datatype and self.datatype not in (
-                RDF.PlainLiteral, RDF.XMLLiteral, RDFS.Literal,
-                XSD.anyURI, XSD.language, XSD.Name, XSD.NMName,
-                XSD.normalizedString, XSD.string, XSD.token, XSD.NMTOKEN,
+            value = bool(self)
+        elif self.datatype in (
+            XSD.integer,
+            XSD.int,
+            XSD.short,
+            XSD.long,
+            XSD.nonPositiveInteger,
+            XSD.negativeInteger,
+            XSD.nonNegativeInteger,
+            XSD.unsignedInt,
+            XSD.unsignedShort,
+            XSD.unsignedLong,
+            XSD.byte,
+            XSD.unsignedByte,
         ):
-            warnings.warn(
-                f"unknown datatype: {self.datatype} - assuming string"
-            )
-        return v
+            value = int(self)
+        elif self.datatype in (
+            XSD.double,
+            XSD.decimal,
+            XSD.dataTimeStamp,
+            OWL.real,
+            OWL.rational,
+        ):
+            value = float(self)
+        elif self.datatype == XSD.hexBinary:
+            value = self.encode()
+        elif self.datatype == XSD.dateTime:
+            value = datetime.fromisoformat(self)
+        elif self.datatype and self.datatype not in (
+            RDF.PlainLiteral,
+            RDF.XMLLiteral,
+            RDFS.Literal,
+            XSD.anyURI,
+            XSD.language,
+            XSD.Name,
+            XSD.NMName,
+            XSD.normalizedString,
+            XSD.string,
+            XSD.token,
+            XSD.NMTOKEN,
+        ):
+            warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
+        return value
 
-    def n3(self):
+    def n3(self):  # pylint: disable=invalid-name
         """Returns a representation in n3 format."""
         if self.lang:
             return f'"{self}"@{self.lang}'
-        elif self.datatype:
+        if self.datatype:
             return f'"{self}"^^{self.datatype}'
-        else:
-            return f'"{self}"'
+        return f'"{self}"'
 
 
-def en(value):
+def en(value):  # pylint: disable=invalid-name
     """Convenience function that returns value as a plain english literal.
 
     Equivalent to``Literal(value, lang="en")``.
@@ -343,18 +375,19 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
         """
-        module = import_module(backend if "." in backend
-                      else "tripper.backends." + backend)
+        module = import_module(
+            backend if "." in backend else f"tripper.backends.{backend}"
+        )
         cls = getattr(module, backend.title() + "Strategy")
         self.base_iri = base_iri
-        self.namespaces = {}
+        self.namespaces: "Dict[str, Namespace]" = {}
         self.backend_name = backend
         self.backend = cls(base_iri=base_iri, **kwargs)
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
-        self.function_repo = {}
-        for prefix, ns in self.default_namespaces.items():
-            self.bind(prefix, ns)
+        self.function_repo: "Dict[str, Union[float, Callable[[], float]]]" = {}
+        for prefix, namespace in self.default_namespaces.items():
+            self.bind(prefix, namespace)
 
     # Methods implemented by backend
     # ------------------------------
@@ -383,7 +416,9 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
-    def parse(self, source=None, format=None, **kwargs):
+    def parse(
+        self, source=None, format=None, **kwargs  # pylint: disable=redefined-builtin
+    ):
         """Parse source and add the resulting triples to triplestore.
 
         Parameters:
@@ -398,11 +433,16 @@ class Triplestore:
         self.backend.parse(source=source, format=format, **kwargs)
 
         if hasattr(self.backend, "namespaces"):
-            for prefix, ns in self.backend.namespaces().items():
+            for prefix, namespace in self.backend.namespaces().items():
                 if prefix and prefix not in self.namespaces:
-                    self.namespaces[prefix] = Namespace(ns)
+                    self.namespaces[prefix] = Namespace(namespace)
 
-    def serialize(self, destination=None, format="turtle", **kwargs):
+    def serialize(
+        self,
+        destination=None,
+        format="turtle",  # pylint: disable=redefined-builtin
+        **kwargs,
+    ) -> "Union[None, str]":
         """Serialise triplestore.
 
         Parameters:
@@ -416,8 +456,7 @@ class Triplestore:
             Serialized string if `destination` is None.
         """
         self._check_method("serialize")
-        return self.backend.serialize(destination=destination,
-                                      format=format, **kwargs)
+        return self.backend.serialize(destination=destination, format=format, **kwargs)
 
     def query(self, query_object, **kwargs):
         """SPARQL query.
@@ -458,18 +497,19 @@ class Triplestore:
 
         If `namespace` is None, the corresponding prefix is removed.
         """
-        if namespace is None:
-            del self.namespaces[prefix]
-            ns = None
-        else:
-            ns = namespace if isinstance(namespace, Namespace) else Namespace(
-                namespace, **kwargs)
-            self.namespaces[prefix] = ns
-
         if hasattr(self.backend, "bind"):
             self.backend.bind(prefix, namespace)
 
-        return ns
+        if namespace is None:
+            del self.namespaces[prefix]
+            return None
+
+        self.namespaces[prefix] = (
+            namespace
+            if isinstance(namespace, Namespace)
+            else Namespace(namespace, **kwargs)
+        )
+        return self.namespaces[prefix]
 
     # Convenient methods
     # ------------------
@@ -480,15 +520,17 @@ class Triplestore:
         """Check that backend implements the given method."""
         if not hasattr(self.backend, name):
             raise NotImplementedError(
-                f'Triplestore backend "{self.backend_name}" do not '
-                f'implement a "{name}()" method.')
+                f"Triplestore backend {self.backend_name!r} do not implement a "
+                f'"{name}()" method.'
+            )
 
     def add(self, triple: "Triple"):
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(self, subject=None, predicate=None, object=None, default=None,
-              any=False):
+    def value(
+        self, subject=None, predicate=None, object=None, default=None, any=False
+    ):  # pylint: disable=redefined-builtin
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
@@ -499,9 +541,9 @@ class Triplestore:
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
         """
-        g = self.triples((subject, predicate, object))
+        triple = self.triples((subject, predicate, object))
         try:
-            value = next(g)
+            value = next(triple)
         except StopIteration:
             return default
 
@@ -509,18 +551,22 @@ class Triplestore:
             return value
 
         try:
-            next(g)
+            next(triple)
         except StopIteration:
             return value
         else:
             raise UniquenessError("More than one match")
 
-    def subjects(self, predicate=None, object=None):
+    def subjects(
+        self, predicate=None, object=None  # pylint: disable=redefined-builtin
+    ):
         """Returns a generator of subjects for given predicate and object."""
         for s, _, _ in self.triples((None, predicate, object)):
             yield s
 
-    def predicates(self, subject=None, object=None):
+    def predicates(
+        self, subject=None, object=None  # pylint: disable=redefined-builtin
+    ):
         """Returns a generator of predicates for given subject and object."""
         for _, p, _ in self.triples((subject, None, object)):
             yield p
@@ -530,7 +576,7 @@ class Triplestore:
         for _, _, o in self.triples((subject, predicate, None)):
             yield o
 
-    def subject_predicates(self, object=None):
+    def subject_predicates(self, object=None):  # pylint: disable=redefined-builtin
         """Returns a generator of (subject, predicate) tuples for given
         object."""
         for s, p, _ in self.triples((None, None, object)):
@@ -558,16 +604,17 @@ class Triplestore:
         self.remove((s, p, None))
         self.add(triple)
 
-    def has(self, subject=None, predicate=None, object=None):
+    def has(
+        self, subject=None, predicate=None, object=None
+    ):  # pylint: disable=redefined-builtin
         """Returns true if the triplestore has any triple matching
         the give subject, predicate and/or object."""
-        g = self.triples((subject, predicate, object))
+        triple = self.triples((subject, predicate, object))
         try:
-            g.__next__()
+            next(triple)
         except StopIteration:
             return False
         return True
-
 
     # Methods providing additional functionality
     # ------------------------------------------
@@ -598,19 +645,19 @@ class Triplestore:
                 raise NamespaceError(f"No prefix defined for IRI: {iri}")
         return iri
 
-    def add_mapsTo(
-            self,
-            target: str,
-            source: "Union[str, dlite.Instance, dataclass]",
-            property_name: str = None,
-            cost: "Union[float, Callable]" = None,
-            target_cost: bool = True,
+    def add_mapsTo(  # pylint: disable=invalid-name
+        self,
+        target: str,
+        source: str,
+        property_name: str = None,
+        cost: "Union[float, Callable]" = None,
+        target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to triplestore.
 
         Parameters:
             target: IRI of target ontological concept.
-            source: Source IRI or entity object.
+            source: Source IRI (or entity object).
             property_name: Name of property if `source` is an entity or
                 an entity IRI.
             cost: User-defined cost of following this mapping relation
@@ -624,7 +671,8 @@ class Triplestore:
 
         if not property_name and not isinstance(source, str):
             raise TriplestoreError(
-                "`property_name` is required when `target` is not a string.")
+                "`property_name` is required when `target` is not a string."
+            )
 
         target = self.expand_iri(target)
         source = self.expand_iri(infer_iri(source))
@@ -636,13 +684,13 @@ class Triplestore:
             self._add_cost(cost, dest)
 
     def add_function(
-            self,
-            func: Callable,
-            expects: "Union[str, Sequence, Mapping]" = (),
-            returns: "Union[str, Sequence]" = (),
-            base_iri: str = None,
-            standard: str = 'fno',
-            cost: "Union[float, Callable]" = None,
+        self,
+        func: Callable,
+        expects: "Union[str, Sequence, Mapping]" = (),
+        returns: "Union[str, Sequence]" = (),
+        base_iri: str = None,
+        standard: str = "fno",
+        cost: "Union[float, Callable]" = None,
     ):
         """Inspect function and add triples describing it to the triplestore.
 
@@ -680,7 +728,7 @@ class Triplestore:
 
         return func_iri
 
-    def _add_cost(self, cost, dest_iri):
+    def _add_cost(self, cost: "Union[float, Callable[[], float]]", dest_iri):
         """Help function that adds `cost` to destination IRI `dest_iri`.
 
         `cost` should be either a float or a Callable returning a float.
@@ -709,23 +757,20 @@ class Triplestore:
         if base_iri is None:
             base_iri = self.base_iri if self.base_iri else ":"
         fid = function_id(func)  # Function id
-        doc = inspect.getdoc(func)
-        name = func.__name__
-        signature = inspect.signature(func)
-        func_iri = f"{base_iri}{name}_{fid}"
-        parlist = f"_:{name}{fid}parlist"
-        outlist = f"_:{name}{fid}outlist"
+        doc_string = inspect.getdoc(func)
+        func_iri = f"{base_iri}{func.__name__}_{fid}"
+        parlist = f"_:{func.__name__}{fid}parlist"
+        outlist = f"_:{func.__name__}{fid}outlist"
         self.add((func_iri, RDF.type, FNO.Function))
         self.add((func_iri, FNO.expects, parlist))
         self.add((func_iri, FNO.returns, outlist))
-        if doc:
-            self.add((func_iri, DCTERMS.description, en(doc)))
+        if doc_string:
+            self.add((func_iri, DCTERMS.description, en(doc_string)))
 
         if isinstance(expects, Sequence):
-            items = list(zip(expects, signature.parameters))
+            items = list(zip(expects, inspect.signature(func).parameters))
         else:
-            items = [(expects[par], par)
-                     for par in signature.parameters.keys()]
+            items = [(expects[par], par) for par in inspect.signature(func).parameters]
         lst = parlist
         for i, (iri, parname) in enumerate(items):
             lst_next = f"{parlist}{i+2}" if i < len(items) - 1 else RDF.nil
@@ -763,7 +808,7 @@ def infer_iri(obj):
     if hasattr(obj, "schema") and callable(obj.schema):
         # pydantic.BaseModel
         schema = obj.schema()
-        properties = schema['properties']
+        properties = schema["properties"]
         if "uri" in properties and properties["uri"]:
             return properties["uri"]
         if "uuid" in properties and properties["uuid"]:
@@ -780,6 +825,7 @@ def function_id(func, length=4):
     the current implementation is based on the shake_128 algorithm,
     it make no sense to set `length` larger than 32 bytes.
     """
-    #return hex(crc32(inspect.getsource(func).encode())).lstrip('0x')
-    return hashlib.shake_128(
-        inspect.getsource(func).encode()).hexdigest(length)
+    # return hex(crc32(inspect.getsource(func).encode())).lstrip('0x')
+    return hashlib.shake_128(  # pylint: disable=too-many-function-args
+        inspect.getsource(func).encode()
+    ).hexdigest(length)
