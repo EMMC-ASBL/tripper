@@ -79,6 +79,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Overview: overview.md
   - License: LICENSE.md
   - Changelog: CHANGELOG.md
   - ... | api_reference/**
