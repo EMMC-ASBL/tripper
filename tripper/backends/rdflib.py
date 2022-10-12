@@ -29,8 +29,8 @@ def asuri(value: "Union[None, Literal, str]"):
 
 def astriple(triple: "Triple"):
     """Help function converting a triple to rdflib triple."""
-    subject, predicate, object_ = triple
-    return asuri(subject), asuri(predicate), asuri(object_)
+    s, p, o = triple
+    return asuri(s), asuri(p), asuri(o)
 
 
 class RdflibStrategy:
@@ -41,19 +41,15 @@ class RdflibStrategy:
 
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
-        for (
-            subject,
-            predicate,
-            object_,
-        ) in self.graph.triples(  # pylint: disable=not-an-iterable
+        for (s, p, o,) in self.graph.triples(  # pylint: disable=not-an-iterable
             astriple(triple)
         ):
             yield (
-                str(subject),
-                str(predicate),
-                Literal(object_.value, lang=object_.language, datatype=object_.datatype)
-                if isinstance(object_, rdflibLiteral)
-                else str(object_),
+                str(s),
+                str(p),
+                Literal(o.value, lang=o.language, datatype=o.datatype)
+                if isinstance(o, rdflibLiteral)
+                else str(o),
             )
 
     def add_triples(self, triples: "Sequence[Triple]"):

@@ -138,9 +138,9 @@ class Namespace:
         # Add (label, full_iri) pairs to cache
         for label in reversed(self._label_annotations):
             self._cache.update(
-                (object_, subject)
-                for subject, object_ in triplestore.subject_objects(label)
-                if subject.startswith(self._iri)
+                (o, s)
+                for s, o in triplestore.subject_objects(label)
+                if s.startswith(self._iri)
             )
 
         # Add (name, full_iri) pairs to cache
@@ -148,9 +148,9 @@ class Namespace:
         # relations.
         # Is there an efficient way to loop over all IRIs in this namespace?
         self._cache.update(
-            (subject[len(self._iri) :], subject)
-            for subject in triplestore.subjects(RDFS.isDefinedBy, self._iri)
-            if subject.startswith(self._iri)
+            (s[len(self._iri) :], s)
+            for s in triplestore.subjects(RDFS.isDefinedBy, self._iri)
+            if s.startswith(self._iri)
         )
 
     def __getattr__(self, name):
@@ -176,11 +176,11 @@ class Namespace:
 
             # Check for label annotations matching `name`.
             for label in self._label_annotations:
-                for subject, object_ in self._triplestore.subject_objects(label):
-                    if object_ == name and subject.startswith(self._iri):
+                for s, o in self._triplestore.subject_objects(label):
+                    if o == name and s.startswith(self._iri):
                         if self._cache is not None:
-                            self._cache[name] = subject
-                        return subject
+                            self._cache[name] = s
+                        return s
 
         if self._check:
             raise NoSuchIRIError(self._iri + name)
@@ -526,38 +526,38 @@ class Triplestore:
         self, predicate=None, object=None  # pylint: disable=redefined-builtin
     ):
         """Returns a generator of subjects for given predicate and object."""
-        for subject, _, _ in self.triples((None, predicate, object)):
-            yield subject
+        for s, _, _ in self.triples((None, predicate, object)):
+            yield s
 
     def predicates(
         self, subject=None, object=None  # pylint: disable=redefined-builtin
     ):
         """Returns a generator of predicates for given subject and object."""
-        for _, predicate, _ in self.triples((subject, None, object)):
-            yield predicate
+        for _, p, _ in self.triples((subject, None, object)):
+            yield p
 
     def objects(self, subject=None, predicate=None):
         """Returns a generator of objects for given subject and predicate."""
-        for _, _, object_ in self.triples((subject, predicate, None)):
-            yield object_
+        for _, _, o in self.triples((subject, predicate, None)):
+            yield o
 
     def subject_predicates(self, object=None):  # pylint: disable=redefined-builtin
         """Returns a generator of (subject, predicate) tuples for given
         object."""
-        for subject, predicate, _ in self.triples((None, None, object)):
-            yield subject, predicate
+        for s, p, _ in self.triples((None, None, object)):
+            yield s, p
 
     def subject_objects(self, predicate=None):
         """Returns a generator of (subject, object) tuples for given
         predicate."""
-        for subject, _, object_ in self.triples((None, predicate, None)):
-            yield subject, object_
+        for s, _, o in self.triples((None, predicate, None)):
+            yield s, o
 
     def predicate_objects(self, subject=None):
         """Returns a generator of (predicate, object) tuples for given
         subject."""
-        for _, predicate, object_ in self.triples((subject, None, None)):
-            yield predicate, object_
+        for _, p, o in self.triples((subject, None, None)):
+            yield p, o
 
     def set(self, triple):
         """Convenience method to update the value of object.
@@ -565,8 +565,8 @@ class Triplestore:
         Removes any existing triples for subject and predicate before adding
         the given `triple`.
         """
-        subject, predicate, _ = triple
-        self.remove((subject, predicate, None))
+        s, p, _ = triple
+        self.remove((s, p, None))
         self.add(triple)
 
     def has(

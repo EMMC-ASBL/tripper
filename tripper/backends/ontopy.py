@@ -51,75 +51,71 @@ class OntopyStrategy:
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
 
-        def to_literal(object_, datum):
-            """Returns a literal from (object_, datum)."""
-            if isinstance(datum, str) and datum.startswith("@"):
-                lang, datatype = datum[1:], None
-            else:
-                lang, datatype = None, datum
-            return Literal(object_, lang=lang, datatype=datatype)
+        def to_literal(o, datatype) -> Literal:
+            """Returns a literal from (o, datatype)."""
+            if isinstance(datatype, str) and datatype.startswith("@"):
+                return Literal(o, lang=datatype[1:], datatype=None)
+            return Literal(o, lang=None, datatype=datatype)
 
-        subject, predicate, object_ = triple
+        s, p, o = triple
         abb = (
-            None if (subject) is None else self.onto._abbreviate(subject),
-            None if (predicate) is None else self.onto._abbreviate(predicate),
-            None if (object_) is None else self.onto._abbreviate(object_),
+            None if (s) is None else self.onto._abbreviate(s),
+            None if (p) is None else self.onto._abbreviate(p),
+            None if (o) is None else self.onto._abbreviate(o),
         )
-        for subject, predicate, object_ in self.onto._get_obj_triples_spo_spo(*abb):
+        for s, p, o in self.onto._get_obj_triples_spo_spo(*abb):
             yield (
-                _unabbreviate(self.onto, subject),
-                _unabbreviate(self.onto, predicate),
-                _unabbreviate(self.onto, object_),
+                _unabbreviate(self.onto, s),
+                _unabbreviate(self.onto, p),
+                _unabbreviate(self.onto, o),
             )
-        for subject, predicate, object_, datum in self.onto._get_data_triples_spod_spod(
-            *abb, d=""
-        ):
+        for s, p, o, datatype in self.onto._get_data_triples_spod_spod(*abb, d=""):
             yield (
-                _unabbreviate(self.onto, subject),
-                _unabbreviate(self.onto, predicate),
-                to_literal(object_, datum),
+                _unabbreviate(self.onto, s),
+                _unabbreviate(self.onto, p),
+                to_literal(o, datatype),
             )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
         if TYPE_CHECKING:  # pragma: no cover
-            datum: "Union[int, str]"
-        for subject, predicate, object_ in triples:
-            if isinstance(object_, Literal):
-                if object_.lang:
-                    datum = f"@{object_.lang}"
-                elif object_.datatype:
-                    datum = f"^^{object_.datatype}"
+            datatype: "Union[int, str]"
+        for s, p, o in triples:
+            if isinstance(o, Literal):
+                if o.lang:
+                    datatype = f"@{o.lang}"
+                elif o.datatype:
+                    datatype = f"^^{o.datatype}"
                 else:
-                    datum = 0
+                    datatype = 0
                 self.onto._add_data_triple_spod(
-                    self.onto._abbreviate(subject),
-                    self.onto._abbreviate(predicate),
-                    self.onto._abbreviate(object_),
-                    datum,
+                    self.onto._abbreviate(s),
+                    self.onto._abbreviate(p),
+                    self.onto._abbreviate(o),
+                    datatype,
                 )
             else:
                 self.onto._add_obj_triple_spo(
-                    self.onto._abbreviate(subject),
-                    self.onto._abbreviate(predicate),
-                    self.onto._abbreviate(object_),
+                    self.onto._abbreviate(s),
+                    self.onto._abbreviate(p),
+                    self.onto._abbreviate(o),
                 )
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
-        subject, predicate, object_ = triple
+        s, p, o = triple
         to_remove = list(
             self.onto._get_triples_spod_spod(
-                self.onto._abbreviate(subject) if (subject) is not None else None,
-                self.onto._abbreviate(predicate) if (subject) is not None else None,
-                self.onto._abbreviate(object_) if (subject) is not None else None,
+                self.onto._abbreviate(s) if (s) is not None else None,
+                self.onto._abbreviate(p) if (s) is not None else None,
+                self.onto._abbreviate(o) if (s) is not None else None,
             )
         )
-        for subject, predicate, object_, datum in to_remove:
-            if datum:
-                self.onto._del_data_triple_spod(subject, predicate, object_, datum)
+        for s, p, o, datatype in to_remove:
+            if datatype:
+                self.onto._del_data_triple_spod(s, p, o, datatype)
             else:
-                self.onto._del_obj_triple_spo(subject, predicate, object_)
+                self.onto._del_obj_triple_spo(s, p, o)
 
     # Optional methods
     def parse(

@@ -89,6 +89,12 @@ max-locals = 20
 disable = [
     "fixme",
 ]
+good-names = [
+    # Default
+    "i", "j", "k", "ex", "Run", "_",
+    # Triple components: subject, predicate, object
+    "s", "p", "o",
+]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
