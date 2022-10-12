@@ -1,19 +1,22 @@
-import io
+"""Backend for EMMOntoPy.
+
+For developers: The usage of `s`, `p`, and `o` represent the different parts of an
+RDF Triple: subject, predicate, and object.
+"""
+# pylint: disable=protected-access
 import os
 import tempfile
-import warnings
 from typing import TYPE_CHECKING
 
-from ontopy.ontology import get_ontology, Ontology, _unabbreviate
+from ontopy.ontology import Ontology, _unabbreviate, get_ontology
 
-
-from triplestore import Literal
+from tripper.triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator
+    from typing import Generator, Optional, Union
 
-    from triplestore import Triple
+    from tripper.triplestore import Triple
 
 
 class OntopyStrategy:
@@ -29,12 +32,13 @@ class OntopyStrategy:
 
     Either the `base_iri` or `onto` argument must be provided.
     """
+
     def __init__(
-            self,
-            base_iri: str = None,
-            onto: Ontology = None,
-            load: bool = False,
-            kwargs: dict = {}
+        self,
+        base_iri: "Optional[str]" = None,
+        onto: "Optional[Ontology]" = None,
+        load: bool = False,
+        **kwargs,
     ):
         if onto is None:
             if base_iri is None:
@@ -51,19 +55,17 @@ class OntopyStrategy:
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
 
-        def to_literal(o, d):
-            """Returns a literal from (o, d)."""
-            if isinstance(d, str) and d.startswith("@"):
-                lang, datatype = d[1:], None
-            else:
-                lang, datatype = None, d
-            return Literal(o, lang=lang, datatype=datatype)
+        def to_literal(o, datatype) -> Literal:
+            """Returns a literal from (o, datatype)."""
+            if isinstance(datatype, str) and datatype.startswith("@"):
+                return Literal(o, lang=datatype[1:], datatype=None)
+            return Literal(o, lang=None, datatype=datatype)
 
         s, p, o = triple
         abb = (
-            None if s is None else self.onto._abbreviate(s),
-            None if p is None else self.onto._abbreviate(p),
-            None if o is None else self.onto._abbreviate(o),
+            None if (s) is None else self.onto._abbreviate(s),
+            None if (p) is None else self.onto._abbreviate(p),
+            None if (o) is None else self.onto._abbreviate(o),
         )
         for s, p, o in self.onto._get_obj_triples_spo_spo(*abb):
             yield (
@@ -71,28 +73,30 @@ class OntopyStrategy:
                 _unabbreviate(self.onto, p),
                 _unabbreviate(self.onto, o),
             )
-        for s, p, o, d in self.onto._get_data_triples_spod_spod(*abb, d=''):
+        for s, p, o, datatype in self.onto._get_data_triples_spod_spod(*abb, d=""):
             yield (
                 _unabbreviate(self.onto, s),
                 _unabbreviate(self.onto, p),
-                to_literal(o, d),
+                to_literal(o, datatype),
             )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
+        if TYPE_CHECKING:  # pragma: no cover
+            datatype: "Union[int, str]"
         for s, p, o in triples:
             if isinstance(o, Literal):
                 if o.lang:
-                    d = f"@{o.lang}"
+                    datatype = f"@{o.lang}"
                 elif o.datatype:
-                    d = f"^^{o.datatype}"
+                    datatype = f"^^{o.datatype}"
                 else:
-                    d = 0
+                    datatype = 0
                 self.onto._add_data_triple_spod(
                     self.onto._abbreviate(s),
                     self.onto._abbreviate(p),
                     self.onto._abbreviate(o),
-                    d,
+                    datatype,
                 )
             else:
                 self.onto._add_obj_triple_spo(
@@ -104,20 +108,29 @@ class OntopyStrategy:
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
         s, p, o = triple
-        to_remove = list(self.onto._get_triples_spod_spod(
-            self.onto._abbreviate(s) if s is not None else None,
-            self.onto._abbreviate(p) if s is not None else None,
-            self.onto._abbreviate(o) if s is not None else None,
-        ))
-        for s, p, o, d in to_remove:
-            if d:
-                self.onto._del_data_triple_spod(s, p, o, d)
+        to_remove = list(
+            self.onto._get_triples_spod_spod(
+                self.onto._abbreviate(s) if (s) is not None else None,
+                self.onto._abbreviate(p) if (s) is not None else None,
+                self.onto._abbreviate(o) if (s) is not None else None,
+            )
+        )
+        for s, p, o, datatype in to_remove:
+            if datatype:
+                self.onto._del_data_triple_spod(s, p, o, datatype)
             else:
                 self.onto._del_obj_triple_spo(s, p, o)
 
     # Optional methods
-    def parse(self, source=None, location=None, data=None, format=None,
-              encoding=None, **kwargs):
+    def parse(
+        self,
+        source=None,
+        location=None,
+        data=None,
+        format=None,  # pylint: disable=redefined-builtin
+        encoding=None,
+        **kwargs,
+    ):
         """Parse source and add the resulting triples to triplestore.
 
         The source is specified using one of `source`, `location` or `data`.
@@ -135,29 +148,32 @@ class OntopyStrategy:
         elif location:
             self.onto.load(filename=location, format=format, **kwargs)
         elif data:
-            #s = io.StringIO(data)
-            #self.onto.load(filename=s, format=format, **kwargs)
+            # s = io.StringIO(data)
+            # self.onto.load(filename=s, format=format, **kwargs)
 
             # Could have been done much nicer if it hasn't been for Windows
             filename = None
             try:
-                kw = {"delete": False}
+                tmpfile_options = {"delete": False}
                 if isinstance(data, str):
-                    kw.update(mode="w+t", encoding=encoding)
-                with tempfile.NamedTemporaryFile(**kw) as f:
-                    f.write(data)
-                    filename = f.name
+                    tmpfile_options.update(mode="w+t", encoding=encoding)
+                with tempfile.NamedTemporaryFile(**tmpfile_options) as handle:
+                    handle.write(data)
+                    filename = handle.name
                 self.onto.load(filename=filename, format=format, **kwargs)
             finally:
                 if filename:
                     os.remove(filename)
 
         else:
-            raise ValueError(
-                "either `source`, `location` or `data` must be given"
-            )
+            raise ValueError("either `source`, `location` or `data` must be given")
 
-    def serialize(self, destination=None, format='turtle', **kwargs):
+    def serialize(
+        self,
+        destination=None,
+        format="turtle",  # pylint: disable=redefined-builtin
+        **kwargs,
+    ) -> "Union[None, str]":
         """Serialise to destination.
 
         Parameters:
@@ -176,14 +192,15 @@ class OntopyStrategy:
             # Clumsy implementation due to Windows file locking...
             filename = None
             try:
-                with tempfile.NamedTemporaryFile(delete=False) as f:
-                    filename = f.name
+                with tempfile.NamedTemporaryFile(delete=False) as handle:
+                    filename = handle.name
                     self.onto.save(filename, format=format, **kwargs)
-                with open(filename, 'rt') as f:
-                    return f.read()
+                with open(filename, "rt", encoding="utf8") as handle:
+                    return handle.read()
             finally:
                 if filename:
                     os.remove(filename)
+        return None
 
     def query(self, query_object, native=True, **kwargs):
         """SPARQL query."""

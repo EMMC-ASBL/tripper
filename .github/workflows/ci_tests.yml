@@ -17,26 +17,36 @@ jobs:
 
       # pre-commit
       run_pre-commit: true
-      python_version_pre-commit: "3.9"
+      python_version_pre-commit: "3.8"
       skip_pre-commit_hooks: pylint,pylint-tests
 
       # pylint & safety
-      python_version_pylint_safety: "3.9"
+      python_version_pylint_safety: "3.7"
       run_pylint: true
       pylint_runs: |
         --rcfile=pyproject.toml tripper
         --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests
       run_safety: true
+      # 48547: RDFLib vulnerability: https://pyup.io/vulnerabilities/PVE-2022-48547/48547/
+      # 44715-44717: NumPy vulnerabilities:
+      #  https://pyup.io/vulnerabilities/CVE-2021-41495/44715/
+      #  https://pyup.io/vulnerabilities/CVE-2021-41496/44716/
+      #  https://pyup.io/vulnerabilities/CVE-2021-34141/44717/
+      safety_options: |
+        --ignore=48547
+        --ignore=44715
+        --ignore=44716
+        --ignore=44717
 
       # Build package
       run_build_package: true
-      python_version_package: "3.9"
+      python_version_package: "3.7"
       build_libs: flit
       build_cmd: flit build
 
       # Build documentation
       run_build_docs: true
-      python_version_docs: "3.9"
+      python_version_docs: "3.7"
       update_python_api_ref: true
       update_docs_landing_page: true
       package_dirs: tripper
@@ -47,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
     - name: Checkout tripper
