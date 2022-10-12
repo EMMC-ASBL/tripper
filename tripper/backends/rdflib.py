@@ -1,33 +1,40 @@
+"""Backend for RDFLib.
+
+For developers: The usage of `s`, `p`, and `o` represent the different parts of an
+RDF Triple: subject, predicate, and object.
+"""
+# pylint: disable=line-too-long
 import warnings
 from typing import TYPE_CHECKING
 
-import rdflib
-from rdflib import BNode, Graph, URIRef
+from rdflib import BNode, Graph
+from rdflib import Literal as rdflibLiteral
+from rdflib import URIRef
 from rdflib.util import guess_format
 
-from tripper import Literal
+from tripper.triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator
+    from typing import Generator, Union
 
-    from tripper import Triple
+    from tripper.triplestore import Triple
 
 
-def asuri(v):
+def asuri(value: "Union[None, Literal, str]"):
     """Help function converting a spo-value to proper rdflib type."""
-    if v is None:
+    if value is None:
         return None
-    if isinstance(v, Literal):
-        return rdflib.Literal(v.value, lang=v.lang, datatype=v.datatype)
-    if v.startswith("_:"):
-        return BNode(v)
-    return URIRef(v)
+    if isinstance(value, Literal):
+        return rdflibLiteral(value.value, lang=value.lang, datatype=value.datatype)
+    if value.startswith("_:"):
+        return BNode(value)
+    return URIRef(value)
 
 
-def astriple(t):
+def astriple(triple: "Triple"):
     """Help function converting a triple to rdflib triple."""
-    s, p, o = t
+    s, p, o = triple
     return asuri(s), asuri(p), asuri(o)
 
 
@@ -41,7 +48,9 @@ class RdflibStrategy:
         format: Format of storage specified with `base_iri`.
     """
 
-    def __init__(self, base_iri: str = None, format: str = None):
+    def __init__(
+        self, base_iri: str = None, format: str = None
+    ):  # pylint: disable=redefined-builtin
         self.graph = Graph()
         self.base_iri = base_iri
         if base_iri is not None:
@@ -52,19 +61,21 @@ class RdflibStrategy:
 
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
-        for s, p, o in self.graph.triples(astriple(triple)):
+        for s, p, o in self.graph.triples(  # pylint: disable=not-an-iterable
+            astriple(triple)
+        ):
             yield (
                 str(s),
                 str(p),
                 Literal(o.value, lang=o.language, datatype=o.datatype)
-                if isinstance(o, rdflib.Literal)
+                if isinstance(o, rdflibLiteral)
                 else str(o),
             )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
-        for t in triples:
-            self.graph.add(astriple(t))
+        for triple in triples:
+            self.graph.add(astriple(triple))
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
@@ -72,11 +83,19 @@ class RdflibStrategy:
 
     # Optional methods
     def close(self):
+        """Close the internal RDFLib graph."""
         if self.base_iri:
             self.serialize(destination=self.base_iri, format=self.base_format)
         self.graph.close()
 
-    def parse(self, source=None, location=None, data=None, format=None, **kwargs):
+    def parse(
+        self,
+        source=None,
+        location=None,
+        data=None,
+        format=None,  # pylint: disable=redefined-builtin
+        **kwargs,
+    ):
         """Parse source and add the resulting triples to triplestore.
 
         The source is specified using one of `source`, `location` or `data`.
@@ -93,25 +112,30 @@ class RdflibStrategy:
             source=source, location=location, data=data, format=format, **kwargs
         )
 
-    def serialize(self, destination=None, format="turtle", **kwargs):
+    def serialize(
+        self,
+        destination=None,
+        format="turtle",  # pylint: disable=redefined-builtin
+        **kwargs,
+    ) -> "Union[None, str]":
         """Serialise to destination.
 
         Parameters:
-            destination: File name or object to write to.  If None, the
-                serialisation is returned.
-            format: Format to serialise as.  Supported formats, depends on
-                the backend.
+            destination: File name or object to write to. If None, the serialisation is
+                returned.
+            format: Format to serialise as. Supported formats, depends on the backend.
             kwargs: Passed to the rdflib.Graph.serialize() method.
                 See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.serialize
 
         Returns:
             Serialised string if `destination` is None.
         """
-        s = self.graph.serialize(destination=destination, format=format, **kwargs)
+        result = self.graph.serialize(destination=destination, format=format, **kwargs)
         if destination is None:
             # Depending on the version of rdflib the return value of
             # graph.serialize() man either be a string or a bytes object...
-            return s if isinstance(s, str) else s.decode()
+            return result if isinstance(result, str) else result.decode()
+        return None
 
     def query(self, query_object, **kwargs):
         """SPARQL query."""
@@ -140,4 +164,4 @@ class RdflibStrategy:
         Used by triplestore.parse() to get prefixes after reading
         triples from an external source.
         """
-        return {prefix: str(ns) for prefix, ns in self.graph.namespaces()}
+        return {prefix: str(namespace) for prefix, namespace in self.graph.namespaces()}

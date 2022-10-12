@@ -1,7 +1,6 @@
 """Implementation of triplestore backends"""
 from importlib import import_module
 
-
 # A dict mapping backend names to a list of dependencies
 backend_dependencies = {
     "rdflib": ["rdflib"],
@@ -18,17 +17,16 @@ def get_backends(only_available=False):
     if only_available:
         backends = []
         for backend, dependencies in backend_dependencies.items():
-            ok = True
+            module_found = True
             for dependency in dependencies:
                 try:
                     import_module(dependency)
                 except ModuleNotFoundError:
-                    ok = False
-            if ok:
+                    module_found = False
+            if module_found:
                 backends.append(backend)
         return backends
-    else:
-        return list(backend_dependencies)
+    return list(backend_dependencies)
 
 
 def get_dependencies(backend=None):
