@@ -722,21 +722,20 @@ class Triplestore:
         if base_iri is None:
             base_iri = self.base_iri if self.base_iri else ":"
         fid = function_id(func)  # Function id
-        name = func.__name__
-        signature = inspect.signature(func)
-        func_iri = f"{base_iri}{name}_{fid}"
-        parlist = f"_:{name}{fid}parlist"
-        outlist = f"_:{name}{fid}outlist"
+        doc_string = inspect.getdoc(func)
+        func_iri = f"{base_iri}{func.__name__}_{fid}"
+        parlist = f"_:{func.__name__}{fid}parlist"
+        outlist = f"_:{func.__name__}{fid}outlist"
         self.add((func_iri, RDF.type, FNO.Function))
         self.add((func_iri, FNO.expects, parlist))
         self.add((func_iri, FNO.returns, outlist))
-        if inspect.getdoc(func):
-            self.add((func_iri, DCTERMS.description, en(inspect.getdoc(func))))
+        if doc_string:
+            self.add((func_iri, DCTERMS.description, en(doc_string)))
 
         if isinstance(expects, Sequence):
-            items = list(zip(expects, signature.parameters))
+            items = list(zip(expects, inspect.signature(func).parameters))
         else:
-            items = [(expects[par], par) for par in signature.parameters]
+            items = [(expects[par], par) for par in inspect.signature(func).parameters]
         lst = parlist
         for i, (iri, parname) in enumerate(items):
             lst_next = f"{parlist}{i+2}" if i < len(items) - 1 else RDF.nil
