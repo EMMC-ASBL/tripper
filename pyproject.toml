@@ -3,7 +3,7 @@ requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "tripperpy"
+name = "tripper"
 authors = [
     {name = "Jesper Friis", email = "jesper.friis@sintef.no"},
     {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
@@ -69,9 +69,6 @@ Source = "https://github.com/EMMC-ASBL/tripper"
 "Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"
 Changelog = "https://github.com/EMMC-ASBL/tripper/blob/main/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
-
-[tool.flit.module]
-name = "tripper"
 
 [tool.mypy]
 python_version = "3.7"

@@ -6,10 +6,10 @@ _The best ride when handling any triplestore._
 
 ## Installation
 
-The package can be installed from [PyPI](https://pypi.org/project/tripperpy) using `pip`:
+The package can be installed from [PyPI](https://pypi.org/project/tripper) using `pip`:
 
 ```shell
-pip install tripperpy
+pip install tripper
 ```
 
 ## License and copyright
