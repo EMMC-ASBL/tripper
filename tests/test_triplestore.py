@@ -20,7 +20,17 @@ def test_triplestore(
     example_function: "Callable[[Any, Any], Any]",
     expected_function_triplestore: str,
 ) -> None:
-    """Test the Triplestore class."""
+    """Test the Triplestore class.
+
+    Parameters:
+        backend: Dynamic parameter based on the parametrize decorator.
+        example_function: Fixture from `conftest.py` to return a function
+            implementation example for use with Triplestore.
+        expected_function_triplestore: Fixture from `conftest.py`, which returns a
+            Turtle-serialized string of what is expected when serializing the
+            Triplestore in this test.
+
+    """
     from tripper.triplestore import OWL, RDF, RDFS, XSD, Triplestore
 
     store = Triplestore(backend)
@@ -48,7 +58,14 @@ def test_triplestore(
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
-    """Specifically test the rdflib backend Triplestore."""
+    """Specifically test the rdflib backend Triplestore.
+
+    Parameters:
+        expected_function_triplestore: Fixture from `conftest.py`, which returns a
+            Turtle-serialized string of what is expected when serializing the
+            Triplestore in this test.
+
+    """
     from tripper.triplestore import RDFS, Triplestore
 
     store = Triplestore("rdflib")
@@ -81,7 +98,13 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
 
 
 def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
-    """Specifically test the ontopy backend Triplestore."""
+    """Specifically test the ontopy backend Triplestore.
+
+    Parameters:
+        get_ontology_path: Fixture from `conftest.py` to retrieve a `pathlib.Path`
+            object pointing to an ontology test file.
+
+    """
     from tripper.triplestore import Namespace, Triplestore
 
     ontopath_food = get_ontology_path("food")

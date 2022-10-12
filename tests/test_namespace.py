@@ -10,7 +10,13 @@ if TYPE_CHECKING:
 
 
 def test_namespaces(get_ontology_path: "Callable[[str], Path]") -> None:
-    """Test namespaces."""
+    """Test namespaces.
+
+    Parameters:
+        get_ontology_path: Fixture from `conftest.py` to retrieve a `pathlib.Path`
+            object pointing to an ontology test file.
+
+    """
     from tripper.triplestore import RDF, Namespace, NoSuchIRIError
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"

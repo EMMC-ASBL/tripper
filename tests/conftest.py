@@ -10,13 +10,29 @@ if TYPE_CHECKING:
 
 @pytest.fixture(scope="session")
 def get_ontology_path() -> "Callable[[str], Path]":
-    """Return a function to retrieve a Path object to a Turtle file used for testing."""
+    """Return a function to retrieve a Path object to a Turtle file used for testing.
+
+    This fixture will be called once during the test session and will then be cached.
+
+    Returns:
+        A function that can retrieve a Path object to a static ontology test file.
+
+    """
     from pathlib import Path
 
     ontologies_dir = Path(__file__).resolve().parent / "ontologies"
 
     def _get_ontology_path(ontology_name: str) -> "Path":
-        """Return a Path object to at Turtle file used for testing."""
+        """Return a Path object to at Turtle file used for testing.
+
+        Parameters:
+            ontology_name: The ontology file base name to retrieve from the list of
+                static ontology test files.
+
+        Returns:
+            A `pathlib.Path` instance, representing the ontology test file.
+
+        """
         ontology_path = ontologies_dir / f"{ontology_name}.ttl"
         if ontology_path.exists():
             return ontology_path
@@ -29,7 +45,12 @@ def get_ontology_path() -> "Callable[[str], Path]":
 
 @pytest.fixture
 def example_function() -> "Callable[[Any, Any], Any]":
-    """Return an example function to be used to test the Triplestore."""
+    """Return an example function to be used to test the Triplestore.
+
+    Returns:
+        A function implementation that can be used with the Triplestore.
+
+    """
 
     def sum_(first_param: "Any", second_param: "Any") -> "Any":
         """Returns the sum of `first_param` and `second_param`."""
@@ -40,7 +61,17 @@ def example_function() -> "Callable[[Any, Any], Any]":
 
 @pytest.fixture
 def expected_function_triplestore(example_function: "Callable[[Any, Any], Any]") -> str:
-    """The expected Turtle-serialized output of a Triplestore."""
+    """The expected Turtle-serialized output of a Triplestore.
+
+    Parameters:
+        example_function: Pytest fixture found in `conftest.py`.
+            This becomes a function implementation that can be used with the
+            Triplestore.
+
+    Returns:
+        A Turtle-serialized output that would be expected from the Triplestore.
+
+    """
     from tripper.triplestore import function_id
 
     fid = function_id(example_function)
