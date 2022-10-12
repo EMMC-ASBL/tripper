@@ -24,7 +24,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Any, Callable, Dict, Generator, Tuple, Union
+    from typing import Any, Callable, Dict, Generator, List, Tuple, Union
+
+    from rdflib.query import Result as rdflibResult
 
     Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
 
@@ -458,7 +460,9 @@ class Triplestore:
         self._check_method("serialize")
         return self.backend.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs):
+    def query(
+        self, query_object, **kwargs
+    ) -> "Union[rdflibResult, List, List[Tuple[str, ...]]]":
         """SPARQL query.
 
         Parameters:
@@ -469,22 +473,24 @@ class Triplestore:
             List of tuples of IRIs for each matching row.
 
         Note:
-            This method is intended for SELECT queries.  Use
-            the update() method for INSERT and DELETE  queries.
+            This method is intended for SELECT queries. Use
+            the update() method for INSERT and DELETE queries.
+
         """
         self._check_method("query")
         return self.backend.query(query_object=query_object, **kwargs)
 
-    def update(self, update_object, **kwargs):
+    def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
 
         Parameters:
-            query_object: String with the SPARQL query.
+            update_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend update() method.
 
         Note:
-            This method is intended for INSERT and DELETE queries.  Use
+            This method is intended for INSERT and DELETE queries. Use
             the query() method for SELECT queries.
+
         """
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
