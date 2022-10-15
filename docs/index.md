@@ -17,4 +17,4 @@ pip install tripper
 
 ## License and copyright
 
-All files in this repository are licensed under the [MIT license](LICENSE.md) with copyright &copy; 2022 European Material Modelling Council.
+All files in this repository are licensed under the [MIT license](LICENSE.md) with copyright &copy; 2022 SINTEF.
