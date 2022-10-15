@@ -2,9 +2,9 @@ Tripper
 =======
 _Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends._
 
+[![PyPI](https://img.shields.io/pypi/v/tripper?logo=pypi)](https://pypi.org/project/tripper)
+[![Documentation](https://img.shields.io/badge/documentation-informational?logo=github)](https://emmc-asbl.github.io/tripper/latest/)
 ![CI tests](https://github.com/EMMC-ASBL/tripper/workflows/CI%20-%20Tests/badge.svg)
-[![PyPI version](https://badge.fury.io/py/tripper.svg)](https://badge.fury.io/py/tripper)
-
 
 
 Basic concepts
@@ -18,19 +18,20 @@ In Tripper are:
 * Blank nodes are strings starting with "_:".
   Example: `"_:bnode1"`
 
-* Literals are constructed with `tripper.Literal`.
+* Literals are constructed with [`tripper.Literal`][Literal].
   Example: `tripper.Literal(3.14, datatype=XSD.float)`
 
 To make it easy to work with IRIs, provide Tripper a set of pre-defined namespaces, like `XSD.float`.
-New namespaces can easily be defined with the `tripper.Namespace` class.
+New namespaces can easily be defined with the [`tripper.Namespace`][Namespace] class.
 
-A triplestore wrapper is created with the `tripper.Triplestore` class.
+A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] class.
 
 
 
-Getting started
----------------
-Take a look at the [tutorial](tutorial.md) to get started.
+Documentation
+-------------
+* Getting started: Take a look at the [tutorial](tutorial.md).
+* Reference manual: [API Reference]
 
 
 Installation
@@ -39,7 +40,7 @@ Installation
 library, but the triplestore backends may have.
 
 
-The package can be installed from [PyPI](https://pypi.org/project/tripper) using `pip`:
+The package can be installed from [PyPI] using `pip`:
 
 ```shell
 pip install tripper
@@ -52,3 +53,8 @@ All files in this repository are licensed under the [MIT license](LICENSE.md) wi
 
 
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
+[PyPI]: https://pypi.org/project/tripper
+[API Reference]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
+[Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
+[Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
+[Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
