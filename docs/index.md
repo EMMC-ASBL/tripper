@@ -4,14 +4,17 @@
 
 _The best ride when handling any triplestore._
 
+See the [documentation](overview.md) for a quick tutorial.
+
+
 ## Installation
 
-The package can be installed from [PyPI](https://pypi.org/project/tripperpy) using `pip`:
+The package can be installed from [PyPI](https://pypi.org/project/tripper) using `pip`:
 
 ```shell
-pip install tripperpy
+pip install tripper
 ```
 
 ## License and copyright
 
-All files in this repository are licensed under the [MIT license](LICENSE.md) with copyright &copy; 2022 European Material Modelling Council.
+All files in this repository are licensed under the [MIT license](LICENSE.md) with copyright &copy; 2022 SINTEF.
