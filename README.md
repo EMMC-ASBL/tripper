@@ -50,7 +50,7 @@ pip install tripper
 License and copyright
 ---------------------
 All files in this repository are licensed under the [MIT license](LICENSE).
-If not stated otherwise in the top of the file, it has copyright &copy; 2022
+If not stated otherwise in the top of the files, they have copyright &copy; 2022
 SINTEF.
 
 
