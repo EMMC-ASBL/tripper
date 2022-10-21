@@ -1,10 +1,11 @@
 Tripper
 =======
-_Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends._
+_Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends - the best ride when handling any triplestore._
+
 
 [![PyPI](https://img.shields.io/pypi/v/tripper?logo=pypi)](https://pypi.org/project/tripper)
 [![Documentation](https://img.shields.io/badge/documentation-informational?logo=github)](https://emmc-asbl.github.io/tripper/latest/)
-![CI tests](https://github.com/EMMC-ASBL/tripper/workflows/CI%20-%20Tests/badge.svg)
+[![CI tests](https://github.com/EMMC-ASBL/tripper/workflows/CI%20-%20Tests/badge.svg)](https://github.com/EMMC-ASBL/tripper/actions/workflows/ci_tests.yml?query=branch%3Amain)
 
 
 Basic concepts
@@ -48,7 +49,10 @@ pip install tripper
 
 License and copyright
 ---------------------
-All files in this repository are licensed under the [MIT license](LICENSE.md) with copyright &copy; 2022 SINTEF.
+All files in this repository are licensed under the [MIT license](LICENSE.md).
+If not stated otherwise in the top of the file, it has copyright &copy; 2022
+SINTEF.
+
 
 
 
