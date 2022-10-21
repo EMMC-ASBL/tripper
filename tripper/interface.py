@@ -66,7 +66,7 @@ class ITriplestore(Protocol):
             List of tuples of IRIs for each matching row.
         """
 
-    def update(self, update_object, **kwargs)
+    def update(self, update_object, **kwargs):
         """Update triplestore with SPARQL.
 
         Parameters:
