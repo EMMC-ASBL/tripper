@@ -78,7 +78,7 @@ class ITriplestore(Protocol):
             the query() method for SELECT queries.
         """
 
-    def bind(self, prefix: str, namespace: str)
+    def bind(self, prefix: str, namespace: str):
         """Bind prefix to namespace.
 
         Should only be defined if the backend supports namespaces.
