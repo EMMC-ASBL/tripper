@@ -45,18 +45,21 @@ class RdflibStrategy:
         base_iri: If given, initialise the triplestore from this storage.
             When `close()` is called, the storage will be overwritten
             with the current content of the triplestore.
+        triplestore_url: Alternative URL to the underlying ontology if
+            `base_iri` is not resolvable.  Defaults to `base_iri`.
         format: Format of storage specified with `base_iri`.
     """
 
     def __init__(
-        self, base_iri: str = None, format: str = None
+        self, base_iri: str = None, triplestore_url: str = None, format: str = None
     ):  # pylint: disable=redefined-builtin
         self.graph = Graph()
         self.base_iri = base_iri
-        if base_iri is not None:
+        self.triplestore_url = triplestore_url if triplestore_url else base_iri
+        if self.triplestore_url is not None:
             if format is None:
-                format = guess_format(base_iri)
-            self.parse(location=base_iri, format=format)
+                format = guess_format(self.triplestore_url)
+            self.parse(location=self.triplestore_url, format=format)
         self.base_format = format
 
     def triples(self, triple: "Triple") -> "Generator":
@@ -84,8 +87,8 @@ class RdflibStrategy:
     # Optional methods
     def close(self):
         """Close the internal RDFLib graph."""
-        if self.base_iri:
-            self.serialize(destination=self.base_iri, format=self.base_format)
+        if self.triplestore_url:
+            self.serialize(destination=self.triplestore_url, format=self.base_format)
         self.graph.close()
 
     def parse(

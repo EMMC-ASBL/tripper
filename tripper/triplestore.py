@@ -111,7 +111,7 @@ class Namespace:
 
         if need_triplestore and triplestore is None:
             url = triplestore_url if triplestore_url else iri
-            triplestore = Triplestore("rdflib", base_iri=iri)
+            triplestore = Triplestore("rdflib", base_iri=iri, triplestore_url=url)
             triplestore.parse(url)
 
         self._cache = {} if cachemode != Namespace.NO_CACHE else None
