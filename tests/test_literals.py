@@ -1,4 +1,5 @@
 """Test RDF literals."""
+# pylint: disable=invalid-name
 
 
 def test_string() -> None:
@@ -100,7 +101,7 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.boolean
 
-    dt = datetime(2022, 10, 23)  # pylint: disable=invalid-name
+    dt = datetime(2022, 10, 23)
     literal = parse_literal(Literal(dt).n3())
     assert literal.value == dt
     assert literal.lang is None
