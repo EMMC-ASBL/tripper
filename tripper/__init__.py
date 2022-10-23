@@ -3,7 +3,9 @@ pattern.
 
 See the README.md file for a description for how to use this package.
 """
-from .triplestore import (
+from .errors import NamespaceError, NoSuchIRIError, TriplestoreError, UniquenessError
+from .literal import Literal, en, parse_literal
+from .namespace import (
     DC,
     DCTERMS,
     DM,
@@ -18,32 +20,35 @@ from .triplestore import (
     SKOS,
     XML,
     XSD,
-    Literal,
     Namespace,
-    Triplestore,
-    en,
 )
+from .triplestore import Triplestore, split_iri
 
 __version__ = "0.1.1"
 
-
 __all__ = (
+    "TriplestoreError",
+    "UniquenessError",
+    "NamespaceError",
+    "NoSuchIRIError",
+    "DC",
+    "DCTERMS",
+    "DM",
+    "DOAP",
+    "EMMO",
+    "FNO",
+    "FOAF",
+    "MAP",
+    "OWL",
+    "RDF",
+    "RDFS",
+    "SKOS",
+    "XML",
+    "XSD",
     "Literal",
     "Namespace",
     "Triplestore",
     "en",
-    "XML",
-    "RDF",
-    "RDFS",
-    "XSD",
-    "OWL",
-    "SKOS",
-    "DC",
-    "DCTERMS",
-    "FOAF",
-    "DOAP",
-    "FNO",
-    "EMMO",
-    "MAP",
-    "DM",
+    "parse_literal",
+    "split_iri",
 )

@@ -2,7 +2,7 @@
 pattern.
 
 See
-https://raw.githubusercontent.com/EMMC-ASBL/OntoFlow/master/triplestore/README.md
+https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
 for an introduction.
 
 This module has no dependencies outside the standard library, but the
@@ -18,9 +18,12 @@ import inspect
 import re
 import warnings
 from collections.abc import Sequence
-from datetime import datetime
 from importlib import import_module
 from typing import TYPE_CHECKING
+
+from .errors import NamespaceError, TriplestoreError, UniquenessError
+from .literal import Literal, en
+from .namespace import DCTERMS, DM, FNO, MAP, OWL, RDF, RDFS, XML, XSD, Namespace
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
@@ -31,318 +34,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # Regular expression matching a prefixed IRI
 _MATCH_PREFIXED_IRI = re.compile(r"^([a-z]+):([^/]{2}.*)$")
-
-
-class TriplestoreError(Exception):
-    """Base exception for triplestore errors."""
-
-
-class UniquenessError(TriplestoreError):
-    """More than one matching triple."""
-
-
-class NamespaceError(TriplestoreError):
-    """Namespace error."""
-
-
-class NoSuchIRIError(NamespaceError):
-    """Namespace has no such IRI."""
-
-
-class Namespace:
-    """Represent a namespace.
-
-    Arguments:
-        iri: IRI of namespace to represent.
-        label_annotations: Sequence of label annotations. If given, check
-            the underlying ontology during attribute access if the name
-            correspond to a label. The label annotations should be ordered
-            from highest to lowest precedense.
-            If True is provided, `label_annotations` is set to
-            ``(SKOS.prefLabel, RDF.label, SKOS.altLabel)``.
-        check: Whether to check underlying ontology if the IRI exists during
-            attribute access.  If true, NoSuchIRIError will be raised if the
-            IRI does not exist in this namespace.
-        cachemode: Should be one of:
-              - Namespace.NO_CACHE: Turn off caching.
-              - Namespace.USE_CACHE: Cache attributes as they are looked up.
-              - Namespace.ONLY_CACHE: Cache all names at initialisation time.
-                Do not access the triplestore after that.
-            Default is `NO_CACHE` if neither `label_annotations` or `check`
-            is given, otherwise `USE_CACHE`.
-        triplestore: Use this triplestore for label lookup and checking.
-            If not given, and either `label_annotations` or `check` are
-            enabled, a new rdflib triplestore will be created.
-        triplestore_url: Alternative URL to use for loading the underlying
-            ontology if `triplestore` is not given.  Defaults to `iri`.
-    """
-
-    NO_CACHE = 0
-    USE_CACHE = 1
-    ONLY_CACHE = 2
-
-    __slots__ = (
-        "_iri",
-        "_label_annotations",
-        "_check",
-        "_cache",
-        "_triplestore",
-    )
-
-    def __init__(
-        self,
-        iri,
-        label_annotations=(),
-        check=False,
-        cachemode=-1,
-        triplestore=None,
-        triplestore_url=None,
-    ):
-        if label_annotations is True:
-            label_annotations = (SKOS.prefLabel, RDF.label, SKOS.altLabel)
-
-        self._iri = str(iri)
-        self._label_annotations = tuple(label_annotations)
-        self._check = bool(check)
-
-        need_triplestore = bool(check or label_annotations)
-        if cachemode == -1:
-            cachemode = Namespace.ONLY_CACHE if need_triplestore else Namespace.NO_CACHE
-
-        if need_triplestore and triplestore is None:
-            url = triplestore_url if triplestore_url else iri
-            triplestore = Triplestore("rdflib", base_iri=iri)
-            triplestore.parse(url)
-
-        self._cache = {} if cachemode != Namespace.NO_CACHE else None
-        #
-        # FIXME:
-        # Change this to only assigning the triplestore if cachemode is
-        # ONLY_CACHE when we figure out a good way to pre-populate the
-        # cache with IRIs from the triplestore.
-        #
-        # self._triplestore = (
-        #    triplestore if cachemode != Namespace.ONLY_CACHE else None
-        # )
-        self._triplestore = triplestore if need_triplestore else None
-
-        if cachemode != Namespace.NO_CACHE:
-            self._update_cache(triplestore)
-
-    def _update_cache(self, triplestore=None):
-        """Update the internal cache from `triplestore`."""
-        if not triplestore:
-            triplestore = self._triplestore
-        if not triplestore:
-            raise NamespaceError("`triplestore` argument needed for updating the cache")
-        if self._cache is None:
-            self._cache = {}
-
-        # Add (label, full_iri) pairs to cache
-        for label in reversed(self._label_annotations):
-            self._cache.update(
-                (o, s)
-                for s, o in triplestore.subject_objects(label)
-                if s.startswith(self._iri)
-            )
-
-        # Add (name, full_iri) pairs to cache
-        # Currently we only check concepts that defines RDFS.isDefinedBy
-        # relations.
-        # Is there an efficient way to loop over all IRIs in this namespace?
-        self._cache.update(
-            (s[len(self._iri) :], s)
-            for s in triplestore.subjects(RDFS.isDefinedBy, self._iri)
-            if s.startswith(self._iri)
-        )
-
-    def __getattr__(self, name):
-        if self._cache and name in self._cache:
-            return self._cache[name]
-
-        if self._triplestore:
-
-            # Check if ``iri = self._iri + name`` is in the triplestore.
-            # If so, add it to the cache.
-            # We only need to check that generator returned by
-            # `self._triplestore.predicate_objects(iri)` is non-empty.
-            iri = self._iri + name
-            predicate_object = self._triplestore.predicate_objects(iri)
-            try:
-                predicate_object.__next__()
-            except StopIteration:
-                pass
-            else:
-                if self._cache is not None:
-                    self._cache[name] = iri
-                return iri
-
-            # Check for label annotations matching `name`.
-            for label in self._label_annotations:
-                for s, o in self._triplestore.subject_objects(label):
-                    if o == name and s.startswith(self._iri):
-                        if self._cache is not None:
-                            self._cache[name] = s
-                        return s
-
-        if self._check:
-            raise NoSuchIRIError(self._iri + name)
-        return self._iri + name
-
-    def __getitem__(self, key):
-        return self.__getattr__(key)
-
-    def __repr__(self):
-        return f"Namespace({self._iri})"
-
-    def __str__(self):
-        return self._iri
-
-    def __add__(self, other):
-        return self._iri + str(other)
-
-
-# Pre-defined namespaces
-XML = Namespace("http://www.w3.org/XML/1998/namespace")
-RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#")
-XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
-OWL = Namespace("http://www.w3.org/2002/07/owl#")
-SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
-DC = Namespace("http://purl.org/dc/elements/1.1/")
-DCTERMS = Namespace("http://purl.org/dc/terms/")
-FOAF = Namespace("http://xmlns.com/foaf/0.1/")
-DOAP = Namespace("http://usefulinc.com/ns/doap#")
-PROV = Namespace("http://www.w3.org/ns/prov#")
-DCAT = Namespace("http://www.w3.org/ns/dcat#")
-TIME = Namespace("http://www.w3.org/2006/time#")
-FNO = Namespace("https://w3id.org/function/ontology#")
-
-EMMO = Namespace("http://emmo.info/emmo#")
-MAP = Namespace("http://emmo.info/domain-mappings#")
-DM = Namespace("http://emmo.info/datamodel#")
-
-
-class Literal(str):
-    """A literal RDF value."""
-
-    lang: str
-    datatype: "Any"
-
-    def __new__(cls, value, lang=None, datatype=None):
-        string = super().__new__(cls, value)
-        if lang:
-            if datatype:
-                raise TypeError("A literal can only have one of `lang` or `datatype`.")
-            string.lang = str(lang)
-            string.datatype = None
-        else:
-            string.lang = None
-            if datatype:
-                string.datatype = {
-                    str: XSD.string,
-                    bool: XSD.boolean,
-                    int: XSD.integer,
-                    float: XSD.double,
-                    bytes: XSD.hexBinary,
-                    bytearray: XSD.hexBinary,
-                    datetime: XSD.dateTime,
-                }.get(datatype, datatype)
-            elif isinstance(value, str):
-                string.datatype = None
-            elif isinstance(value, bool):
-                string.datatype = XSD.boolean
-            elif isinstance(value, int):
-                string.datatype = XSD.integer
-            elif isinstance(value, float):
-                string.datatype = XSD.double
-            elif isinstance(value, (bytes, bytearray)):
-                string = value.hex()
-                string.datatype = XSD.hexBinary
-            elif isinstance(value, datetime):
-                string.datatype = XSD.dateTime
-                # TODO:
-                #   - XSD.base64Binary
-                #   - XSD.byte, XSD.unsignedByte
-            else:
-                string.datatype = None
-        return string
-
-    def __repr__(self):
-        lang = f", lang='{self.lang}'" if self.lang else ""
-        datatype = f", datatype='{self.datatype}'" if self.datatype else ""
-        return f"Literal('{self}'{lang}{datatype})"
-
-    value = property(
-        fget=lambda self: self.to_python(),
-        doc="Appropriate python datatype derived from this RDF literal.",
-    )
-
-    def to_python(self):
-        """Returns an appropriate python datatype derived from this RDF
-        literal."""
-        value = str(self)
-
-        if self.datatype == XSD.boolean:
-            value = bool(self)
-        elif self.datatype in (
-            XSD.integer,
-            XSD.int,
-            XSD.short,
-            XSD.long,
-            XSD.nonPositiveInteger,
-            XSD.negativeInteger,
-            XSD.nonNegativeInteger,
-            XSD.unsignedInt,
-            XSD.unsignedShort,
-            XSD.unsignedLong,
-            XSD.byte,
-            XSD.unsignedByte,
-        ):
-            value = int(self)
-        elif self.datatype in (
-            XSD.double,
-            XSD.decimal,
-            XSD.dataTimeStamp,
-            OWL.real,
-            OWL.rational,
-        ):
-            value = float(self)
-        elif self.datatype == XSD.hexBinary:
-            value = self.encode()
-        elif self.datatype == XSD.dateTime:
-            value = datetime.fromisoformat(self)
-        elif self.datatype and self.datatype not in (
-            RDF.PlainLiteral,
-            RDF.XMLLiteral,
-            RDFS.Literal,
-            XSD.anyURI,
-            XSD.language,
-            XSD.Name,
-            XSD.NMName,
-            XSD.normalizedString,
-            XSD.string,
-            XSD.token,
-            XSD.NMTOKEN,
-        ):
-            warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
-        return value
-
-    def n3(self):  # pylint: disable=invalid-name
-        """Returns a representation in n3 format."""
-        if self.lang:
-            return f'"{self}"@{self.lang}'
-        if self.datatype:
-            return f'"{self}"^^{self.datatype}'
-        return f'"{self}"'
-
-
-def en(value):  # pylint: disable=invalid-name
-    """Convenience function that returns value as a plain english literal.
-
-    Equivalent to``Literal(value, lang="en")``.
-    """
-    return Literal(value, lang="en")
 
 
 class Triplestore:
@@ -645,7 +336,8 @@ class Triplestore:
         target = self.expand_iri(target)
         source = self.expand_iri(infer_iri(source))
         if property_name:
-            source = f"{source}#{property_name}"
+            self.add((f"{source}#{property_name}", MAP.mapsTo, target))
+        else:
             self.add((source, MAP.mapsTo, target))
         if cost is not None:
             dest = target if target_cost else source
@@ -653,7 +345,7 @@ class Triplestore:
 
     def add_function(
         self,
-        func: Callable,
+        func: "Union[Callable, str]",
         expects: "Union[str, Sequence, Mapping]" = (),
         returns: "Union[str, Sequence]" = (),
         base_iri: str = None,
@@ -663,7 +355,8 @@ class Triplestore:
         """Inspect function and add triples describing it to the triplestore.
 
         Parameters:
-            func: Function to describe.
+            func: Function to describe.  Should either be a callable or a
+                string with a unique function IRI.
             expects: Sequence of IRIs to ontological concepts corresponding
                 to positional arguments of `func`.  May also be given as a
                 dict mapping argument names to corresponding ontological IRIs.
@@ -688,11 +381,10 @@ class Triplestore:
 
         method = getattr(self, f"_add_function_{standard}")
         func_iri = method(func, expects, returns, base_iri)
-        self.function_repo[func_iri] = func
-
+        if callable(func):
+            self.function_repo[func_iri] = func
         if cost is not None:
-            for dest_iri in returns:
-                self._add_cost(cost, dest_iri)
+            self._add_cost(cost, func_iri)
 
         return func_iri
 
@@ -714,7 +406,7 @@ class Triplestore:
             self.add((dest_iri, DM.hasCost, Literal(cost_id)))
             self.function_repo[cost_id] = cost
         else:
-            self.add((dest_iri, DM.hasCost, Literal(cost)))
+            self.add((dest_iri, DM.hasCost, Literal(cost).n3()))
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
@@ -724,24 +416,39 @@ class Triplestore:
 
         if base_iri is None:
             base_iri = self.base_iri if self.base_iri else ":"
-        fid = function_id(func)  # Function id
-        doc_string = inspect.getdoc(func)
-        func_iri = f"{base_iri}{func.__name__}_{fid}"
-        parlist = f"_:{func.__name__}{fid}parlist"
-        outlist = f"_:{func.__name__}{fid}outlist"
+
+        if callable(func):
+            fid = function_id(func)  # Function id
+            func_iri = f"{base_iri}{func.__name__}_{fid}"
+            doc_string = inspect.getdoc(func)
+            parlist = f"_:{func.__name__}{fid}_parlist"
+            outlist = f"_:{func.__name__}{fid}_outlist"
+            if isinstance(expects, Sequence):
+                pars = list(zip(expects, inspect.signature(func).parameters))
+            else:
+                pars = [
+                    (expects[par], par) for par in inspect.signature(func).parameters
+                ]
+        elif isinstance(func, str):
+            func_iri = func
+            doc_string = ""
+            parlist = f"_:{func_iri}_parlist"
+            outlist = f"_:{func_iri}_outlist"
+            pariris = expects if isinstance(expects, Sequence) else expects.values()
+            parnames = [split_iri(par)[1] for par in pariris]
+            pars = list(zip(pariris, parnames))
+        else:
+            raise TypeError("`func` should be either a callable or an IRI")
+
         self.add((func_iri, RDF.type, FNO.Function))
         self.add((func_iri, FNO.expects, parlist))
         self.add((func_iri, FNO.returns, outlist))
         if doc_string:
             self.add((func_iri, DCTERMS.description, en(doc_string)))
 
-        if isinstance(expects, Sequence):
-            items = list(zip(expects, inspect.signature(func).parameters))
-        else:
-            items = [(expects[par], par) for par in inspect.signature(func).parameters]
         lst = parlist
-        for i, (iri, parname) in enumerate(items):
-            lst_next = f"{parlist}{i+2}" if i < len(items) - 1 else RDF.nil
+        for i, (iri, parname) in enumerate(pars):
+            lst_next = f"{parlist}{i+2}" if i < len(pars) - 1 else RDF.nil
             par = f"{func_iri}_parameter{i+1}_{parname}"
             self.add((par, RDF.type, FNO.Parameter))
             self.add((par, RDFS.label, en(parname)))
@@ -761,6 +468,21 @@ class Triplestore:
             lst = lst_next
 
         return func_iri
+
+
+def function_id(func: "Callable", length: int = 4) -> str:
+    """Return a checksum for function `func`.
+
+    The returned object is a string of hexadecimal digits.
+
+    `length` is the number of bytes in the returned checksum.  Since
+    the current implementation is based on the shake_128 algorithm,
+    it make no sense to set `length` larger than 32 bytes.
+    """
+    # return hex(crc32(inspect.getsource(func).encode())).lstrip('0x')
+    return hashlib.shake_128(  # pylint: disable=too-many-function-args
+        inspect.getsource(func).encode()
+    ).hexdigest(length)
 
 
 def infer_iri(obj):
@@ -784,16 +506,14 @@ def infer_iri(obj):
     raise TypeError("cannot infer IRI from object {obj!r}")
 
 
-def function_id(func, length=4):
-    """Return a checksum for function `func`.
+def split_iri(iri: str) -> "Tuple[str, str]":
+    """Split iri into namespace and name parts and return them as a tuple."""
+    if "#" in iri:
+        namespace, name = iri.rsplit("#", 1)
+        return f"{namespace}#", name
 
-    The returned object is a string of hexadecimal digits.
+    if "/" in iri:
+        namespace, name = iri.rsplit("/", 1)
+        return f"{namespace}/", name
 
-    `length` is the number of bytes in the returned checksum.  Since
-    the current implementation is based on the shake_128 algorithm,
-    it make no sense to set `length` larger than 32 bytes.
-    """
-    # return hex(crc32(inspect.getsource(func).encode())).lstrip('0x')
-    return hashlib.shake_128(  # pylint: disable=too-many-function-args
-        inspect.getsource(func).encode()
-    ).hexdigest(length)
+    raise ValueError("all IRIs should contain a slash")
