@@ -27,10 +27,15 @@ from .triplestore import Triplestore, split_iri
 __version__ = "0.1.1"
 
 __all__ = (
-    "TriplestoreError",
-    "UniquenessError",
     "NamespaceError",
     "NoSuchIRIError",
+    "TriplestoreError",
+    "UniquenessError",
+    #
+    "Literal",
+    "en",
+    "parse_literal",
+    #
     "DC",
     "DCTERMS",
     "DM",
@@ -45,10 +50,8 @@ __all__ = (
     "SKOS",
     "XML",
     "XSD",
-    "Literal",
     "Namespace",
+    #
     "Triplestore",
-    "en",
-    "parse_literal",
     "split_iri",
 )

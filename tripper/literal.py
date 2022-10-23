@@ -134,15 +134,23 @@ def en(value):  # pylint: disable=invalid-name
     return Literal(value, lang="en")
 
 
-def parse_literal(
-    literal: "Union[str, Literal]",
-) -> "Tuple[Any, Union[str, None], Union[str, None]]":
-    """Parses n3-encoded literal and return a (value, lang, datatype) tuple."""
-    # pylint: disable=invalid-name
+def parse_literal(literal: "Union[str, Literal]") -> "Literal":
+    """Parse `literal` and return it as an instance of Literal.
+
+    The main difference between this function and the Literal constructor,
+    is that this function correctly interprets n3-encoded literal strings.
+    """
+    # pylint: disable=invalid-name,too-many-branches
     lang, datatype = None, None
 
     if isinstance(literal, Literal):
-        return literal.value, literal.lang, literal.datatype
+        return literal
+
+    if not isinstance(literal, str):
+        for type_, datatype in Literal.datatypes.items():
+            if isinstance(literal, type_):
+                return Literal(type_(literal), lang=lang, datatype=datatype)
+        TypeError(f"unsupported literal type: {type(literal)}")
 
     match = re.match(r'^\s*("""(.*)"""|"(.*)")\s*$', literal, flags=re.DOTALL)
     if match:
@@ -170,14 +178,12 @@ def parse_literal(
             types = {v: k for k, v in Literal.datatypes.items()}
             type_ = types[datatype]
             value = type_(value)
-        return value, lang, datatype
+        return Literal(value, lang=lang, datatype=datatype)
 
     for type_, datatype in Literal.datatypes.items():
         try:
-            value = type_(literal)
+            return Literal(type_(literal), lang=lang, datatype=datatype)
         except (ValueError, TypeError):
             pass
-        else:
-            return value, lang, datatype
 
     raise ValueError("cannot parse {literal=}")

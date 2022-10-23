@@ -406,7 +406,7 @@ class Triplestore:
             self.add((dest_iri, DM.hasCost, Literal(cost_id)))
             self.function_repo[cost_id] = cost
         else:
-            self.add((dest_iri, DM.hasCost, Literal(cost).n3()))
+            self.add((dest_iri, DM.hasCost, Literal(cost)))
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
