@@ -18,12 +18,12 @@ class Literal(str):
 
     datatypes = {
         datetime: XSD.dateTime,
-        int: XSD.integer,
-        float: XSD.double,
         bytes: XSD.hexBinary,
         bytearray: XSD.hexBinary,
-        str: XSD.string,
         bool: XSD.boolean,
+        int: XSD.integer,
+        float: XSD.double,
+        str: XSD.string,
     }
 
     def __new__(cls, value, lang=None, datatype=None):
@@ -73,7 +73,7 @@ class Literal(str):
         value = str(self)
 
         if self.datatype == XSD.boolean:
-            value = bool(self)
+            value = False if self == "False" else bool(self)
         elif self.datatype in (
             XSD.integer,
             XSD.int,
@@ -134,7 +134,7 @@ def en(value):  # pylint: disable=invalid-name
     return Literal(value, lang="en")
 
 
-def parse_literal(literal: "Union[str, Literal]") -> "Literal":
+def parse_literal(literal: "Any") -> "Literal":
     """Parse `literal` and return it as an instance of Literal.
 
     The main difference between this function and the Literal constructor,
@@ -149,7 +149,7 @@ def parse_literal(literal: "Union[str, Literal]") -> "Literal":
     if not isinstance(literal, str):
         for type_, datatype in Literal.datatypes.items():
             if isinstance(literal, type_):
-                return Literal(type_(literal), lang=lang, datatype=datatype)
+                return Literal(literal, lang=lang, datatype=datatype)
         TypeError(f"unsupported literal type: {type(literal)}")
 
     match = re.match(r'^\s*("""(.*)"""|"(.*)")\s*$', literal, flags=re.DOTALL)
@@ -177,13 +177,17 @@ def parse_literal(literal: "Union[str, Literal]") -> "Literal":
         if datatype:
             types = {v: k for k, v in Literal.datatypes.items()}
             type_ = types[datatype]
-            value = type_(value)
+            try:
+                value = type_(value)
+            except TypeError:
+                pass
         return Literal(value, lang=lang, datatype=datatype)
 
     for type_, datatype in Literal.datatypes.items():
-        try:
-            return Literal(type_(literal), lang=lang, datatype=datatype)
-        except (ValueError, TypeError):
-            pass
+        if type_ is not bool:
+            try:
+                return Literal(type_(literal), lang=lang, datatype=datatype)
+            except (ValueError, TypeError):
+                pass
 
     raise ValueError("cannot parse {literal=}")

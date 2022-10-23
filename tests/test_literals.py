@@ -71,39 +71,62 @@ def test_split_iri() -> None:
 
 def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
+    from datetime import datetime
+
     from tripper import XSD, Literal, parse_literal
 
-    value, lang, datatype = parse_literal(Literal("abc").n3())
-    assert value == "abc"
-    assert lang is None
-    assert datatype == XSD.string
+    literal = parse_literal(Literal("abc").n3())
+    assert literal.value == "abc"
+    assert literal.lang is None
+    assert literal.datatype == XSD.string
 
-    value, lang, datatype = parse_literal(Literal("abc", lang="en").n3())
-    assert value == "abc"
-    assert lang == "en"
-    assert datatype is None
+    literal = parse_literal(Literal("abc", lang="en").n3())
+    assert literal.value == "abc"
+    assert literal.lang == "en"
+    assert literal.datatype is None
 
-    value, lang, datatype = parse_literal(Literal(3).n3())
-    assert value == 3
-    assert lang is None
-    assert datatype == XSD.integer
+    literal = parse_literal(Literal(3).n3())
+    assert literal.value == 3
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
 
-    value, lang, datatype = parse_literal(Literal(3.14).n3())
-    assert value == 3.14
-    assert lang is None
-    assert datatype == XSD.double
+    literal = parse_literal(Literal(3.14).n3())
+    assert literal.value == 3.14
+    assert literal.lang is None
+    assert literal.datatype == XSD.double
 
-    value, lang, datatype = parse_literal(Literal(True).n3())
-    assert value is True
-    assert lang is None
-    assert datatype == XSD.boolean
+    literal = parse_literal(Literal(True).n3())
+    assert literal.value is True
+    assert literal.lang is None
+    assert literal.datatype == XSD.boolean
 
-    value, lang, datatype = parse_literal("3")
-    assert value == 3
-    assert lang is None
-    assert datatype == XSD.integer
+    dt = datetime(2022, 10, 23)  # pylint: disable=invalid-name
+    literal = parse_literal(Literal(dt).n3())
+    assert literal.value == dt
+    assert literal.lang is None
+    assert literal.datatype == XSD.dateTime
 
-    value, lang, datatype = parse_literal("3.14")
-    assert value == 3.14
-    assert lang is None
-    assert datatype == XSD.double
+    literal = parse_literal(dt)
+    assert literal.value == dt
+    assert literal.lang is None
+    assert literal.datatype == XSD.dateTime
+
+    literal = parse_literal("abc")
+    assert literal.value == "abc"
+    assert literal.lang is None
+    assert literal.datatype == XSD.string
+
+    literal = parse_literal("3")
+    assert literal.value == 3
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
+
+    literal = parse_literal("3.14")
+    assert literal.value == 3.14
+    assert literal.lang is None
+    assert literal.datatype == XSD.double
+
+    literal = parse_literal(False)
+    assert literal.value is False
+    assert literal.lang is None
+    assert literal.datatype == XSD.boolean
