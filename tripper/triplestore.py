@@ -111,7 +111,7 @@ class Namespace:
 
         if need_triplestore and triplestore is None:
             url = triplestore_url if triplestore_url else iri
-            triplestore = Triplestore("rdflib", base_iri=iri)
+            triplestore = Triplestore("rdflib", base_iri=iri, triplestore_url=url)
             triplestore.parse(url)
 
         self._cache = {} if cachemode != Namespace.NO_CACHE else None
@@ -378,9 +378,10 @@ class Triplestore:
         module = import_module(
             backend if "." in backend else f"tripper.backends.{backend}"
         )
-        cls = getattr(module, backend.title() + "Strategy")
+        cls = getattr(module, f"{backend.title()}Strategy")
         self.base_iri = base_iri
         self.namespaces: "Dict[str, Namespace]" = {}
+        self.closed = False
         self.backend_name = backend
         self.backend = cls(base_iri=base_iri, **kwargs)
         # Keep functions in the triplestore for convienence even though
@@ -405,6 +406,16 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
+    def close(self):
+        """Calls the backend close() method if it is implemented.
+        Otherwise, this method has no effect.
+        """
+        # It should be ok to call close() regardless of whether the backend
+        # implements this method or not.  Hence, don't call _check_method().
+        if not self.closed and hasattr(self.backend, "close"):
+            self.backend.close()
+        self.closed = True
+
     def parse(
         self, source=None, format=None, **kwargs  # pylint: disable=redefined-builtin
     ):
@@ -496,9 +507,9 @@ class Triplestore:
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(
+    def value(  # pylint: disable=redefined-builtin
         self, subject=None, predicate=None, object=None, default=None, any=False
-    ):  # pylint: disable=redefined-builtin
+    ):
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
