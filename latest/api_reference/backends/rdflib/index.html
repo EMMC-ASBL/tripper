@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/rdflib/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.6">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
     
     
       
@@ -442,6 +442,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.rdflib.RdflibStrategy.close" class="md-nav__link">
+    close()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.rdflib.RdflibStrategy.namespaces" class="md-nav__link">
     namespaces()
   </a>
@@ -587,6 +594,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.rdflib.RdflibStrategy.close" class="md-nav__link">
+    close()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.rdflib.RdflibStrategy.namespaces" class="md-nav__link">
     namespaces()
   </a>
@@ -695,29 +709,81 @@ RDF Triple: subject, predicate, and object.</p>
 
 
 
-<h2 id="tripper.backends.rdflib.RdflibStrategy" class="doc doc-heading">
+<h2 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy">
         <code>
 RdflibStrategy        </code>
 
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy" class="headerlink" title="Permanent link">&para;</a></h2>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
       <p>Triplestore strategy for rdflib.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>base_iri</code></td>
+        <td><code>str</code></td>
+        <td><p>If given, initialise the triplestore from this storage.
+When <code>close()</code> is called, the storage will be overwritten
+with the current content of the triplestore.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>triplestore_url</code></td>
+        <td><code>str</code></td>
+        <td><p>Alternative URL to the underlying ontology if
+<code>base_iri</code> is not resolvable.  Defaults to <code>base_iri</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>format</code></td>
+        <td><code>str</code></td>
+        <td><p>Format of storage specified with <code>base_iri</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RdflibStrategy</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Triplestore strategy for rdflib.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Triplestore strategy for rdflib.</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        base_iri: If given, initialise the triplestore from this storage.</span>
+<span class="sd">            When `close()` is called, the storage will be overwritten</span>
+<span class="sd">            with the current content of the triplestore.</span>
+<span class="sd">        triplestore_url: Alternative URL to the underlying ontology if</span>
+<span class="sd">            `base_iri` is not resolvable.  Defaults to `base_iri`.</span>
+<span class="sd">        format: Format of storage specified with `base_iri`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">triplestore_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="o">=</span> <span class="n">base_iri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span> <span class="o">=</span> <span class="n">triplestore_url</span> <span class="k">if</span> <span class="n">triplestore_url</span> <span class="k">else</span> <span class="n">base_iri</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">format</span> <span class="o">=</span> <span class="n">guess_format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_format</span> <span class="o">=</span> <span class="nb">format</span>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-an-iterable</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-an-iterable</span>
             <span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">yield</span> <span class="p">(</span>
@@ -738,6 +804,12 @@ RdflibStrategy        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
 
     <span class="c1"># Optional methods</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close the internal RDFLib graph.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -835,11 +907,11 @@ RdflibStrategy        </code>
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.add_triples" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.add_triples">
 <code class="highlight language-python"><span class="n">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.add_triples" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.add_triples" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -863,11 +935,11 @@ RdflibStrategy        </code>
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.bind" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.bind">
 <code class="highlight language-python"><span class="n">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.bind" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.bind" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -899,11 +971,40 @@ Called by triplestore.bind().</p>
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.namespaces" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.close">
+<code class="highlight language-python"><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.close" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Close the internal RDFLib graph.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Close the internal RDFLib graph.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_format</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.namespaces">
 <code class="highlight language-python"><span class="n">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.namespaces" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.namespaces" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -934,11 +1035,11 @@ triples from an external source.</p>
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.parse" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.parse">
 <code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.parse" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.parse" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -1026,11 +1127,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.query" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.query">
 <code class="highlight language-python"><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.query" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.query" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -1054,11 +1155,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.remove" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.remove">
 <code class="highlight language-python"><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.remove" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.remove" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -1081,11 +1182,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.serialize" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.serialize">
 <code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.serialize" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.serialize" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -1177,11 +1278,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.triples" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.triples">
 <code class="highlight language-python"><span class="n">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.triples" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.triples" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -1191,7 +1292,7 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-an-iterable</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-an-iterable</span>
         <span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">yield</span> <span class="p">(</span>
@@ -1213,11 +1314,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
 
 
 
-<h3 id="tripper.backends.rdflib.RdflibStrategy.update" class="doc doc-heading">
+<h3 class="doc doc-heading" id="tripper.backends.rdflib.RdflibStrategy.update">
 <code class="highlight language-python"><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.RdflibStrategy.update" class="headerlink" title="Permanent link">&para;</a></h3>
+<a class="headerlink" href="#tripper.backends.rdflib.RdflibStrategy.update" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents ">
 
@@ -1251,11 +1352,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
 
 
 
-<h2 id="tripper.backends.rdflib.astriple" class="doc doc-heading">
+<h2 class="doc doc-heading" id="tripper.backends.rdflib.astriple">
 <code class="highlight language-python"><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.astriple" class="headerlink" title="Permanent link">&para;</a></h2>
+<a class="headerlink" href="#tripper.backends.rdflib.astriple" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
@@ -1279,11 +1380,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
 
 
 
-<h2 id="tripper.backends.rdflib.asuri" class="doc doc-heading">
+<h2 class="doc doc-heading" id="tripper.backends.rdflib.asuri">
 <code class="highlight language-python"><span class="n">asuri</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.asuri" class="headerlink" title="Permanent link">&para;</a></h2>
+<a class="headerlink" href="#tripper.backends.rdflib.asuri" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
@@ -1395,10 +1496,10 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.078830c0.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.8492ddcf.min.js"></script>
       
     
   </body>
