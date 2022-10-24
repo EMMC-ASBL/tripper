@@ -507,7 +507,15 @@ def infer_iri(obj):
 
 
 def split_iri(iri: str) -> "Tuple[str, str]":
-    """Split iri into namespace and name parts and return them as a tuple."""
+    """Split iri into namespace and name parts and return them as a tuple.
+
+    Parameters:
+        iri: The IRI to be split.
+
+    Returns:
+        A split IRI. Split into namespace and name.
+
+    """
     if "#" in iri:
         namespace, name = iri.rsplit("#", 1)
         return f"{namespace}#", name
