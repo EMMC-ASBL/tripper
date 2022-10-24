@@ -21,9 +21,9 @@ from collections.abc import Sequence
 from importlib import import_module
 from typing import TYPE_CHECKING
 
-from .errors import NamespaceError, TriplestoreError, UniquenessError
-from .literal import Literal, en
-from .namespace import DCTERMS, DM, FNO, MAP, OWL, RDF, RDFS, XML, XSD, Namespace
+from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
+from tripper.literal import Literal, en
+from tripper.namespace import DCTERMS, DM, FNO, MAP, OWL, RDF, RDFS, XML, XSD, Namespace
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
