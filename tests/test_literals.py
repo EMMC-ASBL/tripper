@@ -4,7 +4,7 @@
 
 def test_string() -> None:
     """Test creating a string literal."""
-    from tripper import Literal
+    from tripper.literal import Literal
 
     literal = Literal("Hello world!")
     assert literal == "Hello world!"
