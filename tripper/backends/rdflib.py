@@ -16,7 +16,7 @@ from tripper.triplestore import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, Union
+    from typing import Generator, List, Tuple, Union
 
     from tripper.triplestore import Triple
 
@@ -140,13 +140,32 @@ class RdflibStrategy:
             return result if isinstance(result, str) else result.decode()
         return None
 
-    def query(self, query_object, **kwargs):
-        """SPARQL query."""
-        # TODO: convert to returned object
-        return self.graph.query(query_object=query_object, **kwargs)
+    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+        """SPARQL query.
 
-    def update(self, update_object, **kwargs):
-        """Update triplestore with SPARQL."""
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to rdflib.Graph.query().
+
+        Returns:
+            List of tuples of IRIs for each matching row.
+
+        """
+        rows = self.graph.query(query_object=query_object, **kwargs)
+        return [tuple(str(v) for v in row) for row in rows]
+
+    def update(self, update_object, **kwargs) -> None:
+        """Update triplestore with SPARQL.
+
+        Parameters:
+            update_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to rdflib.Graph.update().
+
+        Note:
+            This method is intended for INSERT and DELETE queries. Use
+            the query() method for SELECT queries.
+
+        """
         return self.graph.update(update_object=update_object, **kwargs)
 
     def bind(self, prefix: str, namespace: str):

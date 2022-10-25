@@ -23,15 +23,27 @@ class ITriplestore(Protocol):
 
     ```python
 
-    def __init__(self, base_iri=None, **kwargs)
+    def __init__(self, base_iri: str = None, **kwargs):
+        """Initialise triplestore.
 
-    def parse(self, source=None, location=None, data=None, format=None,
-              **kwargs):
+        Arguments:
+            base_iri: Optional base IRI to initiate the triplestore from.
+            kwargs: Additional keyword arguments passed to the backend.
+        """
+
+    def parse(
+            self,
+            source: Union[str, Path, IO] = None,
+            location: str = None,
+            data: str = None,
+            format: str = None,
+            **kwargs
+        ):
         """Parse source and add the resulting triples to triplestore.
 
         The source is specified using one of `source`, `location` or `data`.
 
-        Parameters:
+        Arguments:
             source: File-like object or file name.
             location: String with relative or absolute URL to source.
             data: String containing the data to be parsed.
@@ -40,10 +52,15 @@ class ITriplestore(Protocol):
                 the parsing.
         """
 
-    def serialize(self, destination=None, format='xml', **kwargs)
+    def serialize(
+            self,
+            destination: Union[str, Path, IO] = None,
+            format: str ='xml',
+            **kwargs
+        ):
         """Serialise to destination.
 
-        Parameters:
+        Arguments:
             destination: File name or object to write to.  If None, the
                 serialisation is returned.
             format: Format to serialise as.  Supported formats, depends on
@@ -55,19 +72,36 @@ class ITriplestore(Protocol):
             Serialised string if `destination` is None.
         """
 
-    def query(self, query_object, **kwargs)
-        """SPARQL query."""
+    def query(self, query_object: str, **kwargs) -> List:
+        """SPARQL query.
 
-    def update(self, update_object, **kwargs)
-        """Update triplestore with SPARQL."""
+        Arguments:
+            query_object: String with the SPARQL query.
+            kwargs: Additional backend-specific keyword arguments.
 
-    def bind(self, prefix: str, namespace: str)
+        Returns:
+            List of tuples of IRIs for each matching row.
+        """
+
+    def update(self, update_object: str, **kwargs):
+        """Update triplestore with SPARQL.
+
+        Arguments:
+            query_object: String with the SPARQL query.
+            kwargs: Additional backend-specific keyword arguments.
+
+        Note:
+            This method is intended for INSERT and DELETE queries.  Use
+            the query() method for SELECT queries.
+        """
+
+    def bind(self, prefix: str, namespace: str) -> Namespace:
         """Bind prefix to namespace.
 
         Should only be defined if the backend supports namespaces.
         """
 
-    def namespaces(self) -> dict
+    def namespaces(self) -> dict:
         """Returns a dict mapping prefixes to namespaces.
 
         Should only be defined if the backend supports namespaces.
@@ -78,10 +112,21 @@ class ITriplestore(Protocol):
     '''
 
     def triples(self, triple: "Triple") -> "Generator":
-        """Returns a generator over matching triples."""
+        """Returns a generator over matching triples.
+
+        Arguments:
+            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should
+                either be None (matching anything) or an exact IRI to
+                match.
+        """
 
     def add_triples(self, triples: "Sequence[Triple]"):
-        """Add a sequence of triples."""
+        """Add a sequence of triples.
+
+        Arguments:
+            triples: A sequence of `(s, p, o)` tuples to add to the
+                triplestore.
+        """
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
