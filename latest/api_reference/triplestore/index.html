@@ -1836,11 +1836,22 @@ Triplestore        </code>
     <span class="c1"># Methods implemented by backend</span>
     <span class="c1"># ------------------------------</span>
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
+<span class="sd">                either be None (matching anything) or an exact IRI to</span>
+<span class="sd">                match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            triples: A sequence of `(s, p, o)` tuples to add to the</span>
+<span class="sd">                triplestore.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
@@ -1901,13 +1912,38 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;serialize&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;SPARQL query.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[rdflibResult, List, List[Tuple[str, ...]]]&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            query_object: String with the SPARQL query.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend query() method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of tuples of IRIs for each matching row.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is intended for SELECT queries. Use</span>
+<span class="sd">            the update() method for INSERT and DELETE queries.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            update_object: String with the SPARQL query.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend update() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is intended for INSERT and DELETE queries. Use</span>
+<span class="sd">            the query() method for SELECT queries.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">update_object</span><span class="o">=</span><span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -2605,10 +2641,35 @@ that have <code>target</code> as output.</p></td>
 
       <p>Add a sequence of triples.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>triples</code></td>
+        <td><code>&#39;Sequence[Triple]&#39;</code></td>
+        <td><p>A sequence of <code>(s, p, o)</code> tuples to add to the
+triplestore.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        triples: A sequence of `(s, p, o)` tuples to add to the</span>
+<span class="sd">            triplestore.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2993,10 +3054,70 @@ if no prefix can be found.</p>
 
       <p>SPARQL query.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>query_object</code></td>
+        <td></td>
+        <td><p>String with the SPARQL query.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Keyword arguments passed to the backend query() method.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Union[rdflibResult, List, List[Tuple[str, ...]]]&#39;</code></td>
+      <td><p>List of tuples of IRIs for each matching row.</p></td>
+    </tr>
+  </tbody>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is intended for SELECT queries. Use
+the update() method for INSERT and DELETE queries.</p>
+</div>
+
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;SPARQL query.&quot;&quot;&quot;</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[rdflibResult, List, List[Tuple[str, ...]]]&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        query_object: String with the SPARQL query.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend query() method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of tuples of IRIs for each matching row.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This method is intended for SELECT queries. Use</span>
+<span class="sd">        the update() method for INSERT and DELETE queries.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
@@ -3265,10 +3386,37 @@ object.</p>
 
       <p>Returns a generator over matching triples.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>triple</code></td>
+        <td><code>&#39;Triple&#39;</code></td>
+        <td><p>A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code> should
+either be None (matching anything) or an exact IRI to
+match.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
+<span class="sd">            either be None (matching anything) or an exact IRI to</span>
+<span class="sd">            match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -3292,10 +3440,50 @@ object.</p>
 
       <p>Update triplestore with SPARQL.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>update_object</code></td>
+        <td></td>
+        <td><p>String with the SPARQL query.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Keyword arguments passed to the backend update() method.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is intended for INSERT and DELETE queries. Use
+the query() method for SELECT queries.</p>
+</div>
+
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.&quot;&quot;&quot;</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        update_object: String with the SPARQL query.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend update() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This method is intended for INSERT and DELETE queries. Use</span>
+<span class="sd">        the query() method for SELECT queries.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">update_object</span><span class="o">=</span><span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>

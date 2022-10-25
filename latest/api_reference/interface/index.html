@@ -594,15 +594,27 @@ ITriplestore            (<span title="typing_extensions.Protocol">Protocol</span
       <p>Interface for triplestore backends.</p>
 <p>In addition to the methods specified by this interface, a backend
 may also implement the following optional methods:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initialise triplestore.</span>
 
-<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-          <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        base_iri: Optional base IRI to initiate the triplestore from.</span>
+<span class="sd">        kwargs: Additional keyword arguments passed to the backend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">IO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">    The source is specified using one of `source`, `location` or `data`.</span>
 
-<span class="sd">    Parameters:</span>
+<span class="sd">    Arguments:</span>
 <span class="sd">        source: File-like object or file name.</span>
 <span class="sd">        location: String with relative or absolute URL to source.</span>
 <span class="sd">        data: String containing the data to be parsed.</span>
@@ -611,10 +623,15 @@ may also implement the following optional methods:</p>
 <span class="sd">            the parsing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">destination</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">IO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
 
-<span class="sd">    Parameters:</span>
+<span class="sd">    Arguments:</span>
 <span class="sd">        destination: File name or object to write to.  If None, the</span>
 <span class="sd">            serialisation is returned.</span>
 <span class="sd">        format: Format to serialise as.  Supported formats, depends on</span>
@@ -626,19 +643,36 @@ may also implement the following optional methods:</p>
 <span class="sd">        Serialised string if `destination` is None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;SPARQL query.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
-<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.&quot;&quot;&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        query_object: String with the SPARQL query.</span>
+<span class="sd">        kwargs: Additional backend-specific keyword arguments.</span>
 
-<span class="k">def</span> <span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        List of tuples of IRIs for each matching row.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        query_object: String with the SPARQL query.</span>
+<span class="sd">        kwargs: Additional backend-specific keyword arguments.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This method is intended for INSERT and DELETE queries.  Use</span>
+<span class="sd">        the query() method for SELECT queries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">def</span> <span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Bind prefix to namespace.</span>
 
 <span class="sd">    Should only be defined if the backend supports namespaces.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns a dict mapping prefixes to namespaces.</span>
 
 <span class="sd">    Should only be defined if the backend supports namespaces.</span>
@@ -657,15 +691,27 @@ may also implement the following optional methods:</p>
 
 <span class="sd">    ```python</span>
 
-<span class="sd">    def __init__(self, base_iri=None, **kwargs)</span>
+<span class="sd">    def __init__(self, base_iri: str = None, **kwargs):</span>
+<span class="sd">        &quot;&quot;&quot;Initialise triplestore.</span>
 
-<span class="sd">    def parse(self, source=None, location=None, data=None, format=None,</span>
-<span class="sd">              **kwargs):</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            base_iri: Optional base IRI to initiate the triplestore from.</span>
+<span class="sd">            kwargs: Additional keyword arguments passed to the backend.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">    def parse(</span>
+<span class="sd">            self,</span>
+<span class="sd">            source: Union[str, Path, IO] = None,</span>
+<span class="sd">            location: str = None,</span>
+<span class="sd">            data: str = None,</span>
+<span class="sd">            format: str = None,</span>
+<span class="sd">            **kwargs</span>
+<span class="sd">        ):</span>
 <span class="sd">        &quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">        The source is specified using one of `source`, `location` or `data`.</span>
 
-<span class="sd">        Parameters:</span>
+<span class="sd">        Arguments:</span>
 <span class="sd">            source: File-like object or file name.</span>
 <span class="sd">            location: String with relative or absolute URL to source.</span>
 <span class="sd">            data: String containing the data to be parsed.</span>
@@ -674,10 +720,15 @@ may also implement the following optional methods:</p>
 <span class="sd">                the parsing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="sd">    def serialize(self, destination=None, format=&#39;xml&#39;, **kwargs)</span>
+<span class="sd">    def serialize(</span>
+<span class="sd">            self,</span>
+<span class="sd">            destination: Union[str, Path, IO] = None,</span>
+<span class="sd">            format: str =&#39;xml&#39;,</span>
+<span class="sd">            **kwargs</span>
+<span class="sd">        ):</span>
 <span class="sd">        &quot;&quot;&quot;Serialise to destination.</span>
 
-<span class="sd">        Parameters:</span>
+<span class="sd">        Arguments:</span>
 <span class="sd">            destination: File name or object to write to.  If None, the</span>
 <span class="sd">                serialisation is returned.</span>
 <span class="sd">            format: Format to serialise as.  Supported formats, depends on</span>
@@ -689,19 +740,36 @@ may also implement the following optional methods:</p>
 <span class="sd">            Serialised string if `destination` is None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="sd">    def query(self, query_object, **kwargs)</span>
-<span class="sd">        &quot;&quot;&quot;SPARQL query.&quot;&quot;&quot;</span>
+<span class="sd">    def query(self, query_object: str, **kwargs) -&gt; List:</span>
+<span class="sd">        &quot;&quot;&quot;SPARQL query.</span>
 
-<span class="sd">    def update(self, update_object, **kwargs)</span>
-<span class="sd">        &quot;&quot;&quot;Update triplestore with SPARQL.&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            query_object: String with the SPARQL query.</span>
+<span class="sd">            kwargs: Additional backend-specific keyword arguments.</span>
 
-<span class="sd">    def bind(self, prefix: str, namespace: str)</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List of tuples of IRIs for each matching row.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">    def update(self, update_object: str, **kwargs):</span>
+<span class="sd">        &quot;&quot;&quot;Update triplestore with SPARQL.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            query_object: String with the SPARQL query.</span>
+<span class="sd">            kwargs: Additional backend-specific keyword arguments.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method is intended for INSERT and DELETE queries.  Use</span>
+<span class="sd">            the query() method for SELECT queries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">    def bind(self, prefix: str, namespace: str) -&gt; Namespace:</span>
 <span class="sd">        &quot;&quot;&quot;Bind prefix to namespace.</span>
 
 <span class="sd">        Should only be defined if the backend supports namespaces.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-<span class="sd">    def namespaces(self) -&gt; dict</span>
+<span class="sd">    def namespaces(self) -&gt; dict:</span>
 <span class="sd">        &quot;&quot;&quot;Returns a dict mapping prefixes to namespaces.</span>
 
 <span class="sd">        Should only be defined if the backend supports namespaces.</span>
@@ -712,10 +780,21 @@ may also implement the following optional methods:</p>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
+<span class="sd">                either be None (matching anything) or an exact IRI to</span>
+<span class="sd">                match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            triples: A sequence of `(s, p, o)` tuples to add to the</span>
+<span class="sd">                triplestore.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
@@ -750,10 +829,35 @@ may also implement the following optional methods:</p>
 
       <p>Add a sequence of triples.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>triples</code></td>
+        <td><code>Sequence[Triple]</code></td>
+        <td><p>A sequence of <code>(s, p, o)</code> tuples to add to the
+triplestore.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/interface.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        triples: A sequence of `(s, p, o)` tuples to add to the</span>
+<span class="sd">            triplestore.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
     </div>
@@ -802,10 +906,37 @@ may also implement the following optional methods:</p>
 
       <p>Returns a generator over matching triples.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>triple</code></td>
+        <td><code>Triple</code></td>
+        <td><p>A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code> should
+either be None (matching anything) or an exact IRI to
+match.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/interface.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
+<span class="sd">            either be None (matching anything) or an exact IRI to</span>
+<span class="sd">            match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
     </div>
