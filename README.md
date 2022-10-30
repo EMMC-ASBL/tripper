@@ -25,7 +25,7 @@ In Tripper:
   Example: `tripper.Literal(3.14, datatype=XSD.float)`
 
 To make it easy to work with IRIs, provide Tripper a set of pre-defined namespaces, like `XSD.float`.
-New namespaces can easily be defined with the [`tripper.Namespace`][Namespace] class.
+New namespaces can be defined with the [`tripper.Namespace`][Namespace] class.
 
 A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] class.
 
