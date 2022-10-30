@@ -39,8 +39,7 @@ Documentation
 
 Installation
 ------------
-**Tripper** has by itself no dependencies outside the standard
-library, but the triplestore backends may have.
+Tripper has by itself no dependencies outside the standard library, but the triplestore backends may have specific dependencies.
 
 
 The package can be installed from [PyPI] using `pip`:
