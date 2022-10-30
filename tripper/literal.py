@@ -76,7 +76,7 @@ class Literal(str):
         doc="Appropriate python datatype derived from this RDF literal.",
     )
 
-    def to_python(self):
+    def to_python(self) -> "Union[bool, int, float, bytes, datetime.datetime, str]":
         """Returns an appropriate python datatype derived from this RDF
         literal."""
         value = str(self)
