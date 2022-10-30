@@ -76,7 +76,7 @@ class Triplestore:
         self.backend = cls(base_iri=base_iri, **kwargs)
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
-        self.function_repo: "Dict[str, Union[float, Callable[[], float]]]" = {}
+        self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
 
@@ -381,8 +381,7 @@ class Triplestore:
 
         method = getattr(self, f"_add_function_{standard}")
         func_iri = method(func, expects, returns, base_iri)
-        if callable(func):
-            self.function_repo[func_iri] = func
+        self.function_repo[func_iri] = func if callable(func) else None
         if cost is not None:
             self._add_cost(cost, func_iri)
 
