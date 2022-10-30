@@ -10,9 +10,11 @@ _Triplestore wrapper for Python providing a simple and consistent interface to a
 
 Basic concepts
 --------------
-**Tripper** strives for simplicity and is modelled after [rdflib] (with a few simplifications).
+Tripper provides a simple and consistent interface to a range of triplestore backends.
+It strives for simplicity and is modelled after [rdflib] (with a few simplifications).
 
-In Tripper are:
+In Tripper:
+
 * All IRIs are represented by Python strings.
   Example: `"http://emmo.info/emmo#Atom"`
 
@@ -23,7 +25,7 @@ In Tripper are:
   Example: `tripper.Literal(3.14, datatype=XSD.float)`
 
 To make it easy to work with IRIs, provide Tripper a set of pre-defined namespaces, like `XSD.float`.
-New namespaces can easily be defined with the [`tripper.Namespace`][Namespace] class.
+New namespaces can be defined with the [`tripper.Namespace`][Namespace] class.
 
 A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] class.
 
@@ -37,8 +39,7 @@ Documentation
 
 Installation
 ------------
-**Tripper** has by itself no dependencies outside the standard
-library, but the triplestore backends may have.
+Tripper has by itself no dependencies outside the standard library, but the triplestore backends may have specific dependencies.
 
 
 The package can be installed from [PyPI] using `pip`:
