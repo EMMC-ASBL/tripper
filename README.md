@@ -13,7 +13,8 @@ Basic concepts
 Tripper provides a simple and consistent interface to a range of triplestore backends.
 It strives for simplicity and is modelled after [rdflib] (with a few simplifications).
 
-In Tripper are:
+In Tripper:
+
 * All IRIs are represented by Python strings.
   Example: `"http://emmo.info/emmo#Atom"`
 
