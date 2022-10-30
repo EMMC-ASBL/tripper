@@ -434,7 +434,7 @@ class Triplestore:
             parlist = f"_:{func_iri}_parlist"
             outlist = f"_:{func_iri}_outlist"
             pariris = expects if isinstance(expects, Sequence) else expects.values()
-            parnames = [split_iri(par)[1] for par in pariris]
+            parnames = [split_iri(pariri)[1] for pariri in pariris]
             pars = list(zip(pariris, parnames))
         else:
             raise TypeError("`func` should be either a callable or an IRI")

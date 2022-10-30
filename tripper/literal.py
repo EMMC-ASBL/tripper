@@ -10,9 +10,19 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Literal(str):
-    """A literal RDF value."""
+    """A literal RDF value.
 
-    lang: str
+    Arguments:
+        value: The literal value.  See the `datatypes` class attribute for
+            valid supported data types.  A localised string is provided as
+            a string with `lang` set to a language code.
+        lang: A standard language code, like "en", "no", etc.  Implies that
+            the `value` is a localised string.
+        datatype: Explicit specification of the type of `value`. Should not
+            be combined with `lang`.
+    """
+
+    lang: "Union[str, None]"
     datatype: "Any"
 
     datatypes = {

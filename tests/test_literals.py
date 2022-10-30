@@ -18,7 +18,7 @@ def test_string() -> None:
 
 def test_string_lang() -> None:
     """Test creating a string literal with a set language."""
-    from tripper import Literal
+    from tripper.literal import Literal
 
     literal = Literal("Hello world!", lang="en")
     assert literal.lang == "en"
