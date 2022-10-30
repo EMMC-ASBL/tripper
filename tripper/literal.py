@@ -25,6 +25,8 @@ class Literal(str):
     lang: "Union[str, None]"
     datatype: "Any"
 
+    # Note that the order of datatypes matters - it is used by
+    # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
         datetime: XSD.dateTime,
         bytes: XSD.hexBinary,
@@ -76,7 +78,7 @@ class Literal(str):
         doc="Appropriate python datatype derived from this RDF literal.",
     )
 
-    def to_python(self) -> "Union[bool, int, float, bytes, datetime.datetime, str]":
+    def to_python(self):
         """Returns an appropriate python datatype derived from this RDF
         literal."""
         value = str(self)
