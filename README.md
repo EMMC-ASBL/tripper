@@ -10,7 +10,8 @@ _Triplestore wrapper for Python providing a simple and consistent interface to a
 
 Basic concepts
 --------------
-**Tripper** strives for simplicity and is modelled after [rdflib] (with a few simplifications).
+Tripper provides a simple and consistent interface to a range of triplestore backends.
+It strives for simplicity and is modelled after [rdflib] (with a few simplifications).
 
 In Tripper are:
 * All IRIs are represented by Python strings.
