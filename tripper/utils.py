@@ -68,10 +68,10 @@ def function_id(func: "Callable", length: int = 4) -> str:
     ).hexdigest(length)
 
 
-def en(value):  # pylint: disable=invalid-name
+def en(value) -> "Literal":  # pylint: disable=invalid-name
     """Convenience function that returns value as a plain english literal.
 
-    Equivalent to``Literal(value, lang="en")``.
+    Equivalent to ``Literal(value, lang="en")``.
     """
     return Literal(value, lang="en")
 
