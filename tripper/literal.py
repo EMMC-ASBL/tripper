@@ -67,16 +67,16 @@ class Literal(str):
         return string
 
     def __repr__(self) -> str:
-        lang = f", lang='{self.lang}'" if self.lang else ""
-        datatype = f", datatype='{self.datatype}'" if self.datatype else ""
-        return f"Literal('{self}'{lang}{datatype})"
+        lang = f", lang={self.lang!r}" if self.lang else ""
+        datatype = f", datatype={self.datatype!r}" if self.datatype else ""
+        return f"Literal({self!r}{lang}{datatype})"
 
     value = property(
         fget=lambda self: self.to_python(),
         doc="Appropriate python datatype derived from this RDF literal.",
     )
 
-    def to_python(self):
+    def to_python(self) -> "Union[bool, int, float, bytes, datetime.datetime, str]":
         """Returns an appropriate python datatype derived from this RDF
         literal."""
         value = str(self)
@@ -126,7 +126,7 @@ class Literal(str):
             warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
         return value
 
-    def n3(self):  # pylint: disable=invalid-name
+    def n3(self) -> str:  # pylint: disable=invalid-name
         """Returns a representation in n3 format."""
         if self.lang:
             return f'"{self}"@{self.lang}'
