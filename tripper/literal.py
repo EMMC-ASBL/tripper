@@ -126,7 +126,7 @@ class Literal(str):
             warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
         return value
 
-    def n3(self):  # pylint: disable=invalid-name
+    def n3(self) -> str:  # pylint: disable=invalid-name
         """Returns a representation in n3 format."""
         if self.lang:
             return f'"{self}"@{self.lang}'
