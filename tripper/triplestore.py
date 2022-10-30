@@ -13,7 +13,6 @@ RDF Triple: subject, predicate, and object.
 """
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
-import hashlib
 import inspect
 import re
 import warnings
@@ -22,8 +21,9 @@ from importlib import import_module
 from typing import TYPE_CHECKING
 
 from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
-from tripper.literal import Literal, en
+from tripper.literal import Literal
 from tripper.namespace import DCTERMS, DM, FNO, MAP, OWL, RDF, RDFS, XML, XSD, Namespace
+from tripper.utils import en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
@@ -468,59 +468,3 @@ class Triplestore:
             lst = lst_next
 
         return func_iri
-
-
-def function_id(func: "Callable", length: int = 4) -> str:
-    """Return a checksum for function `func`.
-
-    The returned object is a string of hexadecimal digits.
-
-    `length` is the number of bytes in the returned checksum.  Since
-    the current implementation is based on the shake_128 algorithm,
-    it make no sense to set `length` larger than 32 bytes.
-    """
-    return hashlib.shake_128(  # pylint: disable=too-many-function-args
-        inspect.getsource(func).encode()
-    ).hexdigest(length)
-
-
-def infer_iri(obj):
-    """Return IRI of the individual that stands for object `obj`."""
-    if isinstance(obj, str):
-        return obj
-    if hasattr(obj, "uri") and obj.uri:
-        # dlite.Metadata or dataclass (or instance with uri)
-        return obj.uri
-    if hasattr(obj, "uuid") and obj.uuid:
-        # dlite.Instance or dataclass
-        return obj.uuid
-    if hasattr(obj, "schema") and callable(obj.schema):
-        # pydantic.BaseModel
-        schema = obj.schema()
-        properties = schema["properties"]
-        if "uri" in properties and properties["uri"]:
-            return properties["uri"]
-        if "uuid" in properties and properties["uuid"]:
-            return properties["uuid"]
-    raise TypeError("cannot infer IRI from object {obj!r}")
-
-
-def split_iri(iri: str) -> "Tuple[str, str]":
-    """Split iri into namespace and name parts and return them as a tuple.
-
-    Parameters:
-        iri: The IRI to be split.
-
-    Returns:
-        A split IRI. Split into namespace and name.
-
-    """
-    if "#" in iri:
-        namespace, name = iri.rsplit("#", 1)
-        return f"{namespace}#", name
-
-    if "/" in iri:
-        namespace, name = iri.rsplit("/", 1)
-        return f"{namespace}/", name
-
-    raise ValueError("all IRIs should contain a slash")

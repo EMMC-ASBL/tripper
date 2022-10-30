@@ -29,7 +29,7 @@ def test_string_lang() -> None:
 
 def test_en() -> None:
     """Test creating a string literal through `en()`."""
-    from tripper import en
+    from tripper.utils import en
 
     literal = en("Hello world!")
     assert literal.n3() == '"Hello world!"@en'
@@ -59,7 +59,8 @@ def test_float_through_datatype() -> None:
 
 def test_split_iri() -> None:
     """Test parse n3-encoded literal value."""
-    from tripper import DCTERMS, RDFS, split_iri
+    from tripper import DCTERMS, RDFS
+    from tripper.utils import split_iri
 
     namespace, name = split_iri(DCTERMS.prefLabel)
     assert namespace == str(DCTERMS)
@@ -74,7 +75,8 @@ def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
     from datetime import datetime
 
-    from tripper import XSD, Literal, parse_literal
+    from tripper import XSD, Literal
+    from tripper.utils import parse_literal
 
     literal = parse_literal(Literal("abc").n3())
     assert literal.value == "abc"

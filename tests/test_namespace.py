@@ -17,7 +17,8 @@ def test_namespaces(get_ontology_path: "Callable[[str], Path]") -> None:
             object pointing to an ontology test file.
 
     """
-    from tripper import RDF, Namespace, NoSuchIRIError
+    from tripper import RDF, Namespace
+    from tripper.errors import NoSuchIRIError
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
