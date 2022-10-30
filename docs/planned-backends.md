@@ -1,7 +1,8 @@
-Additional backends
-===================
-Backends that could be supported in upcoming versions
-  - owlready2/EMMOntoPy
+Planned backends
+================
+In addition to the currently existing backends, the following
+additional backends may be supported in upcoming versions:
+
   - OntoRec/OntoFlowKB
   - Stardog
   - DLite triplestore (based on Redland librdf)
