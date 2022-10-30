@@ -66,7 +66,7 @@ class Literal(str):
                 string.datatype = None
         return string
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""
         datatype = f", datatype='{self.datatype}'" if self.datatype else ""
         return f"Literal('{self}'{lang}{datatype})"
