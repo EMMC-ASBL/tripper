@@ -19,6 +19,6 @@ jobs:
       update_python_api_ref: true
       update_docs_landing_page: true
       python_version: "3.7"
-      doc_extras: "[docs]"
+      #doc_extras: "[docs]"
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
