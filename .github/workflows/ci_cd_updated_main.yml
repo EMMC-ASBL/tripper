@@ -16,8 +16,8 @@ jobs:
       default_repo_branch: main
       package_dirs: tripper
       update_docs: false
-      update_python_api_ref: true
-      update_docs_landing_page: true
+      update_python_api_ref: false
+      update_docs_landing_page: false
       python_version: "3.7"
       doc_extras: "[docs]"
     secrets:
