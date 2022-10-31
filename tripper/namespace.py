@@ -1,5 +1,5 @@
 """Provides a simple representation of namespaces."""
-from .errors import NamespaceError, NoSuchIRIError
+from tripper.errors import NamespaceError, NoSuchIRIError
 
 
 class Namespace:
