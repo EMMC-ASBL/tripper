@@ -27,7 +27,7 @@ from tripper.utils import en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Any, Callable, Dict, Generator, Tuple, Union
+    from typing import Any, Callable, Dict, Generator, List, Tuple, Union
 
     Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
 
@@ -69,9 +69,10 @@ class Triplestore:
         module = import_module(
             backend if "." in backend else f"tripper.backends.{backend}"
         )
-        cls = getattr(module, backend.title() + "Strategy")
+        cls = getattr(module, f"{backend.title()}Strategy")
         self.base_iri = base_iri
         self.namespaces: "Dict[str, Namespace]" = {}
+        self.closed = False
         self.backend_name = backend
         self.backend = cls(base_iri=base_iri, **kwargs)
         # Keep functions in the triplestore for convienence even though
@@ -83,11 +84,22 @@ class Triplestore:
     # Methods implemented by backend
     # ------------------------------
     def triples(self, triple: "Triple") -> "Generator":
-        """Returns a generator over matching triples."""
+        """Returns a generator over matching triples.
+
+        Arguments:
+            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should
+                either be None (matching anything) or an exact IRI to
+                match.
+        """
         return self.backend.triples(triple)
 
     def add_triples(self, triples: "Sequence[Triple]"):
-        """Add a sequence of triples."""
+        """Add a sequence of triples.
+
+        Arguments:
+            triples: A sequence of `(s, p, o)` tuples to add to the
+                triplestore.
+        """
         self.backend.add_triples(triples)
 
     def remove(self, triple: "Triple"):
@@ -96,6 +108,16 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
+    def close(self):
+        """Calls the backend close() method if it is implemented.
+        Otherwise, this method has no effect.
+        """
+        # It should be ok to call close() regardless of whether the backend
+        # implements this method or not.  Hence, don't call _check_method().
+        if not self.closed and hasattr(self.backend, "close"):
+            self.backend.close()
+        self.closed = True
+
     def parse(
         self, source=None, format=None, **kwargs  # pylint: disable=redefined-builtin
     ):
@@ -138,13 +160,37 @@ class Triplestore:
         self._check_method("serialize")
         return self.backend.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs):
-        """SPARQL query."""
+    def query(
+        self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+        """SPARQL query.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to the backend query() method.
+
+        Returns:
+            List of tuples of IRIs for each matching row.
+
+        Note:
+            This method is intended for SELECT queries. Use
+            the update() method for INSERT and DELETE queries.
+
+        """
         self._check_method("query")
         return self.backend.query(query_object=query_object, **kwargs)
 
-    def update(self, update_object, **kwargs):
-        """Update triplestore with SPARQL."""
+    def update(self, update_object, **kwargs) -> None:
+        """Update triplestore with SPARQL.
+
+        Parameters:
+            update_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to the backend update() method.
+
+        Note:
+            This method is intended for INSERT and DELETE queries. Use
+            the query() method for SELECT queries.
+
+        """
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
 
@@ -187,9 +233,9 @@ class Triplestore:
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(
+    def value(  # pylint: disable=redefined-builtin
         self, subject=None, predicate=None, object=None, default=None, any=False
-    ):  # pylint: disable=redefined-builtin
+    ):
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.

@@ -1,18 +1,8 @@
-# Overview
-
+Tutorial
+========
 <!-- markdownlint-disable MD007 -->
 
-A Python package encapsulating different triplestores using the strategy design pattern.
-
-This package has by itself no dependencies outside the standard library, but the triplestore backends may have.
-
-The main class is Triplestore, who's `__init__()` method takes the name of the backend to encapsulate as first argument.
-Its interface is strongly inspired by rdflib.Graph, but simplified when possible to make it easy to use.
-Some important differences:
-
-- all IRIs are represented by Python strings
-- blank nodes are strings starting with "_:"
-- literals are constructed with `Literal()`
+Create a triplestore instance using the `rdflib` backend:
 
 ```python
 from triplestore import Triplestore
@@ -36,7 +26,7 @@ ONTO.MyConcept
 # -> 'http://example.com/onto#MyConcept'
 ```
 
-Namespace also support access by label and IRI checking.
+Namespace also supports access by label and IRI checking.
 Both of these features requires loading an ontology.
 The following example shows how to create an EMMO namespace with IRI checking.
 The keyword argument `label_annotations=True` enables access by `skos:prefLabel`, `rdfs:label` or `skos:altLabel`.
@@ -121,18 +111,3 @@ ts.add_function(
     returns=ONTO.AverageArmLength,
 )
 ```
-
-## Further development
-
-- Update the `query()` method to return the SPARQL result in a backend-independent way.
-- Add additional backends. Candidates include:
-
-    - list of tuples
-    - owlready2/EMMOntoPy
-    - OntoRec/OntoFlowKB
-    - Stardog
-    - DLite triplestore (based on Redland librdf)
-    - Redland librdf
-    - Apache Jena Fuseki
-    - Allegrograph
-    - Wikidata
