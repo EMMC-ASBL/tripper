@@ -2,42 +2,47 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/CHANGELOG/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/LICENSE/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://EMMC-ASBL.github.io/tripper/latest/overview/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/planned-backends/</loc>
+         <lastmod>2022-10-31</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/tutorial/</loc>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/interface/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/triplestore/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/ontopy/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/rdflib/</loc>
-         <lastmod>2022-10-25</lastmod>
+         <lastmod>2022-10-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
