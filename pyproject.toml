@@ -47,7 +47,7 @@ pre-commit = [
     "pylint ~=2.13",
 ]
 testing = [
-    "pytest ~=7.1",
+    "pytest ~=7.2",
     "pytest-cov ~=4.0",
 ]
 dev = [
@@ -58,7 +58,7 @@ dev = [
     "mkdocstrings[python-legacy] ~=0.19.0",
     "pre-commit ~=2.20",
     "pylint ~=2.13",
-    "pytest ~=7.1",
+    "pytest ~=7.2",
     "pytest-cov ~=4.0",
 ]
 
