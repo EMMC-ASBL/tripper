@@ -5,30 +5,31 @@ on:
     types:
     - published
 
-jobs:
-  publish-package-and-docs:
-    name: External
-    uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v1
-    if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')
-    with:
-      # General
-      git_username: "TEAM 4.0[bot]"
-      git_email: "Team4.0@SINTEF.no"
-      release_branch: main
-      install_extras: "[dev]"
-
-      # Build package
-      python_package: true
-      package_dirs: tripper
-      python_version_build: "3.7"
-      build_cmd: "pip install -U flit && flit build"
-      publish_on_pypi: true
-
-      # Build & publish documentation
-      update_docs: false
-      python_version_docs: "3.7"
-      doc_extras: "[docs]"
-      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
-    secrets:
-      PyPI_token: ${{ secrets.PYPI_TOKEN }}
-      PAT: ${{ secrets.RELEASE_PAT }}
+#jobs:
+#  publish-package-and-docs:
+#    name: External
+#    uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v1
+#    if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')
+#    with:
+#      # General
+#      git_username: "TEAM 4.0[bot]"
+#      git_email: "Team4.0@SINTEF.no"
+#      release_branch: main
+#      install_extras: "[dev]"
+#
+#      # Build package
+#      python_package: true
+#      package_dirs: tripper
+#      python_version_build: "3.7"
+#      build_cmd: "pip install -U flit && flit build"
+#      publish_on_pypi: true
+#
+#      # Build & publish documentation
+#      update_docs: true
+#      python_version_docs: "3.7"
+#      doc_extras: "[docs]"
+#      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
+#    secrets:
+#      PyPI_token: ${{ secrets.PYPI_TOKEN }}
+#      PAT: ${{ secrets.RELEASE_PAT }}
+#
