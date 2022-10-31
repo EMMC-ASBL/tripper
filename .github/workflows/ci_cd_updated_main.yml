@@ -15,10 +15,10 @@ jobs:
       permanent_dependencies_branch: "ci/dependency-updates"
       default_repo_branch: main
       package_dirs: tripper
-      update_docs: true
+      update_docs: false
       update_python_api_ref: true
       update_docs_landing_page: true
       python_version: "3.7"
-      #doc_extras: "[docs]"
+      doc_extras: "[docs]"
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
