@@ -72,7 +72,7 @@ def expected_function_triplestore(example_function: "Callable[[Any, Any], Any]")
         A Turtle-serialized output that would be expected from the Triplestore.
 
     """
-    from tripper.triplestore import function_id
+    from tripper.utils import function_id
 
     fid = function_id(example_function)
 

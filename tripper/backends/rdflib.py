@@ -12,7 +12,7 @@ from rdflib import Literal as rdflibLiteral
 from rdflib import URIRef
 from rdflib.util import guess_format
 
-from tripper.triplestore import Literal
+from tripper import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
