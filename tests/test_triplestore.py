@@ -156,7 +156,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
             object pointing to an ontology test file.
 
     """
-    from tripper.triplestore import Namespace, Triplestore
+    from tripper import Namespace, Triplestore
 
     ontopath_food = get_ontology_path("food")
 

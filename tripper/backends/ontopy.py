@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from ontopy.ontology import Ontology, _unabbreviate, get_ontology
 
-from tripper.triplestore import Literal
+from tripper.literal import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
