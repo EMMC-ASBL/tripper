@@ -56,6 +56,23 @@ def test_triplestore(
     ts_as_turtle = store.serialize(format="turtle")
     assert ts_as_turtle == expected_function_triplestore
 
+    # Test SPARQL query
+    rows = store.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
+    assert len(rows) == 3
+    rows.sort()  # ensure consistent ordering of rows
+    assert rows[0] == (
+        "http://example.com/onto#AnotherConcept",
+        "http://www.w3.org/2002/07/owl#Thing",
+    )
+    assert rows[1] == (
+        "http://example.com/onto#MyConcept",
+        "http://www.w3.org/2002/07/owl#Thing",
+    )
+    assert rows[2] == (
+        "http://example.com/onto#Sum",
+        "http://www.w3.org/2002/07/owl#Thing",
+    )
+
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
     """Specifically test the rdflib backend Triplestore.
@@ -97,6 +114,40 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     assert len(store.function_repo) == 4
 
 
+def test_backend_rdflib_base_iri(
+    get_ontology_path: "Callable[[str], Path]", tmp_path: "Path"
+) -> None:
+    """Test rdflib with `base_iri`.
+
+    Parameters:
+        get_ontology_path: Fixture from `conftest.py` to retrieve a `pathlib.Path`
+            object pointing to an ontology test file.
+        tmp_path: Built-in pytest fixture, which returns a `pathlib.Path` object
+            representing a temporary folder.
+
+    """
+    import shutil
+
+    from tripper.triplestore import RDF, Triplestore
+
+    ontopath_family = get_ontology_path("family")
+    tmp_onto = tmp_path / "family.ttl"
+    shutil.copy(ontopath_family, tmp_onto)
+
+    store = Triplestore(backend="rdflib", base_iri=f"file://{tmp_onto}")
+    FAM = store.bind(  # pylint: disable=invalid-name
+        "fam", "http://onto-ns.com/ontologies/examples/family#"
+    )
+    store.add_triples(
+        [
+            (":Nils", RDF.type, FAM.Father),
+            (":Anna", RDF.type, FAM.Dauther),
+            (":Nils", FAM.hasChild, ":Anna"),
+        ]
+    )
+    store.close()
+
+
 def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     """Specifically test the ontopy backend Triplestore.
 
@@ -105,7 +156,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
             object pointing to an ontology test file.
 
     """
-    from tripper.triplestore import Namespace, Triplestore
+    from tripper import Namespace, Triplestore
 
     ontopath_food = get_ontology_path("food")
 

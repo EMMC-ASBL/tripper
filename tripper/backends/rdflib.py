@@ -10,12 +10,13 @@ from typing import TYPE_CHECKING
 from rdflib import BNode, Graph
 from rdflib import Literal as rdflibLiteral
 from rdflib import URIRef
+from rdflib.util import guess_format
 
-from tripper.triplestore import Literal
+from tripper import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, Union
+    from typing import Generator, List, Tuple, Union
 
     from tripper.triplestore import Triple
 
@@ -38,14 +39,32 @@ def astriple(triple: "Triple"):
 
 
 class RdflibStrategy:
-    """Triplestore strategy for rdflib."""
+    """Triplestore strategy for rdflib.
 
-    def __init__(self, **kwargs) -> None:  # pylint: disable=unused-argument
+    Arguments:
+        base_iri: If given, initialise the triplestore from this storage.
+            When `close()` is called, the storage will be overwritten
+            with the current content of the triplestore.
+        triplestore_url: Alternative URL to the underlying ontology if
+            `base_iri` is not resolvable.  Defaults to `base_iri`.
+        format: Format of storage specified with `base_iri`.
+    """
+
+    def __init__(
+        self, base_iri: str = None, triplestore_url: str = None, format: str = None
+    ):  # pylint: disable=redefined-builtin
         self.graph = Graph()
+        self.base_iri = base_iri
+        self.triplestore_url = triplestore_url if triplestore_url else base_iri
+        if self.triplestore_url is not None:
+            if format is None:
+                format = guess_format(self.triplestore_url)
+            self.parse(location=self.triplestore_url, format=format)
+        self.base_format = format
 
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples."""
-        for (s, p, o,) in self.graph.triples(  # pylint: disable=not-an-iterable
+        for s, p, o in self.graph.triples(  # pylint: disable=not-an-iterable
             astriple(triple)
         ):
             yield (
@@ -66,6 +85,12 @@ class RdflibStrategy:
         self.graph.remove(astriple(triple))
 
     # Optional methods
+    def close(self):
+        """Close the internal RDFLib graph."""
+        if self.triplestore_url:
+            self.serialize(destination=self.triplestore_url, format=self.base_format)
+        self.graph.close()
+
     def parse(
         self,
         source=None,
@@ -115,7 +140,7 @@ class RdflibStrategy:
             return result if isinstance(result, str) else result.decode()
         return None
 
-    def query(self, query_object, **kwargs):
+    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
         """SPARQL query.
 
         Parameters:
@@ -124,19 +149,20 @@ class RdflibStrategy:
 
         Returns:
             List of tuples of IRIs for each matching row.
+
         """
         rows = self.graph.query(query_object=query_object, **kwargs)
         return [tuple(str(v) for v in row) for row in rows]
 
-    def update(self, update_object, **kwargs):
+    def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
 
         Parameters:
-            query_object: String with the SPARQL query.
-            kwargs: Keyword arguments passed to rdflib.Graph.query().
+            update_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to rdflib.Graph.update().
 
         Note:
-            This method is intended for INSERT and DELETE queries.  Use
+            This method is intended for INSERT and DELETE queries. Use
             the query() method for SELECT queries.
         """
         return self.graph.update(update_object=update_object, **kwargs)

@@ -3,7 +3,8 @@ pattern.
 
 See the README.md file for a description for how to use this package.
 """
-from .triplestore import (
+from .literal import Literal
+from .namespace import (
     DC,
     DCTERMS,
     DM,
@@ -18,32 +19,30 @@ from .triplestore import (
     SKOS,
     XML,
     XSD,
-    Literal,
     Namespace,
-    Triplestore,
-    en,
 )
+from .triplestore import Triplestore
 
-__version__ = "0.1.0"
-
+__version__ = "0.1.1"
 
 __all__ = (
     "Literal",
-    "Namespace",
-    "Triplestore",
-    "en",
-    "XML",
-    "RDF",
-    "RDFS",
-    "XSD",
-    "OWL",
-    "SKOS",
+    #
     "DC",
     "DCTERMS",
-    "FOAF",
-    "DOAP",
-    "FNO",
-    "EMMO",
-    "MAP",
     "DM",
+    "DOAP",
+    "EMMO",
+    "FNO",
+    "FOAF",
+    "MAP",
+    "OWL",
+    "RDF",
+    "RDFS",
+    "SKOS",
+    "XML",
+    "XSD",
+    "Namespace",
+    #
+    "Triplestore",
 )

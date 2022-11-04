@@ -10,11 +10,13 @@ from typing import TYPE_CHECKING
 
 from ontopy.ontology import Ontology, _unabbreviate, get_ontology
 
-from tripper.triplestore import Literal
+from tripper.literal import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, Optional, Union
+    from typing import Generator, List, Optional, Union
+
+    from rdflib.query import Result
 
     from tripper.triplestore import Triple
 
@@ -202,8 +204,21 @@ class OntopyStrategy:
                     os.remove(filename)
         return None
 
-    def query(self, query_object, native=True, **kwargs):
-        """SPARQL query."""
+    def query(self, query_object, native=True, **kwargs) -> "Union[List, Result]":
+        """SPARQL query.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            native: Whether or not to use EMMOntoPy/Owlready2 or RDFLib.
+            kwargs: Keyword arguments passed to rdflib.Graph.query().
+
+        Returns:
+            SPARQL query results.
+
+        """
+        if TYPE_CHECKING:
+            res: "Union[List, Result]"
+
         if native:
             res = self.onto.world.sparql(query_object)
         else:
@@ -212,8 +227,19 @@ class OntopyStrategy:
         # TODO: Convert result to expected type
         return res
 
-    def update(self, update_object, native=True, **kwargs):
-        """Update triplestore with SPARQL."""
+    def update(self, update_object, native=True, **kwargs) -> None:
+        """Update triplestore with SPARQL.
+
+        Parameters:
+            update_object: String with the SPARQL query.
+            native: Whether or not to use EMMOntoPy/Owlready2 or RDFLib.
+            kwargs: Keyword arguments passed to rdflib.Graph.update().
+
+        Note:
+            This method is intended for INSERT and DELETE queries. Use
+            the query() method for SELECT queries.
+
+        """
         if native:
             self.onto.world.sparql(update_object)
         else:

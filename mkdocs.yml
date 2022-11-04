@@ -1,7 +1,7 @@
 site_name: "Tripper"
 site_description: Documentation for the Tripper package
 site_url: https://EMMC-ASBL.github.io/tripper
-copyright: Copyright &copy; 2022 European Material Modelling Council
+copyright: Copyright &copy; 2022 SINTEF
 
 theme:
   name: material
@@ -79,7 +79,7 @@ plugins:
 
 nav:
   - Home: index.md
-  - Overview: overview.md
+  - Tutorial: tutorial.md
   - License: LICENSE.md
   - Changelog: CHANGELOG.md
   - ... | api_reference/**

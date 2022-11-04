@@ -1,0 +1,3 @@
+# namespace
+
+::: tripper.namespace
