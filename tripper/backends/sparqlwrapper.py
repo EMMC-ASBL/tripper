@@ -1,7 +1,5 @@
-"""Backend for RDFLib.
+"""Backend for SPARQLWrapper
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of an
-RDF Triple: subject, predicate, and object.
 """
 from typing import TYPE_CHECKING
 
@@ -57,8 +55,8 @@ class SparqlwrapperStrategy:
         ret = self.sparql.queryAndConvert()
         for binding in ret["results"]["bindings"]:
             yield tuple(
-                convert_json_entrydict(binding.get(triple_name, triple_value))
-                for triple_name, triple_value in zip("spo", triple)
+                convert_json_entrydict(binding[name]) if name in binding else value
+                for name, value in zip("spo", triple)
             )
 
     def add_triples(self, triples: "Sequence[Triple]") -> "QueryResult":

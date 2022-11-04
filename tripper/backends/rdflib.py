@@ -1,7 +1,7 @@
 """Backend for RDFLib.
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of an
-RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different
+parts of an RDF Triple: subject, predicate, and object.
 """
 # pylint: disable=line-too-long
 import warnings
