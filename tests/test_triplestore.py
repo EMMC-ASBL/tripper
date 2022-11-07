@@ -5,8 +5,10 @@ installed backends are tested one by one.
 """
 # pylint: disable=duplicate-code,comparison-with-callable
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
+import os
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -134,7 +136,9 @@ def test_backend_rdflib_base_iri(
     tmp_onto = tmp_path / "family.ttl"
     shutil.copy(ontopath_family, tmp_onto)
 
-    store = Triplestore(backend="rdflib", base_iri=f"file://{tmp_onto}")
+    tmp_onto = Path(os.path.abspath(tmp_onto)).as_uri()
+
+    store = Triplestore(backend="rdflib", base_iri=tmp_onto)
     FAM = store.bind(  # pylint: disable=invalid-name
         "fam", "http://onto-ns.com/ontologies/examples/family#"
     )
@@ -180,3 +184,49 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     store.bind("food", FOOD)
     with open(ontopath_food, "rt", encoding="utf8") as handle:
         store.parse(data=handle.read())
+
+
+def test_ontorec_backend(
+    example_function: "Callable[[Any, Any], Any]",
+    expected_function_triplestore: str,
+    ):
+
+    from tripper.triplestore import OWL, RDF, RDFS, XSD, Triplestore
+
+    store = Triplestore("ontorec", base_iri=None, database_name="testdb", ip="127.0.0.1", port="80")
+    assert store.expand_iri("xsd:integer") == XSD.integer
+    assert store.prefix_iri(RDF.type) == "rdf:type"
+    EX = store.bind("ex", "http://example.com/onto#")  # pylint: disable=invalid-name
+    assert str(EX) == "http://example.com/onto#"
+    store.add_mapsTo(EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop")
+    store.add((EX.MyConcept, RDFS.subClassOf, OWL.Thing))
+    store.add((EX.AnotherConcept, RDFS.subClassOf, OWL.Thing))
+    store.add((EX.Sum, RDFS.subClassOf, OWL.Thing))
+    assert store.has(EX.Sum) is True
+    assert store.has(EX.Sum, RDFS.subClassOf, OWL.Thing) is True
+    assert store.has(object=EX.NotInOntology) is False
+
+    store.add_function(
+        example_function,
+        expects=(EX.MyConcept, EX.AnotherConcept),
+        returns=EX.Sum,
+        base_iri=EX,
+    )
+
+    # Test SPARQL query
+    rows = store.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
+    print(rows)
+    assert len(rows) == 3
+    rows.sort()  # ensure consistent ordering of rows
+    assert rows[0] == (
+        "http://example.com/onto#AnotherConcept",
+        "http://www.w3.org/2002/07/owl#Thing",
+    )
+    assert rows[1] == (
+        "http://example.com/onto#MyConcept",
+        "http://www.w3.org/2002/07/owl#Thing",
+    )
+    assert rows[2] == (
+        "http://example.com/onto#Sum",
+        "http://www.w3.org/2002/07/owl#Thing",
+    )
