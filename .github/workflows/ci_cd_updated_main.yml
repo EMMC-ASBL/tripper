@@ -7,7 +7,7 @@ on:
 jobs:
   update-deps-branch-and-docs:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_cd_updated_default_branch.yml@v1.3.4
+    uses: SINTEF/ci-cd/.github/workflows/ci_cd_updated_default_branch.yml@v1
     if: github.repository_owner == 'EMMC-ASBL'
     with:
       git_username: "TEAM 4.0[bot]"
