@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/triplestore/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.8">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
@@ -21,10 +21,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.20d9efc8.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.472b142f.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.815d1a91.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.08040f6c.min.css">
         
           
           
@@ -971,7 +971,9 @@ Triplestore        </code>
         <span class="c1"># &quot;dm&quot;: DM,</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
 <span class="sd">        Parameters:</span>
@@ -1268,8 +1270,8 @@ Triplestore        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">property_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">property_name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add &#39;mapsTo&#39; relation to triplestore.</span>
@@ -1308,9 +1310,9 @@ Triplestore        </code>
         <span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Union[Callable, str]&quot;</span><span class="p">,</span>
         <span class="n">expects</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence, Mapping]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">returns</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fno&quot;</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
 
@@ -1479,7 +1481,7 @@ Triplestore        </code>
       </tr>
       <tr>
         <td><code>base_iri</code></td>
-        <td><code>str</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Base IRI used by the add_function() method when adding
 new triples.</p></td>
         <td><code>None</code></td>
@@ -1495,7 +1497,9 @@ method.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
 <span class="sd">    Parameters:</span>
@@ -1603,7 +1607,7 @@ of IRIs, if multiple values are returned.</p></td>
       </tr>
       <tr>
         <td><code>base_iri</code></td>
-        <td><code>str</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Base of the IRI representing the function in the
 knowledge base.  Defaults to the base IRI of the triplestore.</p></td>
         <td><code>None</code></td>
@@ -1617,7 +1621,7 @@ Defaults to the Function Ontology (FnO).</p></td>
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Union[float, Callable]&#39;</code></td>
+        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking the same arguments as <code>func</code>
@@ -1648,9 +1652,9 @@ returning the cost as a float.</p></td>
     <span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Union[Callable, str]&quot;</span><span class="p">,</span>
     <span class="n">expects</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence, Mapping]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">returns</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fno&quot;</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
 
@@ -1733,14 +1737,14 @@ returning the cost as a float.</p></td>
       </tr>
       <tr>
         <td><code>property_name</code></td>
-        <td><code>str</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Name of property if <code>source</code> is an entity or
 an entity IRI.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>&#39;Union[float, Callable]&#39;</code></td>
+        <td><code>&#39;Optional[Union[float, Callable]]&#39;</code></td>
         <td><p>User-defined cost of following this mapping relation
 represented as a float.  It may be given either as a
 float or as a callable taking the value of the mapped
@@ -1762,8 +1766,8 @@ that have <code>target</code> as output.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">property_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">property_name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Add &#39;mapsTo&#39; relation to triplestore.</span>
