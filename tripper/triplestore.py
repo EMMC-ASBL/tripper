@@ -27,7 +27,7 @@ from tripper.utils import en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Any, Callable, Dict, Generator, List, Tuple, Union
+    from typing import Callable, Dict, Generator, List, Optional, Tuple, Union
 
     Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
 
@@ -56,7 +56,9 @@ class Triplestore:
         # "dm": DM,
     }
 
-    def __init__(self, backend: str, base_iri: str = None, **kwargs):
+    def __init__(
+        self, backend: str, base_iri: "Optional[str]" = None, **kwargs
+    ) -> None:
         """Initialise triplestore using the backend with the given name.
 
         Parameters:
@@ -353,8 +355,8 @@ class Triplestore:
         self,
         target: str,
         source: str,
-        property_name: str = None,
-        cost: "Union[float, Callable]" = None,
+        property_name: "Optional[str]" = None,
+        cost: "Optional[Union[float, Callable]]" = None,
         target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to triplestore.
@@ -393,9 +395,9 @@ class Triplestore:
         func: "Union[Callable, str]",
         expects: "Union[str, Sequence, Mapping]" = (),
         returns: "Union[str, Sequence]" = (),
-        base_iri: str = None,
+        base_iri: "Optional[str]" = None,
         standard: str = "fno",
-        cost: "Union[float, Callable]" = None,
+        cost: "Optional[Union[float, Callable]]" = None,
     ):
         """Inspect function and add triples describing it to the triplestore.
 
