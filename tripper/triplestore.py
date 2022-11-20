@@ -11,6 +11,7 @@ triplestore backends may have.
 For developers: The usage of `s`, `p`, and `o` represent the different parts of an
 RDF Triple: subject, predicate, and object.
 """
+# pylint: disable=invalid-name
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import inspect
@@ -57,7 +58,11 @@ class Triplestore:
     }
 
     def __init__(
-        self, backend: str, base_iri: "Optional[str]" = None, **kwargs
+        self,
+        backend: str,
+        base_iri: "Optional[str]" = None,
+        database: "Optional[str]" = None,
+        **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
 
@@ -65,6 +70,7 @@ class Triplestore:
             backend: Name of the backend module.
             base_iri: Base IRI used by the add_function() method when adding
                 new triples.
+            database: Name of database to connect to (for backends that supports it).
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
         """
@@ -76,7 +82,7 @@ class Triplestore:
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
         self.backend_name = backend
-        self.backend = cls(base_iri=base_iri, **kwargs)
+        self.backend = cls(base_iri=base_iri, database=database, **kwargs)
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
         self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
@@ -194,6 +200,26 @@ class Triplestore:
         """
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
+
+    def create_database(self, database, **kwargs):
+        """Create a new database in backend.
+
+        Parameters:
+            database: Name of the new database.
+            kwargs: Keyword arguments passed to the backend create_database() method.
+        """
+        self._check_method("create_database")
+        return self.backend.create_database(database=database, **kwargs)
+
+    def remove_database(self, database, **kwargs):
+        """Remove a database in backend.
+
+        Parameters:
+            database: Name of the database to be removed.
+            kwargs: Keyword arguments passed to the backend remove_database() method.
+        """
+        self._check_method("remove_database")
+        return self.backend.remove_database(database=database, **kwargs)
 
     def bind(self, prefix: str, namespace: "Union[str, Namespace]", **kwargs):
         """Bind prefix to namespace and return the new Namespace object.
@@ -351,7 +377,7 @@ class Triplestore:
                 raise NamespaceError(f"No prefix defined for IRI: {iri}")
         return iri
 
-    def add_mapsTo(  # pylint: disable=invalid-name
+    def add_mapsTo(
         self,
         target: str,
         source: str,
