@@ -64,6 +64,8 @@ class Literal(str):
             elif isinstance(value, float):
                 string.datatype = XSD.double
             elif isinstance(value, (bytes, bytearray)):
+                # Re-initialize the value anew, similarly to what is done in the first
+                # line of this method.
                 string = super().__new__(cls, value.hex())
                 string.lang = None
                 string.datatype = XSD.hexBinary
