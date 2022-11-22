@@ -8,8 +8,7 @@ from tripper.literal import Literal
 from tripper.namespace import XSD
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping
-    from typing import Any, Callable, Dict, Generator, Tuple, Union
+    from typing import Any, Callable, Tuple
 
 
 def infer_iri(obj):
@@ -89,9 +88,10 @@ def parse_literal(literal: "Any") -> "Literal":
         return literal
 
     if not isinstance(literal, str):
-        for type_, datatype in Literal.datatypes.items():
-            if isinstance(literal, type_):
-                return Literal(literal, lang=lang, datatype=datatype)
+        if isinstance(literal, tuple(Literal.datatypes)):
+            return Literal(
+                literal, lang=lang, datatype=Literal.datatypes.get(type(literal))
+            )
         TypeError(f"unsupported literal type: {type(literal)}")
 
     match = re.match(r'^\s*("""(.*)"""|"(.*)")\s*$', literal, flags=re.DOTALL)

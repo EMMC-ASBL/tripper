@@ -6,20 +6,22 @@ from typing import TYPE_CHECKING
 from tripper.namespace import OWL, RDF, RDFS, XSD
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Tuple, Union
+    from typing import Any, Optional, Union
 
 
 class Literal(str):
     """A literal RDF value.
 
     Arguments:
-        value: The literal value.  See the `datatypes` class attribute for
-            valid supported data types.  A localised string is provided as
-            a string with `lang` set to a language code.
-        lang: A standard language code, like "en", "no", etc.  Implies that
-            the `value` is a localised string.
-        datatype: Explicit specification of the type of `value`. Should not
-            be combined with `lang`.
+        value (Union[datetime, bytes, bytearray, bool, int, float, str]): The literal
+            value. See the `datatypes` class attribute for valid supported data types.
+            A localised string is provided as a string with `lang` set to a language
+            code.
+        lang (Optional[str]): A standard language code, like "en", "no", etc. Implies
+            that the `value` is a localised string.
+        datatype (Any): Explicit specification of the type of `value`. Should not be
+            combined with `lang`.
+
     """
 
     lang: "Union[str, None]"
@@ -37,7 +39,12 @@ class Literal(str):
         str: XSD.string,
     }
 
-    def __new__(cls, value, lang=None, datatype=None):
+    def __new__(
+        cls,
+        value: "Union[datetime, bytes, bytearray, bool, int, float, str]",
+        lang: "Optional[str]" = None,
+        datatype: "Optional[Any]" = None,
+    ):
         string = super().__new__(cls, value)
         if lang:
             if datatype:
@@ -57,7 +64,10 @@ class Literal(str):
             elif isinstance(value, float):
                 string.datatype = XSD.double
             elif isinstance(value, (bytes, bytearray)):
-                string = value.hex()
+                # Re-initialize the value anew, similarly to what is done in the first
+                # line of this method.
+                string = super().__new__(cls, value.hex())
+                string.lang = None
                 string.datatype = XSD.hexBinary
             elif isinstance(value, datetime):
                 string.datatype = XSD.dateTime
