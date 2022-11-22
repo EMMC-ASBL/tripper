@@ -675,24 +675,25 @@ Literal            (<span title="str">str</span>)
   <tbody>
       <tr>
         <td><code>value</code></td>
-        <td></td>
-        <td><p>The literal value.  See the <code>datatypes</code> class attribute for
-valid supported data types.  A localised string is provided as
-a string with <code>lang</code> set to a language code.</p></td>
+        <td><code>Union[datetime, bytes, bytearray, bool, int, float, str]</code></td>
+        <td><p>The literal
+value. See the <code>datatypes</code> class attribute for valid supported data types.
+A localised string is provided as a string with <code>lang</code> set to a language
+code.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>lang</code></td>
-        <td></td>
-        <td><p>A standard language code, like "en", "no", etc.  Implies that
-the <code>value</code> is a localised string.</p></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>A standard language code, like "en", "no", etc. Implies
+that the <code>value</code> is a localised string.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>datatype</code></td>
-        <td></td>
-        <td><p>Explicit specification of the type of <code>value</code>. Should not
-be combined with <code>lang</code>.</p></td>
+        <td><code>Any</code></td>
+        <td><p>Explicit specification of the type of <code>value</code>. Should not be
+combined with <code>lang</code>.</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
@@ -703,13 +704,15 @@ be combined with <code>lang</code>.</p></td>
     <span class="sd">&quot;&quot;&quot;A literal RDF value.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        value: The literal value.  See the `datatypes` class attribute for</span>
-<span class="sd">            valid supported data types.  A localised string is provided as</span>
-<span class="sd">            a string with `lang` set to a language code.</span>
-<span class="sd">        lang: A standard language code, like &quot;en&quot;, &quot;no&quot;, etc.  Implies that</span>
-<span class="sd">            the `value` is a localised string.</span>
-<span class="sd">        datatype: Explicit specification of the type of `value`. Should not</span>
-<span class="sd">            be combined with `lang`.</span>
+<span class="sd">        value (Union[datetime, bytes, bytearray, bool, int, float, str]): The literal</span>
+<span class="sd">            value. See the `datatypes` class attribute for valid supported data types.</span>
+<span class="sd">            A localised string is provided as a string with `lang` set to a language</span>
+<span class="sd">            code.</span>
+<span class="sd">        lang (Optional[str]): A standard language code, like &quot;en&quot;, &quot;no&quot;, etc. Implies</span>
+<span class="sd">            that the `value` is a localised string.</span>
+<span class="sd">        datatype (Any): Explicit specification of the type of `value`. Should not be</span>
+<span class="sd">            combined with `lang`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Union[str, None]&quot;</span>
@@ -727,7 +730,12 @@ be combined with <code>lang</code>.</p></td>
         <span class="nb">str</span><span class="p">:</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str]&quot;</span><span class="p">,</span>
+        <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Any]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
@@ -747,7 +755,10 @@ be combined with <code>lang</code>.</p></td>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
                 <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">double</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
-                <span class="n">string</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+                <span class="c1"># Re-initialize the value anew, similarly to what is done in the first</span>
+                <span class="c1"># line of this method.</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
+                <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
                 <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
@@ -884,7 +895,12 @@ be combined with <code>lang</code>.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str]&quot;</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Any]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
@@ -904,7 +920,10 @@ be combined with <code>lang</code>.</p></td>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">double</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+            <span class="c1"># Re-initialize the value anew, similarly to what is done in the first</span>
+            <span class="c1"># line of this method.</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
