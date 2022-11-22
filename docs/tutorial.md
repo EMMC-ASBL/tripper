@@ -51,7 +51,7 @@ New triples can be added either with the `parse()` method (for backends that sup
 
 ```python
 # en(msg) is a convenient function for adding english literals.
-# It is equivalent to ``triplestore.Literal(msg, lang="en")``.
+# It is equivalent to ``tripper.Literal(msg, lang="en")``.
 from tripper.utils import en
 ts.parse("onto.ttl", format="turtle")
 ts.add_triples([
