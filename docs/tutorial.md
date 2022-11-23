@@ -5,7 +5,7 @@ Tutorial
 Create a triplestore instance using the `rdflib` backend:
 
 ```python
-from triplestore import Triplestore
+from tripper import Triplestore
 ts = Triplestore(backend="rdflib")
 ```
 
@@ -13,7 +13,7 @@ The module already provides a set of pre-defined namespaces that simplifies writ
 For example:
 
 ```python
-from triplestore import RDFS, OWL
+from tripper import RDFS, OWL
 RDFS.subClassOf
 # -> 'http://www.w3.org/2000/01/rdf-schema#subClassOf'
 ```
@@ -51,8 +51,8 @@ New triples can be added either with the `parse()` method (for backends that sup
 
 ```python
 # en(msg) is a convenient function for adding english literals.
-# It is equivalent to ``triplestore.Literal(msg, lang="en")``.
-from triplestore import en
+# It is equivalent to ``tripper.Literal(msg, lang="en")``.
+from tripper.utils import en
 ts.parse("onto.ttl", format="turtle")
 ts.add_triples([
     (ONTO.MyConcept, RDFS.subClassOf, OWL.Thing),
@@ -83,7 +83,7 @@ Finally Triplestore has two specialised methods `add_mapsTo()` and `add_function
 `add_mapsTo()` is convinient for defining new mappings:
 
 ```python
-from triplestore import Namespace
+from tripper import Namespace
 META = Namespace("http://onto-ns.com/meta/0.1/MyEntity#")
 ts.add_mapsTo(ONTO.MyConcept, META.my_property)
 ```
