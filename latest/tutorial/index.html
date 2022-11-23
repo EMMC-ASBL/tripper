@@ -499,12 +499,12 @@
 <!-- markdownlint-disable MD007 -->
 
 <p>Create a triplestore instance using the <code>rdflib</code> backend:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">triplestore</span> <span class="kn">import</span> <span class="n">Triplestore</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>The module already provides a set of pre-defined namespaces that simplifies writing IRIs.
 For example:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">triplestore</span> <span class="kn">import</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">OWL</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">OWL</span>
 <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span>
 <span class="c1"># -&gt; &#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span>
 </code></pre></div>
@@ -533,8 +533,8 @@ It is needed, because the 'rdflib' backend is currently not able to load EMMO fr
 </code></pre></div>
 <p>New triples can be added either with the <code>parse()</code> method (for backends that support it) or the <code>add()</code> and <code>add_triples()</code> methods:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># en(msg) is a convenient function for adding english literals.</span>
-<span class="c1"># It is equivalent to ``triplestore.Literal(msg, lang=&quot;en&quot;)``.</span>
-<span class="kn">from</span> <span class="nn">triplestore</span> <span class="kn">import</span> <span class="n">en</span>
+<span class="c1"># It is equivalent to ``tripper.Literal(msg, lang=&quot;en&quot;)``.</span>
+<span class="kn">from</span> <span class="nn">tripper.utils</span> <span class="kn">import</span> <span class="n">en</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;onto.ttl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span>
     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span><span class="p">),</span>
@@ -555,7 +555,7 @@ For example:</p>
 <p>The <code>query()</code> and <code>update()</code> methods can be used to query and update the triplestore using SPARQL.</p>
 <p>Finally Triplestore has two specialised methods <code>add_mapsTo()</code> and <code>add_function()</code> that simplify working with mappings.
 <code>add_mapsTo()</code> is convinient for defining new mappings:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">triplestore</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="n">META</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="s2">&quot;http://onto-ns.com/meta/0.1/MyEntity#&quot;</span><span class="p">)</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">add_mapsTo</span><span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">META</span><span class="o">.</span><span class="n">my_property</span><span class="p">)</span>
 </code></pre></div>
