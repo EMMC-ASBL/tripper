@@ -230,11 +230,12 @@ class Triplestore:
         Parameters:
             backend: Name of backend.
             database: Name of the new database.
-            kwargs: Keyword arguments passed to the backend create_database() method.
+            kwargs: Keyword arguments passed to the backend
+                create_database() method.
 
         Note:
-            This is a class method, which operates on the backend triplestore without
-            connecting to it.
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
         """
         cls._check_backend_method(backend, "create_database")
         backend_class = cls._get_backend(backend)
@@ -247,11 +248,12 @@ class Triplestore:
         Parameters:
             backend: Name of backend.
             database: Name of the database to be removed.
-            kwargs: Keyword arguments passed to the backend remove_database() method.
+            kwargs: Keyword arguments passed to the backend
+                remove_database() method.
 
         Note:
-            This is a class method, which operates on the backend triplestore without
-            connecting to it.
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
         """
         cls._check_backend_method(backend, "remove_database")
         backend_class = cls._get_backend(backend)
@@ -259,15 +261,17 @@ class Triplestore:
 
     @classmethod
     def list_databases(cls, backend: str, **kwargs):
-        """For backends that supports multiple databases, list of all databases.
+        """For backends that supports multiple databases, list of all
+        databases.
 
         Parameters:
             backend: Name of backend.
-            kwargs: Keyword arguments passed to the backend remove_database() method.
+            kwargs: Keyword arguments passed to the backend
+                list_databases() method.
 
         Note:
-            This is a class method, which operates on the backend triplestore without
-            connecting to it.
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
         """
         cls._check_backend_method(backend, "list_databases")
         backend_class = cls._get_backend(backend)

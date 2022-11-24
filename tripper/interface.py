@@ -108,6 +108,49 @@ class ITriplestore(Protocol):
         Used by triplestore.parse() to get prefixes after reading
         triples from an external source.
         """
+
+    @classmethod
+    def create_database(cls, database: str, **kwargs):
+        """Create a new database in backend.
+
+        Parameters:
+            database: Name of the new database.
+            kwargs: Keyword arguments passed to the backend
+                create_database() method.
+
+        Note:
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
+        """
+
+    @classmethod
+    def remove_database(cls, database: str, **kwargs):
+        """Remove a database in backend.
+
+        Parameters:
+            database: Name of the database to be removed.
+            kwargs: Keyword arguments passed to the backend
+                remove_database() method.
+
+        Note:
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
+        """
+
+    @classmethod
+    def list_databases(cls, **kwargs):
+        """For backends that supports multiple databases, list of all
+        databases.
+
+        Parameters:
+            kwargs: Keyword arguments passed to the backend
+                list_database() method.
+
+        Note:
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
+        """
+
     ```
     '''
 
