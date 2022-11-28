@@ -11,6 +11,7 @@ triplestore backends may have.
 For developers: The usage of `s`, `p`, and `o` represent the different parts of an
 RDF Triple: subject, predicate, and object.
 """
+# pylint: disable=invalid-name,too-many-public-methods
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import inspect
@@ -57,7 +58,11 @@ class Triplestore:
     }
 
     def __init__(
-        self, backend: str, base_iri: "Optional[str]" = None, **kwargs
+        self,
+        backend: str,
+        base_iri: "Optional[str]" = None,
+        database: "Optional[str]" = None,
+        **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
 
@@ -65,6 +70,7 @@ class Triplestore:
             backend: Name of the backend module.
             base_iri: Base IRI used by the add_function() method when adding
                 new triples.
+            database: Name of database to connect to (for backends that supports it).
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
         """
@@ -76,7 +82,7 @@ class Triplestore:
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
         self.backend_name = backend
-        self.backend = cls(base_iri=base_iri, **kwargs)
+        self.backend = cls(base_iri=base_iri, database=database, **kwargs)
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
         self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
@@ -217,18 +223,89 @@ class Triplestore:
         )
         return self.namespaces[prefix]
 
+    @classmethod
+    def create_database(cls, backend: str, database: str, **kwargs):
+        """Create a new database in backend.
+
+        Parameters:
+            backend: Name of backend.
+            database: Name of the new database.
+            kwargs: Keyword arguments passed to the backend
+                create_database() method.
+
+        Note:
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
+        """
+        cls._check_backend_method(backend, "create_database")
+        backend_class = cls._get_backend(backend)
+        return backend_class.create_database(database=database, **kwargs)
+
+    @classmethod
+    def remove_database(cls, backend: str, database: str, **kwargs):
+        """Remove a database in backend.
+
+        Parameters:
+            backend: Name of backend.
+            database: Name of the database to be removed.
+            kwargs: Keyword arguments passed to the backend
+                remove_database() method.
+
+        Note:
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
+        """
+        cls._check_backend_method(backend, "remove_database")
+        backend_class = cls._get_backend(backend)
+        return backend_class.remove_database(database=database, **kwargs)
+
+    @classmethod
+    def list_databases(cls, backend: str, **kwargs):
+        """For backends that supports multiple databases, list of all
+        databases.
+
+        Parameters:
+            backend: Name of backend.
+            kwargs: Keyword arguments passed to the backend
+                list_databases() method.
+
+        Note:
+            This is a class method, which operates on the backend
+            triplestore without connecting to it.
+        """
+        cls._check_backend_method(backend, "list_databases")
+        backend_class = cls._get_backend(backend)
+        return backend_class.list_databases(**kwargs)
+
     # Convenient methods
     # ------------------
     # These methods are modelled after rdflib and provide some convinient
     # interfaces to the triples(), add_triples() and remove() methods
     # implemented by all backends.
+
+    @classmethod
+    def _get_backend(cls, backend: str):
+        """Returns the class implementing the given backend."""
+        module = import_module(
+            backend if "." in backend else f"tripper.backends.{backend}"
+        )
+        return getattr(module, f"{backend.title()}Strategy")
+
+    @classmethod
+    def _check_backend_method(cls, backend: str, name: str):
+        """Checks that `backend` has a method called `name`.
+
+        Raises NotImplementedError if it hasn't.
+        """
+        backend_class = cls._get_backend(backend)
+        if not hasattr(backend_class, name):
+            raise NotImplementedError(
+                f'Triplestore backend {backend!r} do not implement a "{name}()" method.'
+            )
+
     def _check_method(self, name):
         """Check that backend implements the given method."""
-        if not hasattr(self.backend, name):
-            raise NotImplementedError(
-                f"Triplestore backend {self.backend_name!r} do not implement a "
-                f'"{name}()" method.'
-            )
+        self._check_backend_method(self.backend_name, name)
 
     def add(self, triple: "Triple"):
         """Add `triple` to triplestore."""
@@ -351,7 +428,7 @@ class Triplestore:
                 raise NamespaceError(f"No prefix defined for IRI: {iri}")
         return iri
 
-    def add_mapsTo(  # pylint: disable=invalid-name
+    def add_mapsTo(
         self,
         target: str,
         source: str,
