@@ -463,6 +463,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.create_database" class="md-nav__link">
+    create_database()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.expand_iri" class="md-nav__link">
     expand_iri()
   </a>
@@ -472,6 +479,13 @@
           <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.has" class="md-nav__link">
     has()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.list_databases" class="md-nav__link">
+    list_databases()
   </a>
   
 </li>
@@ -521,6 +535,13 @@
           <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.remove" class="md-nav__link">
     remove()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.remove_database" class="md-nav__link">
+    remove_database()
   </a>
   
 </li>
@@ -767,6 +788,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.create_database" class="md-nav__link">
+    create_database()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.expand_iri" class="md-nav__link">
     expand_iri()
   </a>
@@ -776,6 +804,13 @@
           <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.has" class="md-nav__link">
     has()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.list_databases" class="md-nav__link">
+    list_databases()
   </a>
   
 </li>
@@ -825,6 +860,13 @@
           <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.remove" class="md-nav__link">
     remove()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.remove_database" class="md-nav__link">
+    remove_database()
   </a>
   
 </li>
@@ -972,7 +1014,11 @@ Triplestore        </code>
     <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
@@ -980,6 +1026,7 @@ Triplestore        </code>
 <span class="sd">            backend: Name of the backend module.</span>
 <span class="sd">            base_iri: Base IRI used by the add_function() method when adding</span>
 <span class="sd">                new triples.</span>
+<span class="sd">            database: Name of database to connect to (for backends that supports it).</span>
 <span class="sd">            kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">                method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -991,7 +1038,7 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Namespace]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Keep functions in the triplestore for convienence even though</span>
         <span class="c1"># they usually do not belong to the triplestore per se.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Union[float, Callable[[], float], None]]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1132,18 +1179,89 @@ Triplestore        </code>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            backend: Name of backend.</span>
+<span class="sd">            database: Name of the new database.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">                create_database() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is a class method, which operates on the backend</span>
+<span class="sd">            triplestore without connecting to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;create_database&quot;</span><span class="p">)</span>
+        <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">backend_class</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">remove_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            backend: Name of backend.</span>
+<span class="sd">            database: Name of the database to be removed.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">                remove_database() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is a class method, which operates on the backend</span>
+<span class="sd">            triplestore without connecting to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;remove_database&quot;</span><span class="p">)</span>
+        <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">backend_class</span><span class="o">.</span><span class="n">remove_database</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">list_databases</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="sd">        databases.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            backend: Name of backend.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">                list_databases() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is a class method, which operates on the backend</span>
+<span class="sd">            triplestore without connecting to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;list_databases&quot;</span><span class="p">)</span>
+        <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">backend_class</span><span class="o">.</span><span class="n">list_databases</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="c1"># Convenient methods</span>
     <span class="c1"># ------------------</span>
     <span class="c1"># These methods are modelled after rdflib and provide some convinient</span>
     <span class="c1"># interfaces to the triples(), add_triples() and remove() methods</span>
     <span class="c1"># implemented by all backends.</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the class implementing the given backend.&quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span>
+            <span class="n">backend</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">backend</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tripper.backends.</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_check_backend_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks that `backend` has a method called `name`.</span>
+
+<span class="sd">        Raises NotImplementedError if it hasn&#39;t.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend_class</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Triplestore backend </span><span class="si">{</span><span class="n">backend</span><span class="si">!r}</span><span class="s1"> do not implement a &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">()&quot; method.&#39;</span>
+            <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_check_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Check that backend implements the given method.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Triplestore backend </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="si">!r}</span><span class="s2"> do not implement a &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">()&quot; method.&#39;</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add `triple` to triplestore.&quot;&quot;&quot;</span>
@@ -1266,7 +1384,7 @@ Triplestore        </code>
                 <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No prefix defined for IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">iri</span>
 
-    <span class="k">def</span> <span class="nf">add_mapsTo</span><span class="p">(</span>  <span class="c1"># pylint: disable=invalid-name</span>
+    <span class="k">def</span> <span class="nf">add_mapsTo</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1450,7 +1568,7 @@ Triplestore        </code>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1487,6 +1605,12 @@ new triples.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>database</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>Name of database to connect to (for backends that supports it).</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>kwargs</code></td>
         <td></td>
         <td><p>Keyword arguments passed to the backend's <strong>init</strong>()
@@ -1498,7 +1622,11 @@ method.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
@@ -1506,6 +1634,7 @@ method.</p></td>
 <span class="sd">        backend: Name of the backend module.</span>
 <span class="sd">        base_iri: Base IRI used by the add_function() method when adding</span>
 <span class="sd">            new triples.</span>
+<span class="sd">        database: Name of database to connect to (for backends that supports it).</span>
 <span class="sd">        kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">            method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1517,7 +1646,7 @@ method.</p></td>
     <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Namespace]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="c1"># Keep functions in the triplestore for convienence even though</span>
     <span class="c1"># they usually do not belong to the triplestore per se.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Union[float, Callable[[], float], None]]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1762,7 +1891,7 @@ that have <code>target</code> as output.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_mapsTo</span><span class="p">(</span>  <span class="c1"># pylint: disable=invalid-name</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_mapsTo</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1946,6 +2075,87 @@ Otherwise, this method has no effect.</p>
 
 
 
+<h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.create_database">
+<code class="highlight language-python"><span class="n">create_database</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a class="headerlink" href="#tripper.triplestore.Triplestore.create_database" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Create a new database in backend.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>backend</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of backend.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>database</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the new database.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Keyword arguments passed to the backend
+create_database() method.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a class method, which operates on the backend
+triplestore without connecting to it.</p>
+</div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/triplestore.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        backend: Name of backend.</span>
+<span class="sd">        database: Name of the new database.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">            create_database() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a class method, which operates on the backend</span>
+<span class="sd">        triplestore without connecting to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;create_database&quot;</span><span class="p">)</span>
+    <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">backend_class</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.expand_iri">
 <code class="highlight language-python"><span class="n">expand_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span></code>
 
@@ -2005,6 +2215,82 @@ the give subject, predicate and/or object.</p>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.list_databases">
+<code class="highlight language-python"><span class="n">list_databases</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a class="headerlink" href="#tripper.triplestore.Triplestore.list_databases" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>For backends that supports multiple databases, list of all
+databases.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>backend</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of backend.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Keyword arguments passed to the backend
+list_databases() method.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a class method, which operates on the backend
+triplestore without connecting to it.</p>
+</div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/triplestore.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">list_databases</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="sd">    databases.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        backend: Name of backend.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">            list_databases() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a class method, which operates on the backend</span>
+<span class="sd">        triplestore without connecting to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;list_databases&quot;</span><span class="p">)</span>
+    <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">backend_class</span><span class="o">.</span><span class="n">list_databases</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2326,6 +2612,87 @@ the update() method for INSERT and DELETE queries.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.remove_database">
+<code class="highlight language-python"><span class="n">remove_database</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a class="headerlink" href="#tripper.triplestore.Triplestore.remove_database" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Remove a database in backend.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>backend</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of backend.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>database</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the database to be removed.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Keyword arguments passed to the backend
+remove_database() method.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a class method, which operates on the backend
+triplestore without connecting to it.</p>
+</div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/triplestore.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">remove_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        backend: Name of backend.</span>
+<span class="sd">        database: Name of the database to be removed.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">            remove_database() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a class method, which operates on the backend</span>
+<span class="sd">        triplestore without connecting to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;remove_database&quot;</span><span class="p">)</span>
+    <span class="n">backend_class</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">backend_class</span><span class="o">.</span><span class="n">remove_database</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>

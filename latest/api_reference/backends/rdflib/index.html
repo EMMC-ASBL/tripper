@@ -797,6 +797,12 @@ with the current content of the triplestore.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>database</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Unused - rdflib does not support multiple databases.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>triplestore_url</code></td>
         <td><code>Optional[str]</code></td>
         <td><p>Alternative URL to the underlying ontology if
@@ -820,6 +826,7 @@ with the current content of the triplestore.</p></td>
 <span class="sd">        base_iri: If given, initialise the triplestore from this storage.</span>
 <span class="sd">            When `close()` is called, the storage will be overwritten</span>
 <span class="sd">            with the current content of the triplestore.</span>
+<span class="sd">        database: Unused - rdflib does not support multiple databases.</span>
 <span class="sd">        triplestore_url: Alternative URL to the underlying ontology if</span>
 <span class="sd">            `base_iri` is not resolvable.  Defaults to `base_iri`.</span>
 <span class="sd">        format: Format of storage specified with `base_iri`.</span>
@@ -828,9 +835,11 @@ with the current content of the triplestore.</p></td>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=unused-argument</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="o">=</span> <span class="n">base_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span> <span class="o">=</span> <span class="n">triplestore_url</span> <span class="k">if</span> <span class="n">triplestore_url</span> <span class="k">else</span> <span class="n">base_iri</span>

@@ -735,6 +735,48 @@ may also implement the following optional methods:</p>
 <span class="sd">    Used by triplestore.parse() to get prefixes after reading</span>
 <span class="sd">    triples from an external source.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        database: Name of the new database.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">            create_database() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a class method, which operates on the backend</span>
+<span class="sd">        triplestore without connecting to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">remove_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        database: Name of the database to be removed.</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">            remove_database() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a class method, which operates on the backend</span>
+<span class="sd">        triplestore without connecting to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">list_databases</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="sd">    databases.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">            list_database() method.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This is a class method, which operates on the backend</span>
+<span class="sd">        triplestore without connecting to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div>
 
         <details class="quote">
@@ -832,6 +874,49 @@ may also implement the following optional methods:</p>
 <span class="sd">        Used by triplestore.parse() to get prefixes after reading</span>
 <span class="sd">        triples from an external source.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">    @classmethod</span>
+<span class="sd">    def create_database(cls, database: str, **kwargs):</span>
+<span class="sd">        &quot;&quot;&quot;Create a new database in backend.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            database: Name of the new database.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">                create_database() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is a class method, which operates on the backend</span>
+<span class="sd">            triplestore without connecting to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">    @classmethod</span>
+<span class="sd">    def remove_database(cls, database: str, **kwargs):</span>
+<span class="sd">        &quot;&quot;&quot;Remove a database in backend.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            database: Name of the database to be removed.</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">                remove_database() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is a class method, which operates on the backend</span>
+<span class="sd">            triplestore without connecting to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">    @classmethod</span>
+<span class="sd">    def list_databases(cls, **kwargs):</span>
+<span class="sd">        &quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="sd">        databases.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            kwargs: Keyword arguments passed to the backend</span>
+<span class="sd">                list_database() method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This is a class method, which operates on the backend</span>
+<span class="sd">            triplestore without connecting to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
 <span class="sd">    ```</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 

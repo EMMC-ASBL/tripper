@@ -726,6 +726,12 @@ Default to "http://example.com/onto#" if <code>onto</code> is not given.</p></td
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>database</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Unused - ontopy does not support multiple databases.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>onto</code></td>
         <td><code>Optional[Ontology]</code></td>
         <td><p>Ontology to initiate the triplestore from.  Defaults to an new
@@ -755,6 +761,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: The base iri of the ontology.</span>
 <span class="sd">            Default to &quot;http://example.com/onto#&quot; if `onto` is not given.</span>
+<span class="sd">        database: Unused - ontopy does not support multiple databases.</span>
 <span class="sd">        onto: Ontology to initiate the triplestore from.  Defaults to an new</span>
 <span class="sd">            ontology with the given `base_iri`.</span>
 <span class="sd">        load: Whether to load the ontology.</span>
@@ -766,10 +773,12 @@ ontology with the given <code>base_iri</code>.</p></td>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">onto</span><span class="p">:</span> <span class="s2">&quot;Optional[Ontology]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># pylint: disable=unused-argument</span>
         <span class="k">if</span> <span class="n">onto</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">base_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">base_iri</span> <span class="o">=</span> <span class="s2">&quot;http://example.com/onto#&quot;</span>
