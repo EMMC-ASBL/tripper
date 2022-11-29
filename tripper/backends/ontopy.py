@@ -27,6 +27,7 @@ class OntopyStrategy:
     Arguments:
         base_iri: The base iri of the ontology.
             Default to "http://example.com/onto#" if `onto` is not given.
+        database: Unused - ontopy does not support multiple databases.
         onto: Ontology to initiate the triplestore from.  Defaults to an new
             ontology with the given `base_iri`.
         load: Whether to load the ontology.
@@ -38,10 +39,12 @@ class OntopyStrategy:
     def __init__(
         self,
         base_iri: "Optional[str]" = None,
+        database: "Optional[str]" = None,
         onto: "Optional[Ontology]" = None,
         load: bool = False,
         **kwargs,
     ):
+        # pylint: disable=unused-argument
         if onto is None:
             if base_iri is None:
                 base_iri = "http://example.com/onto#"

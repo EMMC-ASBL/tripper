@@ -16,7 +16,7 @@ from tripper import Literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, List, Tuple, Union
+    from typing import Generator, List, Optional, Tuple, Union
 
     from tripper.triplestore import Triple
 
@@ -45,14 +45,20 @@ class RdflibStrategy:
         base_iri: If given, initialise the triplestore from this storage.
             When `close()` is called, the storage will be overwritten
             with the current content of the triplestore.
+        database: Unused - rdflib does not support multiple databases.
         triplestore_url: Alternative URL to the underlying ontology if
             `base_iri` is not resolvable.  Defaults to `base_iri`.
         format: Format of storage specified with `base_iri`.
     """
 
     def __init__(
-        self, base_iri: str = None, triplestore_url: str = None, format: str = None
-    ):  # pylint: disable=redefined-builtin
+        self,
+        base_iri: "Optional[str]" = None,
+        database: "Optional[str]" = None,
+        triplestore_url: "Optional[str]" = None,
+        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    ) -> None:
+        # pylint: disable=unused-argument
         self.graph = Graph()
         self.base_iri = base_iri
         self.triplestore_url = triplestore_url if triplestore_url else base_iri
