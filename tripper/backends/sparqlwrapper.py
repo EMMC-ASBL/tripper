@@ -46,7 +46,7 @@ class SparqlwrapperStrategy:
             [
                 f"SELECT {' '.join(variables)} WHERE {{",
                 f"  {where_spec} .",
-                "}",
+                "}}",
             ]
         )
         self.sparql.setReturnFormat(JSON)
