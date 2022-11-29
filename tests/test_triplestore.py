@@ -180,3 +180,42 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     store.bind("food", FOOD)
     with open(ontopath_food, "rt", encoding="utf8") as handle:
         store.parse(data=handle.read())
+
+
+def test_backend_sparqlwrapper() -> None:
+    """Specifically test the SPARQLWrapper backend Triplestore."""
+    from tripper import SKOS, Triplestore
+
+    store = Triplestore(
+        backend="sparqlwrapper",
+        base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
+        "csiro_international-chronostratigraphic-chart_geologic-time-scale-2020",
+    )
+    for s, p, o in store.triples((None, SKOS.notation, None)):
+        assert s
+        assert p
+        assert o
+
+
+@pytest.mark.skip(
+    "These will fail because we do not have credentials to modify the triplestore"
+)
+def test_backend_sparqlwrapper_methods() -> None:
+    """Test SPARQLWrapper methods."""
+    from tripper import RDFS, SKOS, Literal, Namespace, Triplestore
+
+    store = Triplestore(
+        backend="sparqlwrapper",
+        base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
+        "csiro_international-chronostratigraphic-chart_geologic-time-scale-2020",
+    )
+
+    store.remove((None, SKOS.notation, None))
+
+    EX = Namespace("http://example.com#")  # pylint: disable=invalid-name
+    store.add_triples(
+        [
+            (EX.a, RDFS.subClassOf, EX.base),
+            (EX.a, SKOS.prefLabel, Literal("An a class.", lang="en")),
+        ]
+    )

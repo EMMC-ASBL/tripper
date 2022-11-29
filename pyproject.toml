@@ -5,9 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "tripper"
 authors = [
-    {name = "Jesper Friis", email = "jesper.friis@sintef.no"},
-    {name = "Casper Welzel Andersen", email = "casper.w.andersen@sintef.no"},
-    {name = "Thomas F. Hagelien", email = "thomas.f.hagelien@sintef.no"},
+    {name = "SINTEF", email = "TEAM4.0@sintef.no"},
 ]
 description = "A triplestore wrapper for Python."
 readme = "README.md"
@@ -31,6 +29,7 @@ dynamic = ["version"]
 dependencies = [
     "EMMOntoPy ~=0.4",
     "rdflib ~=6.2",
+    "SPARQLWrapper ~=2.0",
     "typing-extensions ~=4.4 ; python_version<'3.8'",
 ]
 
