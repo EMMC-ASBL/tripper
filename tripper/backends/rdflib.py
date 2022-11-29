@@ -1,7 +1,7 @@
 """Backend for RDFLib.
 
-For developers: The usage of `s`, `p`, and `o` represent the different
-parts of an RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different parts of an
+RDF Triple: subject, predicate, and object.
 """
 # pylint: disable=line-too-long
 import warnings
@@ -170,6 +170,7 @@ class RdflibStrategy:
         Note:
             This method is intended for INSERT and DELETE queries. Use
             the query() method for SELECT queries.
+
         """
         return self.graph.update(update_object=update_object, **kwargs)
 

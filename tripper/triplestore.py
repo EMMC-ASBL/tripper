@@ -181,6 +181,7 @@ class Triplestore:
         Note:
             This method is intended for SELECT queries. Use
             the update() method for INSERT and DELETE queries.
+
         """
         self._check_method("query")
         return self.backend.query(query_object=query_object, **kwargs)
@@ -195,6 +196,7 @@ class Triplestore:
         Note:
             This method is intended for INSERT and DELETE queries. Use
             the query() method for SELECT queries.
+
         """
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
