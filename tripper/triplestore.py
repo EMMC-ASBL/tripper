@@ -91,7 +91,7 @@ class Triplestore:
 
     # Methods implemented by backend
     # ------------------------------
-    def triples(self, triple: "Triple") -> "Generator":
+    def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples.
 
         Arguments:
@@ -110,7 +110,7 @@ class Triplestore:
         """
         self.backend.add_triples(triples)
 
-    def remove(self, triple: "Triple"):
+    def remove(self, triple: "Triple") -> None:
         """Remove all matching triples from the backend."""
         self.backend.remove(triple)
 
@@ -128,7 +128,7 @@ class Triplestore:
 
     def parse(
         self, source=None, format=None, **kwargs  # pylint: disable=redefined-builtin
-    ):
+    ) -> None:
         """Parse source and add the resulting triples to triplestore.
 
         Parameters:
@@ -168,7 +168,7 @@ class Triplestore:
         self._check_method("serialize")
         return self.backend.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+    def query(self, query_object, **kwargs) -> "List[Triple]":
         """SPARQL query.
 
         Parameters:
@@ -201,7 +201,9 @@ class Triplestore:
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
 
-    def bind(self, prefix: str, namespace: "Union[str, Namespace]", **kwargs):
+    def bind(
+        self, prefix: str, namespace: "Union[str, Namespace]", **kwargs
+    ) -> Namespace:
         """Bind prefix to namespace and return the new Namespace object.
 
         The new Namespace is created with `namespace` as IRI.

@@ -30,7 +30,7 @@ class SparqlwrapperStrategy:
         )  # database is not used in the SPARQLWrapper backend
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
 
-    def triples(self, triple: "Triple") -> "Generator":
+    def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
         variables = [
             f"?{triple_name}"

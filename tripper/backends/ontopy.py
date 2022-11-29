@@ -57,7 +57,7 @@ class OntopyStrategy:
         if load:
             self.onto.load(**kwargs)
 
-    def triples(self, triple: "Triple") -> "Generator":
+    def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
 
         def to_literal(o, datatype) -> Literal:

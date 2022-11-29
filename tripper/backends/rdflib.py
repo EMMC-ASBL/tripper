@@ -68,7 +68,7 @@ class RdflibStrategy:
             self.parse(location=self.triplestore_url, format=format)
         self.base_format = format
 
-    def triples(self, triple: "Triple") -> "Generator":
+    def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
         for s, p, o in self.graph.triples(  # pylint: disable=not-an-iterable
             astriple(triple)
