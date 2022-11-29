@@ -25,6 +25,9 @@ class SparqlwrapperStrategy:
     """
 
     def __init__(self, base_iri: str, **kwargs) -> None:
+        kwargs.pop(
+            "database", None
+        )  # database is not used in the SPARQLWrapper backend
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
 
     def triples(self, triple: "Triple") -> "Generator":
@@ -46,7 +49,7 @@ class SparqlwrapperStrategy:
             [
                 f"SELECT {' '.join(variables)} WHERE {{",
                 f"  {where_spec} .",
-                "}}",
+                "}",
             ]
         )
         self.sparql.setReturnFormat(JSON)
