@@ -1,13 +1,11 @@
 [build-system]
-requires = [
-    "flit_core >=3.4,<4",
-]
+requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
 name = "tripper"
 authors = [
-    {name = "SINTEF", email = "team40@sintef.no"},
+    {name = "SINTEF", email = "TEAM4.0@sintef.no"},
 ]
 description = "A triplestore wrapper for Python."
 readme = "README.md"
