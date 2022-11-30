@@ -72,7 +72,7 @@ class ITriplestore(Protocol):
             Serialised string if `destination` is None.
         """
 
-    def query(self, query_object: str, **kwargs) -> List:
+    def query(self, query_object: str, **kwargs) -> List[Tuple[str, ...]]:
         """SPARQL query.
 
         Arguments:
