@@ -32,6 +32,7 @@ with pytest.raises(TypeError):
 with pytest.raises(ValueError):
     split_iri("abc")
 
+
 # Test function_id()
 def f():
     """Function."""
@@ -78,6 +79,14 @@ assert parse_object("1") == Literal("1", datatype=XSD.integer)
 assert parse_object("-1") == Literal("-1", datatype=XSD.integer)
 assert parse_object("42") == Literal("42", datatype=XSD.integer)
 assert parse_object("3.14") == Literal("3.14", datatype=XSD.double)
+assert parse_object(".1") == Literal(".1", datatype=XSD.double)
+assert parse_object("1.") == Literal("1.", datatype=XSD.double)
+assert parse_object("1e10") == Literal("1e10", datatype=XSD.double)
+assert parse_object("1E10") == Literal("1E10", datatype=XSD.double)
+assert parse_object("1e+10") == Literal("1e+10", datatype=XSD.double)
+assert parse_object("1e-10") == Literal("1e-10", datatype=XSD.double)
+assert parse_object(".1e10") == Literal(".1e10", datatype=XSD.double)
+assert parse_object("1.e10") == Literal("1.e10", datatype=XSD.double)
 assert parse_object("abc") == Literal("abc", datatype=XSD.string)
 assert parse_object('"abc"@en') == Literal("abc", lang="en")
 assert parse_object(str(XSD)) == str(XSD)
