@@ -165,11 +165,12 @@ def parse_object(object: "Union[str, Literal]") -> "Union[str, Literal]":
         if re.match(r"^[a-z]+://", object):
             return object
         types = {
-            int: XSD.integer,
-            float: XSD.double,
-            datetime.datetime.fromisoformat: XSD.dateTime,
+            XSD.integer: int,
+            XSD.int: int,
+            XSD.double: float,  # must come after int
+            XSD.dateTime: datetime.datetime.fromisoformat,
         }
-        for pytype, datatype in types.items():
+        for datatype, pytype in types.items():
             try:
                 pytype(object)  # type: ignore
             except ValueError:

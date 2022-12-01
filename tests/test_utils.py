@@ -87,9 +87,29 @@ assert parse_object("1e+10") == Literal("1e+10", datatype=XSD.double)
 assert parse_object("1e-10") == Literal("1e-10", datatype=XSD.double)
 assert parse_object(".1e10") == Literal(".1e10", datatype=XSD.double)
 assert parse_object("1.e10") == Literal("1.e10", datatype=XSD.double)
+assert parse_object("2022-12-01") == Literal("2022-12-01", datatype=XSD.dateTime)
+assert parse_object("2022-12-01 12:30") == Literal(
+    "2022-12-01 12:30", datatype=XSD.dateTime
+)
+assert parse_object("2022-12-01 12:30:30") == Literal(
+    "2022-12-01 12:30:30", datatype=XSD.dateTime
+)
+assert parse_object("2022-12-01 12:30:30.50") == Literal(
+    "2022-12-01 12:30:30.50", datatype=XSD.dateTime
+)
+assert parse_object("2022-12-01 12:30:30Z") == Literal(
+    "2022-12-01 12:30:30Z", datatype=XSD.dateTime
+)
+assert parse_object("2022-12-01 12:30:30+01:00") == Literal(
+    "2022-12-01 12:30:30+01:00", datatype=XSD.dateTime
+)
 assert parse_object("abc") == Literal("abc", datatype=XSD.string)
 assert parse_object('"abc"@en') == Literal("abc", lang="en")
 assert parse_object(str(XSD)) == str(XSD)
 assert parse_object(XSD.int) == XSD.int
 assert parse_object(f'"42"^^{XSD.integer}') == Literal("42", datatype=XSD.integer)
+assert parse_object(f'"4.2"^^{XSD.double}') == Literal("4.2", datatype=XSD.double)
+
+# __FIXME__: parse_object() currently fails for the following cases:
+# assert parse_object(f'"42"^^{XSD.double}') == Literal("42", datatype=XSD.double)
 # assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
