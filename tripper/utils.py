@@ -171,7 +171,7 @@ def parse_object(object: "Union[str, Literal]") -> "Union[str, Literal]":
         }
         for pytype, datatype in types.items():
             try:
-                pytype(object)
+                pytype(object)  # type: ignore
             except ValueError:
                 pass
             else:
