@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
 
-# @pytest.mark.parametrize("backend", ["ontopy", "rdflib"])
-@pytest.mark.parametrize("backend", ["rdflib"])
+# @pytest.mark.parametrize("backend", ["rdflib", "ontopy", "collection"])
+@pytest.mark.parametrize("backend", ["rdflib", "collection"])
 def test_triplestore(
     backend: str,
     example_function: "Callable[[Any, Any], Any]",
@@ -53,25 +53,33 @@ def test_triplestore(
         base_iri=EX,
     )
 
-    ts_as_turtle = store.serialize(format="turtle")
-    assert ts_as_turtle == expected_function_triplestore
+    try:
+        ts_as_turtle = store.serialize(format="turtle")
+    except NotImplementedError:
+        pass
+    else:
+        assert ts_as_turtle == expected_function_triplestore
 
     # Test SPARQL query
-    rows = store.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
-    assert len(rows) == 3
-    rows.sort()  # ensure consistent ordering of rows
-    assert rows[0] == (
-        "http://example.com/onto#AnotherConcept",
-        "http://www.w3.org/2002/07/owl#Thing",
-    )
-    assert rows[1] == (
-        "http://example.com/onto#MyConcept",
-        "http://www.w3.org/2002/07/owl#Thing",
-    )
-    assert rows[2] == (
-        "http://example.com/onto#Sum",
-        "http://www.w3.org/2002/07/owl#Thing",
-    )
+    try:
+        rows = store.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
+    except NotImplementedError:
+        pass
+    else:
+        assert len(rows) == 3
+        rows.sort()  # ensure consistent ordering of rows
+        assert rows[0] == (
+            "http://example.com/onto#AnotherConcept",
+            "http://www.w3.org/2002/07/owl#Thing",
+        )
+        assert rows[1] == (
+            "http://example.com/onto#MyConcept",
+            "http://www.w3.org/2002/07/owl#Thing",
+        )
+        assert rows[2] == (
+            "http://example.com/onto#Sum",
+            "http://www.w3.org/2002/07/owl#Thing",
+        )
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
