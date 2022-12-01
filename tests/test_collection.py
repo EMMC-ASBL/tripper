@@ -7,7 +7,7 @@ ts = Triplestore(backend="collection")
 assert not list(ts.triples((None, None, None)))
 
 STRUCTURE = ts.bind("structure", "http://onto-ns.com/meta/0.1/Structure#")
-CIF = ts.bind("cif", "http://emmo.info/cif-ontology/0.1#")
+CIF = ts.bind("cif", "http://emmo.info/0.1/cif-ontology#")
 triples = [
     (STRUCTURE.symbols, MAP.mapsTo, EMMO.Symbol),
     (STRUCTURE.positions, MAP.mapsTo, EMMO.PositionVector),
