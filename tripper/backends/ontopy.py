@@ -219,7 +219,7 @@ class OntopyStrategy:
             SPARQL query results.
 
         """
-        if TYPE_CHECKING:
+        if TYPE_CHECKING:  # pragma: no cover
             res: "Union[List, Result]"
 
         if native:
