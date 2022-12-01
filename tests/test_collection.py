@@ -1,4 +1,6 @@
 """Test collection."""
+import dlite
+
 from tripper import EMMO, MAP, Triplestore
 
 ts = Triplestore(backend="collection")
@@ -18,3 +20,11 @@ assert set(ts.triples((None, None, None))) == set(triples)
 
 ts.remove((None, None, EMMO.Mass))
 assert set(ts.triples((None, None, None))) == set(triples[:-1])
+
+
+# Test that we can initialise from an existing collection
+coll = dlite.Collection()
+for triple in triples:
+    coll.add_relation(*triple)
+ts2 = Triplestore(backend="collection", collection=coll)
+assert set(ts2.triples((None, None, None))) == set(triples)
