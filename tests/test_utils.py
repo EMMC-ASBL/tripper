@@ -94,6 +94,9 @@ assert parse_object("2022-12-01 12:30") == Literal(
 assert parse_object("2022-12-01 12:30:30") == Literal(
     "2022-12-01 12:30:30", datatype=XSD.dateTime
 )
+assert parse_object("2022-12-01T12:30:30") == Literal(
+    "2022-12-01T12:30:30", datatype=XSD.dateTime
+)
 assert parse_object("2022-12-01 12:30:30.50") == Literal(
     "2022-12-01 12:30:30.50", datatype=XSD.dateTime
 )
