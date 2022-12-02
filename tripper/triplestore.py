@@ -168,7 +168,7 @@ class Triplestore:
         self._check_method("serialize")
         return self.backend.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "List[Triple]":
+    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
         """SPARQL query.
 
         Parameters:
