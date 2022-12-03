@@ -21,22 +21,24 @@ if TYPE_CHECKING:  # pragma: no cover
 def infer_iri(obj):
     """Return IRI of the individual that stands for object `obj`."""
     if isinstance(obj, str):
-        return obj
-    if hasattr(obj, "uri") and obj.uri:
+        iri = obj
+    elif hasattr(obj, "uri") and obj.uri:
         # dlite.Metadata or dataclass (or instance with uri)
-        return obj.uri
-    if hasattr(obj, "uuid") and obj.uuid:
+        iri = obj.uri
+    elif hasattr(obj, "uuid") and obj.uuid:
         # dlite.Instance or dataclass
-        return obj.uuid
-    if hasattr(obj, "schema") and callable(obj.schema):
+        iri = obj.uuid
+    elif hasattr(obj, "schema") and callable(obj.schema):
         # pydantic.BaseModel
         schema = obj.schema()
         properties = schema["properties"]
         if "uri" in properties and properties["uri"]:
-            return properties["uri"]
+            iri = properties["uri"]
         if "uuid" in properties and properties["uuid"]:
-            return properties["uuid"]
-    raise TypeError(f"cannot infer IRI from object: {obj!r}")
+            iri = properties["uuid"]
+    else:
+        raise TypeError(f"cannot infer IRI from object: {obj!r}")
+    return str(iri)
 
 
 def split_iri(iri: str) -> "Tuple[str, str]":

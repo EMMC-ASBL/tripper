@@ -1,5 +1,5 @@
 """Test utils"""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,too-few-public-methods
 import dlite
 import pytest
 
@@ -19,6 +19,47 @@ assert infer_iri(RDFS.subClassOf) == RDFS.subClassOf
 coll = dlite.Collection()
 assert infer_iri(coll.meta) == coll.meta.uri
 assert infer_iri(coll) == coll.uuid
+
+# We have no dependencies on pydantic, hence don't assume that it is installed
+try:
+    from pydantic import AnyUrl, BaseModel, Field
+except ImportError:
+    pass
+else:
+    from typing import Any, Optional
+
+    class Property(BaseModel):
+        """A property."""
+
+        type: Any = Field(..., description="Valid type name.")
+        shape: Optional[list[str]] = Field(
+            None, description="List of dimension expressions."
+        )
+        unit: Optional[str] = Field(None, description="Unit of a property.")
+        description: Optional[str] = Field(
+            None, description="A human description of the property."
+        )
+
+    class Entity(BaseModel):
+        """An entity."""
+
+        uri: AnyUrl = Field(..., description="Unique URI identifying the entity.")
+        description: str = Field("", description="A description of the entity.")
+        dimensions: Optional[dict[str, str]] = Field(
+            None, description="Dict mapping dimension names to descriptions."
+        )
+        properties: dict[str, Property] = Field(..., description="Dict of properties.")
+
+    user = Entity(
+        uri="http://onto-ns.com/meta/0.1/User",
+        properties={
+            "username": Property(type=str, description="username"),
+            "quota": Property(type=float, unit="GB", description="User quota"),
+        },
+    )
+
+    assert infer_iri(user) == "http://onto-ns.com/meta/0.1/User"
+
 
 # Test split_iri()
 rdfs = str(RDFS)
