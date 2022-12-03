@@ -30,7 +30,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
     from typing import Callable, Dict, Generator, List, Optional, Tuple, Union
 
-    Triple = Tuple[Union[str, None], Union[str, None], Union[str, None]]
+    from tripper.utils import OptionalTriple, Triple
 
 
 # Regular expression matching a prefixed IRI

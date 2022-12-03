@@ -1,4 +1,6 @@
 """Utility functions."""
+# pylint: disable=invalid-name,redefined-builtin
+import datetime
 import hashlib
 import inspect
 import re
@@ -8,7 +10,12 @@ from tripper.literal import Literal
 from tripper.namespace import XSD
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Tuple
+    from typing import Any, Callable, Tuple, Union
+
+    OptionalTriple = Tuple[
+        Union[str, None], Union[str, None], Union[str, Literal, None]
+    ]
+    Triple = Tuple[str, str, Union[str, Literal]]
 
 
 def infer_iri(obj):
@@ -29,7 +36,7 @@ def infer_iri(obj):
             return properties["uri"]
         if "uuid" in properties and properties["uuid"]:
             return properties["uuid"]
-    raise TypeError("cannot infer IRI from object {obj!r}")
+    raise TypeError(f"cannot infer IRI from object: {obj!r}")
 
 
 def split_iri(iri: str) -> "Tuple[str, str]":
@@ -133,3 +140,42 @@ def parse_literal(literal: "Any") -> "Literal":
                 pass
 
     raise ValueError("cannot parse {literal=}")
+
+
+def parse_object(object: "Union[str, Literal]") -> "Union[str, Literal]":
+    """Applies heuristics to parse RDF object `object` to an IRI or literal.
+
+    The following heuristics is performed (in the given order):
+    - If `object` is a Literal, it is returned.
+    - If `object` is a string and
+      - starts with a scheme, it is asumed to be an IRI and returned.
+      - can be converted to a float, int or datetime, return it
+        converted to a literal of the corresponding type.
+      - it is a valid n3 representation, return it as the given type.
+      - otherwise, return it as a xsd:string literal.
+    - Otherwise, raise an ValueError.
+
+    Returns
+        A string if `object` is considered to be an IRI, otherwise a
+        literal.
+    """
+    if isinstance(object, Literal):
+        return object
+    if isinstance(object, str):
+        if re.match(r"^[a-z]+://", object):
+            return object
+        types = {
+            XSD.integer: int,
+            XSD.int: int,
+            XSD.double: float,  # must come after int
+            XSD.dateTime: datetime.datetime.fromisoformat,
+        }
+        for datatype, pytype in types.items():
+            try:
+                pytype(object)  # type: ignore
+            except ValueError:
+                pass
+            else:
+                return Literal(object, datatype=datatype)
+        return parse_literal(object)
+    raise ValueError("`object` should be a literal or a string.")

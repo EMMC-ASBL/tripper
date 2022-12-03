@@ -79,9 +79,9 @@ class Literal(str):
         return string
 
     def __repr__(self) -> str:
-        lang = f", lang={self.lang!r}" if self.lang else ""
-        datatype = f", datatype={self.datatype!r}" if self.datatype else ""
-        return f"Literal({self!r}{lang}{datatype})"
+        lang = f", lang='{self.lang}'" if self.lang else ""
+        datatype = f", datatype='{self.datatype}'" if self.datatype else ""
+        return f"Literal('{self}'{lang}{datatype})"
 
     value = property(
         fget=lambda self: self.to_python(),
