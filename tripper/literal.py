@@ -102,7 +102,7 @@ class Literal(str):
         return string
 
     def __hash__(self):
-        return hash((self, self.lang, self.datatype))
+        return hash((str(self), self.lang, self.datatype))
 
     def __eq__(self, other):
         if isinstance(other, Literal):
@@ -111,7 +111,7 @@ class Literal(str):
                 and self.lang == other.lang
                 and self.datatype == other.datatype
             )
-        return False
+        return str(self) == str(other)
 
     def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""

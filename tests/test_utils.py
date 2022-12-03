@@ -100,7 +100,7 @@ assert parse_object("2022-12-01T12:30:30") == Literal(
 assert parse_object("2022-12-01 12:30:30.500") == Literal(
     "2022-12-01 12:30:30.500", datatype=XSD.dateTime
 )
-# Removed in Python 3.10
+# Format not supported in Python < 3.11
 # assert parse_object("2022-12-01 12:30:30Z") == Literal(
 #    "2022-12-01 12:30:30Z", datatype=XSD.dateTime
 # )

@@ -159,6 +159,12 @@ class Namespace:
     def __add__(self, other):
         return self._iri + str(other)
 
+    def __hash__(self):
+        return hash(self._iri)
+
+    def __eq__(self, other):
+        return self._iri == str(other)
+
 
 # Pre-defined namespaces
 XML = Namespace("http://www.w3.org/XML/1998/namespace")
