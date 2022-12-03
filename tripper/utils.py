@@ -171,7 +171,7 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
             return obj
         if obj in ("true", "false"):  # boolean
             return Literal(obj, datatype=XSD.boolean)
-        if re.match(r"^\s*[+-]?\d+\s*^", obj):  # integer
+        if re.match(r"^\s*[+-]?\d+\s*$", obj):  # integer
             return Literal(obj, datatype=XSD.integer)
         if check(float, obj, ValueError):  #  float
             return Literal(obj, datatype=XSD.double)

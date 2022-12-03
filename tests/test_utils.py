@@ -65,15 +65,15 @@ assert en("abc") == Literal("abc", lang="en")
 # test parse_literal()
 assert parse_literal("abc") == Literal("abc", datatype=XSD.string)
 assert parse_literal(True) == Literal("True", datatype=XSD.boolean)
-assert parse_literal(1) == Literal("1", datatype=XSD.inteter)
+assert parse_literal(1) == Literal("1", datatype=XSD.integer)
 assert parse_literal(3.14) == Literal("3.14", datatype=XSD.double)
 assert parse_literal(f'"3.14"^^{XSD.double}') == Literal("3.14", datatype=XSD.double)
 
 
 # test parse_object()
-assert parse_object("True") == Literal("True", datatype=XSD.boolean)
-assert parse_object("False") == Literal("False", datatype=XSD.boolean)
-assert parse_object("true") == Literal("true", datatype=XSD.string)
+assert parse_object("true") == Literal("true", datatype=XSD.boolean)
+assert parse_object("false") == Literal("false", datatype=XSD.boolean)
+assert parse_object("True") == Literal("True", datatype=XSD.string)
 assert parse_object("0") == Literal("0", datatype=XSD.integer)
 assert parse_object("1") == Literal("1", datatype=XSD.integer)
 assert parse_object("-1") == Literal("-1", datatype=XSD.integer)
@@ -97,12 +97,13 @@ assert parse_object("2022-12-01 12:30:30") == Literal(
 assert parse_object("2022-12-01T12:30:30") == Literal(
     "2022-12-01T12:30:30", datatype=XSD.dateTime
 )
-assert parse_object("2022-12-01 12:30:30.50") == Literal(
-    "2022-12-01 12:30:30.50", datatype=XSD.dateTime
+assert parse_object("2022-12-01 12:30:30.500") == Literal(
+    "2022-12-01 12:30:30.500", datatype=XSD.dateTime
 )
-assert parse_object("2022-12-01 12:30:30Z") == Literal(
-    "2022-12-01 12:30:30Z", datatype=XSD.dateTime
-)
+# Removed in Python 3.10
+# assert parse_object("2022-12-01 12:30:30Z") == Literal(
+#    "2022-12-01 12:30:30Z", datatype=XSD.dateTime
+# )
 assert parse_object("2022-12-01 12:30:30+01:00") == Literal(
     "2022-12-01 12:30:30+01:00", datatype=XSD.dateTime
 )
