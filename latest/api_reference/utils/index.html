@@ -448,6 +448,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.utils.parse_object" class="md-nav__link">
+    parse_object()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.utils.split_iri" class="md-nav__link">
     split_iri()
   </a>
@@ -488,6 +495,20 @@
           backends
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/collection/" class="md-nav__link">
+        collection
+      </a>
+    </li>
+  
+
+            
           
             
               
@@ -601,6 +622,13 @@
         <li class="md-nav__item">
   <a href="#tripper.utils.parse_literal" class="md-nav__link">
     parse_literal()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.parse_object" class="md-nav__link">
+    parse_object()
   </a>
   
 </li>
@@ -753,7 +781,7 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
             <span class="k">return</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;cannot infer IRI from object </span><span class="si">{obj!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot infer IRI from object: </span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -838,6 +866,79 @@ is that this function correctly interprets n3-encoded literal strings.</p>
                 <span class="k">pass</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot parse {literal=}&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 class="doc doc-heading" id="tripper.utils.parse_object">
+<code class="highlight language-python"><span class="n">parse_object</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.utils.parse_object" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Applies heuristics to parse RDF object <code>object</code> to an IRI or literal.</p>
+<p>The following heuristics is performed (in the given order):
+- If <code>object</code> is a Literal, it is returned.
+- If <code>object</code> is a string and
+  - starts with a scheme, it is asumed to be an IRI and returned.
+  - can be converted to a float, int or datetime, return it
+    converted to a literal of the corresponding type.
+  - it is a valid n3 representation, return it as the given type.
+  - otherwise, return it as a xsd:string literal.
+- Otherwise, raise an ValueError.</p>
+<p>Returns
+    A string if <code>object</code> is considered to be an IRI, otherwise a
+    literal.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_object</span><span class="p">(</span><span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Applies heuristics to parse RDF object `object` to an IRI or literal.</span>
+
+<span class="sd">    The following heuristics is performed (in the given order):</span>
+<span class="sd">    - If `object` is a Literal, it is returned.</span>
+<span class="sd">    - If `object` is a string and</span>
+<span class="sd">      - starts with a scheme, it is asumed to be an IRI and returned.</span>
+<span class="sd">      - can be converted to a float, int or datetime, return it</span>
+<span class="sd">        converted to a literal of the corresponding type.</span>
+<span class="sd">      - it is a valid n3 representation, return it as the given type.</span>
+<span class="sd">      - otherwise, return it as a xsd:string literal.</span>
+<span class="sd">    - Otherwise, raise an ValueError.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        A string if `object` is considered to be an IRI, otherwise a</span>
+<span class="sd">        literal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">object</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z]+://&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">object</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">int</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">double</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>  <span class="c1"># must come after int</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">pytype</span> <span class="ow">in</span> <span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pytype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`object` should be a literal or a string.&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -974,13 +1075,13 @@ is that this function correctly interprets n3-encoded literal strings.</p>
       
       
         
-        <a href="../backends/ontopy/" class="md-footer__link md-footer__link--next" aria-label="Next: ontopy" rel="next">
+        <a href="../backends/collection/" class="md-footer__link md-footer__link--next" aria-label="Next: collection" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              ontopy
+              collection
             </div>
           </div>
           <div class="md-footer__button md-icon">

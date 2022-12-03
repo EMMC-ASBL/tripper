@@ -501,6 +501,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../backends/collection/" class="md-nav__link">
+        collection
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../backends/ontopy/" class="md-nav__link">
         ontopy
       </a>
@@ -784,9 +798,9 @@ combined with <code>lang</code>.</p></td>
         <span class="k">return</span> <span class="n">string</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">lang</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, lang=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, datatype=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Literal(</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}{</span><span class="n">lang</span><span class="si">}{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, lang=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, datatype=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Literal(&#39;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">lang</span><span class="si">}{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span>
         <span class="n">fget</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_python</span><span class="p">(),</span>
