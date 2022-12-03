@@ -97,7 +97,9 @@ def parse_literal(literal: "Any") -> "Literal":
     if not isinstance(literal, str):
         if isinstance(literal, tuple(Literal.datatypes)):
             return Literal(
-                literal, lang=lang, datatype=Literal.datatypes.get(type(literal))
+                literal,
+                lang=lang,
+                datatype=Literal.datatypes.get(type(literal))[0],  # type: ignore
             )
         TypeError(f"unsupported literal type: {type(literal)}")
 
@@ -124,7 +126,9 @@ def parse_literal(literal: "Any") -> "Literal":
 
     if lang or datatype:
         if datatype:
-            types = {v: k for k, v in Literal.datatypes.items()}
+            types = {}
+            for pytype, datatypes in Literal.datatypes.items():
+                types.update({t: pytype for t in datatypes})
             type_ = types[datatype]
             try:
                 value = type_(value)
@@ -132,50 +136,61 @@ def parse_literal(literal: "Any") -> "Literal":
                 pass
         return Literal(value, lang=lang, datatype=datatype)
 
-    for type_, datatype in Literal.datatypes.items():
+    for type_, datatypes in Literal.datatypes.items():
         if type_ is not bool:
             try:
-                return Literal(type_(literal), lang=lang, datatype=datatype)
+                return Literal(type_(literal), lang=lang, datatype=datatypes[0])
             except (ValueError, TypeError):
                 pass
 
-    raise ValueError("cannot parse {literal=}")
+    raise ValueError(f'cannot parse literal "{literal}"')
 
 
-def parse_object(object: "Union[str, Literal]") -> "Union[str, Literal]":
-    """Applies heuristics to parse RDF object `object` to an IRI or literal.
+def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
+    """Applies heuristics to parse RDF object `obj` to an IRI or literal.
 
     The following heuristics is performed (in the given order):
-    - If `object` is a Literal, it is returned.
-    - If `object` is a string and
+    - If `obj` is a Literal, it is returned.
+    - If `obj` is a string and
       - starts with a scheme, it is asumed to be an IRI and returned.
-      - can be converted to a float, int or datetime, return it
+      - can be converted to a boolean, int, float or datetime, return it
         converted to a literal of the corresponding type.
       - it is a valid n3 representation, return it as the given type.
       - otherwise, return it as a xsd:string literal.
     - Otherwise, raise an ValueError.
 
     Returns
-        A string if `object` is considered to be an IRI, otherwise a
+        A string if `obj` is considered to be an IRI, otherwise a
         literal.
     """
-    if isinstance(object, Literal):
-        return object
-    if isinstance(object, str):
-        if re.match(r"^[a-z]+://", object):
-            return object
-        types = {
-            XSD.integer: int,
-            XSD.int: int,
-            XSD.double: float,  # must come after int
-            XSD.dateTime: datetime.datetime.fromisoformat,
-        }
-        for datatype, pytype in types.items():
-            try:
-                pytype(object)  # type: ignore
-            except ValueError:
-                pass
-            else:
-                return Literal(object, datatype=datatype)
-        return parse_literal(object)
-    raise ValueError("`object` should be a literal or a string.")
+    # pylint: disable=too-many-return-statements
+    if isinstance(obj, Literal):
+        return obj
+    if isinstance(obj, str):
+        if re.match(r"^[a-z]+://", obj):  # IRI
+            return obj
+        if obj in ("true", "false"):  # boolean
+            return Literal(obj, datatype=XSD.boolean)
+        if re.match(r"^\s*[+-]?\d+\s*^", obj):  # integer
+            return Literal(obj, datatype=XSD.integer)
+        if check(float, obj, ValueError):  #  float
+            return Literal(obj, datatype=XSD.double)
+        if check(datetime.datetime.fromisoformat, obj, ValueError):  #  datetime
+            return Literal(obj, datatype=XSD.dateTime)
+        return parse_literal(obj)
+    raise ValueError("`obj` should be a literal or a string.")
+
+
+def check(func: "Callable", s: str, exceptions) -> bool:
+    """Help function that returns true if `func(s)` does not raise an exception.
+
+    False is returned if `func(s)` raises an exception listed in `exceptions`.
+    Otherwise the exception is propagated.
+    """
+    # Note that the missing type hint on `exceptions` is deliberately, see
+    # https://peps.python.org/pep-0484/#exceptions
+    try:
+        func(s)
+    except exceptions:
+        return False
+    return True

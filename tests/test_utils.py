@@ -112,7 +112,5 @@ assert parse_object(str(XSD)) == str(XSD)
 assert parse_object(XSD.int) == XSD.int
 assert parse_object(f'"42"^^{XSD.integer}') == Literal("42", datatype=XSD.integer)
 assert parse_object(f'"4.2"^^{XSD.double}') == Literal("4.2", datatype=XSD.double)
-
-# __FIXME__: parse_object() currently fails for the following cases:
-# assert parse_object(f'"42"^^{XSD.double}') == Literal("42", datatype=XSD.double)
-# assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
+assert parse_object(f'"42"^^{XSD.double}') == Literal("42.0", datatype=XSD.double)
+assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
