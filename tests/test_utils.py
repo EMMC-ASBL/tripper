@@ -46,8 +46,7 @@ else:
         """An entity."""
 
         # pylint: disable=unsubscriptable-object
-
-        uri: AnyUrl = Field(..., description="Unique URI identifying the entity.")
+        identity: AnyUrl = Field(..., description="Unique URI identifying the entity.")
         description: str = Field("", description="A description of the entity.")
         dimensions: Optional[dict[str, str]] = Field(
             None, description="Dict mapping dimension names to descriptions."
@@ -55,7 +54,7 @@ else:
         properties: dict[str, Property] = Field(..., description="Dict of properties.")
 
     user = Entity(
-        uri="http://onto-ns.com/meta/0.1/User",
+        identity="http://onto-ns.com/meta/0.1/User",
         properties={
             "username": Property(type=str, description="username"),
             "quota": Property(type=float, unit="GB", description="User quota"),

@@ -22,20 +22,27 @@ def infer_iri(obj):
     """Return IRI of the individual that stands for object `obj`."""
     if isinstance(obj, str):
         iri = obj
-    elif hasattr(obj, "uri") and obj.uri:
+    elif hasattr(obj, "uri") and isinstance(obj.uri, str):
         # dlite.Metadata or dataclass (or instance with uri)
         iri = obj.uri
     elif hasattr(obj, "uuid") and obj.uuid:
         # dlite.Instance or dataclass
-        iri = obj.uuid
+        iri = str(obj.uuid)
     elif hasattr(obj, "schema") and callable(obj.schema):
         # pydantic.BaseModel
-        schema = obj.schema()
-        properties = schema["properties"]
-        if "uri" in properties and properties["uri"]:
-            iri = properties["uri"]
-        if "uuid" in properties and properties["uuid"]:
-            iri = properties["uuid"]
+        if hasattr(obj, "identity") and isinstance(obj.identity, str):
+            # soft7 pydantic model
+            iri = obj.identity
+        else:
+            # pydantic instance
+            schema = obj.schema()
+            properties = schema["properties"]
+            if "uri" in properties and isinstance(properties["uri"], str):
+                iri = properties["uri"]
+            if "identity" in properties and isinstance(properties["identity"], str):
+                iri = properties["identity"]
+            if "uuid" in properties and properties["uuid"]:
+                iri = str(properties["uuid"])
     else:
         raise TypeError(f"cannot infer IRI from object: {obj!r}")
     return str(iri)
