@@ -31,6 +31,8 @@ else:
     class Property(BaseModel):
         """A property."""
 
+        # pylint: disable=unsubscriptable-object
+        # Yet another pylint bug, see https://github.com/PyCQA/pylint/issues/1498
         type: Any = Field(..., description="Valid type name.")
         shape: Optional[list[str]] = Field(
             None, description="List of dimension expressions."
@@ -42,6 +44,8 @@ else:
 
     class Entity(BaseModel):
         """An entity."""
+
+        # pylint: disable=unsubscriptable-object
 
         uri: AnyUrl = Field(..., description="Unique URI identifying the entity.")
         description: str = Field("", description="A description of the entity.")
