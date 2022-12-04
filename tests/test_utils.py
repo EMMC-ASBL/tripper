@@ -20,7 +20,8 @@ coll = dlite.Collection()
 assert infer_iri(coll.meta) == coll.meta.uri
 assert infer_iri(coll) == coll.uuid
 
-# We have no dependencies on pydantic, hence don't assume that it is installed
+# We have no dependencies on pydantic, hence don't assume that it is installed.
+# But if it is, infer_iri() should be able to infer IRIs from SOFT7 datamodels.
 try:
     from pydantic import AnyUrl, BaseModel, Field
 except ImportError:
