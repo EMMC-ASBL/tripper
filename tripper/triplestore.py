@@ -91,15 +91,40 @@ class Triplestore:
 
     # Methods implemented by backend
     # ------------------------------
-    def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
+    def triples(  # pylint: disable=redefined-builtin
+        self,
+        subject: "Optional[Union[str, Triple]]" = None,
+        predicate: "Optional[str]" = None,
+        object: "Optional[Union[str, Literal]]" = None,
+        triple: "Optional[Triple]" = None,
+    ) -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples.
 
         Arguments:
-            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should
-                either be None (matching anything) or an exact IRI to
-                match.
+            subject: If given, match triples with this subject.
+            predicate: If given, match triples with this predicate.
+            object: If given, match triples with this object.
+            triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`
+                should either be None (matching anything) or an exact IRI
+                to match.
+
+        Returns:
+            Generator over all matching triples.
         """
-        return self.backend.triples(triple)
+        # __TODO__: Remove these lines when deprecated
+        if triple or (subject and not isinstance(subject, str)):
+            warnings.warn(
+                "The `triple` argument is deprecated.  Use `subject`, "
+                "`predicate` and `object` arguments instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if subject and not isinstance(subject, str):
+            subject, predicate, object = subject
+        elif triple:
+            subject, predicate, object = triple
+
+        return self.backend.triples((subject, predicate, object))
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples.
@@ -110,9 +135,37 @@ class Triplestore:
         """
         self.backend.add_triples(triples)
 
-    def remove(self, triple: "Triple") -> None:
-        """Remove all matching triples from the backend."""
-        self.backend.remove(triple)
+    def remove(  # pylint: disable=redefined-builtin
+        self,
+        subject: "Optional[Union[str, Triple]]" = None,
+        predicate: "Optional[str]" = None,
+        object: "Optional[Union[str, Literal]]" = None,
+        triple: "Optional[Triple]" = None,
+    ) -> None:
+        """Remove all matching triples from the backend.
+
+        Arguments:
+            subject: If given, match triples with this subject.
+            predicate: If given, match triples with this predicate.
+            object: If given, match triples with this object.
+            triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`
+                should either be None (matching anything) or an exact IRI
+                to match.
+        """
+        # __TODO__: Remove these lines when deprecated
+        if triple or (subject and not isinstance(subject, str)):
+            warnings.warn(
+                "The `triple` argument is deprecated.  Use `subject`, "
+                "`predicate` and `object` arguments instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if subject and not isinstance(subject, str):
+            subject, predicate, object = subject
+        elif triple:
+            subject, predicate, object = triple
+
+        return self.backend.remove((subject, predicate, object))
 
     # Methods optionally implemented by backend
     # -----------------------------------------
