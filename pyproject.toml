@@ -27,10 +27,6 @@ requires-python = "~=3.7"
 dynamic = ["version"]
 
 dependencies = [
-    "EMMOntoPy ~=0.4",
-    "rdflib ~=6.2",
-    "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.15",
     "typing-extensions ~=4.4 ; python_version<'3.8'",
 ]
 
@@ -49,6 +45,10 @@ pre-commit = [
 testing = [
     "pytest ~=7.2",
     "pytest-cov ~=4.0",
+    "EMMOntoPy ~=0.4",
+    "rdflib ~=6.2",
+    "SPARQLWrapper ~=2.0",
+    "DLite-Python >=0.3.15",
 ]
 dev = [
     "mike ~=1.1",

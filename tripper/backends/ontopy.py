@@ -8,9 +8,14 @@ import os
 import tempfile
 from typing import TYPE_CHECKING
 
-from ontopy.ontology import Ontology, _unabbreviate, get_ontology
-
 from tripper.literal import Literal
+
+try:
+    from ontopy.ontology import Ontology, _unabbreviate, get_ontology
+except ImportError as exc:
+    raise ImportError(
+        "EMMOntoPy is not installed.  Install it with: `pip install EMMOntoPy`"
+    ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence

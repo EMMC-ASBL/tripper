@@ -7,6 +7,13 @@ RDF Triple: subject, predicate, and object.
 import warnings
 from typing import TYPE_CHECKING
 
+try:
+    import rdflib  # pylint: disable=unused-import
+except ImportError as exc:
+    raise ImportError(
+        "rdflib is not installed.  Install it with: `pip install rdflib`"
+    ) from exc
+
 from rdflib import BNode, Graph
 from rdflib import Literal as rdflibLiteral
 from rdflib import URIRef
