@@ -42,12 +42,11 @@ class RdflibStrategy:
     """Triplestore strategy for rdflib.
 
     Arguments:
-        base_iri: If given, initialise the triplestore from this storage.
-            When `close()` is called, the storage will be overwritten
-            with the current content of the triplestore.
+        base_iri: Unused by this backend.
         database: Unused - rdflib does not support multiple databases.
-        triplestore_url: Alternative URL to the underlying ontology if
-            `base_iri` is not resolvable.  Defaults to `base_iri`.
+        triplestore_url: If given, initialise the triplestore from this
+            storage.  When `close()` is called, the storage will be
+            overwritten with the current content of the triplestore.
         format: Format of storage specified with `base_iri`.
     """
 
@@ -60,8 +59,7 @@ class RdflibStrategy:
     ) -> None:
         # pylint: disable=unused-argument
         self.graph = Graph()
-        self.base_iri = base_iri
-        self.triplestore_url = triplestore_url if triplestore_url else base_iri
+        self.triplestore_url = triplestore_url
         if self.triplestore_url is not None:
             if format is None:
                 format = guess_format(self.triplestore_url)
