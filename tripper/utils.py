@@ -161,8 +161,9 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
     The following heuristics is performed (in the given order):
     - If `obj` is a Literal, it is returned.
     - If `obj` is a string and
+      - starts with "_:", it is assumed to be a blank node and returned.
       - starts with a scheme, it is asumed to be an IRI and returned.
-      - can be converted to a boolean, int, float or datetime, return it
+      - can be converted to a float, int or datetime, it is returned.
         converted to a literal of the corresponding type.
       - it is a valid n3 representation, return it as the given type.
       - otherwise, return it as a xsd:string literal.
@@ -176,7 +177,7 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
     if isinstance(obj, Literal):
         return obj
     if isinstance(obj, str):
-        if re.match(r"^[a-z]+://", obj):  # IRI
+        if obj.startswith("_:") or re.match(r"^[a-z]+://", obj):  # IRI
             return obj
         if obj in ("true", "false"):  # boolean
             return Literal(obj, datatype=XSD.boolean)
