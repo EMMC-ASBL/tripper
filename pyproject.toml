@@ -60,6 +60,10 @@ dev = [
     "pylint ~=2.13",
     "pytest ~=7.2",
     "pytest-cov ~=4.0",
+    "EMMOntoPy ~=0.4",
+    "rdflib ~=6.2",
+    "SPARQLWrapper ~=2.0",
+    "DLite-Python >=0.3.15",
 ]
 
 [project.urls]
