@@ -3,7 +3,7 @@ import warnings
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from tripper.namespace import OWL, RDF, RDFS, XSD
+from tripper.namespace import RDF, RDFS, XSD
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Optional, Union
@@ -13,15 +13,14 @@ class Literal(str):
     """A literal RDF value.
 
     Arguments:
-        value (Union[datetime, bytes, bytearray, bool, int, float, str]): The literal
-            value. See the `datatypes` class attribute for valid supported data types.
-            A localised string is provided as a string with `lang` set to a language
-            code.
-        lang (Optional[str]): A standard language code, like "en", "no", etc. Implies
-            that the `value` is a localised string.
-        datatype (Any): Explicit specification of the type of `value`. Should not be
-            combined with `lang`.
-
+        value (Union[datetime, bytes, bytearray, bool, int, float, str]):
+            The literal value. See the `datatypes` class attribute for valid
+            supported data types.  A localised string is provided as a string
+            with `lang` set to a language code.
+        lang (Optional[str]): A standard language code, like "en", "no", etc.
+            Implies that the `value` is a localised string.
+        datatype (Any): Explicit specification of the type of `value`. Should
+            not be combined with `lang`.
     """
 
     lang: "Union[str, None]"
@@ -30,13 +29,37 @@ class Literal(str):
     # Note that the order of datatypes matters - it is used by
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
-        datetime: XSD.dateTime,
-        bytes: XSD.hexBinary,
-        bytearray: XSD.hexBinary,
-        bool: XSD.boolean,
-        int: XSD.integer,
-        float: XSD.double,
-        str: XSD.string,
+        datetime: (XSD.dateTime,),
+        bytes: (XSD.hexBinary,),
+        bytearray: (XSD.hexBinary,),
+        bool: (XSD.boolean,),
+        int: (
+            XSD.integer,
+            XSD.int,
+            XSD.short,
+            XSD.long,
+            XSD.nonPositiveInteger,
+            XSD.negativeInteger,
+            XSD.unsignedInt,
+            XSD.unsignedShort,
+            XSD.unsignedLong,
+            XSD.byte,
+            XSD.unsignedByte,
+        ),
+        float: (XSD.double, XSD.decimal, XSD.dateTimeStamp, XSD.real, XSD.rational),
+        str: (
+            XSD.string,
+            RDF.PlainLiteral,
+            RDF.XMLLiteral,
+            RDFS.Literal,
+            XSD.anyURI,
+            XSD.language,
+            XSD.Name,
+            XSD.NMName,
+            XSD.normalizedString,
+            XSD.token,
+            XSD.NMTOKEN,
+        ),
     }
 
     def __new__(
@@ -54,7 +77,7 @@ class Literal(str):
         else:
             string.lang = None
             if datatype:
-                string.datatype = cls.datatypes.get(datatype, datatype)
+                string.datatype = cls.datatypes.get(datatype, (datatype,))[0]
             elif isinstance(value, str):
                 string.datatype = None
             elif isinstance(value, bool):
@@ -78,6 +101,18 @@ class Literal(str):
                 string.datatype = None
         return string
 
+    def __hash__(self):
+        return hash((str(self), self.lang, self.datatype))
+
+    def __eq__(self, other):
+        if isinstance(other, Literal):
+            return (
+                str(self) == str(other)
+                and self.lang == other.lang
+                and self.datatype == other.datatype
+            )
+        return str(self) == str(other)
+
     def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""
         datatype = f", datatype='{self.datatype}'" if self.datatype else ""
@@ -95,46 +130,15 @@ class Literal(str):
 
         if self.datatype == XSD.boolean:
             value = False if self == "False" else bool(self)
-        elif self.datatype in (
-            XSD.integer,
-            XSD.int,
-            XSD.short,
-            XSD.long,
-            XSD.nonPositiveInteger,
-            XSD.negativeInteger,
-            XSD.nonNegativeInteger,
-            XSD.unsignedInt,
-            XSD.unsignedShort,
-            XSD.unsignedLong,
-            XSD.byte,
-            XSD.unsignedByte,
-        ):
+        elif self.datatype in self.datatypes[int]:
             value = int(self)
-        elif self.datatype in (
-            XSD.double,
-            XSD.decimal,
-            XSD.dataTimeStamp,
-            OWL.real,
-            OWL.rational,
-        ):
+        elif self.datatype in self.datatypes[float]:
             value = float(self)
         elif self.datatype == XSD.hexBinary:
             value = self.encode()
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
-        elif self.datatype and self.datatype not in (
-            RDF.PlainLiteral,
-            RDF.XMLLiteral,
-            RDFS.Literal,
-            XSD.anyURI,
-            XSD.language,
-            XSD.Name,
-            XSD.NMName,
-            XSD.normalizedString,
-            XSD.string,
-            XSD.token,
-            XSD.NMTOKEN,
-        ):
+        elif self.datatype and self.datatype not in self.datatypes[str]:
             warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
         return value
 

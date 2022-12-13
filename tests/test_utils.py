@@ -1,5 +1,5 @@
 """Test utils"""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,too-few-public-methods
 import dlite
 import pytest
 
@@ -19,6 +19,51 @@ assert infer_iri(RDFS.subClassOf) == RDFS.subClassOf
 coll = dlite.Collection()
 assert infer_iri(coll.meta) == coll.meta.uri
 assert infer_iri(coll) == coll.uuid
+
+# We have no dependencies on pydantic, hence don't assume that it is installed.
+# But if it is, infer_iri() should be able to infer IRIs from SOFT7 datamodels.
+try:
+    from pydantic import AnyUrl, BaseModel, Field
+except ImportError:
+    pass
+else:
+    from typing import Any, Optional
+
+    class Property(BaseModel):
+        """A property."""
+
+        # pylint: disable=unsubscriptable-object
+        # Yet another pylint bug, see https://github.com/PyCQA/pylint/issues/1498
+        type: Any = Field(..., description="Valid type name.")
+        shape: Optional[list[str]] = Field(
+            None, description="List of dimension expressions."
+        )
+        unit: Optional[str] = Field(None, description="Unit of a property.")
+        description: Optional[str] = Field(
+            None, description="A human description of the property."
+        )
+
+    class Entity(BaseModel):
+        """An entity."""
+
+        # pylint: disable=unsubscriptable-object
+        identity: AnyUrl = Field(..., description="Unique URI identifying the entity.")
+        description: str = Field("", description="A description of the entity.")
+        dimensions: Optional[dict[str, str]] = Field(
+            None, description="Dict mapping dimension names to descriptions."
+        )
+        properties: dict[str, Property] = Field(..., description="Dict of properties.")
+
+    user = Entity(
+        identity="http://onto-ns.com/meta/0.1/User",
+        properties={
+            "username": Property(type=str, description="username"),
+            "quota": Property(type=float, unit="GB", description="User quota"),
+        },
+    )
+
+    assert infer_iri(user) == "http://onto-ns.com/meta/0.1/User"
+
 
 # Test split_iri()
 rdfs = str(RDFS)
@@ -65,15 +110,15 @@ assert en("abc") == Literal("abc", lang="en")
 # test parse_literal()
 assert parse_literal("abc") == Literal("abc", datatype=XSD.string)
 assert parse_literal(True) == Literal("True", datatype=XSD.boolean)
-assert parse_literal(1) == Literal("1", datatype=XSD.inteter)
+assert parse_literal(1) == Literal("1", datatype=XSD.integer)
 assert parse_literal(3.14) == Literal("3.14", datatype=XSD.double)
 assert parse_literal(f'"3.14"^^{XSD.double}') == Literal("3.14", datatype=XSD.double)
 
 
 # test parse_object()
-assert parse_object("True") == Literal("True", datatype=XSD.boolean)
-assert parse_object("False") == Literal("False", datatype=XSD.boolean)
-assert parse_object("true") == Literal("true", datatype=XSD.string)
+assert parse_object("true") == Literal("true", datatype=XSD.boolean)
+assert parse_object("false") == Literal("false", datatype=XSD.boolean)
+assert parse_object("True") == Literal("True", datatype=XSD.string)
 assert parse_object("0") == Literal("0", datatype=XSD.integer)
 assert parse_object("1") == Literal("1", datatype=XSD.integer)
 assert parse_object("-1") == Literal("-1", datatype=XSD.integer)
@@ -97,12 +142,13 @@ assert parse_object("2022-12-01 12:30:30") == Literal(
 assert parse_object("2022-12-01T12:30:30") == Literal(
     "2022-12-01T12:30:30", datatype=XSD.dateTime
 )
-assert parse_object("2022-12-01 12:30:30.50") == Literal(
-    "2022-12-01 12:30:30.50", datatype=XSD.dateTime
+assert parse_object("2022-12-01 12:30:30.500") == Literal(
+    "2022-12-01 12:30:30.500", datatype=XSD.dateTime
 )
-assert parse_object("2022-12-01 12:30:30Z") == Literal(
-    "2022-12-01 12:30:30Z", datatype=XSD.dateTime
-)
+# Format not supported in Python < 3.11
+# assert parse_object("2022-12-01 12:30:30Z") == Literal(
+#    "2022-12-01 12:30:30Z", datatype=XSD.dateTime
+# )
 assert parse_object("2022-12-01 12:30:30+01:00") == Literal(
     "2022-12-01 12:30:30+01:00", datatype=XSD.dateTime
 )
@@ -112,7 +158,5 @@ assert parse_object(str(XSD)) == str(XSD)
 assert parse_object(XSD.int) == XSD.int
 assert parse_object(f'"42"^^{XSD.integer}') == Literal("42", datatype=XSD.integer)
 assert parse_object(f'"4.2"^^{XSD.double}') == Literal("4.2", datatype=XSD.double)
-
-# __FIXME__: parse_object() currently fails for the following cases:
-# assert parse_object(f'"42"^^{XSD.double}') == Literal("42", datatype=XSD.double)
-# assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
+assert parse_object(f'"42"^^{XSD.double}') == Literal("42.0", datatype=XSD.double)
+assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
