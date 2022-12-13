@@ -11,7 +11,7 @@ try:
     import dlite
 except ImportError as exc:
     raise ImportError(
-        "DLite is not installed.  Install it with: `pip install DLite-Python`"
+        "DLite is not installed.\nInstall it with:\n\n    pip install DLite-Python"
     ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover

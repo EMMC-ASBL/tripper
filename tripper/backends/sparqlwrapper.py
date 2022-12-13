@@ -9,7 +9,7 @@ try:
     from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
 except ImportError as exc:
     raise ImportError(
-        "SPARQLWrapper is not installed.  Install it with: `pip install SPARQLWrapper`"
+        "SPARQLWrapper is not installed.\nInstall it with:\n\n    pip install SPARQLWrapper"
     ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover

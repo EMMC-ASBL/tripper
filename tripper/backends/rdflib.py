@@ -11,7 +11,7 @@ try:
     import rdflib  # pylint: disable=unused-import
 except ImportError as exc:
     raise ImportError(
-        "rdflib is not installed.  Install it with: `pip install rdflib`"
+        "rdflib is not installed.\nInstall it with:\n\n    pip install rdflib"
     ) from exc
 
 from rdflib import BNode, Graph
