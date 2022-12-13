@@ -3,9 +3,15 @@
 """
 from typing import TYPE_CHECKING
 
-from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
-
 from tripper import Literal
+
+try:
+    from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
+except ImportError as exc:
+    raise ImportError(
+        "SPARQLWrapper is not installed.\nInstall it with:\n\n"
+        "    pip install SPARQLWrapper"
+    ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
