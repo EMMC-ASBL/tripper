@@ -1,5 +1,28 @@
 # Changelog
 
+## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.0...HEAD)
+
+**Fixed bugs:**
+
+- Deploy docs failing due to wrong dependency installation [\#53](https://github.com/EMMC-ASBL/tripper/issues/53)
+
+## [v0.2.0](https://github.com/EMMC-ASBL/tripper/tree/v0.2.0) (2022-12-13)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.1.2...v0.2.0)
+
+**Closed issues:**
+
+- Remove backend packages from requirements [\#48](https://github.com/EMMC-ASBL/tripper/issues/48)
+- Fix utils.parse\_object\(\)  [\#45](https://github.com/EMMC-ASBL/tripper/issues/45)
+
+**Merged pull requests:**
+
+- Update `docs` extra [\#54](https://github.com/EMMC-ASBL/tripper/pull/54) ([CasperWA](https://github.com/CasperWA))
+- Remove backend packages from requirements [\#52](https://github.com/EMMC-ASBL/tripper/pull/52) ([jesper-friis](https://github.com/jesper-friis))
+- Fix utils.parse\_object\(\) [\#46](https://github.com/EMMC-ASBL/tripper/pull/46) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.1.2](https://github.com/EMMC-ASBL/tripper/tree/v0.1.2) (2022-12-11)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.1.1...v0.1.2)
