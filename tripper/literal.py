@@ -101,17 +101,17 @@ class Literal(str):
                 string.datatype = None
         return string
 
-    def __hash__(self):
-        return hash((str(self), self.lang, self.datatype))
+    # def __hash__(self):
+    #     return hash((str(self), self.lang, self.datatype))
 
-    def __eq__(self, other):
-        if isinstance(other, Literal):
-            return (
-                str(self) == str(other)
-                and self.lang == other.lang
-                and self.datatype == other.datatype
-            )
-        return str(self) == str(other)
+    # def __eq__(self, other):
+    #     if isinstance(other, Literal):
+    #         return (
+    #             str(self) == str(other)
+    #             and self.lang == other.lang
+    #             and self.datatype == other.datatype
+    #         )
+    #     return str(self) == str(other)
 
     def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""
