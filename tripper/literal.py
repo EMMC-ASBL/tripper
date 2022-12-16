@@ -101,6 +101,12 @@ class Literal(str):
                 string.datatype = None
         return string
 
+    # These two methods are commeted out for now because they cause
+    # the DLite example/mapping/mappingfunc.py example to fail.
+    #
+    # It seems that these methods cause the datatype be changed to
+    # an "h" in some relations added by the add_function() method.
+
     # def __hash__(self):
     #     return hash((str(self), self.lang, self.datatype))
 
