@@ -1075,15 +1075,40 @@ Triplestore        </code>
 
     <span class="c1"># Methods implemented by backend</span>
     <span class="c1"># ------------------------------</span>
-    <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Triple]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
-<span class="sd">                either be None (matching anything) or an exact IRI to</span>
-<span class="sd">                match.</span>
+<span class="sd">            subject: If given, match triples with this subject.</span>
+<span class="sd">            predicate: If given, match triples with this predicate.</span>
+<span class="sd">            object: If given, match triples with this object.</span>
+<span class="sd">            triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`</span>
+<span class="sd">                should either be None (matching anything) or an exact IRI</span>
+<span class="sd">                to match.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Generator over all matching triples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+        <span class="c1"># __TODO__: Remove these lines when deprecated</span>
+        <span class="k">if</span> <span class="n">triple</span> <span class="ow">or</span> <span class="p">(</span><span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The `triple` argument is deprecated.  Use `subject`, &quot;</span>
+                <span class="s2">&quot;`predicate` and `object` arguments instead.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="k">elif</span> <span class="n">triple</span><span class="p">:</span>
+            <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">triple</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
@@ -1094,9 +1119,37 @@ Triplestore        </code>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Triple]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            subject: If given, match triples with this subject.</span>
+<span class="sd">            predicate: If given, match triples with this predicate.</span>
+<span class="sd">            object: If given, match triples with this object.</span>
+<span class="sd">            triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`</span>
+<span class="sd">                should either be None (matching anything) or an exact IRI</span>
+<span class="sd">                to match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># __TODO__: Remove these lines when deprecated</span>
+        <span class="k">if</span> <span class="n">triple</span> <span class="ow">or</span> <span class="p">(</span><span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The `triple` argument is deprecated.  Use `subject`, &quot;</span>
+                <span class="s2">&quot;`predicate` and `object` arguments instead.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="k">elif</span> <span class="n">triple</span><span class="p">:</span>
+            <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">triple</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 
     <span class="c1"># Methods optionally implemented by backend</span>
     <span class="c1"># -----------------------------------------</span>
@@ -2630,7 +2683,7 @@ the update() method for INSERT and DELETE queries.</p>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.remove">
-<code class="highlight language-python"><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">triple</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.triplestore.Triplestore.remove" title="Permanent link">&para;</a></h3>
@@ -2639,11 +2692,78 @@ the update() method for INSERT and DELETE queries.</p>
 
       <p>Remove all matching triples from the backend.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>subject</code></td>
+        <td><code>&#39;Optional[Union[str, Triple]]&#39;</code></td>
+        <td><p>If given, match triples with this subject.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>predicate</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>If given, match triples with this predicate.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>object</code></td>
+        <td><code>&#39;Optional[Union[str, Literal]]&#39;</code></td>
+        <td><p>If given, match triples with this object.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>triple</code></td>
+        <td><code>&#39;Optional[Triple]&#39;</code></td>
+        <td><p>Deprecated. A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code>
+should either be None (matching anything) or an exact IRI
+to match.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Triple]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        subject: If given, match triples with this subject.</span>
+<span class="sd">        predicate: If given, match triples with this predicate.</span>
+<span class="sd">        object: If given, match triples with this object.</span>
+<span class="sd">        triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`</span>
+<span class="sd">            should either be None (matching anything) or an exact IRI</span>
+<span class="sd">            to match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># __TODO__: Remove these lines when deprecated</span>
+    <span class="k">if</span> <span class="n">triple</span> <span class="ow">or</span> <span class="p">(</span><span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The `triple` argument is deprecated.  Use `subject`, &quot;</span>
+            <span class="s2">&quot;`predicate` and `object` arguments instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">subject</span>
+    <span class="k">elif</span> <span class="n">triple</span><span class="p">:</span>
+        <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">triple</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
@@ -2955,7 +3075,7 @@ object.</p>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.triples">
-<code class="highlight language-python"><span class="n">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">triple</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.triplestore.Triplestore.triples" title="Permanent link">&para;</a></h3>
@@ -2976,26 +3096,84 @@ object.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>triple</code></td>
-        <td><code>&#39;Triple&#39;</code></td>
-        <td><p>A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code> should
-either be None (matching anything) or an exact IRI to
-match.</p></td>
-        <td><em>required</em></td>
+        <td><code>subject</code></td>
+        <td><code>&#39;Optional[Union[str, Triple]]&#39;</code></td>
+        <td><p>If given, match triples with this subject.</p></td>
+        <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>predicate</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>If given, match triples with this predicate.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>object</code></td>
+        <td><code>&#39;Optional[Union[str, Literal]]&#39;</code></td>
+        <td><p>If given, match triples with this object.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>triple</code></td>
+        <td><code>&#39;Optional[Triple]&#39;</code></td>
+        <td><p>Deprecated. A <code>(s, p, o)</code> tuple where <code>s</code>, <code>p</code> and <code>o</code>
+should either be None (matching anything) or an exact IRI
+to match.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Generator[Triple, None, None]&#39;</code></td>
+      <td><p>Generator over all matching triples.</p></td>
+    </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Triple]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
-<span class="sd">            either be None (matching anything) or an exact IRI to</span>
-<span class="sd">            match.</span>
+<span class="sd">        subject: If given, match triples with this subject.</span>
+<span class="sd">        predicate: If given, match triples with this predicate.</span>
+<span class="sd">        object: If given, match triples with this object.</span>
+<span class="sd">        triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`</span>
+<span class="sd">            should either be None (matching anything) or an exact IRI</span>
+<span class="sd">            to match.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Generator over all matching triples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+    <span class="c1"># __TODO__: Remove these lines when deprecated</span>
+    <span class="k">if</span> <span class="n">triple</span> <span class="ow">or</span> <span class="p">(</span><span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The `triple` argument is deprecated.  Use `subject`, &quot;</span>
+            <span class="s2">&quot;`predicate` and `object` arguments instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">subject</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">subject</span>
+    <span class="k">elif</span> <span class="n">triple</span><span class="p">:</span>
+        <span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">triple</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
