@@ -4,10 +4,15 @@
 # pylint: disable=protected-access,invalid-name
 from typing import TYPE_CHECKING
 
-import dlite
-
 from tripper.literal import Literal
 from tripper.utils import parse_object
+
+try:
+    import dlite
+except ImportError as exc:
+    raise ImportError(
+        "DLite is not installed.\nInstall it with:\n\n    pip install DLite-Python"
+    ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
