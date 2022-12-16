@@ -819,17 +819,23 @@ not be combined with <code>lang</code>.</p></td>
                 <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">string</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">))</span>
+    <span class="c1"># These two methods are commeted out for now because they cause</span>
+    <span class="c1"># the DLite example/mapping/mappingfunc.py example to fail.</span>
+    <span class="c1">#</span>
+    <span class="c1"># It seems that these methods cause the datatype be changed to</span>
+    <span class="c1"># an &quot;h&quot; in some relations added by the add_function() method.</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">lang</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">datatype</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="c1"># def __hash__(self):</span>
+    <span class="c1">#     return hash((str(self), self.lang, self.datatype))</span>
+
+    <span class="c1"># def __eq__(self, other):</span>
+    <span class="c1">#     if isinstance(other, Literal):</span>
+    <span class="c1">#         return (</span>
+    <span class="c1">#             str(self) == str(other)</span>
+    <span class="c1">#             and self.lang == other.lang</span>
+    <span class="c1">#             and self.datatype == other.datatype</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#     return str(self) == str(other)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">lang</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, lang=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -900,8 +906,6 @@ not be combined with <code>lang</code>.</p></td>
     </div>
 
   </div>
-
-
 
 
 
