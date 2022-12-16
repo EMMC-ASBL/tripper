@@ -101,17 +101,23 @@ class Literal(str):
                 string.datatype = None
         return string
 
-    def __hash__(self):
-        return hash((str(self), self.lang, self.datatype))
+    # These two methods are commeted out for now because they cause
+    # the DLite example/mapping/mappingfunc.py example to fail.
+    #
+    # It seems that these methods cause the datatype be changed to
+    # an "h" in some relations added by the add_function() method.
 
-    def __eq__(self, other):
-        if isinstance(other, Literal):
-            return (
-                str(self) == str(other)
-                and self.lang == other.lang
-                and self.datatype == other.datatype
-            )
-        return str(self) == str(other)
+    # def __hash__(self):
+    #     return hash((str(self), self.lang, self.datatype))
+
+    # def __eq__(self, other):
+    #     if isinstance(other, Literal):
+    #         return (
+    #             str(self) == str(other)
+    #             and self.lang == other.lang
+    #             and self.datatype == other.datatype
+    #         )
+    #     return str(self) == str(other)
 
     def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""
