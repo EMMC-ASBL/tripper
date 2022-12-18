@@ -1,16 +1,26 @@
 # Changelog
 
-## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+## [v0.2.1](https://github.com/EMMC-ASBL/tripper/tree/v0.2.1) (2022-12-16)
 
-[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.0...HEAD)
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.0...v0.2.1)
 
-**Fixed bugs:**
+**Closed issues:**
 
-- Deploy docs failing due to wrong dependency installation [\#53](https://github.com/EMMC-ASBL/tripper/issues/53)
+- Simplify use of the Triplestore triples\(\) and remove\(\) methods [\#50](https://github.com/EMMC-ASBL/tripper/issues/50)
+
+**Merged pull requests:**
+
+- Commented out \_\_hash\_\_\(\) and \_\_eq\_\_\(\) methods from Literal. [\#55](https://github.com/EMMC-ASBL/tripper/pull/55) ([jesper-friis](https://github.com/jesper-friis))
+- Simplify use of the Triplestore triples\(\) and remove\(\) methods [\#51](https://github.com/EMMC-ASBL/tripper/pull/51) ([jesper-friis](https://github.com/jesper-friis))
+- Separated `base_iri` argument from `triplestore_url` in rdflib backend [\#49](https://github.com/EMMC-ASBL/tripper/pull/49) ([jesper-friis](https://github.com/jesper-friis))
 
 ## [v0.2.0](https://github.com/EMMC-ASBL/tripper/tree/v0.2.0) (2022-12-13)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.1.2...v0.2.0)
+
+**Fixed bugs:**
+
+- Deploy docs failing due to wrong dependency installation [\#53](https://github.com/EMMC-ASBL/tripper/issues/53)
 
 **Closed issues:**
 
