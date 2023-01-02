@@ -719,7 +719,7 @@ SparqlwrapperStrategy        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SparqlwrapperStrategy</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Triplestore strategy for SPARQLWrapper.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for SPARQLWrapper.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: URI of SPARQL endpoint.</span>
@@ -734,7 +734,7 @@ SparqlwrapperStrategy        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
         <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span>
             <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
@@ -766,7 +766,7 @@ SparqlwrapperStrategy        </code>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
         <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="s2">&quot;  &quot;</span>
             <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -787,7 +787,7 @@ SparqlwrapperStrategy        </code>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
         <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -836,7 +836,7 @@ SparqlwrapperStrategy        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="s2">&quot;  &quot;</span>
         <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -880,7 +880,7 @@ SparqlwrapperStrategy        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
@@ -921,7 +921,7 @@ SparqlwrapperStrategy        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
     <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span>
         <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
@@ -988,7 +988,7 @@ literal) to a tripper type.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">convert_json_entrydict</span><span class="p">(</span><span class="n">entrydict</span><span class="p">:</span> <span class="s2">&quot;Dict[str, str]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Convert SPARQLWrapper json entry dict (representing a single IRI or</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert SPARQLWrapper json entry dict (representing a single IRI or</span>
 <span class="sd">    literal) to a tripper type.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;uri&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>

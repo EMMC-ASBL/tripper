@@ -1022,7 +1022,7 @@ Triplestore        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Triplestore</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Provides a common frontend to a range of triplestore backends.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Provides a common frontend to a range of triplestore backends.&quot;&quot;&quot;</span>
 
     <span class="n">default_namespaces</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;xml&quot;</span><span class="p">:</span> <span class="n">XML</span><span class="p">,</span>
@@ -1048,7 +1048,7 @@ Triplestore        </code>
         <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            backend: Name of the backend module.</span>
@@ -1082,7 +1082,7 @@ Triplestore        </code>
         <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            subject: If given, match triples with this subject.</span>
@@ -1111,7 +1111,7 @@ Triplestore        </code>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            triples: A sequence of `(s, p, o)` tuples to add to the</span>
@@ -1126,7 +1126,7 @@ Triplestore        </code>
         <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            subject: If given, match triples with this subject.</span>
@@ -1154,7 +1154,7 @@ Triplestore        </code>
     <span class="c1"># Methods optionally implemented by backend</span>
     <span class="c1"># -----------------------------------------</span>
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calls the backend close() method if it is implemented.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the backend close() method if it is implemented.</span>
 <span class="sd">        Otherwise, this method has no effect.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># It should be ok to call close() regardless of whether the backend</span>
@@ -1166,7 +1166,7 @@ Triplestore        </code>
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            source: File-like object or file name.</span>
@@ -1190,7 +1190,7 @@ Triplestore        </code>
         <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Serialise triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialise triplestore.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            destination: File name or object to write to.  If None, the</span>
@@ -1206,7 +1206,7 @@ Triplestore        </code>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[str, ...]]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            query_object: String with the SPARQL query.</span>
@@ -1224,7 +1224,7 @@ Triplestore        </code>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            update_object: String with the SPARQL query.</span>
@@ -1241,7 +1241,7 @@ Triplestore        </code>
     <span class="k">def</span> <span class="nf">bind</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="s2">&quot;Union[str, Namespace]&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Bind prefix to namespace and return the new Namespace object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bind prefix to namespace and return the new Namespace object.</span>
 
 <span class="sd">        The new Namespace is created with `namespace` as IRI.</span>
 <span class="sd">        Keyword arguments are passed to the Namespace() constructor.</span>
@@ -1264,7 +1264,7 @@ Triplestore        </code>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            backend: Name of backend.</span>
@@ -1282,7 +1282,7 @@ Triplestore        </code>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">remove_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            backend: Name of backend.</span>
@@ -1300,7 +1300,7 @@ Triplestore        </code>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">list_databases</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
 <span class="sd">        databases.</span>
 
 <span class="sd">        Parameters:</span>
@@ -1324,7 +1324,7 @@ Triplestore        </code>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the class implementing the given backend.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the class implementing the given backend.&quot;&quot;&quot;</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span>
             <span class="n">backend</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">backend</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tripper.backends.</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
@@ -1332,7 +1332,7 @@ Triplestore        </code>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_check_backend_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Checks that `backend` has a method called `name`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks that `backend` has a method called `name`.</span>
 
 <span class="sd">        Raises NotImplementedError if it hasn&#39;t.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1343,17 +1343,17 @@ Triplestore        </code>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_check_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Check that backend implements the given method.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that backend implements the given method.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_backend_method</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add `triple` to triplestore.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add `triple` to triplestore.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span><span class="n">triple</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
 
 <span class="sd">        Useful if one knows that there may only be one value.</span>
 
@@ -1382,42 +1382,42 @@ Triplestore        </code>
     <span class="k">def</span> <span class="nf">subjects</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator of subjects for given predicate and object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator of subjects for given predicate and object.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="n">s</span>
 
     <span class="k">def</span> <span class="nf">predicates</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator of predicates for given subject and object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator of predicates for given subject and object.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="n">p</span>
 
     <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator of objects for given subject and predicate.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator of objects for given subject and predicate.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="n">o</span>
 
     <span class="k">def</span> <span class="nf">subject_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator of (subject, predicate) tuples for given</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator of (subject, predicate) tuples for given</span>
 <span class="sd">        object.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span>
 
     <span class="k">def</span> <span class="nf">subject_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator of (subject, object) tuples for given</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator of (subject, object) tuples for given</span>
 <span class="sd">        predicate.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span>
 
     <span class="k">def</span> <span class="nf">predicate_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator of (predicate, object) tuples for given</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator of (predicate, object) tuples for given</span>
 <span class="sd">        subject.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
             <span class="k">yield</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span>
 
     <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convenience method to update the value of object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convenience method to update the value of object.</span>
 
 <span class="sd">        Removes any existing triples for subject and predicate before adding</span>
 <span class="sd">        the given `triple`.</span>
@@ -1429,7 +1429,7 @@ Triplestore        </code>
     <span class="k">def</span> <span class="nf">has</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-        <span class="sd">&quot;&quot;&quot;Returns true if the triplestore has any triple matching</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns true if the triplestore has any triple matching</span>
 <span class="sd">        the give subject, predicate and/or object.&quot;&quot;&quot;</span>
         <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1441,7 +1441,7 @@ Triplestore        </code>
     <span class="c1"># Methods providing additional functionality</span>
     <span class="c1"># ------------------------------------------</span>
     <span class="k">def</span> <span class="nf">expand_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the full IRI if `iri` is prefixed.  Otherwise `iri` is</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the full IRI if `iri` is prefixed.  Otherwise `iri` is</span>
 <span class="sd">        returned.&quot;&quot;&quot;</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">_MATCH_PREFIXED_IRI</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
@@ -1452,7 +1452,7 @@ Triplestore        </code>
         <span class="k">return</span> <span class="n">iri</span>
 
     <span class="k">def</span> <span class="nf">prefix_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return prefixed IRI.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return prefixed IRI.</span>
 
 <span class="sd">        This is the reverse of expand_iri().</span>
 
@@ -1475,7 +1475,7 @@ Triplestore        </code>
         <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add &#39;mapsTo&#39; relation to triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add &#39;mapsTo&#39; relation to triplestore.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            target: IRI of target ontological concept.</span>
@@ -1515,7 +1515,7 @@ Triplestore        </code>
         <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fno&quot;</span><span class="p">,</span>
         <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            func: Function to describe.  Should either be a callable or a</span>
@@ -1551,7 +1551,7 @@ Triplestore        </code>
         <span class="k">return</span> <span class="n">func_iri</span>
 
     <span class="k">def</span> <span class="nf">_add_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable[[], float]]&quot;</span><span class="p">,</span> <span class="n">dest_iri</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Help function that adds `cost` to destination IRI `dest_iri`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Help function that adds `cost` to destination IRI `dest_iri`.</span>
 
 <span class="sd">        `cost` should be either a float or a Callable returning a float.</span>
 
@@ -1571,7 +1571,7 @@ Triplestore        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">dest_iri</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hasCost</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cost</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">_add_function_fno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="p">,</span> <span class="n">returns</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implementing add_function() for FnO.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implementing add_function() for FnO.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;fno&quot;</span><span class="p">,</span> <span class="n">FNO</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;dcterms&quot;</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">MAP</span><span class="p">)</span>
@@ -1711,7 +1711,7 @@ method.</p></td>
     <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        backend: Name of the backend module.</span>
@@ -1760,7 +1760,7 @@ method.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add `triple` to triplestore.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add `triple` to triplestore.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span><span class="n">triple</span><span class="p">])</span>
 </code></pre></div>
         </details>
@@ -1868,7 +1868,7 @@ returning the cost as a float.</p></td>
     <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fno&quot;</span><span class="p">,</span>
     <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        func: Function to describe.  Should either be a callable or a</span>
@@ -1982,7 +1982,7 @@ that have <code>target</code> as output.</p></td>
     <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">target_cost</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add &#39;mapsTo&#39; relation to triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add &#39;mapsTo&#39; relation to triplestore.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        target: IRI of target ontological concept.</span>
@@ -2057,7 +2057,7 @@ triplestore.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        triples: A sequence of `(s, p, o)` tuples to add to the</span>
@@ -2094,7 +2094,7 @@ Keyword arguments are passed to the Namespace() constructor.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">bind</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="s2">&quot;Union[str, Namespace]&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Bind prefix to namespace and return the new Namespace object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bind prefix to namespace and return the new Namespace object.</span>
 
 <span class="sd">    The new Namespace is created with `namespace` as IRI.</span>
 <span class="sd">    Keyword arguments are passed to the Namespace() constructor.</span>
@@ -2140,7 +2140,7 @@ Otherwise, this method has no effect.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calls the backend close() method if it is implemented.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calls the backend close() method if it is implemented.</span>
 <span class="sd">    Otherwise, this method has no effect.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># It should be ok to call close() regardless of whether the backend</span>
@@ -2214,7 +2214,7 @@ triplestore without connecting to it.</p>
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        backend: Name of backend.</span>
@@ -2255,7 +2255,7 @@ returned.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">expand_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the full IRI if `iri` is prefixed.  Otherwise `iri` is</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the full IRI if `iri` is prefixed.  Otherwise `iri` is</span>
 <span class="sd">    returned.&quot;&quot;&quot;</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">_MATCH_PREFIXED_IRI</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
@@ -2292,7 +2292,7 @@ the give subject, predicate and/or object.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">has</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-    <span class="sd">&quot;&quot;&quot;Returns true if the triplestore has any triple matching</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns true if the triplestore has any triple matching</span>
 <span class="sd">    the give subject, predicate and/or object.&quot;&quot;&quot;</span>
     <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
     <span class="k">try</span><span class="p">:</span>
@@ -2361,7 +2361,7 @@ triplestore without connecting to it.</p>
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">list_databases</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
 <span class="sd">    databases.</span>
 
 <span class="sd">    Parameters:</span>
@@ -2401,7 +2401,7 @@ triplestore without connecting to it.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of objects for given subject and predicate.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of objects for given subject and predicate.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
         <span class="k">yield</span> <span class="n">o</span>
 </code></pre></div>
@@ -2465,7 +2465,7 @@ data to be parsed) arguments.</p></td>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        source: File-like object or file name.</span>
@@ -2508,7 +2508,7 @@ subject.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">predicate_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of (predicate, object) tuples for given</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of (predicate, object) tuples for given</span>
 <span class="sd">    subject.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
         <span class="k">yield</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span>
@@ -2539,7 +2539,7 @@ subject.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">predicates</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of predicates for given subject and object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of predicates for given subject and object.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
         <span class="k">yield</span> <span class="n">p</span>
 </code></pre></div>
@@ -2570,7 +2570,7 @@ if no prefix can be found.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">prefix_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return prefixed IRI.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return prefixed IRI.</span>
 
 <span class="sd">    This is the reverse of expand_iri().</span>
 
@@ -2654,7 +2654,7 @@ the update() method for INSERT and DELETE queries.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[str, ...]]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        query_object: String with the SPARQL query.</span>
@@ -2740,7 +2740,7 @@ to match.</p></td>
     <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        subject: If given, match triples with this subject.</span>
@@ -2830,7 +2830,7 @@ triplestore without connecting to it.</p>
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">remove_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        backend: Name of backend.</span>
@@ -2923,7 +2923,7 @@ the backend.</p></td>
     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Serialise triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise triplestore.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        destination: File name or object to write to.  If None, the</span>
@@ -2964,7 +2964,7 @@ the given <code>triple</code>.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convenience method to update the value of object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience method to update the value of object.</span>
 
 <span class="sd">    Removes any existing triples for subject and predicate before adding</span>
 <span class="sd">    the given `triple`.</span>
@@ -2998,7 +2998,7 @@ predicate.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">subject_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of (subject, object) tuples for given</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of (subject, object) tuples for given</span>
 <span class="sd">    predicate.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
         <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span>
@@ -3028,7 +3028,7 @@ object.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">subject_predicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of (subject, predicate) tuples for given</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of (subject, predicate) tuples for given</span>
 <span class="sd">    object.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
         <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span>
@@ -3059,7 +3059,7 @@ object.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">subjects</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator of subjects for given predicate and object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator of subjects for given predicate and object.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
         <span class="k">yield</span> <span class="n">s</span>
 </code></pre></div>
@@ -3147,7 +3147,7 @@ to match.</p></td>
     <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Optional[Triple]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        subject: If given, match triples with this subject.</span>
@@ -3229,7 +3229,7 @@ the query() method for SELECT queries.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        update_object: String with the SPARQL query.</span>
@@ -3302,7 +3302,7 @@ UniquenessError.</p></td>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">value</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
 
 <span class="sd">    Useful if one knows that there may only be one value.</span>
 

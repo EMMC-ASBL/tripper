@@ -679,7 +679,7 @@ ITriplestore            (<span title="typing_extensions.Protocol">Protocol</span
 <p>In addition to the methods specified by this interface, a backend
 may also implement the following optional methods:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Initialise triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: Optional base IRI to initiate the triplestore from.</span>
@@ -694,7 +694,7 @@ may also implement the following optional methods:</p>
         <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">    The source is specified using one of `source`, `location` or `data`.</span>
 
@@ -713,7 +713,7 @@ may also implement the following optional methods:</p>
         <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="s1">&#39;xml&#39;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        destination: File name or object to write to.  If None, the</span>
@@ -728,7 +728,7 @@ may also implement the following optional methods:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        query_object: String with the SPARQL query.</span>
@@ -739,7 +739,7 @@ may also implement the following optional methods:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        query_object: String with the SPARQL query.</span>
@@ -751,13 +751,13 @@ may also implement the following optional methods:</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">namespace</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Bind prefix to namespace.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bind prefix to namespace.</span>
 
 <span class="sd">    Should only be defined if the backend supports namespaces.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a dict mapping prefixes to namespaces.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a dict mapping prefixes to namespaces.</span>
 
 <span class="sd">    Should only be defined if the backend supports namespaces.</span>
 <span class="sd">    Used by triplestore.parse() to get prefixes after reading</span>
@@ -766,7 +766,7 @@ may also implement the following optional methods:</p>
 
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new database in backend.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        database: Name of the new database.</span>
@@ -780,7 +780,7 @@ may also implement the following optional methods:</p>
 
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">remove_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a database in backend.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        database: Name of the database to be removed.</span>
@@ -794,7 +794,7 @@ may also implement the following optional methods:</p>
 
 <span class="nd">@classmethod</span>
 <span class="k">def</span> <span class="nf">list_databases</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;For backends that supports multiple databases, list of all</span>
 <span class="sd">    databases.</span>
 
 <span class="sd">    Parameters:</span>
@@ -810,7 +810,7 @@ may also implement the following optional methods:</p>
         <details class="quote">
           <summary>Source code in <code>tripper/interface.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ITriplestore</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Interface for triplestore backends.</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Interface for triplestore backends.</span>
 
 <span class="sd">    In addition to the methods specified by this interface, a backend</span>
 <span class="sd">    may also implement the following optional methods:</span>
@@ -949,7 +949,7 @@ may also implement the following optional methods:</p>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>
@@ -958,7 +958,7 @@ may also implement the following optional methods:</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            triples: A sequence of `(s, p, o)` tuples to add to the</span>
@@ -966,7 +966,7 @@ may also implement the following optional methods:</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 
@@ -1021,7 +1021,7 @@ triplestore.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/interface.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        triples: A sequence of `(s, p, o)` tuples to add to the</span>
@@ -1052,7 +1052,7 @@ triplestore.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/interface.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
     </div>
@@ -1099,7 +1099,7 @@ match.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/interface.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        triple: A `(s, p, o)` tuple where `s`, `p` and `o` should</span>

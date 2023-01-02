@@ -723,7 +723,7 @@ UnusedArgumentWarning            (<span title="Warning">Warning</span>)
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UnusedArgumentWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Argument is unused.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Argument is unused.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 
@@ -754,7 +754,7 @@ Otherwise the exception is propagated.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Help function that returns true if `func(s)` does not raise an exception.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function that returns true if `func(s)` does not raise an exception.</span>
 
 <span class="sd">    False is returned if `func(s)` raises an exception listed in `exceptions`.</span>
 <span class="sd">    Otherwise the exception is propagated.</span>
@@ -792,7 +792,7 @@ Otherwise the exception is propagated.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">en</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal&quot;</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-    <span class="sd">&quot;&quot;&quot;Convenience function that returns value as a plain english literal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function that returns value as a plain english literal.</span>
 
 <span class="sd">    Equivalent to ``Literal(value, lang=&quot;en&quot;)``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -826,7 +826,7 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">function_id</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a checksum for function `func`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a checksum for function `func`.</span>
 
 <span class="sd">    The returned object is a string of hexadecimal digits.</span>
 
@@ -862,7 +862,7 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">infer_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return IRI of the individual that stands for object `obj`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return IRI of the individual that stands for object `obj`.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">iri</span> <span class="o">=</span> <span class="n">obj</span>
     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;uri&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -916,7 +916,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Parse `literal` and return it as an instance of Literal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse `literal` and return it as an instance of Literal.</span>
 
 <span class="sd">    The main difference between this function and the Literal constructor,</span>
 <span class="sd">    is that this function correctly interprets n3-encoded literal strings.</span>
@@ -1015,7 +1015,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Applies heuristics to parse RDF object `obj` to an IRI or literal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies heuristics to parse RDF object `obj` to an IRI or literal.</span>
 
 <span class="sd">    The following heuristics is performed (in the given order):</span>
 <span class="sd">    - If `obj` is a Literal, it is returned.</span>
@@ -1107,7 +1107,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">split_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tuple[str, str]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Split iri into namespace and name parts and return them as a tuple.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split iri into namespace and name parts and return them as a tuple.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        iri: The IRI to be split.</span>

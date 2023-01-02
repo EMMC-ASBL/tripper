@@ -784,7 +784,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">OntopyStrategy</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Triplestore strategy for EMMOntoPy.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for EMMOntoPy.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: The base iri of the ontology.</span>
@@ -820,10 +820,10 @@ ontology with the given <code>base_iri</code>.</p></td>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">to_literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;Returns a literal from (o, datatype).&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Returns a literal from (o, datatype).&quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">datatype</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
@@ -848,7 +848,7 @@ ontology with the given <code>base_iri</code>.</p></td>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Union[int, str]&quot;</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
@@ -873,7 +873,7 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
         <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
         <span class="n">to_remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_triples_spod_spod</span><span class="p">(</span>
@@ -898,7 +898,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">        The source is specified using one of `source`, `location` or `data`.</span>
 
@@ -941,7 +941,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            destination: File name or object to write to.  If None, the</span>
@@ -970,7 +970,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            query_object: String with the SPARQL query.</span>
@@ -993,7 +993,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="k">return</span> <span class="n">res</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            update_object: String with the SPARQL query.</span>
@@ -1043,7 +1043,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Union[int, str]&quot;</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
@@ -1149,7 +1149,7 @@ ontology with the given <code>base_iri</code>.</p></td>
     <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">    The source is specified using one of `source`, `location` or `data`.</span>
 
@@ -1256,7 +1256,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        query_object: String with the SPARQL query.</span>
@@ -1302,7 +1302,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
     <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
     <span class="n">to_remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_triples_spod_spod</span><span class="p">(</span>
@@ -1394,7 +1394,7 @@ the backend.</p></td>
     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        destination: File name or object to write to.  If None, the</span>
@@ -1446,10 +1446,10 @@ the backend.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">to_literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a literal from (o, datatype).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a literal from (o, datatype).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">datatype</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
@@ -1533,7 +1533,7 @@ the query() method for SELECT queries.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        update_object: String with the SPARQL query.</span>
