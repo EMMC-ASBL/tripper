@@ -32,3 +32,36 @@ routes = mapping_routes(
     sources={},  # MOL.groundstate_energy: 1.0},
     triplestore=ts,
 )
+
+assert routes.number_of_routes() == 0
+assert routes.output_iri == ("http://onto-ns.com/meta/0.1/Substance#molecule_energy")
+assert routes.cost == 2.0
+assert (
+    routes.show()
+    == """\
+Step:
+  steptype: MAPSTO
+  output_iri: http://onto-ns.com/meta/0.1/Substance#molecule_energy
+  output_unit: None
+  cost: 2.0
+  routes:
+    - arg1:
+        steptype: INV_MAPSTO
+        output_iri: http://onto-ns.com/onto/chemistry#GroundStateEnergy
+        output_unit: None
+        cost: 2.0
+        routes:
+          - arg1:
+              steptype: None
+              output_iri: http://onto-ns.com/meta/0.1/Molecule#groundstate_energy
+              output_unit: None
+              cost: 1.0
+              routes:
+          - arg1:
+              steptype: None
+              output_iri: http://onto-ns.com/meta/0.1/Molecule2#energy
+              output_unit: None
+              cost: 1.0
+              routes:\
+"""
+)
