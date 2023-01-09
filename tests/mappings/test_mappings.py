@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+"""Test mappings."""
 from pathlib import Path
 
 from tripper import Triplestore

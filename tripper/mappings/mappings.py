@@ -9,20 +9,19 @@ Shapes are automatically handled by expressing non-scalar quantities
 with numpy.
 
 """
+
+# pylint: disable=invalid-name,redefined-builtin
+
 from __future__ import annotations
 
-import itertools
-import types
-import warnings
 from collections import defaultdict
-from collections.abc import Sequence
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import numpy as np
 from pint import Quantity  # remove
 
-from tripper import DM, FNO, MAP, RDF, RDFS, Triplestore
+from tripper import DM, FNO, MAP, RDF, RDFS
 
 # from dlite.utils import infer_dimensions
 
@@ -75,14 +74,28 @@ class Value:
         cost: Cost of accessing this value.
     """
 
-    def __init__(self, value, unit=None, iri=None, property_iri=None, cost=0.0):
+    # pylint: disable=too-few-public-methods
+
+    def __init__(
+        self,
+        value,
+        unit=None,
+        iri=None,
+        property_iri=None,
+        cost=0.0,
+    ):
         self.value = value
         self.unit = unit
         self.iri = iri
         self.property_iri = property_iri
         self.cost = cost
 
-    def show(self, routeno=None, name=None, indent=0):
+    def show(
+        self,
+        routeno=None,
+        name=None,
+        indent=0,
+    ):  # pylint: disable=unused-argument
         """Returns a string representation of the Value.
 
         Arguments:
@@ -122,6 +135,8 @@ class MappingStep:
     The arguments can also be assigned as attributes.
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(
         self,
         output_iri: Optional[str] = None,
@@ -135,9 +150,9 @@ class MappingStep:
         self.function = function
         self.cost = cost
         self.output_unit = output_unit
-        self.input_routes = []  # list of inputs dicts
+        self.input_routes: List[dict] = []  # list of inputs dicts
         self.join_mode = False  # whether to join upcoming input
-        self.joined_input = {}
+        self.joined_input: Dict[str, Union[MappingStep, Value]] = {}
 
     def add_inputs(self, inputs):
         """Add input dict for an input route."""
@@ -195,10 +210,9 @@ class MappingStep:
 
         if isinstance(value, quantity) and unit:
             return value.m_as(unit)
-        elif isinstance(value, quantity) and magnitude:
+        if isinstance(value, quantity) and magnitude:
             return value.m
-        else:
-            return value
+        return value
 
     def get_inputs(self, routeno):
         """Returns input and input index `(inputs, idx)` for route number
@@ -214,7 +228,7 @@ class MappingStep:
     def get_input_iris(self, routeno):
         """Returns a dict mapping input names to iris for the given route
         number."""
-        inputs, idx = self.get_inputs(routeno)
+        inputs, _ = self.get_inputs(routeno)
         return {
             k: v.output_iri if isinstance(v, MappingStep) else v.iri
             for k, v in inputs.items()
@@ -256,13 +270,17 @@ class MappingStep:
                 if isinstance(input, MappingStep):
                     nroutes = input.number_of_routes()
                     res = np.rec.fromrecords(
-                        [
-                            row
-                            for row in sorted(
-                                input.lowest_costs(nresults=nresults),
-                                key=lambda x: x[1],
-                            )
-                        ],
+                        sorted(
+                            input.lowest_costs(nresults=nresults),
+                            key=lambda x: x[1],
+                        ),
+                        # [
+                        #     row
+                        #     for row in sorted(
+                        #         input.lowest_costs(nresults=nresults),
+                        #         key=lambda x: x[1],
+                        #     )
+                        # ],
                         dtype=base.dtype,
                     )
                     res1 = res.repeat(len(base))
@@ -318,7 +336,7 @@ class MappingStep:
         s.append(ind + f"  output_unit: {self.output_unit}")
         s.append(ind + f"  cost: {self.cost}")
         if routeno is None:
-            s.append(ind + f"  routes:")
+            s.append(ind + "  routes:")
             for inputs in self.input_routes:
                 t = "\n".join(
                     [
@@ -328,7 +346,7 @@ class MappingStep:
                 )
                 s.append(ind + "    - " + t[indent + 6 :])
         else:
-            s.append(ind + f"  inputs:")
+            s.append(ind + "  inputs:")
             inputs, idx = self.get_inputs(routeno)
             t = "\n".join(
                 [
@@ -386,9 +404,12 @@ def fno_mapper(triplestore):
 
     tuples.
     """
+
+    # pylint: disable=too-many-branches
+
     # Temporary dicts for fast lookup
-    Dfirst = {s: o for s, o in triplestore.subject_objects(RDF.first)}
-    Drest = {s: o for s, o in triplestore.subject_objects(RDF.rest)}
+    Dfirst = dict(triplestore.subject_objects(RDF.first))
+    Drest = dict(triplestore.subject_objects(RDF.rest))
     Dexpects = defaultdict(list)
     Dreturns = defaultdict(list)
     for s, o in triplestore.subject_objects(FNO.expects):
@@ -432,13 +453,13 @@ def mapping_routes(
     triplestore,
     function_repo=None,
     function_mappers=(fno_mapper,),
-    default_costs={
-        "function": 10.0,
-        "mapsTo": 2.0,
-        "instanceOf": 1.0,
-        "subClassOf": 1.0,
-        "value": 0.0,
-    },
+    default_costs=(
+        ("function", 10.0),
+        ("mapsTo", 2.0),
+        ("instanceOf", 1.0),
+        ("subClassOf", 1.0),
+        ("value", 0.0),
+    ),
     mapsTo=MAP.mapsTo,
     instanceOf=DM.instanceOf,
     subClassOf=RDFS.subClassOf,
@@ -486,15 +507,20 @@ def mapping_routes(
         MappingStep instances providing an (efficient) internal description
         of all possible mapping routes from `sources` to `target`.
     """
+
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-statements
+
     if function_repo is None:
         function_repo = triplestore.function_repo
+
+    default_costs = dict(default_costs)
 
     # Create lookup tables for fast access to properties
     # This only transverse `tiples` once
     soMaps = defaultdict(list)  # (s, mapsTo, o)     ==> soMaps[s]  -> [o, ..]
     osMaps = defaultdict(list)  # (o, mapsTo, s)     ==> osMaps[o]  -> [s, ..]
     osSubcl = defaultdict(list)  # (o, subClassOf, s) ==> osSubcl[o] -> [s, ..]
-    soInst = dict()  # (s, instanceOf, o) ==> soInst[s]  -> o
+    soInst = {}  # (s, instanceOf, o) ==> soInst[s]  -> o
     osInst = defaultdict(list)  # (o, instanceOf, s) ==> osInst[o]  -> [s, ..]
     for s, o in triplestore.subject_objects(mapsTo):
         soMaps[s].append(o)
@@ -509,9 +535,9 @@ def mapping_routes(
             )
         soInst[s] = o
         osInst[o].append(s)
-    soName = {s: o for s, o in triplestore.subject_objects(label)}
-    soUnit = {s: o for s, o in triplestore.subject_objects(hasUnit)}
-    soCost = {s: o for s, o in triplestore.subject_objects(hasCost)}
+    soName = dict(triplestore.subject_objects(label))
+    soUnit = dict(triplestore.subject_objects(hasUnit))
+    soCost = dict(triplestore.subject_objects(hasCost))
 
     def getcost(target, stepname):
         """Returns the cost assigned to IRI `target` for a mapping step
@@ -564,7 +590,7 @@ def mapping_routes(
                 step.cost = getcost(func, "function")
                 step.function = function_repo[func]
                 step.join_mode = True
-                for i, input_iri in enumerate(input_iris):
+                for input_iri in input_iris:
                     step0 = MappingStep(
                         output_iri=input_iri, output_unit=soUnit.get(input_iri)
                     )
@@ -592,153 +618,153 @@ def mapping_routes(
     return step
 
 
-def instance_routes(
-    meta, instances, triplestore, allow_incomplete=False, quantity=Quantity, **kwargs
-):
-    """Find all mapping routes for populating an instance of `meta`.
-
-    Arguments:
-        meta: Metadata for the instance we will create.
-        instances: sequence of instances that the new intance will be
-            populated from.
-        triplestore: Triplestore containing the mappings.
-        allow_incomplete: Whether to allow not populating all properties
-            of the returned instance.
-        quantity: Class implementing quantities with units.  Defaults to
-            pint.Quantity.
-        kwargs: Keyword arguments passed to mapping_routes().
-
-    Returns:
-        A dict mapping property names to a MappingStep instance.
-    """
-    if isinstance(meta, str):
-        meta = dlite.get_instance(meta)
-    if isinstance(instances, dlite.Instance):
-        instances = [instances]
-
-    sources = {}
-    for inst in instances:
-        props = {p.name: p for p in inst.meta["properties"]}
-        for k, v in inst.properties.items():
-            sources[f"{inst.meta.uri}#{k}"] = quantity(v, props[k].unit)
-
-    routes = {}
-    for prop in meta["properties"]:
-        target = f"{meta.uri}#{prop.name}"
-        try:
-            route = mapping_routes(target, sources, triplestore, **kwargs)
-        except MissingRelationError:
-            if allow_incomplete:
-                continue
-            raise
-        if not allow_incomplete and not route.number_of_routes():
-            raise InsufficientMappingError(f"no mappings for {target}")
-        routes[prop.name] = route
-
-    return routes
-
-
-def instantiate_from_routes(meta, routes, routedict=None, id=None, quantity=Quantity):
-    """Create a new instance of `meta` from selected mapping route returned
-    by instance_routes().
-
-    Arguments:
-        meta: Metadata to instantiate.
-        routes: Dict returned by instance_routes().  It should map property
-            names to MappingStep instances.
-        routedict: Dict mapping property names to route number to select for
-            the given property.  The default is to select the route with
-            lowest cost.
-        id: URI of instance to create.
-        quantity: Class implementing quantities with units.  Defaults to
-            pint.Quantity.
-
-    Returns:
-        New instance.
-    """
-    if isinstance(meta, str):
-        meta = dlite.get_instance(meta)
-
-    if routedict is None:
-        routedict = {}
-
-    values = {}
-    for prop in meta["properties"]:
-        if prop.name in routes:
-            step = routes[prop.name]
-            values[prop.name] = step.eval(
-                routeno=routedict.get(prop.name), unit=prop.unit, quantity=quantity
-            )
-    dims = infer_dimensions(meta, values)
-    inst = meta(dims=dims, id=id)
-
-    for k, v in routes.items():
-        inst[k] = v.eval(magnitude=True, unit=meta.getprop(k).unit)
-
-    return inst
-
-
-def instantiate(
-    meta,
-    instances,
-    triplestore,
-    routedict=None,
-    id=None,
-    allow_incomplete=False,
-    quantity=Quantity,
-    **kwargs,
-):
-    """Create a new instance of `meta` populated with the selected mapping
-    routes.
-
-    This is a convenient function that combines instance_routes() and
-    instantiate_from_routes().  If you want to investigate the possible
-    routes, you will probably want to call instance_routes() and
-    instantiate_from_routes() instead.
-
-    Arguments:
-        meta: Metadata to instantiate.
-        instances: Sequence of instances with source values.
-        triplestore: Triplestore instance.
-            It is safe to pass a generator expression too.
-        routedict: Dict mapping property names to route number to select for
-            the given property.  The default is to select the route with
-            lowest cost.
-        id: URI of instance to create.
-        allow_incomplete: Whether to allow not populating all properties
-            of the returned instance.
-        quantity: Class implementing quantities with units.  Defaults to
-            pint.Quantity.
-
-    Keyword arguments (passed to mapping_routes()):
-        function_repo: Dict mapping function IRIs to corresponding Python
-            function.  Default is to use `triplestore.function_repo`.
-        function_mappers: Sequence of mapping functions that takes
-            `triplestore` as argument and return a dict mapping output IRIs
-            to a list of `(function_iri, [input_iris, ...])` tuples.
-        mapsTo: IRI of 'mapsTo' in `triplestore`.
-        instanceOf: IRI of 'instanceOf' in `triplestore`.
-        subClassOf: IRI of 'subClassOf' in `triplestore`.  Set it to None if
-            subclasses should not be considered.
-        label: IRI of 'label' in `triplestore`.  Used for naming function
-            input parameters.  The default is to use rdfs:label.
-        hasUnit: IRI of 'hasUnit' in `triplestore`.
-        hasCost: IRI of 'hasCost' in `triplestore`.
-
-    Returns:
-        New instance.
-    """
-    if isinstance(meta, str):
-        meta = dlite.get_instance(meta)
-
-    routes = instance_routes(
-        meta=meta,
-        instances=instances,
-        triplestore=triplestore,
-        allow_incomplete=allow_incomplete,
-        quantity=quantity,
-        **kwargs,
-    )
-    return instantiate_from_routes(
-        meta=meta, routes=routes, routedict=routedict, id=id, quantity=quantity
-    )
+# def instance_routes(
+#     meta, instances, triplestore, allow_incomplete=False, quantity=Quantity, **kwargs
+# ):
+#     """Find all mapping routes for populating an instance of `meta`.
+#
+#     Arguments:
+#         meta: Metadata for the instance we will create.
+#         instances: sequence of instances that the new intance will be
+#             populated from.
+#         triplestore: Triplestore containing the mappings.
+#         allow_incomplete: Whether to allow not populating all properties
+#             of the returned instance.
+#         quantity: Class implementing quantities with units.  Defaults to
+#             pint.Quantity.
+#         kwargs: Keyword arguments passed to mapping_routes().
+#
+#     Returns:
+#         A dict mapping property names to a MappingStep instance.
+#     """
+#     if isinstance(meta, str):
+#         meta = dlite.get_instance(meta)
+#     if isinstance(instances, dlite.Instance):
+#         instances = [instances]
+#
+#     sources = {}
+#     for inst in instances:
+#         props = {p.name: p for p in inst.meta["properties"]}
+#         for k, v in inst.properties.items():
+#             sources[f"{inst.meta.uri}#{k}"] = quantity(v, props[k].unit)
+#
+#     routes = {}
+#     for prop in meta["properties"]:
+#         target = f"{meta.uri}#{prop.name}"
+#         try:
+#             route = mapping_routes(target, sources, triplestore, **kwargs)
+#         except MissingRelationError:
+#             if allow_incomplete:
+#                 continue
+#             raise
+#         if not allow_incomplete and not route.number_of_routes():
+#             raise InsufficientMappingError(f"no mappings for {target}")
+#         routes[prop.name] = route
+#
+#     return routes
+#
+#
+# def instantiate_from_routes(meta, routes, routedict=None, id=None, quantity=Quantity):
+#     """Create a new instance of `meta` from selected mapping route returned
+#     by instance_routes().
+#
+#     Arguments:
+#         meta: Metadata to instantiate.
+#         routes: Dict returned by instance_routes().  It should map property
+#             names to MappingStep instances.
+#         routedict: Dict mapping property names to route number to select for
+#             the given property.  The default is to select the route with
+#             lowest cost.
+#         id: URI of instance to create.
+#         quantity: Class implementing quantities with units.  Defaults to
+#             pint.Quantity.
+#
+#     Returns:
+#         New instance.
+#     """
+#     if isinstance(meta, str):
+#         meta = dlite.get_instance(meta)
+#
+#     if routedict is None:
+#         routedict = {}
+#
+#     values = {}
+#     for prop in meta["properties"]:
+#         if prop.name in routes:
+#             step = routes[prop.name]
+#             values[prop.name] = step.eval(
+#                 routeno=routedict.get(prop.name), unit=prop.unit, quantity=quantity
+#             )
+#     dims = infer_dimensions(meta, values)
+#     inst = meta(dims=dims, id=id)
+#
+#     for k, v in routes.items():
+#         inst[k] = v.eval(magnitude=True, unit=meta.getprop(k).unit)
+#
+#     return inst
+#
+#
+# def instantiate(
+#     meta,
+#     instances,
+#     triplestore,
+#     routedict=None,
+#     id=None,
+#     allow_incomplete=False,
+#     quantity=Quantity,
+#     **kwargs,
+# ):
+#     """Create a new instance of `meta` populated with the selected mapping
+#     routes.
+#
+#     This is a convenient function that combines instance_routes() and
+#     instantiate_from_routes().  If you want to investigate the possible
+#     routes, you will probably want to call instance_routes() and
+#     instantiate_from_routes() instead.
+#
+#     Arguments:
+#         meta: Metadata to instantiate.
+#         instances: Sequence of instances with source values.
+#         triplestore: Triplestore instance.
+#             It is safe to pass a generator expression too.
+#         routedict: Dict mapping property names to route number to select for
+#             the given property.  The default is to select the route with
+#             lowest cost.
+#         id: URI of instance to create.
+#         allow_incomplete: Whether to allow not populating all properties
+#             of the returned instance.
+#         quantity: Class implementing quantities with units.  Defaults to
+#             pint.Quantity.
+#
+#     Keyword arguments (passed to mapping_routes()):
+#         function_repo: Dict mapping function IRIs to corresponding Python
+#             function.  Default is to use `triplestore.function_repo`.
+#         function_mappers: Sequence of mapping functions that takes
+#             `triplestore` as argument and return a dict mapping output IRIs
+#             to a list of `(function_iri, [input_iris, ...])` tuples.
+#         mapsTo: IRI of 'mapsTo' in `triplestore`.
+#         instanceOf: IRI of 'instanceOf' in `triplestore`.
+#         subClassOf: IRI of 'subClassOf' in `triplestore`.  Set it to None if
+#             subclasses should not be considered.
+#         label: IRI of 'label' in `triplestore`.  Used for naming function
+#             input parameters.  The default is to use rdfs:label.
+#         hasUnit: IRI of 'hasUnit' in `triplestore`.
+#         hasCost: IRI of 'hasCost' in `triplestore`.
+#
+#     Returns:
+#         New instance.
+#     """
+#     if isinstance(meta, str):
+#         meta = dlite.get_instance(meta)
+#
+#     routes = instance_routes(
+#         meta=meta,
+#         instances=instances,
+#         triplestore=triplestore,
+#         allow_incomplete=allow_incomplete,
+#         quantity=quantity,
+#         **kwargs,
+#     )
+#     return instantiate_from_routes(
+#         meta=meta, routes=routes, routedict=routedict, id=id, quantity=quantity
+#     )
