@@ -467,7 +467,7 @@ def mapping_routes(
     label=RDFS.label,
     hasUnit=DM.hasUnit,
     hasCost=DM.hasCost,  # TODO - add hasCost to the DM ontology
-):
+) -> MappingStep:
     """Find routes of mappings from any source in `sources` to `target`.
 
     This implementation supports functions (using FnO) and subclass
