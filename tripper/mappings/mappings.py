@@ -9,21 +9,26 @@ Shapes are automatically handled by expressing non-scalar quantities
 with numpy.
 
 """
-
 # pylint: disable=invalid-name,redefined-builtin
-
-from __future__ import annotations
+from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 from collections import defaultdict
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 from pint import Quantity  # remove
 
 from tripper import DM, FNO, MAP, RDF, RDFS
 
-# from dlite.utils import infer_dimensions
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+
+    from tripper import Triplestore
+
+    # Add some specialised types for convinience
+    Input = Union["MappingStep", "Value"]
+    Inputs = Dict[str, Input]
 
 
 class MappingError(Exception):
@@ -78,11 +83,11 @@ class Value:
 
     def __init__(
         self,
-        value,
-        unit=None,
-        iri=None,
-        property_iri=None,
-        cost=0.0,
+        value: "Any",
+        unit: "Optional[str]" = None,
+        iri: "Optional[str]" = None,
+        property_iri: "Optional[str]" = None,
+        cost: float = 0.0,
     ):
         self.value = value
         self.unit = unit
@@ -92,9 +97,9 @@ class Value:
 
     def show(
         self,
-        routeno=None,
-        name=None,
-        indent=0,
+        routeno: "Optional[int]" = None,
+        name: "Optional[str]" = None,
+        indent: int = 0,
     ):  # pylint: disable=unused-argument
         """Returns a string representation of the Value.
 
@@ -104,15 +109,15 @@ class Value:
             name: Name of value.
             indent: Indentation level.
         """
-        s = []
+        strings = []
         ind = " " * indent
-        s.append(ind + f'{name if name else "Value"}:')
-        s.append(ind + f"  iri: {self.iri}")
-        s.append(ind + f"  property_iri: {self.property_iri}")
-        s.append(ind + f"  unit: {self.unit}")
-        s.append(ind + f"  cost: {self.cost}")
-        s.append(ind + f"  value: {self.value}")
-        return "\n".join(s)
+        strings.append(ind + f'{name if name else "Value"}:')
+        strings.append(ind + f"  iri: {self.iri}")
+        strings.append(ind + f"  property_iri: {self.property_iri}")
+        strings.append(ind + f"  unit: {self.unit}")
+        strings.append(ind + f"  cost: {self.cost}")
+        strings.append(ind + f"  value: {self.value}")
+        return "\n".join(strings)
 
 
 class MappingStep:
@@ -139,27 +144,27 @@ class MappingStep:
 
     def __init__(
         self,
-        output_iri: Optional[str] = None,
-        steptype: Optional[StepType] = None,
-        function: Optional[Callable] = None,
-        cost: Union[Any, Callable] = 1.0,
-        output_unit: Optional[str] = None,
+        output_iri: "Optional[str]" = None,
+        steptype: "Optional[StepType]" = None,
+        function: "Optional[Callable]" = None,
+        cost: "Union[float, Callable]" = 1.0,
+        output_unit: "Optional[str]" = None,
     ):
         self.output_iri = output_iri
         self.steptype = steptype
         self.function = function
         self.cost = cost
         self.output_unit = output_unit
-        self.input_routes: List[dict] = []  # list of inputs dicts
+        self.input_routes: "List[dict]" = []  # list of inputs dicts
         self.join_mode = False  # whether to join upcoming input
-        self.joined_input: Dict[str, Union[MappingStep, Value]] = {}
+        self.joined_input: "Inputs" = {}
 
-    def add_inputs(self, inputs):
+    def add_inputs(self, inputs: "Inputs"):
         """Add input dict for an input route."""
-        assert isinstance(inputs, dict)
+        assert isinstance(inputs, dict)  # nosec
         self.input_routes.append(inputs)
 
-    def add_input(self, input, name=None):
+    def add_input(self, input: "Input", name: "Optional[str]" = None):
         """Add an input (MappingStep or Value), where `name` is the name
         assigned to the argument.
 
@@ -169,7 +174,7 @@ class MappingStep:
         If the `join_mode` attribute is true, the input is remembered, but
         first added when join_input() is called.
         """
-        assert isinstance(input, (MappingStep, Value))
+        assert isinstance(input, (MappingStep, Value))  # nosec
         argname = name if name else f"arg{len(self.joined_input)+1}"
         if self.join_mode:
             self.joined_input[argname] = input
@@ -185,7 +190,13 @@ class MappingStep:
         self.add_inputs(self.joined_input)
         self.joined_input = {}
 
-    def eval(self, routeno=None, unit=None, magnitude=False, quantity=Quantity):
+    def eval(
+        self,
+        routeno: "Optional[int]" = None,
+        unit: "Optional[str]" = None,
+        magnitude: bool = False,
+        quantity: "Any" = Quantity,
+    ) -> "Any":
         """Returns the evaluated value of given input route number.
 
         Args:
@@ -196,6 +207,9 @@ class MappingStep:
             magnitude: Whether to only return the magitude of the evaluated
                 value (with no unit).
             quantity: Quantity class to use for evaluation.  Defaults to pint.
+
+        Returns:
+            Evaluation result.
         """
         if routeno is None:
             ((_, routeno),) = self.lowest_costs(nresults=1)
@@ -214,7 +228,7 @@ class MappingStep:
             return value.m
         return value
 
-    def get_inputs(self, routeno):
+    def get_inputs(self, routeno: int) -> "Tuple[Inputs, int]":
         """Returns input and input index `(inputs, idx)` for route number
         `routeno`."""
         n = 0
@@ -225,7 +239,7 @@ class MappingStep:
                 return inputs, routeno - n0
         raise ValueError(f"routeno={routeno} exceeds number of routes")
 
-    def get_input_iris(self, routeno):
+    def get_input_iris(self, routeno: int) -> "Dict[str, Optional[str]]":
         """Returns a dict mapping input names to iris for the given route
         number."""
         inputs, _ = self.get_inputs(routeno)
@@ -234,14 +248,14 @@ class MappingStep:
             for k, v in inputs.items()
         }
 
-    def number_of_routes(self):
+    def number_of_routes(self) -> int:
         """Returns total number of routes to this mapping step."""
         n = 0
         for inputs in self.input_routes:
             n += get_nroutes(inputs)
         return n
 
-    def lowest_costs(self, nresults=5):
+    def lowest_costs(self, nresults: int = 5) -> "List[Tuple[float, int]]":
         """Returns a list of `(cost, routeno)` tuples with up to the `nresult`
         lowest costs and their corresponding route numbers."""
         result = []
@@ -317,7 +331,12 @@ class MappingStep:
         # `nresults` rows with lowest cost.
         return sorted(result)[:nresults]
 
-    def show(self, routeno=None, name=None, indent=0):
+    def show(
+        self,
+        routeno: "Optional[int]" = None,
+        name: "Optional[str]" = None,
+        indent: int = 0,
+    ):
         """Returns a string representation of the mapping routes to this step.
 
         Arguments:
@@ -326,17 +345,17 @@ class MappingStep:
             indent: How of blanks to prepend each line with (mainly for
                 internal use).
         """
-        s = []
+        strings = []
         ind = " " * indent
-        s.append(ind + f'{name if name else "Step"}:')
-        s.append(
+        strings.append(ind + f'{name if name else "Step"}:')
+        strings.append(
             ind + f"  steptype: " f"{self.steptype.name if self.steptype else None}"
         )
-        s.append(ind + f"  output_iri: {self.output_iri}")
-        s.append(ind + f"  output_unit: {self.output_unit}")
-        s.append(ind + f"  cost: {self.cost}")
+        strings.append(ind + f"  output_iri: {self.output_iri}")
+        strings.append(ind + f"  output_unit: {self.output_unit}")
+        strings.append(ind + f"  cost: {self.cost}")
         if routeno is None:
-            s.append(ind + "  routes:")
+            strings.append(ind + "  routes:")
             for inputs in self.input_routes:
                 t = "\n".join(
                     [
@@ -344,9 +363,9 @@ class MappingStep:
                         for name_, input_ in inputs.items()
                     ]
                 )
-                s.append(ind + "    - " + t[indent + 6 :])
+                strings.append(ind + "    - " + t[indent + 6 :])
         else:
-            s.append(ind + "  inputs:")
+            strings.append(ind + "  inputs:")
             inputs, idx = self.get_inputs(routeno)
             t = "\n".join(
                 [
@@ -354,11 +373,11 @@ class MappingStep:
                     for name_, input_ in inputs.items()
                 ]
             )
-            s.append(ind + "    - " + t[indent + 6 :])
-        return "\n".join(s)
+            strings.append(ind + "    - " + t[indent + 6 :])
+        return "\n".join(strings)
 
 
-def get_nroutes(inputs):
+def get_nroutes(inputs: "Inputs") -> int:
     """Help function returning the number of routes for an input dict."""
     m = 1
     for input in inputs.values():
@@ -367,13 +386,16 @@ def get_nroutes(inputs):
     return m
 
 
-def get_values(inputs, routeno, quantity=Quantity, magnitudes=False):
+def get_values(
+    inputs: "Inputs", routeno: int, quantity: "Any" = Quantity, magnitudes: bool = False
+):
     """Help function returning a dict mapping the input names to actual value
     of expected input unit.
 
     There exists `get_nroutes(inputs)` routes to populate `inputs`.
     `routeno` is the index of the specific route we will use to obtain the
-    values."""
+    values.
+    """
     values = {}
     for k, v in inputs.items():
         if isinstance(v, MappingStep):
@@ -394,7 +416,7 @@ def get_values(inputs, routeno, quantity=Quantity, magnitudes=False):
     return values
 
 
-def fno_mapper(triplestore):
+def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
     """Finds all function definitions in `triplestore` based on the function
     ontololy (FNO).
 
@@ -448,25 +470,25 @@ def fno_mapper(triplestore):
 
 
 def mapping_routes(
-    target,
-    sources,
-    triplestore,
-    function_repo=None,
-    function_mappers=(fno_mapper,),
-    default_costs=(
+    target: str,
+    sources: "Dict[str, Value]",
+    triplestore: "Triplestore",
+    function_repo: "Any" = None,
+    function_mappers: "Sequence[Callable]" = (fno_mapper,),
+    default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
         ("instanceOf", 1.0),
         ("subClassOf", 1.0),
         ("value", 0.0),
     ),
-    mapsTo=MAP.mapsTo,
-    instanceOf=DM.instanceOf,
-    subClassOf=RDFS.subClassOf,
-    # description=DCTERMS.description,
-    label=RDFS.label,
-    hasUnit=DM.hasUnit,
-    hasCost=DM.hasCost,  # TODO - add hasCost to the DM ontology
+    mapsTo: str = MAP.mapsTo,
+    instanceOf: str = DM.instanceOf,
+    subClassOf: str = RDFS.subClassOf,
+    # description: str = DCTERMS.description,
+    label: str = RDFS.label,
+    hasUnit: str = DM.hasUnit,
+    hasCost: str = DM.hasCost,  # TODO - add hasCost to the DM ontology
 ) -> MappingStep:
     """Find routes of mappings from any source in `sources` to `target`.
 
