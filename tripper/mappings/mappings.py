@@ -537,8 +537,7 @@ def mapping_routes(
 
     default_costs = dict(default_costs)
 
-    # Create lookup tables for fast access to properties
-    # This only transverse `tiples` once
+    # Create lookup tables for fast access to triplestore content
     soMaps = defaultdict(list)  # (s, mapsTo, o)     ==> soMaps[s]  -> [o, ..]
     osMaps = defaultdict(list)  # (o, mapsTo, s)     ==> osMaps[o]  -> [s, ..]
     osSubcl = defaultdict(list)  # (o, subClassOf, s) ==> osSubcl[o] -> [s, ..]
@@ -624,8 +623,9 @@ def mapping_routes(
     step = MappingStep(output_iri=target, output_unit=soUnit.get(target))
     if target in soInst:
         # It is only initially we want to follow instanceOf in forward
-        # direction.
-        visited.add(target)  # do we really wan't this?
+        # direction.  Later on we will only follow mapsTo and instanceOf in
+        # backward direction.
+        visited.add(target)  # do we really wan't this?  Yes, I think so...
         source = soInst[target]
         step.steptype = StepType.INSTANCEOF
         step.cost = getcost(source, "instanceOf")
