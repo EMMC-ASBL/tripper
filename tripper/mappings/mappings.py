@@ -174,7 +174,7 @@ class MappingStep:
         If the `join_mode` attribute is true, the input is remembered, but
         first added when join_input() is called.
         """
-        assert isinstance(input, (MappingStep, Value))  # nosec
+        assert isinstance(input, (MappingStep, Value))  # nosec B101
         argname = name if name else f"arg{len(self.joined_input)+1}"
         if self.join_mode:
             self.joined_input[argname] = input
