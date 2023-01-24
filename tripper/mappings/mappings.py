@@ -161,7 +161,7 @@ class MappingStep:
 
     def add_inputs(self, inputs: "Inputs"):
         """Add input dict for an input route."""
-        assert isinstance(inputs, dict)  # nosec
+        assert isinstance(inputs, dict)  # nosec B101
         self.input_routes.append(inputs)
 
     def add_input(self, input: "Input", name: "Optional[str]" = None):
