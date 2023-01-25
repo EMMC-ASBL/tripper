@@ -495,6 +495,32 @@ class Triplestore:
                 raise NamespaceError(f"No prefix defined for IRI: {iri}")
         return iri
 
+    def map(
+        self,
+        source: str,
+        target: str,
+        cost: "Optional[Union[float, Callable]]" = None,
+        target_cost: bool = True,
+    ):
+        """Add 'mapsTo' relation to the triplestore.
+
+        Parameters:
+            source: Source IRI.
+            target: IRI of target ontological concept.
+            cost: User-defined cost of following this mapping relation
+                represented as a float.  It may be given either as a
+                float or as a callable taking the value of the mapped
+                quantity as input and returning the cost as a float.
+            target_cost: Whether the cost is assigned to mapping steps
+                that have `target` as output.
+        """
+        return self.add_mapsTo(
+            target=target,
+            source=source,
+            cost=cost,
+            target_cost=target_cost,
+        )
+
     def add_mapsTo(
         self,
         target: str,
@@ -516,6 +542,10 @@ class Triplestore:
                 quantity as input and returning the cost as a float.
             target_cost: Whether the cost is assigned to mapping steps
                 that have `target` as output.
+
+        Note:
+            This is equivalent to the `map()` method, but reverts the
+            two first arguments and adds the `property_name` argument.
         """
         self.bind("map", MAP)
 
