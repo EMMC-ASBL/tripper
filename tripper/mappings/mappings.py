@@ -20,6 +20,7 @@ import numpy as np
 from pint import Quantity  # remove
 
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
+from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
@@ -91,7 +92,7 @@ class Value:
     ):
         self.value = value
         self.unit = unit
-        self.iri = iri
+        self.output_iri = iri
         self.property_iri = property_iri
         self.cost = cost
 
@@ -112,7 +113,7 @@ class Value:
         strings = []
         ind = " " * indent
         strings.append(ind + f'{name if name else "Value"}:')
-        strings.append(ind + f"  iri: {self.iri}")
+        strings.append(ind + f"  iri: {self.output_iri}")
         strings.append(ind + f"  property_iri: {self.property_iri}")
         strings.append(ind + f"  unit: {self.unit}")
         strings.append(ind + f"  cost: {self.cost}")
@@ -133,9 +134,11 @@ class MappingStep:
         steptype: One of the step types from the StepType enum.
         function: Callable that evaluates the output from the input.
         cost: The cost related to this mapping step.  Should be either a
-            float or a callable taking the same arguments as `function` as
-            input returning the cost as a float.
+            float or a callable taking three arguments (`triplestore`,
+            `input_iris` and `output_iri`) and return the cost as a float.
         output_unit: Output unit.
+        triplestore: Triplestore instance containing the knowledge base
+            that this mapping step was created from.
 
     The arguments can also be assigned as attributes.
     """
@@ -149,11 +152,13 @@ class MappingStep:
         function: "Optional[Callable]" = None,
         cost: "Union[float, Callable]" = 1.0,
         output_unit: "Optional[str]" = None,
+        triplestore: "Optional[Triplestore]" = None,
     ):
         self.output_iri = output_iri
         self.steptype = steptype
         self.function = function
         self.cost = cost
+        self.triplestore = triplestore
         self.output_unit = output_unit
         self.input_routes: "List[dict]" = []  # list of inputs dicts
         self.join_mode = False  # whether to join upcoming input
@@ -244,7 +249,7 @@ class MappingStep:
         number."""
         inputs, _ = self.get_inputs(routeno)
         return {
-            k: v.output_iri if isinstance(v, MappingStep) else v.iri
+            k: v.output_iri if isinstance(v, MappingStep) else v.output_iri
             for k, v in inputs.items()
         }
 
@@ -318,9 +323,13 @@ class MappingStep:
             # mapping step.
             if callable(self.cost):
                 for i, rno in enumerate(base.routeno):
-                    values = get_values(inputs, rno, magnitudes=True)
-                    owncost = self.cost(**values)
+                    inputs, _ = self.get_inputs(rno)
+                    input_iris = [input.output_iri for input in inputs.values()]
+                    owncost = self.cost(self.triplestore, input_iris, self.output_iri)
                     base.cost[i] += owncost
+                    # values = get_values(inputs, rno, magnitudes=True)
+                    # owncost = self.cost(**values)
+                    # base.cost[i] += owncost
             else:
                 owncost = self.cost
                 base.cost += owncost
@@ -588,7 +597,10 @@ def mapping_routes(
         cost = soCost.get(target, default_costs[stepname])
         if cost is None:
             return None
-        return function_repo[cost] if cost in function_repo else float(cost)
+        # return function_repo[cost] if cost in function_repo else float(cost)
+        return (
+            function_repo[cost] if cost in function_repo else float(parse_literal(cost))
+        )
 
     def walk(target, visited, step):
         """Walk backward in rdf graph from `node` to sources."""
@@ -611,7 +623,11 @@ def mapping_routes(
                 )
                 step.add_input(value, name=soName.get(node))
             else:
-                prevstep = MappingStep(output_iri=node, output_unit=soUnit.get(node))
+                prevstep = MappingStep(
+                    output_iri=node,
+                    output_unit=soUnit.get(node),
+                    triplestore=triplestore,
+                )
                 step.add_input(prevstep, name=soName.get(node))
                 walk(node, visited, prevstep)
 
@@ -631,18 +647,24 @@ def mapping_routes(
             for func, input_iris in fmap(triplestore)[target]:
                 step.steptype = StepType.FUNCTION
                 step.cost = getcost(func, "function")
-                step.function = function_repo[func]
+                step.function = function_repo.get(func)
                 step.join_mode = True
                 for input_iri in input_iris:
                     step0 = MappingStep(
-                        output_iri=input_iri, output_unit=soUnit.get(input_iri)
+                        output_iri=input_iri,
+                        output_unit=soUnit.get(input_iri),
+                        triplestore=triplestore,
                     )
                     step.add_input(step0, name=soName.get(input_iri))
                     walk(input_iri, visited, step0)
                 step.join_input()
 
     visited = set()
-    step = MappingStep(output_iri=target, output_unit=soUnit.get(target))
+    step = MappingStep(
+        output_iri=target,
+        output_unit=soUnit.get(target),
+        triplestore=triplestore,
+    )
     if target in soInst:
         # It is only initially we want to follow instanceOf in forward
         # direction.  Later on we will only follow mapsTo and instanceOf in
@@ -651,7 +673,11 @@ def mapping_routes(
         source = soInst[target]
         step.steptype = StepType.INSTANCEOF
         step.cost = getcost(source, "instanceOf")
-        step0 = MappingStep(output_iri=source, output_unit=soUnit.get(source))
+        step0 = MappingStep(
+            output_iri=source,
+            output_unit=soUnit.get(source),
+            triplestore=triplestore,
+        )
         step.add_input(step0, name=soName.get(target))
         step = step0
         target = source
