@@ -23,7 +23,19 @@ from typing import TYPE_CHECKING
 
 from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
 from tripper.literal import Literal
-from tripper.namespace import DCTERMS, DM, FNO, MAP, OWL, RDF, RDFS, XML, XSD, Namespace
+from tripper.namespace import (
+    DCTERMS,
+    DM,
+    EMMO,
+    FNO,
+    MAP,
+    OWL,
+    RDF,
+    RDFS,
+    XML,
+    XSD,
+    Namespace,
+)
 from tripper.utils import en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -644,5 +656,57 @@ class Triplestore:
             self.add((lst, RDF.first, val))
             self.add((lst, RDF.rest, lst_next))
             lst = lst_next
+
+        return func_iri
+
+    def _add_function_emmo(self, func, expects, returns, base_iri):
+        """Implementing add_function() for EMMO."""
+        # pylint: disable=too-many-locals
+        self.bind("emmo", EMMO)
+        self.bind("dcterms", DCTERMS)
+        self.bind("map", MAP)
+
+        # Hardcode EMMO IRIs to avoid slow lookup
+        Task = EMMO.EMMO_4299e344_a321_4ef2_a744_bacfcce80afc
+        DataSet = EMMO.EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
+        hasInput = EMMO.EMMO_36e69413_8c59_4799_946c_10b05d266e22
+        hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
+        # Software = EMMO.EMMO_8681074a_e225_4e38_b586_e85b0f43ce38
+        # hasSoftware = EMMO.Software  # TODO: fix
+
+        if base_iri is None:
+            base_iri = self.base_iri if self.base_iri else ":"
+
+        if callable(func):
+            fid = function_id(func)  # Function id
+            func_iri = f"{base_iri}{func.__name__}_{fid}"
+            doc_string = inspect.getdoc(func)
+            if isinstance(expects, Sequence):
+                pars = list(zip(inspect.signature(func).parameters, expects))
+            else:
+                pars = expects.items()
+        elif isinstance(func, str):
+            func_iri = func
+            doc_string = ""
+            pariris = expects if isinstance(expects, Sequence) else expects.values()
+            parnames = [split_iri(pariri)[1] for pariri in pariris]
+            pars = list(zip(parnames, pariris))
+        else:
+            raise TypeError("`func` should be either a callable or an IRI")
+
+        self.add((func_iri, RDF.type, Task))
+        for parname, iri in pars:
+            par = f"{func_iri}_input_{parname}"
+            self.add((par, RDF.type, DataSet))
+            self.add((par, RDFS.label, en(parname)))
+            self.add((par, MAP.mapsTo, iri))
+            self.add((func_iri, hasInput, par))
+        for i, iri in enumerate(returns):
+            val = f"{func_iri}_output{i+1}"
+            self.add((val, RDF.type, DataSet))
+            self.add((val, MAP.mapsTo, iri))
+            self.add((func_iri, hasOutput, val))
+        if doc_string:
+            self.add((func_iri, DCTERMS.description, en(doc_string)))
 
         return func_iri
