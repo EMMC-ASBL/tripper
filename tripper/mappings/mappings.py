@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Sequence
 import numpy as np
 from pint import Quantity  # remove
 
-from tripper import DM, FNO, MAP, RDF, RDFS
+from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
@@ -474,6 +474,28 @@ def get_values(
             }
 
     return values
+
+
+def emmo_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
+    """Finds all function definitions in `triplestore` based on EMMO.
+
+    Return a dict mapping output IRIs to a list of
+
+        (function_iri, [input_iris, ...])
+
+    tuples.
+    """
+    Task = EMMO.EMMO_4299e344_a321_4ef2_a744_bacfcce80afc
+    hasInput = EMMO.EMMO_36e69413_8c59_4799_946c_10b05d266e22
+    hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
+
+    d = defaultdict(list)
+    for task in triplestore.subjects(RDF.type, Task):
+        inputs = list(triplestore.objects(task, hasInput))
+        for output in triplestore.objects(task, hasOutput):
+            d[output].append((task, inputs))
+
+    return d
 
 
 def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
