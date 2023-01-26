@@ -288,7 +288,7 @@ class MappingStep:
             nresults: Number of results to return.
 
         Returns:
-            A list of ``(cost, routeno)`` tuples.
+            A list of `(cost, routeno)` tuples.
         """
         result = []
         n = 0  # total number of routes
@@ -484,7 +484,7 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
         triplestore: The triplestore to investigate.
 
     Returns:
-        A mapping of output IRIs to a list of ``(function_iri, [input_iris, ...])``
+        A mapping of output IRIs to a list of `(function_iri, [input_iris, ...])`
         tuples.
     """
     # pylint: disable=too-many-branches
