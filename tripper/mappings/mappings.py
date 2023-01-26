@@ -22,7 +22,7 @@ from pint import Quantity  # remove
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
+    from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
     from tripper import Triplestore
 
@@ -200,7 +200,7 @@ class MappingStep:
         routeno: "Optional[int]" = None,
         unit: "Optional[str]" = None,
         magnitude: bool = False,
-        quantity: "Type[Quantity]" = Quantity,
+        quantity: "Any" = Quantity,
     ) -> "Any":
         """Returns the evaluated value of given input route number.
 
@@ -431,7 +431,7 @@ def get_nroutes(inputs: "Inputs") -> int:
 def get_values(
     inputs: "dict[str, Any]",
     routeno: int,
-    quantity: "Type[Quantity]" = Quantity,
+    quantity: "Any" = Quantity,
     magnitudes: bool = False,
 ) -> "dict[str, Any]":
     """Help function returning a dict mapping the input names to actual value
