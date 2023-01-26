@@ -411,37 +411,37 @@ class Triplestore:
         self, predicate=None, object=None  # pylint: disable=redefined-builtin
     ):
         """Returns a generator of subjects for given predicate and object."""
-        for s, _, _ in self.triples((None, predicate, object)):
+        for s, _, _ in self.triples(predicate=predicate, object=object):
             yield s
 
     def predicates(
         self, subject=None, object=None  # pylint: disable=redefined-builtin
     ):
         """Returns a generator of predicates for given subject and object."""
-        for _, p, _ in self.triples((subject, None, object)):
+        for _, p, _ in self.triples(subject=subject, object=object):
             yield p
 
     def objects(self, subject=None, predicate=None):
         """Returns a generator of objects for given subject and predicate."""
-        for _, _, o in self.triples((subject, predicate, None)):
+        for _, _, o in self.triples(subject=subject, predicate=predicate):
             yield o
 
     def subject_predicates(self, object=None):  # pylint: disable=redefined-builtin
         """Returns a generator of (subject, predicate) tuples for given
         object."""
-        for s, p, _ in self.triples((None, None, object)):
+        for s, p, _ in self.triples(object=object):
             yield s, p
 
     def subject_objects(self, predicate=None):
         """Returns a generator of (subject, object) tuples for given
         predicate."""
-        for s, _, o in self.triples((None, predicate, None)):
+        for s, _, o in self.triples(predicate=predicate):
             yield s, o
 
     def predicate_objects(self, subject=None):
         """Returns a generator of (predicate, object) tuples for given
         subject."""
-        for _, p, o in self.triples((subject, None, None)):
+        for _, p, o in self.triples(subject=subject):
             yield p, o
 
     def set(self, triple):
@@ -459,7 +459,7 @@ class Triplestore:
     ):  # pylint: disable=redefined-builtin
         """Returns true if the triplestore has any triple matching
         the give subject, predicate and/or object."""
-        triple = self.triples((subject, predicate, object))
+        triple = self.triples(subject=subject, predicate=predicate, object=object)
         try:
             next(triple)
         except StopIteration:
