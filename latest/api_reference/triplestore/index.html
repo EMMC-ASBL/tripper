@@ -1575,7 +1575,9 @@ Triplestore        </code>
 <span class="sd">            base_iri: Base of the IRI representing the function in the</span>
 <span class="sd">                knowledge base.  Defaults to the base IRI of the triplestore.</span>
 <span class="sd">            standard: Name of ontology to use when describing the function.</span>
-<span class="sd">                Defaults to the Function Ontology (FnO).</span>
+<span class="sd">                Valid values are:</span>
+<span class="sd">                - &quot;emmo&quot;: Elementary Multiperspective Material Ontology (EMMO)</span>
+<span class="sd">                - &quot;fno&quot;: Function Ontology (FnO)</span>
 <span class="sd">            cost: User-defined cost of following this mapping relation</span>
 <span class="sd">                represented as a float.  It may be given either as a</span>
 <span class="sd">                float or as a callable taking the same arguments as `func`</span>
@@ -1675,6 +1677,58 @@ Triplestore        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">lst</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">lst</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">rest</span><span class="p">,</span> <span class="n">lst_next</span><span class="p">))</span>
             <span class="n">lst</span> <span class="o">=</span> <span class="n">lst_next</span>
+
+        <span class="k">return</span> <span class="n">func_iri</span>
+
+    <span class="k">def</span> <span class="nf">_add_function_emmo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="p">,</span> <span class="n">returns</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implementing add_function() method for the &quot;emmo&quot; standard.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=too-many-locals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="n">EMMO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;dcterms&quot;</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">MAP</span><span class="p">)</span>
+
+        <span class="c1"># Hardcode EMMO IRIs to avoid slow lookup</span>
+        <span class="n">Task</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_4299e344_a321_4ef2_a744_bacfcce80afc</span>
+        <span class="n">DataSet</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a</span>
+        <span class="n">hasInput</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_36e69413_8c59_4799_946c_10b05d266e22</span>
+        <span class="n">hasOutput</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840</span>
+        <span class="c1"># Software = EMMO.EMMO_8681074a_e225_4e38_b586_e85b0f43ce38</span>
+        <span class="c1"># hasSoftware = EMMO.Software  # TODO: fix when EMMO has hasSoftware</span>
+
+        <span class="k">if</span> <span class="n">base_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base_iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="k">else</span> <span class="s2">&quot;:&quot;</span>
+
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="n">fid</span> <span class="o">=</span> <span class="n">function_id</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># Function id</span>
+            <span class="n">func_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_iri</span><span class="si">}{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">doc_string</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expects</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+                <span class="n">pars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">expects</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pars</span> <span class="o">=</span> <span class="n">expects</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">func_iri</span> <span class="o">=</span> <span class="n">func</span>
+            <span class="n">doc_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">pariris</span> <span class="o">=</span> <span class="n">expects</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expects</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="n">expects</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="n">parnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">split_iri</span><span class="p">(</span><span class="n">pariri</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pariri</span> <span class="ow">in</span> <span class="n">pariris</span><span class="p">]</span>
+            <span class="n">pars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">parnames</span><span class="p">,</span> <span class="n">pariris</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`func` should be either a callable or an IRI&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">Task</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">parname</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">pars</span><span class="p">:</span>
+            <span class="n">par</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_input_</span><span class="si">{</span><span class="n">parname</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">parname</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">hasInput</span><span class="p">,</span> <span class="n">par</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">returns</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_output</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">hasOutput</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">doc_string</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">doc_string</span><span class="p">)))</span>
 
         <span class="k">return</span> <span class="n">func_iri</span>
 </code></pre></div>
@@ -1875,7 +1929,9 @@ knowledge base.  Defaults to the base IRI of the triplestore.</p></td>
         <td><code>standard</code></td>
         <td><code>str</code></td>
         <td><p>Name of ontology to use when describing the function.
-Defaults to the Function Ontology (FnO).</p></td>
+Valid values are:
+- "emmo": Elementary Multiperspective Material Ontology (EMMO)
+- "fno": Function Ontology (FnO)</p></td>
         <td><code>&#39;fno&#39;</code></td>
       </tr>
       <tr>
@@ -1928,7 +1984,9 @@ returning the cost as a float.</p></td>
 <span class="sd">        base_iri: Base of the IRI representing the function in the</span>
 <span class="sd">            knowledge base.  Defaults to the base IRI of the triplestore.</span>
 <span class="sd">        standard: Name of ontology to use when describing the function.</span>
-<span class="sd">            Defaults to the Function Ontology (FnO).</span>
+<span class="sd">            Valid values are:</span>
+<span class="sd">            - &quot;emmo&quot;: Elementary Multiperspective Material Ontology (EMMO)</span>
+<span class="sd">            - &quot;fno&quot;: Function Ontology (FnO)</span>
 <span class="sd">        cost: User-defined cost of following this mapping relation</span>
 <span class="sd">            represented as a float.  It may be given either as a</span>
 <span class="sd">            float or as a callable taking the same arguments as `func`</span>
