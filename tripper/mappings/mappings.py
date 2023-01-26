@@ -240,6 +240,7 @@ class MappingStep:
         for inputs in self.input_routes:
             n0 = n
             n += get_nroutes(inputs)
+            print(f"*** {n=} {routeno=}")
             if n > routeno:
                 return inputs, routeno - n0
         raise ValueError(f"routeno={routeno} exceeds number of routes")
@@ -384,6 +385,13 @@ class MappingStep:
             )
             strings.append(ind + "    - " + t[indent + 6 :])
         return "\n".join(strings)
+
+    def get_workflow(self, routeno: int):
+        """Returns a representation of route number `routeno` as a
+        declarative workflow in YAML."""
+        strings = []
+        strings.append("---")
+        inputs, idx = self.get_inputs(routeno)
 
 
 def get_nroutes(inputs: "Inputs") -> int:
