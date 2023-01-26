@@ -556,7 +556,9 @@ class Triplestore:
             base_iri: Base of the IRI representing the function in the
                 knowledge base.  Defaults to the base IRI of the triplestore.
             standard: Name of ontology to use when describing the function.
-                Defaults to the Function Ontology (FnO).
+                Valid values are:
+                - "emmo": Elementary Multiperspective Material Ontology (EMMO)
+                - "fno": Function Ontology (FnO)
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
                 float or as a callable taking the same arguments as `func`
@@ -660,7 +662,7 @@ class Triplestore:
         return func_iri
 
     def _add_function_emmo(self, func, expects, returns, base_iri):
-        """Implementing add_function() for EMMO."""
+        """Implementing add_function() method for the "emmo" standard."""
         # pylint: disable=too-many-locals
         self.bind("emmo", EMMO)
         self.bind("dcterms", DCTERMS)
