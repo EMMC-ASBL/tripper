@@ -674,7 +674,7 @@ class Triplestore:
         hasInput = EMMO.EMMO_36e69413_8c59_4799_946c_10b05d266e22
         hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
         # Software = EMMO.EMMO_8681074a_e225_4e38_b586_e85b0f43ce38
-        # hasSoftware = EMMO.Software  # TODO: fix
+        # hasSoftware = EMMO.Software  # TODO: fix when EMMO has hasSoftware
 
         if base_iri is None:
             base_iri = self.base_iri if self.base_iri else ":"
