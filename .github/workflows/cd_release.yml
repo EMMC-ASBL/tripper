@@ -25,11 +25,10 @@ jobs:
       publish_on_pypi: true
 
       # Build & publish documentation
-      update_docs: true
+      update_docs: false
       python_version_docs: "3.7"
       doc_extras: "[docs]"
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
-      strict: false
     secrets:
       PyPI_token: ${{ secrets.PYPI_TOKEN }}
       PAT: ${{ secrets.RELEASE_PAT }}
