@@ -612,6 +612,7 @@ class Triplestore:
         if callable(func):
             fid = function_id(func)  # Function id
             func_iri = f"{base_iri}{func.__name__}_{fid}"
+            name = func.__name__
             doc_string = inspect.getdoc(func)
             parlist = f"_:{func.__name__}{fid}_parlist"
             outlist = f"_:{func.__name__}{fid}_outlist"
@@ -623,6 +624,7 @@ class Triplestore:
                 ]
         elif isinstance(func, str):
             func_iri = func
+            name = split_iri(func)[1]
             doc_string = ""
             parlist = f"_:{func_iri}_parlist"
             outlist = f"_:{func_iri}_outlist"
@@ -633,6 +635,7 @@ class Triplestore:
             raise TypeError("`func` should be either a callable or an IRI")
 
         self.add((func_iri, RDF.type, FNO.Function))
+        self.add((func_iri, RDFS.label, en(name)))
         self.add((func_iri, FNO.expects, parlist))
         self.add((func_iri, FNO.returns, outlist))
         if doc_string:
@@ -682,6 +685,7 @@ class Triplestore:
         if callable(func):
             fid = function_id(func)  # Function id
             func_iri = f"{base_iri}{func.__name__}_{fid}"
+            name = func.__name__
             doc_string = inspect.getdoc(func)
             if isinstance(expects, Sequence):
                 pars = list(zip(inspect.signature(func).parameters, expects))
@@ -689,6 +693,7 @@ class Triplestore:
                 pars = expects.items()
         elif isinstance(func, str):
             func_iri = func
+            name = split_iri(func)[1]
             doc_string = ""
             pariris = expects if isinstance(expects, Sequence) else expects.values()
             parnames = [split_iri(pariri)[1] for pariri in pariris]
@@ -697,6 +702,7 @@ class Triplestore:
             raise TypeError("`func` should be either a callable or an IRI")
 
         self.add((func_iri, RDF.type, Task))
+        self.add((func_iri, RDFS.label, en(name)))
         for parname, iri in pars:
             par = f"{func_iri}_input_{parname}"
             self.add((par, RDF.type, DataSet))

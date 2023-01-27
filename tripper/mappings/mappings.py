@@ -240,7 +240,6 @@ class MappingStep:
         for inputs in self.input_routes:
             n0 = n
             n += get_nroutes(inputs)
-            print(f"*** {n=} {routeno=}")
             if n > routeno:
                 return inputs, routeno - n0
         raise ValueError(f"routeno={routeno} exceeds number of routes")
@@ -386,7 +385,50 @@ class MappingStep:
             strings.append(ind + "    - " + t[indent + 6 :])
         return "\n".join(strings)
 
-    def get_workflow(self, routeno: int):
+    def _iri(self, iri: str) -> str:
+        """Help method that returns prefixed iri if possible, otherwise `iri`."""
+        return self.triplestore.prefix_iri(iri) if self.triplestore else iri
+
+    def _visualise(self, routeno: int, input_iri: str) -> str:
+        """Help function for visualise()"""
+        inputs, idx = self.get_inputs(routeno)
+        strings = []
+        for name, input in inputs.items():
+            if isinstance(input, Value):
+                print(
+                    f"*** Value: {name}: {self._iri(input_iri)} -> {self._iri(self.output_iri)}"
+                )
+                strings.append(
+                    f'  "{self._iri(input.output_iri)}" -> '
+                    f'"{self._iri(input_iri)}";'
+                )
+            elif isinstance(input, MappingStep):
+                print(
+                    f"*** {self.steptype}: {name}: {self._iri(input_iri)} -> {self._iri(self.output_iri)}"
+                )
+                strings.append(input._visualise(routeno=idx, input_iri=self.output_iri))
+                strings.append(
+                    f'  "{self._iri(self.output_iri)}" -> '
+                    f'"{self._iri(input.output_iri)}";'
+                )
+                # strings.append(
+                #    f'  "{self._iri(self.output_iri)}" '
+                #    f'[style=filled,fillcolor=lightyellow]'
+                # )
+            else:
+                raise TypeError("input should be Value or MappingStep")
+        return "\n".join(strings)
+
+    def visualise(self, routeno: int) -> str:
+        """Returns a representation of route number `routeno` as a
+        declarative workflow in YAML."""
+        strings = []
+        strings.append("digraph G {")
+        strings.append(self._visualise(routeno, "???"))
+        strings.append("}")
+        return "\n".join(strings)
+
+    def get_workflow(self, routeno: int) -> str:
         """Returns a representation of route number `routeno` as a
         declarative workflow in YAML."""
         strings = []
@@ -513,7 +555,7 @@ def mapping_routes(
     sources: "Dict[str, Value]",
     triplestore: "Triplestore",
     function_repo: "Any" = None,
-    function_mappers: "Sequence[Callable]" = (fno_mapper,),
+    function_mappers: "Sequence[Callable]" = (emmo_mapper, fno_mapper),
     default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
