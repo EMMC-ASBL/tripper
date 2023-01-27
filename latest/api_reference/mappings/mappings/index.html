@@ -1214,14 +1214,21 @@ output, a set of triples are expected.</p>
         <td><code>cost</code></td>
         <td><code>&#39;Union[float, Callable]&#39;</code></td>
         <td><p>The cost related to this mapping step.  Should be either a
-float or a callable taking the same arguments as <code>function</code> as
-input returning the cost as a float.</p></td>
+float or a callable taking three arguments (<code>triplestore</code>,
+<code>input_iris</code> and <code>output_iri</code>) and return the cost as a float.</p></td>
         <td><code>1.0</code></td>
       </tr>
       <tr>
         <td><code>output_unit</code></td>
         <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Output unit.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>triplestore</code></td>
+        <td><code>&#39;Optional[Triplestore]&#39;</code></td>
+        <td><p>Triplestore instance containing the knowledge base
+that this mapping step was created from.</p></td>
         <td><code>None</code></td>
       </tr>
   </tbody>
@@ -1242,9 +1249,11 @@ input returning the cost as a float.</p></td>
 <span class="sd">        steptype: One of the step types from the StepType enum.</span>
 <span class="sd">        function: Callable that evaluates the output from the input.</span>
 <span class="sd">        cost: The cost related to this mapping step.  Should be either a</span>
-<span class="sd">            float or a callable taking the same arguments as `function` as</span>
-<span class="sd">            input returning the cost as a float.</span>
+<span class="sd">            float or a callable taking three arguments (`triplestore`,</span>
+<span class="sd">            `input_iris` and `output_iri`) and return the cost as a float.</span>
 <span class="sd">        output_unit: Output unit.</span>
+<span class="sd">        triplestore: Triplestore instance containing the knowledge base</span>
+<span class="sd">            that this mapping step was created from.</span>
 
 <span class="sd">    The arguments can also be assigned as attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1258,11 +1267,13 @@ input returning the cost as a float.</p></td>
         <span class="n">function</span><span class="p">:</span> <span class="s2">&quot;Optional[Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">output_unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Optional[Triplestore]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">output_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">steptype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span> <span class="o">=</span> <span class="n">triplestore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_unit</span> <span class="o">=</span> <span class="n">output_unit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span> <span class="s2">&quot;List[dict]&quot;</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of inputs dicts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether to join upcoming input</span>
@@ -1369,7 +1380,7 @@ input returning the cost as a float.</p></td>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">iri</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
 
@@ -1454,8 +1465,9 @@ input returning the cost as a float.</p></td>
             <span class="c1"># mapping step.</span>
             <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rno</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">routeno</span><span class="p">):</span>
-                    <span class="n">values</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">rno</span><span class="p">,</span> <span class="n">magnitudes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="n">owncost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">(</span><span class="o">**</span><span class="n">values</span><span class="p">)</span>
+                    <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">rno</span><span class="p">)</span>
+                    <span class="n">input_iris</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                    <span class="n">owncost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">input_iris</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span>
                     <span class="n">base</span><span class="o">.</span><span class="n">cost</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">owncost</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">owncost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span>
@@ -1783,7 +1795,7 @@ number.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">iri</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">}</span>
 </code></pre></div>
@@ -2026,8 +2038,9 @@ lowest costs and their corresponding route numbers.</p>
         <span class="c1"># mapping step.</span>
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rno</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">routeno</span><span class="p">):</span>
-                <span class="n">values</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">rno</span><span class="p">,</span> <span class="n">magnitudes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">owncost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">(</span><span class="o">**</span><span class="n">values</span><span class="p">)</span>
+                <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">rno</span><span class="p">)</span>
+                <span class="n">input_iris</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+                <span class="n">owncost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">input_iris</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span>
                 <span class="n">base</span><span class="o">.</span><span class="n">cost</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">owncost</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">owncost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span>
@@ -2401,7 +2414,7 @@ instance of.</p></td>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iri</span> <span class="o">=</span> <span class="n">iri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span> <span class="o">=</span> <span class="n">property_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
 
@@ -2427,7 +2440,7 @@ instance of.</p></td>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
         <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  property_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2534,7 +2547,7 @@ the corresponding method in Step.</p></td>
     <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
     <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  property_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2922,7 +2935,7 @@ value (with no unit).</p></td>
 
 
 <h2 class="doc doc-heading" id="tripper.mappings.mappings.mapping_routes">
-<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7fe685ab5320</span><span class="o">&gt;</span><span class="p">,),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7f34bfc754d0</span><span class="o">&gt;</span><span class="p">,),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.mappings.mappings.mapping_routes" title="Permanent link">&para;</a></h2>
@@ -3110,7 +3123,9 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
         <span class="n">cost</span> <span class="o">=</span> <span class="n">soCost</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">default_costs</span><span class="p">[</span><span class="n">stepname</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">cost</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">function_repo</span><span class="p">[</span><span class="n">cost</span><span class="p">]</span> <span class="k">if</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">function_repo</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">function_repo</span><span class="p">[</span><span class="n">cost</span><span class="p">]</span> <span class="k">if</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">function_repo</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">parse_literal</span><span class="p">(</span><span class="n">cost</span><span class="p">))</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Walk backward in rdf graph from `node` to sources.&quot;&quot;&quot;</span>
@@ -3133,7 +3148,11 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
                 <span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">prevstep</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span><span class="n">output_iri</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+                <span class="n">prevstep</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span>
+                    <span class="n">output_iri</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                    <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
+                    <span class="n">triplestore</span><span class="o">=</span><span class="n">triplestore</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">prevstep</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
                 <span class="n">walk</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">prevstep</span><span class="p">)</span>
 
@@ -3153,18 +3172,24 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
             <span class="k">for</span> <span class="n">func</span><span class="p">,</span> <span class="n">input_iris</span> <span class="ow">in</span> <span class="n">fmap</span><span class="p">(</span><span class="n">triplestore</span><span class="p">)[</span><span class="n">target</span><span class="p">]:</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">getcost</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span>
-                <span class="n">step</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">function_repo</span><span class="p">[</span><span class="n">func</span><span class="p">]</span>
+                <span class="n">step</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">function_repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">for</span> <span class="n">input_iri</span> <span class="ow">in</span> <span class="n">input_iris</span><span class="p">:</span>
                     <span class="n">step0</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span>
-                        <span class="n">output_iri</span><span class="o">=</span><span class="n">input_iri</span><span class="p">,</span> <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">input_iri</span><span class="p">)</span>
+                        <span class="n">output_iri</span><span class="o">=</span><span class="n">input_iri</span><span class="p">,</span>
+                        <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">input_iri</span><span class="p">),</span>
+                        <span class="n">triplestore</span><span class="o">=</span><span class="n">triplestore</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">step0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">input_iri</span><span class="p">))</span>
                     <span class="n">walk</span><span class="p">(</span><span class="n">input_iri</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">step0</span><span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">join_input</span><span class="p">()</span>
 
     <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">step</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span><span class="n">output_iri</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span>
+        <span class="n">output_iri</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+        <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">),</span>
+        <span class="n">triplestore</span><span class="o">=</span><span class="n">triplestore</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">soInst</span><span class="p">:</span>
         <span class="c1"># It is only initially we want to follow instanceOf in forward</span>
         <span class="c1"># direction.  Later on we will only follow mapsTo and instanceOf in</span>
@@ -3173,7 +3198,11 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
         <span class="n">source</span> <span class="o">=</span> <span class="n">soInst</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
         <span class="n">step</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INSTANCEOF</span>
         <span class="n">step</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">getcost</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;instanceOf&quot;</span><span class="p">)</span>
-        <span class="n">step0</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span><span class="n">output_iri</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+        <span class="n">step0</span> <span class="o">=</span> <span class="n">MappingStep</span><span class="p">(</span>
+            <span class="n">output_iri</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
+            <span class="n">triplestore</span><span class="o">=</span><span class="n">triplestore</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">step0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
         <span class="n">step</span> <span class="o">=</span> <span class="n">step0</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">source</span>
