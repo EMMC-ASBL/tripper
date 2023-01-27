@@ -22,7 +22,7 @@ from pint import Quantity  # remove
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+    from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Type, Union
 
     from tripper import Triplestore
 
@@ -496,7 +496,7 @@ def mapping_routes(
     sources: "Dict[str, Value]",
     triplestore: "Triplestore",
     function_repo: "Any" = None,
-    function_mappers: "Sequence[Callable]" = (fno_mapper,),
+    function_mappers: "Sequence[Callable]" = (emmo_mapper,),
     default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
@@ -504,6 +504,8 @@ def mapping_routes(
         ("subClassOf", 1.0),
         ("value", 0.0),
     ),
+    value_class: "Optional[Type[Value]]" = None,
+    mappingstep_class: "Optional[Type[MappingStep]]" = None,
     mapsTo: str = MAP.mapsTo,
     instanceOf: str = DM.instanceOf,
     subClassOf: str = RDFS.subClassOf,
@@ -534,6 +536,10 @@ def mapping_routes(
             of mapping steps ("function", "mapsTo", "instanceOf",
             "subclassOf", and "value").  These costs can be overridden with
             'hasCost' relations in the ontology.
+        value_class: Optional `Value` subclass to use instead of `Value` when
+            creating the returned mapping route.
+        mappingstep_class: Optional `MappingStep` subclass to use instead of
+            `MappingStep` when creating the returned mapping route.
         mapsTo: IRI of 'mapsTo' in `triplestore`.
         instanceOf: IRI of 'instanceOf' in `triplestore`.
         subClassOf: IRI of 'subClassOf' in `triples`.  Set it to None if
@@ -558,6 +564,12 @@ def mapping_routes(
         function_repo = triplestore.function_repo
 
     default_costs = dict(default_costs)
+
+    if value_class is None:
+        value_class = Value
+
+    if mappingstep_class is None:
+        mappingstep_class = MappingStep
 
     # Create lookup tables for fast access to triplestore content
     soMaps = defaultdict(list)  # (s, mapsTo, o)     ==> soMaps[s]  -> [o, ..]
@@ -602,7 +614,7 @@ def mapping_routes(
             step.steptype = steptype
             step.cost = getcost(target, stepname)
             if node in sources:
-                value = Value(
+                value = value_class(
                     value=sources[node],
                     unit=soUnit.get(node),
                     iri=node,
@@ -611,7 +623,10 @@ def mapping_routes(
                 )
                 step.add_input(value, name=soName.get(node))
             else:
-                prevstep = MappingStep(output_iri=node, output_unit=soUnit.get(node))
+                prevstep = mappingstep_class(
+                    output_iri=node,
+                    output_unit=soUnit.get(node),
+                )
                 step.add_input(prevstep, name=soName.get(node))
                 walk(node, visited, prevstep)
 
@@ -634,7 +649,7 @@ def mapping_routes(
                 step.function = function_repo[func]
                 step.join_mode = True
                 for input_iri in input_iris:
-                    step0 = MappingStep(
+                    step0 = mappingstep_class(
                         output_iri=input_iri, output_unit=soUnit.get(input_iri)
                     )
                     step.add_input(step0, name=soName.get(input_iri))
@@ -642,7 +657,7 @@ def mapping_routes(
                 step.join_input()
 
     visited = set()
-    step = MappingStep(output_iri=target, output_unit=soUnit.get(target))
+    step = mappingstep_class(output_iri=target, output_unit=soUnit.get(target))
     if target in soInst:
         # It is only initially we want to follow instanceOf in forward
         # direction.  Later on we will only follow mapsTo and instanceOf in
@@ -651,7 +666,7 @@ def mapping_routes(
         source = soInst[target]
         step.steptype = StepType.INSTANCEOF
         step.cost = getcost(source, "instanceOf")
-        step0 = MappingStep(output_iri=source, output_unit=soUnit.get(source))
+        step0 = mappingstep_class(output_iri=source, output_unit=soUnit.get(source))
         step.add_input(step0, name=soName.get(target))
         step = step0
         target = source
