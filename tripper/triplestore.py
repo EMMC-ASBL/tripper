@@ -570,7 +570,7 @@ class Triplestore:
         expects: "Union[str, Sequence, Mapping]" = (),
         returns: "Union[str, Sequence]" = (),
         base_iri: "Optional[str]" = None,
-        standard: str = "fno",
+        standard: str = "emmo",
         cost: "Optional[Union[float, Callable]]" = None,
     ):
         """Inspect function and add triples describing it to the triplestore.
