@@ -1258,7 +1258,7 @@ input returning the cost as a float.</p></td>
         <span class="n">function</span><span class="p">:</span> <span class="s2">&quot;Optional[Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">output_unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">output_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">steptype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">function</span>
@@ -1268,12 +1268,12 @@ input returning the cost as a float.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether to join upcoming input</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add input dict for an input route.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>  <span class="c1"># nosec B101</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an input (MappingStep or Value), where `name` is the name</span>
 <span class="sd">        assigned to the argument.</span>
 
@@ -1290,7 +1290,7 @@ input returning the cost as a float.</p></td>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_inputs</span><span class="p">({</span><span class="n">argname</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
 
-    <span class="k">def</span> <span class="nf">join_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">join_input</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Join all input added with add_input() since `join_mode` was set true.</span>
 <span class="sd">        Resets `join_mode` to false.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span><span class="p">:</span>
@@ -1304,16 +1304,16 @@ input returning the cost as a float.</p></td>
         <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Type[Quantity]&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the evaluated value of given input route number.</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Arguments:</span>
 <span class="sd">            routeno: The route number to evaluate.  If None (default)</span>
 <span class="sd">                the route with the lowest cost is evalueated.</span>
 <span class="sd">            unit: return the result in the given unit.</span>
 <span class="sd">                Implies `magnitude=True`.</span>
-<span class="sd">            magnitude: Whether to only return the magitude of the evaluated</span>
+<span class="sd">            magnitude: Whether to only return the magnitude of the evaluated</span>
 <span class="sd">                value (with no unit).</span>
 <span class="sd">            quantity: Quantity class to use for evaluation.  Defaults to pint.</span>
 
@@ -1339,7 +1339,15 @@ input returning the cost as a float.</p></td>
 
     <span class="k">def</span> <span class="nf">get_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tuple[Inputs, int]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns input and input index `(inputs, idx)` for route number</span>
-<span class="sd">        `routeno`.&quot;&quot;&quot;</span>
+<span class="sd">        `routeno`.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            routeno: The route number to return inputs for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Inputs and difference between route number and number of routes for an</span>
+<span class="sd">            input dictioary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
             <span class="n">n0</span> <span class="o">=</span> <span class="n">n</span>
@@ -1350,7 +1358,15 @@ input returning the cost as a float.</p></td>
 
     <span class="k">def</span> <span class="nf">get_input_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, Optional[str]]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict mapping input names to iris for the given route</span>
-<span class="sd">        number.&quot;&quot;&quot;</span>
+<span class="sd">        number.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            routeno: The route number to return a mapping for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping of input names to IRIs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">iri</span>
@@ -1358,7 +1374,11 @@ input returning the cost as a float.</p></td>
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">number_of_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns total number of routes to this mapping step.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total number of routes to this mapping step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Total number of routes to this mapping step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
             <span class="n">n</span> <span class="o">+=</span> <span class="n">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -1366,7 +1386,14 @@ input returning the cost as a float.</p></td>
 
     <span class="k">def</span> <span class="nf">lowest_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nresults</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[float, int]]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of `(cost, routeno)` tuples with up to the `nresult`</span>
-<span class="sd">        lowest costs and their corresponding route numbers.&quot;&quot;&quot;</span>
+<span class="sd">        lowest costs and their corresponding route numbers.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            nresults: Number of results to return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of `(cost, routeno)` tuples.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of routes</span>
 
@@ -1445,7 +1472,7 @@ input returning the cost as a float.</p></td>
         <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the mapping routes to this step.</span>
 
 <span class="sd">        Arguments:</span>
@@ -1453,6 +1480,9 @@ input returning the cost as a float.</p></td>
 <span class="sd">            name: Name of the last mapping step (mainly for internal use).</span>
 <span class="sd">            indent: How of blanks to prepend each line with (mainly for</span>
 <span class="sd">                internal use).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            String representation of the mapping routes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
@@ -1521,7 +1551,7 @@ first added when join_input() is called.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an input (MappingStep or Value), where `name` is the name</span>
 <span class="sd">    assigned to the argument.</span>
 
@@ -1561,7 +1591,7 @@ first added when join_input() is called.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add input dict for an input route.&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>  <span class="c1"># nosec B101</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -1615,13 +1645,13 @@ Implies <code>magnitude=True</code>.</p></td>
       <tr>
         <td><code>magnitude</code></td>
         <td><code>bool</code></td>
-        <td><p>Whether to only return the magitude of the evaluated
+        <td><p>Whether to only return the magnitude of the evaluated
 value (with no unit).</p></td>
         <td><code>False</code></td>
       </tr>
       <tr>
         <td><code>quantity</code></td>
-        <td><code>&#39;Any&#39;</code></td>
+        <td><code>&#39;Type[Quantity]&#39;</code></td>
         <td><p>Quantity class to use for evaluation.  Defaults to pint.</p></td>
         <td><code>&lt;class &#39;pint.quantity.Quantity&#39;&gt;</code></td>
       </tr>
@@ -1649,16 +1679,16 @@ value (with no unit).</p></td>
     <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Type[Quantity]&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the evaluated value of given input route number.</span>
 
-<span class="sd">    Args:</span>
+<span class="sd">    Arguments:</span>
 <span class="sd">        routeno: The route number to evaluate.  If None (default)</span>
 <span class="sd">            the route with the lowest cost is evalueated.</span>
 <span class="sd">        unit: return the result in the given unit.</span>
 <span class="sd">            Implies `magnitude=True`.</span>
-<span class="sd">        magnitude: Whether to only return the magitude of the evaluated</span>
+<span class="sd">        magnitude: Whether to only return the magnitude of the evaluated</span>
 <span class="sd">            value (with no unit).</span>
 <span class="sd">        quantity: Quantity class to use for evaluation.  Defaults to pint.</span>
 
@@ -1704,11 +1734,53 @@ value (with no unit).</p></td>
       <p>Returns a dict mapping input names to iris for the given route
 number.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>routeno</code></td>
+        <td><code>int</code></td>
+        <td><p>The route number to return a mapping for.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Dict[str, Optional[str]]&#39;</code></td>
+      <td><p>Mapping of input names to IRIs.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_input_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, Optional[str]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a dict mapping input names to iris for the given route</span>
-<span class="sd">    number.&quot;&quot;&quot;</span>
+<span class="sd">    number.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        routeno: The route number to return a mapping for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Mapping of input names to IRIs.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">iri</span>
@@ -1737,11 +1809,54 @@ number.</p>
       <p>Returns input and input index <code>(inputs, idx)</code> for route number
 <code>routeno</code>.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>routeno</code></td>
+        <td><code>int</code></td>
+        <td><p>The route number to return inputs for.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Tuple[Inputs, int]&#39;</code></td>
+      <td><p>Inputs and difference between route number and number of routes for an
+input dictioary.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tuple[Inputs, int]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns input and input index `(inputs, idx)` for route number</span>
-<span class="sd">    `routeno`.&quot;&quot;&quot;</span>
+<span class="sd">    `routeno`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        routeno: The route number to return inputs for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Inputs and difference between route number and number of routes for an</span>
+<span class="sd">        input dictioary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
         <span class="n">n0</span> <span class="o">=</span> <span class="n">n</span>
@@ -1774,7 +1889,7 @@ Resets <code>join_mode</code> to false.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">join_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">join_input</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Join all input added with add_input() since `join_mode` was set true.</span>
 <span class="sd">    Resets `join_mode` to false.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span><span class="p">:</span>
@@ -1805,11 +1920,52 @@ Resets <code>join_mode</code> to false.</p>
       <p>Returns a list of <code>(cost, routeno)</code> tuples with up to the <code>nresult</code>
 lowest costs and their corresponding route numbers.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>nresults</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of results to return.</p></td>
+        <td><code>5</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;List[Tuple[float, int]]&#39;</code></td>
+      <td><p>A list of <code>(cost, routeno)</code> tuples.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">lowest_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nresults</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[float, int]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of `(cost, routeno)` tuples with up to the `nresult`</span>
-<span class="sd">    lowest costs and their corresponding route numbers.&quot;&quot;&quot;</span>
+<span class="sd">    lowest costs and their corresponding route numbers.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        nresults: Number of results to return.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of `(cost, routeno)` tuples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of routes</span>
 
@@ -1902,12 +2058,31 @@ lowest costs and their corresponding route numbers.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Returns total number of routes to this mapping step.</p>
+      <p>Total number of routes to this mapping step.</p>
 
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>int</code></td>
+      <td><p>Total number of routes to this mapping step.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">number_of_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns total number of routes to this mapping step.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Total number of routes to this mapping step.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Total number of routes to this mapping step.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
         <span class="n">n</span> <span class="o">+=</span> <span class="n">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -1966,6 +2141,21 @@ internal use).</p></td>
       </tr>
   </tbody>
 </table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>str</code></td>
+      <td><p>String representation of the mapping routes.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span>
@@ -1973,7 +2163,7 @@ internal use).</p></td>
     <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the mapping routes to this step.</span>
 
 <span class="sd">    Arguments:</span>
@@ -1981,6 +2171,9 @@ internal use).</p></td>
 <span class="sd">        name: Name of the last mapping step (mainly for internal use).</span>
 <span class="sd">        indent: How of blanks to prepend each line with (mainly for</span>
 <span class="sd">            internal use).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        String representation of the mapping routes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
@@ -2153,7 +2346,7 @@ Value        </code>
         <td><code>value</code></td>
         <td><code>&#39;Any&#39;</code></td>
         <td><p>Property value.</p></td>
-        <td><em>required</em></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>unit</code></td>
@@ -2176,7 +2369,7 @@ instance of.</p></td>
       </tr>
       <tr>
         <td><code>cost</code></td>
-        <td><code>float</code></td>
+        <td><code>&#39;Union[float, Callable]&#39;</code></td>
         <td><p>Cost of accessing this value.</p></td>
         <td><code>0.0</code></td>
       </tr>
@@ -2200,11 +2393,11 @@ instance of.</p></td>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">property_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
@@ -2217,7 +2410,8 @@ instance of.</p></td>
         <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=unused-argument</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the Value.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2225,6 +2419,10 @@ instance of.</p></td>
 <span class="sd">                the corresponding method in Step.</span>
 <span class="sd">            name: Name of value.</span>
 <span class="sd">            indent: Indentation level.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            String representation of the value.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
@@ -2297,6 +2495,21 @@ the corresponding method in Step.</p></td>
       </tr>
   </tbody>
 </table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>str</code></td>
+      <td><p>String representation of the value.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span>
@@ -2304,7 +2517,8 @@ the corresponding method in Step.</p></td>
     <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=unused-argument</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the Value.</span>
 
 <span class="sd">    Arguments:</span>
@@ -2312,6 +2526,10 @@ the corresponding method in Step.</p></td>
 <span class="sd">            the corresponding method in Step.</span>
 <span class="sd">        name: Name of value.</span>
 <span class="sd">        indent: Indentation level.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        String representation of the value.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
@@ -2403,24 +2621,55 @@ the corresponding method in Step.</p></td>
 
       <p>Finds all function definitions in <code>triplestore</code> based on the function
 ontololy (FNO).</p>
-<p>Return a dict mapping output IRIs to a list of</p>
-<div class="highlight"><pre><span></span><code>(function_iri, [input_iris, ...])
-</code></pre></div>
-<p>tuples.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>triplestore</code></td>
+        <td><code>&#39;Triplestore&#39;</code></td>
+        <td><p>The triplestore to investigate.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Dict[str, list]&#39;</code></td>
+      <td><p>A mapping of output IRIs to a list of <code>(function_iri, [input_iris, ...])</code>
+tuples.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">fno_mapper</span><span class="p">(</span><span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, list]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds all function definitions in `triplestore` based on the function</span>
 <span class="sd">    ontololy (FNO).</span>
 
-<span class="sd">    Return a dict mapping output IRIs to a list of</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        triplestore: The triplestore to investigate.</span>
 
-<span class="sd">        (function_iri, [input_iris, ...])</span>
-
-<span class="sd">    tuples.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A mapping of output IRIs to a list of `(function_iri, [input_iris, ...])`</span>
+<span class="sd">        tuples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># pylint: disable=too-many-branches</span>
 
     <span class="c1"># Temporary dicts for fast lookup</span>
@@ -2483,15 +2732,56 @@ ontololy (FNO).</p>
 
       <p>Help function returning the number of routes for an input dict.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>inputs</code></td>
+        <td><code>&#39;Inputs&#39;</code></td>
+        <td><p>Input dictionary.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>int</code></td>
+      <td><p>Number of routes in the <code>inputs</code> input dictionary.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning the number of routes for an input dict.&quot;&quot;&quot;</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning the number of routes for an input dict.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        inputs: Input dictionary.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Number of routes in the `inputs` input dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nroutes</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">):</span>
-            <span class="n">m</span> <span class="o">*=</span> <span class="nb">input</span><span class="o">.</span><span class="n">number_of_routes</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">m</span>
+            <span class="n">nroutes</span> <span class="o">*=</span> <span class="nb">input</span><span class="o">.</span><span class="n">number_of_routes</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">nroutes</span>
 </code></pre></div>
         </details>
     </div>
@@ -2518,17 +2808,83 @@ of expected input unit.</p>
 <code>routeno</code> is the index of the specific route we will use to obtain the
 values.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>inputs</code></td>
+        <td><code>&#39;dict[str, Any]&#39;</code></td>
+        <td><p>Input dictionary.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>routeno</code></td>
+        <td><code>int</code></td>
+        <td><p>Route number index.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>quantity</code></td>
+        <td><code>&#39;Type[Quantity]&#39;</code></td>
+        <td><p>A unit quantity class.</p></td>
+        <td><code>&lt;class &#39;pint.quantity.Quantity&#39;&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>magnitudes</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to only return the magnitude of the evaluated
+value (with no unit).</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;dict[str, Any]&#39;</code></td>
+      <td><p>A mapping between input names and values of expected input unit.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span>
-    <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">magnitudes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">):</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span>
+    <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Type[Quantity]&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
+    <span class="n">magnitudes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning a dict mapping the input names to actual value</span>
 <span class="sd">    of expected input unit.</span>
 
 <span class="sd">    There exists `get_nroutes(inputs)` routes to populate `inputs`.</span>
 <span class="sd">    `routeno` is the index of the specific route we will use to obtain the</span>
 <span class="sd">    values.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        inputs: Input dictionary.</span>
+<span class="sd">        routeno: Route number index.</span>
+<span class="sd">        quantity: A unit quantity class.</span>
+<span class="sd">        magnitudes: Whether to only return the magnitude of the evaluated</span>
+<span class="sd">            value (with no unit).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A mapping between input names and values of expected input unit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2539,8 +2895,13 @@ values.</p>
                 <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">output_unit</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
                 <span class="k">else</span> <span class="n">value</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
             <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantity</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expected values in inputs to be either `MappingStep` or &quot;</span>
+                <span class="s2">&quot;`Value` objects.&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">magnitudes</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
@@ -2561,7 +2922,7 @@ values.</p>
 
 
 <h2 class="doc doc-heading" id="tripper.mappings.mappings.mapping_routes">
-<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7f54512af290</span><span class="o">&gt;</span><span class="p">,),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7fe685ab5320</span><span class="o">&gt;</span><span class="p">,),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.mappings.mappings.mapping_routes" title="Permanent link">&para;</a></h2>
@@ -2593,7 +2954,8 @@ relations.  It also correctly handles transitivity of <code>mapsTo</code> and
       <tr>
         <td><code>sources</code></td>
         <td><code>&#39;Dict[str, Value]&#39;</code></td>
-        <td><p>Dict mapping source IRIs to source values.</p></td>
+        <td><p>Dict mapping source IRIs to source values or a sequence
+of source IRIs (with no explicit values).</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -2636,7 +2998,7 @@ It is safe to pass a generator expression too.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>MappingStep</code></td>
+      <td><code>Input</code></td>
       <td><p>A MappingStep instance.  This is a root of a nested tree of
 MappingStep instances providing an (efficient) internal description
 of all possible mapping routes from <code>sources</code> to <code>target</code>.</p></td>
@@ -2649,7 +3011,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">sources</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Value]&quot;</span><span class="p">,</span>
     <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
-    <span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">function_mappers</span><span class="p">:</span> <span class="s2">&quot;Sequence[Callable]&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="n">fno_mapper</span><span class="p">,),</span>
     <span class="n">default_costs</span><span class="p">:</span> <span class="s2">&quot;Tuple&quot;</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
@@ -2665,7 +3027,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
     <span class="n">hasUnit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DM</span><span class="o">.</span><span class="n">hasUnit</span><span class="p">,</span>
     <span class="n">hasCost</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DM</span><span class="o">.</span><span class="n">hasCost</span><span class="p">,</span>  <span class="c1"># TODO - add hasCost to the DM ontology</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MappingStep</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Input</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find routes of mappings from any source in `sources` to `target`.</span>
 
 <span class="sd">    This implementation supports functions (using FnO) and subclass</span>
@@ -2674,7 +3036,8 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        target: IRI of the target in `triplestore`.</span>
-<span class="sd">        sources: Dict mapping source IRIs to source values.</span>
+<span class="sd">        sources: Dict mapping source IRIs to source values or a sequence</span>
+<span class="sd">            of source IRIs (with no explicit values).</span>
 <span class="sd">        triplestore: Triplestore instance.</span>
 <span class="sd">            It is safe to pass a generator expression too.</span>
 
@@ -2705,8 +3068,13 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
 <span class="sd">        MappingStep instances providing an (efficient) internal description</span>
 <span class="sd">        of all possible mapping routes from `sources` to `target`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># pylint: disable=too-many-arguments,too-many-locals,too-many-statements</span>
+
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Value</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span><span class="n">iri</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">}</span>
 
     <span class="k">if</span> <span class="n">function_repo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">function_repo</span> <span class="o">=</span> <span class="n">triplestore</span><span class="o">.</span><span class="n">function_repo</span>
