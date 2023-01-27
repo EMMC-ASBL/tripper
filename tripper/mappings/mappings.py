@@ -327,9 +327,6 @@ class MappingStep:
                     input_iris = [input.output_iri for input in inputs.values()]
                     owncost = self.cost(self.triplestore, input_iris, self.output_iri)
                     base.cost[i] += owncost
-                    # values = get_values(inputs, rno, magnitudes=True)
-                    # owncost = self.cost(**values)
-                    # base.cost[i] += owncost
             else:
                 owncost = self.cost
                 base.cost += owncost
@@ -597,7 +594,6 @@ def mapping_routes(
         cost = soCost.get(target, default_costs[stepname])
         if cost is None:
             return None
-        # return function_repo[cost] if cost in function_repo else float(cost)
         return (
             function_repo[cost] if cost in function_repo else float(parse_literal(cost))
         )
