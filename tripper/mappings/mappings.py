@@ -375,7 +375,7 @@ class MappingStep:
             routeno: show given route.  The default is to show all routes.
             name: Name of the last mapping step (mainly for internal use).
             indent: How of blanks to prepend each line with (mainly for
-            internal use).
+                internal use).
 
         Returns:
             String representation of the mapping routes.
