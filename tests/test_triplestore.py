@@ -51,6 +51,7 @@ def test_triplestore(
         expects=(EX.MyConcept, EX.AnotherConcept),
         returns=EX.Sum,
         base_iri=EX,
+        standard="fno",
     )
 
     try:
