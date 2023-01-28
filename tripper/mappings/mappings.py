@@ -14,15 +14,16 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 from collections import defaultdict
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 import numpy as np
 from pint import Quantity  # remove
 
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
+from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Type, Union
+    from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
     from tripper import Triplestore
 
@@ -83,15 +84,15 @@ class Value:
 
     def __init__(
         self,
-        value: "Any",
+        value: "Any" = None,
         unit: "Optional[str]" = None,
         iri: "Optional[str]" = None,
         property_iri: "Optional[str]" = None,
-        cost: float = 0.0,
+        cost: "Union[float, Callable]" = 0.0,
     ):
         self.value = value
         self.unit = unit
-        self.iri = iri
+        self.output_iri = iri
         self.property_iri = property_iri
         self.cost = cost
 
@@ -100,7 +101,8 @@ class Value:
         routeno: "Optional[int]" = None,
         name: "Optional[str]" = None,
         indent: int = 0,
-    ):  # pylint: disable=unused-argument
+    ) -> str:
+        # pylint: disable=unused-argument
         """Returns a string representation of the Value.
 
         Arguments:
@@ -108,11 +110,15 @@ class Value:
                 the corresponding method in Step.
             name: Name of value.
             indent: Indentation level.
+
+        Returns:
+            String representation of the value.
+
         """
         strings = []
         ind = " " * indent
         strings.append(ind + f'{name if name else "Value"}:')
-        strings.append(ind + f"  iri: {self.iri}")
+        strings.append(ind + f"  iri: {self.output_iri}")
         strings.append(ind + f"  property_iri: {self.property_iri}")
         strings.append(ind + f"  unit: {self.unit}")
         strings.append(ind + f"  cost: {self.cost}")
@@ -133,9 +139,11 @@ class MappingStep:
         steptype: One of the step types from the StepType enum.
         function: Callable that evaluates the output from the input.
         cost: The cost related to this mapping step.  Should be either a
-            float or a callable taking the same arguments as `function` as
-            input returning the cost as a float.
+            float or a callable taking three arguments (`triplestore`,
+            `input_iris` and `output_iri`) and return the cost as a float.
         output_unit: Output unit.
+        triplestore: Triplestore instance containing the knowledge base
+            that this mapping step was created from.
 
     The arguments can also be assigned as attributes.
     """
@@ -149,22 +157,24 @@ class MappingStep:
         function: "Optional[Callable]" = None,
         cost: "Union[float, Callable]" = 1.0,
         output_unit: "Optional[str]" = None,
-    ):
+        triplestore: "Optional[Triplestore]" = None,
+    ) -> None:
         self.output_iri = output_iri
         self.steptype = steptype
         self.function = function
         self.cost = cost
+        self.triplestore = triplestore
         self.output_unit = output_unit
         self.input_routes: "List[dict]" = []  # list of inputs dicts
         self.join_mode = False  # whether to join upcoming input
         self.joined_input: "Inputs" = {}
 
-    def add_inputs(self, inputs: "Inputs"):
+    def add_inputs(self, inputs: "Inputs") -> None:
         """Add input dict for an input route."""
         assert isinstance(inputs, dict)  # nosec B101
         self.input_routes.append(inputs)
 
-    def add_input(self, input: "Input", name: "Optional[str]" = None):
+    def add_input(self, input: "Input", name: "Optional[str]" = None) -> None:
         """Add an input (MappingStep or Value), where `name` is the name
         assigned to the argument.
 
@@ -181,7 +191,7 @@ class MappingStep:
         else:
             self.add_inputs({argname: input})
 
-    def join_input(self):
+    def join_input(self) -> None:
         """Join all input added with add_input() since `join_mode` was set true.
         Resets `join_mode` to false."""
         if not self.join_mode:
@@ -195,16 +205,16 @@ class MappingStep:
         routeno: "Optional[int]" = None,
         unit: "Optional[str]" = None,
         magnitude: bool = False,
-        quantity: "Any" = Quantity,
+        quantity: "Type[Quantity]" = Quantity,
     ) -> "Any":
         """Returns the evaluated value of given input route number.
 
-        Args:
+        Arguments:
             routeno: The route number to evaluate.  If None (default)
                 the route with the lowest cost is evalueated.
             unit: return the result in the given unit.
                 Implies `magnitude=True`.
-            magnitude: Whether to only return the magitude of the evaluated
+            magnitude: Whether to only return the magnitude of the evaluated
                 value (with no unit).
             quantity: Quantity class to use for evaluation.  Defaults to pint.
 
@@ -230,7 +240,15 @@ class MappingStep:
 
     def get_inputs(self, routeno: int) -> "Tuple[Inputs, int]":
         """Returns input and input index `(inputs, idx)` for route number
-        `routeno`."""
+        `routeno`.
+
+        Arguments:
+            routeno: The route number to return inputs for.
+
+        Returns:
+            Inputs and difference between route number and number of routes for an
+            input dictioary.
+        """
         n = 0
         for inputs in self.input_routes:
             n0 = n
@@ -241,15 +259,27 @@ class MappingStep:
 
     def get_input_iris(self, routeno: int) -> "Dict[str, Optional[str]]":
         """Returns a dict mapping input names to iris for the given route
-        number."""
+        number.
+
+        Arguments:
+            routeno: The route number to return a mapping for.
+
+        Returns:
+            Mapping of input names to IRIs.
+
+        """
         inputs, _ = self.get_inputs(routeno)
         return {
-            k: v.output_iri if isinstance(v, MappingStep) else v.iri
+            k: v.output_iri if isinstance(v, MappingStep) else v.output_iri
             for k, v in inputs.items()
         }
 
     def number_of_routes(self) -> int:
-        """Returns total number of routes to this mapping step."""
+        """Total number of routes to this mapping step.
+
+        Returns:
+            Total number of routes to this mapping step.
+        """
         n = 0
         for inputs in self.input_routes:
             n += get_nroutes(inputs)
@@ -257,7 +287,14 @@ class MappingStep:
 
     def lowest_costs(self, nresults: int = 5) -> "List[Tuple[float, int]]":
         """Returns a list of `(cost, routeno)` tuples with up to the `nresult`
-        lowest costs and their corresponding route numbers."""
+        lowest costs and their corresponding route numbers.
+
+        Arguments:
+            nresults: Number of results to return.
+
+        Returns:
+            A list of `(cost, routeno)` tuples.
+        """
         result = []
         n = 0  # total number of routes
 
@@ -318,8 +355,9 @@ class MappingStep:
             # mapping step.
             if callable(self.cost):
                 for i, rno in enumerate(base.routeno):
-                    values = get_values(inputs, rno, magnitudes=True)
-                    owncost = self.cost(**values)
+                    inputs, _ = self.get_inputs(rno)
+                    input_iris = [input.output_iri for input in inputs.values()]
+                    owncost = self.cost(self.triplestore, input_iris, self.output_iri)
                     base.cost[i] += owncost
             else:
                 owncost = self.cost
@@ -336,7 +374,7 @@ class MappingStep:
         routeno: "Optional[int]" = None,
         name: "Optional[str]" = None,
         indent: int = 0,
-    ):
+    ) -> str:
         """Returns a string representation of the mapping routes to this step.
 
         Arguments:
@@ -344,6 +382,9 @@ class MappingStep:
             name: Name of the last mapping step (mainly for internal use).
             indent: How of blanks to prepend each line with (mainly for
                 internal use).
+
+        Returns:
+            String representation of the mapping routes.
         """
         strings = []
         ind = " " * indent
@@ -378,23 +419,43 @@ class MappingStep:
 
 
 def get_nroutes(inputs: "Inputs") -> int:
-    """Help function returning the number of routes for an input dict."""
-    m = 1
+    """Help function returning the number of routes for an input dict.
+
+    Arguments:
+        inputs: Input dictionary.
+
+    Returns:
+        Number of routes in the `inputs` input dictionary.
+    """
+    nroutes = 1
     for input in inputs.values():
         if isinstance(input, MappingStep):
-            m *= input.number_of_routes()
-    return m
+            nroutes *= input.number_of_routes()
+    return nroutes
 
 
 def get_values(
-    inputs: "Inputs", routeno: int, quantity: "Any" = Quantity, magnitudes: bool = False
-):
+    inputs: "dict[str, Any]",
+    routeno: int,
+    quantity: "Type[Quantity]" = Quantity,
+    magnitudes: bool = False,
+) -> "dict[str, Any]":
     """Help function returning a dict mapping the input names to actual value
     of expected input unit.
 
     There exists `get_nroutes(inputs)` routes to populate `inputs`.
     `routeno` is the index of the specific route we will use to obtain the
     values.
+
+    Arguments:
+        inputs: Input dictionary.
+        routeno: Route number index.
+        quantity: A unit quantity class.
+        magnitudes: Whether to only return the magnitude of the evaluated
+            value (with no unit).
+
+    Returns:
+        A mapping between input names and values of expected input unit.
     """
     values = {}
     for k, v in inputs.items():
@@ -405,8 +466,13 @@ def get_values(
                 if v.output_unit and isinstance(v, quantity)
                 else value
             )
-        else:
+        elif isinstance(v, Value):
             values[k] = quantity(v.value, v.unit)
+        else:
+            raise TypeError(
+                "Expected values in inputs to be either `MappingStep` or "
+                "`Value` objects."
+            )
 
         if magnitudes:
             values = {
@@ -442,13 +508,13 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
     """Finds all function definitions in `triplestore` based on the function
     ontololy (FNO).
 
-    Return a dict mapping output IRIs to a list of
+    Arguments:
+        triplestore: The triplestore to investigate.
 
-        (function_iri, [input_iris, ...])
-
-    tuples.
+    Returns:
+        A mapping of output IRIs to a list of `(function_iri, [input_iris, ...])`
+        tuples.
     """
-
     # pylint: disable=too-many-branches
 
     # Temporary dicts for fast lookup
@@ -495,8 +561,8 @@ def mapping_routes(
     target: str,
     sources: "Dict[str, Value]",
     triplestore: "Triplestore",
-    function_repo: "Any" = None,
-    function_mappers: "Sequence[Callable]" = (emmo_mapper,),
+    function_repo: "Optional[dict]" = None,
+    function_mappers: "Sequence[Callable]" = (emmo_mapper, fno_mapper),
     default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
@@ -513,7 +579,7 @@ def mapping_routes(
     label: str = RDFS.label,
     hasUnit: str = DM.hasUnit,
     hasCost: str = DM.hasCost,  # TODO - add hasCost to the DM ontology
-) -> MappingStep:
+) -> Input:
     """Find routes of mappings from any source in `sources` to `target`.
 
     This implementation supports functions (using FnO) and subclass
@@ -522,7 +588,8 @@ def mapping_routes(
 
     Arguments:
         target: IRI of the target in `triplestore`.
-        sources: Dict mapping source IRIs to source values.
+        sources: Dict mapping source IRIs to source values or a sequence
+            of source IRIs (with no explicit values).
         triplestore: Triplestore instance.
             It is safe to pass a generator expression too.
 
@@ -557,8 +624,13 @@ def mapping_routes(
         MappingStep instances providing an (efficient) internal description
         of all possible mapping routes from `sources` to `target`.
     """
-
     # pylint: disable=too-many-arguments,too-many-locals,too-many-statements
+
+    if target in sources:
+        return Value(iri=target)
+
+    if isinstance(sources, Sequence):
+        sources = {iri: None for iri in sources}
 
     if function_repo is None:
         function_repo = triplestore.function_repo
@@ -600,7 +672,9 @@ def mapping_routes(
         cost = soCost.get(target, default_costs[stepname])
         if cost is None:
             return None
-        return function_repo[cost] if cost in function_repo else float(cost)
+        return (
+            function_repo[cost] if cost in function_repo else float(parse_literal(cost))
+        )
 
     def walk(target, visited, step):
         """Walk backward in rdf graph from `node` to sources."""
@@ -626,6 +700,7 @@ def mapping_routes(
                 prevstep = mappingstep_class(
                     output_iri=node,
                     output_unit=soUnit.get(node),
+                    triplestore=triplestore,
                 )
                 step.add_input(prevstep, name=soName.get(node))
                 walk(node, visited, prevstep)
@@ -646,18 +721,24 @@ def mapping_routes(
             for func, input_iris in fmap(triplestore)[target]:
                 step.steptype = StepType.FUNCTION
                 step.cost = getcost(func, "function")
-                step.function = function_repo[func]
+                step.function = function_repo.get(func)
                 step.join_mode = True
                 for input_iri in input_iris:
                     step0 = mappingstep_class(
-                        output_iri=input_iri, output_unit=soUnit.get(input_iri)
+                        output_iri=input_iri,
+                        output_unit=soUnit.get(input_iri),
+                        triplestore=triplestore,
                     )
                     step.add_input(step0, name=soName.get(input_iri))
                     walk(input_iri, visited, step0)
                 step.join_input()
 
     visited = set()
-    step = mappingstep_class(output_iri=target, output_unit=soUnit.get(target))
+    step = mappingstep_class(
+        output_iri=target,
+        output_unit=soUnit.get(target),
+        triplestore=triplestore,
+    )
     if target in soInst:
         # It is only initially we want to follow instanceOf in forward
         # direction.  Later on we will only follow mapsTo and instanceOf in
@@ -666,7 +747,11 @@ def mapping_routes(
         source = soInst[target]
         step.steptype = StepType.INSTANCEOF
         step.cost = getcost(source, "instanceOf")
-        step0 = mappingstep_class(output_iri=source, output_unit=soUnit.get(source))
+        step0 = mappingstep_class(
+            output_iri=source,
+            output_unit=soUnit.get(source),
+            triplestore=triplestore,
+        )
         step.add_input(step0, name=soName.get(target))
         step = step0
         target = source
