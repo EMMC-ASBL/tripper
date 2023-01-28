@@ -12,6 +12,7 @@ with numpy.
 # pylint: disable=invalid-name,redefined-builtin
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
+import subprocess  # nosec: B404
 from collections import defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING, Sequence
@@ -439,18 +440,29 @@ class MappingStep:
         Returns:
             Mapping route in dot (graphviz) notation.
         """
+        hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
+
+        # Edge labels. We invert the steptypes, since we want to visualise
+        # the workflow in forward direction, while the steptypes refer to
+        # backward direction
+        labeldict = {
+            StepType.UNSPECIFIED: "",
+            StepType.MAPSTO: "inverse(mapsTo)",
+            StepType.INV_MAPSTO: "mapsTo",
+            StepType.INSTANCEOF: "instanceOf",
+            StepType.INV_INSTANCEOF: "inverse(instanceOf)",
+            StepType.SUBCLASSOF: "subClassOf",
+            StepType.INV_SUBCLASSOF: "inverse(subClassOf)",
+            StepType.FUNCTION: "function",
+        }
         inputs, idx = self.get_inputs(routeno)
         strings = []
-        if next_iri:
-            strings.append(
-                f'  "{self._iri(self.output_iri)}" -> '
-                f'"{self._iri(next_iri)}" [label="{next_steptype}"];'
-            )
         for _, input in inputs.items():
             if isinstance(input, Value):
                 strings.append(
                     f'  "{self._iri(input.output_iri)}" -> '
-                    f'"{self._iri(self.output_iri)}" [label="{next_steptype}"];'
+                    f'"{self._iri(self.output_iri)}" '
+                    f'[label="{labeldict[self.steptype]}"];'
                 )
             elif isinstance(input, MappingStep):
                 strings.append(
@@ -462,16 +474,61 @@ class MappingStep:
                 )
             else:
                 raise TypeError("input should be Value or MappingStep")
+        if next_iri:
+            label = labeldict[next_steptype]
+            if next_steptype == StepType.FUNCTION and self.triplestore:
+                model_iri = self.triplestore.value(
+                    predicate=hasOutput,  # Assuming EMMO
+                    object=next_iri,
+                    default="function",
+                    any=True,
+                )
+                if model_iri:
+                    label = self.triplestore.value(
+                        subject=model_iri,
+                        predicate=RDFS.label,
+                        default=self._iri(model_iri),
+                        any=True,
+                    )
+            else:
+                label = labeldict[next_steptype]
+            strings.append(
+                f'  "{self._iri(self.output_iri)}" -> '
+                f'"{self._iri(next_iri)}" [label="{label}"];'
+            )
         return "\n".join(strings)
 
-    def visualise(self, routeno: int) -> str:
-        """Returns a representation of route number `routeno` as a
-        declarative workflow in YAML."""
+    def visualise(
+        self,
+        routeno: int,
+        output: "Optional[str]" = None,
+        format: "Optional[str]" = "png",
+        dot: str = "dot",
+    ) -> str:
+        """Greate a Graphviz visualisation of a given mapping route.
+
+        Arguments:
+            routeno: Number of mapping route to visualise.
+            output: If given, write the graph to this file.
+            format: File format to use with `output`.
+            dot: Path to Graphviz dot executable.
+
+        Returns:
+            String representation of the graph in dot format.
+        """
         strings = []
         strings.append("digraph G {")
         strings.append(self._visualise(routeno, "", StepType.UNSPECIFIED))
         strings.append("}")
-        return "\n".join(strings)
+        graph = "\n".join(strings) + "\n"
+        if output:
+            subprocess.run(
+                args=[dot, f"-T{format}", "-o", output],
+                shell=True,
+                check=True,
+                input=graph.encode(),
+            )
+        return graph
 
 
 def get_nroutes(inputs: "Inputs") -> int:

@@ -29,39 +29,22 @@ ts.add_mapsTo(CHEM.GroundStateEnergy, SUB.molecule_energy)
 
 routes = mapping_routes(
     target=SUB.molecule_energy,
-    sources={},  # MOL.groundstate_energy: 1.0},
+    sources={MOL.groundstate_energy: 1.0},
     triplestore=ts,
 )
 
-assert routes.number_of_routes() == 0
+assert routes.number_of_routes() == 1
 assert routes.output_iri == ("http://onto-ns.com/meta/0.1/Substance#molecule_energy")
 assert routes.cost == 2.0
 assert (
-    routes.show()
-    == """\
-Step:
-  steptype: MAPSTO
-  output_iri: http://onto-ns.com/meta/0.1/Substance#molecule_energy
-  output_unit: None
-  cost: 2.0
-  routes:
-    - arg1:
-        steptype: INV_MAPSTO
-        output_iri: http://onto-ns.com/onto/chemistry#GroundStateEnergy
-        output_unit: None
-        cost: 2.0
-        routes:
-          - arg1:
-              steptype: UNSPECIFIED
-              output_iri: http://onto-ns.com/meta/0.1/Molecule#groundstate_energy
-              output_unit: None
-              cost: 1.0
-              routes:
-          - arg1:
-              steptype: UNSPECIFIED
-              output_iri: http://onto-ns.com/meta/0.1/Molecule2#energy
-              output_unit: None
-              cost: 1.0
-              routes:\
-"""
+    routes.visualise(0).strip()
+    == """
+digraph G {
+  "mol:groundstate_energy" -> "chem:GroundStateEnergy" [label="mapsTo"];
+  "chem:GroundStateEnergy" -> "sub:molecule_energy" [label="inverse(mapsTo)"];
+}
+""".strip()
 )
+
+# Commented out, to avoid dependencies of Graphviz
+# routes.visualise(0, output="graph.png", format="png", dot="dot")

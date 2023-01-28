@@ -391,20 +391,28 @@ class Triplestore:
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
         """
-        triple = self.triples((subject, predicate, object))
+        spo = (subject, predicate, object)
+        if sum(iri is None for iri in spo) != 1:
+            raise ValueError(
+                "Exactly one of `subject`, `predicate` or `object` must be None."
+            )
+
+        triple = self.triples(spo)
         try:
             value = next(triple)
         except StopIteration:
             return default
 
-        if any:
-            return value
+        # Index of subject-predicate-object argument that is None
+        (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         try:
             next(triple)
         except StopIteration:
-            return value
+            return value[idx]
         else:
+            if any:
+                return value[idx]
             raise UniquenessError("More than one match")
 
     def subjects(
