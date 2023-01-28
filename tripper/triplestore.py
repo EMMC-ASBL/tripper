@@ -632,6 +632,7 @@ class Triplestore:
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
+        # pylint: disable=too-many-locals,too-many-statements
         self.bind("fno", FNO)
         self.bind("dcterms", DCTERMS)
         self.bind("map", MAP)
@@ -734,17 +735,29 @@ class Triplestore:
         self.add((func_iri, RDF.type, Task))
         self.add((func_iri, RDFS.label, en(name)))
         for parname, iri in pars:
-            par = f"{func_iri}_input_{parname}"
-            self.add((par, RDF.type, DataSet))
-            self.add((par, RDFS.label, en(parname)))
-            self.add((par, MAP.mapsTo, iri))
-            self.add((func_iri, hasInput, par))
-        for i, iri in enumerate(returns):
-            val = f"{func_iri}_output{i+1}"
-            self.add((val, RDF.type, DataSet))
-            self.add((val, MAP.mapsTo, iri))
-            self.add((func_iri, hasOutput, val))
+            self.add((iri, RDF.type, DataSet))
+            self.add((iri, RDFS.label, en(parname)))
+            self.add((func_iri, hasInput, iri))
+        for iri in returns:
+            self.add((iri, RDF.type, DataSet))
+            self.add((func_iri, hasOutput, iri))
         if doc_string:
             self.add((func_iri, DCTERMS.description, en(doc_string)))
+
+        # self.add((func_iri, RDF.type, Task))
+        # self.add((func_iri, RDFS.label, en(name)))
+        # for parname, iri in pars:
+        #    par = f"{func_iri}_input_{parname}"
+        #    self.add((par, RDF.type, DataSet))
+        #    self.add((par, RDFS.label, en(parname)))
+        #    self.add((par, MAP.mapsTo, iri))
+        #    self.add((func_iri, hasInput, par))
+        # for i, iri in enumerate(returns):
+        #    val = f"{func_iri}_output{i+1}"
+        #    self.add((val, RDF.type, DataSet))
+        #    self.add((val, MAP.mapsTo, iri))
+        #    self.add((func_iri, hasOutput, val))
+        # if doc_string:
+        #    self.add((func_iri, DCTERMS.description, en(doc_string)))
 
         return func_iri

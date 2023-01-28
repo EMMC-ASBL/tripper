@@ -52,13 +52,13 @@ Step:
         cost: 2.0
         routes:
           - arg1:
-              steptype: None
+              steptype: UNSPECIFIED
               output_iri: http://onto-ns.com/meta/0.1/Molecule#groundstate_energy
               output_unit: None
               cost: 1.0
               routes:
           - arg1:
-              steptype: None
+              steptype: UNSPECIFIED
               output_iri: http://onto-ns.com/meta/0.1/Molecule2#energy
               output_unit: None
               cost: 1.0

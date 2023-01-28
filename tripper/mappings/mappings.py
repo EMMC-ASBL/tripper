@@ -59,6 +59,7 @@ class MissingRelationError(MappingError):
 class StepType(Enum):
     """Type of mapping step when going from the output to the inputs."""
 
+    UNSPECIFIED = 0
     MAPSTO = 1
     INV_MAPSTO = -1
     INSTANCEOF = 2
@@ -92,7 +93,12 @@ class Value:
     ):
         self.value = value
         self.unit = unit
-        self.output_iri = iri
+        if iri:
+            self.output_iri = iri
+        elif hasattr(value, __name__):
+            self.output_iri = value.__name__
+        else:
+            self.output_iri = f"_:value_{id(value)}"
         self.property_iri = property_iri
         self.cost = cost
 
@@ -147,8 +153,8 @@ class MappingStep:
 
     def __init__(
         self,
-        output_iri: "Optional[str]" = None,
-        steptype: "Optional[StepType]" = None,
+        output_iri: str,
+        steptype: "StepType" = StepType.UNSPECIFIED,
         function: "Optional[Callable]" = None,
         cost: "Union[float, Callable]" = 1.0,
         output_unit: "Optional[str]" = None,
@@ -389,32 +395,39 @@ class MappingStep:
         """Help method that returns prefixed iri if possible, otherwise `iri`."""
         return self.triplestore.prefix_iri(iri) if self.triplestore else iri
 
-    def _visualise(self, routeno: int, input_iri: str) -> str:
-        """Help function for visualise()"""
+    def _visualise(self, routeno: int, next_iri: str, next_steptype: StepType) -> str:
+        """Help function for visualise().
+
+        Arguments:
+            routeno: Route number to visualise.
+            next_iri: IRI of the next mapping step (i.e. the previous mapping
+                when starting from the target).
+            next_steptype: Step type from this to next iri.
+
+        Returns:
+            Mapping route in dot (graphviz) notation.
+        """
         inputs, idx = self.get_inputs(routeno)
         strings = []
-        for name, input in inputs.items():
+        if next_iri:
+            strings.append(
+                f'  "{self._iri(self.output_iri)}" -> '
+                f'"{self._iri(next_iri)}" [label="{next_steptype}"];'
+            )
+        for _, input in inputs.items():
             if isinstance(input, Value):
-                print(
-                    f"*** Value: {name}: {self._iri(input_iri)} -> {self._iri(self.output_iri)}"
-                )
                 strings.append(
                     f'  "{self._iri(input.output_iri)}" -> '
-                    f'"{self._iri(input_iri)}";'
+                    f'"{self._iri(self.output_iri)}" [label="{next_steptype}"];'
                 )
             elif isinstance(input, MappingStep):
-                print(
-                    f"*** {self.steptype}: {name}: {self._iri(input_iri)} -> {self._iri(self.output_iri)}"
-                )
-                strings.append(input._visualise(routeno=idx, input_iri=self.output_iri))
                 strings.append(
-                    f'  "{self._iri(self.output_iri)}" -> '
-                    f'"{self._iri(input.output_iri)}";'
+                    input._visualise(  # pylint: disable=protected-access
+                        routeno=idx,
+                        next_iri=self.output_iri,
+                        next_steptype=self.steptype,
+                    )
                 )
-                # strings.append(
-                #    f'  "{self._iri(self.output_iri)}" '
-                #    f'[style=filled,fillcolor=lightyellow]'
-                # )
             else:
                 raise TypeError("input should be Value or MappingStep")
         return "\n".join(strings)
@@ -424,16 +437,9 @@ class MappingStep:
         declarative workflow in YAML."""
         strings = []
         strings.append("digraph G {")
-        strings.append(self._visualise(routeno, "???"))
+        strings.append(self._visualise(routeno, "", StepType.UNSPECIFIED))
         strings.append("}")
         return "\n".join(strings)
-
-    def get_workflow(self, routeno: int) -> str:
-        """Returns a representation of route number `routeno` as a
-        declarative workflow in YAML."""
-        strings = []
-        strings.append("---")
-        inputs, idx = self.get_inputs(routeno)
 
 
 def get_nroutes(inputs: "Inputs") -> int:
@@ -555,7 +561,7 @@ def mapping_routes(
     sources: "Dict[str, Value]",
     triplestore: "Triplestore",
     function_repo: "Any" = None,
-    function_mappers: "Sequence[Callable]" = (emmo_mapper, fno_mapper),
+    function_mappers: "Union[str, Sequence[Callable]]" = (emmo_mapper, fno_mapper),
     default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
@@ -586,7 +592,8 @@ def mapping_routes(
     Additional arguments for fine-grained tuning:
         function_repo: Dict mapping function IRIs to corresponding Python
             function.  Default is to use `triplestore.function_repo`.
-        function_mappers: Sequence of mapping functions that takes
+        function_mappers: Name of mapping standard: "emmo" or "fno".
+            Alternatively, a sequence of mapping functions that takes
             `triplestore` as argument and return a dict mapping output IRIs
             to a list of `(function_iri, [input_iris, ...])` tuples.
         default_costs: A dict providing default costs of different types
@@ -610,11 +617,14 @@ def mapping_routes(
         MappingStep instances providing an (efficient) internal description
         of all possible mapping routes from `sources` to `target`.
     """
-
     # pylint: disable=too-many-arguments,too-many-locals,too-many-statements
 
     if function_repo is None:
         function_repo = triplestore.function_repo
+
+    if isinstance(function_mappers, str):
+        fmd = {"emmo": emmo_mapper, "fno": fno_mapper}
+        function_mappers = [fmd[name] for name in function_mappers.split(",")]
 
     default_costs = dict(default_costs)
 

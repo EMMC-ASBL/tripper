@@ -27,6 +27,7 @@ assert (
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <:func_f1a5429a> a fno:Function ;
+    rdfs:label "func"@en ;
     dcterms:description "Returns the sum of `a` and `b`."@en ;
     fno:expects ( <:func_f1a5429a_parameter1_a> <:func_f1a5429a_parameter2_b> ) ;
     fno:returns ( <:func_f1a5429a_output1> ) .
@@ -59,25 +60,22 @@ assert (
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <http://emmo.info/emmo#> .
 @prefix ex: <http://example.com/ex#> .
-@prefix map: <http://emmo.info/domain-mappings#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <:func_f1a5429a> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
-    emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 <:func_f1a5429a_input_a>,
-        <:func_f1a5429a_input_b> ;
-    emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840 <:func_f1a5429a_output1> ;
+    rdfs:label "func"@en ;
+    emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 ex:arg1,
+        ex:arg2 ;
+    emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840 ex:sum ;
     dcterms:description "Returns the sum of `a` and `b`."@en .
 
-<:func_f1a5429a_input_a> a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    rdfs:label "a"@en ;
-    map:mapsTo ex:arg1 .
+ex:arg1 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+    rdfs:label "a"@en .
 
-<:func_f1a5429a_input_b> a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    rdfs:label "b"@en ;
-    map:mapsTo ex:arg2 .
+ex:arg2 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+    rdfs:label "b"@en .
 
-<:func_f1a5429a_output1> a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    map:mapsTo ex:sum .
+ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
 """.strip()
 )
 
@@ -96,24 +94,21 @@ assert (
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <http://emmo.info/emmo#> .
 @prefix ex: <http://example.com/ex#> .
-@prefix map: <http://emmo.info/domain-mappings#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <:func_f1a5429a> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
-    emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 <:func_f1a5429a_input_x>,
-        <:func_f1a5429a_input_y> ;
-    emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840 <:func_f1a5429a_output1> ;
+    rdfs:label "func"@en ;
+    emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 ex:arg1,
+        ex:arg2 ;
+    emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840 ex:sum ;
     dcterms:description "Returns the sum of `a` and `b`."@en .
 
-<:func_f1a5429a_input_x> a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    rdfs:label "x"@en ;
-    map:mapsTo ex:arg1 .
+ex:arg1 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+    rdfs:label "x"@en .
 
-<:func_f1a5429a_input_y> a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    rdfs:label "y"@en ;
-    map:mapsTo ex:arg2 .
+ex:arg2 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+    rdfs:label "y"@en .
 
-<:func_f1a5429a_output1> a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    map:mapsTo ex:sum .
+ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
 """.strip()
 )
