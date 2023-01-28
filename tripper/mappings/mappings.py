@@ -524,7 +524,7 @@ class MappingStep:
         if output:
             subprocess.run(
                 args=[dot, f"-T{format}", "-o", output],
-                shell=True,
+                shell=False,  # nosec: B603
                 check=True,
                 input=graph.encode(),
             )
