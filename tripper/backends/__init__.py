@@ -5,6 +5,7 @@ from importlib import import_module
 backend_dependencies = {
     "rdflib": ["rdflib"],
     "ontopy": ["EMMOntoPy"],
+    "stardog": ["SPARQLWrapper", "pystardog"],
 }
 
 
