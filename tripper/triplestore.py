@@ -391,20 +391,28 @@ class Triplestore:
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
         """
-        triple = self.triples((subject, predicate, object))
+        spo = (subject, predicate, object)
+        if sum(iri is None for iri in spo) != 1:
+            raise ValueError(
+                "Exactly one of `subject`, `predicate` or `object` must be None."
+            )
+
+        triple = self.triples(spo)
         try:
             value = next(triple)
         except StopIteration:
             return default
 
-        if any:
-            return value
+        # Index of subject-predicate-object argument that is None
+        (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         try:
             next(triple)
         except StopIteration:
-            return value
+            return value[idx]
         else:
+            if any:
+                return value[idx]
             raise UniquenessError("More than one match")
 
     def subjects(
@@ -632,6 +640,7 @@ class Triplestore:
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
+        # pylint: disable=too-many-locals,too-many-statements
         self.bind("fno", FNO)
         self.bind("dcterms", DCTERMS)
         self.bind("map", MAP)
@@ -642,6 +651,7 @@ class Triplestore:
         if callable(func):
             fid = function_id(func)  # Function id
             func_iri = f"{base_iri}{func.__name__}_{fid}"
+            name = func.__name__
             doc_string = inspect.getdoc(func)
             parlist = f"_:{func.__name__}{fid}_parlist"
             outlist = f"_:{func.__name__}{fid}_outlist"
@@ -653,6 +663,7 @@ class Triplestore:
                 ]
         elif isinstance(func, str):
             func_iri = func
+            name = split_iri(func)[1]
             doc_string = ""
             parlist = f"_:{func_iri}_parlist"
             outlist = f"_:{func_iri}_outlist"
@@ -663,6 +674,7 @@ class Triplestore:
             raise TypeError("`func` should be either a callable or an IRI")
 
         self.add((func_iri, RDF.type, FNO.Function))
+        self.add((func_iri, RDFS.label, en(name)))
         self.add((func_iri, FNO.expects, parlist))
         self.add((func_iri, FNO.returns, outlist))
         if doc_string:
@@ -712,6 +724,7 @@ class Triplestore:
         if callable(func):
             fid = function_id(func)  # Function id
             func_iri = f"{base_iri}{func.__name__}_{fid}"
+            name = func.__name__
             doc_string = inspect.getdoc(func)
             if isinstance(expects, Sequence):
                 pars = list(zip(inspect.signature(func).parameters, expects))
@@ -719,6 +732,7 @@ class Triplestore:
                 pars = expects.items()
         elif isinstance(func, str):
             func_iri = func
+            name = split_iri(func)[1]
             doc_string = ""
             pariris = expects if isinstance(expects, Sequence) else expects.values()
             parnames = [split_iri(pariri)[1] for pariri in pariris]
@@ -727,18 +741,31 @@ class Triplestore:
             raise TypeError("`func` should be either a callable or an IRI")
 
         self.add((func_iri, RDF.type, Task))
+        self.add((func_iri, RDFS.label, en(name)))
         for parname, iri in pars:
-            par = f"{func_iri}_input_{parname}"
-            self.add((par, RDF.type, DataSet))
-            self.add((par, RDFS.label, en(parname)))
-            self.add((par, MAP.mapsTo, iri))
-            self.add((func_iri, hasInput, par))
-        for i, iri in enumerate(returns):
-            val = f"{func_iri}_output{i+1}"
-            self.add((val, RDF.type, DataSet))
-            self.add((val, MAP.mapsTo, iri))
-            self.add((func_iri, hasOutput, val))
+            self.add((iri, RDF.type, DataSet))
+            self.add((iri, RDFS.label, en(parname)))
+            self.add((func_iri, hasInput, iri))
+        for iri in returns:
+            self.add((iri, RDF.type, DataSet))
+            self.add((func_iri, hasOutput, iri))
         if doc_string:
             self.add((func_iri, DCTERMS.description, en(doc_string)))
+
+        # self.add((func_iri, RDF.type, Task))
+        # self.add((func_iri, RDFS.label, en(name)))
+        # for parname, iri in pars:
+        #    par = f"{func_iri}_input_{parname}"
+        #    self.add((par, RDF.type, DataSet))
+        #    self.add((par, RDFS.label, en(parname)))
+        #    self.add((par, MAP.mapsTo, iri))
+        #    self.add((func_iri, hasInput, par))
+        # for i, iri in enumerate(returns):
+        #    val = f"{func_iri}_output{i+1}"
+        #    self.add((val, RDF.type, DataSet))
+        #    self.add((val, MAP.mapsTo, iri))
+        #    self.add((func_iri, hasOutput, val))
+        # if doc_string:
+        #    self.add((func_iri, DCTERMS.description, en(doc_string)))
 
         return func_iri
