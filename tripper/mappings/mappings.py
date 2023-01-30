@@ -562,7 +562,7 @@ def mapping_routes(
     sources: "Dict[str, Value]",
     triplestore: "Triplestore",
     function_repo: "Optional[dict]" = None,
-    function_mappers: "Sequence[Callable]" = (fno_mapper,),
+    function_mappers: "Sequence[Callable]" = (emmo_mapper, fno_mapper),
     default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
@@ -570,6 +570,8 @@ def mapping_routes(
         ("subClassOf", 1.0),
         ("value", 0.0),
     ),
+    value_class: "Optional[Type[Value]]" = None,
+    mappingstep_class: "Optional[Type[MappingStep]]" = None,
     mapsTo: str = MAP.mapsTo,
     instanceOf: str = DM.instanceOf,
     subClassOf: str = RDFS.subClassOf,
@@ -601,6 +603,10 @@ def mapping_routes(
             of mapping steps ("function", "mapsTo", "instanceOf",
             "subclassOf", and "value").  These costs can be overridden with
             'hasCost' relations in the ontology.
+        value_class: Optional `Value` subclass to use instead of `Value` when
+            creating the returned mapping route.
+        mappingstep_class: Optional `MappingStep` subclass to use instead of
+            `MappingStep` when creating the returned mapping route.
         mapsTo: IRI of 'mapsTo' in `triplestore`.
         instanceOf: IRI of 'instanceOf' in `triplestore`.
         subClassOf: IRI of 'subClassOf' in `triples`.  Set it to None if
@@ -630,6 +636,12 @@ def mapping_routes(
         function_repo = triplestore.function_repo
 
     default_costs = dict(default_costs)
+
+    if value_class is None:
+        value_class = Value
+
+    if mappingstep_class is None:
+        mappingstep_class = MappingStep
 
     # Create lookup tables for fast access to triplestore content
     soMaps = defaultdict(list)  # (s, mapsTo, o)     ==> soMaps[s]  -> [o, ..]
@@ -676,7 +688,7 @@ def mapping_routes(
             step.steptype = steptype
             step.cost = getcost(target, stepname)
             if node in sources:
-                value = Value(
+                value = value_class(
                     value=sources[node],
                     unit=soUnit.get(node),
                     iri=node,
@@ -685,7 +697,7 @@ def mapping_routes(
                 )
                 step.add_input(value, name=soName.get(node))
             else:
-                prevstep = MappingStep(
+                prevstep = mappingstep_class(
                     output_iri=node,
                     output_unit=soUnit.get(node),
                     triplestore=triplestore,
@@ -712,7 +724,7 @@ def mapping_routes(
                 step.function = function_repo.get(func)
                 step.join_mode = True
                 for input_iri in input_iris:
-                    step0 = MappingStep(
+                    step0 = mappingstep_class(
                         output_iri=input_iri,
                         output_unit=soUnit.get(input_iri),
                         triplestore=triplestore,
@@ -722,7 +734,7 @@ def mapping_routes(
                 step.join_input()
 
     visited = set()
-    step = MappingStep(
+    step = mappingstep_class(
         output_iri=target,
         output_unit=soUnit.get(target),
         triplestore=triplestore,
@@ -735,7 +747,7 @@ def mapping_routes(
         source = soInst[target]
         step.steptype = StepType.INSTANCEOF
         step.cost = getcost(source, "instanceOf")
-        step0 = MappingStep(
+        step0 = mappingstep_class(
             output_iri=source,
             output_unit=soUnit.get(source),
             triplestore=triplestore,
