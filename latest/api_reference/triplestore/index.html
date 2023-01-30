@@ -1424,20 +1424,28 @@ Triplestore        </code>
 <span class="sd">            any: If true, return any matching value, otherwise raise</span>
 <span class="sd">                UniquenessError.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
+        <span class="n">spo</span> <span class="o">=</span> <span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">spo</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Exactly one of `subject`, `predicate` or `object` must be None.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">spo</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">default</span>
 
-        <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span>
+        <span class="c1"># Index of subject-predicate-object argument that is None</span>
+        <span class="p">(</span><span class="n">idx</span><span class="p">,)</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spo</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span>
+            <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="k">raise</span> <span class="n">UniquenessError</span><span class="p">(</span><span class="s2">&quot;More than one match&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">subjects</span><span class="p">(</span>
@@ -1665,6 +1673,7 @@ Triplestore        </code>
 
     <span class="k">def</span> <span class="nf">_add_function_fno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="p">,</span> <span class="n">returns</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implementing add_function() for FnO.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=too-many-locals,too-many-statements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;fno&quot;</span><span class="p">,</span> <span class="n">FNO</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;dcterms&quot;</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="n">MAP</span><span class="p">)</span>
@@ -1675,6 +1684,7 @@ Triplestore        </code>
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
             <span class="n">fid</span> <span class="o">=</span> <span class="n">function_id</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># Function id</span>
             <span class="n">func_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_iri</span><span class="si">}{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="n">doc_string</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
             <span class="n">parlist</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="n">fid</span><span class="si">}</span><span class="s2">_parlist&quot;</span>
             <span class="n">outlist</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}{</span><span class="n">fid</span><span class="si">}</span><span class="s2">_outlist&quot;</span>
@@ -1686,6 +1696,7 @@ Triplestore        </code>
                 <span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">func_iri</span> <span class="o">=</span> <span class="n">func</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">split_iri</span><span class="p">(</span><span class="n">func</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">doc_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="n">parlist</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_parlist&quot;</span>
             <span class="n">outlist</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_outlist&quot;</span>
@@ -1696,6 +1707,7 @@ Triplestore        </code>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`func` should be either a callable or an IRI&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">FNO</span><span class="o">.</span><span class="n">Function</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">FNO</span><span class="o">.</span><span class="n">expects</span><span class="p">,</span> <span class="n">parlist</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">FNO</span><span class="o">.</span><span class="n">returns</span><span class="p">,</span> <span class="n">outlist</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">doc_string</span><span class="p">:</span>
@@ -1745,6 +1757,7 @@ Triplestore        </code>
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
             <span class="n">fid</span> <span class="o">=</span> <span class="n">function_id</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>  <span class="c1"># Function id</span>
             <span class="n">func_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_iri</span><span class="si">}{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
             <span class="n">doc_string</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expects</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="n">pars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">expects</span><span class="p">))</span>
@@ -1752,6 +1765,7 @@ Triplestore        </code>
                 <span class="n">pars</span> <span class="o">=</span> <span class="n">expects</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">func_iri</span> <span class="o">=</span> <span class="n">func</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">split_iri</span><span class="p">(</span><span class="n">func</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">doc_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="n">pariris</span> <span class="o">=</span> <span class="n">expects</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expects</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="n">expects</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
             <span class="n">parnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">split_iri</span><span class="p">(</span><span class="n">pariri</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pariri</span> <span class="ow">in</span> <span class="n">pariris</span><span class="p">]</span>
@@ -1760,19 +1774,32 @@ Triplestore        </code>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`func` should be either a callable or an IRI&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">Task</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
         <span class="k">for</span> <span class="n">parname</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">pars</span><span class="p">:</span>
-            <span class="n">par</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_input_</span><span class="si">{</span><span class="n">parname</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">parname</span><span class="p">)))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">par</span><span class="p">,</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">hasInput</span><span class="p">,</span> <span class="n">par</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">returns</span><span class="p">):</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_iri</span><span class="si">}</span><span class="s2">_output</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">hasOutput</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">parname</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">hasInput</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">returns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">hasOutput</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">doc_string</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="n">doc_string</span><span class="p">)))</span>
+
+        <span class="c1"># self.add((func_iri, RDF.type, Task))</span>
+        <span class="c1"># self.add((func_iri, RDFS.label, en(name)))</span>
+        <span class="c1"># for parname, iri in pars:</span>
+        <span class="c1">#    par = f&quot;{func_iri}_input_{parname}&quot;</span>
+        <span class="c1">#    self.add((par, RDF.type, DataSet))</span>
+        <span class="c1">#    self.add((par, RDFS.label, en(parname)))</span>
+        <span class="c1">#    self.add((par, MAP.mapsTo, iri))</span>
+        <span class="c1">#    self.add((func_iri, hasInput, par))</span>
+        <span class="c1"># for i, iri in enumerate(returns):</span>
+        <span class="c1">#    val = f&quot;{func_iri}_output{i+1}&quot;</span>
+        <span class="c1">#    self.add((val, RDF.type, DataSet))</span>
+        <span class="c1">#    self.add((val, MAP.mapsTo, iri))</span>
+        <span class="c1">#    self.add((func_iri, hasOutput, val))</span>
+        <span class="c1"># if doc_string:</span>
+        <span class="c1">#    self.add((func_iri, DCTERMS.description, en(doc_string)))</span>
 
         <span class="k">return</span> <span class="n">func_iri</span>
 </code></pre></div>
@@ -3560,20 +3587,28 @@ UniquenessError.</p></td>
 <span class="sd">        any: If true, return any matching value, otherwise raise</span>
 <span class="sd">            UniquenessError.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
+    <span class="n">spo</span> <span class="o">=</span> <span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">spo</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Exactly one of `subject`, `predicate` or `object` must be None.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">spo</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">default</span>
 
-    <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">value</span>
+    <span class="c1"># Index of subject-predicate-object argument that is None</span>
+    <span class="p">(</span><span class="n">idx</span><span class="p">,)</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spo</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">raise</span> <span class="n">UniquenessError</span><span class="p">(</span><span class="s2">&quot;More than one match&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>

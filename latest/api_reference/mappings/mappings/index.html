@@ -656,6 +656,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tripper.mappings.mappings.MappingStep.visualise" class="md-nav__link">
+    visualise()
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -887,6 +894,13 @@
           <li class="md-nav__item">
   <a href="#tripper.mappings.mappings.MappingStep.show" class="md-nav__link">
     show()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.mappings.mappings.MappingStep.visualise" class="md-nav__link">
+    visualise()
   </a>
   
 </li>
@@ -1194,15 +1208,15 @@ output, a set of triples are expected.</p>
   <tbody>
       <tr>
         <td><code>output_iri</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><code>str</code></td>
         <td><p>IRI of the output concept.</p></td>
-        <td><code>None</code></td>
+        <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>steptype</code></td>
-        <td><code>&#39;Optional[StepType]&#39;</code></td>
+        <td><code>&#39;StepType&#39;</code></td>
         <td><p>One of the step types from the StepType enum.</p></td>
-        <td><code>None</code></td>
+        <td><code>&lt;StepType.UNSPECIFIED: 0&gt;</code></td>
       </tr>
       <tr>
         <td><code>function</code></td>
@@ -1262,8 +1276,8 @@ that this mapping step was created from.</p></td>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">output_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">steptype</span><span class="p">:</span> <span class="s2">&quot;Optional[StepType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">output_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">steptype</span><span class="p">:</span> <span class="s2">&quot;StepType&quot;</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
         <span class="n">function</span><span class="p">:</span> <span class="s2">&quot;Optional[Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">output_unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1526,6 +1540,112 @@ that this mapping step was created from.</p></td>
             <span class="p">)</span>
             <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;    - &quot;</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Help method that returns prefixed iri if possible, otherwise `iri`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="o">.</span><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span> <span class="k">else</span> <span class="n">iri</span>
+
+    <span class="k">def</span> <span class="nf">_visualise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">next_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">next_steptype</span><span class="p">:</span> <span class="n">StepType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Help function for visualise().</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            routeno: Route number to visualise.</span>
+<span class="sd">            next_iri: IRI of the next mapping step (i.e. the previous mapping</span>
+<span class="sd">                when starting from the target).</span>
+<span class="sd">            next_steptype: Step type from this to next iri.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Mapping route in dot (graphviz) notation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hasOutput</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840</span>
+
+        <span class="c1"># Edge labels. We invert the steptypes, since we want to visualise</span>
+        <span class="c1"># the workflow in forward direction, while the steptypes refer to</span>
+        <span class="c1"># backward direction</span>
+        <span class="n">labeldict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">MAPSTO</span><span class="p">:</span> <span class="s2">&quot;inverse(mapsTo)&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_MAPSTO</span><span class="p">:</span> <span class="s2">&quot;mapsTo&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INSTANCEOF</span><span class="p">:</span> <span class="s2">&quot;instanceOf&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_INSTANCEOF</span><span class="p">:</span> <span class="s2">&quot;inverse(instanceOf)&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">SUBCLASSOF</span><span class="p">:</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_SUBCLASSOF</span><span class="p">:</span> <span class="s2">&quot;inverse(subClassOf)&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
+                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;  &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; -&gt; &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;[label=&quot;</span><span class="si">{</span><span class="n">labeldict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;];&#39;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">):</span>
+                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="nb">input</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span>  <span class="c1"># pylint: disable=protected-access</span>
+                        <span class="n">routeno</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span>
+                        <span class="n">next_iri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">,</span>
+                        <span class="n">next_steptype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input should be Value or MappingStep&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">next_iri</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">labeldict</span><span class="p">[</span><span class="n">next_steptype</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">next_steptype</span> <span class="o">==</span> <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="p">:</span>
+                <span class="n">model_iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+                    <span class="n">predicate</span><span class="o">=</span><span class="n">hasOutput</span><span class="p">,</span>  <span class="c1"># Assuming EMMO</span>
+                    <span class="nb">object</span><span class="o">=</span><span class="n">next_iri</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">,</span>
+                    <span class="nb">any</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">model_iri</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+                        <span class="n">subject</span><span class="o">=</span><span class="n">model_iri</span><span class="p">,</span>
+                        <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="n">model_iri</span><span class="p">),</span>
+                        <span class="nb">any</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">labeldict</span><span class="p">[</span><span class="n">next_steptype</span><span class="p">]</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;  &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; -&gt; &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="n">next_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; [label=&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&quot;];&#39;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">visualise</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
+        <span class="n">dot</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Greate a Graphviz visualisation of a given mapping route.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            routeno: Number of mapping route to visualise.</span>
+<span class="sd">            output: If given, write the graph to this file.</span>
+<span class="sd">            format: File format to use with `output`.</span>
+<span class="sd">            dot: Path to Graphviz dot executable.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            String representation of the graph in dot format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;digraph G {&quot;</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span><span class="n">routeno</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">))</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">dot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-T</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span>
+                <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># nosec: B603</span>
+                <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">graph</span>
 </code></pre></div>
         </details>
 
@@ -2226,6 +2346,113 @@ internal use).</p></td>
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 class="doc doc-heading" id="tripper.mappings.mappings.MappingStep.visualise">
+<code class="highlight language-python"><span class="n">visualise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="n">dot</span><span class="o">=</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.mappings.mappings.MappingStep.visualise" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Greate a Graphviz visualisation of a given mapping route.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>routeno</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of mapping route to visualise.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>output</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>If given, write the graph to this file.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>format</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>File format to use with <code>output</code>.</p></td>
+        <td><code>&#39;png&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>dot</code></td>
+        <td><code>str</code></td>
+        <td><p>Path to Graphviz dot executable.</p></td>
+        <td><code>&#39;dot&#39;</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>str</code></td>
+      <td><p>String representation of the graph in dot format.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">visualise</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
+    <span class="n">dot</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Greate a Graphviz visualisation of a given mapping route.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        routeno: Number of mapping route to visualise.</span>
+<span class="sd">        output: If given, write the graph to this file.</span>
+<span class="sd">        format: File format to use with `output`.</span>
+<span class="sd">        dot: Path to Graphviz dot executable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        String representation of the graph in dot format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;digraph G {&quot;</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span><span class="n">routeno</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">))</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">dot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-T</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># nosec: B603</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
 
 
   </div>
@@ -2289,6 +2516,7 @@ StepType            (<span title="enum.Enum">Enum</span>)
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">StepType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of mapping step when going from the output to the inputs.&quot;&quot;&quot;</span>
 
+    <span class="n">UNSPECIFIED</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">MAPSTO</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">INV_MAPSTO</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">INSTANCEOF</span> <span class="o">=</span> <span class="mi">2</span>
@@ -2302,6 +2530,7 @@ StepType            (<span title="enum.Enum">Enum</span>)
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2414,7 +2643,12 @@ instance of.</p></td>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">iri</span>
+        <span class="k">if</span> <span class="n">iri</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">iri</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:value_</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span> <span class="o">=</span> <span class="n">property_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
 
@@ -2935,7 +3169,7 @@ value (with no unit).</p></td>
 
 
 <h2 class="doc doc-heading" id="tripper.mappings.mappings.mapping_routes">
-<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">emmo_mapper</span> <span class="n">at</span> <span class="mh">0x7f9a5007b560</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7f9a5007b5f0</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">value_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mappingstep_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">emmo_mapper</span> <span class="n">at</span> <span class="mh">0x7fe141b4db00</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7fe141b4db90</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">value_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mappingstep_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.mappings.mappings.mapping_routes" title="Permanent link">&para;</a></h2>
@@ -2982,7 +3216,8 @@ It is safe to pass a generator expression too.</p></td>
 </table>      <p>Additional arguments for fine-grained tuning:
     !!! function_repo "Dict mapping function IRIs to corresponding Python"
         function.  Default is to use <code>triplestore.function_repo</code>.
-    !!! function_mappers "Sequence of mapping functions that takes"
+    !!! function_mappers "Name of mapping standard: "emmo" or "fno"."
+        Alternatively, a sequence of mapping functions that takes
         <code>triplestore</code> as argument and return a dict mapping output IRIs
         to a list of <code>(function_iri, [input_iris, ...])</code> tuples.
     !!! default_costs "A dict providing default costs of different types"
@@ -3029,7 +3264,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
     <span class="n">sources</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Value]&quot;</span><span class="p">,</span>
     <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
     <span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">function_mappers</span><span class="p">:</span> <span class="s2">&quot;Sequence[Callable]&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="n">emmo_mapper</span><span class="p">,</span> <span class="n">fno_mapper</span><span class="p">),</span>
+    <span class="n">function_mappers</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[Callable]]&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="n">emmo_mapper</span><span class="p">,</span> <span class="n">fno_mapper</span><span class="p">),</span>
     <span class="n">default_costs</span><span class="p">:</span> <span class="s2">&quot;Tuple&quot;</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
         <span class="p">(</span><span class="s2">&quot;mapsTo&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
@@ -3063,7 +3298,8 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
 <span class="sd">    Additional arguments for fine-grained tuning:</span>
 <span class="sd">        function_repo: Dict mapping function IRIs to corresponding Python</span>
 <span class="sd">            function.  Default is to use `triplestore.function_repo`.</span>
-<span class="sd">        function_mappers: Sequence of mapping functions that takes</span>
+<span class="sd">        function_mappers: Name of mapping standard: &quot;emmo&quot; or &quot;fno&quot;.</span>
+<span class="sd">            Alternatively, a sequence of mapping functions that takes</span>
 <span class="sd">            `triplestore` as argument and return a dict mapping output IRIs</span>
 <span class="sd">            to a list of `(function_iri, [input_iris, ...])` tuples.</span>
 <span class="sd">        default_costs: A dict providing default costs of different types</span>
@@ -3101,6 +3337,10 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
 
     <span class="k">if</span> <span class="n">function_repo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">function_repo</span> <span class="o">=</span> <span class="n">triplestore</span><span class="o">.</span><span class="n">function_repo</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_mappers</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">fmd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;emmo&quot;</span><span class="p">:</span> <span class="n">emmo_mapper</span><span class="p">,</span> <span class="s2">&quot;fno&quot;</span><span class="p">:</span> <span class="n">fno_mapper</span><span class="p">}</span>
+        <span class="n">function_mappers</span> <span class="o">=</span> <span class="p">[</span><span class="n">fmd</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">function_mappers</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
 
     <span class="n">default_costs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">default_costs</span><span class="p">)</span>
 
