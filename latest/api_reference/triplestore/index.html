@@ -1603,7 +1603,7 @@ Triplestore        </code>
         <span class="n">expects</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence, Mapping]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">returns</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fno&quot;</span><span class="p">,</span>
+        <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
         <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
@@ -1920,7 +1920,7 @@ method.</p></td>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.add_function">
-<code class="highlight language-python"><span class="n">add_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="o">=</span><span class="p">(),</span> <span class="n">returns</span><span class="o">=</span><span class="p">(),</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard</span><span class="o">=</span><span class="s1">&#39;fno&#39;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">add_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">expects</span><span class="o">=</span><span class="p">(),</span> <span class="n">returns</span><span class="o">=</span><span class="p">(),</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard</span><span class="o">=</span><span class="s1">&#39;emmo&#39;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.triplestore.Triplestore.add_function" title="Permanent link">&para;</a></h3>
@@ -1976,7 +1976,7 @@ knowledge base.  Defaults to the base IRI of the triplestore.</p></td>
 Valid values are:
 - "emmo": Elementary Multiperspective Material Ontology (EMMO)
 - "fno": Function Ontology (FnO)</p></td>
-        <td><code>&#39;fno&#39;</code></td>
+        <td><code>&#39;emmo&#39;</code></td>
       </tr>
       <tr>
         <td><code>cost</code></td>
@@ -2012,7 +2012,7 @@ returning the cost as a float.</p></td>
     <span class="n">expects</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence, Mapping]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">returns</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fno&quot;</span><span class="p">,</span>
+    <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
     <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspect function and add triples describing it to the triplestore.</span>
