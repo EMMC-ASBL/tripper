@@ -1,6 +1,31 @@
 # Changelog
 
-## [v0.2.1](https://github.com/EMMC-ASBL/tripper/tree/v0.2.1) (2022-12-16)
+## [v0.2.2](https://github.com/EMMC-ASBL/tripper/tree/v0.2.2) (2023-01-30)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.1...v0.2.2)
+
+**Fixed bugs:**
+
+- pre-commit failing hook installation [\#75](https://github.com/EMMC-ASBL/tripper/issues/75)
+- ontopy backend failing tests [\#7](https://github.com/EMMC-ASBL/tripper/issues/7)
+
+**Closed issues:**
+
+- Describe functions with EMMO instead of FnO [\#65](https://github.com/EMMC-ASBL/tripper/issues/65)
+
+**Merged pull requests:**
+
+- Using isort 5.12.0 for pre-commit [\#76](https://github.com/EMMC-ASBL/tripper/pull/76) ([CasperWA](https://github.com/CasperWA))
+- Visualise [\#74](https://github.com/EMMC-ASBL/tripper/pull/74) ([jesper-friis](https://github.com/jesper-friis))
+- Generate mapping routes from subclasses of Value and MappingStep [\#73](https://github.com/EMMC-ASBL/tripper/pull/73) ([jesper-friis](https://github.com/jesper-friis))
+- Fix deprecated calls syntax to Triplestore.triples\(\) [\#71](https://github.com/EMMC-ASBL/tripper/pull/71) ([jesper-friis](https://github.com/jesper-friis))
+- Made the value optional + added some cleanup [\#70](https://github.com/EMMC-ASBL/tripper/pull/70) ([jesper-friis](https://github.com/jesper-friis))
+- Add map\(\) method to Triplestore [\#69](https://github.com/EMMC-ASBL/tripper/pull/69) ([jesper-friis](https://github.com/jesper-friis))
+- Proper cost function [\#68](https://github.com/EMMC-ASBL/tripper/pull/68) ([jesper-friis](https://github.com/jesper-friis))
+- Updated Triplestore.add\_function\(\) to also support EMMO. [\#67](https://github.com/EMMC-ASBL/tripper/pull/67) ([jesper-friis](https://github.com/jesper-friis))
+- Added mappings [\#62](https://github.com/EMMC-ASBL/tripper/pull/62) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.2.1](https://github.com/EMMC-ASBL/tripper/tree/v0.2.1) (2022-12-18)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.0...v0.2.1)
 
