@@ -12,6 +12,7 @@ with numpy.
 # pylint: disable=invalid-name,redefined-builtin
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
+import subprocess  # nosec: B404
 from collections import defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING, Sequence
@@ -59,6 +60,7 @@ class MissingRelationError(MappingError):
 class StepType(Enum):
     """Type of mapping step when going from the output to the inputs."""
 
+    UNSPECIFIED = 0
     MAPSTO = 1
     INV_MAPSTO = -1
     INSTANCEOF = 2
@@ -92,7 +94,12 @@ class Value:
     ):
         self.value = value
         self.unit = unit
-        self.output_iri = iri
+        if iri:
+            self.output_iri = iri
+        elif hasattr(value, __name__):
+            self.output_iri = value.__name__
+        else:
+            self.output_iri = f"_:value_{id(value)}"
         self.property_iri = property_iri
         self.cost = cost
 
@@ -152,8 +159,8 @@ class MappingStep:
 
     def __init__(
         self,
-        output_iri: "Optional[str]" = None,
-        steptype: "Optional[StepType]" = None,
+        output_iri: str,
+        steptype: "StepType" = StepType.UNSPECIFIED,
         function: "Optional[Callable]" = None,
         cost: "Union[float, Callable]" = 1.0,
         output_unit: "Optional[str]" = None,
@@ -300,7 +307,6 @@ class MappingStep:
 
         # Loop over all toplevel routes leading into this mapping step
         for inputs in self.input_routes:
-
             # For each route, loop over all input arguments of this step
             # The number of permutations we must consider is the product
             # of the total number of routes to each input argument.
@@ -416,6 +422,112 @@ class MappingStep:
             )
             strings.append(ind + "    - " + t[indent + 6 :])
         return "\n".join(strings)
+
+    def _iri(self, iri: str) -> str:
+        """Help method that returns prefixed iri if possible, otherwise `iri`."""
+        return self.triplestore.prefix_iri(iri) if self.triplestore else iri
+
+    def _visualise(self, routeno: int, next_iri: str, next_steptype: StepType) -> str:
+        """Help function for visualise().
+
+        Arguments:
+            routeno: Route number to visualise.
+            next_iri: IRI of the next mapping step (i.e. the previous mapping
+                when starting from the target).
+            next_steptype: Step type from this to next iri.
+
+        Returns:
+            Mapping route in dot (graphviz) notation.
+        """
+        hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
+
+        # Edge labels. We invert the steptypes, since we want to visualise
+        # the workflow in forward direction, while the steptypes refer to
+        # backward direction
+        labeldict = {
+            StepType.UNSPECIFIED: "",
+            StepType.MAPSTO: "inverse(mapsTo)",
+            StepType.INV_MAPSTO: "mapsTo",
+            StepType.INSTANCEOF: "instanceOf",
+            StepType.INV_INSTANCEOF: "inverse(instanceOf)",
+            StepType.SUBCLASSOF: "subClassOf",
+            StepType.INV_SUBCLASSOF: "inverse(subClassOf)",
+            StepType.FUNCTION: "function",
+        }
+        inputs, idx = self.get_inputs(routeno)
+        strings = []
+        for _, input in inputs.items():
+            if isinstance(input, Value):
+                strings.append(
+                    f'  "{self._iri(input.output_iri)}" -> '
+                    f'"{self._iri(self.output_iri)}" '
+                    f'[label="{labeldict[self.steptype]}"];'
+                )
+            elif isinstance(input, MappingStep):
+                strings.append(
+                    input._visualise(  # pylint: disable=protected-access
+                        routeno=idx,
+                        next_iri=self.output_iri,
+                        next_steptype=self.steptype,
+                    )
+                )
+            else:
+                raise TypeError("input should be Value or MappingStep")
+        if next_iri:
+            label = labeldict[next_steptype]
+            if next_steptype == StepType.FUNCTION and self.triplestore:
+                model_iri = self.triplestore.value(
+                    predicate=hasOutput,  # Assuming EMMO
+                    object=next_iri,
+                    default="function",
+                    any=True,
+                )
+                if model_iri:
+                    label = self.triplestore.value(
+                        subject=model_iri,
+                        predicate=RDFS.label,
+                        default=self._iri(model_iri),
+                        any=True,
+                    )
+            else:
+                label = labeldict[next_steptype]
+            strings.append(
+                f'  "{self._iri(self.output_iri)}" -> '
+                f'"{self._iri(next_iri)}" [label="{label}"];'
+            )
+        return "\n".join(strings)
+
+    def visualise(
+        self,
+        routeno: int,
+        output: "Optional[str]" = None,
+        format: "Optional[str]" = "png",
+        dot: str = "dot",
+    ) -> str:
+        """Greate a Graphviz visualisation of a given mapping route.
+
+        Arguments:
+            routeno: Number of mapping route to visualise.
+            output: If given, write the graph to this file.
+            format: File format to use with `output`.
+            dot: Path to Graphviz dot executable.
+
+        Returns:
+            String representation of the graph in dot format.
+        """
+        strings = []
+        strings.append("digraph G {")
+        strings.append(self._visualise(routeno, "", StepType.UNSPECIFIED))
+        strings.append("}")
+        graph = "\n".join(strings) + "\n"
+        if output:
+            subprocess.run(
+                args=[dot, f"-T{format}", "-o", output],
+                shell=False,  # nosec: B603
+                check=True,
+                input=graph.encode(),
+            )
+        return graph
 
 
 def get_nroutes(inputs: "Inputs") -> int:
@@ -562,7 +674,7 @@ def mapping_routes(
     sources: "Dict[str, Value]",
     triplestore: "Triplestore",
     function_repo: "Optional[dict]" = None,
-    function_mappers: "Sequence[Callable]" = (fno_mapper,),
+    function_mappers: "Union[str, Sequence[Callable]]" = (emmo_mapper, fno_mapper),
     default_costs: "Tuple" = (
         ("function", 10.0),
         ("mapsTo", 2.0),
@@ -570,6 +682,8 @@ def mapping_routes(
         ("subClassOf", 1.0),
         ("value", 0.0),
     ),
+    value_class: "Optional[Type[Value]]" = None,
+    mappingstep_class: "Optional[Type[MappingStep]]" = None,
     mapsTo: str = MAP.mapsTo,
     instanceOf: str = DM.instanceOf,
     subClassOf: str = RDFS.subClassOf,
@@ -594,13 +708,18 @@ def mapping_routes(
     Additional arguments for fine-grained tuning:
         function_repo: Dict mapping function IRIs to corresponding Python
             function.  Default is to use `triplestore.function_repo`.
-        function_mappers: Sequence of mapping functions that takes
+        function_mappers: Name of mapping standard: "emmo" or "fno".
+            Alternatively, a sequence of mapping functions that takes
             `triplestore` as argument and return a dict mapping output IRIs
             to a list of `(function_iri, [input_iris, ...])` tuples.
         default_costs: A dict providing default costs of different types
             of mapping steps ("function", "mapsTo", "instanceOf",
             "subclassOf", and "value").  These costs can be overridden with
             'hasCost' relations in the ontology.
+        value_class: Optional `Value` subclass to use instead of `Value` when
+            creating the returned mapping route.
+        mappingstep_class: Optional `MappingStep` subclass to use instead of
+            `MappingStep` when creating the returned mapping route.
         mapsTo: IRI of 'mapsTo' in `triplestore`.
         instanceOf: IRI of 'instanceOf' in `triplestore`.
         subClassOf: IRI of 'subClassOf' in `triples`.  Set it to None if
@@ -629,7 +748,17 @@ def mapping_routes(
     if function_repo is None:
         function_repo = triplestore.function_repo
 
+    if isinstance(function_mappers, str):
+        fmd = {"emmo": emmo_mapper, "fno": fno_mapper}
+        function_mappers = [fmd[name] for name in function_mappers.split(",")]
+
     default_costs = dict(default_costs)
+
+    if value_class is None:
+        value_class = Value
+
+    if mappingstep_class is None:
+        mappingstep_class = MappingStep
 
     # Create lookup tables for fast access to triplestore content
     soMaps = defaultdict(list)  # (s, mapsTo, o)     ==> soMaps[s]  -> [o, ..]
@@ -676,7 +805,7 @@ def mapping_routes(
             step.steptype = steptype
             step.cost = getcost(target, stepname)
             if node in sources:
-                value = Value(
+                value = value_class(
                     value=sources[node],
                     unit=soUnit.get(node),
                     iri=node,
@@ -685,7 +814,7 @@ def mapping_routes(
                 )
                 step.add_input(value, name=soName.get(node))
             else:
-                prevstep = MappingStep(
+                prevstep = mappingstep_class(
                     output_iri=node,
                     output_unit=soUnit.get(node),
                     triplestore=triplestore,
@@ -712,7 +841,7 @@ def mapping_routes(
                 step.function = function_repo.get(func)
                 step.join_mode = True
                 for input_iri in input_iris:
-                    step0 = MappingStep(
+                    step0 = mappingstep_class(
                         output_iri=input_iri,
                         output_unit=soUnit.get(input_iri),
                         triplestore=triplestore,
@@ -722,7 +851,7 @@ def mapping_routes(
                 step.join_input()
 
     visited = set()
-    step = MappingStep(
+    step = mappingstep_class(
         output_iri=target,
         output_unit=soUnit.get(target),
         triplestore=triplestore,
@@ -735,7 +864,7 @@ def mapping_routes(
         source = soInst[target]
         step.steptype = StepType.INSTANCEOF
         step.cost = getcost(source, "instanceOf")
-        step0 = MappingStep(
+        step0 = mappingstep_class(
             output_iri=source,
             output_unit=soUnit.get(source),
             triplestore=triplestore,

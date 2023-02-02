@@ -86,6 +86,7 @@ def expected_function_triplestore(example_function: "Callable[[Any, Any], Any]")
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 ex:sum__{fid} a fno:Function ;
+    rdfs:label "sum_"@en ;
     dcterms:description "Returns the sum of `first_param` and `second_param`."@en ;
     fno:expects ( ex:sum__{fid}_parameter1_first_param ex:sum__{fid}_parameter2_second_param ) ;
     fno:returns ( ex:sum__{fid}_output1 ) .
