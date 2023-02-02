@@ -12,8 +12,14 @@
       
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/CHANGELOG/">
       
+      
+        <link rel="prev" href="../LICENSE/">
+      
+      
+        <link rel="next" href="../api_reference/errors/">
+      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
     
     
       
@@ -21,15 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.0d440cfe.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
-        
-          
-          
-          <meta name="theme-color" content="#00bdd6">
-        
       
       
 
@@ -146,7 +147,7 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -269,7 +270,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
@@ -298,6 +299,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased-2023-02-02" class="md-nav__link">
+    Unreleased (2023-02-02)
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#v022-2023-01-30" class="md-nav__link">
@@ -353,17 +361,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_5">
+        <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
           API Reference
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="API Reference" data-md-level="1">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           API Reference
@@ -463,17 +472,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_7" type="checkbox" id="__nav_5_7" >
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_5_7">
+        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="backends" data-md-level="2">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_5_7">
           <span class="md-nav__icon md-icon"></span>
           backends
@@ -552,17 +562,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_8" type="checkbox" id="__nav_5_8" >
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
       
       
       
-      
-        <label class="md-nav__link" for="__nav_5_8">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="mappings" data-md-level="2">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           mappings
@@ -623,6 +634,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#unreleased-2023-02-02" class="md-nav__link">
+    Unreleased (2023-02-02)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v022-2023-01-30" class="md-nav__link">
     v0.2.2 (2023-01-30)
   </a>
@@ -672,7 +690,18 @@
                   
 
 
+
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="unreleased-2023-02-02"><a href="https://github.com/EMMC-ASBL/tripper/tree/Unreleased">Unreleased</a> (2023-02-02)<a class="headerlink" href="#unreleased-2023-02-02" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.2...Unreleased">Full Changelog</a></p>
+<p><strong>Closed issues:</strong></p>
+<ul>
+<li>Add a to_yaml() method to MappingStep <a href="https://github.com/EMMC-ASBL/tripper/issues/66">#66</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>[Auto-generated] Update dependencies <a href="https://github.com/EMMC-ASBL/tripper/pull/78">#78</a> (<a href="https://github.com/TEAM4-0">TEAM4-0</a>)</li>
+</ul>
 <h2 id="v022-2023-01-30"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.2">v0.2.2</a> (2023-01-30)<a class="headerlink" href="#v022-2023-01-30" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.1...v0.2.2">Full Changelog</a></p>
 <p><strong>Fixed bugs:</strong></p>
@@ -695,6 +724,7 @@
 <li>Proper cost function <a href="https://github.com/EMMC-ASBL/tripper/pull/68">#68</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Updated Triplestore.add_function() to also support EMMO. <a href="https://github.com/EMMC-ASBL/tripper/pull/67">#67</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Added mappings <a href="https://github.com/EMMC-ASBL/tripper/pull/62">#62</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[Auto-generated] Update dependencies <a href="https://github.com/EMMC-ASBL/tripper/pull/60">#60</a> (<a href="https://github.com/TEAM4-0">TEAM4-0</a>)</li>
 </ul>
 <h2 id="v021-2022-12-18"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.1">v0.2.1</a> (2022-12-18)<a class="headerlink" href="#v021-2022-12-18" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.0...v0.2.1">Full Changelog</a></p>
@@ -751,6 +781,7 @@
 <li>Use the proper version of SINTEF/ci-cd <a href="https://github.com/EMMC-ASBL/tripper/pull/36">#36</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
 <li>bumped ci-cd version to remove --strict mkdocs command <a href="https://github.com/EMMC-ASBL/tripper/pull/32">#32</a> (<a href="https://github.com/daniel-sintef">daniel-sintef</a>)</li>
 <li>3 refactor triplestorepy triplestore module api <a href="https://github.com/EMMC-ASBL/tripper/pull/31">#31</a> (<a href="https://github.com/daniel-sintef">daniel-sintef</a>)</li>
+<li>[Auto-generated] Update dependencies <a href="https://github.com/EMMC-ASBL/tripper/pull/28">#28</a> (<a href="https://github.com/TEAM4-0">TEAM4-0</a>)</li>
 <li>3 refactor triplestore <a href="https://github.com/EMMC-ASBL/tripper/pull/27">#27</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Corrected copyright <a href="https://github.com/EMMC-ASBL/tripper/pull/21">#21</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Add a useful description to README file. <a href="https://github.com/EMMC-ASBL/tripper/pull/19">#19</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
@@ -772,6 +803,7 @@
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>[Auto-generated] Update dependencies <a href="https://github.com/EMMC-ASBL/tripper/pull/17">#17</a> (<a href="https://github.com/TEAM4-0">TEAM4-0</a>)</li>
 <li>Use the package name <code>tripper</code> (not <code>tripperpy</code>) <a href="https://github.com/EMMC-ASBL/tripper/pull/16">#16</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
 <li>Clean up repository &amp; fix workflows <a href="https://github.com/EMMC-ASBL/tripper/pull/5">#5</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
 <li>Added version number in __init__ to enable local pip install <a href="https://github.com/EMMC-ASBL/tripper/pull/4">#4</a> (<a href="https://github.com/quaat">quaat</a>)</li>
@@ -799,42 +831,6 @@
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../LICENSE/" class="md-footer__link md-footer__link--prev" aria-label="Previous: License" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              License
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../api_reference/errors/" class="md-footer__link md-footer__link--next" aria-label="Next: errors" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              errors
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -871,12 +867,11 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../assets/javascripts/bundle.a00a7c5e.min.js"></script>
       
-    
     
   </body>
 </html>
