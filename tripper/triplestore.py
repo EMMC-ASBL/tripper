@@ -410,10 +410,10 @@ class Triplestore:
             next(triple)
         except StopIteration:
             return value[idx]
-        else:
-            if any:
-                return value[idx]
-            raise UniquenessError("More than one match")
+
+        if any:
+            return value[idx]
+        raise UniquenessError("More than one match")
 
     def subjects(
         self, predicate=None, object=None  # pylint: disable=redefined-builtin

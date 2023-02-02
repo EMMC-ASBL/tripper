@@ -307,7 +307,6 @@ class MappingStep:
 
         # Loop over all toplevel routes leading into this mapping step
         for inputs in self.input_routes:
-
             # For each route, loop over all input arguments of this step
             # The number of permutations we must consider is the product
             # of the total number of routes to each input argument.
