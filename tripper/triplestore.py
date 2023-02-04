@@ -14,12 +14,17 @@ RDF Triple: subject, predicate, and object.
 # pylint: disable=invalid-name,too-many-public-methods
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
+import importlib
 import inspect
+import pkgutil
 import re
+import sys
 import warnings
 from collections.abc import Sequence
 from importlib import import_module
+from pathlib import Path
 from typing import TYPE_CHECKING
+from site import getuserbase
 
 from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
 from tripper.literal import Literal
@@ -69,11 +74,18 @@ class Triplestore:
         # "dm": DM,
     }
 
+    # Default search path for backends
+    default_path = [
+        Path(__file__).resolve().parent / "backends",
+        Path(getuserbase()) / "share" / "tripper" / "backends",
+    ]
+
     def __init__(
         self,
         backend: str,
         base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
+        path: "Optional[list]" = None,
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
@@ -86,9 +98,12 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
         """
-        module = import_module(
-            backend if "." in backend else f"tripper.backends.{backend}"
-        )
+        #module = import_module(
+        #    backend if "." in backend else f"tripper.backends.{backend}"
+        #)
+        print("*** default_path:", self.default_path)
+        module = self._load_module(backend, path if path else self.default_path)
+
         cls = getattr(module, f"{backend.title()}Strategy")
         self.base_iri = base_iri
         self.namespaces: "Dict[str, Namespace]" = {}
@@ -100,6 +115,23 @@ class Triplestore:
         self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
+
+    def _load_module(self, backend, path):
+        """Find, load and return backend module."""
+        if backend in sys.path:
+            return sys.path[backend]
+        for finder, name, ispkg in pkgutil.iter_modules([str(p) for p in path]):
+            print("  -", finder)
+            if not ispkg and name == backend:
+                spec = finder.find_spec(name, f"tripper.backends.{name}")
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[name] = module
+                spec.loader.exec_module(module)
+                return module
+        raise ModuleNotFoundError(
+            f"cannot find module in search path: {path}", name=name,
+        )
+
 
     # Methods implemented by backend
     # ------------------------------
