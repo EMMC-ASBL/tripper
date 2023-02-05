@@ -95,6 +95,7 @@ class Triplestore:
         self.closed = False
         self.backend_name = backend
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
+
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
         self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
@@ -459,7 +460,7 @@ class Triplestore:
         the given `triple`.
         """
         s, p, _ = triple
-        self.remove((s, p, None))
+        self.remove(s, p)
         self.add(triple)
 
     def has(
