@@ -1,6 +1,6 @@
 Workflow example
 ================
-This example is implemented in the [workflow_example.py](workflow_example.py) script.
+This example is implemented in the [workflow_example.py] script.
 It populates a knowledge base with individuals standing for two
 data sources (`data1` and `data2`) a `target` and two model (`model1` and
 `model2`).
@@ -37,3 +37,7 @@ routes.visualise(0, output="route.svg", format="svg")
 which should produce the following graph:
 
 ![Mapping route](route.svg)
+
+
+
+ [workflow_example.py]: https://github.com/EMMC-ASBL/tripper/blob/main/examples/workflow-mappings/workflow_mappings.py
