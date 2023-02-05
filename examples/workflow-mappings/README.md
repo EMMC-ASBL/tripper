@@ -1,21 +1,38 @@
-Generic example
-===============
-This example populates a knowledge base with information about some data sources and models.
+Workflow example
+================
+This example populates a knowledge base with individuals standing for two
+data sources (`data1` and `data2`) a `target` and two model (`model1` and
+`model2`).
+The input and output of the models is also documented.
 
-It then asks OntoFlow how the `target` data can be obtained given the data and models that the knowledge base have been populated with.
+We also add mappings from the data sources and model input/output to the
+ontological concepts `A`, `B`, `C` and `D` as shown with red arrows in the
+following figure.
 
-We expect to find the following workflow
+![Knowledge base](knowledge-base.svg)
+
+We then ask tripper how the `target` data can be obtained given the data
+and models that the knowledge base have been populated with, by calling
+
+```python
+routes = mapping_routes(
+    target=EX.target,
+    sources=(EX.data1, EX.data2),
+    triplestore=ts,
+)
+```
+
+
+We expect to find one mapping route representing the following workflow
 
 ![Workflow](workflow.svg)
 
-When the data sources and sinks are documented using partial pipelines, the workflow may also be represented as follows
+Finally we visualise the mapping route by calling
 
-![Workflow with pipelines](workflow_w_pipes.svg)
+```python
+routes.visualise(0, output="route.svg", format="svg")
+```
 
-Each of the 4 pipelines consist of two partial pipelines, one documenting the data source and one documenting the data sink.
-For example, `pipe1` has a partial pipeline documenting the data source `data1` and a partial pipeline documenting the input to `model1`.
-Similar for the other pipelines.
+which should produce the following graph:
 
-The important information that we have populated the knowledge base with in this generic example is shown below, where the red arrows correspond to mapping relations and `A`, `B`, `C` and `D` are ontological concepts.
-
-![Knowledge base](knowledge-base.svg)
+![Mapping route](route.svg)

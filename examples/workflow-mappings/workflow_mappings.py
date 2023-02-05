@@ -1,10 +1,9 @@
 """Workflow example"""
-from tripper import Namespace, Triplestore
+from tripper import Triplestore
 from tripper.mappings import MappingStep, mapping_routes
 
-EX = Namespace("http://example.com/generic_example#")
-
 ts = Triplestore(backend="rdflib")
+EX = ts.bind("ex", "http://example.com/generic_example#")
 ts.add_function(
     EX.model1,
     expects=EX.model1_input,
@@ -33,4 +32,3 @@ routes = mapping_routes(
 if isinstance(routes, MappingStep):
     print("Number of routes:", routes.number_of_routes())
     routes.visualise(0, output="route.svg", format="svg")
-print(routes.show())
