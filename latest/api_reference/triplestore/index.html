@@ -1133,6 +1133,7 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="c1"># Keep functions in the triplestore for convienence even though</span>
         <span class="c1"># they usually do not belong to the triplestore per se.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Union[float, Callable[[], float], None]]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1497,7 +1498,7 @@ Triplestore        </code>
 <span class="sd">        the given `triple`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">triple</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">has</span><span class="p">(</span>
@@ -1907,6 +1908,7 @@ method.</p></td>
     <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="c1"># Keep functions in the triplestore for convienence even though</span>
     <span class="c1"># they usually do not belong to the triplestore per se.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Union[float, Callable[[], float], None]]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
@@ -3250,7 +3252,7 @@ the given <code>triple</code>.</p>
 <span class="sd">    the given `triple`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">triple</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
 </code></pre></div>
         </details>
