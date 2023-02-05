@@ -17,6 +17,7 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 import importlib
 import inspect
 import re
+import sys
 import warnings
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
@@ -139,21 +140,24 @@ class Triplestore:
         Otherwise, look for the `backend` in any of the (sub)packages listed
         `backend_packages` module variable.
         """
+        # Explicitly specified backend
         if "." in backend or package:
             return importlib.import_module(backend, package)
 
-        try:
+        # Installed backend package
+        if (3, 8) <= sys.version_info < (3, 10):
+            # Fallback for Python 3.8 and 3.9
+            eps = entry_points()["tripper.backends"]
+        else:
             # New entry_point interface from Python 3.10+, which is also
             # implemented in the importlib_metadata backport for Python 3.6
             # and 3.7.
             eps = entry_points(group="tripper.backends")
-        except TypeError:
-            # Fallback for Python 3.8 and 3.9
-            eps = entry_points()["tripper.backends"]
         for entry_point in eps:
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
 
+        # Backend module
         for pack in backend_packages:
             try:
                 return importlib.import_module(f"{pack}.{backend}")

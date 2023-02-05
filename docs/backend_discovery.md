@@ -6,8 +6,8 @@ The methods they are supposed to define are documented in [tripper/interface.py]
 Tripper support several use cases for discovery of custom backends.
 
 
-Backend package
----------------
+Installed backend package
+-------------------------
 It is possible to create a pip installable Python package that provides new tripper backends that will be automatically discovered.
 
 The backend package should add the following to its `pyproject.toml` file:
