@@ -1,6 +1,7 @@
 Workflow example
 ================
-This example populates a knowledge base with individuals standing for two
+This example is implemented in the [workflow_example.py](workflow_example.py) script.
+It populates a knowledge base with individuals standing for two
 data sources (`data1` and `data2`) a `target` and two model (`model1` and
 `model2`).
 The input and output of the models is also documented.
