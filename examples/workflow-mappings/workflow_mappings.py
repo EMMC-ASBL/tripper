@@ -1,22 +1,19 @@
-"""Test for the generic case described in the README file."""
-from tripper import Triplestore
-from tripper.mappings import mapping_routes
+"""Workflow example"""
+from tripper import Namespace, Triplestore
+from tripper.mappings import MappingStep, mapping_routes
+
+EX = Namespace("http://example.com/generic_example#")
 
 ts = Triplestore(backend="rdflib")
-EX = ts.bind("ex", "http://example.com/generic_example#")
 ts.add_function(
     EX.model1,
     expects=EX.model1_input,
     returns=EX.model1_output,
-    standard="emmo",
-    # standard="fno",
 )
 ts.add_function(
     EX.model2,
     expects=(EX.model2_input1, EX.model2_input2),
     returns=EX.model2_output,
-    standard="emmo",
-    # standard="fno",
 )
 ts.map(EX.data1, EX.A)
 ts.map(EX.model1_input, EX.A)
@@ -29,10 +26,11 @@ ts.map(EX.target, EX.D)
 
 routes = mapping_routes(
     target=EX.target,
-    sources={EX.data1: None, EX.data2: None},
+    sources=(EX.data1, EX.data2),
     triplestore=ts,
-    # function_mappers = "emmo"
-    # function_mappers = "fno"
 )
 
-# routes.visualise(0, output="route.svg", format="svg")
+if isinstance(routes, MappingStep):
+    print("Number of routes:", routes.number_of_routes())
+    routes.visualise(0, output="route.svg", format="svg")
+print(routes.show())
