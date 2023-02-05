@@ -57,7 +57,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        # -- Uncomment when tripper this version of tripper has been released
+        #    such that we can import tripper with Python 3.11
+        # python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
     - name: Checkout tripper
@@ -81,29 +84,31 @@ jobs:
       if: matrix.python-version == '3.9' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v3
 
-  pytest-36:
-    runs-on: ubuntu-20.04
-
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.6.8"]
-
-    steps:
-    - name: Checkout tripper
-      uses: actions/checkout@v3
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install -U pip
-        pip install -U setuptools wheel flit
-        pip install -e .
-        pip install pytest EMMOntoPy rdflib SPARQLWrapper DLite-Python
-
-    - name: Test with pytest
-      run: pytest -vvv
+  # -- Uncomment when tripper this version of tripper has been released
+  #    such that we can import tripper with Python 3.6
+  # pytest-36:
+  #   runs-on: ubuntu-20.04
+  #
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       python-version: ["3.6.8"]
+  #
+  #   steps:
+  #   - name: Checkout tripper
+  #     uses: actions/checkout@v3
+  #
+  #   - name: Set up Python ${{ matrix.python-version }}
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: ${{ matrix.python-version }}
+  #
+  #   - name: Install dependencies
+  #     run: |
+  #       python -m pip install -U pip
+  #       pip install -U setuptools wheel flit
+  #       pip install -e .
+  #       pip install pytest EMMOntoPy rdflib SPARQLWrapper DLite-Python
+  #
+  #   - name: Test with pytest
+  #     run: pytest -vvv
