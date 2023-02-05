@@ -45,10 +45,10 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.utils import OptionalTriple, Triple
 
 try:
+    from importlib.metadata import entry_points
+except ImportError:
     # Use importlib_metadata backport for Python 3.6 and 3.7
     from importlib_metadata import entry_points
-except ImportError:
-    from importlib.metadata import entry_points
 
 
 # Default packages in which to look for tripper backends
@@ -142,7 +142,15 @@ class Triplestore:
         if "." in backend or package:
             return importlib.import_module(backend, package)
 
-        for entry_point in entry_points(group="tripper.backends"):
+        try:
+            # New entry_point interface from Python 3.10+, which is also
+            # implemented in the importlib_metadata backport for Python 3.6
+            # and 3.7.
+            eps = entry_points(group="tripper.backends")
+        except TypeError:
+            # Fallback for Python 3.8 and 3.9
+            eps = entry_points()["tripper.backends"]
+        for entry_point in eps:
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
 
