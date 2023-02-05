@@ -19,7 +19,6 @@ import inspect
 import re
 import warnings
 from collections.abc import Sequence
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
@@ -52,10 +51,8 @@ except ImportError:
     from importlib_metadata import entry_points
 
 
-# Default search path for backends
-backend_path = [
-    Path(__file__).resolve().parent / "backends",
-]
+# Default packages in which to look for tripper backends
+backend_packages = ["tripper.backends"]
 
 
 # Regular expression matching a prefixed IRI
@@ -113,9 +110,6 @@ class Triplestore:
                 method.
 
         """
-        # module = import_module(
-        #    backend if "." in backend else f"tripper.backends.{backend}"
-        # )
         module = self._load_backend(backend, package)
         cls = getattr(module, f"{backend.title()}Strategy")
         self.base_iri = base_iri
@@ -134,31 +128,34 @@ class Triplestore:
     def _load_backend(cls, backend: str, package: "Optional[str]" = None):
         """Load and return backend module.  The arguments has the same meaning
         as corresponding arguments to __init__().
+
+        If `backend` contains a dot or `package` is given, import `backend` using
+        `package` for relative imports.
+
+        Otherwise, if there in the "tripper.backends" entry point group exists
+        an entry point who's name matches `backend`, then the corresponding module
+        is loaded.
+
+        Otherwise, look for the `backend` in any of the (sub)packages listed
+        `backend_packages` module variable.
         """
         if "." in backend or package:
             return importlib.import_module(backend, package)
 
-        module = importlib.import_module(
-            backend if "." in backend else f"tripper.backends.{backend}"
-        )
-        return module
+        for entry_point in entry_points(group="tripper.backends"):
+            if entry_point.name == backend:
+                return importlib.import_module(entry_point.module)
 
-    # def _load_module(self, backend, path):
-    #     """Find, load and return backend module."""
-    #     if backend in sys.path:
-    #         return sys.path[backend]
-    #     for finder, name, ispkg in pkgutil.iter_modules([str(p) for p in path]):
-    #         print("  -", finder)
-    #         if not ispkg and name == backend:
-    #             spec = finder.find_spec(name, f"tripper.backends.{name}")
-    #             module = importlib.util.module_from_spec(spec)
-    #             sys.modules[name] = module
-    #             spec.loader.exec_module(module)
-    #             return module
-    #     raise ModuleNotFoundError(
-    #         f"cannot find module in search path: {path}",
-    #         name=name,
-    #     )
+        for pack in backend_packages:
+            try:
+                return importlib.import_module(f"{pack}.{backend}")
+            except ModuleNotFoundError:
+                pass
+
+        raise ModuleNotFoundError(
+            "No tripper backend named '{backend}'",
+            name=backend,
+        )
 
     # Methods implemented by backend
     # ------------------------------
