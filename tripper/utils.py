@@ -114,7 +114,7 @@ def parse_literal(literal: "Any") -> "Literal":
                 lang=lang,
                 datatype=Literal.datatypes.get(type(literal))[0],  # type: ignore
             )
-        raise TypeError(f"unsupported literal type: {type(literal)}")
+        TypeError(f"unsupported literal type: {type(literal)}")
 
     match = re.match(r'^\s*("""(.*)"""|"(.*)")\s*$', literal, flags=re.DOTALL)
     if match:

@@ -45,10 +45,10 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.utils import OptionalTriple, Triple
 
 try:
-    from importlib.metadata import entry_points
-except ImportError:
     # Use importlib_metadata backport for Python 3.6 and 3.7
     from importlib_metadata import entry_points
+except ImportError:
+    from importlib.metadata import entry_points
 
 
 # Default packages in which to look for tripper backends
