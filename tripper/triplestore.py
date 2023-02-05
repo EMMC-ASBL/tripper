@@ -147,7 +147,7 @@ class Triplestore:
         # Installed backend package
         if (3, 8) <= sys.version_info < (3, 10):
             # Fallback for Python 3.8 and 3.9
-            eps = entry_points()["tripper.backends"]
+            eps = entry_points().get("tripper.backends", ())
         else:
             # New entry_point interface from Python 3.10+, which is also
             # implemented in the importlib_metadata backport for Python 3.6
