@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.2.3](https://github.com/EMMC-ASBL/tripper/tree/v0.2.3) (2023-02-05)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.2...v0.2.3)
+
+**Closed issues:**
+
+- Add a to\_yaml\(\) method to MappingStep [\#66](https://github.com/EMMC-ASBL/tripper/issues/66)
+
+**Merged pull requests:**
+
+- Add official support for Python 3.11 [\#82](https://github.com/EMMC-ASBL/tripper/pull/82) ([jesper-friis](https://github.com/jesper-friis))
+- added PR template [\#77](https://github.com/EMMC-ASBL/tripper/pull/77) ([alfredoisg](https://github.com/alfredoisg))
+
 ## [v0.2.2](https://github.com/EMMC-ASBL/tripper/tree/v0.2.2) (2023-01-30)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.1...v0.2.2)
