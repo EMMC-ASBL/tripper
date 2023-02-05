@@ -119,7 +119,6 @@ class Namespace:
             return self._cache[name]
 
         if self._triplestore:
-
             # Check if ``iri = self._iri + name`` is in the triplestore.
             # If so, add it to the cache.
             # We only need to check that generator returned by
