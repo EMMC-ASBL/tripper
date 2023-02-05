@@ -671,7 +671,7 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
 
 def mapping_routes(
     target: str,
-    sources: "Dict[str, Value]",
+    sources: "Union[Dict[str, Union[None, Value]], Sequence[str]]",
     triplestore: "Triplestore",
     function_repo: "Optional[dict]" = None,
     function_mappers: "Union[str, Sequence[Callable]]" = (emmo_mapper, fno_mapper),
