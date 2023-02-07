@@ -525,7 +525,7 @@ class Triplestore:
         the given `triple`.
         """
         s, p, _ = triple
-        self.remove((s, p, None))
+        self.remove(s, p)
         self.add(triple)
 
     def has(
