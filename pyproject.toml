@@ -37,10 +37,10 @@ docs = [
     "mkdocs-awesome-pages-plugin ~=2.8",
     "mkdocs-material ~=9.0",
     "mkdocstrings[python-legacy] ~=0.20.0",
-    "EMMOntoPy ~=0.4",
+    "EMMOntoPy ~=0.5",
     "rdflib ~=6.2",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.16,<1",
+    "DLite-Python >=0.3.17,<1",
 ]
 pre-commit = [
     "pre-commit ~=2.21",
@@ -49,10 +49,10 @@ pre-commit = [
 testing = [
     "pytest ~=7.2",
     "pytest-cov ~=4.0",
-    "EMMOntoPy ~=0.4",
+    "EMMOntoPy ~=0.5",
     "rdflib ~=6.2",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.16,<1",
+    "DLite-Python >=0.3.17,<1",
 ]
 dev = [
     "mike ~=1.1",
@@ -64,10 +64,10 @@ dev = [
     "pylint ~=2.13",
     "pytest ~=7.2",
     "pytest-cov ~=4.0",
-    "EMMOntoPy ~=0.4",
+    "EMMOntoPy ~=0.5",
     "rdflib ~=6.2",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.16,<1",
+    "DLite-Python >=0.3.17,<1",
 ]
 
 [project.urls]
