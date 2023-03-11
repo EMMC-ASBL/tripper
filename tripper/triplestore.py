@@ -14,11 +14,12 @@ RDF Triple: subject, predicate, and object.
 # pylint: disable=invalid-name,too-many-public-methods
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
+import importlib
 import inspect
 import re
+import sys
 import warnings
 from collections.abc import Sequence
-from importlib import import_module
 from typing import TYPE_CHECKING
 
 from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
@@ -43,6 +44,16 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Callable, Dict, Generator, List, Optional, Tuple, Union
 
     from tripper.utils import OptionalTriple, Triple
+
+try:
+    from importlib.metadata import entry_points
+except ImportError:
+    # Use importlib_metadata backport for Python 3.6 and 3.7
+    from importlib_metadata import entry_points
+
+
+# Default packages in which to look for tripper backends
+backend_packages = ["tripper.backends"]
 
 
 # Regular expression matching a prefixed IRI
@@ -74,21 +85,33 @@ class Triplestore:
         backend: str,
         base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
+        package: "Optional[str]" = None,
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
 
         Parameters:
             backend: Name of the backend module.
+
+                For built-in backends or backends provided via a
+                backend package (using entrypoints), this should just
+                be the name of the backend with no dots (ex: "rdflib").
+
+                For a custom backend, you can provide the full module name,
+                including the dots (ex:"mypackage.mybackend").  If `package`
+                is given, `backend` is interpreted relative to `package`
+                (ex: ..mybackend).
             base_iri: Base IRI used by the add_function() method when adding
                 new triples. May also be used by the backend.
-            database: Name of database to connect to (for backends that supports it).
+            database: Name of database to connect to (for backends that
+                supports it).
+            package: Required when `backend` is a relative module.  In that
+                case, it is relative to `package`.
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
+
         """
-        module = import_module(
-            backend if "." in backend else f"tripper.backends.{backend}"
-        )
+        module = self._load_backend(backend, package)
         cls = getattr(module, f"{backend.title()}Strategy")
         self.base_iri = base_iri
         self.namespaces: "Dict[str, Namespace]" = {}
@@ -101,6 +124,50 @@ class Triplestore:
         self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
+
+    @classmethod
+    def _load_backend(cls, backend: str, package: "Optional[str]" = None):
+        """Load and return backend module.  The arguments has the same meaning
+        as corresponding arguments to __init__().
+
+        If `backend` contains a dot or `package` is given, import `backend` using
+        `package` for relative imports.
+
+        Otherwise, if there in the "tripper.backends" entry point group exists
+        an entry point who's name matches `backend`, then the corresponding module
+        is loaded.
+
+        Otherwise, look for the `backend` in any of the (sub)packages listed
+        `backend_packages` module variable.
+        """
+        # Explicitly specified backend
+        if "." in backend or package:
+            return importlib.import_module(backend, package)
+
+        # Installed backend package
+        if (3, 8) <= sys.version_info < (3, 10):
+            # Fallback for Python 3.8 and 3.9
+            eps = entry_points().get("tripper.backends", ())
+        else:
+            # New entry_point interface from Python 3.10+, which is also
+            # implemented in the importlib_metadata backport for Python 3.6
+            # and 3.7.
+            eps = entry_points(group="tripper.backends")
+        for entry_point in eps:
+            if entry_point.name == backend:
+                return importlib.import_module(entry_point.module)
+
+        # Backend module
+        for pack in backend_packages:
+            try:
+                return importlib.import_module(f"{pack}.{backend}")
+            except ModuleNotFoundError:
+                pass
+
+        raise ModuleNotFoundError(
+            "No tripper backend named '{backend}'",
+            name=backend,
+        )
 
     # Methods implemented by backend
     # ------------------------------
@@ -352,11 +419,9 @@ class Triplestore:
     # implemented by all backends.
 
     @classmethod
-    def _get_backend(cls, backend: str):
+    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
         """Returns the class implementing the given backend."""
-        module = import_module(
-            backend if "." in backend else f"tripper.backends.{backend}"
-        )
+        module = cls._load_backend(backend, package=package)
         return getattr(module, f"{backend.title()}Strategy")
 
     @classmethod
