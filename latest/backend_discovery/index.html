@@ -10,20 +10,20 @@
       
       
       
-        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/LICENSE/">
+        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/backend_discovery/">
       
       
-        <link rel="prev" href="../tutorial/">
+        <link rel="prev" href="../LICENSE/">
       
       
-        <link rel="next" href="../CHANGELOG/">
+        <link rel="next" href="../planned-backends/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.2">
     
     
       
-        <title>License - Tripper</title>
+        <title>Backend discovery - Tripper</title>
       
     
     
@@ -74,6 +74,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#discovery-of-custom-backends" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -109,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              License
+              Backend discovery
             
           </span>
         </div>
@@ -247,19 +252,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../LICENSE/" class="md-nav__link">
         License
       </a>
-      
     </li>
   
 
@@ -553,6 +550,57 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installed-backend-package" class="md-nav__link">
+    Installed backend package
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backend-module" class="md-nav__link">
+    Backend module
+  </a>
+  
+    <nav class="md-nav" aria-label="Backend module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instantiate-triplestore-with-explicit-module-path" class="md-nav__link">
+    Instantiate triplestore with explicit module path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#append-to-tripperbackend_packages" class="md-nav__link">
+    Append to tripper.backend_packages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search-order-for-backends" class="md-nav__link">
+    Search order for backends
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -567,25 +615,47 @@
                   
 
 
-  <h1>License</h1>
+<h1 id="discovery-of-custom-backends">Discovery of custom backends<a class="headerlink" href="#discovery-of-custom-backends" title="Permanent link">&para;</a></h1>
+<p>A tripper backend is a normal importable Python module that defines the class <code>{Name}Strategy</code>, where <code>{Name}</code> is the name of the backend with the first letter capitalized (as it would be with the <code>str.title()</code> method).
+The methods they are supposed to define are documented in <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/interface/">tripper/interface.py</a>.</p>
+<p>Tripper support several use cases for discovery of custom backends.</p>
+<h2 id="installed-backend-package">Installed backend package<a class="headerlink" href="#installed-backend-package" title="Permanent link">&para;</a></h2>
+<p>It is possible to create a pip installable Python package that provides new tripper backends that will be automatically discovered.</p>
+<p>The backend package should add the following to its <code>pyproject.toml</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project.entry-points.&quot;tripper.backends&quot;]</span>
+<span class="n">mybackend1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;subpackage.mybackend1&quot;</span>
+<span class="n">mybackend2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;subpackage.mybackend2&quot;</span>
+</code></pre></div>
+<p>When your package is installed, this would make <code>mybackend1</code> and <code>mybackend2</code> automatically discovarable by tripper, such that you can write</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Triplestore</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;mybackend1&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="backend-module">Backend module<a class="headerlink" href="#backend-module" title="Permanent link">&para;</a></h2>
+<p>If you have a tripper backend that is specific to your application, or that you for some other reason don't want or feel the need to publish as a separate Python package, you can keep the backend as a module within your application.</p>
+<p>In this case you have two options, either specify explicitly backend module when you instantiate your triplestore or append your package to the <code>tripper.backend_packages</code> module variable:</p>
+<h3 id="instantiate-triplestore-with-explicit-module-path">Instantiate triplestore with explicit module path<a class="headerlink" href="#instantiate-triplestore-with-explicit-module-path" title="Permanent link">&para;</a></h3>
+<p>An explicit module path can either be absolute or relative as shown in the example below:</p>
+<div class="highlight"><pre><span></span><code># Absolute
+&gt;&gt;&gt; ts = Triplestore(backend=&quot;mypackage.backends.mybackend&quot;)
 
-<p>MIT License</p>
-<p>Copyright (c) 2022 SINTEF</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+# Relative to the `package` argument
+&gt;&gt;&gt; ts = Triplestore(backend=&quot;backends.mybackend&quot;, package=&quot;mypackage&quot;)
+</code></pre></div>
+<p>A backend is considered to be specified explicitly if the <code>backend</code> argument contain a dot (.) or if the <code>package</code> argument is provided.</p>
+<h3 id="append-to-tripperbackend_packages">Append to <code>tripper.backend_packages</code><a class="headerlink" href="#append-to-tripperbackend_packages" title="Permanent link">&para;</a></h3>
+<p>Finally you can insert/append the sub-package with your backend to the <code>tripper.backend_packages</code> list module variable:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">tripper</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">backend_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mypackage.backends&quot;</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;mybackend&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="search-order-for-backends">Search order for backends<a class="headerlink" href="#search-order-for-backends" title="Permanent link">&para;</a></h2>
+<p>Tripper backends are looked up in the following order:
+1. explicit specified backend modules
+2. backend packages
+3. checking <code>tripper.backend_packages</code></p>
+<p>By default the built-in backends are looked up as the first element in <code>tripper.backend_packages</code> (but it is possible for the insert a custom backend sub-package before it).
+This means that backend packages are looked up before the built-in backends.
+Hence it is possible for a backend package to overwrite or extend a built-in backend.</p>
 
 
 

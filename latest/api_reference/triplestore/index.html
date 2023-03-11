@@ -19,7 +19,7 @@
         <link rel="next" href="../utils/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.15">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.2">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.113286f1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7bf56d0a.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
@@ -91,7 +91,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="Tripper" class="md-header__button md-logo" aria-label="Tripper" data-md-component="logo">
       
@@ -1068,6 +1070,7 @@ RDF Triple: subject, predicate, and object.</p>
 
 
 
+
   <div class="doc doc-object doc-class">
 
 
@@ -1111,21 +1114,33 @@ Triplestore        </code>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">package</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            backend: Name of the backend module.</span>
+
+<span class="sd">                For built-in backends or backends provided via a</span>
+<span class="sd">                backend package (using entrypoints), this should just</span>
+<span class="sd">                be the name of the backend with no dots (ex: &quot;rdflib&quot;).</span>
+
+<span class="sd">                For a custom backend, you can provide the full module name,</span>
+<span class="sd">                including the dots (ex:&quot;mypackage.mybackend&quot;).  If `package`</span>
+<span class="sd">                is given, `backend` is interpreted relative to `package`</span>
+<span class="sd">                (ex: ..mybackend).</span>
 <span class="sd">            base_iri: Base IRI used by the add_function() method when adding</span>
 <span class="sd">                new triples. May also be used by the backend.</span>
-<span class="sd">            database: Name of database to connect to (for backends that supports it).</span>
+<span class="sd">            database: Name of database to connect to (for backends that</span>
+<span class="sd">                supports it).</span>
+<span class="sd">            package: Required when `backend` is a relative module.  In that</span>
+<span class="sd">                case, it is relative to `package`.</span>
 <span class="sd">            kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">                method.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span>
-            <span class="n">backend</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">backend</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tripper.backends.</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="o">=</span> <span class="n">base_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Namespace]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1138,6 +1153,50 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Union[float, Callable[[], float], None]]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_load_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load and return backend module.  The arguments has the same meaning</span>
+<span class="sd">        as corresponding arguments to __init__().</span>
+
+<span class="sd">        If `backend` contains a dot or `package` is given, import `backend` using</span>
+<span class="sd">        `package` for relative imports.</span>
+
+<span class="sd">        Otherwise, if there in the &quot;tripper.backends&quot; entry point group exists</span>
+<span class="sd">        an entry point who&#39;s name matches `backend`, then the corresponding module</span>
+<span class="sd">        is loaded.</span>
+
+<span class="sd">        Otherwise, look for the `backend` in any of the (sub)packages listed</span>
+<span class="sd">        `backend_packages` module variable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Explicitly specified backend</span>
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">backend</span> <span class="ow">or</span> <span class="n">package</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
+
+        <span class="c1"># Installed backend package</span>
+        <span class="k">if</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+            <span class="c1"># Fallback for Python 3.8 and 3.9</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="n">entry_points</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tripper.backends&quot;</span><span class="p">,</span> <span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># New entry_point interface from Python 3.10+, which is also</span>
+            <span class="c1"># implemented in the importlib_metadata backport for Python 3.6</span>
+            <span class="c1"># and 3.7.</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="n">entry_points</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">&quot;tripper.backends&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entry_point</span> <span class="ow">in</span> <span class="n">eps</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entry_point</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">backend</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">entry_point</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="c1"># Backend module</span>
+        <span class="k">for</span> <span class="n">pack</span> <span class="ow">in</span> <span class="n">backend_packages</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pack</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+            <span class="s2">&quot;No tripper backend named &#39;</span><span class="si">{backend}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Methods implemented by backend</span>
     <span class="c1"># ------------------------------</span>
@@ -1389,11 +1448,9 @@ Triplestore        </code>
     <span class="c1"># implemented by all backends.</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_get_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_backend</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the class implementing the given backend.&quot;&quot;&quot;</span>
-        <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span>
-            <span class="n">backend</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">backend</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tripper.backends.</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy&quot;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -1828,7 +1885,7 @@ Triplestore        </code>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.__init__">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1854,7 +1911,14 @@ Triplestore        </code>
       <tr>
         <td><code>backend</code></td>
         <td><code>str</code></td>
-        <td><p>Name of the backend module.</p></td>
+        <td><p>Name of the backend module.</p>
+<p>For built-in backends or backends provided via a
+backend package (using entrypoints), this should just
+be the name of the backend with no dots (ex: "rdflib").</p>
+<p>For a custom backend, you can provide the full module name,
+including the dots (ex:"mypackage.mybackend").  If <code>package</code>
+is given, <code>backend</code> is interpreted relative to <code>package</code>
+(ex: ..mybackend).</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1867,7 +1931,15 @@ new triples. May also be used by the backend.</p></td>
       <tr>
         <td><code>database</code></td>
         <td><code>&#39;Optional[str]&#39;</code></td>
-        <td><p>Name of database to connect to (for backends that supports it).</p></td>
+        <td><p>Name of database to connect to (for backends that
+supports it).</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>package</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>Required when <code>backend</code> is a relative module.  In that
+case, it is relative to <code>package</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -1886,21 +1958,33 @@ method.</p></td>
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">package</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        backend: Name of the backend module.</span>
+
+<span class="sd">            For built-in backends or backends provided via a</span>
+<span class="sd">            backend package (using entrypoints), this should just</span>
+<span class="sd">            be the name of the backend with no dots (ex: &quot;rdflib&quot;).</span>
+
+<span class="sd">            For a custom backend, you can provide the full module name,</span>
+<span class="sd">            including the dots (ex:&quot;mypackage.mybackend&quot;).  If `package`</span>
+<span class="sd">            is given, `backend` is interpreted relative to `package`</span>
+<span class="sd">            (ex: ..mybackend).</span>
 <span class="sd">        base_iri: Base IRI used by the add_function() method when adding</span>
 <span class="sd">            new triples. May also be used by the backend.</span>
-<span class="sd">        database: Name of database to connect to (for backends that supports it).</span>
+<span class="sd">        database: Name of database to connect to (for backends that</span>
+<span class="sd">            supports it).</span>
+<span class="sd">        package: Required when `backend` is a relative module.  In that</span>
+<span class="sd">            case, it is relative to `package`.</span>
 <span class="sd">        kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">            method.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span>
-        <span class="n">backend</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">backend</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tripper.backends.</span><span class="si">{</span><span class="n">backend</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">backend</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">base_iri</span> <span class="o">=</span> <span class="n">base_iri</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span> <span class="s2">&quot;Dict[str, Namespace]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
@@ -3706,7 +3790,7 @@ UniquenessError.</p></td>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.2a6f1dda.min.js"></script>
+      <script src="../../assets/javascripts/bundle.fc8c2696.min.js"></script>
       
     
   </body>
