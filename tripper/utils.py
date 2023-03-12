@@ -3,7 +3,9 @@
 import datetime
 import hashlib
 import inspect
+import random
 import re
+import string
 from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
@@ -167,7 +169,7 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
     - If `obj` is a string and
       - starts with "_:", it is assumed to be a blank node and returned.
       - starts with a scheme, it is asumed to be an IRI and returned.
-      - can be converted to a float, int or datetime, it is returned.
+      - can be converted to a float, int or datetime, it is returned
         converted to a literal of the corresponding type.
       - it is a valid n3 representation, return it as the given type.
       - otherwise, return it as a xsd:string literal.
@@ -201,10 +203,16 @@ def check(func: "Callable", s: str, exceptions) -> bool:
     False is returned if `func(s)` raises an exception listed in `exceptions`.
     Otherwise the exception is propagated.
     """
-    # Note that the missing type hint on `exceptions` is deliberately, see
+    # Note that the missing type hint on `exceptions` is deliberate, see
     # https://peps.python.org/pep-0484/#exceptions
     try:
         func(s)
     except exceptions:
         return False
     return True
+
+
+def random_string(length=8):
+    """Return a random string of the given length."""
+    letters = string.ascii_letters + string.digits
+    return "".join(random.choice(letters) for i in range(length))  # nosec

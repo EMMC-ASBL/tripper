@@ -671,7 +671,7 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
 
 def mapping_routes(
     target: str,
-    sources: "Dict[str, Value]",
+    sources: "Union[Dict[str, Union[Value, None]], Sequence[str]]",
     triplestore: "Triplestore",
     function_repo: "Optional[dict]" = None,
     function_mappers: "Union[str, Sequence[Callable]]" = (emmo_mapper, fno_mapper),
@@ -702,8 +702,7 @@ def mapping_routes(
         target: IRI of the target in `triplestore`.
         sources: Dict mapping source IRIs to source values or a sequence
             of source IRIs (with no explicit values).
-        triplestore: Triplestore instance.
-            It is safe to pass a generator expression too.
+        triplestore: Triplestore instance for the knowledge graph to traverse.
 
     Additional arguments for fine-grained tuning:
         function_repo: Dict mapping function IRIs to corresponding Python

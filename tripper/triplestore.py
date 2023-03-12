@@ -36,13 +36,30 @@ from tripper.namespace import (
     XSD,
     Namespace,
 )
-from tripper.utils import en, function_id, infer_iri, split_iri
+from tripper.utils import (
+    en,
+    function_id,
+    infer_iri,
+    parse_literal,
+    random_string,
+    split_iri,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Callable, Dict, Generator, List, Optional, Tuple, Union
+    from typing import Any, Callable, Dict, Generator, List, Optional, Tuple, Union
 
+    from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
+
+
+# FIXME - add the following classes and properties to ontologies
+# These would be good to have in EMMO
+DataSource = EMMO.DataSource
+hasAccessFunction = EMMO.hasAccessFunction
+hasDataValue = RDF.value  # ??
+hasUnit = DM.hasUnit
+hasCost = DM.hasCost
 
 
 # Regular expression matching a prefixed IRI
@@ -97,7 +114,7 @@ class Triplestore:
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
         # Keep functions in the triplestore for convienence even though
         # they usually do not belong to the triplestore per se.
-        self.function_repo: "Dict[str, Union[float, Callable[[], float], None]]" = {}
+        self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
 
@@ -769,3 +786,195 @@ class Triplestore:
         #    self.add((func_iri, DCTERMS.description, en(doc_string)))
 
         return func_iri
+
+    def add_interpolation_source(
+        self,
+        xcoord: str,
+        ycoord: str,
+        base_iri: "Optional[str]" = None,
+        standard: str = "emmo",
+        cost: "Optional[Union[float, Callable]]" = None,
+        left: "Optional[float]" = None,
+        right: "Optional[float]" = None,
+        period: "Optional[float]" = None,
+    ) -> str:
+        """Add data source to triplestore, such that it can be used to
+        transparently transform other data.
+
+        No data will be fetch before it is actually needed.
+
+        Parameters:
+            xcoord: IRI of data source with x-coordinates `xp`.  Must be
+                increasing if argument `period` is not specified. Otherwise,
+                `xp` is internally sorted after normalising the periodic
+                boundaries with ``xp = xp % period``.
+            ycoord: IRI of data source with y-coordinates `yp`.  Must have
+                the same length as `xp`.
+            base_iri: Base of the IRI representing the transformation in the
+                knowledge base.  Defaults to the base IRI of the triplestore.
+            standard: Name of ontology to use when describing the
+                transformation.  Valid values are:
+                - "emmo": Elementary Multiperspective Material Ontology (EMMO)
+                - "fno": Function Ontology (FnO)
+            cost: User-defined cost of following this mapping relation
+                represented as a float.  It may be given either as a
+                float or as a callable taking the same arguments as `func`
+                returning the cost as a float.
+            left: Value to return for `x < xp[0]`, default is `fp[0]`.
+            right: Value to return for `x > xp[-1]`, default is `fp[-1]`.
+            period: A period for the x-coordinates. This parameter allows the
+                proper interpolation of angular x-coordinates. Parameters
+                `left` and `right` are ignored if `period` is specified.
+
+        Returns:
+            transformation_iri: IRI of the added transformation.
+
+        Example:
+            Assume we have a data source that relates water temperature
+            (mapped to EX.Temp) to the amount of blue-green algae (mapped to
+            EX.AlgaeConc). By registering it with
+
+            >>> ts.add_interpolation_source(EX.Temp, EX.AlgaeConc)
+
+            we can now ask for the blue-green algae concentration in a fjord,
+            given we have a data source with the water temperature field in
+            the same fjord.
+        """
+        import numpy as np  # pylint: disable=import-outside-toplevel
+
+        def func(x):
+            xp = self.get_value(xcoord)
+            fp = self.get_value(ycoord)
+            return np.interp(
+                x,
+                xp=xp,
+                fp=fp,
+                left=left,
+                right=right,
+                period=period,
+            )
+
+        return self.add_function(
+            func,
+            expects=xcoord,
+            returns=ycoord,
+            base_iri=base_iri,
+            standard=standard,
+            cost=cost,
+        )
+
+    def add_data(
+        self,
+        func: "Union[Callable, Literal]",
+        returns: "Union[str, Sequence]",
+        configurations: "Optional[dict]" = None,
+        base_iri: "Optional[str]" = None,
+        standard: str = "emmo",
+        cost: "Optional[Union[float, Callable]]" = None,
+    ) -> str:
+        """Register a data source to the triplestore.
+
+        Parameters:
+            func: A callable that should return the value of the registered
+                data source.  It is called with following protopype:
+
+                    func(returns, configurations, triplestore) -> Value
+
+                and should return a tripper.mappings.Value object.
+                Alternatively, `func` may also be a literal value.
+            returns: IRI of ontological concept that the data returned by
+                `func` is mapped to.  If `func` is a callable, it may also be
+                given as a sequenceof IRIs, if multiple values are returned.
+            configurations: Configurations passed on to `func`.
+            base_iri: Base of the IRI representing the function in the
+                knowledge base.  Defaults to the base IRI of the triplestore.
+            standard: Name of ontological standard to use when describing the
+                function.  Valid values are:
+                - "emmo": Elementary Multiperspective Material Ontology (EMMO)
+                - "fno": Function Ontology (FnO)
+            cost: User-defined cost of following this mapping relation
+                represented as a float.  It may be given either as a
+                float or as a callable taking the same arguments as `func`
+                returning the cost as a float.
+
+        Returns:
+            IRI of data source.
+        """
+        data_source = "_data_source_" + random_string(8)
+        self.add((data_source, RDF.type, DataSource))
+        for iri in returns:
+            self.add((data_source, MAP.mapsTo, iri))
+
+        if isinstance(func, Literal):
+            self.add((data_source, hasDataValue, func))
+            if cost is not None:
+                self._add_cost(cost, data_source)
+        elif callable(func):
+
+            def fn():
+                return func(returns, configurations, self)
+
+            func_iri = self.add_function(
+                fn,
+                expects=(),
+                returns=returns,
+                base_iri=base_iri,
+                standard=standard,
+                cost=cost,
+            )
+            self.add((data_source, hasAccessFunction, func_iri))
+        else:
+            raise TypeError(f"`func` must be a callable or literal, got {type(func)}")
+
+        return data_source
+
+    def get_value(self, iri, routeno=0, **kwargs) -> "Value":
+        """Return the value of the individual value of an ontological concept.
+
+        Parameters:
+            iri: IRI of the ontological concept for which we want to return
+                the value of one of its individuals.
+            routeno: Number identifying the mapping route to apply for
+                retrieving the individual value.
+            kwargs: Additional arguments passed on to `mapping_routes()`.
+
+        Returns:
+            The value of the individual.
+        """
+        from tripper.mappings import (  # pylint: disable=import-outside-toplevel
+            Value,
+            mapping_routes,
+        )
+
+        if self.has(iri, RDF.type, DataSource):
+            # `iri` refer to a DataSource
+            if self.has(iri, hasDataValue):  # literal value
+                return Value(
+                    value=parse_literal(self.value(iri, hasDataValue)).to_python(),
+                    unit=parse_literal(self.value(iri, hasUnit)).to_python()
+                    if self.has(iri, hasUnit)
+                    else None,
+                    iri=self.value(iri, MAP.mapsTo),
+                    cost=parse_literal(self.value(iri, hasCost)).to_python()
+                    if self.has(iri, hasCost)
+                    else 0.0,
+                )
+            if self.has(iri, hasAccessFunction):  # callable
+                func_iri = self.value(iri, hasAccessFunction)
+                func = self.function_repo[func_iri]
+                assert callable(func)  # nosec
+                return func()
+            raise TriplestoreError(
+                f"data source {iri} has neither a 'hasDataValue' or a "
+                f"'hasAccessFunction' property"
+            )
+
+        # `iri` correspond to an ontological concept
+        # In this case we check if there exists a mapping route resulting
+        # in an individual of `iri`.
+        routes = mapping_routes(
+            target=iri,
+            sources=list(self.subjects(RDF.type, DataSource)),
+            **kwargs,
+        )
+        return routes if isinstance(routes, Value) else routes.eval(routeno=routeno)
