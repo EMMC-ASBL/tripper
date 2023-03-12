@@ -843,8 +843,8 @@ class Triplestore:
         import numpy as np  # pylint: disable=import-outside-toplevel
 
         def func(x):
-            xp = self.get_value(xcoord)
-            fp = self.get_value(ycoord)
+            xp = self.get_value(xcoord).value
+            fp = self.get_value(ycoord).value
             return np.interp(
                 x,
                 xp=xp,
@@ -902,8 +902,11 @@ class Triplestore:
         """
         data_source = "_data_source_" + random_string(8)
         self.add((data_source, RDF.type, DataSource))
-        for iri in returns:
-            self.add((data_source, MAP.mapsTo, iri))
+        if isinstance(returns, str):
+            self.add((data_source, MAP.mapsTo, returns))
+        else:
+            for iri in returns:
+                self.add((data_source, MAP.mapsTo, iri))
 
         if isinstance(func, Literal):
             self.add((data_source, hasDataValue, func))
@@ -913,6 +916,10 @@ class Triplestore:
 
             def fn():
                 return func(returns, configurations, self)
+
+            # Include data source IRI in documentation to ensure that the
+            # function_id of `fn()` will differ for different data sources...
+            fn.__doc__ = f"Function for data source: {data_source}."
 
             func_iri = self.add_function(
                 fn,
@@ -975,6 +982,7 @@ class Triplestore:
         routes = mapping_routes(
             target=iri,
             sources=list(self.subjects(RDF.type, DataSource)),
+            triplestore=self,
             **kwargs,
         )
         return routes if isinstance(routes, Value) else routes.eval(routeno=routeno)

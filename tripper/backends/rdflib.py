@@ -86,7 +86,11 @@ class RdflibStrategy:
             yield (
                 str(s),
                 str(p),
-                Literal(o.value, lang=o.language, datatype=o.datatype)
+                Literal(
+                    o.value,
+                    lang=o.language,
+                    datatype=str(o.datatype) if o.datatype else o.datatype,
+                )
                 if isinstance(o, rdflibLiteral)
                 else str(o),
             )

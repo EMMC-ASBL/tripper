@@ -84,8 +84,10 @@ def function_id(func: "Callable", length: int = 4) -> str:
     the current implementation is based on the shake_128 algorithm,
     it make no sense to set `length` larger than 32 bytes.
     """
+    source = inspect.getsource(func)
+    doc = func.__doc__ if func.__doc__ else ""
     return hashlib.shake_128(  # pylint: disable=too-many-function-args
-        inspect.getsource(func).encode()
+        (source + doc).encode()
     ).hexdigest(length)
 
 

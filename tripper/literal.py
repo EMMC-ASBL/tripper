@@ -146,6 +146,7 @@ class Literal(str):
             value = datetime.fromisoformat(self)
         elif self.datatype and self.datatype not in self.datatypes[str]:
             warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
+
         return value
 
     def n3(self) -> str:  # pylint: disable=invalid-name
