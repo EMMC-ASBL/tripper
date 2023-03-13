@@ -840,7 +840,14 @@ class Triplestore:
             given we have a data source with the water temperature field in
             the same fjord.
         """
-        import numpy as np  # pylint: disable=import-outside-toplevel
+        try:
+            import numpy as np  # pylint: disable=import-outside-toplevel
+        except ImportError as exc:
+            raise RuntimeError(
+                "Triplestore.add_interpolation_source() requires numpy.\n"
+                "Install it with\n\n"
+                "    pip install numpy"
+            ) from exc
 
         def func(x):
             xp = self.get_value(xcoord).value
