@@ -33,8 +33,9 @@ A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] c
 
 Documentation
 -------------
-* Getting started: Take a look at the [tutorial](tutorial.md).
-* Reference manual: [API Reference]
+* Getting started: See the [tutorial](tutorial.md)
+* [Discovery of custom backends](backend_discovery.md)
+* [Reference manual]
 
 
 Installation
@@ -59,7 +60,7 @@ SINTEF.
 
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
-[API Reference]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
+[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
 [Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore

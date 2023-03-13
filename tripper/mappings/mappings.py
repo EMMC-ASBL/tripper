@@ -871,6 +871,7 @@ def mapping_routes(
         step.add_input(step0, name=soName.get(target))
         step = step0
         target = source
+
     if target not in soMaps:
         raise MissingRelationError(f'Missing "mapsTo" relation on: {target}')
     walk(target, visited, step)

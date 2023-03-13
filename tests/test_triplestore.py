@@ -241,7 +241,7 @@ def test_backend_sparqlwrapper() -> None:
         base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
         "csiro_international-chronostratigraphic-chart_geologic-time-scale-2020",
     )
-    for s, p, o in store.triples((None, SKOS.notation, None)):
+    for s, p, o in store.triples(predicate=SKOS.notation):
         assert s
         assert p
         assert o

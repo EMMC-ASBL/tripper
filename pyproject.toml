@@ -14,12 +14,10 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -29,7 +27,7 @@ requires-python = "~=3.7"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions ~=4.4 ; python_version<'3.8'",
+    "typing-extensions ~=4.5; python_version<'3.8'",
 ]
 
 [project.optional-dependencies]
@@ -39,10 +37,10 @@ docs = [
     "mkdocs-awesome-pages-plugin ~=2.8",
     "mkdocs-material ~=9.0",
     "mkdocstrings[python-legacy] ~=0.20.0",
-    "EMMOntoPy ~=0.4",
+    "EMMOntoPy ~=0.5",
     "rdflib ~=6.2",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.16,<1",
+    "DLite-Python >=0.3.17,<1",
 ]
 pre-commit = [
     "pre-commit ~=2.21",
@@ -51,10 +49,10 @@ pre-commit = [
 testing = [
     "pytest ~=7.2",
     "pytest-cov ~=4.0",
-    "EMMOntoPy ~=0.4",
+    "EMMOntoPy ~=0.5",
     "rdflib ~=6.2",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.16,<1",
+    "DLite-Python >=0.3.17,<1",
 ]
 dev = [
     "mike ~=1.1",
@@ -66,10 +64,10 @@ dev = [
     "pylint ~=2.13",
     "pytest ~=7.2",
     "pytest-cov ~=4.0",
-    "EMMOntoPy ~=0.4",
+    "EMMOntoPy ~=0.5",
     "rdflib ~=6.2",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.16,<1",
+    "DLite-Python >=0.3.17,<1",
 ]
 
 [project.urls]

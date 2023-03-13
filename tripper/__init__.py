@@ -21,9 +21,9 @@ from .namespace import (
     XSD,
     Namespace,
 )
-from .triplestore import Triplestore
+from .triplestore import Triplestore, backend_packages
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 __all__ = (
     "Literal",
@@ -45,4 +45,5 @@ __all__ = (
     "Namespace",
     #
     "Triplestore",
+    "backend_packages",
 )
