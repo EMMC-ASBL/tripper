@@ -761,10 +761,10 @@ def mapping_routes(
 
     # Create lookup tables for fast access to triplestore content
     soMaps = defaultdict(list)  # (s, mapsTo, o)     ==> soMaps[s]  -> [o, ..]
-    osMaps = defaultdict(list)  # (o, mapsTo, s)     ==> osMaps[o]  -> [s, ..]
-    osSubcl = defaultdict(list)  # (o, subClassOf, s) ==> osSubcl[o] -> [s, ..]
+    osMaps = defaultdict(list)  # (o, inv(mapsTo), s)     ==> osMaps[o]  -> [s, ..]
+    osSubcl = defaultdict(list)  # (o, inv(subClassOf), s) ==> osSubcl[o] -> [s, ..]
     soInst = {}  # (s, instanceOf, o) ==> soInst[s]  -> o
-    osInst = defaultdict(list)  # (o, instanceOf, s) ==> osInst[o]  -> [s, ..]
+    osInst = defaultdict(list)  # (o, inv(instanceOf), s) ==> osInst[o]  -> [s, ..]
     for s, o in triplestore.subject_objects(mapsTo):
         soMaps[s].append(o)
         osMaps[o].append(s)
