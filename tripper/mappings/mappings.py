@@ -121,7 +121,7 @@ class Value:
             args.append(", cost={self.cost}")
         return f"Value({self._value}{''.join(args)})"
 
-    def get_value(self, unit=None, magnitude=False, quantity=None):
+    def get_value(self, unit=None, magnitude=False, quantity=None) -> "Any":
         """Returns the evaluated value of given input route number.
 
         Arguments:
