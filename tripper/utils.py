@@ -20,6 +20,19 @@ if TYPE_CHECKING:  # pragma: no cover
     Triple = Tuple[str, str, Union[str, Literal]]
 
 
+__all__ = (
+    "infer_iri",
+    "split_iri",
+    "function_id",
+    "en",
+    "parse_literal",
+    "parse_object",
+    "as_python",
+    "check",
+    "random_string",
+)
+
+
 class UnusedArgumentWarning(Warning):
     """Argument is unused."""
 
@@ -197,6 +210,21 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
             return Literal(obj, datatype=XSD.dateTime)
         return parse_literal(obj)
     raise ValueError("`obj` should be a literal or a string.")
+
+
+def as_python(value: "Any") -> "Any":
+    """Converts `value` to a native Python representation.
+
+    If `value` is a Literal, its Python representation will be returned.
+    If `value` is a string, it will first be converted to a Literal, before
+    its Python representation is returned.
+    Otherwise, `value` will be returned as-is.
+    """
+    if isinstance(value, Literal):
+        return value.to_python()
+    if isinstance(value, str):
+        return parse_literal(value).to_python()
+    return value
 
 
 def check(func: "Callable", s: str, exceptions) -> bool:

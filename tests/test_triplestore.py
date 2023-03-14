@@ -108,20 +108,21 @@ def test_triplestore(  # pylint: disable=too-many-locals
     xcoords_iri = ts.add_data(xcoords, EX.Length)
     ycoords_iri = ts.add_data(ycoords, EX.Voltage)
 
-    val = ts.get_value(string_iri)
-    assert val.value == "string value"
-    assert val.unit is None
+    assert ts.get_value(string_iri) == "string value"
+    assert ts.get_value(number_iri) == 3.14
+    assert ts.get_value(xcoords_iri).m.tolist() == [0, 2, 4, 6, 8, 10]
+    assert ts.get_value(xcoords_iri, magnitude=True).tolist() == [0, 2, 4, 6, 8, 10]
+    assert ts.get_value(xcoords_iri, unit="dm").tolist() == [0, 20, 40, 60, 80, 100]
+    assert ts.get_value(ycoords_iri).m.tolist() == [0, 4, 16, 36, 64, 100]
 
-    val = ts.get_value(number_iri)
-    assert val.value == 3.14
+    # Test get_value() via mappings
+    ts.map(EX.indv, EX.Description)
+    assert ts.get_value(EX.indv) == "string value"
 
-    val = ts.get_value(xcoords_iri)
-    assert val.value == [0, 2, 4, 6, 8, 10]
-    assert val.unit == "m"
+    ts.map(EX.indv2, EX.Length)
+    assert ts.get_value(EX.indv2).m.tolist() == [0, 2, 4, 6, 8, 10]
 
-    val = ts.get_value(ycoords_iri)
-    assert val.value == [0, 4, 16, 36, 64, 100]
-    assert val.unit == "V"
+    ts.add_interpolation_source(xcoords_iri, ycoords_iri)
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:

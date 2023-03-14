@@ -480,7 +480,7 @@ class Triplestore:
                 "Exactly one of `subject`, `predicate` or `object` must be None."
             )
 
-        triple = self.triples(spo)
+        triple = self.triples(subject, predicate, object)
         try:
             value = next(triple)
         except StopIteration:
@@ -1008,14 +1008,29 @@ class Triplestore:
 
         return data_source
 
-    def get_value(self, iri, routeno=0, **kwargs) -> "Value":
-        """Return the value of the individual value of an ontological concept.
+    def get_value(
+        self,
+        iri,
+        routeno=0,
+        unit: "Optional[str]" = None,
+        magnitude: bool = False,
+        quantity: "Optional[Any]" = None,
+        **kwargs,
+    ) -> "Value":
+        """Return the value of an individual.
 
         Parameters:
-            iri: IRI of the ontological concept for which we want to return
-                the value of one of its individuals.
+            iri: IRI of individual who's value we want to return.  IRI may
+                either refer to a data source or an individual mapped to
+                an ontological concept.
             routeno: Number identifying the mapping route to apply for
-                retrieving the individual value.
+                retrieving the individual value in case IRI does not refer
+                to a data source.
+            unit: return the result in the given unit.
+                Implies `magnitude=True`.
+            magnitude: Whether to only return the magnitude of the evaluated
+                value (with no unit).
+            quantity: Quantity class to use for evaluation.  Defaults to pint.
             kwargs: Additional arguments passed on to `mapping_routes()`.
 
         Returns:
@@ -1038,24 +1053,32 @@ class Triplestore:
                     cost=parse_literal(self.value(iri, hasCost)).to_python()
                     if self.has(iri, hasCost)
                     else 0.0,
-                )
+                ).get_value(unit=unit, magnitude=magnitude, quantity=quantity)
             if self.has(iri, hasAccessFunction):  # callable
                 func_iri = self.value(iri, hasAccessFunction)
                 func = self.function_repo[func_iri]
                 assert callable(func)  # nosec
-                return func()
+                return func().get_value(
+                    unit=unit, magnitude=magnitude, quantity=quantity
+                )
             raise TriplestoreError(
                 f"data source {iri} has neither a 'hasDataValue' or a "
                 f"'hasAccessFunction' property"
             )
 
-        # `iri` correspond to an ontological concept
-        # In this case we check if there exists a mapping route resulting
-        # in an individual of `iri`.
+        # `iri` correspond to an individual mapped to an ontological concept.
+        # In this case we check if there exists a mapping route.
         routes = mapping_routes(
             target=iri,
             sources=list(self.subjects(RDF.type, DataSource)),
             triplestore=self,
             **kwargs,
         )
-        return routes if isinstance(routes, Value) else routes.eval(routeno=routeno)
+        if isinstance(routes, Value):
+            return routes.get_value(unit=unit, magnitude=magnitude, quantity=quantity)
+        return routes.eval(
+            routeno=routeno,
+            unit=unit,
+            magnitude=magnitude,
+            quantity=quantity,
+        )

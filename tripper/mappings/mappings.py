@@ -21,6 +21,7 @@ import numpy as np
 from pint import Quantity  # remove
 
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
+from tripper.triplestore import hasAccessFunction, hasDataValue
 from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -92,7 +93,7 @@ class Value:
         property_iri: "Optional[str]" = None,
         cost: "Union[float, Callable]" = 0.0,
     ):
-        self.value = value
+        self._value = value
         self.unit = unit
         if iri:
             self.output_iri = iri
@@ -102,6 +103,48 @@ class Value:
             self.output_iri = f"_:value_{id(value)}"
         self.property_iri = property_iri
         self.cost = cost
+
+    value = property(
+        lambda self: self._value() if callable(self._value) else self._value,
+        doc="Value of property.",
+    )
+
+    def __repr__(self):
+        args = []
+        if self.unit:
+            args.append(", unit={self.unit}")
+        if self.output_iri:
+            args.append(", iri={self.output_iri}")
+        if self.property_iri:
+            args.append(", property_iri={self.property_iri}")
+        if self.cost:
+            args.append(", cost={self.cost}")
+        return f"Value({self._value}{''.join(args)})"
+
+    def get_value(self, unit=None, magnitude=False, quantity=None):
+        """Returns the evaluated value of given input route number.
+
+        Arguments:
+            unit: return the result in the given unit.
+                Implies `magnitude=True`.
+            magnitude: Whether to only return the magnitude of the evaluated
+                value (with no unit).
+            quantity: Quantity class to use for evaluation.  Defaults to pint.
+
+        Returns:
+            Value.
+        """
+        if quantity is None:
+            quantity = Quantity
+        value = self._value() if callable(self._value) else self._value
+        if not isinstance(value, Quantity) and not self.unit:
+            return value
+        q = quantity(value, self.unit)
+        if unit:
+            return q.m_as(unit)
+        if magnitude:
+            return q.m
+        return q
 
     def show(
         self,
@@ -120,7 +163,6 @@ class Value:
 
         Returns:
             String representation of the value.
-
         """
         strings = []
         ind = " " * indent
@@ -212,7 +254,7 @@ class MappingStep:
         routeno: "Optional[int]" = None,
         unit: "Optional[str]" = None,
         magnitude: bool = False,
-        quantity: "Type[Quantity]" = Quantity,
+        quantity: "Optional[Type[Quantity]]" = None,
     ) -> "Any":
         """Returns the evaluated value of given input route number.
 
@@ -228,21 +270,28 @@ class MappingStep:
         Returns:
             Evaluation result.
         """
+        if quantity is None:
+            quantity = Quantity
         if routeno is None:
             ((_, routeno),) = self.lowest_costs(nresults=1)
         inputs, idx = self.get_inputs(routeno)
         values = get_values(inputs, idx, quantity=quantity)
-        if self.function:
+
+        if len(inputs) == 1 and all(isinstance(v, Value) for v in inputs.values()):
+            (value,) = tuple(inputs.values())
+        elif self.function:
             value = self.function(**values)
         elif len(values) == 1:
             (value,) = values.values()
         else:
             raise TypeError(f"Expected inputs to be a single argument: {values}")
 
-        if isinstance(value, quantity) and unit:
+        if isinstance(value, Quantity) and unit:
             return value.m_as(unit)
-        if isinstance(value, quantity) and magnitude:
+        if isinstance(value, Quantity) and magnitude:
             return value.m
+        if isinstance(value, Value):
+            return value.get_value(unit=unit, magnitude=magnitude, quantity=quantity)
         return value
 
     def get_inputs(self, routeno: int) -> "Tuple[Inputs, int]":
@@ -579,7 +628,7 @@ def get_values(
                 else value
             )
         elif isinstance(v, Value):
-            values[k] = quantity(v.value, v.unit)
+            values[k] = v.value if v.unit is None else quantity(v.value, v.unit)
         else:
             raise TypeError(
                 "Expected values in inputs to be either `MappingStep` or "
@@ -691,6 +740,8 @@ def mapping_routes(
     label: str = RDFS.label,
     hasUnit: str = DM.hasUnit,
     hasCost: str = DM.hasCost,  # TODO - add hasCost to the DM ontology
+    hasAccessFunction: str = hasAccessFunction,  # pylint: disable=redefined-outer-name
+    hasDataValue: str = hasDataValue,  # pylint: disable=redefined-outer-name
 ) -> Input:
     """Find routes of mappings from any source in `sources` to `target`.
 
@@ -725,11 +776,15 @@ def mapping_routes(
             subclasses should not be considered.
         label: IRI of 'label' in `triplestore`.  Used for naming function
             input parameters.  The default is to use rdfs:label.
-        hasUnit: IRI of 'hasUnit' in `triples`.  Can be used to explicit
+        hasUnit: IRI of 'hasUnit' in `triplestore`.  Can be used to explicit
             specify the unit of a quantity.
-        hasCost: IRI of 'hasCost' in `triples`.  Used for associating a
+        hasCost: IRI of 'hasCost' in `triplestore`.  Used for associating a
             user-defined cost or cost function with instantiation of a
             property.
+        hasAccessFunction: IRI of 'hasAccessFunction'.  Used to associate a
+            data source to a function that retrieves the data.
+        hasDataValue: IRI of 'hasDataValue'.  Used to associate a data source
+            with its literal value.
 
     Returns:
         A MappingStep instance.  This is a root of a nested tree of
@@ -781,6 +836,8 @@ def mapping_routes(
     soName = dict(triplestore.subject_objects(label))
     soUnit = dict(triplestore.subject_objects(hasUnit))
     soCost = dict(triplestore.subject_objects(hasCost))
+    soAFun = dict(triplestore.subject_objects(hasAccessFunction))
+    soDVal = dict(triplestore.subject_objects(hasDataValue))
 
     def getcost(target, stepname):
         """Returns the cost assigned to IRI `target` for a mapping step
@@ -803,7 +860,26 @@ def mapping_routes(
                 return
             step.steptype = steptype
             step.cost = getcost(target, stepname)
-            if node in sources:
+            if node in soAFun:
+                value = value_class(
+                    value=triplestore.function_repo[soAFun[node]],
+                    unit=soUnit.get(node),
+                    iri=node,
+                    property_iri=soInst.get(node),
+                    cost=getcost(node, "value"),
+                )
+                step.add_input(value, name=soName.get(node))
+            elif node in soDVal:
+                literal = parse_literal(soDVal[node])
+                value = value_class(
+                    value=literal.to_python(),
+                    unit=soUnit.get(node),
+                    iri=node,
+                    property_iri=soInst.get(node),
+                    cost=getcost(node, "value"),
+                )
+                step.add_input(value, name=soName.get(node))
+            elif node in sources:
                 value = value_class(
                     value=sources[node],
                     unit=soUnit.get(node),
