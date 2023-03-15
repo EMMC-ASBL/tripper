@@ -836,28 +836,14 @@ class Triplestore:
         if doc_string:
             self.add((func_iri, DCTERMS.description, en(doc_string)))
 
-        # self.add((func_iri, RDF.type, Task))
-        # self.add((func_iri, RDFS.label, en(name)))
-        # for parname, iri in pars:
-        #    par = f"{func_iri}_input_{parname}"
-        #    self.add((par, RDF.type, DataSet))
-        #    self.add((par, RDFS.label, en(parname)))
-        #    self.add((par, MAP.mapsTo, iri))
-        #    self.add((func_iri, hasInput, par))
-        # for i, iri in enumerate(returns):
-        #    val = f"{func_iri}_output{i+1}"
-        #    self.add((val, RDF.type, DataSet))
-        #    self.add((val, MAP.mapsTo, iri))
-        #    self.add((func_iri, hasOutput, val))
-        # if doc_string:
-        #    self.add((func_iri, DCTERMS.description, en(doc_string)))
-
         return func_iri
 
-    def add_interpolation_source(
+    def add_interpolation_source(  # pylint: disable=too-many-arguments
         self,
         xcoord: str,
         ycoord: str,
+        input_iri: str,
+        output_iri: str,
         base_iri: "Optional[str]" = None,
         standard: str = "emmo",
         cost: "Optional[Union[float, Callable]]" = None,
@@ -877,6 +863,10 @@ class Triplestore:
                 boundaries with ``xp = xp % period``.
             ycoord: IRI of data source with y-coordinates `yp`.  Must have
                 the same length as `xp`.
+            input_iri: IRI of ontological concept that interpolation input-
+                data should be mapped to.
+            output_iri: IRI of ontological concept that interpolation output-
+                data should be mapped to.
             base_iri: Base of the IRI representing the transformation in the
                 knowledge base.  Defaults to the base IRI of the triplestore.
             standard: Name of ontology to use when describing the
@@ -901,11 +891,17 @@ class Triplestore:
             (mapped to EX.Temp) to the amount of blue-green algae (mapped to
             EX.AlgaeConc). By registering it with
 
-            >>> ts.add_interpolation_source(EX.Temp, EX.AlgaeConc)
+            >>> temp = ts.add_data(...)  # Data source with temperatures
+            >>> conc = ts.add_data(...)  # Data source with algae conc.
+            >>> ts.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
 
             we can now ask for the blue-green algae concentration in a fjord,
             given we have a data source with the water temperature field in
             the same fjord.
+
+            >>> ts.add_data(..., EX.Temp)  # temperature field
+            >>> ts.map(EX.indv, EX.AlgaeConc)
+            >>> ts.get_data(EX.indv)  # should return the algae conc. field
         """
         try:
             import numpy as np  # pylint: disable=import-outside-toplevel
@@ -917,8 +913,8 @@ class Triplestore:
             ) from exc
 
         def func(x):
-            xp = self.get_value(xcoord).value
-            fp = self.get_value(ycoord).value
+            xp = self.get_value(xcoord)
+            fp = self.get_value(ycoord)
             return np.interp(
                 x,
                 xp=xp,
@@ -930,8 +926,8 @@ class Triplestore:
 
         return self.add_function(
             func,
-            expects=xcoord,
-            returns=ycoord,
+            expects=input_iri,
+            returns=output_iri,
             base_iri=base_iri,
             standard=standard,
             cost=cost,
@@ -1001,7 +997,8 @@ class Triplestore:
 
             # Include data source IRI in documentation to ensure that the
             # function_id of `fn()` will differ for different data sources...
-            fn.__doc__ = f"Function for data source: {data_source}."
+            fn.__doc__ = f"Function for data source: {data_source}.\n\n{func.__doc__}"
+            fn.__name__ = func.__name__
 
             func_iri = self.add_function(
                 fn,
