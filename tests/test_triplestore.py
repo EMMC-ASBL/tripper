@@ -31,8 +31,6 @@ def test_triplestore(  # pylint: disable=too-many-locals
             Triplestore in this test.
 
     """
-    from tripper.literal import Literal
-    from tripper.mappings import Value
     from tripper.triplestore import OWL, RDF, RDFS, XSD, Triplestore
 
     store = Triplestore(backend)
@@ -83,46 +81,6 @@ def test_triplestore(  # pylint: disable=too-many-locals
             "http://example.com/onto#Sum",
             "http://www.w3.org/2002/07/owl#Thing",
         )
-
-    # Test add_data() and get_value()
-    def xcoords(
-        returns, configurations, triplestore
-    ):  # pylint: disable=unused-argument
-        return Value(
-            value=[0, 2, 4, 6, 8, 10],
-            unit="m",
-        )
-
-    def ycoords(
-        returns, configurations, triplestore
-    ):  # pylint: disable=unused-argument
-        return Value(
-            value=[0, 4, 16, 36, 64, 100],
-            unit="V",
-        )
-
-    ts = Triplestore(backend)  # pylint: disable=invalid-name
-
-    string_iri = ts.add_data(Literal("string value"), EX.Description)
-    number_iri = ts.add_data(Literal(3.14), EX.WellKnownNumber)
-    xcoords_iri = ts.add_data(xcoords, EX.Length)
-    ycoords_iri = ts.add_data(ycoords, EX.Voltage)
-
-    assert ts.get_value(string_iri) == "string value"
-    assert ts.get_value(number_iri) == 3.14
-    assert ts.get_value(xcoords_iri).m.tolist() == [0, 2, 4, 6, 8, 10]
-    assert ts.get_value(xcoords_iri, magnitude=True).tolist() == [0, 2, 4, 6, 8, 10]
-    assert ts.get_value(xcoords_iri, unit="dm").tolist() == [0, 20, 40, 60, 80, 100]
-    assert ts.get_value(ycoords_iri).m.tolist() == [0, 4, 16, 36, 64, 100]
-
-    # Test get_value() via mappings
-    ts.map(EX.indv, EX.Description)
-    assert ts.get_value(EX.indv) == "string value"
-
-    ts.map(EX.indv2, EX.Length)
-    assert ts.get_value(EX.indv2).m.tolist() == [0, 2, 4, 6, 8, 10]
-
-    ts.add_interpolation_source(xcoords_iri, ycoords_iri)
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:

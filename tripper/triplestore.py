@@ -18,6 +18,7 @@ import importlib
 import inspect
 import re
 import sys
+import uuid
 import warnings
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
@@ -939,7 +940,7 @@ class Triplestore:
     def add_data(
         self,
         func: "Union[Callable, Literal]",
-        returns: "Union[str, Sequence]",
+        iri: "Optional[Union[str, Sequence]]" = None,
         configurations: "Optional[dict]" = None,
         base_iri: "Optional[str]" = None,
         standard: str = "emmo",
@@ -951,13 +952,17 @@ class Triplestore:
             func: A callable that should return the value of the registered
                 data source.  It is called with following protopype:
 
-                    func(returns, configurations, triplestore) -> Value
+                    func(returns, configurations, triplestore)
 
-                and should return a tripper.mappings.Value object.
+                The returned value may in principle be of any type, but for
+                values with unit, it is recommended to return a
+                tripper.mappings.Value object.
                 Alternatively, `func` may also be a literal value.
-            returns: IRI of ontological concept that the data returned by
-                `func` is mapped to.  If `func` is a callable, it may also be
-                given as a sequenceof IRIs, if multiple values are returned.
+            iri: IRI of ontological concept or individual that the data
+                returned by `func` should be mapped to.  If `func` is a
+                callable and multiple values are returned, it may also be
+                given as a sequenceof IRIs.
+                If not given, it will default to a new blank node.
             configurations: Configurations passed on to `func`.
             base_iri: Base of the IRI representing the function in the
                 knowledge base.  Defaults to the base IRI of the triplestore.
@@ -973,22 +978,26 @@ class Triplestore:
         Returns:
             IRI of data source.
         """
+        if iri is None:
+            # pylint complains about uuid being unused if we make this an
+            # f-string
+            iri = "_bnode_" + str(uuid.uuid4())
         data_source = "_data_source_" + random_string(8)
         self.add((data_source, RDF.type, DataSource))
-        if isinstance(returns, str):
-            self.add((data_source, MAP.mapsTo, returns))
-        else:
-            for iri in returns:
-                self.add((data_source, MAP.mapsTo, iri))
 
         if isinstance(func, Literal):
             self.add((data_source, hasDataValue, func))
             if cost is not None:
                 self._add_cost(cost, data_source)
+            if isinstance(iri, str):
+                self.map(data_source, iri)
+            else:
+                raise TypeError("literal data can only have a single `iri`")
+
         elif callable(func):
 
             def fn():
-                return func(returns, configurations, self)
+                return func(iri, configurations, self)
 
             # Include data source IRI in documentation to ensure that the
             # function_id of `fn()` will differ for different data sources...
@@ -997,7 +1006,7 @@ class Triplestore:
             func_iri = self.add_function(
                 fn,
                 expects=(),
-                returns=returns,
+                returns=iri,
                 base_iri=base_iri,
                 standard=standard,
                 cost=cost,
@@ -1054,13 +1063,18 @@ class Triplestore:
                     if self.has(iri, hasCost)
                     else 0.0,
                 ).get_value(unit=unit, magnitude=magnitude, quantity=quantity)
+
             if self.has(iri, hasAccessFunction):  # callable
                 func_iri = self.value(iri, hasAccessFunction)
                 func = self.function_repo[func_iri]
                 assert callable(func)  # nosec
-                return func().get_value(
-                    unit=unit, magnitude=magnitude, quantity=quantity
-                )
+                retval = func()
+                if isinstance(retval, Value):
+                    return retval.get_value(
+                        unit=unit, magnitude=magnitude, quantity=quantity
+                    )
+                return retval
+
             raise TriplestoreError(
                 f"data source {iri} has neither a 'hasDataValue' or a "
                 f"'hasAccessFunction' property"
