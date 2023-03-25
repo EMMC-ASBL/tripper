@@ -26,20 +26,20 @@ assert (
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<:func_f1a5429a> a fno:Function ;
+<:func_daa3fc91> a fno:Function ;
     rdfs:label "func"@en ;
     dcterms:description "Returns the sum of `a` and `b`."@en ;
-    fno:expects ( <:func_f1a5429a_parameter1_a> <:func_f1a5429a_parameter2_b> ) ;
-    fno:returns ( <:func_f1a5429a_output1> ) .
+    fno:expects ( <:func_daa3fc91_parameter1_a> <:func_daa3fc91_parameter2_b> ) ;
+    fno:returns ( <:func_daa3fc91_output1> ) .
 
-<:func_f1a5429a_output1> a fno:Output ;
+<:func_daa3fc91_output1> a fno:Output ;
     map:mapsTo ex:sum .
 
-<:func_f1a5429a_parameter1_a> a fno:Parameter ;
+<:func_daa3fc91_parameter1_a> a fno:Parameter ;
     rdfs:label "a"@en ;
     map:mapsTo ex:arg1 .
 
-<:func_f1a5429a_parameter2_b> a fno:Parameter ;
+<:func_daa3fc91_parameter2_b> a fno:Parameter ;
     rdfs:label "b"@en ;
     map:mapsTo ex:arg2 .
 """.strip()
@@ -62,7 +62,7 @@ assert (
 @prefix ex: <http://example.com/ex#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<:func_f1a5429a> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
+<:func_daa3fc91> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
     rdfs:label "func"@en ;
     emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 ex:arg1,
         ex:arg2 ;
@@ -96,7 +96,7 @@ assert (
 @prefix ex: <http://example.com/ex#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<:func_f1a5429a> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
+<:func_daa3fc91> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
     rdfs:label "func"@en ;
     emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 ex:arg1,
         ex:arg2 ;

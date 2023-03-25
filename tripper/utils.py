@@ -3,7 +3,9 @@
 import datetime
 import hashlib
 import inspect
+import random
 import re
+import string
 from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
@@ -16,6 +18,19 @@ if TYPE_CHECKING:  # pragma: no cover
         Union[str, None], Union[str, None], Union[str, Literal, None]
     ]
     Triple = Tuple[str, str, Union[str, Literal]]
+
+
+__all__ = (
+    "infer_iri",
+    "split_iri",
+    "function_id",
+    "en",
+    "parse_literal",
+    "parse_object",
+    "as_python",
+    "check",
+    "random_string",
+)
 
 
 class UnusedArgumentWarning(Warning):
@@ -82,8 +97,10 @@ def function_id(func: "Callable", length: int = 4) -> str:
     the current implementation is based on the shake_128 algorithm,
     it make no sense to set `length` larger than 32 bytes.
     """
+    source = inspect.getsource(func)
+    doc = func.__doc__ if func.__doc__ else ""
     return hashlib.shake_128(  # pylint: disable=too-many-function-args
-        inspect.getsource(func).encode()
+        (source + doc).encode()
     ).hexdigest(length)
 
 
@@ -167,7 +184,7 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
     - If `obj` is a string and
       - starts with "_:", it is assumed to be a blank node and returned.
       - starts with a scheme, it is asumed to be an IRI and returned.
-      - can be converted to a float, int or datetime, it is returned.
+      - can be converted to a float, int or datetime, it is returned
         converted to a literal of the corresponding type.
       - it is a valid n3 representation, return it as the given type.
       - otherwise, return it as a xsd:string literal.
@@ -195,16 +212,37 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
     raise ValueError("`obj` should be a literal or a string.")
 
 
+def as_python(value: "Any") -> "Any":
+    """Converts `value` to a native Python representation.
+
+    If `value` is a Literal, its Python representation will be returned.
+    If `value` is a string, it will first be converted to a Literal, before
+    its Python representation is returned.
+    Otherwise, `value` will be returned as-is.
+    """
+    if isinstance(value, Literal):
+        return value.to_python()
+    if isinstance(value, str):
+        return parse_literal(value).to_python()
+    return value
+
+
 def check(func: "Callable", s: str, exceptions) -> bool:
     """Help function that returns true if `func(s)` does not raise an exception.
 
     False is returned if `func(s)` raises an exception listed in `exceptions`.
     Otherwise the exception is propagated.
     """
-    # Note that the missing type hint on `exceptions` is deliberately, see
+    # Note that the missing type hint on `exceptions` is deliberate, see
     # https://peps.python.org/pep-0484/#exceptions
     try:
         func(s)
     except exceptions:
         return False
     return True
+
+
+def random_string(length=8):
+    """Return a random string of the given length."""
+    letters = string.ascii_letters + string.digits
+    return "".join(random.choice(letters) for i in range(length))  # nosec
