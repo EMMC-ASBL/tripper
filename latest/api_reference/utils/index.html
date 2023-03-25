@@ -19,7 +19,7 @@
         <link rel="next" href="../backends/collection/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.2">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.4">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7bf56d0a.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.240905d7.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
@@ -431,6 +431,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.utils.as_python" class="md-nav__link">
+    as_python()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.utils.check" class="md-nav__link">
     check()
   </a>
@@ -468,6 +475,13 @@
         <li class="md-nav__item">
   <a href="#tripper.utils.parse_object" class="md-nav__link">
     parse_object()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.random_string" class="md-nav__link">
+    random_string()
   </a>
   
 </li>
@@ -673,6 +687,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.utils.as_python" class="md-nav__link">
+    as_python()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.utils.check" class="md-nav__link">
     check()
   </a>
@@ -710,6 +731,13 @@
         <li class="md-nav__item">
   <a href="#tripper.utils.parse_object" class="md-nav__link">
     parse_object()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.random_string" class="md-nav__link">
+    random_string()
   </a>
   
 </li>
@@ -756,6 +784,7 @@
 
 
 
+
   <div class="doc doc-object doc-class">
 
 
@@ -792,6 +821,47 @@ UnusedArgumentWarning            (<span title="Warning">Warning</span>)
 
 
 
+<h2 class="doc doc-heading" id="tripper.utils.as_python">
+<code class="highlight language-python"><span class="n">as_python</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.utils.as_python" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Converts <code>value</code> to a native Python representation.</p>
+<p>If <code>value</code> is a Literal, its Python representation will be returned.
+If <code>value</code> is a string, it will first be converted to a Literal, before
+its Python representation is returned.
+Otherwise, <code>value</code> will be returned as-is.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">as_python</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts `value` to a native Python representation.</span>
+
+<span class="sd">    If `value` is a Literal, its Python representation will be returned.</span>
+<span class="sd">    If `value` is a string, it will first be converted to a Literal, before</span>
+<span class="sd">    its Python representation is returned.</span>
+<span class="sd">    Otherwise, `value` will be returned as-is.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">to_python</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">to_python</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">value</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 class="doc doc-heading" id="tripper.utils.check">
 <code class="highlight language-python"><span class="n">check</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span></code>
 
@@ -812,7 +882,7 @@ Otherwise the exception is propagated.</p>
 <span class="sd">    False is returned if `func(s)` raises an exception listed in `exceptions`.</span>
 <span class="sd">    Otherwise the exception is propagated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Note that the missing type hint on `exceptions` is deliberately, see</span>
+    <span class="c1"># Note that the missing type hint on `exceptions` is deliberate, see</span>
     <span class="c1"># https://peps.python.org/pep-0484/#exceptions</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">func</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -887,8 +957,10 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
 <span class="sd">    the current implementation is based on the shake_128 algorithm,</span>
 <span class="sd">    it make no sense to set `length` larger than 32 bytes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">shake_128</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-function-args</span>
-        <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">source</span> <span class="o">+</span> <span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
     <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1056,7 +1128,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 - If <code>obj</code> is a string and
   - starts with "_:", it is assumed to be a blank node and returned.
   - starts with a scheme, it is asumed to be an IRI and returned.
-  - can be converted to a float, int or datetime, it is returned.
+  - can be converted to a float, int or datetime, it is returned
     converted to a literal of the corresponding type.
   - it is a valid n3 representation, return it as the given type.
   - otherwise, return it as a xsd:string literal.
@@ -1075,7 +1147,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 <span class="sd">    - If `obj` is a string and</span>
 <span class="sd">      - starts with &quot;_:&quot;, it is assumed to be a blank node and returned.</span>
 <span class="sd">      - starts with a scheme, it is asumed to be an IRI and returned.</span>
-<span class="sd">      - can be converted to a float, int or datetime, it is returned.</span>
+<span class="sd">      - can be converted to a float, int or datetime, it is returned</span>
 <span class="sd">        converted to a literal of the corresponding type.</span>
 <span class="sd">      - it is a valid n3 representation, return it as the given type.</span>
 <span class="sd">      - otherwise, return it as a xsd:string literal.</span>
@@ -1101,6 +1173,34 @@ is that this function correctly interprets n3-encoded literal strings.</p>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`obj` should be a literal or a string.&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 class="doc doc-heading" id="tripper.utils.random_string">
+<code class="highlight language-python"><span class="n">random_string</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.utils.random_string" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a random string of the given length.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">random_string</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a random string of the given length.&quot;&quot;&quot;</span>
+    <span class="n">letters</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">letters</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">))</span>  <span class="c1"># nosec</span>
 </code></pre></div>
         </details>
     </div>
@@ -1208,10 +1308,10 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
         </div>
         
-          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
             Back to top
-          </a>
+          </button>
         
       </main>
       
@@ -1257,7 +1357,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.fc8c2696.min.js"></script>
+      <script src="../../assets/javascripts/bundle.19047be9.min.js"></script>
       
     
   </body>

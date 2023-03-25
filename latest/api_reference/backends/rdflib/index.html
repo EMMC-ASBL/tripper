@@ -19,7 +19,7 @@
         <link rel="next" href="../sparqlwrapper/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.2">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.4">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.7bf56d0a.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.240905d7.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.a0c5b2b5.min.css">
@@ -939,7 +939,11 @@ overwritten with the current content of the triplestore.</p></td>
             <span class="k">yield</span> <span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-                <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">language</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+                <span class="n">Literal</span><span class="p">(</span>
+                    <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">lang</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">language</span><span class="p">,</span>
+                    <span class="n">datatype</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
                 <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
             <span class="p">)</span>
@@ -1516,7 +1520,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
         <span class="k">yield</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-            <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">language</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+            <span class="n">Literal</span><span class="p">(</span>
+                <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">lang</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">language</span><span class="p">,</span>
+                <span class="n">datatype</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
             <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
         <span class="p">)</span>
@@ -1689,10 +1697,10 @@ the query() method for SELECT queries.</p>
 
         </div>
         
-          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
             Back to top
-          </a>
+          </button>
         
       </main>
       
@@ -1738,7 +1746,7 @@ the query() method for SELECT queries.</p>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.fc8c2696.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.19047be9.min.js"></script>
       
     
   </body>
