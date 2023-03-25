@@ -5,11 +5,13 @@ import pytest
 
 from tripper import DCTERMS, RDFS, XSD, Literal
 from tripper.utils import (
+    as_python,
     en,
     function_id,
     infer_iri,
     parse_literal,
     parse_object,
+    random_string,
     split_iri,
 )
 
@@ -160,3 +162,18 @@ assert parse_object(f'"42"^^{XSD.integer}') == Literal("42", datatype=XSD.intege
 assert parse_object(f'"4.2"^^{XSD.double}') == Literal("4.2", datatype=XSD.double)
 assert parse_object(f'"42"^^{XSD.double}') == Literal("42.0", datatype=XSD.double)
 assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
+
+
+# test as_python()
+assert as_python("abc") == "abc"
+assert as_python('"abc"@en') == "abc"
+assert as_python(f'"42"^^{XSD.double}') == 42
+assert as_python(Literal(32, datatype=XSD.integer)) == 32
+assert as_python(3.14) == 3.14
+
+
+# test random_string()
+rstring = random_string(16)
+assert isinstance(rstring, str)
+assert len(rstring) == 16
+assert rstring.isalnum()

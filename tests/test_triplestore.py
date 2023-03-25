@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 # @pytest.mark.parametrize("backend", ["rdflib", "ontopy", "collection"])
 @pytest.mark.parametrize("backend", ["rdflib", "collection"])
-def test_triplestore(
+def test_triplestore(  # pylint: disable=too-many-locals
     backend: str,
     example_function: "Callable[[Any, Any], Any]",
     expected_function_triplestore: str,
