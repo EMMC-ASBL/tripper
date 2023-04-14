@@ -1006,6 +1006,8 @@ class Triplestore:
             cost=cost,
         )
 
+## ==============================================================================
+
     def add_data(
         self,
         func: "Union[Callable, Literal]",
