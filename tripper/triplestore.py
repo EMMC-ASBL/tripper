@@ -1005,8 +1005,8 @@ class Triplestore:
             standard=standard,
             cost=cost,
         )
-
-## ==============================================================================
+    
+class TriplestoreDataHandler(Triplestore):
 
     def add_data(
         self,
