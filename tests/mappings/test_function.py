@@ -11,9 +11,9 @@ We also have two mapping functions; first() and sum()
 The test asks for the value of an individual of ex:D
 """
 # pylint: disable=unused-argument,invalid-name
-from tripper import Literal, Triplestore
+from tripper import Literal, TriplestoreDataHandler
 
-ts = Triplestore(backend="rdflib")
+ts = TriplestoreDataHandler(backend="rdflib")
 EX = ts.bind("ex", "http://example.com/onto#")
 
 
