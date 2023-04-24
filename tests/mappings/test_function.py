@@ -13,8 +13,8 @@ The test asks for the value of an individual of ex:D
 # pylint: disable=unused-argument,invalid-name
 from tripper import Literal, TriplestoreDataHandler
 
-ts = TriplestoreDataHandler(backend="rdflib")
-EX = ts.bind("ex", "http://example.com/onto#")
+tsdh = TriplestoreDataHandler(backend="rdflib")
+EX = tsdh.bind("ex", "http://example.com/onto#")
 
 
 def first(vector):
@@ -32,11 +32,11 @@ def vector(iri, configurations, triplestore):
     return [0.5, 1.2, 3.4, 6.6]
 
 
-ts.add_data(Literal(3.2), EX.A)
-ts.add_data(vector, EX.B)
+tsdh.add_data(Literal(3.2), EX.A)
+tsdh.add_data(vector, EX.B)
 
-ts.add_function(first, expects=EX.B, returns=EX.C)
-ts.add_function(add, expects=(EX.A, EX.C), returns=EX.D)
+tsdh.add_function(first, expects=EX.B, returns=EX.C)
+tsdh.add_function(add, expects=(EX.A, EX.C), returns=EX.D)
 
-ts.map(EX.indv, EX.D)
-assert ts.get_value(EX.indv) == 3.7
+tsdh.map(EX.indv, EX.D)
+assert tsdh.get_value(EX.indv) == 3.7
