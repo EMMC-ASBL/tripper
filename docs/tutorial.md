@@ -13,17 +13,17 @@ The module already provides a set of pre-defined namespaces that simplifies writ
 For example:
 
 ```python
-from tripper import RDFS, OWL
-RDFS.subClassOf
-# -> 'http://www.w3.org/2000/01/rdf-schema#subClassOf'
+>>> from tripper import RDFS, OWL
+>>> RDFS.subClassOf
+'http://www.w3.org/2000/01/rdf-schema#subClassOf'
 ```
 
 New namespaces can be created using the Namespace class, but are usually added with the `bind()` method:
 
 ```python
-ONTO = ts.bind("onto", "http://example.com/onto#")
-ONTO.MyConcept
-# -> 'http://example.com/onto#MyConcept'
+>>> ONTO = ts.bind("onto", "http://example.com/onto#")
+>>> ONTO.MyConcept
+'http://example.com/onto#MyConcept'
 ```
 
 Namespace also supports access by label and IRI checking.
@@ -35,16 +35,18 @@ The `triplestore_url=...` is a resolvable URL that can be read by the 'rdflib' b
 It is needed, because the 'rdflib' backend is currently not able to load EMMO from the `http://emmo.info/emmo#` namespace.
 
 ```python
-EMMO = ts.bind(
-    "emmo", "http://emmo.info/emmo#",
-    label_annotations=True,
-    check=True,
-    triplestore_url="https://emmo-repo.github.io/versions/1.0.0-beta4/emmo-inferred.ttl",
-)
-EMMO.Atom
-# -> 'http://emmo.info/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
-EMMO.invalid_name
-# -> NoSuchIRIError: http://emmo.info/emmo#invalid_name
+>>> EMMO = ts.bind(
+...     "emmo", "http://emmo.info/emmo#",
+...     label_annotations=True,
+...     check=True,
+...     triplestore_url="https://emmo-repo.github.io/versions/1.0.0-beta4/emmo-inferred.ttl",
+... )
+
+>>> EMMO.Atom
+'http://emmo.info/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
+
+>>> EMMO.invalid_name
+NoSuchIRIError: http://emmo.info/emmo#invalid_name
 ```
 
 New triples can be added either with the `parse()` method (for backends that support it) or the `add()` and `add_triples()` methods:
@@ -71,10 +73,10 @@ Except for `value()`, they return the result as generators.
 For example:
 
 ```python
-ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf)
-# -> <generator object Triplestore.objects at 0x7fa502590200>
-list(ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf))
-# -> ['http://www.w3.org/2002/07/owl#Thing']
+>>> ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf)
+<generator object Triplestore.objects at 0x7fa502590200>
+>>> list(ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf))
+['http://www.w3.org/2002/07/owl#Thing']
 ```
 
 The `query()` and `update()` methods can be used to query and update the triplestore using SPARQL.
