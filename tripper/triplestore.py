@@ -891,17 +891,36 @@ class Triplestore:
             (mapped to EX.Temp) to the amount of blue-green algae (mapped to
             EX.AlgaeConc). By registering it with
 
-            >>> temp = ts.add_data(...)  # Data source with temperatures
-            >>> conc = ts.add_data(...)  # Data source with algae conc.
+            >>> from tripper import Triplestore
+            >>> from tripper.mappings import Value
+
+            >>> ts = Triplestore(backend="rdflib")
+            >>> EX = ts.bind("ex", "http://example.com#")
+
+            # Add data source with temperatures
+            >>> temp = ts.add_data(
+            ...     lambda ret, conf, ts: Value([0., 20., 30., 37., 40.], unit="degC")
+            ... )
+
+            # Add data source with algae conc.
+            >>> conc = ts.add_data(
+            ...     lambda ret, conf, ts: Value([1e4, 1e6, 1e7, 1e8, 1e3], unit="")
+            ... )
+
             >>> ts.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
+            ':func_3c61cfff'
 
             we can now ask for the blue-green algae concentration in a fjord,
             given we have a data source with the water temperature field in
             the same fjord.
-
-            >>> ts.add_data(..., EX.Temp)  # temperature field
+            >>> ts.add_data(
+            ...     lambda ret, conf, ts: Value([10., 5., 0., 20.], unit="degC"),
+            ...     iri=EX.Temp,
+            ... )  # doctest: +ELLIPSIS
+            '_data_source_...'
             >>> ts.map(EX.indv, EX.AlgaeConc)
-            >>> ts.get_data(EX.indv)  # should return the algae conc. field
+            >>> ts.get_value(EX.indv)  # should return the algae conc. field
+            array([ 505000.,  257500.,   10000., 1000000.])
         """
         try:
             import numpy as np  # pylint: disable=import-outside-toplevel
