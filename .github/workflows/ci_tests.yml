@@ -70,7 +70,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apt install graphviz
+        sudo apt install graphviz
         python -m pip install -U pip
         pip install -U setuptools wheel flit
         pip install -e .[testing]
