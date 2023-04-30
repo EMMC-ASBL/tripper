@@ -470,7 +470,7 @@ class Triplestore:
         default=None,
         any=False,
         lang=None,
-    ):
+    ) -> "Union[str, Literal]":
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
