@@ -463,17 +463,30 @@ class Triplestore:
         self.add_triples([triple])
 
     def value(  # pylint: disable=redefined-builtin
-        self, subject=None, predicate=None, object=None, default=None, any=False
-    ):
+        self,
+        subject=None,
+        predicate=None,
+        object=None,
+        default=None,
+        any=False,
+        lang=None,
+    ) -> "Union[str, Literal]":
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
 
         Parameters:
-            subject, predicate, object: Triple to match.
+            subject, predicate, object: Criteria to match. Two of these must
+                be provided.
             default: Value to return if no matches are found.
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
+            lang: If provided, require that the value must be a localised
+                literal with the given language code.
+
+        Returns:
+            The value of the `subject`, `predicate` or `object` that is
+            None.
         """
         spo = (subject, predicate, object)
         if sum(iri is None for iri in spo) != 1:
@@ -481,22 +494,37 @@ class Triplestore:
                 "Exactly one of `subject`, `predicate` or `object` must be None."
             )
 
-        triple = self.triples(subject, predicate, object)
-        try:
-            value = next(triple)
-        except StopIteration:
-            return default
-
         # Index of subject-predicate-object argument that is None
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
+        triples = self.triples(subject, predicate, object)
+        if lang:
+            first = None
+            if idx != 2:
+                raise ValueError("`object` must be None if `lang` is given")
+            for triple in triples:
+                value = triple[idx]
+                if isinstance(value, Literal) and value.lang == lang:
+                    if any:
+                        return value
+                    if first:
+                        raise UniquenessError("More than one match")
+                    first = value
+            if first is None:
+                return default
+        else:
+            try:
+                triple = next(triples)
+            except StopIteration:
+                return default
+
         try:
-            next(triple)
+            next(triples)
         except StopIteration:
-            return value[idx]
+            return triple[idx]
 
         if any:
-            return value[idx]
+            return triple[idx]
         raise UniquenessError("More than one match")
 
     def subjects(
