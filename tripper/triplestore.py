@@ -463,17 +463,30 @@ class Triplestore:
         self.add_triples([triple])
 
     def value(  # pylint: disable=redefined-builtin
-        self, subject=None, predicate=None, object=None, default=None, any=False
-    ):
+        self,
+        subject=None,
+        predicate=None,
+        object=None,
+        default=None,
+        any=False,
+        lang=None,
+    ) -> "Union[str, Literal]":
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
 
         Parameters:
-            subject, predicate, object: Triple to match.
+            subject, predicate, object: Criteria to match. Two of these must
+                be provided.
             default: Value to return if no matches are found.
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
+            lang: If provided, require that the value must be a localised
+                literal with the given language code.
+
+        Returns:
+            The value of the `subject`, `predicate` or `object` that is
+            None.
         """
         spo = (subject, predicate, object)
         if sum(iri is None for iri in spo) != 1:
@@ -481,22 +494,37 @@ class Triplestore:
                 "Exactly one of `subject`, `predicate` or `object` must be None."
             )
 
-        triple = self.triples(subject, predicate, object)
-        try:
-            value = next(triple)
-        except StopIteration:
-            return default
-
         # Index of subject-predicate-object argument that is None
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
+        triples = self.triples(subject, predicate, object)
+        if lang:
+            first = None
+            if idx != 2:
+                raise ValueError("`object` must be None if `lang` is given")
+            for triple in triples:
+                value = triple[idx]
+                if isinstance(value, Literal) and value.lang == lang:
+                    if any:
+                        return value
+                    if first:
+                        raise UniquenessError("More than one match")
+                    first = value
+            if first is None:
+                return default
+        else:
+            try:
+                triple = next(triples)
+            except StopIteration:
+                return default
+
         try:
-            next(triple)
+            next(triples)
         except StopIteration:
-            return value[idx]
+            return triple[idx]
 
         if any:
-            return value[idx]
+            return triple[idx]
         raise UniquenessError("More than one match")
 
     def subjects(
@@ -891,17 +919,36 @@ class Triplestore:
             (mapped to EX.Temp) to the amount of blue-green algae (mapped to
             EX.AlgaeConc). By registering it with
 
-            >>> temp = ts.add_data(...)  # Data source with temperatures
-            >>> conc = ts.add_data(...)  # Data source with algae conc.
+            >>> from tripper import Triplestore
+            >>> from tripper.mappings import Value
+
+            >>> ts = Triplestore(backend="rdflib")
+            >>> EX = ts.bind("ex", "http://example.com#")
+
+            # Add data source with temperatures
+            >>> temp = ts.add_data(
+            ...     lambda ret, conf, ts: Value([0., 20., 30., 37., 40.], unit="degC")
+            ... )
+
+            # Add data source with algae conc.
+            >>> conc = ts.add_data(
+            ...     lambda ret, conf, ts: Value([1e4, 1e6, 1e7, 1e8, 1e3], unit="")
+            ... )
+
             >>> ts.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
+            ':func_3c61cfff'
 
             we can now ask for the blue-green algae concentration in a fjord,
             given we have a data source with the water temperature field in
             the same fjord.
-
-            >>> ts.add_data(..., EX.Temp)  # temperature field
+            >>> ts.add_data(
+            ...     lambda ret, conf, ts: Value([10., 5., 0., 20.], unit="degC"),
+            ...     iri=EX.Temp,
+            ... )  # doctest: +ELLIPSIS
+            '_data_source_...'
             >>> ts.map(EX.indv, EX.AlgaeConc)
-            >>> ts.get_data(EX.indv)  # should return the algae conc. field
+            >>> ts.get_value(EX.indv)  # should return the algae conc. field
+            array([ 505000.,  257500.,   10000., 1000000.])
         """
         try:
             import numpy as np  # pylint: disable=import-outside-toplevel
