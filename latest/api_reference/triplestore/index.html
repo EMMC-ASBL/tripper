@@ -1563,17 +1563,30 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span><span class="n">triple</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">False</span>
-    <span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="nb">any</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
 
 <span class="sd">        Useful if one knows that there may only be one value.</span>
 
 <span class="sd">        Parameters:</span>
-<span class="sd">            subject, predicate, object: Triple to match.</span>
+<span class="sd">            subject, predicate, object: Criteria to match. Two of these must</span>
+<span class="sd">                be provided.</span>
 <span class="sd">            default: Value to return if no matches are found.</span>
 <span class="sd">            any: If true, return any matching value, otherwise raise</span>
 <span class="sd">                UniquenessError.</span>
+<span class="sd">            lang: If provided, require that the value must be a localised</span>
+<span class="sd">                literal with the given language code.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The value of the `subject`, `predicate` or `object` that is</span>
+<span class="sd">            None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">spo</span> <span class="o">=</span> <span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">spo</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
@@ -1581,22 +1594,37 @@ Triplestore        </code>
                 <span class="s2">&quot;Exactly one of `subject`, `predicate` or `object` must be None.&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">default</span>
-
         <span class="c1"># Index of subject-predicate-object argument that is None</span>
         <span class="p">(</span><span class="n">idx</span><span class="p">,)</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spo</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
 
+        <span class="n">triples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`object` must be None if `lang` is given&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">triple</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">lang</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">value</span>
+                    <span class="k">if</span> <span class="n">first</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">UniquenessError</span><span class="p">(</span><span class="s2">&quot;More than one match&quot;</span><span class="p">)</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">first</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">triple</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+            <span class="nb">next</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">triple</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">triple</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">raise</span> <span class="n">UniquenessError</span><span class="p">(</span><span class="s2">&quot;More than one match&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">subjects</span><span class="p">(</span>
@@ -4605,7 +4633,7 @@ the query() method for SELECT queries.</p>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.value">
-<code class="highlight language-python"><span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.triplestore.Triplestore.value" title="Permanent link">&para;</a></h3>
@@ -4629,7 +4657,8 @@ the query() method for SELECT queries.</p>
       <tr>
         <td><code>subject,</code></td>
         <td><code>predicate, object</code></td>
-        <td><p>Triple to match.</p></td>
+        <td><p>Criteria to match. Two of these must
+be provided.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -4645,22 +4674,58 @@ the query() method for SELECT queries.</p>
 UniquenessError.</p></td>
         <td><code>False</code></td>
       </tr>
+      <tr>
+        <td><code>lang</code></td>
+        <td></td>
+        <td><p>If provided, require that the value must be a localised
+literal with the given language code.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Union[str, Literal]&#39;</code></td>
+      <td><p>The value of the <code>subject</code>, <code>predicate</code> or <code>object</code> that is
+None.</p></td>
+    </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">value</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">):</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="nb">any</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
 
 <span class="sd">    Useful if one knows that there may only be one value.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        subject, predicate, object: Triple to match.</span>
+<span class="sd">        subject, predicate, object: Criteria to match. Two of these must</span>
+<span class="sd">            be provided.</span>
 <span class="sd">        default: Value to return if no matches are found.</span>
 <span class="sd">        any: If true, return any matching value, otherwise raise</span>
 <span class="sd">            UniquenessError.</span>
+<span class="sd">        lang: If provided, require that the value must be a localised</span>
+<span class="sd">            literal with the given language code.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value of the `subject`, `predicate` or `object` that is</span>
+<span class="sd">        None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">spo</span> <span class="o">=</span> <span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">spo</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
@@ -4668,22 +4733,37 @@ UniquenessError.</p></td>
             <span class="s2">&quot;Exactly one of `subject`, `predicate` or `object` must be None.&quot;</span>
         <span class="p">)</span>
 
-    <span class="n">triple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">default</span>
-
     <span class="c1"># Index of subject-predicate-object argument that is None</span>
     <span class="p">(</span><span class="n">idx</span><span class="p">,)</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spo</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
 
+    <span class="n">triples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`object` must be None if `lang` is given&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">triple</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">lang</span> <span class="o">==</span> <span class="n">lang</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">value</span>
+                <span class="k">if</span> <span class="n">first</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">UniquenessError</span><span class="p">(</span><span class="s2">&quot;More than one match&quot;</span><span class="p">)</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="n">first</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">triple</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+
     <span class="k">try</span><span class="p">:</span>
-        <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">triple</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">any</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">triple</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
     <span class="k">raise</span> <span class="n">UniquenessError</span><span class="p">(</span><span class="s2">&quot;More than one match&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
