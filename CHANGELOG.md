@@ -1,5 +1,28 @@
 # Changelog
 
+## [v0.2.4](https://github.com/EMMC-ASBL/tripper/tree/v0.2.4) (2023-04-30)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.3...v0.2.4)
+
+**Implemented enhancements:**
+
+- Add entrypoint system to link external backend implementation [\#63](https://github.com/EMMC-ASBL/tripper/issues/63)
+
+**Closed issues:**
+
+- Transformations based on data sources [\#90](https://github.com/EMMC-ASBL/tripper/issues/90)
+- Add workflow example  [\#79](https://github.com/EMMC-ASBL/tripper/issues/79)
+
+**Merged pull requests:**
+
+- Added argument `lang` to triplestore.value\(\) [\#104](https://github.com/EMMC-ASBL/tripper/pull/104) ([jesper-friis](https://github.com/jesper-friis))
+- Run doctest from CI tests [\#101](https://github.com/EMMC-ASBL/tripper/pull/101) ([jesper-friis](https://github.com/jesper-friis))
+- Added add\_data\(\), get\_value\(\) and add\_interpolation\_source\(\) methods to Triplestore [\#91](https://github.com/EMMC-ASBL/tripper/pull/91) ([jesper-friis](https://github.com/jesper-friis))
+- Added tests for Python 3.11 and 3.6 [\#84](https://github.com/EMMC-ASBL/tripper/pull/84) ([jesper-friis](https://github.com/jesper-friis))
+- Remove some deprecation warnings [\#83](https://github.com/EMMC-ASBL/tripper/pull/83) ([jesper-friis](https://github.com/jesper-friis))
+- Workflow example [\#81](https://github.com/EMMC-ASBL/tripper/pull/81) ([jesper-friis](https://github.com/jesper-friis))
+- Support external backends [\#80](https://github.com/EMMC-ASBL/tripper/pull/80) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.2.3](https://github.com/EMMC-ASBL/tripper/tree/v0.2.3) (2023-02-05)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.2...v0.2.3)
