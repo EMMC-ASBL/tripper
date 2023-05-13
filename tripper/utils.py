@@ -165,7 +165,7 @@ def parse_literal(literal: "Any") -> "Literal":
             types = {}
             for pytype, datatypes in Literal.datatypes.items():
                 types.update({t: pytype for t in datatypes})
-            type_ = types[datatype]
+            type_ = types.get(datatype, str)
             try:
                 value = type_(value)
             except TypeError:

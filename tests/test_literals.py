@@ -143,3 +143,8 @@ def test_parse_literal() -> None:
     assert literal.value == "text"
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
+
+    literal = parse_literal('"value"^^http://example.com/vocab#mytype')
+    assert literal.value == "value"
+    assert literal.lang is None
+    assert literal.datatype == "http://example.com/vocab#mytype"
