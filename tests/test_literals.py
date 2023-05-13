@@ -1,5 +1,5 @@
 """Test RDF literals."""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,too-many-statements
 
 
 def test_string() -> None:
@@ -75,7 +75,7 @@ def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
     from datetime import datetime
 
-    from tripper import XSD, Literal
+    from tripper import RDF, XSD, Literal
     from tripper.utils import parse_literal
 
     literal = parse_literal(Literal("abc").n3())
@@ -133,3 +133,13 @@ def test_parse_literal() -> None:
     assert literal.value is False
     assert literal.lang is None
     assert literal.datatype == XSD.boolean
+
+    literal = parse_literal(f'"text"^^{RDF.HTML}')
+    assert literal.value == "text"
+    assert literal.lang is None
+    assert literal.datatype == RDF.HTML
+
+    literal = parse_literal(f'"text"^^<{RDF.HTML}>')
+    assert literal.value == "text"
+    assert literal.lang is None
+    assert literal.datatype == RDF.HTML
