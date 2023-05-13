@@ -49,6 +49,7 @@ class Literal(str):
         float: (XSD.double, XSD.decimal, XSD.dateTimeStamp, XSD.real, XSD.rational),
         str: (
             XSD.string,
+            RDF.HTML,
             RDF.PlainLiteral,
             RDF.XMLLiteral,
             RDFS.Literal,
