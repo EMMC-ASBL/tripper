@@ -23,7 +23,7 @@ from .namespace import (
 )
 from .triplestore import Triplestore, backend_packages
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 __all__ = (
     "Literal",
