@@ -892,121 +892,13 @@ class Triplestore:
 
         return func_iri
 
-    def add_interpolation_source(  # pylint: disable=too-many-arguments
-        self,
-        xcoord: str,
-        ycoord: str,
-        input_iri: str,
-        output_iri: str,
-        base_iri: "Optional[str]" = None,
-        standard: str = "emmo",
-        cost: "Optional[Union[float, Callable]]" = None,
-        left: "Optional[float]" = None,
-        right: "Optional[float]" = None,
-        period: "Optional[float]" = None,
-    ) -> str:
-        """Add data source to triplestore, such that it can be used to
-        transparently transform other data.
 
-        No data will be fetch before it is actually needed.
-
-        Parameters:
-            xcoord: IRI of data source with x-coordinates `xp`.  Must be
-                increasing if argument `period` is not specified. Otherwise,
-                `xp` is internally sorted after normalising the periodic
-                boundaries with ``xp = xp % period``.
-            ycoord: IRI of data source with y-coordinates `yp`.  Must have
-                the same length as `xp`.
-            input_iri: IRI of ontological concept that interpolation input-
-                data should be mapped to.
-            output_iri: IRI of ontological concept that interpolation output-
-                data should be mapped to.
-            base_iri: Base of the IRI representing the transformation in the
-                knowledge base.  Defaults to the base IRI of the triplestore.
-            standard: Name of ontology to use when describing the
-                transformation.  Valid values are:
-                - "emmo": Elementary Multiperspective Material Ontology (EMMO)
-                - "fno": Function Ontology (FnO)
-            cost: User-defined cost of following this mapping relation
-                represented as a float.  It may be given either as a
-                float or as a callable taking the same arguments as `func`
-                returning the cost as a float.
-            left: Value to return for `x < xp[0]`, default is `fp[0]`.
-            right: Value to return for `x > xp[-1]`, default is `fp[-1]`.
-            period: A period for the x-coordinates. This parameter allows the
-                proper interpolation of angular x-coordinates. Parameters
-                `left` and `right` are ignored if `period` is specified.
-
-        Returns:
-            transformation_iri: IRI of the added transformation.
-
-        Example:
-            Assume we have a data source that relates water temperature
-            (mapped to EX.Temp) to the amount of blue-green algae (mapped to
-            EX.AlgaeConc). By registering it with
-
-            >>> from tripper import Triplestore
-            >>> from tripper.mappings import Value
-
-            >>> ts = Triplestore(backend="rdflib")
-            >>> EX = ts.bind("ex", "http://example.com#")
-
-            # Add data source with temperatures
-            >>> temp = ts.add_data(
-            ...     lambda ret, conf, ts: Value([0., 20., 30., 37., 40.], unit="degC")
-            ... )
-
-            # Add data source with algae conc.
-            >>> conc = ts.add_data(
-            ...     lambda ret, conf, ts: Value([1e4, 1e6, 1e7, 1e8, 1e3], unit="")
-            ... )
-
-            >>> ts.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
-            ':func_3c61cfff'
-
-            we can now ask for the blue-green algae concentration in a fjord,
-            given we have a data source with the water temperature field in
-            the same fjord.
-            >>> ts.add_data(
-            ...     lambda ret, conf, ts: Value([10., 5., 0., 20.], unit="degC"),
-            ...     iri=EX.Temp,
-            ... )  # doctest: +ELLIPSIS
-            '_data_source_...'
-            >>> ts.map(EX.indv, EX.AlgaeConc)
-            >>> ts.get_value(EX.indv)  # should return the algae conc. field
-            array([ 505000.,  257500.,   10000., 1000000.])
-        """  # pylint: disable=line-too-long
-        try:
-            import numpy as np  # pylint: disable=import-outside-toplevel
-        except ImportError as exc:
-            raise RuntimeError(
-                "Triplestore.add_interpolation_source() requires numpy.\n"
-                "Install it with\n\n"
-                "    pip install numpy"
-            ) from exc
-
-        def func(x):
-            xp = self.get_value(xcoord)
-            fp = self.get_value(ycoord)
-            return np.interp(
-                x,
-                xp=xp,
-                fp=fp,
-                left=left,
-                right=right,
-                period=period,
-            )
-
-        return self.add_function(
-            func,
-            expects=input_iri,
-            returns=output_iri,
-            base_iri=base_iri,
-            standard=standard,
-            cost=cost,
-        )
-    
 class TriplestoreDataHandler(Triplestore):
+    """
+    Subclass of Triplestore that provides additional
+    methods for handling data in the triplestore,
+    such as get_value, add_data and add_interpolation_source.
+    """
 
     def add_data(
         self,
@@ -1175,4 +1067,99 @@ class TriplestoreDataHandler(Triplestore):
             unit=unit,
             magnitude=magnitude,
             quantity=quantity,
+        )
+
+    def add_interpolation_source(  # pylint: disable=too-many-arguments
+        self,
+        xcoord: str,
+        ycoord: str,
+        input_iri: str,
+        output_iri: str,
+        base_iri: "Optional[str]" = None,
+        standard: str = "emmo",
+        cost: "Optional[Union[float, Callable]]" = None,
+        left: "Optional[float]" = None,
+        right: "Optional[float]" = None,
+        period: "Optional[float]" = None,
+    ) -> str:
+        """Add data source to triplestore, such that it can be used to
+        transparently transform other data.
+
+        No data will be fetch before it is actually needed.
+
+        Parameters:
+            xcoord: IRI of data source with x-coordinates `xp`.  Must be
+                increasing if argument `period` is not specified. Otherwise,
+                `xp` is internally sorted after normalising the periodic
+                boundaries with ``xp = xp % period``.
+            ycoord: IRI of data source with y-coordinates `yp`.  Must have
+                the same length as `xp`.
+            input_iri: IRI of ontological concept that interpolation input-
+                data should be mapped to.
+            output_iri: IRI of ontological concept that interpolation output-
+                data should be mapped to.
+            base_iri: Base of the IRI representing the transformation in the
+                knowledge base.  Defaults to the base IRI of the triplestore.
+            standard: Name of ontology to use when describing the
+                transformation.  Valid values are:
+                - "emmo": Elementary Multiperspective Material Ontology (EMMO)
+                - "fno": Function Ontology (FnO)
+            cost: User-defined cost of following this mapping relation
+                represented as a float.  It may be given either as a
+                float or as a callable taking the same arguments as `func`
+                returning the cost as a float.
+            left: Value to return for `x < xp[0]`, default is `fp[0]`.
+            right: Value to return for `x > xp[-1]`, default is `fp[-1]`.
+            period: A period for the x-coordinates. This parameter allows the
+                proper interpolation of angular x-coordinates. Parameters
+                `left` and `right` are ignored if `period` is specified.
+
+        Returns:
+            transformation_iri: IRI of the added transformation.
+
+        Example:
+            Assume we have a data source that relates water temperature
+            (mapped to EX.Temp) to the amount of blue-green algae (mapped to
+            EX.AlgaeConc). By registering it with
+
+            >>> temp = ts.add_data(...)  # Data source with temperatures
+            >>> conc = ts.add_data(...)  # Data source with algae conc.
+            >>> ts.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
+
+            we can now ask for the blue-green algae concentration in a fjord,
+            given we have a data source with the water temperature field in
+            the same fjord.
+
+            >>> ts.add_data(..., EX.Temp)  # temperature field
+            >>> ts.map(EX.indv, EX.AlgaeConc)
+            >>> ts.get_data(EX.indv)  # should return the algae conc. field
+        """
+        try:
+            import numpy as np  # pylint: disable=import-outside-toplevel
+        except ImportError as exc:
+            raise RuntimeError(
+                "Triplestore.add_interpolation_source() requires numpy.\n"
+                "Install it with\n\n"
+                "    pip install numpy"
+            ) from exc
+
+        def func(x):
+            xp = self.get_value(xcoord)
+            fp = self.get_value(ycoord)
+            return np.interp(
+                x,
+                xp=xp,
+                fp=fp,
+                left=left,
+                right=right,
+                period=period,
+            )
+
+        return self.add_function(
+            func,
+            expects=input_iri,
+            returns=output_iri,
+            base_iri=base_iri,
+            standard=standard,
+            cost=cost,
         )
