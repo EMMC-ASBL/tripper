@@ -30,7 +30,6 @@ New namespaces can be defined with the [`tripper.Namespace`][Namespace] class.
 A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] class.
 
 
-
 Documentation
 -------------
 * Getting started: See the [tutorial](docs/tutorial.md)
