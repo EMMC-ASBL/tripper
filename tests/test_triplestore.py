@@ -3,7 +3,7 @@
 If backend is given, only that backend will be tested.  Otherwise all
 installed backends are tested one by one.
 """
-# pylint: disable=duplicate-code,comparison-with-callable
+# pylint: disable=duplicate-code,comparison-with-callable,invalid-name
 from typing import TYPE_CHECKING
 
 import pytest
@@ -31,22 +31,22 @@ def test_triplestore(  # pylint: disable=too-many-locals
             Triplestore in this test.
 
     """
-    from tripper.triplestore import OWL, RDF, RDFS, XSD, Triplestore
+    from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
-    store = Triplestore(backend)
-    assert store.expand_iri("xsd:integer") == XSD.integer
-    assert store.prefix_iri(RDF.type) == "rdf:type"
-    EX = store.bind("ex", "http://example.com/onto#")  # pylint: disable=invalid-name
+    ts = Triplestore(backend)
+    assert ts.expand_iri("xsd:integer") == XSD.integer
+    assert ts.prefix_iri(RDF.type) == "rdf:type"
+    EX = ts.bind("ex", "http://example.com/onto#")  # pylint: disable=invalid-name
     assert str(EX) == "http://example.com/onto#"
-    store.add_mapsTo(EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop")
-    store.add((EX.MyConcept, RDFS.subClassOf, OWL.Thing))
-    store.add((EX.AnotherConcept, RDFS.subClassOf, OWL.Thing))
-    store.add((EX.Sum, RDFS.subClassOf, OWL.Thing))
-    assert store.has(EX.Sum) is True
-    assert store.has(EX.Sum, RDFS.subClassOf, OWL.Thing) is True
-    assert store.has(object=EX.NotInOntology) is False
+    ts.add_mapsTo(EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop")
+    ts.add((EX.MyConcept, RDFS.subClassOf, OWL.Thing))
+    ts.add((EX.AnotherConcept, RDFS.subClassOf, OWL.Thing))
+    ts.add((EX.Sum, RDFS.subClassOf, OWL.Thing))
+    assert ts.has(EX.Sum) is True
+    assert ts.has(EX.Sum, RDFS.subClassOf, OWL.Thing) is True
+    assert ts.has(object=EX.NotInOntology) is False
 
-    store.add_function(
+    func_iri = ts.add_function(
         example_function,
         expects=(EX.MyConcept, EX.AnotherConcept),
         returns=EX.Sum,
@@ -55,7 +55,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
     )
 
     try:
-        ts_as_turtle = store.serialize(format="turtle")
+        ts_as_turtle = ts.serialize(format="turtle")
     except NotImplementedError:
         pass
     else:
@@ -63,7 +63,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
 
     # Test SPARQL query
     try:
-        rows = store.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
+        rows = ts.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
     except NotImplementedError:
         pass
     else:
@@ -82,6 +82,13 @@ def test_triplestore(  # pylint: disable=too-many-locals
             "http://www.w3.org/2002/07/owl#Thing",
         )
 
+    # Test value() method
+    assert ts.value(func_iri, DCTERMS.description) == example_function.__doc__
+    assert (
+        ts.value(func_iri, DCTERMS.description, lang="en") == example_function.__doc__
+    )
+    assert ts.value(func_iri, DCTERMS.description, lang="de") is None
+
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
     """Specifically test the rdflib backend Triplestore.
@@ -94,24 +101,24 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     """
     from tripper.triplestore import RDFS, Triplestore
 
-    store = Triplestore("rdflib")
-    EX = store.bind("ex", "http://example.com/onto#")  # pylint: disable=invalid-name
-    store.parse(format="turtle", data=expected_function_triplestore)
-    assert store.serialize(format="turtle") == expected_function_triplestore
-    store.set((EX.AnotherConcept, RDFS.subClassOf, EX.MyConcept))
+    ts = Triplestore("rdflib")
+    EX = ts.bind("ex", "http://example.com/onto#")  # pylint: disable=invalid-name
+    ts.parse(format="turtle", data=expected_function_triplestore)
+    assert ts.serialize(format="turtle") == expected_function_triplestore
+    ts.set((EX.AnotherConcept, RDFS.subClassOf, EX.MyConcept))
 
     def cost(parameter):
         return 2 * parameter
 
-    store.add_mapsTo(EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost)
-    assert list(store.function_repo.values())[0] == cost
+    ts.add_mapsTo(EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost)
+    assert list(ts.function_repo.values())[0] == cost
 
     def func(parameter):
         return parameter + 1
 
-    store.add_function(func, expects=EX.Sum, returns=EX.OneMore, cost=cost)
-    assert list(store.function_repo.values())[1] == func
-    assert len(store.function_repo) == 2  # cost is only added once
+    ts.add_function(func, expects=EX.Sum, returns=EX.OneMore, cost=cost)
+    assert list(ts.function_repo.values())[1] == func
+    assert len(ts.function_repo) == 2  # cost is only added once
 
     def func2(parameter):
         return parameter + 2
@@ -119,8 +126,8 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     def cost2(parameter):
         return 2 * parameter + 1
 
-    store.add_function(func2, expects=EX.Sum, returns=EX.EvenMore, cost=cost2)
-    assert len(store.function_repo) == 4
+    ts.add_function(func2, expects=EX.Sum, returns=EX.EvenMore, cost=cost2)
+    assert len(ts.function_repo) == 4
 
 
 def test_backend_rdflib_base_iri(
@@ -143,18 +150,18 @@ def test_backend_rdflib_base_iri(
     tmp_onto = tmp_path / "family.ttl"
     shutil.copy(ontopath_family, tmp_onto)
 
-    store = Triplestore(backend="rdflib", base_iri=f"file://{tmp_onto}")
-    FAM = store.bind(  # pylint: disable=invalid-name
+    ts = Triplestore(backend="rdflib", base_iri=f"file://{tmp_onto}")
+    FAM = ts.bind(  # pylint: disable=invalid-name
         "fam", "http://onto-ns.com/ontologies/examples/family#"
     )
-    store.add_triples(
+    ts.add_triples(
         [
             (":Nils", RDF.type, FAM.Father),
             (":Anna", RDF.type, FAM.Dauther),
             (":Nils", FAM.hasChild, ":Anna"),
         ]
     )
-    store.close()
+    ts.close()
 
 
 def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
@@ -176,31 +183,31 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
         triplestore_url=ontopath_food,
     )
 
-    store = Triplestore(
+    ts = Triplestore(
         "ontopy",
         base_iri="http://onto-ns.com/ontologies/examples/food",
     )
-    store.parse(ontopath_food)
+    ts.parse(ontopath_food)
 
-    store = Triplestore(
+    ts = Triplestore(
         "ontopy",
         base_iri="http://onto-ns.com/ontologies/examples/food",
     )
-    store.bind("food", FOOD)
+    ts.bind("food", FOOD)
     with open(ontopath_food, "rt", encoding="utf8") as handle:
-        store.parse(data=handle.read())
+        ts.parse(data=handle.read())
 
 
 def test_backend_sparqlwrapper() -> None:
     """Specifically test the SPARQLWrapper backend Triplestore."""
     from tripper import SKOS, Triplestore
 
-    store = Triplestore(
+    ts = Triplestore(
         backend="sparqlwrapper",
         base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
         "csiro_international-chronostratigraphic-chart_geologic-time-scale-2020",
     )
-    for s, p, o in store.triples(predicate=SKOS.notation):
+    for s, p, o in ts.triples(predicate=SKOS.notation):
         assert s
         assert p
         assert o
@@ -213,16 +220,16 @@ def test_backend_sparqlwrapper_methods() -> None:
     """Test SPARQLWrapper methods."""
     from tripper import RDFS, SKOS, Literal, Namespace, Triplestore
 
-    store = Triplestore(
+    ts = Triplestore(
         backend="sparqlwrapper",
         base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
         "csiro_international-chronostratigraphic-chart_geologic-time-scale-2020",
     )
 
-    store.remove((None, SKOS.notation, None))
+    ts.remove((None, SKOS.notation, None))
 
     EX = Namespace("http://example.com#")  # pylint: disable=invalid-name
-    store.add_triples(
+    ts.add_triples(
         [
             (EX.a, RDFS.subClassOf, EX.base),
             (EX.a, SKOS.prefLabel, Literal("An a class.", lang="en")),
