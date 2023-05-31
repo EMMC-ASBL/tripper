@@ -1117,24 +1117,6 @@ class TriplestoreDataHandler(Triplestore):
         Returns:
             transformation_iri: IRI of the added transformation.
 
-        Example:
-            Assume we have a data source that relates water temperature
-            (mapped to EX.Temp) to the amount of blue-green algae (mapped to
-            EX.AlgaeConc). We can then register it with
-            >>> import triplestore.Triplestore as ts
-            >>> import triplestore.TriplestoreDataHandler as tsdh
-
-            >>> temp = tsdh.add_data(...)  # Data source with temperatures
-            >>> conc = tsdh.add_data(...)  # Data source with algae conc.
-            >>> tsdh.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
-
-            and ask for the blue-green algae concentration in a fjord,
-            given we have a data source with the water temperature field in
-            the same fjord.
-
-            >>> tsdh.add_data(..., EX.Temp)  # temperature field
-            >>> ts.map(EX.indv, EX.AlgaeConc)
-            >>> ts.get_data(EX.indv)  # should return the algae conc. field
         """
         try:
             import numpy as np  # pylint: disable=import-outside-toplevel
