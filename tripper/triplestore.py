@@ -1086,17 +1086,19 @@ class TriplestoreDataHandler(Triplestore):
         Example:
             Assume we have a data source that relates water temperature
             (mapped to EX.Temp) to the amount of blue-green algae (mapped to
-            EX.AlgaeConc). By registering it with
+            EX.AlgaeConc). We can then register it with
+            >>> import TriplestoreDataHandler as tsdh
+            >>> import Triplestore as ts
 
-            >>> temp = ts.add_data(...)  # Data source with temperatures
-            >>> conc = ts.add_data(...)  # Data source with algae conc.
-            >>> ts.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
+            >>> temp = tsdh.add_data(...)  # Data source with temperatures
+            >>> conc = tsdh.add_data(...)  # Data source with algae conc.
+            >>> tsdh.add_interpolation_source(temp, conc, EX.Temp, EX.AlgaeConc)
 
-            we can now ask for the blue-green algae concentration in a fjord,
+            and ask for the blue-green algae concentration in a fjord,
             given we have a data source with the water temperature field in
             the same fjord.
 
-            >>> ts.add_data(..., EX.Temp)  # temperature field
+            >>> tsdh.add_data(..., EX.Temp)  # temperature field
             >>> ts.map(EX.indv, EX.AlgaeConc)
             >>> ts.get_data(EX.indv)  # should return the algae conc. field
         """
