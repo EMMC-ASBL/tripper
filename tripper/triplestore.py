@@ -1087,8 +1087,8 @@ class TriplestoreDataHandler(Triplestore):
             Assume we have a data source that relates water temperature
             (mapped to EX.Temp) to the amount of blue-green algae (mapped to
             EX.AlgaeConc). We can then register it with
-            >>> from triplestore import Triplestore as ts
-            >>> from triplestore import TriplestoreDataHandler as tsdh
+            >>> import triplestore.Triplestore as ts
+            >>> import triplestore.TriplestoreDataHandler as tsdh
 
             >>> temp = tsdh.add_data(...)  # Data source with temperatures
             >>> conc = tsdh.add_data(...)  # Data source with algae conc.
