@@ -70,13 +70,18 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt install graphviz
         python -m pip install -U pip
         pip install -U setuptools wheel flit
         pip install -e .[testing]
 
     - name: Test with pytest
-      run: pytest -vvv --cov-report=xml
+      run: pytest -vvv --cov-report=xml --doctest-modules
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.9' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v3
+
+    - name: Run doctest on tutorial
+      run: |
+        python -m doctest docs/tutorial.md
