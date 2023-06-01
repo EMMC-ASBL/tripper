@@ -10,7 +10,7 @@ else:
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator
+    from typing import Generator, Optional
 
     from tripper.triplestore import Triple
 
@@ -22,14 +22,6 @@ class ITriplestore(Protocol):
     may also implement the following optional methods:
 
     ```python
-
-    def __init__(self, base_iri: str = None, **kwargs):
-        """Initialise triplestore.
-
-        Arguments:
-            base_iri: Optional base IRI to initiate the triplestore from.
-            kwargs: Additional keyword arguments passed to the backend.
-        """
 
     def parse(
             self,
@@ -153,6 +145,14 @@ class ITriplestore(Protocol):
 
     ```
     '''
+
+    def __init__(self, base_iri: "Optional[str]" = None, **kwargs):
+        """Initialise triplestore.
+
+        Arguments:
+            base_iri: Optional base IRI to initiate the triplestore from.
+            kwargs: Additional keyword arguments passed to the backend.
+        """
 
     def triples(self, triple: "Triple") -> "Generator":
         """Returns a generator over matching triples.
