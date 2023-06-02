@@ -169,7 +169,9 @@ class Triplestore:
             eps = entry_points().get("tripper.backends", ())
         else:
             # New entry_point interface from Python 3.10+
-            eps = entry_points(group="tripper.backends")
+            eps = entry_points(  # pylint: disable=unexpected-keyword-arg
+                group="tripper.backends"
+            )
         for entry_point in eps:
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
