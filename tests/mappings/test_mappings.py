@@ -34,7 +34,9 @@ routes = mapping_routes(
 )
 
 assert routes.number_of_routes() == 1
-assert routes.output_iri == ("http://onto-ns.com/meta/0.1/Substance#molecule_energy")
+assert routes.output_iri == (
+    "http://onto-ns.com/meta/0.1/Substance#molecule_energy"
+)
 assert routes.cost == 2.0
 assert (
     routes.visualise(0).strip()
