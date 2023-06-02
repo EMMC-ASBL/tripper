@@ -64,7 +64,9 @@ class SparqlwrapperStrategy:
         ret = self.sparql.queryAndConvert()
         for binding in ret["results"]["bindings"]:
             yield tuple(
-                convert_json_entrydict(binding[name]) if name in binding else value
+                convert_json_entrydict(binding[name])
+                if name in binding
+                else value
                 for name, value in zip("spo", triple)
             )
 

@@ -46,8 +46,12 @@ assert ts.get_value(number_iri) == 3.14
 assert np.allclose(ts.get_value(length_iri).m, [1, 7, 2, 3])
 assert ts.get_value(string2_iri) == "a string"
 assert np.allclose(ts.get_value(xcoords_iri).m, [0, 2, 4, 6, 8, 10])
-assert np.allclose(ts.get_value(xcoords_iri, magnitude=True), [0, 2, 4, 6, 8, 10])
-assert np.allclose(ts.get_value(xcoords_iri, unit="dm"), [0, 20, 40, 60, 80, 100])
+assert np.allclose(
+    ts.get_value(xcoords_iri, magnitude=True), [0, 2, 4, 6, 8, 10]
+)
+assert np.allclose(
+    ts.get_value(xcoords_iri, unit="dm"), [0, 20, 40, 60, 80, 100]
+)
 assert np.allclose(ts.get_value(ycoords_iri).m, [0, 4, 16, 36, 64, 100])
 
 

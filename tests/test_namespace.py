@@ -13,8 +13,8 @@ def test_namespaces(get_ontology_path: "Callable[[str], Path]") -> None:
     """Test namespaces.
 
     Parameters:
-        get_ontology_path: Fixture from `conftest.py` to retrieve a `pathlib.Path`
-            object pointing to an ontology test file.
+        get_ontology_path: Fixture from `conftest.py` to retrieve a
+            `pathlib.Path` object pointing to an ontology test file.
 
     """
     from tripper import RDF, Namespace

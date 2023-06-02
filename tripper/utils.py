@@ -58,7 +58,9 @@ def infer_iri(obj):
             properties = schema["properties"]
             if "uri" in properties and isinstance(properties["uri"], str):
                 iri = properties["uri"]
-            if "identity" in properties and isinstance(properties["identity"], str):
+            if "identity" in properties and isinstance(
+                properties["identity"], str
+            ):
                 iri = properties["identity"]
             if "uuid" in properties and properties["uuid"]:
                 iri = str(properties["uuid"])
@@ -129,7 +131,9 @@ def parse_literal(literal: "Any") -> "Literal":
             return Literal(
                 literal,
                 lang=lang,
-                datatype=Literal.datatypes.get(type(literal))[0],  # type: ignore
+                datatype=Literal.datatypes.get(type(literal))[
+                    0
+                ],  # type: ignore
             )
         raise TypeError(f"unsupported literal type: {type(literal)}")
 
@@ -169,7 +173,9 @@ def parse_literal(literal: "Any") -> "Literal":
     for type_, datatypes in Literal.datatypes.items():
         if type_ is not bool:
             try:
-                return Literal(type_(literal), lang=lang, datatype=datatypes[0])
+                return Literal(
+                    type_(literal), lang=lang, datatype=datatypes[0]
+                )
             except (ValueError, TypeError):
                 pass
 
@@ -206,7 +212,9 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
             return Literal(obj, datatype=XSD.integer)
         if check(float, obj, ValueError):  #  float
             return Literal(obj, datatype=XSD.double)
-        if check(datetime.datetime.fromisoformat, obj, ValueError):  #  datetime
+        if check(
+            datetime.datetime.fromisoformat, obj, ValueError
+        ):  #  datetime
             return Literal(obj, datatype=XSD.dateTime)
         return parse_literal(obj)
     raise ValueError("`obj` should be a literal or a string.")
@@ -228,7 +236,7 @@ def as_python(value: "Any") -> "Any":
 
 
 def check(func: "Callable", s: str, exceptions) -> bool:
-    """Help function that returns true if `func(s)` does not raise an exception.
+    """Help function returning true if `func(s)` does not raise an exception.
 
     False is returned if `func(s)` raises an exception listed in `exceptions`.
     Otherwise the exception is propagated.

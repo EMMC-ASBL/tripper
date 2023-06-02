@@ -79,6 +79,12 @@ Source = "https://github.com/EMMC-ASBL/tripper"
 Changelog = "https://github.com/EMMC-ASBL/tripper/blob/main/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
 
+[tool.isort]
+line_length = 79  # PEP8
+
+[tool.black]
+line-length = 79
+
 [tool.mypy]
 python_version = "3.7"
 ignore_missing_imports = true
@@ -88,7 +94,7 @@ show_error_codes = true
 allow_redefinition = true
 
 [tool.pylint.messages_control]
-max-line-length = 88
+max-line-length = 79
 max-args = 10
 max-public-methods = 25
 max-locals = 20
