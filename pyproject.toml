@@ -93,7 +93,7 @@ warn_unused_configs = true
 show_error_codes = true
 allow_redefinition = true
 
-[tool.pylint.messages_control]
+[tool.pylint]
 max-line-length = 79
 max-args = 10
 max-public-methods = 25
@@ -104,6 +104,8 @@ disable = [
 good-names = [
     # Default
     "i", "j", "k", "ex", "Run", "_",
+    # Triplestore instance
+    "ts",
     # Triple components: subject, predicate, object
     "s", "p", "o",
 ]
