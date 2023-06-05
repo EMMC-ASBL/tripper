@@ -8,8 +8,8 @@ for an introduction.
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of an
-RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different parts of
+an RDF Triple: subject, predicate, and object.
 """
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
@@ -49,7 +49,16 @@ from tripper.utils import (
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
-    from typing import Any, Callable, Dict, Generator, List, Optional, Tuple, Union
+    from typing import (
+        Any,
+        Callable,
+        Dict,
+        Generator,
+        List,
+        Optional,
+        Tuple,
+        Union,
+    )
 
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
@@ -149,12 +158,12 @@ class Triplestore:
         """Load and return backend module.  The arguments has the same meaning
         as corresponding arguments to __init__().
 
-        If `backend` contains a dot or `package` is given, import `backend` using
-        `package` for relative imports.
+        If `backend` contains a dot or `package` is given, import `backend`
+        using `package` for relative imports.
 
         Otherwise, if there in the "tripper.backends" entry point group exists
-        an entry point who's name matches `backend`, then the corresponding module
-        is loaded.
+        an entry point who's name matches `backend`, then the corresponding
+        module is loaded.
 
         Otherwise, look for the `backend` in any of the (sub)packages listed
         `backend_packages` module variable.
@@ -279,7 +288,10 @@ class Triplestore:
         self.closed = True
 
     def parse(
-        self, source=None, format=None, **kwargs  # pylint: disable=redefined-builtin
+        self,
+        source=None,
+        format=None,
+        **kwargs,  # pylint: disable=redefined-builtin
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
 
@@ -318,7 +330,9 @@ class Triplestore:
             Serialized string if `destination` is None.
         """
         self._check_method("serialize")
-        return self.backend.serialize(destination=destination, format=format, **kwargs)
+        return self.backend.serialize(
+            destination=destination, format=format, **kwargs
+        )
 
     def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
         """SPARQL query.
@@ -452,7 +466,8 @@ class Triplestore:
         backend_class = cls._get_backend(backend)
         if not hasattr(backend_class, name):
             raise NotImplementedError(
-                f'Triplestore backend {backend!r} do not implement a "{name}()" method.'
+                f"Triplestore backend {backend!r} do not implement a "
+                f'"{name}()" method.'
             )
 
     def _check_method(self, name):
@@ -492,7 +507,8 @@ class Triplestore:
         spo = (subject, predicate, object)
         if sum(iri is None for iri in spo) != 1:
             raise ValueError(
-                "Exactly one of `subject`, `predicate` or `object` must be None."
+                "Exactly one of `subject`, `predicate` or `object` must be "
+                "None."
             )
 
         # Index of subject-predicate-object argument that is None
@@ -547,7 +563,9 @@ class Triplestore:
         for _, _, o in self.triples(subject=subject, predicate=predicate):
             yield o
 
-    def subject_predicates(self, object=None):  # pylint: disable=redefined-builtin
+    def subject_predicates(
+        self, object=None
+    ):  # pylint: disable=redefined-builtin
         """Returns a generator of (subject, predicate) tuples for given
         object."""
         for s, p, _ in self.triples(object=object):
@@ -580,7 +598,9 @@ class Triplestore:
     ):  # pylint: disable=redefined-builtin
         """Returns true if the triplestore has any triple matching
         the give subject, predicate and/or object."""
-        triple = self.triples(subject=subject, predicate=predicate, object=object)
+        triple = self.triples(
+            subject=subject, predicate=predicate, object=object
+        )
         try:
             next(triple)
         except StopIteration:
@@ -772,7 +792,8 @@ class Triplestore:
                 pars = list(zip(expects, inspect.signature(func).parameters))
             else:
                 pars = [
-                    (expects[par], par) for par in inspect.signature(func).parameters
+                    (expects[par], par)
+                    for par in inspect.signature(func).parameters
                 ]
         elif isinstance(func, str):
             func_iri = func
@@ -780,7 +801,9 @@ class Triplestore:
             doc_string = ""
             parlist = f"_:{func_iri}_parlist"
             outlist = f"_:{func_iri}_outlist"
-            pariris = expects if isinstance(expects, Sequence) else expects.values()
+            pariris = (
+                expects if isinstance(expects, Sequence) else expects.values()
+            )
             parnames = [split_iri(pariri)[1] for pariri in pariris]
             pars = list(zip(pariris, parnames))
         else:
@@ -847,7 +870,9 @@ class Triplestore:
             func_iri = func
             name = split_iri(func)[1]
             doc_string = ""
-            pariris = expects if isinstance(expects, Sequence) else expects.values()
+            pariris = (
+                expects if isinstance(expects, Sequence) else expects.values()
+            )
             parnames = [split_iri(pariri)[1] for pariri in pariris]
             pars = list(zip(parnames, pariris))
         else:
@@ -950,7 +975,7 @@ class Triplestore:
             >>> ts.map(EX.indv, EX.AlgaeConc)
             >>> ts.get_value(EX.indv)  # should return the algae conc. field
             array([ 505000.,  257500.,   10000., 1000000.])
-        """
+        """  # pylint: disable=line-too-long
         try:
             import numpy as np  # pylint: disable=import-outside-toplevel
         except ImportError as exc:
@@ -1045,7 +1070,9 @@ class Triplestore:
 
             # Include data source IRI in documentation to ensure that the
             # function_id of `fn()` will differ for different data sources...
-            fn.__doc__ = f"Function for data source: {data_source}.\n\n{func.__doc__}"
+            fn.__doc__ = (
+                f"Function for data source: {data_source}.\n\n{func.__doc__}"
+            )
             fn.__name__ = func.__name__
 
             func_iri = self.add_function(
@@ -1058,7 +1085,9 @@ class Triplestore:
             )
             self.add((data_source, hasAccessFunction, func_iri))
         else:
-            raise TypeError(f"`func` must be a callable or literal, got {type(func)}")
+            raise TypeError(
+                f"`func` must be a callable or literal, got {type(func)}"
+            )
 
         return data_source
 
@@ -1099,7 +1128,9 @@ class Triplestore:
             # `iri` refer to a DataSource
             if self.has(iri, hasDataValue):  # literal value
                 return Value(
-                    value=parse_literal(self.value(iri, hasDataValue)).to_python(),
+                    value=parse_literal(
+                        self.value(iri, hasDataValue)
+                    ).to_python(),
                     unit=parse_literal(self.value(iri, hasUnit)).to_python()
                     if self.has(iri, hasUnit)
                     else None,
@@ -1134,7 +1165,9 @@ class Triplestore:
             **kwargs,
         )
         if isinstance(routes, Value):
-            return routes.get_value(unit=unit, magnitude=magnitude, quantity=quantity)
+            return routes.get_value(
+                unit=unit, magnitude=magnitude, quantity=quantity
+            )
         return routes.eval(
             routeno=routeno,
             unit=unit,

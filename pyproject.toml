@@ -18,6 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -36,11 +37,11 @@ docs = [
     "mkdocs ~=1.4",
     "mkdocs-awesome-pages-plugin ~=2.9",
     "mkdocs-material ~=9.1",
-    "mkdocstrings[python-legacy] ~=0.21.2",
+    "mkdocstrings[python-legacy] ~=0.22.0",
     "EMMOntoPy ~=0.5",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.19,<1",
+    "DLite-Python >=0.3.20,<1",
 ]
 pre-commit = [
     "pre-commit ~=2.21",
@@ -48,26 +49,26 @@ pre-commit = [
 ]
 testing = [
     "pytest ~=7.3",
-    "pytest-cov ~=4.0",
+    "pytest-cov ~=4.1",
     "EMMOntoPy ~=0.5",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.19,<1",
+    "DLite-Python >=0.3.20,<1",
 ]
 dev = [
     "mike ~=1.1",
     "mkdocs ~=1.4",
     "mkdocs-awesome-pages-plugin ~=2.9",
     "mkdocs-material ~=9.1",
-    "mkdocstrings[python-legacy] ~=0.21.2",
+    "mkdocstrings[python-legacy] ~=0.22.0",
     "pre-commit ~=2.21",
     "pylint ~=2.13",
     "pytest ~=7.3",
-    "pytest-cov ~=4.0",
+    "pytest-cov ~=4.1",
     "EMMOntoPy ~=0.5",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.19,<1",
+    "DLite-Python >=0.3.20,<1",
 ]
 
 [project.urls]
@@ -78,6 +79,12 @@ Source = "https://github.com/EMMC-ASBL/tripper"
 Changelog = "https://github.com/EMMC-ASBL/tripper/blob/main/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
 
+[tool.isort]
+line_length = 79  # PEP8
+
+[tool.black]
+line-length = 79
+
 [tool.mypy]
 python_version = "3.7"
 ignore_missing_imports = true
@@ -86,8 +93,8 @@ warn_unused_configs = true
 show_error_codes = true
 allow_redefinition = true
 
-[tool.pylint.messages_control]
-max-line-length = 88
+[tool.pylint]
+max-line-length = 79
 max-args = 10
 max-public-methods = 25
 max-locals = 20
@@ -97,6 +104,8 @@ disable = [
 good-names = [
     # Default
     "i", "j", "k", "ex", "Run", "_",
+    # Triplestore instance
+    "ts",
     # Triple components: subject, predicate, object
     "s", "p", "o",
 ]

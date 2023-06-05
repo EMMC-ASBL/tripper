@@ -1,7 +1,7 @@
 """Backend for EMMOntoPy.
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of an
-RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different parts of
+an RDF Triple: subject, predicate, and object.
 """
 # pylint: disable=protected-access
 import os
@@ -14,7 +14,8 @@ try:
     from ontopy.ontology import Ontology, _unabbreviate, get_ontology
 except ImportError as exc:
     raise ImportError(
-        "EMMOntoPy is not installed.\nInstall it with:\n\n    pip install EMMOntoPy"
+        "EMMOntoPy is not installed.\nInstall it with:\n\n"
+        "    pip install EMMOntoPy"
     ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -83,7 +84,9 @@ class OntopyStrategy:
                 _unabbreviate(self.onto, p),
                 _unabbreviate(self.onto, o),
             )
-        for s, p, o, datatype in self.onto._get_data_triples_spod_spod(*abb, d=""):
+        for s, p, o, datatype in self.onto._get_data_triples_spod_spod(
+            *abb, d=""
+        ):
             yield (
                 _unabbreviate(self.onto, s),
                 _unabbreviate(self.onto, p),
@@ -176,7 +179,9 @@ class OntopyStrategy:
                     os.remove(filename)
 
         else:
-            raise ValueError("either `source`, `location` or `data` must be given")
+            raise ValueError(
+                "either `source`, `location` or `data` must be given"
+            )
 
     def serialize(
         self,
@@ -212,7 +217,9 @@ class OntopyStrategy:
                     os.remove(filename)
         return None
 
-    def query(self, query_object, native=True, **kwargs) -> "Union[List, Result]":
+    def query(
+        self, query_object, native=True, **kwargs
+    ) -> "Union[List, Result]":
         """SPARQL query.
 
         Parameters:

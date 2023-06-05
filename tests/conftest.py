@@ -10,12 +10,15 @@ if TYPE_CHECKING:
 
 @pytest.fixture(scope="session")
 def get_ontology_path() -> "Callable[[str], Path]":
-    """Return a function to retrieve a Path object to a Turtle file used for testing.
+    """Return a function to retrieve a Path object to a Turtle file used
+    for testing.
 
-    This fixture will be called once during the test session and will then be cached.
+    This fixture will be called once during the test session and will then
+    be cached.
 
     Returns:
-        A function that can retrieve a Path object to a static ontology test file.
+        A function that can retrieve a Path object to a static ontology test
+    file.
 
     """
     from pathlib import Path
@@ -26,8 +29,9 @@ def get_ontology_path() -> "Callable[[str], Path]":
         """Return a Path object to at Turtle file used for testing.
 
         Parameters:
-            ontology_name: The ontology file base name to retrieve from the list of
-                static ontology test files.
+            ontology_name: The ontology file base name to retrieve from the
+                list of static ontology test files.
+
 
         Returns:
             A `pathlib.Path` instance, representing the ontology test file.
@@ -37,7 +41,8 @@ def get_ontology_path() -> "Callable[[str], Path]":
         if ontology_path.exists():
             return ontology_path
         raise ValueError(
-            f"{ontology_name}.ttl does not exist in the 'ontologies' test folder."
+            f"{ontology_name}.ttl does not exist in the 'ontologies' test "
+            f"folder."
         )
 
     return _get_ontology_path
@@ -60,7 +65,9 @@ def example_function() -> "Callable[[Any, Any], Any]":
 
 
 @pytest.fixture
-def expected_function_triplestore(example_function: "Callable[[Any, Any], Any]") -> str:
+def expected_function_triplestore(
+    example_function: "Callable[[Any, Any], Any]",
+) -> str:
     """The expected Turtle-serialized output of a Triplestore.
 
     Parameters:
