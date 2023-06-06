@@ -21,7 +21,8 @@ from .namespace import (
     XSD,
     Namespace,
 )
-from .triplestore import Triplestore, TriplestoreDataHandler, backend_packages
+from .triplestore import Triplestore, backend_packages
+from .tripper import Tripper
 
 __version__ = "0.2.5"
 
@@ -46,5 +47,5 @@ __all__ = (
     #
     "Triplestore",
     "backend_packages",
-    "TriplestoreDataHandler",
+    "Tripper",
 )

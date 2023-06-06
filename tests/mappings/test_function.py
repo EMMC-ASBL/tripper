@@ -11,10 +11,10 @@ We also have two mapping functions; first() and sum()
 The test asks for the value of an individual of ex:D
 """
 # pylint: disable=unused-argument,invalid-name
-from tripper import Literal, TriplestoreDataHandler
+from tripper import Literal, Tripper
 
-tsdh = TriplestoreDataHandler(backend="rdflib")
-EX = tsdh.bind("ex", "http://example.com/onto#")
+tp = Tripper(backend="rdflib")
+EX = tp.bind("ex", "http://example.com/onto#")
 
 
 def first(vector):
@@ -32,11 +32,11 @@ def vector(iri, configurations, triplestore):
     return [0.5, 1.2, 3.4, 6.6]
 
 
-tsdh.add_data(Literal(3.2), EX.A)
-tsdh.add_data(vector, EX.B)
+tp.add_data(Literal(3.2), EX.A)
+tp.add_data(vector, EX.B)
 
-tsdh.add_function(first, expects=EX.B, returns=EX.C)
-tsdh.add_function(add, expects=(EX.A, EX.C), returns=EX.D)
+tp.add_function(first, expects=EX.B, returns=EX.C)
+tp.add_function(add, expects=(EX.A, EX.C), returns=EX.D)
 
-tsdh.map(EX.indv, EX.D)
-assert tsdh.get_value(EX.indv) == 3.7
+tp.map(EX.indv, EX.D)
+assert tp.get_value(EX.indv) == 3.7

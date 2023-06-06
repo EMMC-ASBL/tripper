@@ -2,7 +2,7 @@
 # pylint: disable=unused-argument,invalid-name
 import numpy as np
 
-from tripper import Literal, TriplestoreDataHandler
+from tripper import Literal, Tripper
 from tripper.mappings import Value
 
 
@@ -31,43 +31,47 @@ def ycoords(iri, configurations, triplestore):
     return Value(value=[0, 4, 16, 36, 64, 100], unit="V")
 
 
-tsdh = TriplestoreDataHandler(backend="rdflib")
-EX = tsdh.bind("ex", "http://example.com/onto#")
+tp = Tripper(backend="rdflib")
+EX = tp.bind("ex", "http://example.com/onto#")
 
-string_iri = tsdh.add_data(Literal("string value"), EX.Description)
-number_iri = tsdh.add_data(Literal(3.14), EX.WellKnownNumber)
-length_iri = tsdh.add_data(get_lengths, EX.Length)
-string2_iri = tsdh.add_data(get_string, EX.String)
-xcoords_iri = tsdh.add_data(xcoords)
-ycoords_iri = tsdh.add_data(ycoords)
+string_iri = tp.add_data(Literal("string value"), EX.Description)
+number_iri = tp.add_data(Literal(3.14), EX.WellKnownNumber)
+length_iri = tp.add_data(get_lengths, EX.Length)
+string2_iri = tp.add_data(get_string, EX.String)
+xcoords_iri = tp.add_data(xcoords)
+ycoords_iri = tp.add_data(ycoords)
 
-assert tsdh.get_value(string_iri) == "string value"
-assert tsdh.get_value(number_iri) == 3.14
-assert np.allclose(tsdh.get_value(length_iri).m, [1, 7, 2, 3])
-assert tsdh.get_value(string2_iri) == "a string"
-assert np.allclose(tsdh.get_value(xcoords_iri).m, [0, 2, 4, 6, 8, 10])
-assert np.allclose(tsdh.get_value(xcoords_iri, magnitude=True), [0, 2, 4, 6, 8, 10])
-assert np.allclose(tsdh.get_value(xcoords_iri, unit="dm"), [0, 20, 40, 60, 80, 100])
-assert np.allclose(tsdh.get_value(ycoords_iri).m, [0, 4, 16, 36, 64, 100])
+assert tp.get_value(string_iri) == "string value"
+assert tp.get_value(number_iri) == 3.14
+assert np.allclose(tp.get_value(length_iri).m, [1, 7, 2, 3])
+assert tp.get_value(string2_iri) == "a string"
+assert np.allclose(tp.get_value(xcoords_iri).m, [0, 2, 4, 6, 8, 10])
+assert np.allclose(
+    tp.get_value(xcoords_iri, magnitude=True), [0, 2, 4, 6, 8, 10]
+)
+assert np.allclose(
+    tp.get_value(xcoords_iri, unit="dm"), [0, 20, 40, 60, 80, 100]
+)
+assert np.allclose(tp.get_value(ycoords_iri).m, [0, 4, 16, 36, 64, 100])
 
 
 # Test get_value() via mappings
-tsdh.map(EX.indv, EX.Description)
-assert tsdh.get_value(EX.indv) == "string value"
+tp.map(EX.indv, EX.Description)
+assert tp.get_value(EX.indv) == "string value"
 
-tsdh.map(EX.indv2, EX.WellKnownNumber)
-assert tsdh.get_value(EX.indv2) == 3.14
+tp.map(EX.indv2, EX.WellKnownNumber)
+assert tp.get_value(EX.indv2) == 3.14
 
-tsdh.map(EX.indv3, EX.Length)
-q3 = tsdh.get_value(EX.indv3)
+tp.map(EX.indv3, EX.Length)
+q3 = tp.get_value(EX.indv3)
 assert np.allclose(q3.m, [1, 7, 2, 3])
 assert np.allclose(q3.m_as("dm"), [10, 70, 20, 30])
 
-tsdh.map(EX.indv4, EX.String)
-assert tsdh.get_value(EX.indv4) == "a string"
+tp.map(EX.indv4, EX.String)
+assert tp.get_value(EX.indv4) == "a string"
 
 
 # Test interpolation source
-tsdh.add_interpolation_source(xcoords_iri, ycoords_iri, EX.Length, EX.Voltage)
-tsdh.map(EX.indv5, EX.Voltage)
-assert np.allclose(tsdh.get_value(EX.indv5).m, [2, 50, 4, 10])
+tp.add_interpolation_source(xcoords_iri, ycoords_iri, EX.Length, EX.Voltage)
+tp.map(EX.indv5, EX.Voltage)
+assert np.allclose(tp.get_value(EX.indv5).m, [2, 50, 4, 10])
