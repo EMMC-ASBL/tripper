@@ -1,7 +1,7 @@
 """Backend for RDFLib.
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of an
-RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different parts of
+an RDF Triple: subject, predicate, and object.
 """
 # pylint: disable=line-too-long
 import warnings
@@ -34,7 +34,9 @@ def asuri(value: "Union[None, Literal, str]"):
     if value is None:
         return None
     if isinstance(value, Literal):
-        return rdflibLiteral(value.value, lang=value.lang, datatype=value.datatype)
+        return rdflibLiteral(
+            value.value, lang=value.lang, datatype=value.datatype
+        )
     if value.startswith("_:"):
         return BNode(value)
     return URIRef(value)
@@ -102,7 +104,9 @@ class RdflibStrategy:
     def close(self):
         """Close the internal RDFLib graph."""
         if self.triplestore_url:
-            self.serialize(destination=self.triplestore_url, format=self.base_format)
+            self.serialize(
+                destination=self.triplestore_url, format=self.base_format
+            )
         self.graph.close()
 
     def parse(
@@ -126,7 +130,11 @@ class RdflibStrategy:
                 See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.parse
         """
         self.graph.parse(
-            source=source, location=location, data=data, format=format, **kwargs
+            source=source,
+            location=location,
+            data=data,
+            format=format,
+            **kwargs,
         )
 
     def serialize(
@@ -147,7 +155,9 @@ class RdflibStrategy:
         Returns:
             Serialised string if `destination` is None.
         """
-        result = self.graph.serialize(destination=destination, format=format, **kwargs)
+        result = self.graph.serialize(
+            destination=destination, format=format, **kwargs
+        )
         if destination is None:
             # Depending on the version of rdflib the return value of
             # graph.serialize() man either be a string or a bytes object...
@@ -191,7 +201,9 @@ class RdflibStrategy:
         if namespace:
             self.graph.bind(prefix, namespace, replace=True)
         else:
-            warnings.warn("rdflib does not support removing namespace prefixes")
+            warnings.warn(
+                "rdflib does not support removing namespace prefixes"
+            )
 
     def namespaces(self) -> dict:
         """Returns a dict mapping prefixes to namespaces.
@@ -200,4 +212,7 @@ class RdflibStrategy:
         Used by triplestore.parse() to get prefixes after reading
         triples from an external source.
         """
-        return {prefix: str(namespace) for prefix, namespace in self.graph.namespaces()}
+        return {
+            prefix: str(namespace)
+            for prefix, namespace in self.graph.namespaces()
+        }

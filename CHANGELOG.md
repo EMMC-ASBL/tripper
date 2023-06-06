@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.5](https://github.com/EMMC-ASBL/tripper/tree/v0.2.5) (2023-05-23)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.4...v0.2.5)
+
 ## [v0.2.4](https://github.com/EMMC-ASBL/tripper/tree/v0.2.4) (2023-04-30)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.3...v0.2.4)

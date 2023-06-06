@@ -11,7 +11,8 @@ try:
     import dlite
 except ImportError as exc:
     raise ImportError(
-        "DLite is not installed.\nInstall it with:\n\n    pip install DLite-Python"
+        "DLite is not installed.\nInstall it with:\n\n"
+        "    pip install DLite-Python"
     ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -50,7 +51,9 @@ class CollectionStrategy:
         elif isinstance(collection, dlite.Collection):
             self.collection = collection
         else:
-            raise TypeError("`collection` should be None, string or a collection")
+            raise TypeError(
+                "`collection` should be None, string or a collection"
+            )
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""

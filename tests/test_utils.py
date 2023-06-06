@@ -35,7 +35,8 @@ else:
         """A property."""
 
         # pylint: disable=unsubscriptable-object
-        # Yet another pylint bug, see https://github.com/PyCQA/pylint/issues/1498
+        # Yet another pylint bug, see
+        # https://github.com/PyCQA/pylint/issues/1498
         type: Any = Field(..., description="Valid type name.")
         shape: Optional[list[str]] = Field(
             None, description="List of dimension expressions."
@@ -49,12 +50,18 @@ else:
         """An entity."""
 
         # pylint: disable=unsubscriptable-object
-        identity: AnyUrl = Field(..., description="Unique URI identifying the entity.")
-        description: str = Field("", description="A description of the entity.")
+        identity: AnyUrl = Field(
+            ..., description="Unique URI identifying the entity."
+        )
+        description: str = Field(
+            "", description="A description of the entity."
+        )
         dimensions: Optional[dict[str, str]] = Field(
             None, description="Dict mapping dimension names to descriptions."
         )
-        properties: dict[str, Property] = Field(..., description="Dict of properties.")
+        properties: dict[str, Property] = Field(
+            ..., description="Dict of properties."
+        )
 
     user = Entity(
         identity="http://onto-ns.com/meta/0.1/User",
@@ -114,7 +121,9 @@ assert parse_literal("abc") == Literal("abc", datatype=XSD.string)
 assert parse_literal(True) == Literal("True", datatype=XSD.boolean)
 assert parse_literal(1) == Literal("1", datatype=XSD.integer)
 assert parse_literal(3.14) == Literal("3.14", datatype=XSD.double)
-assert parse_literal(f'"3.14"^^{XSD.double}') == Literal("3.14", datatype=XSD.double)
+assert parse_literal(f'"3.14"^^{XSD.double}') == Literal(
+    "3.14", datatype=XSD.double
+)
 
 
 # test parse_object()
@@ -134,7 +143,9 @@ assert parse_object("1e+10") == Literal("1e+10", datatype=XSD.double)
 assert parse_object("1e-10") == Literal("1e-10", datatype=XSD.double)
 assert parse_object(".1e10") == Literal(".1e10", datatype=XSD.double)
 assert parse_object("1.e10") == Literal("1.e10", datatype=XSD.double)
-assert parse_object("2022-12-01") == Literal("2022-12-01", datatype=XSD.dateTime)
+assert parse_object("2022-12-01") == Literal(
+    "2022-12-01", datatype=XSD.dateTime
+)
 assert parse_object("2022-12-01 12:30") == Literal(
     "2022-12-01 12:30", datatype=XSD.dateTime
 )
@@ -158,9 +169,15 @@ assert parse_object("abc") == Literal("abc", datatype=XSD.string)
 assert parse_object('"abc"@en') == Literal("abc", lang="en")
 assert parse_object(str(XSD)) == str(XSD)
 assert parse_object(XSD.int) == XSD.int
-assert parse_object(f'"42"^^{XSD.integer}') == Literal("42", datatype=XSD.integer)
-assert parse_object(f'"4.2"^^{XSD.double}') == Literal("4.2", datatype=XSD.double)
-assert parse_object(f'"42"^^{XSD.double}') == Literal("42.0", datatype=XSD.double)
+assert parse_object(f'"42"^^{XSD.integer}') == Literal(
+    "42", datatype=XSD.integer
+)
+assert parse_object(f'"4.2"^^{XSD.double}') == Literal(
+    "4.2", datatype=XSD.double
+)
+assert parse_object(f'"42"^^{XSD.double}') == Literal(
+    "42.0", datatype=XSD.double
+)
 assert parse_object(f'"42"^^{XSD.int}') == Literal("42", datatype=XSD.int)
 
 
