@@ -138,12 +138,13 @@ class Triplestore:
                 method.
 
         """
+        backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
-        cls = getattr(module, f"{backend.title()}Strategy")
+        cls = getattr(module, f"{backend_name.title()}Strategy")
         self.base_iri = base_iri
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
-        self.backend_name = backend
+        self.backend_name = backend_name
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
         # Keep functions in the triplestore for convienence even though
@@ -172,14 +173,14 @@ class Triplestore:
             return importlib.import_module(backend, package)
 
         # Installed backend package
-        if (3, 8) <= sys.version_info < (3, 10):
-            # Fallback for Python 3.8 and 3.9
+        if sys.version_info < (3, 10):
+            # Fallback for Python < 3.10
             eps = entry_points().get("tripper.backends", ())
         else:
-            # New entry_point interface from Python 3.10+, which is also
-            # implemented in the importlib_metadata backport for Python 3.6
-            # and 3.7.
-            eps = entry_points(group="tripper.backends")
+            # New entry_point interface from Python 3.10+
+            eps = entry_points(  # pylint: disable=unexpected-keyword-arg
+                group="tripper.backends"
+            )
         for entry_point in eps:
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
@@ -192,7 +193,7 @@ class Triplestore:
                 pass
 
         raise ModuleNotFoundError(
-            "No tripper backend named '{backend}'",
+            f"No tripper backend named '{backend}'",
             name=backend,
         )
 
