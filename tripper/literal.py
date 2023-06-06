@@ -55,6 +55,7 @@ class Literal(str):
         ),
         str: (
             XSD.string,
+            RDF.HTML,
             RDF.PlainLiteral,
             RDF.XMLLiteral,
             RDFS.Literal,

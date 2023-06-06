@@ -137,17 +137,23 @@ def parse_literal(literal: "Any") -> "Literal":
             )
         raise TypeError(f"unsupported literal type: {type(literal)}")
 
+    if hasattr(literal, "n3") and callable(literal.n3):
+        return parse_literal(literal.n3())
+
     match = re.match(r'^\s*("""(.*)"""|"(.*)")\s*$', literal, flags=re.DOTALL)
     if match:
         _, v1, v2 = match.groups()
         value, datatype = v1 if v1 else v2, XSD.string
     else:
         match = re.match(
-            r'^\s*("""(.*)"""|"(.*)")\^\^(.*)\s*$', literal, flags=re.DOTALL
+            r'^\s*("""(.*)"""|"(.*)")\^\^(<([^>]+)>|([^<].*))\s*$',
+            literal,
+            flags=re.DOTALL,
         )
         if match:
-            _, v1, v2, datatype = match.groups()
+            _, v1, v2, _, d1, d2 = match.groups()
             value = v1 if v1 else v2
+            datatype = d1 if d1 else d2
         else:
             match = re.match(
                 r'^\s*("""(.*)"""|"(.*)")@(.*)\s*$', literal, flags=re.DOTALL
@@ -163,7 +169,7 @@ def parse_literal(literal: "Any") -> "Literal":
             types = {}
             for pytype, datatypes in Literal.datatypes.items():
                 types.update({t: pytype for t in datatypes})
-            type_ = types[datatype]
+            type_ = types.get(datatype, str)
             try:
                 value = type_(value)
             except TypeError:
