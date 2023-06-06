@@ -20,7 +20,7 @@ from rdflib import URIRef
 from rdflib.util import guess_format
 
 from tripper import Literal
-from tripper.utils import UnusedArgumentWarning
+from tripper.utils import UnusedArgumentWarning, parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
@@ -88,13 +88,7 @@ class RdflibStrategy:
             yield (
                 str(s),
                 str(p),
-                Literal(
-                    o.value,
-                    lang=o.language,
-                    datatype=str(o.datatype) if o.datatype else o.datatype,
-                )
-                if isinstance(o, rdflibLiteral)
-                else str(o),
+                parse_literal(o) if isinstance(o, rdflibLiteral) else str(o),
             )
 
     def add_triples(self, triples: "Sequence[Triple]"):
