@@ -12,7 +12,7 @@ class DummyStrategy:
         """Returns a generator over matching triples."""
         return ((s, p, o) for s, p, o in ("abc", "def", "ghi"))
 
-    def d_trioles(self, triples):
+    def add_triples(self, triples):
         """Add a sequence of triples."""
 
     def remove(self, triple):
