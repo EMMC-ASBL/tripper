@@ -378,6 +378,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#tripper.interface.ITriplestore.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.interface.ITriplestore.add_triples" class="md-nav__link">
     add_triples()
   </a>
@@ -460,6 +467,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../tripper/" class="md-nav__link">
+        tripper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
         utils
       </a>
@@ -479,17 +500,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -569,17 +590,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_9">
           <span class="md-nav__icon md-icon"></span>
           mappings
         </label>
@@ -652,6 +673,13 @@
   
     <nav class="md-nav" aria-label="ITriplestore">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.interface.ITriplestore.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#tripper.interface.ITriplestore.add_triples" class="md-nav__link">
@@ -733,15 +761,7 @@ ITriplestore            (<span title="typing_extensions.Protocol">Protocol</span
       <p>Interface for triplestore backends.</p>
 <p>In addition to the methods specified by this interface, a backend
 may also implement the following optional methods:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise triplestore.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        base_iri: Optional base IRI to initiate the triplestore from.</span>
-<span class="sd">        kwargs: Additional keyword arguments passed to the backend.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">IO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -872,14 +892,6 @@ may also implement the following optional methods:</p>
 
 <span class="sd">    ```python</span>
 
-<span class="sd">    def __init__(self, base_iri: str = None, **kwargs):</span>
-<span class="sd">        &quot;&quot;&quot;Initialise triplestore.</span>
-
-<span class="sd">        Arguments:</span>
-<span class="sd">            base_iri: Optional base IRI to initiate the triplestore from.</span>
-<span class="sd">            kwargs: Additional keyword arguments passed to the backend.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
 <span class="sd">    def parse(</span>
 <span class="sd">            self,</span>
 <span class="sd">            source: Union[str, Path, IO] = None,</span>
@@ -1003,6 +1015,14 @@ may also implement the following optional methods:</p>
 <span class="sd">    ```</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise triplestore.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            base_iri: Optional base IRI to initiate the triplestore from.</span>
+<span class="sd">            kwargs: Additional keyword arguments passed to the backend.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.</span>
 
@@ -1036,6 +1056,64 @@ may also implement the following optional methods:</p>
 
 
 
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 class="doc doc-heading" id="tripper.interface.ITriplestore.__init__">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a class="headerlink" href="#tripper.interface.ITriplestore.__init__" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Initialise triplestore.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>base_iri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Optional base IRI to initiate the triplestore from.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Additional keyword arguments passed to the backend.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/interface.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise triplestore.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        base_iri: Optional base IRI to initiate the triplestore from.</span>
+<span class="sd">        kwargs: Additional keyword arguments passed to the backend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

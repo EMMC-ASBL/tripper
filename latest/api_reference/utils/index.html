@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/utils/">
       
       
-        <link rel="prev" href="../triplestore/">
+        <link rel="prev" href="../tripper/">
       
       
         <link rel="next" href="../backends/collection/">
@@ -383,6 +383,20 @@
               
   
   
+  
+    <li class="md-nav__item">
+      <a href="../tripper/" class="md-nav__link">
+        tripper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -515,17 +529,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -605,17 +619,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_9">
           <span class="md-nav__icon md-icon"></span>
           mappings
         </label>
@@ -872,14 +886,14 @@ Otherwise, <code>value</code> will be returned as-is.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Help function that returns true if <code>func(s)</code> does not raise an exception.</p>
+      <p>Help function returning true if <code>func(s)</code> does not raise an exception.</p>
 <p>False is returned if <code>func(s)</code> raises an exception listed in <code>exceptions</code>.
 Otherwise the exception is propagated.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function that returns true if `func(s)` does not raise an exception.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning true if `func(s)` does not raise an exception.</span>
 
 <span class="sd">    False is returned if `func(s)` raises an exception listed in `exceptions`.</span>
 <span class="sd">    Otherwise the exception is propagated.</span>
@@ -1009,7 +1023,9 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
             <span class="n">properties</span> <span class="o">=</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;uri&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;identity&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;identity&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">],</span> <span class="nb">str</span>
+            <span class="p">):</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]:</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">])</span>
@@ -1059,9 +1075,14 @@ is that this function correctly interprets n3-encoded literal strings.</p>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span>
                 <span class="n">literal</span><span class="p">,</span>
                 <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span>
-                <span class="n">datatype</span><span class="o">=</span><span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">literal</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
+                <span class="n">datatype</span><span class="o">=</span><span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">literal</span><span class="p">))[</span>
+                    <span class="mi">0</span>
+                <span class="p">],</span>  <span class="c1"># type: ignore</span>
             <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported literal type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;n3&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">n3</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">n3</span><span class="p">())</span>
 
     <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)\s*$&#39;</span><span class="p">,</span> <span class="n">literal</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
@@ -1069,11 +1090,14 @@ is that this function correctly interprets n3-encoded literal strings.</p>
         <span class="n">value</span><span class="p">,</span> <span class="n">datatype</span> <span class="o">=</span> <span class="n">v1</span> <span class="k">if</span> <span class="n">v1</span> <span class="k">else</span> <span class="n">v2</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
-            <span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)\^\^(.*)\s*$&#39;</span><span class="p">,</span> <span class="n">literal</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+            <span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)\^\^(&lt;([^&gt;]+)&gt;|([^&lt;].*))\s*$&#39;</span><span class="p">,</span>
+            <span class="n">literal</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">datatype</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">v1</span> <span class="k">if</span> <span class="n">v1</span> <span class="k">else</span> <span class="n">v2</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">d1</span> <span class="k">if</span> <span class="n">d1</span> <span class="k">else</span> <span class="n">d2</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
                 <span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)@(.*)\s*$&#39;</span><span class="p">,</span> <span class="n">literal</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
@@ -1089,7 +1113,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
             <span class="n">types</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">pytype</span><span class="p">,</span> <span class="n">datatypes</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">types</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">t</span><span class="p">:</span> <span class="n">pytype</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">})</span>
-            <span class="n">type_</span> <span class="o">=</span> <span class="n">types</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span>
+            <span class="n">type_</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">type_</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
@@ -1099,7 +1123,9 @@ is that this function correctly interprets n3-encoded literal strings.</p>
     <span class="k">for</span> <span class="n">type_</span><span class="p">,</span> <span class="n">datatypes</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">type_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">type_</span><span class="p">(</span><span class="n">literal</span><span class="p">),</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span>
+                    <span class="n">type_</span><span class="p">(</span><span class="n">literal</span><span class="p">),</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
                 <span class="k">pass</span>
 
@@ -1171,7 +1197,9 @@ is that this function correctly interprets n3-encoded literal strings.</p>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c1">#  float</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c1">#  datetime</span>
+        <span class="k">if</span> <span class="n">check</span><span class="p">(</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span>
+        <span class="p">):</span>  <span class="c1">#  datetime</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`obj` should be a literal or a string.&quot;</span><span class="p">)</span>

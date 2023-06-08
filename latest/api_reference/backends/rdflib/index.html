@@ -385,6 +385,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../tripper/" class="md-nav__link">
+        tripper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../utils/" class="md-nav__link">
         utils
       </a>
@@ -406,17 +420,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" checked>
       
       
       
-        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="true">
-        <label class="md-nav__title" for="__nav_5_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -634,17 +648,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_9">
           <span class="md-nav__icon md-icon"></span>
           mappings
         </label>
@@ -831,8 +845,8 @@
     <div class="doc doc-contents first">
 
       <p>Backend for RDFLib.</p>
-<p>For developers: The usage of <code>s</code>, <code>p</code>, and <code>o</code> represent the different parts of an
-RDF Triple: subject, predicate, and object.</p>
+<p>For developers: The usage of <code>s</code>, <code>p</code>, and <code>o</code> represent the different parts of
+an RDF Triple: subject, predicate, and object.</p>
 
 
 
@@ -941,13 +955,7 @@ overwritten with the current content of the triplestore.</p></td>
             <span class="k">yield</span> <span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-                <span class="n">Literal</span><span class="p">(</span>
-                    <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">lang</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">language</span><span class="p">,</span>
-                    <span class="n">datatype</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
-                <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
@@ -963,7 +971,9 @@ overwritten with the current content of the triplestore.</p></td>
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the internal RDFLib graph.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_format</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+                <span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_format</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
@@ -987,7 +997,11 @@ overwritten with the current content of the triplestore.</p></td>
 <span class="sd">                See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.parse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
@@ -1008,7 +1022,9 @@ overwritten with the current content of the triplestore.</p></td>
 <span class="sd">        Returns:</span>
 <span class="sd">            Serialised string if `destination` is None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+            <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">destination</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Depending on the version of rdflib the return value of</span>
             <span class="c1"># graph.serialize() man either be a string or a bytes object...</span>
@@ -1052,7 +1068,9 @@ overwritten with the current content of the triplestore.</p></td>
         <span class="k">if</span> <span class="n">namespace</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;rdflib does not support removing namespace prefixes&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;rdflib does not support removing namespace prefixes&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict mapping prefixes to namespaces.</span>
@@ -1061,7 +1079,10 @@ overwritten with the current content of the triplestore.</p></td>
 <span class="sd">        Used by triplestore.parse() to get prefixes after reading</span>
 <span class="sd">        triples from an external source.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span>
+        <span class="p">}</span>
 </code></pre></div>
         </details>
 
@@ -1133,7 +1154,9 @@ Called by triplestore.bind().</p>
     <span class="k">if</span> <span class="n">namespace</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;rdflib does not support removing namespace prefixes&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;rdflib does not support removing namespace prefixes&quot;</span>
+        <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1161,7 +1184,9 @@ Called by triplestore.bind().</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the internal RDFLib graph.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+            <span class="n">destination</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_format</span>
+        <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </code></pre></div>
         </details>
@@ -1197,7 +1222,10 @@ triples from an external source.</p>
 <span class="sd">    Used by triplestore.parse() to get prefixes after reading</span>
 <span class="sd">    triples from an external source.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()}</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span>
+    <span class="p">}</span>
 </code></pre></div>
         </details>
     </div>
@@ -1288,7 +1316,11 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
 <span class="sd">            See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.parse</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1484,7 +1516,9 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
 <span class="sd">    Returns:</span>
 <span class="sd">        Serialised string if `destination` is None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+        <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">destination</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Depending on the version of rdflib the return value of</span>
         <span class="c1"># graph.serialize() man either be a string or a bytes object...</span>
@@ -1522,13 +1556,7 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
         <span class="k">yield</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-            <span class="n">Literal</span><span class="p">(</span>
-                <span class="n">o</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">lang</span><span class="o">=</span><span class="n">o</span><span class="o">.</span><span class="n">language</span><span class="p">,</span>
-                <span class="n">datatype</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
-            <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+            <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
         <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1665,7 +1693,9 @@ the query() method for SELECT queries.</p>
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">rdflibLiteral</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rdflibLiteral</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">BNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>

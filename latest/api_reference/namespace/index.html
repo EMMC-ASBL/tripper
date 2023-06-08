@@ -433,6 +433,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../tripper/" class="md-nav__link">
+        tripper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
         utils
       </a>
@@ -452,17 +466,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -542,17 +556,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_9">
           <span class="md-nav__icon md-icon"></span>
           mappings
         </label>
@@ -818,7 +832,11 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
 
         <span class="n">need_triplestore</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span> <span class="ow">or</span> <span class="n">label_annotations</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cachemode</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">cachemode</span> <span class="o">=</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">ONLY_CACHE</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">NO_CACHE</span>
+            <span class="n">cachemode</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Namespace</span><span class="o">.</span><span class="n">ONLY_CACHE</span>
+                <span class="k">if</span> <span class="n">need_triplestore</span>
+                <span class="k">else</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">NO_CACHE</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">need_triplestore</span> <span class="ow">and</span> <span class="n">triplestore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Import Triplestore here to break cyclic-import</span>
@@ -850,7 +868,9 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">triplestore</span><span class="p">:</span>
             <span class="n">triplestore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">triplestore</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="s2">&quot;`triplestore` argument needed for updating the cache&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
+                <span class="s2">&quot;`triplestore` argument needed for updating the cache&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
 

@@ -467,6 +467,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../tripper/" class="md-nav__link">
+        tripper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../utils/" class="md-nav__link">
         utils
       </a>
@@ -486,17 +500,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -576,17 +590,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_9">
           <span class="md-nav__icon md-icon"></span>
           mappings
         </label>
@@ -819,9 +833,16 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">XSD</span><span class="o">.</span><span class="n">byte</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedByte</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="nb">float</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">double</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">decimal</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTimeStamp</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">rational</span><span class="p">),</span>
+        <span class="nb">float</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">double</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">decimal</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">dateTimeStamp</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">rational</span><span class="p">,</span>
+        <span class="p">),</span>
         <span class="nb">str</span><span class="p">:</span> <span class="p">(</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">,</span>
+            <span class="n">RDF</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span>
             <span class="n">RDF</span><span class="o">.</span><span class="n">PlainLiteral</span><span class="p">,</span>
             <span class="n">RDF</span><span class="o">.</span><span class="n">XMLLiteral</span><span class="p">,</span>
             <span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span><span class="p">,</span>
@@ -844,7 +865,9 @@ not be combined with <code>lang</code>.</p></td>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;A literal can only have one of `lang` or `datatype`.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;A literal can only have one of `lang` or `datatype`.&quot;</span>
+                <span class="p">)</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -860,8 +883,8 @@ not be combined with <code>lang</code>.</p></td>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
                 <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">double</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
-                <span class="c1"># Re-initialize the value anew, similarly to what is done in the first</span>
-                <span class="c1"># line of this method.</span>
+                <span class="c1"># Re-initialize the value anew, similarly to what is done in</span>
+                <span class="c1"># the first line of this method.</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
                 <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
@@ -918,7 +941,9 @@ not be combined with <code>lang</code>.</p></td>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming string&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming string&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span>
 
@@ -997,7 +1022,9 @@ not be combined with <code>lang</code>.</p></td>
     <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;A literal can only have one of `lang` or `datatype`.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;A literal can only have one of `lang` or `datatype`.&quot;</span>
+            <span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1013,8 +1040,8 @@ not be combined with <code>lang</code>.</p></td>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">double</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
-            <span class="c1"># Re-initialize the value anew, similarly to what is done in the first</span>
-            <span class="c1"># line of this method.</span>
+            <span class="c1"># Re-initialize the value anew, similarly to what is done in</span>
+            <span class="c1"># the first line of this method.</span>
             <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
@@ -1099,7 +1126,9 @@ literal.</p>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming string&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming string&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">value</span>
 </code></pre></div>

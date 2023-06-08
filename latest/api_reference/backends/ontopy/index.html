@@ -385,6 +385,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../tripper/" class="md-nav__link">
+        tripper
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../utils/" class="md-nav__link">
         utils
       </a>
@@ -406,17 +420,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_7" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" checked>
       
       
       
-        <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="true">
-        <label class="md-nav__title" for="__nav_5_7">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_5_8">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -599,17 +613,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_8" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_9" >
       
       
       
-        <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_5_9" id="__nav_5_9_label" tabindex="0">
           mappings
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_5_8">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_9_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_5_9">
           <span class="md-nav__icon md-icon"></span>
           mappings
         </label>
@@ -761,8 +775,8 @@
     <div class="doc doc-contents first">
 
       <p>Backend for EMMOntoPy.</p>
-<p>For developers: The usage of <code>s</code>, <code>p</code>, and <code>o</code> represent the different parts of an
-RDF Triple: subject, predicate, and object.</p>
+<p>For developers: The usage of <code>s</code>, <code>p</code>, and <code>o</code> represent the different parts of
+an RDF Triple: subject, predicate, and object.</p>
 
 
 
@@ -895,7 +909,9 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
                 <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_data_triples_spod_spod</span><span class="p">(</span><span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_data_triples_spod_spod</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="p">):</span>
             <span class="k">yield</span> <span class="p">(</span>
                 <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
                 <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
@@ -988,7 +1004,9 @@ ontology with the given <code>base_iri</code>.</p></td>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;either `source`, `location` or `data` must be given&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;either `source`, `location` or `data` must be given&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1024,7 +1042,9 @@ ontology with the given <code>base_iri</code>.</p></td>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -1239,7 +1259,9 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;either `source`, `location` or `data` must be given&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;either `source`, `location` or `data` must be given&quot;</span>
+        <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1310,7 +1332,9 @@ ontology with the given <code>base_iri</code>.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -1521,7 +1545,9 @@ the backend.</p></td>
             <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
             <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span>
         <span class="p">)</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_data_triples_spod_spod</span><span class="p">(</span><span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_data_triples_spod_spod</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+    <span class="p">):</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
             <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
