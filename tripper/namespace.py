@@ -153,7 +153,12 @@ class Namespace:
         return self._iri + name
 
     def __getitem__(self, key):
+        if isinstance(key, (int, slice)):
+            return self._iri[key]
         return self.__getattr__(key)
+
+    def __truediv__(self, other):
+        return f"{self._iri.strip('#/')}/{other}"
 
     def __repr__(self):
         return f"Namespace({self._iri})"
