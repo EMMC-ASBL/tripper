@@ -112,7 +112,7 @@ good-names = [
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-rs --cov=tripper --cov-report=term"
+addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
 ]
