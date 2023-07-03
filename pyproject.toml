@@ -28,7 +28,7 @@ requires-python = "~=3.7"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions ~=4.6; python_version<'3.8'",
+    "typing-extensions ~=4.7; python_version<'3.8'",
 ]
 
 [project.optional-dependencies]
