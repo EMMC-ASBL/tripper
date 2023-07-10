@@ -15,7 +15,7 @@ jobs:
       git_username: "TEAM 4.0[bot]"
       git_email: "Team4.0@SINTEF.no"
       permanent_dependencies_branch: "ci/dependency-updates"
-      default_repo_branch: main
+      default_repo_branch: master
       pr_labels: "CI/CD,skip_changelog"
       extra_to_dos: "- [ ] Make sure that the PR is **squash** merged, with a sensible commit message."
       update_pre-commit: true
