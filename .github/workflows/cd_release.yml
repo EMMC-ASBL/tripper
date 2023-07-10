@@ -14,7 +14,7 @@ jobs:
       # General
       git_username: "TEAM 4.0[bot]"
       git_email: "Team4.0@SINTEF.no"
-      release_branch: main
+      release_branch: master
       install_extras: "[dev]"
 
       # Build package

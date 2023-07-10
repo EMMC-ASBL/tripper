@@ -46,9 +46,16 @@ class Literal(str):
             XSD.byte,
             XSD.unsignedByte,
         ),
-        float: (XSD.double, XSD.decimal, XSD.dateTimeStamp, XSD.real, XSD.rational),
+        float: (
+            XSD.double,
+            XSD.decimal,
+            XSD.dateTimeStamp,
+            XSD.real,
+            XSD.rational,
+        ),
         str: (
             XSD.string,
+            RDF.HTML,
             RDF.PlainLiteral,
             RDF.XMLLiteral,
             RDFS.Literal,
@@ -71,7 +78,9 @@ class Literal(str):
         string = super().__new__(cls, value)
         if lang:
             if datatype:
-                raise TypeError("A literal can only have one of `lang` or `datatype`.")
+                raise TypeError(
+                    "A literal can only have one of `lang` or `datatype`."
+                )
             string.lang = str(lang)
             string.datatype = None
         else:
@@ -87,8 +96,8 @@ class Literal(str):
             elif isinstance(value, float):
                 string.datatype = XSD.double
             elif isinstance(value, (bytes, bytearray)):
-                # Re-initialize the value anew, similarly to what is done in the first
-                # line of this method.
+                # Re-initialize the value anew, similarly to what is done in
+                # the first line of this method.
                 string = super().__new__(cls, value.hex())
                 string.lang = None
                 string.datatype = XSD.hexBinary
@@ -145,7 +154,9 @@ class Literal(str):
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
         elif self.datatype and self.datatype not in self.datatypes[str]:
-            warnings.warn(f"unknown datatype: {self.datatype} - assuming string")
+            warnings.warn(
+                f"unknown datatype: {self.datatype} - assuming string"
+            )
 
         return value
 

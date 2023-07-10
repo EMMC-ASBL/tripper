@@ -40,4 +40,4 @@ which should produce the following graph:
 
 
 
- [workflow_example.py]: https://github.com/EMMC-ASBL/tripper/blob/main/examples/workflow-mappings/workflow_mappings.py
+ [workflow_example.py]: https://github.com/EMMC-ASBL/tripper/blob/master/examples/workflow-mappings/workflow_mappings.py

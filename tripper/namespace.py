@@ -60,7 +60,11 @@ class Namespace:
 
         need_triplestore = bool(check or label_annotations)
         if cachemode == -1:
-            cachemode = Namespace.ONLY_CACHE if need_triplestore else Namespace.NO_CACHE
+            cachemode = (
+                Namespace.ONLY_CACHE
+                if need_triplestore
+                else Namespace.NO_CACHE
+            )
 
         if need_triplestore and triplestore is None:
             # Import Triplestore here to break cyclic-import
@@ -92,7 +96,9 @@ class Namespace:
         if not triplestore:
             triplestore = self._triplestore
         if not triplestore:
-            raise NamespaceError("`triplestore` argument needed for updating the cache")
+            raise NamespaceError(
+                "`triplestore` argument needed for updating the cache"
+            )
         if self._cache is None:
             self._cache = {}
 

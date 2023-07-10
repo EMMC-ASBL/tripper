@@ -1,6 +1,24 @@
 # Changelog
 
-## [v0.2.5](https://github.com/EMMC-ASBL/tripper/tree/v0.2.5) (2023-05-23)
+## [v0.2.6](https://github.com/EMMC-ASBL/tripper/tree/v0.2.6) (2023-06-23)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.5...v0.2.6)
+
+**Closed issues:**
+
+- Add CI/CD tests for Python 3.11 [\#102](https://github.com/EMMC-ASBL/tripper/issues/102)
+
+**Merged pull requests:**
+
+- One letter words where not allowed in mappings, now they are [\#117](https://github.com/EMMC-ASBL/tripper/pull/117) ([francescalb](https://github.com/francescalb))
+- pylint settings [\#115](https://github.com/EMMC-ASBL/tripper/pull/115) ([jesper-friis](https://github.com/jesper-friis))
+- Fix issue with entry points for Python 3.6 and 3.7 [\#113](https://github.com/EMMC-ASBL/tripper/pull/113) ([jesper-friis](https://github.com/jesper-friis))
+- Added DOI badge [\#109](https://github.com/EMMC-ASBL/tripper/pull/109) ([jesper-friis](https://github.com/jesper-friis))
+- Fixed parsing rdf:HTML literals with the rdflib backend [\#106](https://github.com/EMMC-ASBL/tripper/pull/106) ([jesper-friis](https://github.com/jesper-friis))
+- Support Python 3.11 [\#103](https://github.com/EMMC-ASBL/tripper/pull/103) ([jesper-friis](https://github.com/jesper-friis))
+- 92 new triplestore subclass [\#99](https://github.com/EMMC-ASBL/tripper/pull/99) ([alfredoisg](https://github.com/alfredoisg))
+
+## [v0.2.5](https://github.com/EMMC-ASBL/tripper/tree/v0.2.5) (2023-05-24)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.4...v0.2.5)
 

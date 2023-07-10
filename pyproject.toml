@@ -76,8 +76,14 @@ Home = "https://github.com/EMMC-ASBL/tripper"
 Documentation = "https://EMMC-ASBL.github.io/tripper"
 Source = "https://github.com/EMMC-ASBL/tripper"
 "Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"
-Changelog = "https://github.com/EMMC-ASBL/tripper/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
+
+[tool.isort]
+line_length = 79  # PEP8
+
+[tool.black]
+line-length = 79
 
 [tool.mypy]
 python_version = "3.7"
@@ -87,8 +93,8 @@ warn_unused_configs = true
 show_error_codes = true
 allow_redefinition = true
 
-[tool.pylint.messages_control]
-max-line-length = 88
+[tool.pylint]
+max-line-length = 79
 max-args = 10
 max-public-methods = 25
 max-locals = 20
@@ -98,13 +104,15 @@ disable = [
 good-names = [
     # Default
     "i", "j", "k", "ex", "Run", "_",
+    # Triplestore instance
+    "ts",
     # Triple components: subject, predicate, object
     "s", "p", "o",
 ]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-rs --cov=tripper --cov-report=term"
+addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
 ]
