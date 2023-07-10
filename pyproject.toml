@@ -76,7 +76,7 @@ Home = "https://github.com/EMMC-ASBL/tripper"
 Documentation = "https://EMMC-ASBL.github.io/tripper"
 Source = "https://github.com/EMMC-ASBL/tripper"
 "Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"
-Changelog = "https://github.com/EMMC-ASBL/tripper/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
 
 [tool.isort]
