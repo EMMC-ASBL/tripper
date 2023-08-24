@@ -3,19 +3,32 @@
 from collections.abc import Mapping
 from uuid import uuid4
 
-from tripper import DCAT, DCTERMS, EMMO, OWL, RDF, Literal, Namespace
+from tripper import DCAT, DCTERMS, EMMO, OWL, RDF, RDFS, Literal, Namespace
 from tripper.utils import parse_literal
 
 OTEIO = Namespace("http://emmo.info/oteio#")
 
 BASIC_RECOGNISED_KEYS = {
     "downloadUrl": DCAT.downloadUrl,
-    "medieType": DCAT.medieType,
+    "mediaType": DCAT.mediaType,
     "accessUrl": DCAT.accessUrl,
     "accessService": DCAT.accessService,
     "license": DCTERMS.license,
     "accessRights": DCTERMS.accessRights,
     "publisher": DCTERMS.publisher,
+    "description": DCTERMS.description,
+    "creator": DCTERMS.creator,
+    "contributor": DCTERMS.contributor,
+    "title": DCTERMS.title,
+    "available": DCTERMS.available,
+    "bibliographicCitation": DCTERMS.bibliographicCitation,
+    "conformsTo": DCTERMS.conformsTo,
+    "created": DCTERMS.created,
+    "references": DCTERMS.references,
+    "isReplacedBy": DCTERMS.isReplacedBy,
+    "requires": DCTERMS.requires,
+    "label": RDFS.label,
+    "comment": RDFS.comment,
 }
 
 
@@ -175,10 +188,10 @@ def load_dict(ts, iri, recognised_keys=None):
 
     # Recognised IRIs
     if recognised_keys:
-        iris = {v: k for k, v in recognised_keys}
+        iris = {v: k for k, v in recognised_keys.items()}
         for _, p, o in ts.triples(subject=iri):
-            key = iris[p]
-            if p in iris and key not in dct:
-                dct[key] = o
+            key = iris.get(p)
+            if key and p in iris and key not in dct:
+                dct[key] = o.value if isinstance(o, Literal) else o
 
     return dct
