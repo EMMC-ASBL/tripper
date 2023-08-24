@@ -89,6 +89,7 @@ class Triplestore:
         "xsd": XSD,
         "owl": OWL,
         # "skos": SKOS,
+        # "dcat": DCAT,
         # "dc": DC,
         # "dcterms": DCTERMS,
         # "foaf": FOAF,
