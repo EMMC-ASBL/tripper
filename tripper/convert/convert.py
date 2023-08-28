@@ -1,10 +1,16 @@
 """Tripper module for converting between RDF and other repetations."""
 # pylint: disable=invalid-name,redefined-builtin
-from collections.abc import Mapping
+from typing import TYPE_CHECKING, Mapping
 from uuid import uuid4
 
 from tripper import DCAT, DCTERMS, EMMO, OWL, RDF, RDFS, Literal, Namespace
 from tripper.utils import parse_literal
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Any, Dict, Optional, Sequence, Union
+
+    from tripper import Triplestore
+
 
 OTEIO = Namespace("http://emmo.info/oteio#")
 
@@ -33,13 +39,13 @@ BASIC_RECOGNISED_KEYS = {
 
 
 def from_dict(
-    dct,
-    iri,
-    bases=(OTEIO.Dictionary,),
-    lang="en",
-    recognised_keys=None,
-    keep=False,
-):
+    dct: "Mapping[str, Any]",
+    iri: str,
+    bases: "Sequence" = (OTEIO.Dictionary,),
+    lang: str = "en",
+    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    keep: bool = False,
+) -> list:
     """Serialise a dict as RDF.
 
     Arguments:
@@ -90,7 +96,7 @@ def from_dict(
             value = parse_literal(dvalue)
 
         if recognised:
-            rdf.append((iri, recognised_keys[dkey], value))
+            rdf.append((iri, recognised_keys[dkey], value))  # type: ignore
 
         if not recognised or keep:
             uuid = uuid4()
@@ -114,8 +120,13 @@ def from_dict(
 
 
 def save_dict(
-    ts, dct, iri, bases=(OTEIO.Dictionary,), recognised_keys=None, keep=False
-):
+    ts: "Triplestore",
+    dct: "Mapping[str, Any]",
+    iri: str,
+    bases: "Sequence" = (OTEIO.Dictionary,),
+    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    keep: bool = False,
+) -> None:
     """Save a dict to a triplestore.
 
     Arguments:
@@ -149,7 +160,11 @@ def save_dict(
     )
 
 
-def load_dict(ts, iri, recognised_keys=None):
+def load_dict(
+    ts: "Triplestore",
+    iri: str,
+    recognised_keys: "Optional[Union[Dict, str]]" = None,
+) -> dict:
     """Serialise a dict as RDF.
 
     Arguments:
@@ -188,10 +203,12 @@ def load_dict(ts, iri, recognised_keys=None):
 
     # Recognised IRIs
     if recognised_keys:
-        iris = {v: k for k, v in recognised_keys.items()}
+        iris = {v: k for k, v in recognised_keys.items()}  # type: ignore
         for _, p, o in ts.triples(subject=iri):
-            key = iris.get(p)
+            key = iris.get(p)  # type: ignore
             if key and p in iris and key not in dct:
-                dct[key] = o.value if isinstance(o, Literal) else o
+                dct[key] = (
+                    o.value if isinstance(o, Literal) else o  # type: ignore
+                )
 
     return dct
