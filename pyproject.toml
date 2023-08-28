@@ -29,6 +29,7 @@ dynamic = ["version"]
 
 dependencies = [
     "typing-extensions ~=4.7; python_version<'3.8'",
+    "pint ~=0.2",
 ]
 
 [project.optional-dependencies]

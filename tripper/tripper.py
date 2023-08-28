@@ -4,7 +4,6 @@
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import uuid
-from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from tripper.errors import TriplestoreError
@@ -21,7 +20,7 @@ from tripper.triplestore import (
 from tripper.utils import parse_literal, random_string
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Optional, Union
+    from typing import Any, Callable, Optional, Sequence, Union
 
     from tripper.mappings import Value
 
