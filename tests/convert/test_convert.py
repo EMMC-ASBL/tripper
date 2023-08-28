@@ -22,7 +22,8 @@ config2 = {
         "key2": 2,
         "key3": 3.14,
         "key4": None,
-        # "key5": ["a", 1, 2.2, None],  # lists are not supported yet...
+        "key5": True,
+        # "key6": ["a", 1, 2.2, None],  # lists are not supported yet...
     },
 }
 
