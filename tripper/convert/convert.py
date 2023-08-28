@@ -124,12 +124,14 @@ def save_dict(
     dct: "Mapping[str, Any]",
     iri: str,
     bases: "Sequence" = (OTEIO.Dictionary,),
+    lang: str = "en",
     recognised_keys: "Optional[Union[Dict, str]]" = None,
     keep: bool = False,
 ) -> None:
     """Save a dict to a triplestore.
 
     Arguments:
+        ts: Triplestore to which to write the dict.
         dct: The dict to be saved.
         iri: IRI of indicidual that stands for the dict.
         bases: Parent class(es) or the dict.
@@ -154,6 +156,7 @@ def save_dict(
             dct,
             iri,
             bases=bases,
+            lang=lang,
             recognised_keys=recognised_keys,
             keep=keep,
         )
