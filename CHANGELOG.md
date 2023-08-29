@@ -1,5 +1,19 @@
 # Changelog
 
+## [v0.2.7](https://github.com/EMMC-ASBL/tripper/tree/v0.2.7) (2023-08-28)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.6...v0.2.7)
+
+**Fixed bugs:**
+
+- Fix issues related to renaming of the default branch [\#116](https://github.com/EMMC-ASBL/tripper/issues/116)
+
+**Merged pull requests:**
+
+- Added a module for converting to/from dicts [\#126](https://github.com/EMMC-ASBL/tripper/pull/126) ([jesper-friis](https://github.com/jesper-friis))
+- Update dependabot after changing master branch to 'master' [\#121](https://github.com/EMMC-ASBL/tripper/pull/121) ([jesper-friis](https://github.com/jesper-friis))
+- Also run CI tests on examples in documentation [\#118](https://github.com/EMMC-ASBL/tripper/pull/118) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.2.6](https://github.com/EMMC-ASBL/tripper/tree/v0.2.6) (2023-06-23)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.5...v0.2.6)
