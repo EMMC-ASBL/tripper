@@ -63,7 +63,7 @@ def from_container(
         container: The container to be saved.  Should be a mapping or
             sequence.  The `load_container()` function will deserialise
             them as dict and list, respectively.
-        iri: IRI of indicidual that stands for the container.
+        iri: IRI of individual that stands for the container.
         lang: Language to use for mapping keys.
         recognised_keys: An optional dict that maps mapping keys that
             correspond to IRIs of recognised RDF properties.
@@ -178,7 +178,7 @@ def save_container(
     Arguments:
         ts: Triplestore to which to write the container object.
         container: The container object to be saved.
-        iri: IRI of indicidual that stands for the container object.
+        iri: IRI of individual that stands for the container object.
         lang: Language to use for keys.
         recognised_keys: An optional dict that maps dict mapping that
             correspond to IRIs of recognised RDF properties.
@@ -217,7 +217,7 @@ def load_container(
 
     Arguments:
         ts: Triplestore from which to fetch the dict.
-        iri: IRI of indicidual that stands for the dict to fetch.
+        iri: IRI of individual that stands for the dict to fetch.
         recognised_keys: An optional dict that maps dict keys that
             correspond to IRIs of recognised RDF properties.
             If set to the special string "basic", the
@@ -301,7 +301,7 @@ def from_dict(
 
     Arguments:
         dct: The dict to be saved.
-        iri: IRI of indicidual that stands for the dict.
+        iri: IRI of individual that stands for the dict.
         bases: Parent class(es) or the dict.  Unused.
         lang: Language to use for keys.
         recognised_keys: An optional dict that maps dict keys that
@@ -340,7 +340,7 @@ def save_dict(
     Arguments:
         ts: Triplestore to which to write the dict.
         dct: The dict to be saved.
-        iri: IRI of indicidual that stands for the dict.
+        iri: IRI of individual that stands for the dict.
         bases: Parent class(es) or the dict.  Unused.
         lang: Language to use for keys.
         recognised_keys: An optional dict that maps dict keys that
@@ -371,7 +371,7 @@ def load_dict(
 
     Arguments:
         ts: Triplestore from which to fetch the dict.
-        iri: IRI of indicidual that stands for the dict to fetch.
+        iri: IRI of individual that stands for the dict to fetch.
         recognised_keys: An optional dict that maps dict keys that
             correspond to IRIs of recognised RDF properties.
             If set to the special string "basic", the
