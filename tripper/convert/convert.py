@@ -290,13 +290,13 @@ def load_container(
 
 
 def from_dict(
-    dct,
-    iri,
-    bases=None,  # pylint: disable=unused-argument
-    lang="en",
-    recognised_keys=None,
-    keep=False,
-):
+    dct: dict,
+    iri: str,
+    bases: "Optional[Sequence]" = None,
+    lang: str = "en",
+    recognised_keys: "Optional[Union[Dict, str]]" = None,
+    keep: bool = False,
+) -> list:
     """Serialise a dict as RDF.
 
     Arguments:
@@ -315,6 +315,7 @@ def from_dict(
     Returns:
         List of RDF triples.
     """
+    del bases  # silence pylint about unused variable
     warnings.warn(
         "from_dict() is deprecated.  Use from_container() instead",
         DeprecationWarning,
@@ -329,7 +330,7 @@ def save_dict(
     ts: "Triplestore",
     dct: "Mapping[str, Any]",
     iri: str,
-    bases: "Optional[Sequence]" = None,  # pylint: disable=unused-argument
+    bases: "Optional[Sequence]" = None,
     lang: str = "en",
     recognised_keys: "Optional[Union[Dict, str]]" = None,
     keep: bool = False,
@@ -350,6 +351,7 @@ def save_dict(
             items serialised with recognised_keys.  Note that this
             will duplicate potential large literal values.
     """
+    del bases  # silence pylint about unused variable
     warnings.warn(
         "save_dict() is deprecated.  Use save_container() instead",
         DeprecationWarning,
