@@ -280,7 +280,7 @@ def load_container(
 
     else:
         raise TypeError(
-            "iri '{iri}' should be either a RDF.List or an OTEIO.Dictionary"
+            f"iri '{iri}' should be either a RDF.List or an OTEIO.Dictionary"
         )
 
     return container
