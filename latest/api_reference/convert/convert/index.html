@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.7">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -697,6 +697,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.convert.convert.from_container" class="md-nav__link">
+    from_container()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.convert.convert.from_dict" class="md-nav__link">
     from_dict()
   </a>
@@ -704,8 +711,22 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.convert.convert.load_container" class="md-nav__link">
+    load_container()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.convert.convert.load_dict" class="md-nav__link">
     load_dict()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.convert.convert.save_container" class="md-nav__link">
+    save_container()
   </a>
   
 </li>
@@ -837,6 +858,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.convert.convert.from_container" class="md-nav__link">
+    from_container()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.convert.convert.from_dict" class="md-nav__link">
     from_dict()
   </a>
@@ -844,8 +872,22 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.convert.convert.load_container" class="md-nav__link">
+    load_container()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.convert.convert.load_dict" class="md-nav__link">
     load_dict()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.convert.convert.save_container" class="md-nav__link">
+    save_container()
   </a>
   
 </li>
@@ -899,8 +941,216 @@
 
 
 
+<h2 class="doc doc-heading" id="tripper.convert.convert.from_container">
+<code class="highlight language-python"><span class="n">from_container</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.convert.convert.from_container" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Serialise a basic Python container type (mapping or sequence) as RDF.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>container</code></td>
+        <td><code>Union[Mapping[str, Any], Sequence[Any]]</code></td>
+        <td><p>The container to be saved.  Should be a mapping or
+sequence.  The <code>load_container()</code> function will deserialise
+them as dict and list, respectively.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>iri</code></td>
+        <td><code>str</code></td>
+        <td><p>IRI of individual that stands for the container.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>lang</code></td>
+        <td><code>str</code></td>
+        <td><p>Language to use for mapping keys.</p></td>
+        <td><code>&#39;en&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>recognised_keys</code></td>
+        <td><code>Optional[Union[Dict, str]]</code></td>
+        <td><p>An optional dict that maps mapping keys that
+correspond to IRIs of recognised RDF properties.
+If set to the special string "basic", the
+<code>BASIC_RECOGNISED_KEYS</code> module will be used.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>keep</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to keep the key-value pair representation for
+mapping items serialised with recognised_keys.  Note that this
+may duplicate potential large literal values.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>list</code></td>
+      <td><p>List of RDF triples.</p></td>
+    </tr>
+  </tbody>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>container</code> should not be an empty sequence.  The reason for this
+is that is represented with rdf:nil, which is a single IRI and not
+a triple.</p>
+</div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/convert/convert.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_container</span><span class="p">(</span>
+    <span class="n">container</span><span class="p">:</span> <span class="s2">&quot;Union[Mapping[str, Any], Sequence[Any]]&quot;</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise a basic Python container type (mapping or sequence) as RDF.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        container: The container to be saved.  Should be a mapping or</span>
+<span class="sd">            sequence.  The `load_container()` function will deserialise</span>
+<span class="sd">            them as dict and list, respectively.</span>
+<span class="sd">        iri: IRI of individual that stands for the container.</span>
+<span class="sd">        lang: Language to use for mapping keys.</span>
+<span class="sd">        recognised_keys: An optional dict that maps mapping keys that</span>
+<span class="sd">            correspond to IRIs of recognised RDF properties.</span>
+<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
+<span class="sd">        keep: Whether to keep the key-value pair representation for</span>
+<span class="sd">            mapping items serialised with recognised_keys.  Note that this</span>
+<span class="sd">            may duplicate potential large literal values.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of RDF triples.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        `container` should not be an empty sequence.  The reason for this</span>
+<span class="sd">        is that is represented with rdf:nil, which is a single IRI and not</span>
+<span class="sd">        a triple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
+        <span class="n">recognised_keys</span> <span class="o">=</span> <span class="n">BASIC_RECOGNISED_KEYS</span>
+
+    <span class="n">rdf</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">get_obj_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return IRI for Python object `obj`.  The `uuid` argument is</span>
+<span class="sd">        appended to blank nodes for uniques.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span>
+            <span class="n">obj_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="nb">dict</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">RDF</span><span class="o">.</span><span class="n">List</span>
+            <span class="n">obj_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="nb">list</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Nothing</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="n">rdf</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="n">from_container</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="n">obj_iri</span><span class="p">,</span>
+                <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span>
+                <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">,</span>
+                <span class="n">keep</span><span class="o">=</span><span class="n">keep</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj_iri</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">container</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;empty sequence is not supported&quot;</span><span class="p">)</span>
+
+        <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">List</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">container</span><span class="p">):</span>
+            <span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+            <span class="n">first_iri</span> <span class="o">=</span> <span class="n">get_obj_iri</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="n">rest_iri</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">container</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;_:rest_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">first_iri</span><span class="p">))</span>
+            <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">rest</span><span class="p">,</span> <span class="n">rest_iri</span><span class="p">))</span>
+            <span class="n">iri</span> <span class="o">=</span> <span class="n">rest_iri</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">container</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+            <span class="n">recognised</span> <span class="o">=</span> <span class="n">recognised_keys</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">recognised_keys</span>
+            <span class="n">value_iri</span> <span class="o">=</span> <span class="n">get_obj_iri</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">recognised</span><span class="p">:</span>
+                <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value_iri</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">recognised</span> <span class="ow">or</span> <span class="n">keep</span><span class="p">:</span>
+                <span class="n">key_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:key_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">value_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:value_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">pair</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:pair_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">rdf</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">(</span><span class="n">key_indv</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">DictionaryKey</span><span class="p">),</span>
+                        <span class="p">(</span>
+                            <span class="n">key_indv</span><span class="p">,</span>
+                            <span class="n">EMMO</span><span class="o">.</span><span class="n">hasStringValue</span><span class="p">,</span>
+                            <span class="n">Literal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">),</span>
+                        <span class="p">),</span>
+                        <span class="p">(</span><span class="n">value_indv</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">DictionaryValue</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">value_indv</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="n">value_iri</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">KeyValuePair</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryKey</span><span class="p">,</span> <span class="n">key_indv</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryValue</span><span class="p">,</span> <span class="n">value_indv</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasKeyValuePair</span><span class="p">,</span> <span class="n">pair</span><span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;container must be a mapping or sequence&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">rdf</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 class="doc doc-heading" id="tripper.convert.convert.from_dict">
-<code class="highlight language-python"><span class="n">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;http://emmo.info/oteio#Dictionary&#39;</span><span class="p">,),</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.convert.convert.from_dict" title="Permanent link">&para;</a></h2>
@@ -922,21 +1172,21 @@
   <tbody>
       <tr>
         <td><code>dct</code></td>
-        <td><code>Mapping[str, Any]</code></td>
+        <td><code>dict</code></td>
         <td><p>The dict to be saved.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>iri</code></td>
         <td><code>str</code></td>
-        <td><p>IRI of indicidual that stands for the dict.</p></td>
+        <td><p>IRI of individual that stands for the dict.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>bases</code></td>
-        <td><code>Sequence</code></td>
-        <td><p>Parent class(es) or the dict.</p></td>
-        <td><code>(&#39;http://emmo.info/oteio#Dictionary&#39;,)</code></td>
+        <td><code>Optional[Sequence]</code></td>
+        <td><p>Parent class(es) or the dict.  Unused.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>lang</code></td>
@@ -981,9 +1231,9 @@ will duplicate potential large literal values.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/convert/convert.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span>
-    <span class="n">dct</span><span class="p">:</span> <span class="s2">&quot;Mapping[str, Any]&quot;</span><span class="p">,</span>
+    <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">bases</span><span class="p">:</span> <span class="s2">&quot;Sequence&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">,),</span>
+    <span class="n">bases</span><span class="p">:</span> <span class="s2">&quot;Optional[Sequence]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
     <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -992,8 +1242,8 @@ will duplicate potential large literal values.</p></td>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        dct: The dict to be saved.</span>
-<span class="sd">        iri: IRI of indicidual that stands for the dict.</span>
-<span class="sd">        bases: Parent class(es) or the dict.</span>
+<span class="sd">        iri: IRI of individual that stands for the dict.</span>
+<span class="sd">        bases: Parent class(es) or the dict.  Unused.</span>
 <span class="sd">        lang: Language to use for keys.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
@@ -1006,59 +1256,15 @@ will duplicate potential large literal values.</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        List of RDF triples.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
-        <span class="n">recognised_keys</span> <span class="o">=</span> <span class="n">BASIC_RECOGNISED_KEYS</span>
-
-    <span class="n">rdf</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
-        <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">base</span><span class="p">))</span>
-
-    <span class="k">for</span> <span class="n">dkey</span><span class="p">,</span> <span class="n">dvalue</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
-
-        <span class="n">recognised</span> <span class="o">=</span> <span class="n">recognised_keys</span> <span class="ow">and</span> <span class="n">dkey</span> <span class="ow">in</span> <span class="n">recognised_keys</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dvalue</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
-            <span class="c1"># Ideally this should be a blank node, but that becomes</span>
-            <span class="c1"># too nested for rdflib.  Instead we make the IRI unique</span>
-            <span class="c1"># by embedding the UUID.</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dict_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">rdf</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="n">from_dict</span><span class="p">(</span>
-                    <span class="n">dvalue</span><span class="p">,</span>
-                    <span class="n">value</span><span class="p">,</span>
-                    <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span>
-                    <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">,</span>
-                    <span class="n">keep</span><span class="o">=</span><span class="n">keep</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">dvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Nothing</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">dvalue</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">recognised</span><span class="p">:</span>
-            <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="p">[</span><span class="n">dkey</span><span class="p">],</span> <span class="n">value</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">recognised</span> <span class="ow">or</span> <span class="n">keep</span><span class="p">:</span>
-            <span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:key_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">value_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:value_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">pair</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:pair_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">rdf</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">DictionaryKey</span><span class="p">),</span>
-                    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasStringValue</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">dkey</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)),</span>
-                    <span class="p">(</span><span class="n">value_indv</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">DictionaryValue</span><span class="p">),</span>
-                    <span class="p">(</span><span class="n">value_indv</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span>
-                    <span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">KeyValuePair</span><span class="p">),</span>
-                    <span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryKey</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span>
-                    <span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryValue</span><span class="p">,</span> <span class="n">value_indv</span><span class="p">),</span>
-                    <span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasKeyValuePair</span><span class="p">,</span> <span class="n">pair</span><span class="p">),</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">rdf</span>
+    <span class="k">del</span> <span class="n">bases</span>  <span class="c1"># silence pylint about unused variable</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;from_dict() is deprecated.  Use from_container() instead&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">from_container</span><span class="p">(</span>
+        <span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="n">keep</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1071,15 +1277,15 @@ will duplicate potential large literal values.</p></td>
 
 
 
-<h2 class="doc doc-heading" id="tripper.convert.convert.load_dict">
-<code class="highlight language-python"><span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h2 class="doc doc-heading" id="tripper.convert.convert.load_container">
+<code class="highlight language-python"><span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
-<a class="headerlink" href="#tripper.convert.convert.load_dict" title="Permanent link">&para;</a></h2>
+<a class="headerlink" href="#tripper.convert.convert.load_container" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Serialise a dict as RDF.</p>
+      <p>Deserialise a Python container object from a triplestore.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -1101,7 +1307,7 @@ will duplicate potential large literal values.</p></td>
       <tr>
         <td><code>iri</code></td>
         <td><code>str</code></td>
-        <td><p>IRI of indicidual that stands for the dict to fetch.</p></td>
+        <td><p>IRI of individual that stands for the dict to fetch.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1125,7 +1331,156 @@ If set to the special string "basic", the
   </thead>
   <tbody>
     <tr>
-      <td><code>dict</code></td>
+      <td><code>Union[dict, list]</code></td>
+      <td><p>A Python container object corresponding to <code>iri</code>.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/convert/convert.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_container</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deserialise a Python container object from a triplestore.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore from which to fetch the dict.</span>
+<span class="sd">        iri: IRI of individual that stands for the dict to fetch.</span>
+<span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
+<span class="sd">            correspond to IRIs of recognised RDF properties.</span>
+<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A Python container object corresponding to `iri`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">iri</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
+        <span class="n">recognised_keys</span> <span class="o">=</span> <span class="n">BASIC_RECOGNISED_KEYS</span>
+
+    <span class="n">parents</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">o</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_obj</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Python object for `value`.&quot;&quot;&quot;</span>
+        <span class="n">value_type</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value_type</span> <span class="o">==</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value_type</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Nothing</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">OTEIO</span><span class="o">.</span><span class="n">hasKeyValuePair</span>
+        <span class="p">):</span>
+            <span class="n">key_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryKey</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">key_iri</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasStringValue</span><span class="p">)</span>
+            <span class="n">value_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryValue</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">value_iri</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasValue</span><span class="p">)</span>
+            <span class="n">container</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">get_obj</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Recognised IRIs</span>
+        <span class="k">if</span> <span class="n">recognised_keys</span><span class="p">:</span>
+            <span class="n">iris</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">recognised_keys</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># type: ignore</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">iri</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">iris</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">container</span><span class="p">:</span>
+                    <span class="n">container</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">o</span><span class="o">.</span><span class="n">value</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                        <span class="k">else</span> <span class="n">o</span>
+                    <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">RDF</span><span class="o">.</span><span class="n">List</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">rest</span><span class="p">)</span>
+            <span class="n">container</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_obj</span><span class="p">(</span><span class="n">first</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">rest</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">iri</span> <span class="o">=</span> <span class="n">rest</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;iri &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; should be either a rdf:List or an oteio:Dictionary&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">container</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 class="doc doc-heading" id="tripper.convert.convert.load_dict">
+<code class="highlight language-python"><span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.convert.convert.load_dict" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Deserialise a dict from an RDF triplestore.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore from which to fetch the dict.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>iri</code></td>
+        <td><code>str</code></td>
+        <td><p>IRI of individual that stands for the dict to fetch.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>recognised_keys</code></td>
+        <td><code>Optional[Union[Dict, str]]</code></td>
+        <td><p>An optional dict that maps dict keys that
+correspond to IRIs of recognised RDF properties.
+If set to the special string "basic", the
+<code>BASIC_RECOGNISED_KEYS</code> module will be used.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Union[dict, list]</code></td>
       <td><p>A dict corresponding to <code>iri</code>.</p></td>
     </tr>
   </tbody>
@@ -1136,12 +1491,12 @@ If set to the special string "basic", the
     <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise a dict as RDF.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deserialise a dict from an RDF triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore from which to fetch the dict.</span>
-<span class="sd">        iri: IRI of indicidual that stands for the dict to fetch.</span>
+<span class="sd">        iri: IRI of individual that stands for the dict to fetch.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
 <span class="sd">            If set to the special string &quot;basic&quot;, the</span>
@@ -1150,40 +1505,131 @@ If set to the special string "basic", the
 <span class="sd">    Returns:</span>
 <span class="sd">        A dict corresponding to `iri`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
-        <span class="n">recognised_keys</span> <span class="o">=</span> <span class="n">BASIC_RECOGNISED_KEYS</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;load_dict() is deprecated.  Use load_container() instead&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
 
-    <span class="n">dct</span> <span class="o">=</span> <span class="p">{}</span>
+  </div>
 
-    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">OTEIO</span><span class="o">.</span><span class="n">hasKeyValuePair</span><span class="p">):</span>
-        <span class="n">key_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryKey</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">key_iri</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasStringValue</span><span class="p">)</span>
-        <span class="n">value_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryValue</span><span class="p">)</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">value_iri</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasValue</span><span class="p">)</span>
-        <span class="n">value_type</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
 
-        <span class="n">raw_value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
 
-        <span class="k">if</span> <span class="n">value_type</span> <span class="o">==</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Nothing</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">raw_value</span>
+  <div class="doc doc-object doc-function">
 
-        <span class="n">dct</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">val</span>
 
-    <span class="c1"># Recognised IRIs</span>
-    <span class="k">if</span> <span class="n">recognised_keys</span><span class="p">:</span>
-        <span class="n">iris</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">recognised_keys</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># type: ignore</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">iri</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">iris</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
-                <span class="n">dct</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">o</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span> <span class="k">else</span> <span class="n">o</span>  <span class="c1"># type: ignore</span>
-                <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dct</span>
+<h2 class="doc doc-heading" id="tripper.convert.convert.save_container">
+<code class="highlight language-python"><span class="n">save_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+<a class="headerlink" href="#tripper.convert.convert.save_container" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Save a basic Python container object to a triplestore.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore to which to write the container object.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>container</code></td>
+        <td><code>Union[Mapping[str, Any], Sequence[Any]]</code></td>
+        <td><p>The container object to be saved.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>iri</code></td>
+        <td><code>str</code></td>
+        <td><p>IRI of individual that stands for the container object.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>lang</code></td>
+        <td><code>str</code></td>
+        <td><p>Language to use for keys.</p></td>
+        <td><code>&#39;en&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>recognised_keys</code></td>
+        <td><code>Optional[Union[Dict, str]]</code></td>
+        <td><p>An optional dict that maps dict mapping that
+correspond to IRIs of recognised RDF properties.
+If set to the special string "basic", the
+<code>BASIC_RECOGNISED_KEYS</code> module will be used.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>keep</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to keep the key-value pair representation for
+items serialised with recognised_keys.  Note that this
+will duplicate potential large literal values.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/convert/convert.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">save_container</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
+    <span class="n">container</span><span class="p">:</span> <span class="s2">&quot;Union[Mapping[str, Any], Sequence[Any]]&quot;</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a basic Python container object to a triplestore.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore to which to write the container object.</span>
+<span class="sd">        container: The container object to be saved.</span>
+<span class="sd">        iri: IRI of individual that stands for the container object.</span>
+<span class="sd">        lang: Language to use for keys.</span>
+<span class="sd">        recognised_keys: An optional dict that maps dict mapping that</span>
+<span class="sd">            correspond to IRIs of recognised RDF properties.</span>
+<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
+<span class="sd">        keep: Whether to keep the key-value pair representation for</span>
+<span class="sd">            items serialised with recognised_keys.  Note that this</span>
+<span class="sd">            will duplicate potential large literal values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;rdf&quot;</span><span class="p">,</span> <span class="n">RDF</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;dcat&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;dcat&quot;</span><span class="p">,</span> <span class="n">DCAT</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;emmo&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="n">EMMO</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;oteio&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;oteio&quot;</span><span class="p">,</span> <span class="n">OTEIO</span><span class="p">)</span>
+
+    <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span>
+        <span class="n">from_container</span><span class="p">(</span>
+            <span class="n">container</span><span class="p">,</span>
+            <span class="n">iri</span><span class="p">,</span>
+            <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span>
+            <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">,</span>
+            <span class="n">keep</span><span class="o">=</span><span class="n">keep</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1197,7 +1643,7 @@ If set to the special string "basic", the
 
 
 <h2 class="doc doc-heading" id="tripper.convert.convert.save_dict">
-<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;http://emmo.info/oteio#Dictionary&#39;</span><span class="p">,),</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.convert.convert.save_dict" title="Permanent link">&para;</a></h2>
@@ -1232,14 +1678,14 @@ If set to the special string "basic", the
       <tr>
         <td><code>iri</code></td>
         <td><code>str</code></td>
-        <td><p>IRI of indicidual that stands for the dict.</p></td>
+        <td><p>IRI of individual that stands for the dict.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>bases</code></td>
-        <td><code>Sequence</code></td>
-        <td><p>Parent class(es) or the dict.</p></td>
-        <td><code>(&#39;http://emmo.info/oteio#Dictionary&#39;,)</code></td>
+        <td><code>Optional[Sequence]</code></td>
+        <td><p>Parent class(es) or the dict.  Unused.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>lang</code></td>
@@ -1272,7 +1718,7 @@ will duplicate potential large literal values.</p></td>
     <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
     <span class="n">dct</span><span class="p">:</span> <span class="s2">&quot;Mapping[str, Any]&quot;</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">bases</span><span class="p">:</span> <span class="s2">&quot;Sequence&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">,),</span>
+    <span class="n">bases</span><span class="p">:</span> <span class="s2">&quot;Optional[Sequence]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
     <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1282,8 +1728,8 @@ will duplicate potential large literal values.</p></td>
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to which to write the dict.</span>
 <span class="sd">        dct: The dict to be saved.</span>
-<span class="sd">        iri: IRI of indicidual that stands for the dict.</span>
-<span class="sd">        bases: Parent class(es) or the dict.</span>
+<span class="sd">        iri: IRI of individual that stands for the dict.</span>
+<span class="sd">        bases: Parent class(es) or the dict.  Unused.</span>
 <span class="sd">        lang: Language to use for keys.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
@@ -1293,22 +1739,14 @@ will duplicate potential large literal values.</p></td>
 <span class="sd">            items serialised with recognised_keys.  Note that this</span>
 <span class="sd">            will duplicate potential large literal values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;dcat&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;dcat&quot;</span><span class="p">,</span> <span class="n">DCAT</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;emmo&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="n">EMMO</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;oteio&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;oteio&quot;</span><span class="p">,</span> <span class="n">OTEIO</span><span class="p">)</span>
-
-    <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span>
-        <span class="n">from_dict</span><span class="p">(</span>
-            <span class="n">dct</span><span class="p">,</span>
-            <span class="n">iri</span><span class="p">,</span>
-            <span class="n">bases</span><span class="o">=</span><span class="n">bases</span><span class="p">,</span>
-            <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span>
-            <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">,</span>
-            <span class="n">keep</span><span class="o">=</span><span class="n">keep</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="k">del</span> <span class="n">bases</span>  <span class="c1"># silence pylint about unused variable</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;save_dict() is deprecated.  Use save_container() instead&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">save_container</span><span class="p">(</span>
+        <span class="n">ts</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="n">keep</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1390,7 +1828,7 @@ will duplicate potential large literal values.</p></td>
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
     
   </body>
