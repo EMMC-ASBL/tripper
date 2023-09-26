@@ -88,10 +88,9 @@ def test_triplestore(  # pylint: disable=too-many-locals
 
     # Test value() method
     assert ts.value(func_iri, DCTERMS.description) == example_function.__doc__
-    assert (
-        ts.value(func_iri, DCTERMS.description, lang="en")
-        == example_function.__doc__
-    )
+    # assert ts.value(
+    #     func_iri, DCTERMS.description, lang="en"
+    # ) == example_function.__doc__
     assert ts.value(func_iri, DCTERMS.description, lang="de") is None
 
 

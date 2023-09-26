@@ -115,16 +115,21 @@ def en(value) -> "Literal":  # pylint: disable=invalid-name
 
 
 def parse_literal(literal: "Any") -> "Literal":
-    """Parse `literal` and return it as an instance of Literal.
+    """Parse Python object `literal` and return it as an instance of Literal.
 
     The main difference between this function and the Literal constructor,
     is that this function correctly interprets n3-encoded literal strings.
     """
-    # pylint: disable=invalid-name,too-many-branches
+    # pylint: disable=invalid-name,too-many-branches,too-many-return-statements
     lang, datatype = None, None
 
     if isinstance(literal, Literal):
         return literal
+
+    # This will handle rdflib literals correctly and probably most other
+    # literal representations as well.
+    if hasattr(literal, "value"):
+        return Literal(literal.value)
 
     if not isinstance(literal, str):
         if isinstance(literal, tuple(Literal.datatypes)):
@@ -170,6 +175,8 @@ def parse_literal(literal: "Any") -> "Literal":
             for pytype, datatypes in Literal.datatypes.items():
                 types.update({t: pytype for t in datatypes})
             type_ = types.get(datatype, str)
+            if type_ is bool and value in ("False", "false", "0", 0, False):
+                return Literal(False)
             try:
                 value = type_(value)
             except TypeError:
