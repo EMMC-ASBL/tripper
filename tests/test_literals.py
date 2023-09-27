@@ -103,6 +103,11 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.boolean
 
+    literal = parse_literal(Literal(False).n3())
+    assert literal.value is False
+    assert literal.lang is None
+    assert literal.datatype == XSD.boolean
+
     dt = datetime(2022, 10, 23)
     literal = parse_literal(Literal(dt).n3())
     assert literal.value == dt

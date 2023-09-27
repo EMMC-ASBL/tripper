@@ -6,6 +6,7 @@ See the README.md file for a description for how to use this package.
 from .literal import Literal
 from .namespace import (
     DC,
+    DCAT,
     DCTERMS,
     DM,
     DOAP,
@@ -24,11 +25,12 @@ from .namespace import (
 from .triplestore import Triplestore, backend_packages
 from .tripper import Tripper
 
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 
 __all__ = (
     "Literal",
     #
+    "DCAT",
     "DC",
     "DCTERMS",
     "DM",
@@ -48,4 +50,6 @@ __all__ = (
     "Triplestore",
     "backend_packages",
     "Tripper",
+    #
+    "__version__",
 )
