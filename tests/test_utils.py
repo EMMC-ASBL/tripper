@@ -1,6 +1,7 @@
 """Test utils"""
 # pylint: disable=invalid-name,too-few-public-methods
-import dlite
+import warnings
+
 import pytest
 
 from tripper import DCTERMS, RDFS, XSD, Literal
@@ -18,16 +19,25 @@ from tripper.utils import (
 # Test infer_iri()
 assert infer_iri(RDFS.subClassOf) == RDFS.subClassOf
 
-coll = dlite.Collection()
-assert infer_iri(coll.meta) == coll.meta.uri
-assert infer_iri(coll) == coll.uuid
+
+# We have no dependencies on DLite, hence don't assume that it is installed.
+# In case we have dlite, lets see if we can infer IRIs
+try:
+    import dlite
+except ImportError:
+    warnings.warn("DLite-Python not installed, skipping infering DLite IRIs")
+else:
+    coll = dlite.Collection()
+    assert infer_iri(coll.meta) == coll.meta.uri
+    assert infer_iri(coll) == coll.uuid
+
 
 # We have no dependencies on pydantic, hence don't assume that it is installed.
 # But if it is, infer_iri() should be able to infer IRIs from SOFT7 datamodels.
 try:
     from pydantic import AnyUrl, BaseModel, Field
 except ImportError:
-    pass
+    warnings.warn("Pydantic not installed, skipping infering pydantic IRIs")
 else:
     from typing import Any, Optional
 
