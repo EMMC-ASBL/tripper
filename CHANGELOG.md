@@ -1,6 +1,18 @@
 # Changelog
 
-## [v0.2.7](https://github.com/EMMC-ASBL/tripper/tree/v0.2.7) (2023-08-28)
+## [v0.2.9](https://github.com/EMMC-ASBL/tripper/tree/v0.2.9) (2023-09-29)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.8...v0.2.9)
+
+## [v0.2.8](https://github.com/EMMC-ASBL/tripper/tree/v0.2.8) (2023-09-12)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.7...v0.2.8)
+
+**Merged pull requests:**
+
+- Added support for lists in tripper.convert [\#129](https://github.com/EMMC-ASBL/tripper/pull/129) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.2.7](https://github.com/EMMC-ASBL/tripper/tree/v0.2.7) (2023-08-29)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.6...v0.2.7)
 
