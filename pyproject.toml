@@ -29,7 +29,7 @@ dynamic = ["version"]
 
 dependencies = [
     "typing-extensions ~=4.7; python_version<'3.8'",
-    "pint ~=0.2",
+    "pint ~=0.18",
 ]
 
 [project.optional-dependencies]
@@ -37,12 +37,12 @@ docs = [
     "mike ~=1.1",
     "mkdocs ~=1.5",
     "mkdocs-awesome-pages-plugin ~=2.9",
-    "mkdocs-material ~=9.1",
+    "mkdocs-material ~=9.2",
     "mkdocstrings[python-legacy] ~=0.22.0",
     "EMMOntoPy ~=0.6",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.22,<1",
+    "DLite-Python >=0.4.0,<1",
 ]
 pre-commit = [
     "pre-commit ~=2.21",
@@ -54,13 +54,14 @@ testing = [
     "EMMOntoPy ~=0.6",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.22,<1",
+    "DLite-Python >=0.4.0,<1",
+    "graphviz ~= 0.20",
 ]
 dev = [
     "mike ~=1.1",
     "mkdocs ~=1.5",
     "mkdocs-awesome-pages-plugin ~=2.9",
-    "mkdocs-material ~=9.1",
+    "mkdocs-material ~=9.2",
     "mkdocstrings[python-legacy] ~=0.22.0",
     "pre-commit ~=2.21",
     "pylint ~=2.13",
@@ -69,7 +70,7 @@ dev = [
     "EMMOntoPy ~=0.6",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.3.22,<1",
+    "DLite-Python >=0.4.0,<1",
 ]
 
 [project.urls]
