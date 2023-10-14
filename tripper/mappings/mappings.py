@@ -270,6 +270,10 @@ class MappingStep:
         Returns:
             Evaluation result.
         """
+        if not self.number_of_routes():
+            raise MissingRelationError(
+                f"no route to evaluate '{self.output_iri}'"
+            )
         if quantity is None:
             quantity = Quantity
         if routeno is None:
