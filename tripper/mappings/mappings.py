@@ -231,7 +231,11 @@ class MappingStep:
         only one input.
 
         If the `join_mode` attribute is true, the input is remembered, but
-        first added when join_input() is called.
+        first added when `join_input()` is called.
+
+        Arguments:
+            input: A mapping step or a value.
+            name: Name assigned to the argument.
         """
         assert isinstance(input, (MappingStep, Value))  # nosec B101
         argname = name if name else f"arg{len(self.joined_input)+1}"
