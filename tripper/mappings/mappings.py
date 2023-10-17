@@ -219,7 +219,7 @@ class MappingStep:
         self.joined_input: "Inputs" = {}
 
     def add_inputs(self, inputs: "Inputs") -> None:
-        """Add input dict for an input route."""
+        """Add input Mapping (e.g., dict) for an input route."""
         assert isinstance(inputs, Mapping)  # nosec B101
         self.input_routes.append(inputs)
 
