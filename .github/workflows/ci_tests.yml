@@ -51,7 +51,7 @@ jobs:
       update_docs_landing_page: true
       package_dirs: tripper
 
-  pytest-simple:
+  pytest:
     runs-on: ubuntu-latest
 
     strategy:
@@ -86,7 +86,7 @@ jobs:
       run: |
         python -m doctest docs/tutorial.md
 
-  pytest: # Test for basic version, without extras installed
+  pytest-no-extra-dependencies: # Test for basic version, without extras installed
     runs-on: ubuntu-latest
 
     strategy:
@@ -108,6 +108,7 @@ jobs:
         sudo apt install graphviz
         python -m pip install -U pip
         pip install -U setuptools wheel flit
+        pip install pytest
         pip install -e .
 
     - name: Test with pytest
