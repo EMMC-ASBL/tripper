@@ -15,7 +15,7 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 import subprocess  # nosec: B404
 from collections import defaultdict
 from enum import Enum
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Mapping, Sequence
 
 import numpy as np
 from pint import Quantity  # remove
@@ -112,13 +112,13 @@ class Value:
     def __repr__(self):
         args = []
         if self.unit:
-            args.append(", unit={self.unit}")
+            args.append(f", unit={self.unit}")
         if self.output_iri:
-            args.append(", iri={self.output_iri}")
+            args.append(f", iri={self.output_iri}")
         if self.property_iri:
-            args.append(", property_iri={self.property_iri}")
+            args.append(f", property_iri={self.property_iri}")
         if self.cost:
-            args.append(", cost={self.cost}")
+            args.append(f", cost={self.cost}")
         return f"Value({self._value}{''.join(args)})"
 
     def get_value(self, unit=None, magnitude=False, quantity=None) -> "Any":
@@ -219,8 +219,8 @@ class MappingStep:
         self.joined_input: "Inputs" = {}
 
     def add_inputs(self, inputs: "Inputs") -> None:
-        """Add input dict for an input route."""
-        assert isinstance(inputs, dict)  # nosec B101
+        """Add input Mapping (e.g., dict) for an input route."""
+        assert isinstance(inputs, Mapping)  # nosec B101
         self.input_routes.append(inputs)
 
     def add_input(self, input: "Input", name: "Optional[str]" = None) -> None:
@@ -274,6 +274,10 @@ class MappingStep:
         Returns:
             Evaluation result.
         """
+        if not self.number_of_routes():
+            raise MissingRelationError(
+                f"no route to evaluate '{self.output_iri}'"
+            )
         if quantity is None:
             quantity = Quantity
         if routeno is None:
@@ -281,11 +285,12 @@ class MappingStep:
         inputs, idx = self.get_inputs(routeno)
         values = get_values(inputs, idx, quantity=quantity)
 
-        if len(inputs) == 1 and all(
-            isinstance(v, Value) for v in inputs.values()
-        ):
-            (value,) = tuple(inputs.values())
-        elif self.function:
+        # if len(inputs) == 1 and all(
+        #    isinstance(v, Value) for v in inputs.values()
+        # ):
+        #    (value,) = tuple(inputs.values())
+        # elif self.function:
+        if self.function:
             value = self.function(**values)
         elif len(values) == 1:
             (value,) = values.values()
@@ -648,9 +653,7 @@ def get_values(
                 else value
             )
         elif isinstance(v, Value):
-            values[k] = (
-                v.value if v.unit is None else quantity(v.value, v.unit)
-            )
+            values[k] = v.value if not v.unit else quantity(v.value, v.unit)
         else:
             raise TypeError(
                 "Expected values in inputs to be either `MappingStep` or "

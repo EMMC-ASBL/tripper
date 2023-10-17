@@ -26,7 +26,7 @@ repos:
       - --skip-gitignore
 
   - repo: https://github.com/ambv/black
-    rev: 23.7.0
+    rev: 23.9.1
     hooks:
     - id: black
 
