@@ -51,7 +51,7 @@ jobs:
       update_docs_landing_page: true
       package_dirs: tripper
 
-  pytest:
+  pytest-simple:
     runs-on: ubuntu-latest
 
     strategy:
@@ -85,3 +85,30 @@ jobs:
     - name: Run doctest on tutorial
       run: |
         python -m doctest docs/tutorial.md
+
+  pytest: # Test for basic version, without extras installed
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+    - name: Checkout tripper
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt install graphviz
+        python -m pip install -U pip
+        pip install -U setuptools wheel flit
+        pip install -e .
+
+    - name: Test with pytest
+      run: pytest -vvv

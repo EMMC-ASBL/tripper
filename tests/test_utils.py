@@ -22,6 +22,9 @@ assert infer_iri(RDFS.subClassOf) == RDFS.subClassOf
 
 # We have no dependencies on DLite, hence don't assume that it is installed.
 # In case we have dlite, lets see if we can infer IRIs
+
+# pylint: disable=duplicate-code
+
 try:
     import dlite
 except ImportError:
