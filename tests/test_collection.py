@@ -1,23 +1,23 @@
 """Test collection."""
 
-import warnings
+# import warnings
+import pytest
 
-# We have no dependencies on DLite, hence don't assume that it is installed.
-# In case we have dlite, lets see if we can wrok with collections
 
-# pylint disable=duplicate-code
-try:
-    import dlite
-except ImportError:
-    warnings.warn("DLite-Python not installed, skipping infering DLite IRIs")
-else:
+def test_collection():
+    """Test if we can use a DLite collection as backend."""
+    dlite = pytest.importorskip("dlite")
     from tripper import EMMO, MAP, Triplestore
 
     ts = Triplestore(backend="collection")
     assert not list(ts.triples())
 
-    STRUCTURE = ts.bind("structure", "http://onto-ns.com/meta/0.1/Structure#")
-    CIF = ts.bind("cif", "http://emmo.info/0.1/cif-ontology#")
+    STRUCTURE = ts.bind(  # pylint: disable=invalid-name
+        "structure", "http://onto-ns.com/meta/0.1/Structure#"
+    )
+    CIF = ts.bind(  # pylint: disable=invalid-name
+        "cif", "http://emmo.info/0.1/cif-ontology#"
+    )
     triples = [
         (STRUCTURE.symbols, MAP.mapsTo, EMMO.Symbol),
         (STRUCTURE.positions, MAP.mapsTo, EMMO.PositionVector),
