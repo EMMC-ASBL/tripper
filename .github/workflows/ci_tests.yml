@@ -113,4 +113,4 @@ jobs:
         pip install -e .
 
     - name: Test with pytest, but without other extra dependencies
-      run: pytest -vvv
+      run: pytest -vvv tests/

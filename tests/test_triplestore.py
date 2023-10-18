@@ -33,7 +33,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
     """
     pytest.importorskip("rdflib")
     pytest.importorskip("dlite")
-
+    pytest.importorskip("SPQRLWrapper")
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
     ts = Triplestore(backend)
@@ -215,6 +215,7 @@ def test_backend_sparqlwrapper() -> None:
     """Specifically test the SPARQLWrapper backend Triplestore."""
     from tripper import SKOS, Triplestore
 
+    pytest.importorskip("SPARQLWrapper")
     ts = Triplestore(
         backend="sparqlwrapper",
         base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
