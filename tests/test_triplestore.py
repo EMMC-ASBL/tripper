@@ -187,6 +187,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     """
     from tripper import Namespace, Triplestore
 
+    pytest.importorskip("ontopy")
     ontopath_food = get_ontology_path("food")
 
     FOOD = Namespace(  # pylint: disable=invalid-name
