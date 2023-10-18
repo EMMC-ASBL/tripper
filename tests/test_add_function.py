@@ -1,24 +1,29 @@
 """Test Triplestore.add_function()"""
 # pylint: disable=invalid-name
-from tripper import Triplestore
 
 
-def func(a, b):
-    """Returns the sum of `a` and `b`."""
-    return a + b
+def test_add_function():
+    """Test add_function()"""
+    import pytest
 
+    pytest.importorskip("rdflib")
+    from tripper import Triplestore
 
-ts = Triplestore(backend="rdflib")
-EX = ts.bind("ex", "http://example.com/ex#")
-ts.add_function(
-    func,
-    expects=[EX.arg1, EX.arg2],
-    returns=EX.sum,
-    standard="fno",
-)
-assert (
-    ts.serialize().strip()
-    == """
+    def func(a, b):
+        """Returns the sum of `a` and `b`."""
+        return a + b
+
+    ts = Triplestore(backend="rdflib")
+    EX = ts.bind("ex", "http://example.com/ex#")
+    ts.add_function(
+        func,
+        expects=[EX.arg1, EX.arg2],
+        returns=EX.sum,
+        standard="fno",
+    )
+    assert (
+        ts.serialize().strip()
+        == """
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ex: <http://example.com/ex#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -43,20 +48,19 @@ assert (
     rdfs:label "b"@en ;
     map:mapsTo ex:arg2 .
 """.strip()
-)
+    )
 
-
-ts2 = Triplestore(backend="rdflib")
-EX = ts2.bind("ex", "http://example.com/ex#")
-ts2.add_function(
-    func,
-    expects=[EX.arg1, EX.arg2],
-    returns=EX.sum,
-    standard="emmo",
-)
-assert (
-    ts2.serialize().strip()
-    == """
+    ts2 = Triplestore(backend="rdflib")
+    EX = ts2.bind("ex", "http://example.com/ex#")
+    ts2.add_function(
+        func,
+        expects=[EX.arg1, EX.arg2],
+        returns=EX.sum,
+        standard="emmo",
+    )
+    assert (
+        ts2.serialize().strip()
+        == """
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <http://emmo.info/emmo#> .
 @prefix ex: <http://example.com/ex#> .
@@ -77,20 +81,19 @@ ex:arg2 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
 
 ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
 """.strip()
-)
+    )
 
-
-ts3 = Triplestore(backend="rdflib")
-EX = ts3.bind("ex", "http://example.com/ex#")
-ts3.add_function(
-    func,
-    expects={"x": EX.arg1, "y": EX.arg2},
-    returns=EX.sum,
-    standard="emmo",
-)
-assert (
-    ts3.serialize().strip()
-    == """
+    ts3 = Triplestore(backend="rdflib")
+    EX = ts3.bind("ex", "http://example.com/ex#")
+    ts3.add_function(
+        func,
+        expects={"x": EX.arg1, "y": EX.arg2},
+        returns=EX.sum,
+        standard="emmo",
+    )
+    assert (
+        ts3.serialize().strip()
+        == """
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <http://emmo.info/emmo#> .
 @prefix ex: <http://example.com/ex#> .
@@ -111,4 +114,4 @@ ex:arg2 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
 
 ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
 """.strip()
-)
+    )
