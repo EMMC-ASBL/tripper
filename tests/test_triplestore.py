@@ -31,6 +31,9 @@ def test_triplestore(  # pylint: disable=too-many-locals
             serializing the Triplestore in this test.
 
     """
+    pytest.importorskip("rdflib")
+    pytest.importorskip("dlite")
+
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
     ts = Triplestore(backend)
@@ -103,6 +106,7 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
             serializing the Triplestore in this test.
 
     """
+    pytest.importorskip("rdflib")
     from tripper.triplestore import RDFS, Triplestore
 
     ts = Triplestore("rdflib")
@@ -150,6 +154,7 @@ def test_backend_rdflib_base_iri(
             object representing a temporary folder.
 
     """
+    pytest.importorskip("rdflib")
     import shutil
 
     from tripper.triplestore import RDF, Triplestore
