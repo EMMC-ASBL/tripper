@@ -33,7 +33,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
     """
     pytest.importorskip("rdflib")
     pytest.importorskip("dlite")
-    pytest.importorskip("SPRQLWrapper")
+    pytest.importorskip("SPARQLWrapper")
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
     ts = Triplestore(backend)
