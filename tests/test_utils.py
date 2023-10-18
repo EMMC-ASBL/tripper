@@ -35,7 +35,7 @@ def infer_SOFT7_IRIs():
     pytest.importorskip("pydantic")
     from typing import Any, Optional
 
-    from pydantic import (  # pylint: disable=no-name-in-module
+    from pydantic import (  # pylint: disable=no-name-in-module,import-error
         AnyUrl,
         BaseModel,
         Field,
