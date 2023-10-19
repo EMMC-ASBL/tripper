@@ -1192,6 +1192,12 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">infer_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return IRI of the individual that stands for object `obj`.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Please note that tripper does not depend on neither DLite nor Pydantic.</span>
+    <span class="c1"># Hence neither of these packages are imported.  However, due to duck-</span>
+    <span class="c1"># typing, infer_iri() is still able to recognise DLite and Pydantic</span>
+    <span class="c1"># objects and infer their IRIs.</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">iri</span> <span class="o">=</span> <span class="n">obj</span>
     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;uri&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
