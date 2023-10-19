@@ -1,6 +1,5 @@
 """Test collection."""
 
-# import warnings
 import pytest
 
 
