@@ -39,6 +39,12 @@ class UnusedArgumentWarning(Warning):
 
 def infer_iri(obj):
     """Return IRI of the individual that stands for object `obj`."""
+
+    # Please note that tripper does not depend on neither DLite nor Pydantic.
+    # Hence neither of these packages are imported.  However, due to duck-
+    # typing, infer_iri() is still able to recognise DLite and Pydantic
+    # objects and infer their IRIs.
+
     if isinstance(obj, str):
         iri = obj
     elif hasattr(obj, "uri") and isinstance(obj.uri, str):
