@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.2.10](https://github.com/EMMC-ASBL/tripper/tree/v0.2.10) (2023-10-19)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.9...v0.2.10)
+
+**Merged pull requests:**
+
+- Francescalb/testing dependencies [\#142](https://github.com/EMMC-ASBL/tripper/pull/142) ([francescalb](https://github.com/francescalb))
+- Clearified that tripper does not depend on DLite and Pydantic [\#136](https://github.com/EMMC-ASBL/tripper/pull/136) ([jesper-friis](https://github.com/jesper-friis))
+- Cleaned up mappings module [\#132](https://github.com/EMMC-ASBL/tripper/pull/132) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.2.9](https://github.com/EMMC-ASBL/tripper/tree/v0.2.9) (2023-09-29)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.8...v0.2.9)
