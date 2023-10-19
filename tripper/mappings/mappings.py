@@ -9,7 +9,7 @@ Shapes are automatically handled by expressing non-scalar quantities
 with numpy.
 
 """
-# pylint: disable=invalid-name,redefined-builtin
+# pylint: disable=invalid-name,redefined-builtin,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import subprocess  # nosec: B404
@@ -17,7 +17,6 @@ from collections import defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING, Mapping, Sequence
 
-import numpy as np
 from pint import Quantity  # remove
 
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
@@ -366,6 +365,15 @@ class MappingStep:
         Returns:
             A list of `(cost, routeno)` tuples.
         """
+        try:
+            import numpy as np  # pylint: disable=import-outside-toplevel
+        except ImportError as exc:
+            raise RuntimeError(
+                "Mappings.lowest_costs() requires numpy.\n"
+                "Install it with\n\n"
+                "    pip install numpy"
+            ) from exc
+
         result = []
         n = 0  # total number of routes
 
