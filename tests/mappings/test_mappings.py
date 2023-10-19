@@ -3,21 +3,18 @@
 
 # pylint: disable=invalid-name
 
+import pytest
+
 
 def test_mappings():
     """Test mappings.
     Uses rdflib as backend
     """
-    import pytest
 
     pytest.importorskip("rdflib")
-    # from pathlib import Path
 
     from tripper import Triplestore
     from tripper.mappings import mapping_routes
-
-    # Configure paths
-    # thisdir = Path(__file__).parent.absolute()
 
     ts = Triplestore(backend="rdflib")
 

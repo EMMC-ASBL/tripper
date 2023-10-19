@@ -1,10 +1,11 @@
 """Test convertions."""
 # pylint: disable=invalid-name
 
+import pytest
+
 
 def test_convertions():
     """Test convertions. Uses rdflib as triplestore backend"""
-    import pytest
 
     pytest.importorskip("rdflib")
     from tripper import Triplestore
