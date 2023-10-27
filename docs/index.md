@@ -1,6 +1,6 @@
 Tripper
 =======
-_Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends - the best ride when handling any triplestore._
+*Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends.*
 
 
 [![PyPI](https://img.shields.io/pypi/v/tripper?logo=pypi)](https://pypi.org/project/tripper)
@@ -30,6 +30,13 @@ To make it easy to work with IRIs, provide Tripper a set of pre-defined namespac
 New namespaces can be defined with the [`tripper.Namespace`][Namespace] class.
 
 A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] class.
+
+
+Advanced features
+-----------------
+The submodules `mappings` and `convert` provide additional functionality beyond interfacing triplestore backends:
+- **tripper.mappings**: traverse mappings stored in the triplestore and find possible mapping routes.
+- **tripper.convert**: convert between RDF and other data representations.
 
 
 Documentation
