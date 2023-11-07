@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.2.11](https://github.com/EMMC-ASBL/tripper/tree/v0.2.11) (2023-10-27)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.10...v0.2.11)
+
+**Merged pull requests:**
+
+- Added new section to README file [\#148](https://github.com/EMMC-ASBL/tripper/pull/148) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.2.10](https://github.com/EMMC-ASBL/tripper/tree/v0.2.10) (2023-10-19)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.9...v0.2.10)
