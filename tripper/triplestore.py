@@ -30,6 +30,7 @@ from tripper.namespace import (
     EMMO,
     FNO,
     MAP,
+    OTEIO,
     OWL,
     RDF,
     RDFS,
@@ -706,7 +707,11 @@ class Triplestore:
         base_iri: "Optional[str]" = None,
         standard: str = "emmo",
         cost: "Optional[Union[float, Callable]]" = None,
+        module_name: "Optional[str]" = None,
+        package_name: "Optional[str]" = None,
+        pypi_package_name: "Optional[str]" = None,
     ):
+        # pylint: disable=too-many-branches
         """Inspect function and add triples describing it to the triplestore.
 
         Parameters:
@@ -727,9 +732,19 @@ class Triplestore:
                 represented as a float.  It may be given either as a
                 float or as a callable taking the same arguments as `func`
                 returning the cost as a float.
+            module_name: Fully qualified name of Python module implementing
+                this function.  Default is to infer from `func`.
+                implementing the function.
+            package_name: Name of Python package implementing this function.
+                Default is inferred from either the module or first part of
+                `module_name`.
+            pypi_package_name: Name and version of PyPI package implementing
+                this mapping function (specified as in requirements.txt).
+                Defaults to `package_name`.
 
         Returns:
             func_iri: IRI of the added function.
+
         """
         if isinstance(expects, str):
             expects = [expects]
@@ -741,6 +756,52 @@ class Triplestore:
         self.function_repo[func_iri] = func if callable(func) else None
         if cost is not None:
             self._add_cost(cost, func_iri)
+
+        # Add standard-independent documentation of how to access the
+        # mapping function
+        if callable(func):
+            module = inspect.getmodule(func)
+            func_name = func.__name__
+            if not module_name:
+                if module and module.__name__ != "__main__":
+                    module_name = module.__name__
+            if not package_name:
+                package_name = module.__package__  # type: ignore
+            if not pypi_package_name:
+                pypi_package_name = package_name
+        else:
+            func_name = func
+
+        if func_name and module_name:
+            self.bind("oteio", OTEIO)
+            self.add(
+                (func_iri, OTEIO.hasPythonFunctionName, Literal(func_name))
+            )
+            self.add(
+                (func_iri, OTEIO.hasPythonModuleName, Literal(module_name))
+            )
+            if package_name:
+                self.add(
+                    (
+                        func_iri,
+                        OTEIO.hasPythonPackageName,
+                        Literal(package_name),
+                    )
+                )
+            if pypi_package_name:
+                self.add(
+                    (
+                        func_iri,
+                        OTEIO.hasPypiPackageName,
+                        Literal(pypi_package_name),
+                    )
+                )
+        else:
+            warnings.warn(
+                f"Module name for function '{func}' is not provided and "
+                "cannot be inferred.  How to access the function will not "
+                "be documented."
+            )
 
         return func_iri
 
