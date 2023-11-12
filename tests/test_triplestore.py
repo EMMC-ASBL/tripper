@@ -163,7 +163,7 @@ def test_backend_rdflib_base_iri(
     tmp_onto = tmp_path / "family.ttl"
     shutil.copy(ontopath_family, tmp_onto)
 
-    ts = Triplestore(backend="rdflib", base_iri=f"file://{tmp_onto}")
+    ts = Triplestore(backend="rdflib")
     FAM = ts.bind(  # pylint: disable=invalid-name
         "fam", "http://onto-ns.com/ontologies/examples/family#"
     )

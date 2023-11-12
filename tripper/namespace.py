@@ -1,5 +1,11 @@
 """Provides a simple representation of namespaces."""
-from tripper.errors import NamespaceError, NoSuchIRIError
+import warnings
+
+from tripper.errors import (
+    NamespaceError,
+    NoSuchIRIError,
+    UnusedArgumentWarning,
+)
 
 
 class Namespace:
@@ -72,9 +78,12 @@ class Namespace:
                 Triplestore,
             )
 
-            triplestore = Triplestore(
-                "rdflib", base_iri=iri, triplestore_url=triplestore_url
-            )
+            # Create triplestore, while ignoring UnusedArgumentWarning
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=UnusedArgumentWarning)
+                triplestore = Triplestore(
+                    "rdflib", base_iri=iri, triplestore_url=triplestore_url
+                )
 
         self._cache = {} if cachemode != Namespace.NO_CACHE else None
         #
