@@ -15,3 +15,7 @@ class NamespaceError(TriplestoreError):
 
 class NoSuchIRIError(NamespaceError):
     """Namespace has no such IRI."""
+
+
+class CannotGetFunctionError(TriplestoreError):
+    """Not able to get function documented in the triplestore."""

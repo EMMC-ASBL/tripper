@@ -17,12 +17,18 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 import importlib
 import inspect
 import re
+import subprocess  # nosec
 import sys
 import warnings
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from tripper.errors import NamespaceError, TriplestoreError, UniquenessError
+from tripper.errors import (
+    CannotGetFunctionError,
+    NamespaceError,
+    TriplestoreError,
+    UniquenessError,
+)
 from tripper.literal import Literal
 from tripper.namespace import (
     DCTERMS,
@@ -698,6 +704,69 @@ class Triplestore:
         if cost is not None:
             dest = target if target_cost else source
             self._add_cost(cost, dest)
+
+    def get_function(self, func_iri):
+        """Returns Python function object corresponding to `func_iri`.
+
+        Raises CannotGetFunctionError on failure.
+
+        If the function is cached in the the `function_repo` attribute,
+        it is returned directly.
+
+        Otherwise an attempt is made to import the module implementing the
+        function.  If that fails, the corresponding PyPI package is first
+        installed before importing the module again.
+
+        Finally the function if cached and returned.
+        """
+        if func_iri in self.function_repo and self.function_repo[func_iri]:
+            return self.function_repo[func_iri]
+
+        func_name = self.value(func_iri, OTEIO.hasPythonFunctionName)
+        module_name = self.value(func_iri, OTEIO.hasPythonModuleName)
+        package_name = self.value(func_iri, OTEIO.hasPythonPackageName)
+
+        if not func_name or not module_name:
+            raise CannotGetFunctionError(
+                f"no documentation of how to access function: {func_iri}"
+            )
+
+        # Import module implementing the function
+        try:
+            module = importlib.import_module(module_name, package_name)
+        except ModuleNotFoundError:
+            # If we cannot find the module, try to install the pypi
+            # package and try to import the module again
+            pypi_package = self.value(func_iri, OTEIO.hasPypiPackageName)
+            if not pypi_package:
+                raise CannotGetFunctionError(  # pylint: disable=raise-missing-from
+                    f"PyPI package not documented for function: {func_iri}"
+                )
+
+            try:
+                subprocess.check_call(  # nosec
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        f'"{pypi_package}"',
+                    ]
+                )
+            except (subprocess.CalledProcessError, ModuleNotFoundError) as exc:
+                raise CannotGetFunctionError(
+                    f"failed installing PyPI package {pypi_package}"
+                ) from exc
+
+            try:
+                module = importlib.import_module(module_name, package_name)
+            except (subprocess.CalledProcessError, ModuleNotFoundError) as exc:
+                raise CannotGetFunctionError() from exc
+
+        func = getattr(module, func_name)
+        self.function_repo[func_iri] = func
+
+        return func
 
     def add_function(
         self,
