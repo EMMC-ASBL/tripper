@@ -57,6 +57,10 @@ class MissingRelationError(MappingError):
     """There are missing relations in RDF triples."""
 
 
+class UnknownUnitError(MappingError):
+    """A unit does not exists in the pint unit registry."""
+
+
 class StepType(Enum):
     """Type of mapping step when going from the output to the inputs."""
 
