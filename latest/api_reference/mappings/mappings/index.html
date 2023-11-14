@@ -889,6 +889,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.mappings.mappings.UnknownUnitError" class="md-nav__link">
+    UnknownUnitError
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.mappings.mappings.Value" class="md-nav__link">
     Value
   </a>
@@ -1142,6 +1149,13 @@
         <li class="md-nav__item">
   <a href="#tripper.mappings.mappings.StepType" class="md-nav__link">
     StepType
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.mappings.mappings.UnknownUnitError" class="md-nav__link">
+    UnknownUnitError
   </a>
   
 </li>
@@ -2899,6 +2913,37 @@ StepType            (<span title="enum.Enum">Enum</span>)
 
 
 
+<h2 class="doc doc-heading" id="tripper.mappings.mappings.UnknownUnitError">
+        <code>
+UnknownUnitError            (<a class="autorefs autorefs-internal" title="tripper.mappings.mappings.MappingError" href="#tripper.mappings.mappings.MappingError">MappingError</a>)
+        </code>
+
+
+
+<a class="headerlink" href="#tripper.mappings.mappings.UnknownUnitError" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>A unit does not exists in the pint unit registry.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UnknownUnitError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A unit does not exists in the pint unit registry.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h2 class="doc doc-heading" id="tripper.mappings.mappings.Value">
         <code>
 Value        </code>
@@ -3673,7 +3718,7 @@ value (with no unit).</p></td>
 
 
 <h2 class="doc doc-heading" id="tripper.mappings.mappings.mapping_routes">
-<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">emmo_mapper</span> <span class="n">at</span> <span class="mh">0x7fcb951027a0</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7fcb95102830</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">value_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mappingstep_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/emmo#hasAccessFunction&#39;</span><span class="p">,</span> <span class="n">hasDataValue</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#value&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">emmo_mapper</span> <span class="n">at</span> <span class="mh">0x7fef771048c0</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7fef77104950</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">value_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mappingstep_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/domain-mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/datamodel#hasCost&#39;</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="o">=</span><span class="s1">&#39;http://emmo.info/emmo#hasAccessFunction&#39;</span><span class="p">,</span> <span class="n">hasDataValue</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#value&#39;</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.mappings.mappings.mapping_routes" title="Permanent link">&para;</a></h2>
