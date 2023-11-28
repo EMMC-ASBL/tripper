@@ -753,15 +753,20 @@ class Triplestore:
                         f'"{pypi_package}"',
                     ]
                 )
-            except (subprocess.CalledProcessError, ModuleNotFoundError) as exc:
+            except subprocess.CalledProcessError as exc:
                 raise CannotGetFunctionError(
                     f"failed installing PyPI package {pypi_package}"
                 ) from exc
 
             try:
                 module = importlib.import_module(module_name, package_name)
-            except (subprocess.CalledProcessError, ModuleNotFoundError) as exc:
-                raise CannotGetFunctionError() from exc
+            except ModuleNotFoundError as exc:
+                raise CannotGetFunctionError(
+                    f"failed importing module {module_name}"
+                    + f" from {package_name}"
+                    if package_name
+                    else ""
+                ) from exc
 
         func = getattr(module, func_name)
         self.function_repo[func_iri] = func
@@ -776,11 +781,12 @@ class Triplestore:
         base_iri: "Optional[str]" = None,
         standard: str = "emmo",
         cost: "Optional[Union[float, Callable]]" = None,
+        func_name: "Optional[str]" = None,
         module_name: "Optional[str]" = None,
         package_name: "Optional[str]" = None,
         pypi_package_name: "Optional[str]" = None,
     ):
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-arguments
         """Inspect function and add triples describing it to the triplestore.
 
         Parameters:
@@ -801,6 +807,7 @@ class Triplestore:
                 represented as a float.  It may be given either as a
                 float or as a callable taking the same arguments as `func`
                 returning the cost as a float.
+            func_name: Function name.  Needed if `func` is given as an IRI.
             module_name: Fully qualified name of Python module implementing
                 this function.  Default is to infer from `func`.
                 implementing the function.
@@ -829,17 +836,16 @@ class Triplestore:
         # Add standard-independent documentation of how to access the
         # mapping function
         if callable(func):
-            module = inspect.getmodule(func)
             func_name = func.__name__
+            module = inspect.getmodule(func)
+            if not module:
+                raise TypeError("xxx")
             if not module_name:
-                if module and module.__name__ != "__main__":
-                    module_name = module.__name__
+                module_name = module.__name__
             if not package_name:
                 package_name = module.__package__  # type: ignore
             if not pypi_package_name:
                 pypi_package_name = package_name
-        else:
-            func_name = func
 
         if func_name and module_name:
             self.bind("oteio", OTEIO)
@@ -867,9 +873,9 @@ class Triplestore:
                 )
         else:
             warnings.warn(
-                f"Module name for function '{func}' is not provided and "
-                "cannot be inferred.  How to access the function will not "
-                "be documented."
+                f"Function and module name for function '{func}' is not "
+                "provided and cannot be inferred.  How to access the "
+                "function will not be documented."
             )
 
         return func_iri
