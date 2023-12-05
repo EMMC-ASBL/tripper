@@ -705,7 +705,7 @@ class Triplestore:
             dest = target if target_cost else source
             self._add_cost(cost, dest)
 
-    def get_function(self, func_iri):
+    def _get_function(self, func_iri):
         """Returns Python function object corresponding to `func_iri`.
 
         Raises CannotGetFunctionError on failure.
@@ -717,7 +717,11 @@ class Triplestore:
         function.  If that fails, the corresponding PyPI package is first
         installed before importing the module again.
 
-        Finally the function if cached and returned.
+        Finally the function is cached and returned.
+
+        Note: Don't use call this method directly.  Use instead the
+        `eval_function()` method, which will at some point will provide
+        sandboxing for security.
         """
         if func_iri in self.function_repo and self.function_repo[func_iri]:
             return self.function_repo[func_iri]
@@ -744,26 +748,27 @@ class Triplestore:
                 )
 
             try:
-                subprocess.check_call(  # nosec
-                    [
+                subprocess.run(  # nosec
+                    args=[
                         sys.executable,
                         "-m",
                         "pip",
                         "install",
-                        f'"{pypi_package}"',
-                    ]
+                        pypi_package,
+                    ],
+                    check=True,
                 )
             except subprocess.CalledProcessError as exc:
                 raise CannotGetFunctionError(
-                    f"failed installing PyPI package {pypi_package}"
+                    f"failed installing PyPI package '{pypi_package}'"
                 ) from exc
 
             try:
                 module = importlib.import_module(module_name, package_name)
             except ModuleNotFoundError as exc:
                 raise CannotGetFunctionError(
-                    f"failed importing module {module_name}"
-                    + f" from {package_name}"
+                    f"failed importing module '{module_name}'"
+                    + f" from '{package_name}'"
                     if package_name
                     else ""
                 ) from exc
@@ -772,6 +777,31 @@ class Triplestore:
         self.function_repo[func_iri] = func
 
         return func
+
+    def eval_function(self, func_iri, args=(), kwargs=None):
+        """Evaluate mapping function and return the result.
+
+        Parameters:
+            func_iri: IRI of the function to be evaluated.
+            args: Sequence of positional arguments passed to the function.
+            kwargs: Mapping of keyword arguments passed to the function.
+
+        Returns:
+            The return value of the function.
+
+        Note:
+            The current implementation does not protect against side
+            effect or malicious code.  Be warned!
+            This may be improved in the future.
+        """
+        func = self._get_function(func_iri)
+        if not kwargs:
+            kwargs = {}
+
+        # FIXME: Add sandboxing
+        result = func(*args, **kwargs)
+
+        return result
 
     def add_function(
         self,
