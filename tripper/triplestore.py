@@ -888,7 +888,7 @@ class Triplestore:
     def _add_function_doc(
         self,
         func_iri: "str",
-        func: "Optional[callable]" = None,
+        func: "Optional[Callable]" = None,
         func_name: "Optional[str]" = None,
         module_name: "Optional[str]" = None,
         package_name: "Optional[str]" = None,
