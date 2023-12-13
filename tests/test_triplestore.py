@@ -182,6 +182,7 @@ def test_backend_rdflib_graph(
 ) -> None:
     """Test rdflib backend, using the `graph` keyword argument to expose an
     existing rdflib graph with tripper."""
+    pytest.importorskip("rdflib")
     from rdflib import Graph, URIRef
 
     from tripper import RDF, RDFS, Triplestore
