@@ -1032,9 +1032,12 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
                 <span class="n">Triplestore</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">triplestore</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span>
-                <span class="s2">&quot;rdflib&quot;</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">triplestore_url</span><span class="o">=</span><span class="n">triplestore_url</span>
-            <span class="p">)</span>
+            <span class="c1"># Create triplestore, while ignoring UnusedArgumentWarning</span>
+            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnusedArgumentWarning</span><span class="p">)</span>
+                <span class="n">triplestore</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span>
+                    <span class="s2">&quot;rdflib&quot;</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">triplestore_url</span><span class="o">=</span><span class="n">triplestore_url</span>
+                <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">cachemode</span> <span class="o">!=</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">NO_CACHE</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="c1">#</span>
