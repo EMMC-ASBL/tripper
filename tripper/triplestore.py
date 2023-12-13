@@ -859,7 +859,6 @@ class Triplestore:
 
         Returns:
             func_iri: IRI of the added function.
-
         """
         if isinstance(expects, str):
             expects = [expects]
@@ -963,6 +962,7 @@ class Triplestore:
         self,
         cost: "Union[float, Callable]",
         dest_iri,
+        base_iri=None,
         pypi_package_name=None,
     ):
         """Help function that adds `cost` to destination IRI `dest_iri`.
@@ -976,24 +976,35 @@ class Triplestore:
 
                 and returning the cost as a float.
             dest_iri: destination iri that the cost should be associated with.
+            base_iri: Base of the IRI representing the function in the
+                knowledge base.  Defaults to the base IRI of the triplestore.
             pypi_package_name: Name and version of PyPI package implementing
                 this cost function (specified as in requirements.txt).
         """
+        if base_iri is None:
+            base_iri = self.base_iri if self.base_iri else ":"
+
         if self.has(dest_iri, DM.hasCost):
             warnings.warn(f"A cost is already assigned to IRI: {dest_iri}")
         elif callable(cost):
-            cost_id = f"cost_function{function_id(cost)}"
-            self.add((dest_iri, DM.hasCost, Literal(cost_id)))
-            self.function_repo[cost_id] = cost
+            cost_iri = f"{base_iri}cost_function{function_id(cost)}"
+            self.add((dest_iri, DM.hasCost, Literal(cost_iri)))
+            self.function_repo[cost_iri] = cost
+            self._add_function_doc(
+                func=cost,
+                func_iri=cost_iri,
+                pypi_package_name=pypi_package_name,
+            )
         else:
             self.add((dest_iri, DM.hasCost, Literal(cost)))
 
-        if callable(cost):
-            self._add_function_doc(
-                func=cost,
-                func_iri=cost_id,
-                pypi_package_name=pypi_package_name,
-            )
+    def _get_cost(self, dest_iri, input_iris=(), output_iri=None):
+        """Return evaluated cost for given destination iri."""
+        v = self.value(dest_iri, DM.hasCost)
+        if v.datatype:
+            return v.value
+        cost = self._get_function(v.value)
+        return cost(self, input_iris, output_iri)
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
