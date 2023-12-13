@@ -20,7 +20,8 @@ from rdflib import URIRef
 from rdflib.util import guess_format
 
 from tripper import Literal
-from tripper.utils import UnusedArgumentWarning, parse_literal
+from tripper.errors import UnusedArgumentWarning
+from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
@@ -68,9 +69,9 @@ class RdflibStrategy:
         format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
     ) -> None:
         if base_iri:
-            warnings.warn("base_iri", UnusedArgumentWarning, stacklevel=2)
+            warnings.warn("base_iri", UnusedArgumentWarning, stacklevel=3)
         if database:
-            warnings.warn("database", UnusedArgumentWarning, stacklevel=2)
+            warnings.warn("database", UnusedArgumentWarning, stacklevel=3)
 
         self.graph = Graph()
         self.triplestore_url = triplestore_url
