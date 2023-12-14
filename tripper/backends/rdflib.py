@@ -60,7 +60,7 @@ class RdflibStrategy:
             overwritten with the current content of the triplestore.
         format: Format of storage specified with `base_iri`.
         graph: A rdflib.Graph instance to expose with tripper, instead of
-            creating a new empth Graph object.
+            creating a new empty Graph object.
     """
 
     def __init__(
