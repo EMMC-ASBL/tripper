@@ -3,7 +3,7 @@
 
 ## Type of change:
 <!-- Put an `x` in the box that applies. -->
-- [ ] Bug fix.
+- [ ] Bug fix and code cleanup.
 - [ ] New feature.
 - [ ] Documentation update.
 - [ ] Testing.

@@ -33,10 +33,6 @@ __all__ = (
 )
 
 
-class UnusedArgumentWarning(Warning):
-    """Argument is unused."""
-
-
 def infer_iri(obj):
     """Return IRI of the individual that stands for object `obj`."""
 
