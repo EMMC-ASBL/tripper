@@ -650,8 +650,11 @@ class Triplestore:
             target: IRI of target ontological concept.
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
-                float or as a callable taking the value of the mapped
-                quantity as input and returning the cost as a float.
+                float or as a callable taking three arguments
+
+                    cost(triplestore, input_iris, output_iri)
+
+                and returning the cost as a float.
             target_cost: Whether the cost is assigned to mapping steps
                 that have `target` as output.
         """
@@ -679,8 +682,11 @@ class Triplestore:
                 an entity IRI.
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
-                float or as a callable taking the value of the mapped
-                quantity as input and returning the cost as a float.
+                float or as a callable taking three arguments
+
+                    cost(triplestore, input_iris, output_iri)
+
+                and returning the cost as a float.
             target_cost: Whether the cost is assigned to mapping steps
                 that have `target` as output.
 
@@ -835,8 +841,11 @@ class Triplestore:
                 - "fno": Function Ontology (FnO)
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
-                float or as a callable taking the same arguments as `func`
-                returning the cost as a float.
+                float or as a callable taking three arguments
+
+                    cost(triplestore, input_iris, output_iri)
+
+                and returning the cost as a float.
             func_name: Function name.  Needed if `func` is given as an IRI.
             module_name: Fully qualified name of Python module implementing
                 this function.  Default is to infer from `func`.
@@ -850,7 +859,6 @@ class Triplestore:
 
         Returns:
             func_iri: IRI of the added function.
-
         """
         if isinstance(expects, str):
             expects = [expects]
@@ -865,11 +873,52 @@ class Triplestore:
 
         # Add standard-independent documentation of how to access the
         # mapping function
+        self._add_function_doc(
+            func=func if callable(func) else None,
+            func_iri=func_iri,
+            func_name=func_name,
+            module_name=module_name,
+            package_name=package_name,
+            pypi_package_name=pypi_package_name,
+        )
+
+        return func_iri
+
+    def _add_function_doc(
+        self,
+        func_iri: "str",
+        func: "Optional[Callable]" = None,
+        func_name: "Optional[str]" = None,
+        module_name: "Optional[str]" = None,
+        package_name: "Optional[str]" = None,
+        pypi_package_name: "Optional[str]" = None,
+    ):
+        """Add standard-independent documentation of how to access the
+        function.
+
+        Parameters:
+            func_iri: IRI of individual in the triplestore that stands for
+                the function.
+            func: Optional reference to the function itself.
+            func_name: Function name.  Needed if `func` is given as an IRI.
+            module_name: Fully qualified name of Python module implementing
+                this function.  Default is to infer from `func`.
+                implementing the function.
+            package_name: Name of Python package implementing this function.
+                Default is inferred from either the module or first part of
+                `module_name`.
+            pypi_package_name: Name and version of PyPI package implementing
+                this mapping function (specified as in requirements.txt).
+                Defaults to `package_name`.
+        """
         if callable(func):
             func_name = func.__name__
             module = inspect.getmodule(func)
             if not module:
-                raise TypeError("xxx")
+                raise TypeError(
+                    f"inspect is not able to infer module from function "
+                    f"'{func.__name__}'"
+                )
             if not module_name:
                 module_name = module.__name__
             if not package_name:
@@ -903,32 +952,59 @@ class Triplestore:
                 )
         else:
             warnings.warn(
-                f"Function and module name for function '{func}' is not "
-                "provided and cannot be inferred.  How to access the "
-                "function will not be documented."
+                f"Function and module name for function '{func_name}' "
+                "is not provided and cannot be inferred.  How to access "
+                "the function will not be documented.",
+                stacklevel=3,
             )
 
-        return func_iri
-
-    def _add_cost(self, cost: "Union[float, Callable[[], float]]", dest_iri):
+    def _add_cost(
+        self,
+        cost: "Union[float, Callable]",
+        dest_iri,
+        base_iri=None,
+        pypi_package_name=None,
+    ):
         """Help function that adds `cost` to destination IRI `dest_iri`.
 
-        `cost` should be either a float or a Callable returning a float.
+        Parameters:
+            cost: User-defined cost of following this mapping relation
+                represented as a float.  It may be given either as a
+                float or as a callable taking three arguments
 
-        If `cost` is a callable it is just referred to with a literal
-        id and is not ontologically described as a function.  The
-        expected input arguments depends on the context, which is why
-        this function is not part of the public API.  Use the add_mapsTo()
-        and add_function() methods instead.
+                    cost(triplestore, input_iris, output_iri)
+
+                and returning the cost as a float.
+            dest_iri: destination iri that the cost should be associated with.
+            base_iri: Base of the IRI representing the function in the
+                knowledge base.  Defaults to the base IRI of the triplestore.
+            pypi_package_name: Name and version of PyPI package implementing
+                this cost function (specified as in requirements.txt).
         """
+        if base_iri is None:
+            base_iri = self.base_iri if self.base_iri else ":"
+
         if self.has(dest_iri, DM.hasCost):
             warnings.warn(f"A cost is already assigned to IRI: {dest_iri}")
         elif callable(cost):
-            cost_id = f"cost_function{function_id(cost)}"
-            self.add((dest_iri, DM.hasCost, Literal(cost_id)))
-            self.function_repo[cost_id] = cost
+            cost_iri = f"{base_iri}cost_function{function_id(cost)}"
+            self.add((dest_iri, DM.hasCost, Literal(cost_iri)))
+            self.function_repo[cost_iri] = cost
+            self._add_function_doc(
+                func=cost,
+                func_iri=cost_iri,
+                pypi_package_name=pypi_package_name,
+            )
         else:
             self.add((dest_iri, DM.hasCost, Literal(cost)))
+
+    def _get_cost(self, dest_iri, input_iris=(), output_iri=None):
+        """Return evaluated cost for given destination iri."""
+        v = self.value(dest_iri, DM.hasCost)
+        if v.datatype:
+            return v.value
+        cost = self._get_function(v.value)
+        return cost(self, input_iris, output_iri)
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
