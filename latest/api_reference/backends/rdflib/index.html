@@ -1099,6 +1099,13 @@ overwritten with the current content of the triplestore.</p></td>
         <td><p>Format of storage specified with <code>base_iri</code>.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>Graph</code></td>
+        <td><p>A rdflib.Graph instance to expose with tripper, instead of
+creating a new empty Graph object.</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -1113,6 +1120,8 @@ overwritten with the current content of the triplestore.</p></td>
 <span class="sd">            storage.  When `close()` is called, the storage will be</span>
 <span class="sd">            overwritten with the current content of the triplestore.</span>
 <span class="sd">        format: Format of storage specified with `base_iri`.</span>
+<span class="sd">        graph: A rdflib.Graph instance to expose with tripper, instead of</span>
+<span class="sd">            creating a new empty Graph object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -1121,13 +1130,14 @@ overwritten with the current content of the triplestore.</p></td>
         <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="n">graph</span><span class="p">:</span> <span class="s2">&quot;Graph&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">base_iri</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;base_iri&quot;</span><span class="p">,</span> <span class="n">UnusedArgumentWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">database</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="n">UnusedArgumentWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="k">else</span> <span class="n">Graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span> <span class="o">=</span> <span class="n">triplestore_url</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
