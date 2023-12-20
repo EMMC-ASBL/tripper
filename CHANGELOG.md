@@ -1,6 +1,22 @@
 # Changelog
 
-## [v0.2.11](https://github.com/EMMC-ASBL/tripper/tree/v0.2.11) (2023-10-27)
+## [v0.2.13](https://github.com/EMMC-ASBL/tripper/tree/v0.2.13) (2023-11-14)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.12...v0.2.13)
+
+**Merged pull requests:**
+
+- Added UnknownUnitError [\#153](https://github.com/EMMC-ASBL/tripper/pull/153) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.2.12](https://github.com/EMMC-ASBL/tripper/tree/v0.2.12) (2023-11-07)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.11...v0.2.12)
+
+**Merged pull requests:**
+
+- Expand pint requirements to include more versions [\#150](https://github.com/EMMC-ASBL/tripper/pull/150) ([francescalb](https://github.com/francescalb))
+
+## [v0.2.11](https://github.com/EMMC-ASBL/tripper/tree/v0.2.11) (2023-10-30)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.10...v0.2.11)
 
