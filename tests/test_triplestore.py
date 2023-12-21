@@ -124,7 +124,6 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
         EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost
     )
     assert list(ts.function_repo.values())[0] == cost
-    # assert ts.eval_function(EX.Sum
 
     def func(parameter):
         return parameter + 1
