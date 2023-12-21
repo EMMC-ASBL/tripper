@@ -1,6 +1,7 @@
-"""Exceptions for the triplestore package."""
+"""Exceptions and warnings for the triplestore package."""
 
 
+# === Exceptions ===
 class TriplestoreError(Exception):
     """Base exception for triplestore errors."""
 
@@ -19,3 +20,8 @@ class NoSuchIRIError(NamespaceError):
 
 class CannotGetFunctionError(TriplestoreError):
     """Not able to get function documented in the triplestore."""
+
+
+# === Warnings ===
+class UnusedArgumentWarning(Warning):
+    """Argument is unused."""

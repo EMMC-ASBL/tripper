@@ -164,7 +164,7 @@ def test_backend_rdflib_base_iri(
     tmp_onto = tmp_path / "family.ttl"
     shutil.copy(ontopath_family, tmp_onto)
 
-    ts = Triplestore(backend="rdflib", base_iri=f"file://{tmp_onto}")
+    ts = Triplestore(backend="rdflib")
     FAM = ts.bind(  # pylint: disable=invalid-name
         "fam", "http://onto-ns.com/ontologies/examples/family#"
     )
@@ -176,6 +176,31 @@ def test_backend_rdflib_base_iri(
         ]
     )
     ts.close()
+
+
+def test_backend_rdflib_graph(
+    get_ontology_path: "Callable[[str], Path]",
+) -> None:
+    """Test rdflib backend, using the `graph` keyword argument to expose an
+    existing rdflib graph with tripper."""
+    pytest.importorskip("rdflib")
+    from rdflib import Graph, URIRef
+
+    from tripper import RDF, RDFS, Triplestore
+
+    graph = Graph()
+    graph.parse(source=get_ontology_path("family"))
+
+    # Test that triples from the original graph are available via tripper
+    ts = Triplestore(backend="rdflib", graph=graph)
+    FAM = ts.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
+    assert ts.value(FAM.Father, RDFS.subClassOf) == FAM.Person
+    assert ts.value(FAM.Dauther, RDFS.subClassOf) == FAM.Person
+
+    # Test that triples added with tripper are available in the original
+    # graph
+    ts.add_triples([(":Nils", RDF.type, FAM.Father)])
+    assert graph.value(URIRef(":Nils"), URIRef(RDF.type)) == URIRef(FAM.Father)
 
 
 def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:

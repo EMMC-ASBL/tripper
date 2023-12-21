@@ -20,7 +20,8 @@ from rdflib import URIRef
 from rdflib.util import guess_format
 
 from tripper import Literal
-from tripper.utils import UnusedArgumentWarning, parse_literal
+from tripper.errors import UnusedArgumentWarning
+from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
@@ -58,6 +59,8 @@ class RdflibStrategy:
             storage.  When `close()` is called, the storage will be
             overwritten with the current content of the triplestore.
         format: Format of storage specified with `base_iri`.
+        graph: A rdflib.Graph instance to expose with tripper, instead of
+            creating a new empty Graph object.
     """
 
     def __init__(
@@ -66,13 +69,14 @@ class RdflibStrategy:
         database: "Optional[str]" = None,
         triplestore_url: "Optional[str]" = None,
         format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        graph: "Graph" = None,
     ) -> None:
         if base_iri:
-            warnings.warn("base_iri", UnusedArgumentWarning, stacklevel=2)
+            warnings.warn("base_iri", UnusedArgumentWarning, stacklevel=3)
         if database:
-            warnings.warn("database", UnusedArgumentWarning, stacklevel=2)
+            warnings.warn("database", UnusedArgumentWarning, stacklevel=3)
 
-        self.graph = Graph()
+        self.graph = graph if graph else Graph()
         self.triplestore_url = triplestore_url
         if self.triplestore_url is not None:
             if format is None:
