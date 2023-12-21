@@ -784,7 +784,7 @@ class Triplestore:
 
         return func
 
-    def eval_function(self, func_iri, args=(), kwargs=None):
+    def eval_function(self, func_iri, args=(), kwargs=None) -> "Any":
         """Evaluate mapping function and return the result.
 
         Parameters:
