@@ -1,5 +1,9 @@
 """Test Triplestore.eval_function()"""
+import pytest
+
 from tripper import Triplestore
+
+pytest.importorskip("rdflib")
 
 
 def func(a, b):
