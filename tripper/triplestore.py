@@ -147,9 +147,9 @@ class Triplestore:
         self.backend_name = backend_name
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
-        # Keep functions in the triplestore for convienence even though
-        # they usually do not belong to the triplestore per se.
+        # Cache functions in the triplestore for fast access
         self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
+
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
 

@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Mapping, Sequence
 from pint import Quantity  # remove
 
 from tripper import DM, EMMO, FNO, MAP, RDF, RDFS
+from tripper.errors import CannotGetFunctionError
 from tripper.triplestore import hasAccessFunction, hasDataValue
 from tripper.utils import parse_literal
 
@@ -889,17 +890,29 @@ def mapping_routes(
     soAFun = dict(triplestore.subject_objects(hasAccessFunction))
     soDVal = dict(triplestore.subject_objects(hasDataValue))
 
+    def getfunc(func_iri, default=None):
+        """Returns callable function corresponding to `func_iri`.
+        Raises CannotGetFunctionError if func_iri cannot be found."""
+        if func_iri is None:
+            return None
+        if func_iri in function_repo and function_repo[func_iri]:
+            return function_repo[func_iri]
+        try:
+            return (
+                triplestore._get_function(  # pylint: disable=protected-access
+                    func_iri
+                )
+            )
+        except CannotGetFunctionError:
+            return default
+
     def getcost(target, stepname):
         """Returns the cost assigned to IRI `target` for a mapping step
         of type `stepname`."""
         cost = soCost.get(target, default_costs[stepname])
-        if cost is None:
-            return None
-        return (
-            function_repo[cost]
-            if cost in function_repo
-            else float(parse_literal(cost))
-        )
+        if cost is None or callable(cost) or isinstance(cost, float):
+            return cost
+        return getfunc(cost, float(parse_literal(cost)))
 
     def walk(target, visited, step):
         """Walk backward in rdf graph from `node` to sources."""
@@ -914,7 +927,7 @@ def mapping_routes(
             step.cost = getcost(target, stepname)
             if node in soAFun:
                 value = value_class(
-                    value=triplestore.function_repo[soAFun[node]],
+                    value=getfunc(soAFun[node]),
                     unit=soUnit.get(node),
                     iri=node,
                     property_iri=soInst.get(node),
@@ -962,10 +975,10 @@ def mapping_routes(
             addnode(node, StepType.INV_SUBCLASSOF, "subClassOf")
 
         for fmap in function_mappers:
-            for func, input_iris in fmap(triplestore)[target]:
+            for func_iri, input_iris in fmap(triplestore)[target]:
                 step.steptype = StepType.FUNCTION
-                step.cost = getcost(func, "function")
-                step.function = function_repo.get(func)
+                step.cost = getcost(func_iri, "function")
+                step.function = getfunc(func_iri)
                 step.join_mode = True
                 for input_iri in input_iris:
                     step0 = mappingstep_class(
