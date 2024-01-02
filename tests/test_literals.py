@@ -153,3 +153,22 @@ def test_parse_literal() -> None:
     assert literal.value == "value"
     assert literal.lang is None
     assert literal.datatype == "http://example.com/vocab#mytype"
+
+
+# def test_equality() -> None:
+#     """Test equality."""
+if True:  # pylint: disable=using-constant-test
+    from tripper import XSD, Literal
+
+    assert Literal("text", datatype=XSD.string) == "text"
+    assert Literal("text") == "text"
+    assert Literal("text") != "text2"
+    # assert Literal("text", datatype=RDF.HTML) != "text"
+    # assert Literal(1) == 1
+    # assert Literal(1) == 1
+    # assert Literal(1) != 1.0
+    # assert Literal(1, datatype=XSD.double) == 1.0
+    # assert Literal("1", datatype=XSD.double) == 1.0
+    # assert Literal("1.", datatype=XSD.double) == 1.0
+    # assert Literal(True) == True
+    assert Literal(True) == "True"

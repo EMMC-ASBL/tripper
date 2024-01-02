@@ -75,39 +75,64 @@ class Literal(str):
         lang: "Optional[str]" = None,
         datatype: "Optional[Any]" = None,
     ):
+        # pylint: disable=too-many-branches
         string = super().__new__(cls, value)
+        string.lang = None
+        string.datatype = None
+
+        # Get lang
         if lang:
             if datatype:
                 raise TypeError(
                     "A literal can only have one of `lang` or `datatype`."
                 )
             string.lang = str(lang)
-            string.datatype = None
-        else:
-            string.lang = None
-            if datatype:
-                string.datatype = cls.datatypes.get(datatype, (datatype,))[0]
-            elif isinstance(value, str):
-                string.datatype = None
-            elif isinstance(value, bool):
-                string.datatype = XSD.boolean
-            elif isinstance(value, int):
-                string.datatype = XSD.integer
-            elif isinstance(value, float):
-                string.datatype = XSD.double
-            elif isinstance(value, (bytes, bytearray)):
+
+        # Get datatype
+        elif datatype in cls.datatypes:
+            string.datatype = cls.datatypes[datatype][0]
+        elif datatype:
+            # Create canonical string representation of value for
+            # given datatype
+            val = None
+            for typ, names in cls.datatypes.items():
+                for name in names:
+                    if name == datatype:
+                        try:
+                            val = str(typ(value))
+                            break
+                        except:  # pylint: disable=bare-except
+                            pass  # nosec
+                    if val:
+                        break
+            if val is not None:
                 # Re-initialize the value anew, similarly to what is done in
                 # the first line of this method.
-                string = super().__new__(cls, value.hex())
+                string = super().__new__(cls, val)
                 string.lang = None
-                string.datatype = XSD.hexBinary
-            elif isinstance(value, datetime):
-                string.datatype = XSD.dateTime
-                # TODO:
-                #   - XSD.base64Binary
-                #   - XSD.byte, XSD.unsignedByte
-            else:
-                string.datatype = None
+
+            string.datatype = datatype
+
+        # Infer datatype from value
+        # elif isinstance(value, str):
+        #    string.datatype = XSD.string
+        elif isinstance(value, bool):
+            string.datatype = XSD.boolean
+        elif isinstance(value, int):
+            string.datatype = XSD.integer
+        elif isinstance(value, float):
+            string.datatype = XSD.double
+        elif isinstance(value, (bytes, bytearray)):
+            # Re-initialize the value anew, similarly to what is done in
+            # the first line of this method.
+            string = super().__new__(cls, value.hex())
+            string.lang = None
+            string.datatype = XSD.hexBinary
+        elif isinstance(value, datetime):
+            string.datatype = XSD.dateTime
+            # TODO:
+            #   - XSD.base64Binary
+            #   - XSD.byte, XSD.unsignedByte
         return string
 
     # These two methods are commeted out for now because they cause
@@ -117,16 +142,38 @@ class Literal(str):
     # an "h" in some relations added by the add_function() method.
 
     # def __hash__(self):
-    #     return hash((str(self), self.lang, self.datatype))
-
+    #    return super().__hash__(self)
+    #    return hash((str(self), self.lang, self.datatype))
+    #
     # def __eq__(self, other):
-    #     if isinstance(other, Literal):
-    #         return (
-    #             str(self) == str(other)
-    #             and self.lang == other.lang
-    #             and self.datatype == other.datatype
-    #         )
-    #     return str(self) == str(other)
+    #    return super().__eq__(self)
+    #
+    #    #print()
+    #    #print("*** self: ", repr(self))
+    #    #print("    other:", repr(other))
+    #
+    #    if not isinstance(other, Literal):
+    #        # We import parse_literal() here to avoid circular
+    #        # dependencies during import
+    #        from tripper.utils import parse_literal
+    #
+    #        other = parse_literal(other)
+    #
+    #    #print("    -->:  ", repr(other))
+    #    #print("          ",
+    #    #    str(self) == str(other)
+    #    #    and self.lang == other.lang
+    #    #    and self.datatype == other.datatype
+    #    #)
+    #
+    #    return (
+    #        str(self) == str(other)
+    #        and self.lang == other.lang
+    #        and self.datatype == other.datatype
+    #    )
+    #
+    # def __ne__(self, other):
+    #    return not self.__eq__(other)
 
     def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""
