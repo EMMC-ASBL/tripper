@@ -65,16 +65,18 @@ class CollectionStrategy:
             else:
                 yield s, p, o
 
-            # lang = d[1:] if d and d[0] == "@" else None
-            # dt = None if lang else d
-            # print("*** d:", d)
-            # yield s, p, Literal(o, lang=lang, datatype=dt)
-
-    def add_triples(self, triples: "Sequence[Triple]"):
+    def add_triples(
+        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
+    ):
         """Add a sequence of triples."""
         for s, p, o in triples:
             v = parse_object(o)
-            o = v if isinstance(v, str) else v.value
+
+            # Possible bug in mypy
+            # parse_object() is declared to return "Union[str, Literal]".
+            # Dispite of that complains mypy about that `v` has no
+            # attribute "value"
+            obj = v if isinstance(v, str) else str(v.value)  # type: ignore
             d = (
                 None
                 if not isinstance(v, Literal)
@@ -84,22 +86,20 @@ class CollectionStrategy:
             )
             # d = f"@{v.lang}" if v.lang else v.datatype
             # v_str = v.n3() if isinstance(v, Literal) else v
-            print(f"*** add_triple: v={repr(v)}, o={o}, d={d}")
-            self.collection.add_relation(s, p, o, d)
+            print(f"*** add_triple: v={repr(v)}, o={obj}, d={d}")
+            self.collection.add_relation(s, p, obj, d)
         print("-----")
-        # for spod in self.collection.get_relations=
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
         s, p, o = triple
         v = parse_object(o)
-        o = v if isinstance(v, str) else v.value
+        obj = v if isinstance(v, str) else str(v.value)  # type: ignore
         d = (
             None
-            if isinstance(v, str)
+            if not isinstance(v, Literal)
             else f"@{v.lang}"
             if v.lang
             else v.datatype
         )
-        # v_str = v.n3() if isinstance(v, Literal) else v
-        self.collection.remove_relations(s, p, o, d)
+        self.collection.remove_relations(s, p, obj, d)

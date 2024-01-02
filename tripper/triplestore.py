@@ -227,7 +227,9 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(self, triples: "Sequence[Triple]"):
+    def add_triples(
+        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
+    ):
         """Add a sequence of triples.
 
         Arguments:
@@ -349,11 +351,10 @@ class Triplestore:
             return ts.serialize(
                 destination=destination, format=format, **kwargs
             )
-        else:
-            self._check_method("serialize")
-            return self.backend.serialize(
-                destination=destination, format=format, **kwargs
-            )
+        self._check_method("serialize")
+        return self.backend.serialize(
+            destination=destination, format=format, **kwargs
+        )
 
     def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
         """SPARQL query.
