@@ -61,12 +61,8 @@ def test_triplestore(  # pylint: disable=too-many-locals
         standard="fno",
     )
 
-    try:
-        ts_as_turtle = ts.serialize(format="turtle")
-    except NotImplementedError:
-        pass
-    else:
-        assert ts_as_turtle == expected_function_triplestore
+    ts_as_turtle = ts.serialize(format="turtle")
+    assert ts_as_turtle == expected_function_triplestore
 
     # Test SPARQL query
     try:

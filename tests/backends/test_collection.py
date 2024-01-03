@@ -43,9 +43,9 @@ if True:  # pylint: disable=using-constant-test
     assert set(ts2.triples()) == set(triples)
 
     # Test serialising/parsing
-    dump = ts.serialize(backend="rdflib")
+    dump = ts.serialize()
     ts3 = Triplestore(backend="collection")
-    ts3.parse(backend="rdflib", data=dump)
+    ts3.parse(data=dump)
     assert set(ts3.triples()) == set(ts.triples())
     label = ts3.value(STRUCTURE.name, DM.hasLabel)
     assert isinstance(label, Literal)
