@@ -35,7 +35,9 @@ if True:  # pylint: disable=using-constant-test
 
     # Test that we can initialise from an existing collection
     coll = dlite.Collection()
-    for triple in triples:
+    coll.add_relation(STRUCTURE.name, DM.hasLabel, "Strontium titanate", "@en")
+    coll.add_relation(STRUCTURE.masses, DM.hasUnit, "u", XSD.string)
+    for triple in triples[2:]:
         coll.add_relation(*triple)
     ts2 = Triplestore(backend="collection", collection=coll)
     assert set(ts2.triples()) == set(triples)
@@ -45,3 +47,6 @@ if True:  # pylint: disable=using-constant-test
     ts3 = Triplestore(backend="collection")
     ts3.parse(backend="rdflib", data=dump)
     assert set(ts3.triples()) == set(ts.triples())
+    label = ts3.value(STRUCTURE.name, DM.hasLabel)
+    assert isinstance(label, Literal)
+    assert label == Literal("Strontium titanate", lang="en")

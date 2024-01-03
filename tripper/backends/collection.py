@@ -84,8 +84,6 @@ class CollectionStrategy:
                 if v.lang
                 else v.datatype
             )
-            # d = f"@{v.lang}" if v.lang else v.datatype
-            # v_str = v.n3() if isinstance(v, Literal) else v
             self.collection.add_relation(s, p, obj, d)
 
     def remove(self, triple: "Triple"):
