@@ -1,5 +1,4 @@
 """Test collection."""
-
 import pytest
 
 # def test_collection():

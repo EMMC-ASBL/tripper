@@ -86,9 +86,7 @@ class CollectionStrategy:
             )
             # d = f"@{v.lang}" if v.lang else v.datatype
             # v_str = v.n3() if isinstance(v, Literal) else v
-            print(f"*** add_triple: v={repr(v)}, o={obj}, d={d}")
             self.collection.add_relation(s, p, obj, d)
-        print("-----")
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
