@@ -133,8 +133,12 @@ def parse_literal(literal: "Any") -> "Literal":
     elif hasattr(literal, "language"):
         lang = literal.language
 
-    if hasattr(literal, "datatype"):
-        datatype = literal.datatype
+    if not lang and hasattr(literal, "datatype"):
+        datatype = (
+            literal.datatype
+            if literal.__class__ == str
+            else str(literal.datatype)
+        )
 
     # This will handle rdflib literals correctly and probably most other
     # literal representations as well.
