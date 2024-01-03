@@ -4,16 +4,16 @@
 
 def test_string() -> None:
     """Test creating a string literal."""
-    from tripper.literal import Literal
+    from tripper.literal import XSD, Literal
 
     literal = Literal("Hello world!")
     assert literal == "Hello world!"
     assert isinstance(literal, str)
     assert literal.lang is None
-    assert literal.datatype is None
+    # assert literal.datatype is None
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
-    assert literal.n3() == '"Hello world!"'
+    assert literal.n3() == f'"Hello world!"^^{XSD.string}'
 
 
 def test_string_lang() -> None:
@@ -158,17 +158,20 @@ def test_parse_literal() -> None:
 # def test_equality() -> None:
 #     """Test equality."""
 if True:  # pylint: disable=using-constant-test
-    from tripper import XSD, Literal
+    from tripper import RDF, XSD, Literal
 
     assert Literal("text", datatype=XSD.string) == "text"
+    assert Literal("text", lang="en") == "text"
+    assert Literal("text", lang="en") != Literal("text", lang="dk")
     assert Literal("text") == "text"
     assert Literal("text") != "text2"
-    # assert Literal("text", datatype=RDF.HTML) != "text"
-    # assert Literal(1) == 1
-    # assert Literal(1) == 1
-    # assert Literal(1) != 1.0
-    # assert Literal(1, datatype=XSD.double) == 1.0
-    # assert Literal("1", datatype=XSD.double) == 1.0
-    # assert Literal("1.", datatype=XSD.double) == 1.0
-    # assert Literal(True) == True
-    assert Literal(True) == "True"
+    assert Literal("text", datatype=RDF.HTML) != "text"
+    assert Literal(1) == 1
+    assert Literal(1) == 1
+    assert Literal(1) != 1.0
+    assert Literal(1) != "1"
+    assert Literal(1, datatype=XSD.double) == 1.0
+    assert Literal("1", datatype=XSD.double) == 1.0
+    assert Literal("1.", datatype=XSD.double) == 1.0
+    assert Literal(True) == True  # pylint: disable=singleton-comparison
+    assert Literal(True) != "True"

@@ -114,8 +114,8 @@ class Literal(str):
             string.datatype = datatype
 
         # Infer datatype from value
-        # elif isinstance(value, str):
-        #    string.datatype = XSD.string
+        elif isinstance(value, str):
+            string.datatype = XSD.string
         elif isinstance(value, bool):
             string.datatype = XSD.boolean
         elif isinstance(value, int):
@@ -135,45 +135,22 @@ class Literal(str):
             #   - XSD.byte, XSD.unsignedByte
         return string
 
-    # These two methods are commeted out for now because they cause
-    # the DLite example/mapping/mappingfunc.py example to fail.
-    #
-    # It seems that these methods cause the datatype be changed to
-    # an "h" in some relations added by the add_function() method.
+    def __hash__(self):
+        return hash((str(self), self.lang, self.datatype))
 
-    # def __hash__(self):
-    #    return super().__hash__(self)
-    #    return hash((str(self), self.lang, self.datatype))
-    #
-    # def __eq__(self, other):
-    #    return super().__eq__(self)
-    #
-    #    #print()
-    #    #print("*** self: ", repr(self))
-    #    #print("    other:", repr(other))
-    #
-    #    if not isinstance(other, Literal):
-    #        # We import parse_literal() here to avoid circular
-    #        # dependencies during import
-    #        from tripper.utils import parse_literal
-    #
-    #        other = parse_literal(other)
-    #
-    #    #print("    -->:  ", repr(other))
-    #    #print("          ",
-    #    #    str(self) == str(other)
-    #    #    and self.lang == other.lang
-    #    #    and self.datatype == other.datatype
-    #    #)
-    #
-    #    return (
-    #        str(self) == str(other)
-    #        and self.lang == other.lang
-    #        and self.datatype == other.datatype
-    #    )
-    #
-    # def __ne__(self, other):
-    #    return not self.__eq__(other)
+    def __eq__(self, other):
+        if not isinstance(other, Literal):
+            if isinstance(other, str) and self.lang:
+                return str(self) == other
+            other = Literal(other)
+        return (
+            str(self) == str(other)
+            and self.lang == other.lang
+            and self.datatype == other.datatype
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __repr__(self) -> str:
         lang = f", lang='{self.lang}'" if self.lang else ""
@@ -191,7 +168,7 @@ class Literal(str):
         value = str(self)
 
         if self.datatype == XSD.boolean:
-            value = False if self == "False" else bool(self)
+            value = False if str(self) == "False" else bool(self)
         elif self.datatype in self.datatypes[int]:
             value = int(self)
         elif self.datatype in self.datatypes[float]:

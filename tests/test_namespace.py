@@ -17,7 +17,6 @@ def test_namespaces(get_ontology_path: "Callable[[str], Path]") -> None:
             `pathlib.Path` object pointing to an ontology test file.
 
     """
-
     pytest.importorskip("rdflib")
     from tripper import RDF, Namespace
     from tripper.errors import NoSuchIRIError
