@@ -1219,10 +1219,18 @@ is that this function correctly interprets n3-encoded literal strings.</p>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">literal</span>
 
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;lang&quot;</span><span class="p">):</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">literal</span><span class="o">.</span><span class="n">lang</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">):</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">literal</span><span class="o">.</span><span class="n">language</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">lang</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;datatype&quot;</span><span class="p">):</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
     <span class="c1"># This will handle rdflib literals correctly and probably most other</span>
     <span class="c1"># literal representations as well.</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="p">)):</span>
