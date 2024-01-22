@@ -42,7 +42,7 @@ docs = [
     "EMMOntoPy ~=0.6",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.4.5,<1",
+    "DLite-Python >=0.4.6,<1",
 ]
 pre-commit = [
     "pre-commit ~=2.21",
@@ -54,7 +54,7 @@ testing = [
     "EMMOntoPy ~=0.6",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.4.5,<1",
+    "DLite-Python >=0.4.6,<1",
     "graphviz ~= 0.20",
 ]
 testing-core = [
@@ -74,7 +74,7 @@ dev = [
     "EMMOntoPy ~=0.6",
     "rdflib ~=6.3",
     "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.4.5,<1",
+    "DLite-Python >=0.4.6,<1",
 ]
 
 [project.urls]
