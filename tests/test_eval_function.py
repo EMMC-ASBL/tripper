@@ -41,7 +41,7 @@ assert shakevar.hexdigest(4) == "867e2cb0"
 # Test to add a function from a pypi package.
 iri3 = ts.add_function(
     EX.UFloat,
-    expects=[EX.String],
+    expects=[EX.Uncertainty],
     returns=EX.UUID,
     func_name="ufloat",
     module_name="uncertainties",
