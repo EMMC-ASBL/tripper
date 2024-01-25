@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.14...HEAD)
+
+**Closed issues:**
+
+- Function repo plugin system [\#128](https://github.com/EMMC-ASBL/tripper/issues/128)
+
+## [v0.2.14](https://github.com/EMMC-ASBL/tripper/tree/v0.2.14) (2024-01-25)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.13...v0.2.14)
+
+**Closed issues:**
+
+- Literals are lost when listing triples with rdflib [\#162](https://github.com/EMMC-ASBL/tripper/issues/162)
+- dependencies are too strict, at least for pint [\#149](https://github.com/EMMC-ASBL/tripper/issues/149)
+
+**Merged pull requests:**
+
+- Retain datatype when listing literals from rdflib [\#163](https://github.com/EMMC-ASBL/tripper/pull/163) ([jesper-friis](https://github.com/jesper-friis))
+- Make it possible to expose an existing rdflib graph via tripper [\#156](https://github.com/EMMC-ASBL/tripper/pull/156) ([jesper-friis](https://github.com/jesper-friis))
+- Mapping function plugin system [\#152](https://github.com/EMMC-ASBL/tripper/pull/152) ([jesper-friis](https://github.com/jesper-friis))
+- Get rid of confusing UnusedArgumentWarning from working code [\#151](https://github.com/EMMC-ASBL/tripper/pull/151) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.2.13](https://github.com/EMMC-ASBL/tripper/tree/v0.2.13) (2023-11-14)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.12...v0.2.13)
