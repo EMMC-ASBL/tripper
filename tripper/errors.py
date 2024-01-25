@@ -18,6 +18,10 @@ class NoSuchIRIError(NamespaceError):
     """Namespace has no such IRI."""
 
 
+class CannotGetFunctionError(TriplestoreError):
+    """Not able to get function documented in the triplestore."""
+
+
 # === Warnings ===
 class UnusedArgumentWarning(Warning):
     """Argument is unused."""
