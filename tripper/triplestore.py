@@ -1001,6 +1001,7 @@ class Triplestore:
     def _get_cost(self, dest_iri, input_iris=(), output_iri=None):
         """Return evaluated cost for given destination iri."""
         v = self.value(dest_iri, DM.hasCost)
+
         if v.datatype:
             return v.value
         cost = self._get_function(v.value)

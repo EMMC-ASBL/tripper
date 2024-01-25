@@ -46,7 +46,7 @@ iri3 = ts.add_function(
     func_name="ufloat",
     module_name="uncertainties",
     # package_name="uncertainties",
-    pypi_package_name="uncertainties",
+    pypi_package_name="uncertainties==3.1.7",
 )
 val = ts.eval_function(iri3, args=(1, 0.1))
 assert val.n == 1
