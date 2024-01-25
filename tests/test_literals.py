@@ -10,7 +10,7 @@ def test_string() -> None:
     assert literal == "Hello world!"
     assert isinstance(literal, str)
     assert literal.lang is None
-    # assert literal.datatype is None
+    assert literal.datatype == XSD.string
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == f'"Hello world!"^^{XSD.string}'
