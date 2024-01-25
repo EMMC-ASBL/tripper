@@ -88,12 +88,15 @@ def expected_function_triplestore(
 @prefix ex: <http://example.com/onto#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
 @prefix map: <http://emmo.info/domain-mappings#> .
+@prefix oteio: <http://emmo.info/oteio#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 ex:sum__{fid} a fno:Function ;
     rdfs:label "sum_"@en ;
+    oteio:hasPythonFunctionName "sum_" ;
+    oteio:hasPythonModuleName "conftest" ;
     dcterms:description "Returns the sum of `first_param` and `second_param`."@en ;
     fno:expects ( ex:sum__{fid}_parameter1_first_param ex:sum__{fid}_parameter2_second_param ) ;
     fno:returns ( ex:sum__{fid}_output1 ) .
