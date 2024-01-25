@@ -811,7 +811,7 @@ class Triplestore:
                     else ""
                 ) from exc
 
-        func = getattr(module, func_name)
+        func = getattr(module, str(func_name))
         self.function_repo[func_iri] = func
 
         return func
@@ -1020,7 +1020,9 @@ class Triplestore:
             warnings.warn(f"A cost is already assigned to IRI: {dest_iri}")
         elif callable(cost):
             cost_iri = f"{base_iri}cost_function{function_id(cost)}"
-            self.add((dest_iri, DM.hasCost, Literal(cost_iri)))
+            self.add(
+                (dest_iri, DM.hasCost, Literal(cost_iri, datatype=XSD.anyURI))
+            )
             self.function_repo[cost_iri] = cost
             self._add_function_doc(
                 func=cost,
@@ -1034,7 +1036,7 @@ class Triplestore:
         """Return evaluated cost for given destination iri."""
         v = self.value(dest_iri, DM.hasCost)
 
-        if v.datatype:
+        if v.datatype and v.datatype != XSD.anyURI:
             return v.value
         cost = self._get_function(v.value)
         return cost(self, input_iris, output_iri)

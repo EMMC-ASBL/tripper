@@ -28,7 +28,7 @@ assert ts.eval_function(func_iri=iri, args=(2, 3)) == 5
 # Test to add a function from the standard library. The hashlib module
 # is not expected to be imported in the current scope
 iri2 = ts.add_function(
-    EX.shape256,
+    EX.shake256,
     expects=[EX.Bytes],
     returns=EX.ShakeVar,
     func_name="shake_256",
