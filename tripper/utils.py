@@ -135,8 +135,8 @@ def parse_literal(literal: "Any") -> "Literal":
 
     if (
         not lang
-        and literal.datatype is not None
         and hasattr(literal, "datatype")
+        and literal.datatype is not None
     ):
         datatype = str(literal.datatype)
 
