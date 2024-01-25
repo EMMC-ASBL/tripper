@@ -92,14 +92,14 @@ class Literal(str):
         elif datatype in cls.datatypes:
             string.datatype = cls.datatypes[datatype][0]
         elif datatype:
-            # Create canonical string representation of value for
+            # Create canonical representation of value for
             # given datatype
             val = None
             for typ, names in cls.datatypes.items():
                 for name in names:
                     if name == datatype:
                         try:
-                            val = str(typ(value))
+                            val = typ(value)
                             break
                         except:  # pylint: disable=bare-except
                             pass  # nosec
