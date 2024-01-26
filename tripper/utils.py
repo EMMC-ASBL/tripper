@@ -14,10 +14,11 @@ from tripper.namespace import XSD
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Callable, Tuple, Union
 
+    # There
     OptionalTriple = Tuple[
-        Union[str, None], Union[str, None], Union[str, Literal, None]
+        Union[str, None], Union[str, None], Union[str, Any, None]
     ]
-    Triple = Tuple[str, str, Union[str, Literal]]
+    Triple = Tuple[str, str, Union[str, Any]]
 
 
 __all__ = (
@@ -116,7 +117,7 @@ def en(value) -> "Literal":  # pylint: disable=invalid-name
     return Literal(value, lang="en")
 
 
-def parse_literal(literal: "Any") -> "Literal":
+def parse_literal(literal: "Any") -> "Any":
     """Parse Python object `literal` and return it as an instance of Literal.
 
     The main difference between this function and the Literal constructor,
@@ -209,7 +210,7 @@ def parse_literal(literal: "Any") -> "Literal":
     raise ValueError(f'cannot parse literal "{literal}"')
 
 
-def parse_object(obj: "Union[str, Literal]") -> "Union[str, Literal]":
+def parse_object(obj: "Union[str, Literal]") -> "Union[str, Any]":
     """Applies heuristics to parse RDF object `obj` to an IRI or literal.
 
     The following heuristics is performed (in the given order):

@@ -34,7 +34,9 @@ def test_collection():
     assert set(ts.triples()) == set(triples[:-1])
 
 
-# TODO: Fix handling of Literal in Collections (Issue #160, PR #165) and reactivate test.
+# TODO: Fix handling of Literal in Collections (Issue #160, PR #165) and
+# reactivate test.
+#
 #    # Test that we can initialise from an existing collection
 #    coll = dlite.Collection()
 #    for triple in triples:

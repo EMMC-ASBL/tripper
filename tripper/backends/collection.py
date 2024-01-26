@@ -73,7 +73,7 @@ class CollectionStrategy:
             # has been declared to return the union of `str` and
             # `Literal`.
             v = parse_object(o)
-            o = v if isinstance(v, str) else v.value  # type: ignore
+            o = v if isinstance(v, str) else v.value
             d = (
                 None
                 if not isinstance(v, Literal)
@@ -87,13 +87,13 @@ class CollectionStrategy:
         """Remove all matching triples from the backend."""
         s, p, o = triple
         v = parse_object(o)
-        o = v if isinstance(v, str) else v.value  # type: ignore
+        o = v if isinstance(v, str) else v.value
         d = (
             None
             if isinstance(v, str)
-            else f"@{v.lang}"  # type: ignore
-            if v.lang  # type: ignore
-            else v.datatype  # type: ignore
+            else f"@{v.lang}"
+            if v.lang
+            else v.datatype
         )
         # v_str = v.n3() if isinstance(v, Literal) else v
         self.collection.remove_relations(s, p, o, d)
