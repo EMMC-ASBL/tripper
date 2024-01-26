@@ -234,7 +234,9 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(self, triples: "Sequence[Triple]"):
+    def add_triples(
+        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
+    ):
         """Add a sequence of triples.
 
         Arguments:
@@ -291,6 +293,8 @@ class Triplestore:
         self,
         source=None,
         format=None,
+        backend=None,
+        backend_kwargs=None,
         **kwargs,  # pylint: disable=redefined-builtin
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
@@ -298,13 +302,24 @@ class Triplestore:
         Parameters:
             source: File-like object or file name.
             format: Needed if format can not be inferred from source.
+            backend: If given, use the parse() method of the specified
+                backend instead of the current backend.
+            backend_kwargs: Dict with additional keyword arguments passed
+                when instantiating `backend`.
             kwargs: Keyword arguments passed to the backend.
                 The rdflib backend supports e.g. `location` (absolute
                 or relative URL) and `data` (string containing the
                 data to be parsed) arguments.
         """
-        self._check_method("parse")
-        self.backend.parse(source=source, format=format, **kwargs)
+        if backend and backend != self.backend_name:
+            if backend_kwargs is None:
+                backend_kwargs = {}
+            ts = Triplestore(backend=backend, **backend_kwargs)
+            ts.parse(source=source, format=format, **kwargs)
+            self.add_triples(ts.triples())
+        else:
+            self._check_method("parse")
+            self.backend.parse(source=source, format=format, **kwargs)
 
         if hasattr(self.backend, "namespaces"):
             for prefix, namespace in self.backend.namespaces().items():
@@ -315,6 +330,8 @@ class Triplestore:
         self,
         destination=None,
         format="turtle",  # pylint: disable=redefined-builtin
+        backend=None,
+        backend_kwargs=None,
         **kwargs,
     ) -> "Union[None, str]":
         """Serialise triplestore.
@@ -324,11 +341,24 @@ class Triplestore:
                 serialisation is returned.
             format: Format to serialise as.  Supported formats, depends on
                 the backend.
+            backend: If given, use the parse() method of the specified
+                backend instead of the current backend.
+            backend_kwargs: Dict with additional keyword arguments passed
+                when instantiating `backend`.
             kwargs: Passed to the backend serialize() method.
 
         Returns:
             Serialized string if `destination` is None.
         """
+        if backend and backend != self.backend_name:
+            if backend_kwargs is None:
+                backend_kwargs = {}
+            ts = Triplestore(backend=backend, **backend_kwargs)
+            ts.add_triples(self.triples())
+            return ts.serialize(
+                destination=destination, format=format, **kwargs
+            )
+
         self._check_method("serialize")
         return self.backend.serialize(
             destination=destination, format=format, **kwargs
@@ -779,7 +809,7 @@ class Triplestore:
                     else ""
                 ) from exc
 
-        func = getattr(module, func_name)
+        func = getattr(module, str(func_name))
         self.function_repo[func_iri] = func
 
         return func
@@ -988,7 +1018,9 @@ class Triplestore:
             warnings.warn(f"A cost is already assigned to IRI: {dest_iri}")
         elif callable(cost):
             cost_iri = f"{base_iri}cost_function{function_id(cost)}"
-            self.add((dest_iri, DM.hasCost, Literal(cost_iri)))
+            self.add(
+                (dest_iri, DM.hasCost, Literal(cost_iri, datatype=XSD.anyURI))
+            )
             self.function_repo[cost_iri] = cost
             self._add_function_doc(
                 func=cost,
@@ -1002,7 +1034,7 @@ class Triplestore:
         """Return evaluated cost for given destination iri."""
         v = self.value(dest_iri, DM.hasCost)
 
-        if v.datatype:
+        if v.datatype and v.datatype != XSD.anyURI:
             return v.value
         cost = self._get_function(v.value)
         return cost(self, input_iris, output_iri)
