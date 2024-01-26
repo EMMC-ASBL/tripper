@@ -169,6 +169,7 @@ def test_equality() -> None:
     assert Literal(1) != 1.0
     assert Literal(1) != "1"
     assert Literal(1, datatype=XSD.double) == 1.0
+    assert not 1.0 == Literal(1, datatype=XSD.double)
     assert Literal("1", datatype=XSD.double) == 1.0
     assert Literal("1.", datatype=XSD.double) == 1.0
     assert Literal(1.0) == 1.0
