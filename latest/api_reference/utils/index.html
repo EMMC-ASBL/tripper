@@ -1207,7 +1207,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse Python object `literal` and return it as an instance of Literal.</span>
 
 <span class="sd">    The main difference between this function and the Literal constructor,</span>
@@ -1335,7 +1335,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Any]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies heuristics to parse RDF object `obj` to an IRI or literal.</span>
 
 <span class="sd">    The following heuristics is performed (in the given order):</span>

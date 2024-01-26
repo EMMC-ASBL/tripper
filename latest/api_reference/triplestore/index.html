@@ -1460,7 +1460,9 @@ Triplestore        </code>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">predicate</span><span class="p">,</span> <span class="nb">object</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Union[Sequence[Triple], Generator[Triple, None, None]]&quot;</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
 
 <span class="sd">        Arguments:</span>
@@ -1517,6 +1519,8 @@ Triplestore        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
@@ -1524,13 +1528,24 @@ Triplestore        </code>
 <span class="sd">        Parameters:</span>
 <span class="sd">            source: File-like object or file name.</span>
 <span class="sd">            format: Needed if format can not be inferred from source.</span>
+<span class="sd">            backend: If given, use the parse() method of the specified</span>
+<span class="sd">                backend instead of the current backend.</span>
+<span class="sd">            backend_kwargs: Dict with additional keyword arguments passed</span>
+<span class="sd">                when instantiating `backend`.</span>
 <span class="sd">            kwargs: Keyword arguments passed to the backend.</span>
 <span class="sd">                The rdflib backend supports e.g. `location` (absolute</span>
 <span class="sd">                or relative URL) and `data` (string containing the</span>
 <span class="sd">                data to be parsed) arguments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;parse&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">backend_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">backend_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="o">**</span><span class="n">backend_kwargs</span><span class="p">)</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;parse&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;namespaces&quot;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1541,6 +1556,8 @@ Triplestore        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialise triplestore.</span>
@@ -1550,11 +1567,24 @@ Triplestore        </code>
 <span class="sd">                serialisation is returned.</span>
 <span class="sd">            format: Format to serialise as.  Supported formats, depends on</span>
 <span class="sd">                the backend.</span>
+<span class="sd">            backend: If given, use the parse() method of the specified</span>
+<span class="sd">                backend instead of the current backend.</span>
+<span class="sd">            backend_kwargs: Dict with additional keyword arguments passed</span>
+<span class="sd">                when instantiating `backend`.</span>
 <span class="sd">            kwargs: Passed to the backend serialize() method.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Serialized string if `destination` is None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">backend_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">backend_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="o">**</span><span class="n">backend_kwargs</span><span class="p">)</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+                <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;serialize&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
             <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -2005,7 +2035,7 @@ Triplestore        </code>
                     <span class="k">else</span> <span class="s2">&quot;&quot;</span>
                 <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
-        <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">func_name</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">[</span><span class="n">func_iri</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
 
         <span class="k">return</span> <span class="n">func</span>
@@ -2214,7 +2244,9 @@ Triplestore        </code>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A cost is already assigned to IRI: </span><span class="si">{</span><span class="n">dest_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cost</span><span class="p">):</span>
             <span class="n">cost_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_iri</span><span class="si">}</span><span class="s2">cost_function</span><span class="si">{</span><span class="n">function_id</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">dest_iri</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hasCost</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cost_iri</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">dest_iri</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hasCost</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cost_iri</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">))</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">function_repo</span><span class="p">[</span><span class="n">cost_iri</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_function_doc</span><span class="p">(</span>
                 <span class="n">func</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
@@ -2228,7 +2260,7 @@ Triplestore        </code>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return evaluated cost for given destination iri.&quot;&quot;&quot;</span>
         <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">dest_iri</span><span class="p">,</span> <span class="n">DM</span><span class="o">.</span><span class="n">hasCost</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span>
         <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_function</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_iris</span><span class="p">,</span> <span class="n">output_iri</span><span class="p">)</span>
@@ -2878,7 +2910,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
   <tbody>
       <tr>
         <td><code>triples</code></td>
-        <td><code>&#39;Sequence[Triple]&#39;</code></td>
+        <td><code>&#39;Union[Sequence[Triple], Generator[Triple, None, None]]&#39;</code></td>
         <td><p>A sequence of <code>(s, p, o)</code> tuples to add to the
 triplestore.</p></td>
         <td><em>required</em></td>
@@ -2887,7 +2919,9 @@ triplestore.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Union[Sequence[Triple], Generator[Triple, None, None]]&quot;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3445,7 +3479,7 @@ that have <code>target</code> as output.</p></td>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.parse">
-<code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.triplestore.Triplestore.parse" title="Permanent link">&para;</a></h3>
@@ -3478,6 +3512,20 @@ that have <code>target</code> as output.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>backend</code></td>
+        <td></td>
+        <td><p>If given, use the parse() method of the specified
+backend instead of the current backend.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>backend_kwargs</code></td>
+        <td></td>
+        <td><p>Dict with additional keyword arguments passed
+when instantiating <code>backend</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>kwargs</code></td>
         <td></td>
         <td><p>Keyword arguments passed to the backend.
@@ -3494,6 +3542,8 @@ data to be parsed) arguments.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
@@ -3501,13 +3551,24 @@ data to be parsed) arguments.</p></td>
 <span class="sd">    Parameters:</span>
 <span class="sd">        source: File-like object or file name.</span>
 <span class="sd">        format: Needed if format can not be inferred from source.</span>
+<span class="sd">        backend: If given, use the parse() method of the specified</span>
+<span class="sd">            backend instead of the current backend.</span>
+<span class="sd">        backend_kwargs: Dict with additional keyword arguments passed</span>
+<span class="sd">            when instantiating `backend`.</span>
 <span class="sd">        kwargs: Keyword arguments passed to the backend.</span>
 <span class="sd">            The rdflib backend supports e.g. `location` (absolute</span>
 <span class="sd">            or relative URL) and `data` (string containing the</span>
 <span class="sd">            data to be parsed) arguments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;parse&quot;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">backend_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="o">**</span><span class="n">backend_kwargs</span><span class="p">)</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;parse&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;namespaces&quot;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3889,7 +3950,7 @@ triplestore without connecting to it.</p>
 
 
 <h3 class="doc doc-heading" id="tripper.triplestore.Triplestore.serialize">
-<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a class="headerlink" href="#tripper.triplestore.Triplestore.serialize" title="Permanent link">&para;</a></h3>
@@ -3924,6 +3985,20 @@ the backend.</p></td>
         <td><code>&#39;turtle&#39;</code></td>
       </tr>
       <tr>
+        <td><code>backend</code></td>
+        <td></td>
+        <td><p>If given, use the parse() method of the specified
+backend instead of the current backend.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>backend_kwargs</code></td>
+        <td></td>
+        <td><p>Dict with additional keyword arguments passed
+when instantiating <code>backend</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>kwargs</code></td>
         <td></td>
         <td><p>Passed to the backend serialize() method.</p></td>
@@ -3952,6 +4027,8 @@ the backend.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">backend_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise triplestore.</span>
@@ -3961,11 +4038,24 @@ the backend.</p></td>
 <span class="sd">            serialisation is returned.</span>
 <span class="sd">        format: Format to serialise as.  Supported formats, depends on</span>
 <span class="sd">            the backend.</span>
+<span class="sd">        backend: If given, use the parse() method of the specified</span>
+<span class="sd">            backend instead of the current backend.</span>
+<span class="sd">        backend_kwargs: Dict with additional keyword arguments passed</span>
+<span class="sd">            when instantiating `backend`.</span>
 <span class="sd">        kwargs: Passed to the backend serialize() method.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Serialized string if `destination` is None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="ow">and</span> <span class="n">backend</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">backend_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">backend_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="o">**</span><span class="n">backend_kwargs</span><span class="p">)</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+            <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;serialize&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
         <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
