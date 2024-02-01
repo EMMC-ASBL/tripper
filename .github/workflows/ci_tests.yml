@@ -80,7 +80,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.9' && github.repository == 'EMMC-ASBL/tripper'
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v3
 
     - name: Run doctest on tutorial
       run: |
