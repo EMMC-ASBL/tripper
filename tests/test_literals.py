@@ -1,4 +1,5 @@
 """Test RDF literals."""
+
 # pylint: disable=invalid-name,too-many-statements
 
 

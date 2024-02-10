@@ -3,6 +3,7 @@ pattern.
 
 See the README.md file for a description for how to use this package.
 """
+
 from .literal import Literal
 from .namespace import (
     DC,

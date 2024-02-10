@@ -1,4 +1,5 @@
 """Test namespaces."""
+
 # pylint: disable=invalid-name,duplicate-code
 from typing import TYPE_CHECKING
 

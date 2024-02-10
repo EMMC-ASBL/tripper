@@ -1,4 +1,5 @@
 """Test Triplestore.eval_function()"""
+
 import pytest
 
 from tripper import Triplestore

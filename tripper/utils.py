@@ -1,4 +1,5 @@
 """Utility functions."""
+
 # pylint: disable=invalid-name,redefined-builtin
 import datetime
 import hashlib
