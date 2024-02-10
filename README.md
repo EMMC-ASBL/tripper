@@ -64,6 +64,18 @@ If not stated otherwise in the top of the files, they have copyright &copy; 2022
 SINTEF.
 
 
+Acknowledgements
+----------------
+We gracefully acknowledge the following projects for supporting the development of Tripper:
+
+  - [OntoTrans](https://cordis.europa.eu/project/id/862136) (2020-2024) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 862136.
+  - [OpenModel](https://www.open-model.eu/) (2021-2025) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 953167.
+  - [SFI PhysMet](https://www.ntnu.edu/physmet) (2020-2028) funded by Forskningsrådet and Norwegian industry partners.
+  - [DOME 4.0](https://dome40.eu/) (2021-2025) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 953163.
+  - [VIPCOAT](https://www.vipcoat.eu/) (2021-2025) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 952903.
+  - MEDIATE (2022-2025) that receives funding from the RCN, Norway; FNR, Luxenburg; SMWK Germany via the M-era.net programme, project 9557,
+  - [MatCHMaker](https://he-matchmaker.eu/) (2022-2026) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 101091687.
+
 
 
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
