@@ -3,6 +3,7 @@ pattern.
 
 See the README.md file for a description for how to use this package.
 """
+
 from .literal import Literal
 from .namespace import (
     DC,
@@ -25,7 +26,7 @@ from .namespace import (
 from .triplestore import Triplestore, backend_packages
 from .tripper import Tripper
 
-__version__ = "0.2.13"
+__version__ = "0.2.14"
 
 __all__ = (
     "Literal",

@@ -1,6 +1,7 @@
 """Backend for DLite collections.
 
 """
+
 # pylint: disable=protected-access,invalid-name
 from typing import TYPE_CHECKING
 
@@ -70,6 +71,10 @@ class CollectionStrategy:
     ):
         """Add a sequence of triples."""
         for s, p, o in triples:
+            # Strange complains by mypy - it assumed that
+            # parse_object() is returning a `str` regardless that it
+            # has been declared to return the union of `str` and
+            # `Literal`.
             v = parse_object(o)
 
             # Possible bug in mypy
@@ -80,9 +85,7 @@ class CollectionStrategy:
             d = (
                 None
                 if not isinstance(v, Literal)
-                else f"@{v.lang}"
-                if v.lang
-                else v.datatype
+                else f"@{v.lang}" if v.lang else v.datatype
             )
             self.collection.add_relation(s, p, obj, d)
 
@@ -94,8 +97,6 @@ class CollectionStrategy:
         d = (
             None
             if not isinstance(v, Literal)
-            else f"@{v.lang}"
-            if v.lang
-            else v.datatype
+            else f"@{v.lang}" if v.lang else v.datatype
         )
         self.collection.remove_relations(s, p, obj, d)

@@ -1,4 +1,5 @@
 """Provides a simple representation of namespaces."""
+
 import warnings
 
 from tripper.errors import (

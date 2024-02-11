@@ -1,4 +1,5 @@
 """Test RDF literals."""
+
 # pylint: disable=invalid-name,too-many-statements
 
 
@@ -10,7 +11,7 @@ def test_string() -> None:
     assert literal == "Hello world!"
     assert isinstance(literal, str)
     assert literal.lang is None
-    # assert literal.datatype is None
+    assert literal.datatype == XSD.string
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == f'"Hello world!"^^{XSD.string}'
@@ -155,9 +156,8 @@ def test_parse_literal() -> None:
     assert literal.datatype == "http://example.com/vocab#mytype"
 
 
-# def test_equality() -> None:
-#     """Test equality."""
-if True:  # pylint: disable=using-constant-test
+def test_equality() -> None:
+    """Test equality."""
     from tripper import RDF, XSD, Literal
 
     assert Literal("text", datatype=XSD.string) == "text"
@@ -167,11 +167,15 @@ if True:  # pylint: disable=using-constant-test
     assert Literal("text") != "text2"
     assert Literal("text", datatype=RDF.HTML) != "text"
     assert Literal(1) == 1
-    assert Literal(1) == 1
     assert Literal(1) != 1.0
     assert Literal(1) != "1"
     assert Literal(1, datatype=XSD.double) == 1.0
     assert Literal("1", datatype=XSD.double) == 1.0
     assert Literal("1.", datatype=XSD.double) == 1.0
+    assert Literal(1.0) == 1.0
+    assert Literal(1.0) != 1
     assert Literal(True) == True  # pylint: disable=singleton-comparison
     assert Literal(True) != "True"
+
+    # Newer versions of Python also allow reverting equality statements
+    assert 1.0 == Literal(1, datatype=XSD.double)

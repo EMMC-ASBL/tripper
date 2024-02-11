@@ -11,6 +11,7 @@ triplestore backends may have.
 For developers: The usage of `s`, `p`, and `o` represent the different parts of
 an RDF Triple: subject, predicate, and object.
 """
+
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 

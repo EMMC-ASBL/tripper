@@ -1,10 +1,11 @@
 """Test collection."""
+
 import pytest
 
-# def test_collection():
-#     """Test if we can use a DLite collection as backend."""
-if True:  # pylint: disable=using-constant-test
-    dlite = pytest.importorskip("dlite")
+
+def test_collection():
+    """Test if we can use a DLite collection as backend."""
+    dlite = pytest.importorskip("dlite")  # pylint: disable=unused-variable
     from tripper import DM, EMMO, MAP, XSD, Literal, Triplestore
     from tripper.utils import en
 

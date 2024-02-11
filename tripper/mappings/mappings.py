@@ -9,6 +9,7 @@ Shapes are automatically handled by expressing non-scalar quantities
 with numpy.
 
 """
+
 # pylint: disable=invalid-name,redefined-builtin,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 

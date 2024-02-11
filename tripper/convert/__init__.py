@@ -1,4 +1,5 @@
 """Tripper sub-package for converting between RDF and other repetations."""
+
 from .convert import (
     from_container,
     from_dict,
