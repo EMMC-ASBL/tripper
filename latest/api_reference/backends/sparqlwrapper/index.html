@@ -998,11 +998,15 @@ SparqlwrapperStrategy        </code>
             <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">]</span>
         <span class="n">where_spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">triple_value</span>
-            <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="p">(</span>
+                    <span class="n">triple_value</span>
+                    <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -1018,9 +1022,11 @@ SparqlwrapperStrategy        </code>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]:</span>
             <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span>
-                <span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">binding</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">binding</span>
-                <span class="k">else</span> <span class="n">value</span>
+                <span class="p">(</span>
+                    <span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">binding</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">binding</span>
+                    <span class="k">else</span> <span class="n">value</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
             <span class="p">)</span>
 
@@ -1029,11 +1035,11 @@ SparqlwrapperStrategy        </code>
         <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="s2">&quot;  &quot;</span>
             <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">value</span>
-                <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="p">(</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">triple</span>
             <span class="p">)</span>
             <span class="o">+</span> <span class="s2">&quot; .&quot;</span>
@@ -1048,13 +1054,15 @@ SparqlwrapperStrategy        </code>
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
         <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">value</span>
-            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="p">(</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
@@ -1099,11 +1107,11 @@ SparqlwrapperStrategy        </code>
     <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="s2">&quot;  &quot;</span>
         <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="k">else</span> <span class="n">value</span>
-            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">(</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">triple</span>
         <span class="p">)</span>
         <span class="o">+</span> <span class="s2">&quot; .&quot;</span>
@@ -1141,13 +1149,15 @@ SparqlwrapperStrategy        </code>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">else</span> <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-        <span class="k">else</span> <span class="n">value</span>
-        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-        <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="p">(</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
@@ -1187,11 +1197,15 @@ SparqlwrapperStrategy        </code>
         <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="p">]</span>
     <span class="n">where_spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="k">else</span> <span class="n">triple_value</span>
-        <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-        <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="p">(</span>
+                <span class="n">triple_value</span>
+                <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -1207,9 +1221,11 @@ SparqlwrapperStrategy        </code>
     <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]:</span>
         <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">binding</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">binding</span>
-            <span class="k">else</span> <span class="n">value</span>
+            <span class="p">(</span>
+                <span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">binding</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">binding</span>
+                <span class="k">else</span> <span class="n">value</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
 </code></pre></div>
