@@ -1,4 +1,5 @@
 """Test cost."""
+
 import pytest
 
 pytest.importorskip("rdflib")

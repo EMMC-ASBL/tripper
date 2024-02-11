@@ -1,4 +1,5 @@
 """Test custom plugin."""
+
 from tripper import Triplestore
 
 # Test relative import

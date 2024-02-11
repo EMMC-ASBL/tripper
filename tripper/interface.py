@@ -1,5 +1,6 @@
 """Provides the ITriplestore protocol class, that documents the interface
 of the triplestore backends."""
+
 import sys
 from typing import TYPE_CHECKING
 

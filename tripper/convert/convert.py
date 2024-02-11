@@ -1,4 +1,5 @@
 """Tripper module for converting between RDF and other repetations."""
+
 # pylint: disable=invalid-name,redefined-builtin
 import warnings
 from typing import TYPE_CHECKING, Mapping, Sequence

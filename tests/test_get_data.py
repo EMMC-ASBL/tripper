@@ -1,4 +1,5 @@
 """Test Triplestore.get_data() and related methods."""
+
 # pylint: disable=unused-argument,invalid-name
 
 

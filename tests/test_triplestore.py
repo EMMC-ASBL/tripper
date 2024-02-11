@@ -3,6 +3,7 @@
 If backend is given, only that backend will be tested.  Otherwise all
 installed backends are tested one by one.
 """
+
 # pylint: disable=duplicate-code,comparison-with-callable,invalid-name
 from typing import TYPE_CHECKING
 

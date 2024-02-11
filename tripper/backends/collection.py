@@ -1,6 +1,7 @@
 """Backend for DLite collections.
 
 """
+
 # pylint: disable=protected-access,invalid-name
 from typing import TYPE_CHECKING
 
@@ -77,9 +78,7 @@ class CollectionStrategy:
             d = (
                 None
                 if not isinstance(v, Literal)
-                else f"@{v.lang}"
-                if v.lang
-                else v.datatype
+                else f"@{v.lang}" if v.lang else v.datatype
             )
             self.collection.add_relation(s, p, o, d)
 
@@ -91,9 +90,7 @@ class CollectionStrategy:
         d = (
             None
             if isinstance(v, str)
-            else f"@{v.lang}"
-            if v.lang
-            else v.datatype
+            else f"@{v.lang}" if v.lang else v.datatype
         )
         # v_str = v.n3() if isinstance(v, Literal) else v
         self.collection.remove_relations(s, p, o, d)
