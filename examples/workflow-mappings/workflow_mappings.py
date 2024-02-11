@@ -1,4 +1,5 @@
 """Workflow example"""
+
 from tripper import Triplestore
 from tripper.mappings import MappingStep, mapping_routes
 

@@ -1,4 +1,5 @@
 """Test utils"""
+
 # pylint: disable=invalid-name,too-few-public-methods
 
 import pytest

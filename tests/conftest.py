@@ -1,4 +1,5 @@
 """Pytest configuration and fixtures."""
+
 from typing import TYPE_CHECKING
 
 import pytest

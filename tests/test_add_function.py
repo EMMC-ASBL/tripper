@@ -1,4 +1,5 @@
 """Test Triplestore.add_function()"""
+
 # pylint: disable=invalid-name
 
 

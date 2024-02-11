@@ -2,6 +2,7 @@
 
 Most of the rdflib backend is already tested in tests/test_triplestore.py.
 """
+
 import pytest
 
 from tripper import Literal, Triplestore
