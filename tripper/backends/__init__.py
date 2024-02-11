@@ -1,4 +1,5 @@
 """Implementation of triplestore backends"""
+
 from importlib import import_module
 
 # A dict mapping backend names to a list of dependencies

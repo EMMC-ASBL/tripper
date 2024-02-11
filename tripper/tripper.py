@@ -1,5 +1,6 @@
 """A module that adds additional functionality to triplestore
 """
+
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
@@ -161,13 +162,17 @@ class Tripper(Triplestore):
                     value=parse_literal(
                         self.value(iri, hasDataValue)
                     ).to_python(),
-                    unit=parse_literal(self.value(iri, hasUnit)).to_python()
-                    if self.has(iri, hasUnit)
-                    else None,
+                    unit=(
+                        parse_literal(self.value(iri, hasUnit)).to_python()
+                        if self.has(iri, hasUnit)
+                        else None
+                    ),
                     iri=self.value(iri, MAP.mapsTo),
-                    cost=parse_literal(self.value(iri, hasCost)).to_python()
-                    if self.has(iri, hasCost)
-                    else 0.0,
+                    cost=(
+                        parse_literal(self.value(iri, hasCost)).to_python()
+                        if self.has(iri, hasCost)
+                        else 0.0
+                    ),
                 ).get_value(unit=unit, magnitude=magnitude, quantity=quantity)
 
             if self.has(iri, hasAccessFunction):  # callable

@@ -1,4 +1,5 @@
 """Test collection."""
+
 import pytest
 
 

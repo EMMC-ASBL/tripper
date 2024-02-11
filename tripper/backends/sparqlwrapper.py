@@ -1,6 +1,7 @@
 """Backend for SPARQLWrapper
 
 """
+
 from typing import TYPE_CHECKING
 
 from tripper import Literal
@@ -44,11 +45,15 @@ class SparqlwrapperStrategy:
             if triple_value is None
         ]
         where_spec = " ".join(
-            f"?{triple_name}"
-            if triple_value is None
-            else triple_value
-            if triple_value.startswith("<")
-            else f"<{triple_value}>"
+            (
+                f"?{triple_name}"
+                if triple_value is None
+                else (
+                    triple_value
+                    if triple_value.startswith("<")
+                    else f"<{triple_value}>"
+                )
+            )
             for triple_name, triple_value in zip("spo", triple)
         )
         query = "\n".join(
@@ -64,9 +69,11 @@ class SparqlwrapperStrategy:
         ret = self.sparql.queryAndConvert()
         for binding in ret["results"]["bindings"]:
             yield tuple(
-                convert_json_entrydict(binding[name])
-                if name in binding
-                else value
+                (
+                    convert_json_entrydict(binding[name])
+                    if name in binding
+                    else value
+                )
                 for name, value in zip("spo", triple)
             )
 
@@ -75,11 +82,11 @@ class SparqlwrapperStrategy:
         spec = "\n".join(
             "  "
             + " ".join(
-                value.n3()
-                if isinstance(value, Literal)
-                else value
-                if value.startswith("<")
-                else f"<{value}>"
+                (
+                    value.n3()
+                    if isinstance(value, Literal)
+                    else value if value.startswith("<") else f"<{value}>"
+                )
                 for value in triple
             )
             + " ."
@@ -94,13 +101,15 @@ class SparqlwrapperStrategy:
     def remove(self, triple: "Triple") -> "QueryResult":
         """Remove all matching triples from the backend."""
         spec = " ".join(
-            f"?{name}"
-            if value is None
-            else value.n3()
-            if isinstance(value, Literal)
-            else value
-            if value.startswith("<")
-            else f"<{value}>"
+            (
+                f"?{name}"
+                if value is None
+                else (
+                    value.n3()
+                    if isinstance(value, Literal)
+                    else value if value.startswith("<") else f"<{value}>"
+                )
+            )
             for name, value in zip("spo", triple)
         )
         query = f"DELETE {{ {spec} }}"
