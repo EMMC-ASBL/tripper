@@ -66,7 +66,7 @@ SINTEF.
 
 Acknowledgements
 ----------------
-We gracefully acknowledge the following projects for supporting the development of Tripper:
+We gratefully acknowledge the following projects for supporting the development of Tripper:
 
   - [OntoTrans](https://cordis.europa.eu/project/id/862136) (2020-2024) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 862136.
   - [OpenModel](https://www.open-model.eu/) (2021-2025) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 953167.
