@@ -68,7 +68,7 @@ Acknowledgements
 ----------------
 We gratefully acknowledge the following projects for supporting the development of Tripper:
 
-  - [OntoTrans](https://cordis.europa.eu/project/id/862136) (2020-2024) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 862136.
+  - [OntoTrans](https://ontotrans.eu/) (2020-2024) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 862136.
   - [OpenModel](https://www.open-model.eu/) (2021-2025) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 953167.
   - [SFI PhysMet](https://www.ntnu.edu/physmet) (2020-2028) funded by Forskningsrådet and Norwegian industry partners.
   - [DOME 4.0](https://dome40.eu/) (2021-2025) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 953163.
