@@ -81,7 +81,7 @@ class CollectionStrategy:
             # parse_object() is declared to return "Union[str, Literal]".
             # Dispite of that complains mypy about that `v` has no
             # attribute "value"
-            obj = v if isinstance(v, str) else str(v.value)  # type: ignore
+            obj = v if isinstance(v, str) else str(v.value)
             d = (
                 None
                 if not isinstance(v, Literal)
@@ -93,7 +93,7 @@ class CollectionStrategy:
         """Remove all matching triples from the backend."""
         s, p, o = triple
         v = parse_object(o)
-        obj = v if isinstance(v, str) else str(v.value)  # type: ignore
+        obj = v if isinstance(v, str) else str(v.value)
         d = (
             None
             if not isinstance(v, Literal)
