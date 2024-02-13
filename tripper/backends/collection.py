@@ -66,31 +66,28 @@ class CollectionStrategy:
             else:
                 yield s, p, o
 
-    def add_triples(self, triples: "Sequence[Triple]"):
+    def add_triples(
+        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
+    ):
         """Add a sequence of triples."""
         for s, p, o in triples:
-            # Strange complains by mypy - it assumed that
-            # parse_object() is returning a `str` regardless that it
-            # has been declared to return the union of `str` and
-            # `Literal`.
             v = parse_object(o)
-            o = v if isinstance(v, str) else v.value
+            obj = v if isinstance(v, str) else str(v.value)
             d = (
                 None
                 if not isinstance(v, Literal)
                 else f"@{v.lang}" if v.lang else v.datatype
             )
-            self.collection.add_relation(s, p, o, d)
+            self.collection.add_relation(s, p, obj, d)
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
         s, p, o = triple
         v = parse_object(o)
-        o = v if isinstance(v, str) else v.value
+        obj = v if isinstance(v, str) else str(v.value)
         d = (
             None
-            if isinstance(v, str)
+            if not isinstance(v, Literal)
             else f"@{v.lang}" if v.lang else v.datatype
         )
-        # v_str = v.n3() if isinstance(v, Literal) else v
-        self.collection.remove_relations(s, p, o, d)
+        self.collection.remove_relations(s, p, obj, d)

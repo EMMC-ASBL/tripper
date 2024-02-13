@@ -211,6 +211,14 @@ def parse_literal(literal: "Any") -> "Any":
     raise ValueError(f'cannot parse literal "{literal}"')
 
 
+# Note:
+# The return type of parse_object() should really be "Union[str,
+# Literal]", but the current version of mypy interprets `Literal` as
+# `typing.Literal`, resulting in mypy reporting a lot of false errors.
+# It even doesn't understand if we write "Union[str, tripper.Literal".
+# Changing to `Any` solves the problem, to the price of loosing
+# accuracy...
+#
 def parse_object(obj: "Union[str, Literal]") -> "Union[str, Any]":
     """Applies heuristics to parse RDF object `obj` to an IRI or literal.
 
