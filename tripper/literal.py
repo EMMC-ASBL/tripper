@@ -176,6 +176,10 @@ class Literal(str):
             value = float(self)
         elif self.datatype == XSD.hexBinary:
             value = self.encode()
+        elif self.datatype == XSD.nonNegativeInteger:
+            value = int(self)
+            if value < 0:
+                raise TypeError("not a xsd:nonNegativeInteger: '{self}'")
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
         elif self.datatype and self.datatype not in self.datatypes[str]:
