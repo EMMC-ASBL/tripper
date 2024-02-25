@@ -28,6 +28,16 @@ def test_string_lang() -> None:
     assert literal.n3() == '"Hello world!"@en'
 
 
+def test_cannot_combine_datatype_and_lang() -> None:
+    """Test that combining datatype and lang raises TypeError."""
+    import pytest
+
+    from tripper import XSD, Literal
+
+    with pytest.raises(TypeError):
+        Literal("1", datatype=XSD.string, lang="en")
+
+
 def test_en() -> None:
     """Test creating a string literal through `en()`."""
     from tripper.utils import en
@@ -38,6 +48,8 @@ def test_en() -> None:
 
 def test_integer() -> None:
     """Test creating an integer literal."""
+    import pytest
+
     from tripper import XSD, Literal
 
     literal = Literal(42)
@@ -45,6 +57,32 @@ def test_integer() -> None:
     assert literal.datatype == XSD.integer
     assert literal.value == 42
     assert literal.n3() == f'"42"^^{XSD.integer}'
+
+    with pytest.raises(TypeError):
+        Literal(42, datatype=XSD.nonPositiveInteger)
+
+    with pytest.raises(TypeError):
+        Literal(-42, datatype=XSD.nonNegativeInteger)
+
+    with pytest.raises(TypeError):
+        Literal(-42, datatype=XSD.unsignedInt)
+
+
+def test_hexbinary() -> None:
+    """Test creating hexbinary literal."""
+    from tripper import XSD, Literal
+
+    literal = Literal(b"hi")
+    assert literal.lang is None
+    assert literal.datatype == XSD.hexBinary
+    assert literal.value == "6869"
+    assert literal.n3() == f'"6869"^^{XSD.hexBinary}'
+
+    literal = Literal("1f", datatype=XSD.hexBinary)
+    assert literal.lang is None
+    assert literal.datatype == XSD.hexBinary
+    assert literal.value == "1f"
+    assert literal.n3() == f'"1f"^^{XSD.hexBinary}'
 
 
 def test_float_through_datatype() -> None:
@@ -56,6 +94,16 @@ def test_float_through_datatype() -> None:
     assert literal.datatype == XSD.double
     assert literal.value == 42.0
     assert literal.n3() == f'"42"^^{XSD.double}'
+
+
+def test_repr() -> None:
+    """Test repr formatting."""
+    from tripper import Literal
+
+    literal = Literal(42, datatype=float)
+    assert repr(literal) == (
+        "Literal('42', datatype='http://www.w3.org/2001/XMLSchema#double')"
+    )
 
 
 def test_split_iri() -> None:
@@ -75,6 +123,8 @@ def test_split_iri() -> None:
 def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
     from datetime import datetime
+
+    import pytest
 
     from tripper import RDF, XSD, Literal
     from tripper.utils import parse_literal
@@ -150,7 +200,8 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
-    literal = parse_literal('"value"^^http://example.com/vocab#mytype')
+    with pytest.warns(UserWarning, match="unknown datatype"):
+        literal = parse_literal('"value"^^http://example.com/vocab#mytype')
     assert literal.value == "value"
     assert literal.lang is None
     assert literal.datatype == "http://example.com/vocab#mytype"

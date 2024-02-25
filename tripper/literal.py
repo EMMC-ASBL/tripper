@@ -39,6 +39,7 @@ class Literal(str):
             XSD.int,
             XSD.short,
             XSD.long,
+            XSD.nonNegativeInteger,
             XSD.nonPositiveInteger,
             XSD.negativeInteger,
             XSD.unsignedInt,
@@ -134,6 +135,38 @@ class Literal(str):
             # TODO:
             #   - XSD.base64Binary
             #   - XSD.byte, XSD.unsignedByte
+
+        # Some consistency checking
+        if (
+            string.datatype == XSD.nonPositiveInteger
+            and int(value) > 0  # type: ignore[arg-type]
+        ):
+            raise TypeError(f"not a xsd:nonPositiveInteger: '{string}'")
+        if (
+            string.datatype == XSD.nonNegativeInteger
+            and int(value) < 0  # type: ignore[arg-type]
+        ):
+            raise TypeError(f"not a xsd:nonNegativeInteger: '{string}'")
+        if (
+            string.datatype
+            in (
+                XSD.unsignedInt,
+                XSD.unsignedShort,
+                XSD.unsignedLong,
+                XSD.unsignedByte,
+            )
+            and int(value) < 0  # type: ignore[arg-type]
+        ):
+            raise TypeError(f"not an unsigned integer: '{string}'")
+
+        # Check if datatype is known
+        if string.datatype and not any(
+            string.datatype in types for types in cls.datatypes.values()
+        ):
+            warnings.warn(
+                f"unknown datatype: {string.datatype} - assuming xsd:string"
+            )
+
         return string
 
     def __hash__(self):
@@ -174,18 +207,8 @@ class Literal(str):
             value = int(self)
         elif self.datatype in self.datatypes[float]:
             value = float(self)
-        elif self.datatype == XSD.hexBinary:
-            value = self.encode()
-        elif self.datatype == XSD.nonNegativeInteger:
-            value = int(self)
-            if value < 0:
-                raise TypeError("not a xsd:nonNegativeInteger: '{self}'")
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
-        elif self.datatype and self.datatype not in self.datatypes[str]:
-            warnings.warn(
-                f"unknown datatype: {self.datatype} - assuming string"
-            )
 
         return value
 
@@ -195,4 +218,4 @@ class Literal(str):
             return f'"{self}"@{self.lang}'
         if self.datatype:
             return f'"{self}"^^{self.datatype}'
-        return f'"{self}"'
+        assert False, "should never be reached"  # nosec
