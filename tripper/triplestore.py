@@ -962,17 +962,25 @@ class Triplestore:
         if func_name and module_name:
             self.bind("oteio", OTEIO)
             self.add(
-                (func_iri, OTEIO.hasPythonFunctionName, Literal(func_name))
+                (
+                    func_iri,
+                    OTEIO.hasPythonFunctionName,
+                    Literal(func_name, datatype=XSD.string),
+                )
             )
             self.add(
-                (func_iri, OTEIO.hasPythonModuleName, Literal(module_name))
+                (
+                    func_iri,
+                    OTEIO.hasPythonModuleName,
+                    Literal(module_name, datatype=XSD.string),
+                )
             )
             if package_name:
                 self.add(
                     (
                         func_iri,
                         OTEIO.hasPythonPackageName,
-                        Literal(package_name),
+                        Literal(package_name, datatype=XSD.string),
                     )
                 )
             if pypi_package_name:
@@ -980,7 +988,7 @@ class Triplestore:
                     (
                         func_iri,
                         OTEIO.hasPypiPackageName,
-                        Literal(pypi_package_name),
+                        Literal(pypi_package_name, datatype=XSD.string),
                     )
                 )
         else:

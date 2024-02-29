@@ -3,12 +3,28 @@
 # pylint: disable=invalid-name,too-many-statements
 
 
+def test_untyped() -> None:
+    """Test creating a string literal."""
+    from tripper.literal import Literal
+
+    literal = Literal("Hello world!")
+    assert literal == "Hello world!"
+    assert Literal(literal) == "Hello world!"
+    assert isinstance(literal, str)
+    assert literal.lang is None
+    assert literal.datatype is None
+    assert literal.to_python() == "Hello world!"
+    assert literal.value == "Hello world!"
+    assert literal.n3() == "Hello world!"
+
+
 def test_string() -> None:
     """Test creating a string literal."""
     from tripper.literal import XSD, Literal
 
-    literal = Literal("Hello world!")
-    assert literal == "Hello world!"
+    literal = Literal("Hello world!", datatype=XSD.string)
+    assert literal == Literal("Hello world!", datatype=XSD.string)
+    assert Literal(literal) == Literal("Hello world!", datatype=XSD.string)
     assert isinstance(literal, str)
     assert literal.lang is None
     assert literal.datatype == XSD.string
@@ -22,6 +38,8 @@ def test_string_lang() -> None:
     from tripper.literal import Literal
 
     literal = Literal("Hello world!", lang="en")
+    assert literal == Literal("Hello world!", lang="en")
+    assert Literal(literal) == Literal("Hello world!", lang="en")
     assert literal.lang == "en"
     assert literal.datatype is None
     assert literal.value == "Hello world!"
@@ -53,6 +71,8 @@ def test_integer() -> None:
     from tripper import XSD, Literal
 
     literal = Literal(42)
+    assert literal == Literal(42)
+    assert Literal(literal) == Literal(42)
     assert literal.lang is None
     assert literal.datatype == XSD.integer
     assert literal.value == 42
@@ -211,11 +231,13 @@ def test_equality() -> None:
     """Test equality."""
     from tripper import RDF, XSD, Literal
 
-    assert Literal("text", datatype=XSD.string) == "text"
+    assert Literal("text") == "text"
     assert Literal("text", lang="en") == "text"
+    assert Literal("text", lang="dk") == "text"
     assert Literal("text", lang="en") != Literal("text", lang="dk")
     assert Literal("text") == "text"
     assert Literal("text") != "text2"
+    assert Literal("text", datatype=XSD.string) != "text"
     assert Literal("text", datatype=RDF.HTML) != "text"
     assert Literal(1) == 1
     assert Literal(1) != 1.0
