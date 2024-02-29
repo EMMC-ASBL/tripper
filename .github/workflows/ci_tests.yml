@@ -37,6 +37,7 @@ jobs:
         --ignore=44715
         --ignore=44716
         --ignore=44717
+        --ignore=64496
 
       # Build package
       run_build_package: true
