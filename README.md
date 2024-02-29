@@ -50,7 +50,7 @@ Available backends
 ------------------
 The following backends are currently available, either in Tripper or other packages.
 
-| Backend name  | Package      | Requirements            | Comment
+| Backend name  | Provided by  | Requirements            | Comment
 | ------------  | ------------ | ----------------------- | -----------------
 | rdflib        | [tripper]    | rdflib                  | In-memory [rdflib] triplestore supporting all features.
 | ontopy        | [tripper]    | EMMOntoPy               | Tripper backend to [EMMOntoPy]. In-memory.
