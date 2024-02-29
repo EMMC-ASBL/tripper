@@ -46,6 +46,21 @@ Documentation
 * [Reference manual]
 
 
+Available backends
+------------------
+The following backends are currently available, either in Tripper or other packages.
+
+| Backend name  | Package      | Requirements            | Comment
+| ------------  | ------------ | ----------------------- | -----------------
+| rdflib        | [tripper]    | rdflib                  | In-memory [rdflib] triplestore supporting all features.
+| ontopy        | [tripper]    | EMMOntoPy               | Tripper backend to [EMMOntoPy]. In-memory.
+| sparqlwrapper | [tripper]    | sparqlwrapper           | Generic Tripper backend [sparqlwrapper].
+| collection    | [tripper]    | DLite                   | Tripper backend to a [DLite] collection.
+| fuseki        | [PyBackTrip] | sparqlwrapper           | Tripper backend to [fuseki].
+| stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Tripper backend to [StarDog].
+| graphdb       | [PyBackTrip] | sparqlwrapper           | Tripper backend to [GraphDB].
+
+
 Installation
 ------------
 Tripper has by itself no dependencies outside the standard library, but the triplestore backends may have specific dependencies.
@@ -78,9 +93,18 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 
+[tripper]: https://emmc-asbl.github.io/tripper/latest/
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
+[PyBackTrip]: https://github.com/EMMC-ASBL/PyBackTrip/
 [Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
 [Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
+[rdflib]: https://rdflib.readthedocs.io/en/stable/
+[EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/stable/
+[sparqlwrapper]: https://sparqlwrapper.readthedocs.io/en/latest/
+[DLite]: https://sintef.github.io/dlite/
+[fuseki]: https://jena.apache.org/documentation/fuseki2/
+[StarDog]: https://www.stardog.com/
+[GraphDB]: https://www.ontotext.com/products/graphdb/
