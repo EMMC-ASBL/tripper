@@ -32,6 +32,8 @@ jobs:
       #  https://pyup.io/vulnerabilities/CVE-2021-41495/44715/
       #  https://pyup.io/vulnerabilities/CVE-2021-41496/44716/
       #  https://pyup.io/vulnerabilities/CVE-2021-34141/44717/
+      # 64496: mkdocs-material 9.2.7 vulnerability:
+      #  https://data.safetycli.com/v/64496/97c
       safety_options: |
         --ignore=48547
         --ignore=44715
