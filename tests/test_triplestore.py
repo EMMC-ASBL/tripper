@@ -199,6 +199,7 @@ def test_backend_rdflib_graph(
     assert graph.value(URIRef(":Nils"), URIRef(RDF.type)) == URIRef(FAM.Father)
 
 
+@pytest.mark.filterwarnings("ignore:adding new IRI to ontology:UserWarning")
 def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     """Specifically test the ontopy backend Triplestore.
 
@@ -245,10 +246,11 @@ def test_backend_sparqlwrapper() -> None:
         "csiro_international-chronostratigraphic-chart_geologic-"
         "time-scale-2020",
     )
-    for s, p, o in ts.triples(predicate=SKOS.notation):
-        assert s
-        assert p
-        assert o
+    with pytest.warns(UserWarning, match="unknown datatype"):
+        for s, p, o in ts.triples(predicate=SKOS.notation):
+            assert s
+            assert p
+            assert o
 
 
 @pytest.mark.skip(
