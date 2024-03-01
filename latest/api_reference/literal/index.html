@@ -1013,6 +1013,7 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">XSD</span><span class="o">.</span><span class="n">int</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">short</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">long</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">negativeInteger</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedInt</span><span class="p">,</span>
@@ -1108,6 +1109,38 @@ not be combined with <code>lang</code>.</p></td>
             <span class="c1"># TODO:</span>
             <span class="c1">#   - XSD.base64Binary</span>
             <span class="c1">#   - XSD.byte, XSD.unsignedByte</span>
+
+        <span class="c1"># Some consistency checking</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span>
+            <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonPositiveInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span>
+            <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonNegativeInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedInt</span><span class="p">,</span>
+                <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedShort</span><span class="p">,</span>
+                <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedLong</span><span class="p">,</span>
+                <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedByte</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not an unsigned integer: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if datatype is known</span>
+        <span class="k">if</span> <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">types</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="n">string</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming xsd:string&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">string</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1148,14 +1181,8 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming string&quot;</span>
-            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span>
 
@@ -1165,7 +1192,7 @@ not be combined with <code>lang</code>.</p></td>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&quot;@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&quot;^^</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;should never be reached&quot;</span>  <span class="c1"># nosec</span>
 </code></pre></div>
         </details>
 
@@ -1292,6 +1319,38 @@ not be combined with <code>lang</code>.</p></td>
         <span class="c1"># TODO:</span>
         <span class="c1">#   - XSD.base64Binary</span>
         <span class="c1">#   - XSD.byte, XSD.unsignedByte</span>
+
+    <span class="c1"># Some consistency checking</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span>
+        <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonPositiveInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span>
+        <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonNegativeInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedInt</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedShort</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedLong</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">unsignedByte</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not an unsigned integer: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if datatype is known</span>
+    <span class="k">if</span> <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">types</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="n">string</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming xsd:string&quot;</span>
+        <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">string</span>
 </code></pre></div>
         </details>
@@ -1324,7 +1383,7 @@ not be combined with <code>lang</code>.</p></td>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&quot;@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&quot;^^</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&#39;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;should never be reached&quot;</span>  <span class="c1"># nosec</span>
 </code></pre></div>
         </details>
     </div>
@@ -1361,14 +1420,8 @@ literal.</p>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">:</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming string&quot;</span>
-        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">value</span>
 </code></pre></div>
