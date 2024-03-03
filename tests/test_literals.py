@@ -14,7 +14,7 @@ def test_string() -> None:
     assert literal.datatype == XSD.string
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
-    assert literal.n3() == f'"Hello world!"^^{XSD.string}'
+    assert literal.n3() == f'"Hello world!"^^<{XSD.string}>'
 
 
 def test_string_lang() -> None:
@@ -56,7 +56,7 @@ def test_integer() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.integer
     assert literal.value == 42
-    assert literal.n3() == f'"42"^^{XSD.integer}'
+    assert literal.n3() == f'"42"^^<{XSD.integer}>'
 
     with pytest.raises(TypeError):
         Literal(42, datatype=XSD.nonPositiveInteger)
@@ -76,13 +76,13 @@ def test_hexbinary() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.hexBinary
     assert literal.value == "6869"
-    assert literal.n3() == f'"6869"^^{XSD.hexBinary}'
+    assert literal.n3() == f'"6869"^^<{XSD.hexBinary}>'
 
     literal = Literal("1f", datatype=XSD.hexBinary)
     assert literal.lang is None
     assert literal.datatype == XSD.hexBinary
     assert literal.value == "1f"
-    assert literal.n3() == f'"1f"^^{XSD.hexBinary}'
+    assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
 
 def test_float_through_datatype() -> None:
@@ -93,7 +93,7 @@ def test_float_through_datatype() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.double
     assert literal.value == 42.0
-    assert literal.n3() == f'"42"^^{XSD.double}'
+    assert literal.n3() == f'"42"^^<{XSD.double}>'
 
 
 def test_repr() -> None:

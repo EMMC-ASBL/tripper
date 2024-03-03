@@ -25,6 +25,8 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from tripper.errors import (
+    ArgumentTypeError,
+    ArgumentValueError,
     CannotGetFunctionError,
     NamespaceError,
     TriplestoreError,
@@ -45,7 +47,7 @@ from tripper.namespace import (
     XSD,
     Namespace,
 )
-from tripper.utils import en, function_id, infer_iri, split_iri
+from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Mapping
@@ -59,6 +61,11 @@ if TYPE_CHECKING:  # pragma: no cover
         Tuple,
         Union,
     )
+
+    if sys.version_info.minor < 8:
+        from typing_extensions import Literal as TypeLiteral  # type: ignore
+    else:
+        from typing import Literal as TypeLiteral  # type: ignore
 
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
@@ -668,6 +675,146 @@ class Triplestore:
             if require_prefixed:
                 raise NamespaceError(f"No prefix defined for IRI: {iri}")
         return iri
+
+    # Types of restrictions defined in OWL
+    _restriction_types = {
+        "some": (OWL.someValueFrom, None),
+        "only": (OWL.allValueFrom, None),
+        "exactly": (OWL.onClass, OWL.qualifiedCardinality),
+        "min": (OWL.onClass, OWL.minQualifiedCardinality),
+        "max": (OWL.onClass, OWL.maxQualifiedCardinality),
+        "value": (OWL.hasValue, None),
+    }
+
+    def add_restriction(  # pylint: disable=redefined-builtin
+        self,
+        cls: str,
+        property: str,
+        target: "Union[str, Literal]",
+        type: "TypeLiteral['some', 'only', 'exactly', 'min', 'max', 'value']",
+        cardinality: "Optional[int]" = None,
+        hashlength: int = 16,
+    ) -> str:
+        """Add a restriction to a class in the triplestore.
+
+        Parameters:
+            cls: IRI of class to which the restriction applies.
+            property: IRI of restriction property.
+            target: The IRI or literal value of the restriction target.
+            type: The type of the restriction.  Should be one of:
+                - some: existential restriction (target is a class IRI)
+                - only: universal restriction (target is a class IRI)
+                - exactly: cardinality restriction (target is a class IRI)
+                - min: minimum cardinality restriction (target is a class IRI)
+                - max: maximum cardinality restriction (target is a class IRI)
+                - value: Value restriction (target is an IRI of an individual
+                  or a literal)
+
+            cardinality: the cardinality value for cardinality restrictions.
+            hashlength: Number of bytes in the hash part of the bnode IRI.
+
+        Returns:
+            The IRI of the created blank node representing the restriction.
+        """
+        iri = bnode_iri(
+            prefix="restriction",
+            source=f"{cls} {property} {target} {type} {cardinality}",
+            length=hashlength,
+        )
+        triples = [
+            (cls, RDFS.subClassOf, iri),
+            (iri, RDF.type, OWL.Restriction),
+            (iri, OWL.onProperty, property),
+        ]
+        if type not in self._restriction_types:
+            raise ArgumentValueError(
+                '`type` must be one of: "some", "only", "exactly", "min", '
+                '"max" or "value"'
+            )
+        pred, card = self._restriction_types[type]
+        triples.append((iri, pred, target))
+        if card:
+            if not cardinality:
+                raise ArgumentTypeError(
+                    f"`cardinality` must be provided for type='{type}'"
+                )
+            triples.append(
+                (
+                    iri,
+                    card,
+                    Literal(cardinality, datatype=XSD.nonNegativeInteger),
+                ),
+            )
+
+        self.add_triples(triples)
+        return iri
+
+    def restrictions(  # pylint: disable=redefined-builtin
+        self,
+        cls: "Optional[str]" = None,
+        property: "Optional[str]" = None,
+        target: "Optional[Union[str, Literal]]" = None,
+        type: (
+            "Optional[TypeLiteral['some', 'only', 'exactly', 'min', "
+            "'max', 'value']]"
+        ) = None,
+        cardinality: "Optional[int]" = None,
+    ) -> "Generator[Triple, None, None]":
+        # pylint: disable=too-many-boolean-expressions
+        """Returns a generator over matching restrictions.
+
+        Parameters:
+            cls: IRI of class to which the restriction applies.
+            property: IRI of restriction property.
+            target: The IRI or literal value of the restriction target.
+            type: The type of the restriction.  Should be one of:
+                - some: existential restriction (target is a class IRI)
+                - only: universal restriction (target is a class IRI)
+                - exactly: cardinality restriction (target is a class IRI)
+                - min: minimum cardinality restriction (target is a class IRI)
+                - max: maximum cardinality restriction (target is a class IRI)
+                - value: Value restriction (target is an IRI of an individual
+                  or a literal)
+
+            cardinality: the cardinality value for cardinality restrictions.
+        """
+        if type is None:
+            types = {"some", "only", "exactly", "min", "max", "value"}
+        else:
+            types = {type} if isinstance(type, str) else set(type)
+        if isinstance(target, str):
+            types.difference_update({"value"})
+        elif isinstance(target, Literal):
+            types.intersection_update({"value"})
+        if cardinality:
+            types.intersection_update({"exactly", "min", "max"})
+        if not types:
+            raise ArgumentValueError(
+                f"Inconsistent type='{type}', target='{target}' and "
+                f"cardinality='{cardinality}' arguments"
+            )
+        pred = {self._restriction_types[t][0] for t in types}
+        card = {
+            self._restriction_types[t][1]
+            for t in types
+            if self._restriction_types[t][1]
+        }
+
+        if cardinality:
+            lcard = Literal(cardinality, datatype=XSD.nonNegativeInteger)
+
+        for iri in self.subjects(predicate=OWL.onProperty, object=property):
+            if (
+                self.has(iri, RDF.type, OWL.Restriction)
+                and self.has(cls, RDFS.subClassOf, iri)
+                and any(self.has(iri, p, target) for p in pred)
+                and (
+                    not card
+                    or not cardinality
+                    or any(self.has(iri, c, lcard) for c in card)
+                )
+            ):
+                yield iri
 
     def map(
         self,

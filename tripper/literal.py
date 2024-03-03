@@ -217,5 +217,5 @@ class Literal(str):
         if self.lang:
             return f'"{self}"@{self.lang}'
         if self.datatype:
-            return f'"{self}"^^{self.datatype}'
+            return f'"{self}"^^<{self.datatype}>'
         assert False, "should never be reached"  # nosec

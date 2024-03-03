@@ -130,6 +130,54 @@ def test_function_id():
     assert fid4 != fid3
 
 
+def test_bnode_iri():
+    """Test bnode_iri()"""
+    from tripper.utils import bnode_iri
+
+    assert bnode_iri().startswith("_:")
+    assert bnode_iri("abc").startswith("_:abc")
+    assert len(bnode_iri("abc_", "src")) == 6 + 32
+    assert len(bnode_iri("abc_", "src", 8)) == 6 + 16
+
+
+def test_tfilter():
+    """Test filter()"""
+    from tripper import FOAF, RDF, Namespace
+    from tripper.utils import en, tfilter
+
+    EX = Namespace("http://example.com#")
+    triples = [
+        (EX.Tom, RDF.type, EX.Cat),
+        (EX.Tom, RDF.chaises, EX.Jerry),
+        (EX.Tom, EX.pasPart, EX.Leg),
+        (EX.Tom, FOAF.name, en("Tom")),
+        (EX.Jerry, FOAF.name, en("Jerry")),
+    ]
+    assert set(tfilter(triples, predicate=FOAF.name)) == {
+        (EX.Tom, FOAF.name, en("Tom")),
+        (EX.Jerry, FOAF.name, en("Jerry")),
+    }
+    assert set(tfilter(triples, subject=EX.Tom, predicate=FOAF.name)) == {
+        (EX.Tom, FOAF.name, en("Tom")),
+    }
+    assert set(
+        tfilter(
+            triples, subject=(EX.Tom, EX.Jerry, EX.Mammy), predicate=FOAF.name
+        )
+    ) == {
+        (EX.Tom, FOAF.name, en("Tom")),
+        (EX.Jerry, FOAF.name, en("Jerry")),
+    }
+    assert (
+        set(tfilter(triples, subject=EX.Mammy, predicate=FOAF.name)) == set()
+    )
+
+    # Test nested filters
+    assert set(
+        tfilter(triples=tfilter(triples, subject=EX.Tom), predicate=FOAF.name)
+    ) == {(EX.Tom, FOAF.name, en("Tom"))}
+
+
 def test_en():
     """Test en()"""
     from tripper import Literal
