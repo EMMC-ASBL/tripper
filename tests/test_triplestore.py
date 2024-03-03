@@ -280,6 +280,8 @@ def test_backend_sparqlwrapper_methods() -> None:
 # if True:
 def test_find_literal_triples() -> None:
     """Test finding literals."""
+    pytest.importorskip("rdflib")
+
     from tripper import RDF, XSD, Literal, Triplestore
     from tripper.testutils import ontodir
 
