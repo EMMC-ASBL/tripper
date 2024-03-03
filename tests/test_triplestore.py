@@ -99,6 +99,7 @@ def test_restriction() -> None:
     """Test add_restriction() method."""
     pytest.importorskip("rdflib")
 
+    from tripper.errors import ArgumentTypeError, ArgumentValueError
     from tripper.triplestore import OWL, RDF, RDFS, XSD, Literal, Triplestore
 
     ts = Triplestore("rdflib")
@@ -135,9 +136,39 @@ def test_restriction() -> None:
         f"{Literal(3, datatype=XSD.nonNegativeInteger).n3()}"
     ) in txt2
 
+    # Test add value restriction
+    iri3 = ts.add_restriction(
+        cls=EX.Kerberos,
+        property=EX.position,
+        target=Literal("The port of Hades"),
+        type="value",
+    )
+    txt3 = ts.serialize(format="ntriples")
+    assert f"<{EX.Kerberos}> <{RDFS.subClassOf}> {iri3}" in txt3
+    assert f"{iri3} <{RDF.type}> <{OWL.Restriction}>" in txt3
+    assert f"{iri3} <{OWL.onProperty}> <{EX.position}>" in txt3
+    assert (
+        f"{iri3} <{OWL.hasValue}> {Literal('The port of Hades').n3()}" in txt3
+    )
+
+    with pytest.raises(ArgumentValueError):
+        ts.add_restriction(
+            cls=EX.Kerberos,
+            property=EX.hasBodyPart,
+            target=EX.Head,
+            type="wrong_type",
+        )
+    with pytest.raises(ArgumentTypeError):
+        ts.add_restriction(
+            cls=EX.Kerberos,
+            property=EX.hasBodyPart,
+            target=EX.Head,
+            type="min",
+        )
+
     # Test find restriction
-    assert set(ts.restrictions()) == {iri, iri2}
-    assert set(ts.restrictions(cls=EX.Kerberos)) == {iri2}
+    assert set(ts.restrictions()) == {iri, iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Kerberos)) == {iri2, iri3}
     assert set(ts.restrictions(cls=EX.Animal)) == {iri}
     assert not set(ts.restrictions(cls=EX.Dog))
     assert set(ts.restrictions(cls=EX.Kerberos, cardinality=3)) == {iri2}
@@ -149,6 +180,11 @@ def test_restriction() -> None:
     assert set(ts.restrictions(target=EX.Cell)) == {iri}
     assert set(ts.restrictions(target=EX.Head)) == {iri2}
     assert not set(ts.restrictions(target=EX.Leg))
+    assert set(ts.restrictions(target=EX.Cell, type="some")) == {iri}
+    assert set(ts.restrictions(target=EX.Head, type="exactly")) == {iri2}
+
+    with pytest.raises(ArgumentValueError):
+        set(ts.restrictions(target=EX.Cell, type="wrong_type"))
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:

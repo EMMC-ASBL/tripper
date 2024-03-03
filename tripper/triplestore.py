@@ -779,13 +779,20 @@ class Triplestore:
             cardinality: the cardinality value for cardinality restrictions.
         """
         if type is None:
-            types = {"some", "only", "exactly", "min", "max", "value"}
+            types = set(self._restriction_types.keys())
+        elif type not in self._restriction_types:
+            raise ArgumentValueError(
+                f"Invalid `type='{type}'`, it must be one of: "
+                f"{', '.join(self._restriction_types.keys())}."
+            )
         else:
             types = {type} if isinstance(type, str) else set(type)
+
         if isinstance(target, str):
             types.difference_update({"value"})
         elif isinstance(target, Literal):
             types.intersection_update({"value"})
+
         if cardinality:
             types.intersection_update({"exactly", "min", "max"})
         if not types:
