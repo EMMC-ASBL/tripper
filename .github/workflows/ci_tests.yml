@@ -21,7 +21,7 @@ jobs:
       skip_pre-commit_hooks: pylint,pylint-tests
 
       # pylint & safety
-      python_version_pylint_safety: "3.7"
+      python_version_pylint_safety: "3.9"
       run_pylint: true
       pylint_runs: |
         --rcfile=pyproject.toml tripper
@@ -46,7 +46,7 @@ jobs:
 
       # Build documentation
       run_build_docs: true
-      python_version_docs: "3.7"
+      python_version_docs: "3.9"
       update_python_api_ref: true
       update_docs_landing_page: true
       package_dirs: tripper

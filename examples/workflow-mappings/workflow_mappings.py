@@ -1,7 +1,15 @@
 """Workflow example"""
 
+import warnings
+
 from tripper import Triplestore
 from tripper.mappings import MappingStep, mapping_routes
+
+warnings.filterwarnings(
+    action="ignore",
+    message="Function and module name for function '[^']*' is not provided",
+    category=UserWarning,
+)
 
 ts = Triplestore(backend="rdflib")
 EX = ts.bind("ex", "http://example.com/generic_example#")
