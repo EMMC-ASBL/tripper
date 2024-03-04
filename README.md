@@ -101,7 +101,6 @@ We gratefully acknowledge the following projects for supporting the development 
 [Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
 [Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
-[rdflib]: https://rdflib.readthedocs.io/en/stable/
 [EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/stable/
 [sparqlwrapper]: https://sparqlwrapper.readthedocs.io/en/latest/
 [DLite]: https://sintef.github.io/dlite/
