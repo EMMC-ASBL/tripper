@@ -104,7 +104,7 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 
-[tripper]: https://emmc-asbl.github.io/tripper/latest/
+[tripper]: https://emmc-asbl.github.io/tripper
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
 [PyBackTrip]: https://github.com/EMMC-ASBL/PyBackTrip/
