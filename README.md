@@ -72,6 +72,17 @@ The package can be installed from [PyPI] using `pip`:
 pip install tripper
 ```
 
+In addition you would need to install the requirements for one or more of the backends listed in the table above.
+For mappings you would also need to install [Pint].
+For example:
+
+```shell
+pip install rdflib pint
+```
+
+
+
+
 License and copyright
 ---------------------
 All files in this repository are licensed under the [MIT license](LICENSE).
@@ -107,3 +118,4 @@ We gratefully acknowledge the following projects for supporting the development 
 [fuseki]: https://jena.apache.org/documentation/fuseki2/
 [StarDog]: https://www.stardog.com/
 [GraphDB]: https://www.ontotext.com/products/graphdb/
+[Pint]: https://pint.readthedocs.io/en/stable/
