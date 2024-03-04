@@ -53,12 +53,12 @@ The following backends are currently available, either in Tripper or other packa
 | Backend name  | Provided by  | Requirements            | Comment
 | ------------  | ------------ | ----------------------- | -----------------
 | rdflib        | [tripper]    | rdflib                  | In-memory [rdflib] triplestore supporting all features.
-| ontopy        | [tripper]    | EMMOntoPy               | Tripper backend to [EMMOntoPy]. In-memory.
-| sparqlwrapper | [tripper]    | sparqlwrapper           | Generic Tripper backend [sparqlwrapper].
-| collection    | [tripper]    | DLite                   | Tripper backend to a [DLite] collection.
-| fuseki        | [PyBackTrip] | sparqlwrapper           | Tripper backend to [fuseki].
-| stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Tripper backend to [StarDog].
-| graphdb       | [PyBackTrip] | sparqlwrapper           | Tripper backend to [GraphDB].
+| ontopy        | [tripper]    | EMMOntoPy               | Backend for [EMMOntoPy]. In-memory.
+| sparqlwrapper | [tripper]    | sparqlwrapper           | Generic backend for all triplestores supported by [sparqlwrapper].
+| collection    | [tripper]    | DLite-Python            | Backend to a [DLite] collection.
+| fuseki        | [PyBackTrip] | sparqlwrapper           | Backend to [fuseki].
+| stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Backend to [StarDog].
+| graphdb       | [PyBackTrip] | sparqlwrapper           | Backend to [GraphDB].
 
 
 Installation
