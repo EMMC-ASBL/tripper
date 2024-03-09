@@ -118,17 +118,22 @@ def function_id(func: "Callable", length: int = 4) -> str:
     ).hexdigest(length)
 
 
-def bnode_iri(prefix: str = "", source: str = "", length: int = 16) -> str:
-    """Returns a new bnode IRI.
+def bnode_iri(prefix: str = "", source: str = "", length: int = 5) -> str:
+    """Returns a new IRI for a blank node.
 
     Parameters:
         prefix: A prefix to insert between "_:" and the hash.
         source: An unique string that the returned bnode will be a hash of.
             The default is to generate a random hash.
-        length: Length is the number of bytes in the hash.
+        length: Length is the number of bytes in the hash.  The default
+            length of 5 is a compromise between readability (10 characters)
+            and safety (corresponding to about 1e12 possibilites).  You can
+            change it to 16 to get 128 bits, corresponding to the uniqueness
+            of UUIDs).  It makes no sense to go beyond 32, because that is
+            the maximum of the underlying shake_128 algorithm.
 
     Returns:
-        A new benode IRI of the form "_:<prefix><hash>", where `<prefix>`
+        A new bnode IRI of the form "_:<prefix><hash>", where `<prefix>`
         is `prefix` and `<hash>` is a hex-encoded hash of `source`.
     """
     if source:

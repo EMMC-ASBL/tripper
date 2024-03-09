@@ -186,6 +186,9 @@ def test_restriction() -> None:
     with pytest.raises(ArgumentValueError):
         set(ts.restrictions(target=EX.Cell, type="wrong_type"))
 
+    with pytest.raises(ArgumentValueError):
+        set(ts.restrictions(type="value", cardinality=2))
+
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
     """Specifically test the rdflib backend Triplestore.
