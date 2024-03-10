@@ -233,3 +233,34 @@ def test_random_string():
     assert isinstance(rstring, str)
     assert len(rstring) == 16
     assert rstring.isalnum()
+
+
+# if True:
+def test_extend_namespace():
+    """Test extend namespace()"""
+    from tripper import Namespace
+    from tripper.errors import NoSuchIRIError
+    from tripper.testutils import ontodir
+    from tripper.utils import extend_namespace
+
+    FOOD = Namespace(
+        "http://onto-ns.com/ontologies/examples/food#",
+        label_annotations=True,
+        check=True,
+        reload=True,
+        triplestore=ontodir / "food.ttl",
+    )
+
+    # Test extending with dict
+    with pytest.raises(NoSuchIRIError):
+        FOOD.Hamburger  # pylint: disable=pointless-statement
+
+    extend_namespace(FOOD, {"Hamburger": FOOD + "Hamburger"})
+    assert FOOD.Hamburger == FOOD + "Hamburger"
+
+    # Test extending with triplestore
+    with pytest.raises(NoSuchIRIError):
+        FOOD.Fish  # pylint: disable=pointless-statement
+
+    extend_namespace(FOOD, ontodir / "food-more.ttl")
+    assert FOOD.Fish == FOOD + "FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26"

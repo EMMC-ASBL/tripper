@@ -39,19 +39,19 @@ It is needed, because the 'rdflib' backend is currently not able to load EMMO fr
 
 ```python
 >>> EMMO = ts.bind(
-...     "emmo", "http://emmo.info/emmo#",
+...     "emmo", "https://w3id.org/emmo#",
 ...     label_annotations=True,
 ...     check=True,
-...     triplestore_url="https://emmo-repo.github.io/versions/1.0.0-beta4/emmo-inferred.ttl",
+...     triplestore="https://w3id.org/emmo/1.0.0-rc1",
 ... )
 
 >>> EMMO.Atom
-'http://emmo.info/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
+'https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
 
 >>> EMMO.invalid_name
 Traceback (most recent call last):
     ...
-tripper.errors.NoSuchIRIError: http://emmo.info/emmo#invalid_name
+tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name
 
 ```
 

@@ -217,7 +217,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
         "http://onto-ns.com/ontologies/examples/food#",
         label_annotations=True,
         check=True,
-        triplestore_url=ontopath_food,
+        triplestore=ontopath_food,
     )
 
     ts = Triplestore(
