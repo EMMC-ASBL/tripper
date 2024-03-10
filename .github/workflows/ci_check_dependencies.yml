@@ -15,7 +15,7 @@ jobs:
       git_username: "TEAM 4.0[bot]"
       git_email: "Team4.0@SINTEF.no"
       permanent_dependencies_branch: "ci/dependency-updates"
-      python_version: "3.7"
+      python_version: "3.9"
       install_extras: "[dev]"
       pr_labels: "CI/CD,skip_changelog"
     secrets:
