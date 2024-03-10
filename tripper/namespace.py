@@ -40,6 +40,7 @@ class Namespace:
         triplestore: Use this triplestore for label lookup and checking.
             Can be either a Triplestore object or an URL to load from.
             Defaults to `iri`.
+        format: Format to use when loading from a triplestore.
     """
 
     __slots__ = (
@@ -56,7 +57,9 @@ class Namespace:
         check: bool = False,
         reload: "Optional[bool]" = None,
         triplestore: "Optional[Union[Triplestore, str]]" = None,
+        format: "Optional[str]" = None,
     ):
+        # pylint: disable=redefined-builtin
         if label_annotations is True:
             label_annotations = (SKOS.prefLabel, RDF.label, SKOS.altLabel)
 
@@ -70,13 +73,14 @@ class Namespace:
         self._iris: "Optional[dict]" = {} if need_triplestore else None
 
         if need_triplestore:
-            self._update_iris(triplestore, reload=reload)
+            self._update_iris(triplestore, reload=reload, format=format)
 
-    def _update_iris(self, triplestore=None, reload=False):
+    def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
 
         If `reload` is true, reload regardless we have a local cache.
         """
+        # pylint: disable=redefined-builtin
 
         # Import Triplestore here to avoid cyclic import
         from .triplestore import (  # pylint: disable=import-outside-toplevel,cyclic-import
@@ -93,11 +97,8 @@ class Namespace:
             # Ignore UnusedArgumentWarning when creating triplestore
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=UnusedArgumentWarning)
-                ts = Triplestore(
-                    "rdflib",
-                    base_iri=self._iri,
-                )
-            ts.parse(triplestore)
+                ts = Triplestore("rdflib")
+            ts.parse(triplestore, format=format)
         elif isinstance(triplestore, Triplestore):
             ts = triplestore
         elif not isinstance(triplestore, Triplestore):
@@ -107,18 +108,19 @@ class Namespace:
             )
 
         # Add (label, full_iri) pairs
+        iri = self._iri.rstrip("/#")
         for label in reversed(self._label_annotations):
             self._iris.update(
                 (getattr(o, "value", o), s)
                 for s, o in ts.subject_objects(label)
-                if s.startswith(self._iri)
+                if s.startswith(iri)
             )
 
         # Add (name, full_iri) pairs
         self._iris.update(
             (s[len(self._iri) :], s)
             for s in ts.subjects()
-            if s.startswith(self._iri)
+            if s.startswith(iri)
         )
 
     def _get_cachefile(self) -> "Path":

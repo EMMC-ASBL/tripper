@@ -67,7 +67,6 @@ def test_namespace_emmmo():
         iri="https://w3id.org/emmo#",
         label_annotations=True,
         check=True,
-        triplestore="https://emmo-repo.github.io/versions/1.0.0-rc1/emmo.ttl",
     )
     assert EMMO.Atom == (
         "https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
