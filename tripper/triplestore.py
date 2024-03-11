@@ -404,12 +404,12 @@ class Triplestore:
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
 
-    def bind(
+    def bind(  # pylint: disable=inconsistent-return-statements
         self,
         prefix: str,
         namespace: "Union[str, Namespace, Triplestore, None]" = "",
         **kwargs,
-    ) -> "Union[Namespace, None]":
+    ) -> Namespace:
         """Bind prefix to namespace and return the new Namespace object.
 
         Parameters:
@@ -438,7 +438,7 @@ class Triplestore:
             ns = namespace
         elif namespace is None:
             del self.namespaces[prefix]
-            return None
+            return  # type: ignore
         else:
             raise TypeError(f"invalid `namespace` type: {type(namespace)}")
 
