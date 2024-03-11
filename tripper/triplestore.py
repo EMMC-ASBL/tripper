@@ -435,6 +435,7 @@ class Triplestore:
                 )
             ns = Namespace(namespace.base_iri, **kwargs)
         elif isinstance(namespace, Namespace):
+            # pylint: disable=protected-access
             ns = Namespace(namespace._iri, **kwargs)
         elif namespace is None:
             del self.namespaces[prefix]
