@@ -375,7 +375,6 @@ def test_backend_sparqlwrapper_methods() -> None:
     )
 
 
-# if True:
 def test_find_literal_triples() -> None:
     """Test finding literals."""
     pytest.importorskip("rdflib")
@@ -412,10 +411,7 @@ def test_find_literal_triples() -> None:
     ) == set([FAM.Ola, FAM.Kari])
 
     assert set(
-        ts.triples(
-            predicate=FAM.hasName,
-            object=Literal("Per", datatype=XSD.string),
-        )
+        ts.triples(predicate=FAM.hasName, object=Literal("Per"))
     ) == set(
         [
             (FAM.Per, FAM.hasName, Literal("Per")),
