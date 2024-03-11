@@ -13,7 +13,7 @@ rdflib = pytest.importorskip("rdflib")
 ts = Triplestore("rdflib")
 EX = ts.bind("", "http://ex#")
 
-# Test for issue #162: Literals are lost when listing triples with rdflib
+# Test for issue #162: Literals are lost when accessing triples with rdflib
 ts.parse(
     format="turtle",
     data=(
