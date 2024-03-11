@@ -221,4 +221,4 @@ class Literal(str):
             return f'"{self}"@{self.lang}'
         if self.datatype:
             return f'"{self}"^^<{self.datatype}>'
-        return f"{self}"
+        return f'"{self}"'
