@@ -3,7 +3,7 @@ pattern.
 
 See
 https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction.
+for an introduction and for a table over available backends.
 
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
@@ -129,6 +129,10 @@ class Triplestore:
                 including the dots (ex:"mypackage.mybackend").  If `package`
                 is given, `backend` is interpreted relative to `package`
                 (ex: ..mybackend).
+
+                For a list over available backends, see
+                https://github.com/EMMC-ASBL/tripper#available-backends
+
             base_iri: Base IRI used by the add_function() method when adding
                 new triples. May also be used by the backend.
             database: Name of database to connect to (for backends that
