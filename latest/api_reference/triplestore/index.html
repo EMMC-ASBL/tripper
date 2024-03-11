@@ -2357,17 +2357,25 @@ Triplestore        </code>
         <span class="k">if</span> <span class="n">func_name</span> <span class="ow">and</span> <span class="n">module_name</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;oteio&quot;</span><span class="p">,</span> <span class="n">OTEIO</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPythonFunctionName</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">func_name</span><span class="p">))</span>
+                <span class="p">(</span>
+                    <span class="n">func_iri</span><span class="p">,</span>
+                    <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPythonFunctionName</span><span class="p">,</span>
+                    <span class="n">Literal</span><span class="p">(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPythonModuleName</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">module_name</span><span class="p">))</span>
+                <span class="p">(</span>
+                    <span class="n">func_iri</span><span class="p">,</span>
+                    <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPythonModuleName</span><span class="p">,</span>
+                    <span class="n">Literal</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">package_name</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                     <span class="p">(</span>
                         <span class="n">func_iri</span><span class="p">,</span>
                         <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPythonPackageName</span><span class="p">,</span>
-                        <span class="n">Literal</span><span class="p">(</span><span class="n">package_name</span><span class="p">),</span>
+                        <span class="n">Literal</span><span class="p">(</span><span class="n">package_name</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">),</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">pypi_package_name</span><span class="p">:</span>
@@ -2375,7 +2383,7 @@ Triplestore        </code>
                     <span class="p">(</span>
                         <span class="n">func_iri</span><span class="p">,</span>
                         <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasPypiPackageName</span><span class="p">,</span>
-                        <span class="n">Literal</span><span class="p">(</span><span class="n">pypi_package_name</span><span class="p">),</span>
+                        <span class="n">Literal</span><span class="p">(</span><span class="n">pypi_package_name</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">),</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
