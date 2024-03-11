@@ -15,7 +15,7 @@ def test_untyped() -> None:
     assert literal.datatype is None
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
-    assert literal.n3() == "Hello world!"
+    assert literal.n3() == '"Hello world!"'
 
 
 def test_string() -> None:
