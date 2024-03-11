@@ -71,16 +71,8 @@ class CollectionStrategy:
     ):
         """Add a sequence of triples."""
         for s, p, o in triples:
-            # Strange complains by mypy - it assumed that
-            # parse_object() is returning a `str` regardless that it
-            # has been declared to return the union of `str` and
-            # `Literal`.
             v = parse_object(o)
 
-            # Possible bug in mypy
-            # parse_object() is declared to return "Union[str, Literal]".
-            # Dispite of that complains mypy about that `v` has no
-            # attribute "value"
             obj = v if isinstance(v, str) else str(v.value)
             d = (
                 None
