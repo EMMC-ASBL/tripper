@@ -277,3 +277,51 @@ def test_backend_sparqlwrapper_methods() -> None:
             (EX.a, SKOS.prefLabel, Literal("An a class.", lang="en")),
         ]
     )
+
+
+# if True:
+def test_find_literal_triples() -> None:
+    """Test finding literals."""
+    pytest.importorskip("rdflib")
+
+    from tripper import RDF, XSD, Literal, Triplestore
+    from tripper.testutils import ontodir
+
+    ts = Triplestore("rdflib")
+    FAM = ts.bind("ex", "http://onto-ns.com/ontologies/examples/family#")
+    ts.parse(ontodir / "family.ttl")
+    ts.add_triples(
+        [
+            (FAM.Ola, RDF.type, FAM.Son),
+            (FAM.Ola, FAM.hasName, Literal("Ola")),
+            (FAM.Ola, FAM.hasAge, Literal(18)),
+            (FAM.Ola, FAM.hasWeight, Literal(68.5)),
+            (FAM.Kari, RDF.type, FAM.Dauther),
+            (FAM.Kari, FAM.hasName, Literal("Kari")),
+            (FAM.Kari, FAM.hasAge, Literal(18)),
+            (FAM.Kari, FAM.hasWeight, Literal(66.2)),
+            (FAM.Per, RDF.type, FAM.Father),
+            (FAM.Per, FAM.hasName, Literal("Per")),
+            (FAM.Per, FAM.hasAge, Literal(49)),
+            (FAM.Per, FAM.hasWeight, Literal(83.8)),
+            (FAM.Per, FAM.hasChild, FAM.Ola),
+            (FAM.Per, FAM.hasChild, FAM.Kari),
+        ]
+    )
+    assert set(
+        ts.subjects(
+            predicate=FAM.hasAge,
+            object=Literal(18, datatype=XSD.integer),
+        )
+    ) == set([FAM.Ola, FAM.Kari])
+
+    assert set(
+        ts.triples(
+            predicate=FAM.hasName,
+            object=Literal("Per", datatype=XSD.string),
+        )
+    ) == set(
+        [
+            (FAM.Per, FAM.hasName, Literal("Per")),
+        ]
+    )

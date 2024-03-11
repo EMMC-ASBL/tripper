@@ -20,13 +20,13 @@ jobs:
       # Build package
       python_package: true
       package_dirs: tripper
-      python_version_build: "3.7"
+      python_version_build: "3.9"
       build_cmd: "pip install -U flit && flit build"
       publish_on_pypi: true
 
       # Build & publish documentation
       update_docs: true
-      python_version_docs: "3.7"
+      python_version_docs: "3.9"
       doc_extras: "[docs]"
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
     secrets:
