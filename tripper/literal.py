@@ -116,8 +116,11 @@ class Literal(str):
             string.datatype = datatype
 
         # Infer datatype from value
+        elif isinstance(value, Literal):
+            string.lang = value.lang
+            string.datatype = value.datatype
         elif isinstance(value, str):
-            string.datatype = XSD.string
+            string.datatype = None
         elif isinstance(value, bool):
             string.datatype = XSD.boolean
         elif isinstance(value, int):
@@ -218,4 +221,4 @@ class Literal(str):
             return f'"{self}"@{self.lang}'
         if self.datatype:
             return f'"{self}"^^{self.datatype}'
-        assert False, "should never be reached"  # nosec
+        return f"{self}"
