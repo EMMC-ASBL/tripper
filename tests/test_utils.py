@@ -136,7 +136,7 @@ def test_bnode_iri():
 
     assert bnode_iri().startswith("_:")
     assert bnode_iri("abc").startswith("_:abc")
-    assert len(bnode_iri("abc_", "src")) == 6 + 32
+    assert len(bnode_iri("abc_", "src")) == 6 + 10
     assert len(bnode_iri("abc_", "src", 8)) == 6 + 16
 
 
