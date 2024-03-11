@@ -435,7 +435,7 @@ class Triplestore:
                 )
             ns = Namespace(namespace.base_iri, **kwargs)
         elif isinstance(namespace, Namespace):
-            ns = namespace
+            ns = Namespace(namespace._iri, **kwargs)
         elif namespace is None:
             del self.namespaces[prefix]
             return  # type: ignore
@@ -448,7 +448,7 @@ class Triplestore:
             )
 
         self.namespaces[prefix] = ns
-        return ns  # type: Namespace
+        return ns
 
     @classmethod
     def create_database(cls, backend: str, database: str, **kwargs):
