@@ -60,6 +60,7 @@ def test_namespaces() -> None:
 # if True:
 def test_namespace_emmmo():
     """Test EMMO"""
+    pytest.importorskip("rdflib")
     from tripper import Namespace
     from tripper.errors import NoSuchIRIError
 

@@ -2,12 +2,15 @@
 
 # pylint: disable=invalid-name
 
-from tripper import Triplestore
+import pytest
 
 
 # if True:
 def test_sparql():
     """Test SPARQL query."""
+    pytest.importorskip("rdflib")
+    from tripper import Triplestore
+
     # Load pre-inferred EMMO
     ts = Triplestore("rdflib", base_iri="https://w3id.org/emmo#")
     ts.parse("https://w3id.org/emmo#inferred")
