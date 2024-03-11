@@ -46,6 +46,21 @@ Documentation
 * [Reference manual]
 
 
+Available backends
+------------------
+The following backends are currently available, either in Tripper or other packages.
+
+| Backend name  | Provided by  | Requirements            | Comment
+| ------------  | ------------ | ----------------------- | -----------------
+| rdflib        | [tripper]    | rdflib                  | In-memory [rdflib] triplestore supporting all features.
+| ontopy        | [tripper]    | EMMOntoPy               | Backend for [EMMOntoPy]. In-memory.
+| sparqlwrapper | [tripper]    | sparqlwrapper           | Generic backend for all triplestores supported by [sparqlwrapper].
+| collection    | [tripper]    | DLite-Python            | Backend to a [DLite] collection.
+| fuseki        | [PyBackTrip] | sparqlwrapper           | Backend to [fuseki].
+| stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Backend to [StarDog].
+| graphdb       | [PyBackTrip] | sparqlwrapper           | Backend to [GraphDB].
+
+
 Installation
 ------------
 Tripper has by itself no dependencies outside the standard library, but the triplestore backends may have specific dependencies.
@@ -56,6 +71,17 @@ The package can be installed from [PyPI] using `pip`:
 ```shell
 pip install tripper
 ```
+
+In addition you would need to install the requirements for one or more of the backends listed in the table above.
+For mappings you would also need to install [Pint].
+For example:
+
+```shell
+pip install rdflib pint
+```
+
+
+
 
 License and copyright
 ---------------------
@@ -78,9 +104,18 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 
+[tripper]: https://emmc-asbl.github.io/tripper
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
+[PyBackTrip]: https://github.com/EMMC-ASBL/PyBackTrip/
 [Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
 [Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
+[EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/stable/
+[sparqlwrapper]: https://sparqlwrapper.readthedocs.io/en/latest/
+[DLite]: https://sintef.github.io/dlite/
+[fuseki]: https://jena.apache.org/documentation/fuseki2/
+[StarDog]: https://www.stardog.com/
+[GraphDB]: https://www.ontotext.com/products/graphdb/
+[Pint]: https://pint.readthedocs.io/en/stable/

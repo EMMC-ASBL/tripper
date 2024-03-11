@@ -3,7 +3,7 @@ pattern.
 
 See
 https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction.
+for an introduction and for a table over available backends.
 
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
@@ -136,6 +136,10 @@ class Triplestore:
                 including the dots (ex:"mypackage.mybackend").  If `package`
                 is given, `backend` is interpreted relative to `package`
                 (ex: ..mybackend).
+
+                For a list over available backends, see
+                https://github.com/EMMC-ASBL/tripper#available-backends
+
             base_iri: Base IRI used by the add_function() method when adding
                 new triples. May also be used by the backend.
             database: Name of database to connect to (for backends that
@@ -1116,17 +1120,25 @@ class Triplestore:
         if func_name and module_name:
             self.bind("oteio", OTEIO)
             self.add(
-                (func_iri, OTEIO.hasPythonFunctionName, Literal(func_name))
+                (
+                    func_iri,
+                    OTEIO.hasPythonFunctionName,
+                    Literal(func_name, datatype=XSD.string),
+                )
             )
             self.add(
-                (func_iri, OTEIO.hasPythonModuleName, Literal(module_name))
+                (
+                    func_iri,
+                    OTEIO.hasPythonModuleName,
+                    Literal(module_name, datatype=XSD.string),
+                )
             )
             if package_name:
                 self.add(
                     (
                         func_iri,
                         OTEIO.hasPythonPackageName,
-                        Literal(package_name),
+                        Literal(package_name, datatype=XSD.string),
                     )
                 )
             if pypi_package_name:
@@ -1134,7 +1146,7 @@ class Triplestore:
                     (
                         func_iri,
                         OTEIO.hasPypiPackageName,
-                        Literal(pypi_package_name),
+                        Literal(pypi_package_name, datatype=XSD.string),
                     )
                 )
         else:

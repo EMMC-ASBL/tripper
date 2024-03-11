@@ -17,7 +17,7 @@ jobs:
 
       # pre-commit
       run_pre-commit: true
-      python_version_pre-commit: "3.8"
+      python_version_pre-commit: "3.9"
       skip_pre-commit_hooks: pylint,pylint-tests
 
       # pylint & safety
@@ -40,7 +40,7 @@ jobs:
 
       # Build package
       run_build_package: true
-      python_version_package: "3.7"
+      python_version_package: "3.9"
       build_libs: flit
       build_cmd: flit build
 
@@ -85,8 +85,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Run doctest on tutorial
-      run: |
-        python -m doctest docs/tutorial.md
+      run: python -m doctest docs/tutorial.md
 
   pytest-no-extra-dependencies: # Test for basic version, without extras installed
     runs-on: ubuntu-latest
