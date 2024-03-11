@@ -238,6 +238,7 @@ def test_random_string():
 # if True:
 def test_extend_namespace():
     """Test extend namespace()"""
+    pytest.importorskip("rdflib")
     from tripper import Namespace
     from tripper.errors import NoSuchIRIError
     from tripper.testutils import ontodir
