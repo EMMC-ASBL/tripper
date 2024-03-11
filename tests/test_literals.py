@@ -31,6 +31,7 @@ def test_string() -> None:
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == f'"Hello world!"^^{XSD.string}'
+    assert literal != "Hello world!"
 
 
 def test_string_lang() -> None:
