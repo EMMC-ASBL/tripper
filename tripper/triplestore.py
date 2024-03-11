@@ -448,7 +448,7 @@ class Triplestore:
             )
 
         self.namespaces[prefix] = ns
-        return ns
+        return ns  # type: Namespace
 
     @classmethod
     def create_database(cls, backend: str, database: str, **kwargs):
