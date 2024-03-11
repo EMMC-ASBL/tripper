@@ -4,7 +4,7 @@
 
 
 def test_untyped() -> None:
-    """Test creating a string literal."""
+    """Test creating a untyped literal."""
     from tripper.literal import Literal
 
     literal = Literal("Hello world!")
