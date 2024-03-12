@@ -128,7 +128,7 @@ Writing SPARQL queries using Tripper
 A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
 This challenge is greatly mitigated by using the `label_annotations` feature of Tripper namespaces.
 The example below shows how to write and execute a SPARQL query with Tripper that finds the IRI and unit symbol of all length units.
-Note how:
+Note:
 1. EMMO classes and properties are written as `{EMMO.LengthUnit}`, which would expand to `https://w3id.org/emmo#EMMO_b3600e73_3e05_479d_9714_c041c3acf5cc`.
 2. That the curly brackets after the `WHERE` clause has to be written `{{`, `}}` because the query is an f-string.
 
