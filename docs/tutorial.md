@@ -46,7 +46,8 @@ The `check=True` enables checking for existing IRIs.
 
 ```python
 >>> EMMO = ts.bind(
-...     "emmo", "https://w3id.org/emmo#",
+...     prefix="emmo",
+...     namespace="https://w3id.org/emmo#",
 ...     label_annotations=True,
 ...     check=True,
 ... )
@@ -63,8 +64,13 @@ tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name
 
 ```
 
+The above example works, since the `namespace="https://w3id.org/emmo#"` is resolvable.
+In the case when the `namespace` argument is not resolvable, it is possible to supply a resolvable URL, a dict or a reference to a populated Triplestore instance via the `triplestore` keyword argument.
+
 Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.
+
+
 
 
 Working with an interfaced triplestore
