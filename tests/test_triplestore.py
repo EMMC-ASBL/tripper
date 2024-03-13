@@ -182,6 +182,7 @@ def test_restriction() -> None:
     assert not set(ts.restrictions(target=EX.Leg))
     assert set(ts.restrictions(target=EX.Cell, type="some")) == {iri}
     assert set(ts.restrictions(target=EX.Head, type="exactly")) == {iri2}
+    assert set(ts.restrictions(target=Literal("The port of Hades"))) == {iri3}
 
     with pytest.raises(ArgumentValueError):
         set(ts.restrictions(target=EX.Cell, type="wrong_type"))

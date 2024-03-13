@@ -62,10 +62,18 @@ if TYPE_CHECKING:  # pragma: no cover
         Union,
     )
 
-    if sys.version_info.minor < 8:
-        from typing_extensions import Literal as TypeLiteral  # type: ignore
-    else:
-        from typing import Literal as TypeLiteral  # type: ignore
+    # Ideally `RestrictionType` should be defined as
+    #
+    #     RestrictionType = typing.Literal[
+    #         "some", "only", "exactly", "min", "max", "value",
+    #     ]
+    #
+    # but mypy doesn't like that. Also, typing.Literal was added in
+    # Python 3.8 and updated in 3.9.1.  For earlier versions, there
+    # exists typing_extensions, which adds to the version-dependencies
+    # as well as adding an extra requirement.
+    # For now we do it simple.
+    RestrictionType = str
 
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
@@ -690,12 +698,14 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
+    # xtype: "TypeLiteral['some', 'only', 'exactly', 'min', 'max', 'value']",
+
     def add_restriction(  # pylint: disable=redefined-builtin
         self,
         cls: str,
         property: str,
         target: "Union[str, Literal]",
-        type: "TypeLiteral['some', 'only', 'exactly', 'min', 'max', 'value']",
+        type: "RestrictionType",
         cardinality: "Optional[int]" = None,
         hashlength: int = 16,
     ) -> str:
@@ -753,15 +763,17 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
+        # xtype: (
+        #     "Optional[TypeLiteral['some', 'only', 'exactly', 'min', "
+        #     "'max', 'value']]"
+        # ) = None,
+
     def restrictions(  # pylint: disable=redefined-builtin
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
         target: "Optional[Union[str, Literal]]" = None,
-        type: (
-            "Optional[TypeLiteral['some', 'only', 'exactly', 'min', "
-            "'max', 'value']]"
-        ) = None,
+        type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
     ) -> "Generator[Triple, None, None]":
         # pylint: disable=too-many-boolean-expressions
@@ -792,10 +804,10 @@ class Triplestore:
         else:
             types = {type} if isinstance(type, str) else set(type)
 
-        if isinstance(target, str):
-            types.difference_update({"value"})
-        elif isinstance(target, Literal):
+        if isinstance(target, Literal):
             types.intersection_update({"value"})
+        elif isinstance(target, str):
+            types.difference_update({"value"})
 
         if cardinality:
             types.intersection_update({"exactly", "min", "max"})
