@@ -40,7 +40,7 @@ def asuri(value: "Union[None, Literal, str]"):
             value.value, lang=value.lang, datatype=value.datatype
         )
     if value.startswith("_:"):
-        return BNode(value)
+        return BNode(value[2:])
     return URIRef(value)
 
 
@@ -91,9 +91,21 @@ class RdflibStrategy:
             astriple(triple)
         ):
             yield (
-                str(s),
+                (
+                    f"_:{s}"
+                    if isinstance(s, BNode) and not s.startswith("_:")
+                    else str(s)
+                ),
                 str(p),
-                parse_literal(o) if isinstance(o, rdflibLiteral) else str(o),
+                (
+                    parse_literal(o)
+                    if isinstance(o, rdflibLiteral)
+                    else (
+                        f"_:{o}"
+                        if isinstance(o, BNode) and not o.startswith("_:")
+                        else str(o)
+                    )
+                ),
             )
 
     def add_triples(self, triples: "Sequence[Triple]"):
