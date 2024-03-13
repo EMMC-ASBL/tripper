@@ -1249,9 +1249,21 @@ creating a new empty Graph object.</p></td>
             <span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">yield</span> <span class="p">(</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-                <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                <span class="p">(</span>
+                    <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">),</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
@@ -1850,9 +1862,21 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
         <span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">yield</span> <span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="p">),</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-            <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+            <span class="p">(</span>
+                <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
+                <span class="k">else</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1993,7 +2017,7 @@ the query() method for SELECT queries.</p>
             <span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">datatype</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">BNode</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">BNode</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
     <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div>
         </details>
