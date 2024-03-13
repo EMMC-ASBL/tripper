@@ -65,7 +65,7 @@ tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name
 ```
 
 The above example works, since the `namespace="https://w3id.org/emmo#"` is resolvable.
-In the case when the `namespace` argument is not resolvable, it is possible to supply a resolvable URL, a dict or a reference to a populated Triplestore instance via the `triplestore` keyword argument.
+In the case when the IRI in the `namespace` argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated Triplestore instance via the `triplestore` keyword argument.
 
 Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.
