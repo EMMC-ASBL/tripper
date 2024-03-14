@@ -140,6 +140,7 @@ def test_bnode_iri():
     assert len(bnode_iri("abc_", "src", 8)) == 6 + 16
 
 
+# if True:
 def test_tfilter():
     """Test filter()"""
     from tripper import FOAF, RDF, Namespace
@@ -171,6 +172,15 @@ def test_tfilter():
     assert (
         set(tfilter(triples, subject=EX.Mammy, predicate=FOAF.name)) == set()
     )
+    assert set(
+        tfilter(triples, subject=[EX.Mammy, EX.Tom], predicate=FOAF.name)
+    ) == {
+        (EX.Tom, FOAF.name, en("Tom")),
+    }
+    assert set(tfilter(triples, predicate=[FOAF.email, EX.eats])) == set()
+    assert set(tfilter(triples, object=[EX.Leg, EX.Arm])) == {
+        (EX.Tom, EX.pasPart, EX.Leg),
+    }
 
     # Test nested filters
     assert set(
