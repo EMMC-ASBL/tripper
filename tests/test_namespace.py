@@ -56,6 +56,42 @@ def test_namespaces() -> None:
 
     assert FOOD2.NonExisting == FOOD2 + "NonExisting"
 
+    # Reuse the cache
+    FOOD3 = Namespace(
+        "http://onto-ns.com/ontologies/examples/food#", check=True
+    )
+    assert FOOD3[name] == FOOD3 + name
+    assert FOOD3.Vegetable == FOOD3 + name
+
+
+# if True:
+def test_triplestore_arg() -> None:
+    """Test triplestore argument of Namespace.__init__()."""
+    pytest.importorskip("rdflib")
+    from tripper import RDF, Namespace, Triplestore
+    from tripper.errors import NamespaceError, NoSuchIRIError
+    from tripper.testutils import ontodir
+
+    assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
+    ts = Triplestore("rdflib")
+    ts.parse(ontodir / "family.ttl")
+
+    FAM = Namespace(
+        "http://onto-ns.com/ontologies/examples/family#",
+        check=True,
+        triplestore=ts,
+    )
+    assert FAM.Son == "http://onto-ns.com/ontologies/examples/family#Son"
+    assert FAM["Son"] == "http://onto-ns.com/ontologies/examples/family#Son"
+    assert FAM + "Son" == "http://onto-ns.com/ontologies/examples/family#Son"
+    with pytest.raises(NoSuchIRIError):
+        FAM.NonExisting  # pylint: disable=pointless-statement
+
+    with pytest.raises(NamespaceError):
+        Namespace("http://example.com", check=True, triplestore=Ellipsis)
+
 
 # if True:
 def test_namespace_emmo():

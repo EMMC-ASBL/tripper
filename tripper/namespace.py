@@ -192,7 +192,7 @@ class Namespace:
         return self.__getattr__(key)
 
     def __repr__(self):
-        return f"Namespace({self._iri})"
+        return f"Namespace('{self._iri}')"
 
     def __str__(self):
         return self._iri
