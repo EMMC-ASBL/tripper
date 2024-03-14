@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from typing import Callable
 
 
+# if True:
 def test_namespaces() -> None:
     """Test namespaces."""
     pytest.importorskip("rdflib")
@@ -56,12 +57,15 @@ def test_namespaces() -> None:
 
     assert FOOD2.NonExisting == FOOD2 + "NonExisting"
 
-    # Reuse the cache
+    # Save and reuse the cache
+    FOOD2._save_cache()  # pylint: disable=protected-access
     FOOD3 = Namespace(
         "http://onto-ns.com/ontologies/examples/food#", check=True
     )
     assert FOOD3[name] == FOOD3 + name
     assert FOOD3.Vegetable == FOOD3 + name
+    with pytest.raises(NoSuchIRIError):
+        FOOD3.NonExisting  # pylint: disable=pointless-statement
 
 
 # if True:
