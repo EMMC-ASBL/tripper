@@ -14,7 +14,15 @@ from tripper.namespace import XSD, Namespace
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
-    from typing import Any, Callable, Tuple, Union
+    from typing import (
+        Any,
+        Callable,
+        Generator,
+        Iterable,
+        Optional,
+        Tuple,
+        Union,
+    )
 
     from tripper import Triplestore
 
@@ -112,6 +120,74 @@ def function_id(func: "Callable", length: int = 4) -> str:
     return hashlib.shake_128(  # pylint: disable=too-many-function-args
         (source + doc).encode()
     ).hexdigest(length)
+
+
+def bnode_iri(prefix: str = "", source: str = "", length: int = 5) -> str:
+    """Returns a new IRI for a blank node.
+
+    Parameters:
+        prefix: A prefix to insert between "_:" and the hash.
+        source: An unique string that the returned bnode will be a hash of.
+            The default is to generate a random hash.
+        length: Length is the number of bytes in the hash.  The default
+            length of 5 is a compromise between readability (10 characters)
+            and safety (corresponding to about 1e12 possibilites).  You can
+            change it to 16 to get 128 bits, corresponding to the uniqueness
+            of UUIDs).  It makes no sense to go beyond 32, because that is
+            the maximum of the underlying shake_128 algorithm.
+
+    Returns:
+        A new bnode IRI of the form "_:<prefix><hash>", where `<prefix>`
+        is `prefix` and `<hash>` is a hex-encoded hash of `source`.
+    """
+    if source:
+        hash = hashlib.shake_128(source.encode()).hexdigest(length)
+    else:
+        # From Python 3.9 we can use random.randbytes(length).hex()
+        hash = "".join(
+            hex(random.randint(0, 255))[2:] for i in range(length)  # nosec
+        )
+    return f"_:{prefix}{hash}"
+
+
+def tfilter(
+    triples: "Iterable[Triple]",
+    subject: "Optional[Union[Iterable[str], str]]" = None,
+    predicate: "Optional[Union[Iterable[str], str]]" = None,
+    object: "Optional[Union[Iterable, str, Literal]]" = None,
+) -> "Generator[Triple, None, None]":
+    """Filters out non-matching triples.
+
+    Parameters:
+        triples: Triples to filter from.
+        subject: If given, only keep triples whos subject matches `subject`.
+            Can be an iterable of subjects.
+        predicate: If given, only keep triples whos predicate matches
+            `predicate`.  Can be an iterable of subjects.
+        object: If given, only keep triples whos subject matches `object`.
+            Can be an iterable of objects.
+
+    Returns:
+        A generator over matching triples.
+    """
+    for s, p, o in triples:
+        if subject and (
+            s != subject if isinstance(subject, str) else s not in subject
+        ):
+            continue
+        if predicate and (
+            p != predicate
+            if isinstance(predicate, str)
+            else p not in predicate
+        ):
+            continue
+        if object and (
+            o != object
+            if isinstance(object, (str, Literal))
+            else o not in object
+        ):
+            continue
+        yield s, p, o
 
 
 def en(value) -> "Literal":  # pylint: disable=invalid-name

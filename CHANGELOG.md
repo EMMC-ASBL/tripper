@@ -1,12 +1,34 @@
 # Changelog
 
-## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+## [v0.2.15](https://github.com/EMMC-ASBL/tripper/tree/v0.2.15) (2024-03-12)
 
-[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.14...HEAD)
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.14...v0.2.15)
 
 **Closed issues:**
 
-- Function repo plugin system [\#128](https://github.com/EMMC-ASBL/tripper/issues/128)
+- Documentation CD \(still\) fails due to old python version [\#193](https://github.com/EMMC-ASBL/tripper/issues/193)
+- Publish workflow fails because it uses python 3.7 [\#191](https://github.com/EMMC-ASBL/tripper/issues/191)
+- Allow untyped literals [\#182](https://github.com/EMMC-ASBL/tripper/issues/182)
+- Search with ts.triples\(\) doesn't recognise literals [\#179](https://github.com/EMMC-ASBL/tripper/issues/179)
+- PyBackTrip - external tripper backends available [\#177](https://github.com/EMMC-ASBL/tripper/issues/177)
+- Surprising literal comparisons [\#161](https://github.com/EMMC-ASBL/tripper/issues/161)
+- Retain literal types in collection backend [\#160](https://github.com/EMMC-ASBL/tripper/issues/160)
+- Document implemented backends  [\#157](https://github.com/EMMC-ASBL/tripper/issues/157)
+
+**Merged pull requests:**
+
+- Loosen req on pint to include 0.23 \(newest\) [\#198](https://github.com/EMMC-ASBL/tripper/pull/198) ([francescalb](https://github.com/francescalb))
+- Use Python 3.9 in all CI/CD workflows [\#196](https://github.com/EMMC-ASBL/tripper/pull/196) ([CasperWA](https://github.com/CasperWA))
+- Bump basic CI tests and CD to python 3.9 [\#192](https://github.com/EMMC-ASBL/tripper/pull/192) ([ajeklund](https://github.com/ajeklund))
+- Cleaned up PR template [\#188](https://github.com/EMMC-ASBL/tripper/pull/188) ([jesper-friis](https://github.com/jesper-friis))
+- Bump mkdocs-material version for security [\#186](https://github.com/EMMC-ASBL/tripper/pull/186) ([ajeklund](https://github.com/ajeklund))
+- Allow untyped literals [\#184](https://github.com/EMMC-ASBL/tripper/pull/184) ([jesper-friis](https://github.com/jesper-friis))
+- Added test for finding literal triples [\#183](https://github.com/EMMC-ASBL/tripper/pull/183) ([jesper-friis](https://github.com/jesper-friis))
+- Added reference to PyBackTrip [\#180](https://github.com/EMMC-ASBL/tripper/pull/180) ([jesper-friis](https://github.com/jesper-friis))
+- Added support for xsd:nonNegativeInteger literals [\#178](https://github.com/EMMC-ASBL/tripper/pull/178) ([jesper-friis](https://github.com/jesper-friis))
+- Added acknowledgements to readme file. [\#173](https://github.com/EMMC-ASBL/tripper/pull/173) ([jesper-friis](https://github.com/jesper-friis))
+- Retain literal types in collection backend [\#165](https://github.com/EMMC-ASBL/tripper/pull/165) ([jesper-friis](https://github.com/jesper-friis))
+- Improved comparing literals [\#164](https://github.com/EMMC-ASBL/tripper/pull/164) ([jesper-friis](https://github.com/jesper-friis))
 
 ## [v0.2.14](https://github.com/EMMC-ASBL/tripper/tree/v0.2.14) (2024-01-25)
 
@@ -16,6 +38,7 @@
 
 - Literals are lost when listing triples with rdflib [\#162](https://github.com/EMMC-ASBL/tripper/issues/162)
 - dependencies are too strict, at least for pint [\#149](https://github.com/EMMC-ASBL/tripper/issues/149)
+- Function repo plugin system [\#128](https://github.com/EMMC-ASBL/tripper/issues/128)
 
 **Merged pull requests:**
 

@@ -3,18 +3,35 @@
 # pylint: disable=invalid-name,too-many-statements
 
 
+def test_untyped() -> None:
+    """Test creating a untyped literal."""
+    from tripper.literal import Literal
+
+    literal = Literal("Hello world!")
+    assert literal == "Hello world!"
+    assert Literal(literal) == "Hello world!"
+    assert isinstance(literal, str)
+    assert literal.lang is None
+    assert literal.datatype is None
+    assert literal.to_python() == "Hello world!"
+    assert literal.value == "Hello world!"
+    assert literal.n3() == '"Hello world!"'
+
+
 def test_string() -> None:
     """Test creating a string literal."""
     from tripper.literal import XSD, Literal
 
-    literal = Literal("Hello world!")
-    assert literal == "Hello world!"
+    literal = Literal("Hello world!", datatype=XSD.string)
+    assert literal == Literal("Hello world!", datatype=XSD.string)
+    assert Literal(literal) == Literal("Hello world!", datatype=XSD.string)
     assert isinstance(literal, str)
     assert literal.lang is None
     assert literal.datatype == XSD.string
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
-    assert literal.n3() == f'"Hello world!"^^{XSD.string}'
+    assert literal.n3() == f'"Hello world!"^^<{XSD.string}>'
+    assert literal != "Hello world!"
 
 
 def test_string_lang() -> None:
@@ -22,6 +39,8 @@ def test_string_lang() -> None:
     from tripper.literal import Literal
 
     literal = Literal("Hello world!", lang="en")
+    assert literal == Literal("Hello world!", lang="en")
+    assert Literal(literal) == Literal("Hello world!", lang="en")
     assert literal.lang == "en"
     assert literal.datatype is None
     assert literal.value == "Hello world!"
@@ -53,10 +72,12 @@ def test_integer() -> None:
     from tripper import XSD, Literal
 
     literal = Literal(42)
+    assert literal == Literal(42)
+    assert Literal(literal) == Literal(42)
     assert literal.lang is None
     assert literal.datatype == XSD.integer
     assert literal.value == 42
-    assert literal.n3() == f'"42"^^{XSD.integer}'
+    assert literal.n3() == f'"42"^^<{XSD.integer}>'
 
     with pytest.raises(TypeError):
         Literal(42, datatype=XSD.nonPositiveInteger)
@@ -76,13 +97,13 @@ def test_hexbinary() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.hexBinary
     assert literal.value == "6869"
-    assert literal.n3() == f'"6869"^^{XSD.hexBinary}'
+    assert literal.n3() == f'"6869"^^<{XSD.hexBinary}>'
 
     literal = Literal("1f", datatype=XSD.hexBinary)
     assert literal.lang is None
     assert literal.datatype == XSD.hexBinary
     assert literal.value == "1f"
-    assert literal.n3() == f'"1f"^^{XSD.hexBinary}'
+    assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
 
 def test_float_through_datatype() -> None:
@@ -93,7 +114,7 @@ def test_float_through_datatype() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.double
     assert literal.value == 42.0
-    assert literal.n3() == f'"42"^^{XSD.double}'
+    assert literal.n3() == f'"42"^^<{XSD.double}>'
 
 
 def test_repr() -> None:
@@ -211,11 +232,13 @@ def test_equality() -> None:
     """Test equality."""
     from tripper import RDF, XSD, Literal
 
-    assert Literal("text", datatype=XSD.string) == "text"
+    assert Literal("text") == "text"
     assert Literal("text", lang="en") == "text"
+    assert Literal("text", lang="dk") == "text"
     assert Literal("text", lang="en") != Literal("text", lang="dk")
     assert Literal("text") == "text"
     assert Literal("text") != "text2"
+    assert Literal("text", datatype=XSD.string) != "text"
     assert Literal("text", datatype=RDF.HTML) != "text"
     assert Literal(1) == 1
     assert Literal(1) != 1.0
