@@ -478,6 +478,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.namespace.get_cachedir" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_cachedir()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -877,6 +886,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.namespace.get_cachedir" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_cachedir()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -959,13 +977,13 @@ Namespace        </code>
   <tbody>
       <tr>
         <td><code>iri</code></td>
-        <td></td>
+        <td><code>str</code></td>
         <td><p>IRI of namespace to represent.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>label_annotations</code></td>
-        <td></td>
+        <td><code>Sequence</code></td>
         <td><p>Sequence of label annotations. If given, check
 the underlying ontology during attribute access if the name
 correspond to a label. The label annotations should be ordered
@@ -976,37 +994,45 @@ If True is provided, <code>label_annotations</code> is set to
       </tr>
       <tr>
         <td><code>check</code></td>
-        <td></td>
+        <td><code>bool</code></td>
         <td><p>Whether to check underlying ontology if the IRI exists during
 attribute access.  If true, NoSuchIRIError will be raised if the
 IRI does not exist in this namespace.</p></td>
         <td><code>False</code></td>
       </tr>
       <tr>
-        <td><code>cachemode</code></td>
-        <td></td>
-        <td><p>Should be one of:
-  - Namespace.NO_CACHE: Turn off caching.
-  - Namespace.USE_CACHE: Cache attributes as they are looked up.
-  - Namespace.ONLY_CACHE: Cache all names at initialisation time.
-    Do not access the triplestore after that.
-Default is <code>NO_CACHE</code> if neither <code>label_annotations</code> or <code>check</code>
-is given, otherwise <code>USE_CACHE</code>.</p></td>
-        <td><code>-1</code></td>
-      </tr>
-      <tr>
-        <td><code>triplestore</code></td>
-        <td></td>
-        <td><p>Use this triplestore for label lookup and checking.
-If not given, and either <code>label_annotations</code> or <code>check</code> are
-enabled, a new rdflib triplestore will be created.</p></td>
+        <td><code>reload</code></td>
+        <td><code>Optional[bool]</code></td>
+        <td><p>Whether to reload the ontology (which is needed when
+<code>label_annotations</code> or <code>check</code> are given) disregardless whether it
+has been cached locally.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>triplestore</code></td>
+        <td><code>Optional[Union[Triplestore, str]]</code></td>
+        <td><p>Use this triplestore for label lookup and checking.
+Can be either a Triplestore object or an URL to load from.
+Defaults to <code>iri</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>format</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Format to use when loading from a triplestore.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>cachemode</code></td>
+        <td><code>int</code></td>
+        <td><p>Deprecated. Use <code>reload</code> instead (with <code>cachemode=NO_CACHE</code>
+corresponding to <code>reload=True</code>).</p></td>
+        <td><code>-1</code></td>
+      </tr>
+      <tr>
         <td><code>triplestore_url</code></td>
-        <td></td>
-        <td><p>Alternative URL to use for loading the underlying
-ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>.</p></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Deprecated. Use the <code>triplestore</code> argument instead.</p></td>
         <td><code>None</code></td>
       </tr>
   </tbody>
@@ -1027,141 +1053,156 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
 <span class="sd">        check: Whether to check underlying ontology if the IRI exists during</span>
 <span class="sd">            attribute access.  If true, NoSuchIRIError will be raised if the</span>
 <span class="sd">            IRI does not exist in this namespace.</span>
-<span class="sd">        cachemode: Should be one of:</span>
-<span class="sd">              - Namespace.NO_CACHE: Turn off caching.</span>
-<span class="sd">              - Namespace.USE_CACHE: Cache attributes as they are looked up.</span>
-<span class="sd">              - Namespace.ONLY_CACHE: Cache all names at initialisation time.</span>
-<span class="sd">                Do not access the triplestore after that.</span>
-<span class="sd">            Default is `NO_CACHE` if neither `label_annotations` or `check`</span>
-<span class="sd">            is given, otherwise `USE_CACHE`.</span>
+<span class="sd">        reload: Whether to reload the ontology (which is needed when</span>
+<span class="sd">            `label_annotations` or `check` are given) disregardless whether it</span>
+<span class="sd">            has been cached locally.</span>
 <span class="sd">        triplestore: Use this triplestore for label lookup and checking.</span>
-<span class="sd">            If not given, and either `label_annotations` or `check` are</span>
-<span class="sd">            enabled, a new rdflib triplestore will be created.</span>
-<span class="sd">        triplestore_url: Alternative URL to use for loading the underlying</span>
-<span class="sd">            ontology if `triplestore` is not given.  Defaults to `iri`.</span>
+<span class="sd">            Can be either a Triplestore object or an URL to load from.</span>
+<span class="sd">            Defaults to `iri`.</span>
+<span class="sd">        format: Format to use when loading from a triplestore.</span>
+<span class="sd">        cachemode: Deprecated. Use `reload` instead (with `cachemode=NO_CACHE`</span>
+<span class="sd">            corresponding to `reload=True`).</span>
+<span class="sd">        triplestore_url: Deprecated. Use the `triplestore` argument instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">NO_CACHE</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">USE_CACHE</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">ONLY_CACHE</span> <span class="o">=</span> <span class="mi">2</span>
-
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;_iri&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_label_annotations&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_check&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_cache&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_triplestore&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_iri&quot;</span><span class="p">,</span>  <span class="c1"># Ontology IRI</span>
+        <span class="s2">&quot;_label_annotations&quot;</span><span class="p">,</span>  <span class="c1"># Recognised annotations for labels</span>
+        <span class="s2">&quot;_check&quot;</span><span class="p">,</span>  <span class="c1"># Whether to check that IRIs exists</span>
+        <span class="s2">&quot;_iris&quot;</span><span class="p">,</span>  <span class="c1"># Dict mapping labels to IRIs</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">iri</span><span class="p">,</span>
-        <span class="n">label_annotations</span><span class="o">=</span><span class="p">(),</span>
-        <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">cachemode</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">triplestore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">triplestore_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">label_annotations</span><span class="p">:</span> <span class="s2">&quot;Sequence&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">reload</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Triplestore, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cachemode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="k">if</span> <span class="n">cachemode</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The `cachemode` argument of Triplestore.__init__() is &quot;</span>
+                <span class="s2">&quot;deprecated.  Use `reload` instead (with `cachemode=NO_CACHE` &quot;</span>
+                <span class="s2">&quot;corresponding to `reload=True`).</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Will be removed in v0.3.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">reload</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cachemode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">reload</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">triplestore_url</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The `triplestore_url` argument of Triplestore.__init__() is &quot;</span>
+                <span class="s2">&quot;deprecated.  Use the `triplestore` argument instead (which &quot;</span>
+                <span class="s2">&quot;now accepts a string argument with the URL).</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Will be removed in v0.3.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">triplestore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">triplestore</span> <span class="o">=</span> <span class="n">triplestore_url</span>
+
         <span class="k">if</span> <span class="n">label_annotations</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">label_annotations</span> <span class="o">=</span> <span class="p">(</span><span class="n">SKOS</span><span class="o">.</span><span class="n">prefLabel</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">SKOS</span><span class="o">.</span><span class="n">altLabel</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_label_annotations</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">label_annotations</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
-
         <span class="n">need_triplestore</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span> <span class="ow">or</span> <span class="n">label_annotations</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">cachemode</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">cachemode</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">Namespace</span><span class="o">.</span><span class="n">ONLY_CACHE</span>
-                <span class="k">if</span> <span class="n">need_triplestore</span>
-                <span class="k">else</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">NO_CACHE</span>
-            <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">need_triplestore</span> <span class="ow">and</span> <span class="n">triplestore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Import Triplestore here to break cyclic-import</span>
-            <span class="kn">from</span> <span class="nn">.triplestore</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-outside-toplevel,cyclic-import</span>
-                <span class="n">Triplestore</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_annotations</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">label_annotations</span><span class="p">)</span> <span class="k">if</span> <span class="n">label_annotations</span> <span class="k">else</span> <span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="kc">None</span>
 
-            <span class="c1"># Create triplestore, while ignoring UnusedArgumentWarning</span>
-            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnusedArgumentWarning</span><span class="p">)</span>
-                <span class="n">triplestore</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span>
-                    <span class="s2">&quot;rdflib&quot;</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">triplestore_url</span><span class="o">=</span><span class="n">triplestore_url</span>
-                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">need_triplestore</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="n">reload</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">cachemode</span> <span class="o">!=</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">NO_CACHE</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="c1">#</span>
-        <span class="c1"># FIXME:</span>
-        <span class="c1"># Change this to only assigning the triplestore if cachemode is</span>
-        <span class="c1"># ONLY_CACHE when we figure out a good way to pre-populate the</span>
-        <span class="c1"># cache with IRIs from the triplestore.</span>
-        <span class="c1">#</span>
-        <span class="c1"># self._triplestore = (</span>
-        <span class="c1">#    triplestore if cachemode != Namespace.ONLY_CACHE else None</span>
-        <span class="c1"># )</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span> <span class="o">=</span> <span class="n">triplestore</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="nf">_update_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triplestore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the internal cache from `triplestore`.</span>
 
-        <span class="k">if</span> <span class="n">cachemode</span> <span class="o">!=</span> <span class="n">Namespace</span><span class="o">.</span><span class="n">NO_CACHE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_cache</span><span class="p">(</span><span class="n">triplestore</span><span class="p">)</span>
+<span class="sd">        If `reload` is true, reload regardless we have a local cache.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=redefined-builtin</span>
 
-    <span class="k">def</span> <span class="nf">_update_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triplestore</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the internal cache from `triplestore`.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">triplestore</span><span class="p">:</span>
-            <span class="n">triplestore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">triplestore</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
-                <span class="s2">&quot;`triplestore` argument needed for updating the cache&quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="c1"># Add (label, full_iri) pairs to cache</span>
-        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_annotations</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triplestore</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span>
-            <span class="p">)</span>
-
-        <span class="c1"># Add (name, full_iri) pairs to cache</span>
-        <span class="c1"># Currently we only check concepts that defines RDFS.isDefinedBy</span>
-        <span class="c1"># relations.</span>
-        <span class="c1"># Is there an efficient way to loop over all IRIs in this namespace?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span> <span class="p">:],</span> <span class="n">s</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">triplestore</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">isDefinedBy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span>
+        <span class="c1"># Import Triplestore here to avoid cyclic import</span>
+        <span class="kn">from</span> <span class="nn">.triplestore</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-outside-toplevel,cyclic-import</span>
+            <span class="n">Triplestore</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reload</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_cache</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">triplestore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">triplestore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="c1"># Ignore UnusedArgumentWarning when creating triplestore</span>
+            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnusedArgumentWarning</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">Triplestore</span><span class="p">):</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">triplestore</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">Triplestore</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
+                <span class="s2">&quot;If given, `triplestore` argument must be either a URL &quot;</span>
+                <span class="s2">&quot;(string), Path or a Triplestore object.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add (label, full_iri) pairs</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/#&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_annotations</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add (name, full_iri) pairs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span> <span class="p">:],</span> <span class="n">s</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">subjects</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_cachefile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Path&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return path to cache file for this namespace.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;#/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">hashno</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">shake_128</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_cachedir</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">hashno</span><span class="si">}</span><span class="s2">.cache&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_save_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save current cache.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update cache with cache file.</span>
+
+<span class="sd">        Returns true if there exists a cache file to load from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>  <span class="c1"># nosec</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span><span class="p">:</span>
-            <span class="c1"># Check if ``iri = self._iri + name`` is in the triplestore.</span>
-            <span class="c1"># If so, add it to the cache.</span>
-            <span class="c1"># We only need to check that generator returned by</span>
-            <span class="c1"># `self._triplestore.predicate_objects(iri)` is non-empty.</span>
-            <span class="n">iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span>
-            <span class="n">predicate_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span><span class="o">.</span><span class="n">predicate_objects</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">predicate_object</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">iri</span>
-                <span class="k">return</span> <span class="n">iri</span>
-
-            <span class="c1"># Check for label annotations matching `name`.</span>
-            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_annotations</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">o</span> <span class="o">==</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
-                        <span class="k">return</span> <span class="n">s</span>
-
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span>
@@ -1170,7 +1211,7 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Namespace(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Namespace(&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
@@ -1183,6 +1224,10 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_cache</span><span class="p">()</span>
 </code></pre></div>
         </details>
 
@@ -1210,14 +1255,67 @@ ontology if <code>triplestore</code> is not given.  Defaults to <code>iri</code>
 
 
 
-
-
   </div>
 
     </div>
 
   </div>
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.namespace.get_cachedir" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_cachedir</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+
+<a href="#tripper.namespace.get_cachedir" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns cross-platform path to tripper cache directory.</p>
+<p>If <code>create</code> is true, create the cache directory if it doesn't exists.</p>
+<p>The XDG_CACHE_HOME environment variable is used if it exists.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/namespace.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_cachedir</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns cross-platform path to tripper cache directory.</span>
+
+<span class="sd">    If `create` is true, create the cache directory if it doesn&#39;t exists.</span>
+
+<span class="sd">    The XDG_CACHE_HOME environment variable is used if it exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XDG_CACHE_HOME&quot;</span><span class="p">)</span>
+    <span class="n">finaldir</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">site_cachedir</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win32&quot;</span><span class="p">):</span>
+            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;AppData&quot;</span> <span class="o">/</span> <span class="s2">&quot;Local&quot;</span>
+            <span class="n">finaldir</span> <span class="o">=</span> <span class="s2">&quot;Cache&quot;</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;darwin&quot;</span><span class="p">):</span>
+            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;Library&quot;</span> <span class="o">/</span> <span class="s2">&quot;Caches&quot;</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Default to UNIX</span>
+            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.cache&quot;</span>  <span class="c1"># type: ignore</span>
+    <span class="n">cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">site_cachedir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;tripper&quot;</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">finaldir</span><span class="p">:</span>
+        <span class="n">cachedir</span> <span class="o">/=</span> <span class="n">finaldir</span>
+
+    <span class="k">if</span> <span class="n">create</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cachedir</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">cachedir</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">path</span> <span class="o">/=</span> <span class="n">part</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">cachedir</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

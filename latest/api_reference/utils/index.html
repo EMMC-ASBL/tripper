@@ -572,9 +572,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.utils.check" class="md-nav__link">
+  <a href="#tripper.utils.check_function" class="md-nav__link">
     <span class="md-ellipsis">
-      check()
+      check_function()
     </span>
   </a>
   
@@ -584,6 +584,15 @@
   <a href="#tripper.utils.en" class="md-nav__link">
     <span class="md-ellipsis">
       en()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.extend_namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      extend_namespace()
     </span>
   </a>
   
@@ -977,9 +986,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.utils.check" class="md-nav__link">
+  <a href="#tripper.utils.check_function" class="md-nav__link">
     <span class="md-ellipsis">
-      check()
+      check_function()
     </span>
   </a>
   
@@ -989,6 +998,15 @@
   <a href="#tripper.utils.en" class="md-nav__link">
     <span class="md-ellipsis">
       en()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.extend_namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      extend_namespace()
     </span>
   </a>
   
@@ -1242,11 +1260,11 @@ is <code>prefix</code> and <code>&lt;hash&gt;</code> is a hex-encoded hash of <c
 
 
 
-<h2 id="tripper.utils.check" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">check</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span></code>
+<h2 id="tripper.utils.check_function" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">check_function</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span></code>
 
 
-<a href="#tripper.utils.check" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.utils.check_function" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
@@ -1256,7 +1274,7 @@ Otherwise the exception is propagated.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check_function</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning true if `func(s)` does not raise an exception.</span>
 
 <span class="sd">    False is returned if `func(s)` raises an exception listed in `exceptions`.</span>
@@ -1300,6 +1318,93 @@ Otherwise the exception is propagated.</p>
 <span class="sd">    Equivalent to ``Literal(value, lang=&quot;en&quot;)``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.extend_namespace" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">extend_namespace</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.extend_namespace" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Extend a namespace with additional known names.</p>
+<p>This makes only sense if the namespace was created with
+<code>label_annotations</code> or <code>check</code> set to true.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>namespace</code></td>
+        <td><code>Namespace</code></td>
+        <td><p>The namespace to extend.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>triplestore</code></td>
+        <td><code>Union[Triplestore, str, Path, dict]</code></td>
+        <td><p>Source from which to extend the namespace. It can be
+of one of the following types:
+  - Triplestore: triplestore object to read from
+  - str: URL to a triplestore to read from.  May also be a
+    path to a local file to read from
+  - Path: path to a local file to read from
+  - dict: dict mapping new IRI names to their corresponding IRIs</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">extend_namespace</span><span class="p">(</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+    <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Union[Triplestore, str, Path, dict]&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend a namespace with additional known names.</span>
+
+<span class="sd">    This makes only sense if the namespace was created with</span>
+<span class="sd">    `label_annotations` or `check` set to true.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        namespace: The namespace to extend.</span>
+<span class="sd">        triplestore: Source from which to extend the namespace. It can be</span>
+<span class="sd">            of one of the following types:</span>
+<span class="sd">              - Triplestore: triplestore object to read from</span>
+<span class="sd">              - str: URL to a triplestore to read from.  May also be a</span>
+<span class="sd">                path to a local file to read from</span>
+<span class="sd">              - Path: path to a local file to read from</span>
+<span class="sd">              - dict: dict mapping new IRI names to their corresponding IRIs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">namespace</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=protected-access</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;only namespaces created with `label_annotations` or `check` set &quot;</span>
+            <span class="s2">&quot;to true can be extend&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">namespace</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">triplestore</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span>  <span class="c1"># pylint: disable=protected-access</span>
+            <span class="n">triplestore</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1584,9 +1689,9 @@ is that this function correctly interprets n3-encoded literal strings.</p>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*[+-]?\d+\s*$&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>  <span class="c1"># integer</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c1">#  float</span>
+        <span class="k">if</span> <span class="n">check_function</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c1">#  float</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">check</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">check_function</span><span class="p">(</span>
             <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span>
         <span class="p">):</span>  <span class="c1">#  datetime</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">)</span>

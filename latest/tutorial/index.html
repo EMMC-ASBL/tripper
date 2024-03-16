@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tutorial" class="md-skip">
+        <a href="#basic-tutorial" class="md-skip">
           Skip to content
         </a>
       
@@ -264,6 +264,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -273,6 +284,61 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-triplestore-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a triplestore interface
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a namespace
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-an-interfaced-triplestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with an interfaced triplestore
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-sparql-queries-using-tripper" class="md-nav__link">
+    <span class="md-ellipsis">
+      Writing SPARQL queries using Tripper
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -803,6 +869,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-triplestore-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a triplestore interface
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a namespace
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-an-interfaced-triplestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with an interfaced triplestore
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-sparql-queries-using-tripper" class="md-nav__link">
+    <span class="md-ellipsis">
+      Writing SPARQL queries using Tripper
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -816,20 +926,24 @@
                   
 
 
-<h1 id="tutorial">Tutorial<a class="headerlink" href="#tutorial" title="Permanent link">&para;</a></h1>
+<h1 id="basic-tutorial">Basic tutorial<a class="headerlink" href="#basic-tutorial" title="Permanent link">&para;</a></h1>
 <!-- markdownlint-disable MD007 -->
 
-<p>Create a triplestore instance using the <code>rdflib</code> backend:</p>
+<h2 id="creating-a-triplestore-interface">Creating a triplestore interface<a class="headerlink" href="#creating-a-triplestore-interface" title="Permanent link">&para;</a></h2>
+<p>Tripper is a Python library providing a common interface to a range of pre-defined triplestores.
+To interface a triplestore, you create an instance of <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> providing the name of the triplestore as the <code>backend</code> argument.</p>
+<p>For example, to create an interface to an in-memory <a href="https://rdflib.readthedocs.io/">rdflib</a> triplestore, you can use the <code>rdflib</code> backend:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>The module already provides a set of pre-defined namespaces that simplifies writing IRIs.
+<h2 id="creating-a-namespace">Creating a namespace<a class="headerlink" href="#creating-a-namespace" title="Permanent link">&para;</a></h2>
+<p>Tripper provides a set of pre-defined namespaces that simplifies writing IRIs.
 For example:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">OWL</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span>
 <span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span>
 </code></pre></div>
-<p>New namespaces can be created using the Namespace class, but are usually added with the <code>bind()</code> method:</p>
+<p>New namespaces can be created using the <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/namespace/#tripper.namespace.Namespace">Namespace</a> class, but are usually added with the <code>bind()</code> method:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;onto&quot;</span><span class="p">,</span> <span class="s2">&quot;http://example.com/onto#&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span>
 <span class="s1">&#39;http://example.com/onto#MyConcept&#39;</span>
@@ -838,25 +952,40 @@ For example:</p>
 Both of these features requires loading an ontology.
 The following example shows how to create an EMMO namespace with IRI checking.
 The keyword argument <code>label_annotations=True</code> enables access by <code>skos:prefLabel</code>, <code>rdfs:label</code> or <code>skos:altLabel</code>.
-The <code>check=True</code> enables checking for existing IRIs.
-The <code>triplestore_url=...</code> is a resolvable URL that can be read by the 'rdflib' backend.
-It is needed, because the 'rdflib' backend is currently not able to load EMMO from the <code>http://emmo.info/emmo#</code> namespace.</p>
+What labels to use can also be specified explicitly.
+The <code>check=True</code> enables checking for existing IRIs.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-<span class="o">...</span>     <span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="s2">&quot;http://emmo.info/emmo#&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;https://w3id.org/emmo#&quot;</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">triplestore_url</span><span class="o">=</span><span class="s2">&quot;https://emmo-repo.github.io/versions/1.0.0-beta4/emmo-inferred.ttl&quot;</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
 
+<span class="c1"># Access by label</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">Atom</span>
-<span class="s1">&#39;http://emmo.info/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad&#39;</span>
+<span class="s1">&#39;https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad&#39;</span>
 
+<span class="c1"># This fails because we set `check=True`</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">invalid_name</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
     <span class="o">...</span>
-<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">emmo</span><span class="o">.</span><span class="n">info</span><span class="o">/</span><span class="n">emmo</span><span class="c1">#invalid_name</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">w3id</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">emmo</span><span class="c1">#invalid_name</span>
 </code></pre></div>
-<p>New triples can be added with the <code>add()</code> and <code>add_triples()</code> methods:</p>
+<p>The above example works, since the <code>namespace="https://w3id.org/emmo#"</code> is resolvable.
+In the case when the IRI in the <code>namespace</code> argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated Triplestore instance via the <code>triplestore</code> keyword argument.</p>
+<p>Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
+More about this below.</p>
+<h2 id="working-with-an-interfaced-triplestore">Working with an interfaced triplestore<a class="headerlink" href="#working-with-an-interfaced-triplestore" title="Permanent link">&para;</a></h2>
+<p>The interface provided by Tripper is modelled after <a href="https://rdflib.readthedocs.io/">rdflib</a>, so if you know that library, you will find Tripper rather familiar.</p>
+<p>There are some differences, though. Most recognisable:
+* All IRIs are represented by Python strings.
+  Example: <code>"http://emmo.info/emmo#Atom"</code>
+* Blank nodes are strings starting with "_:".
+  Example: <code>"_:bnode1"</code>
+* Literals are constructed with <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.literal.Literal"><code>tripper.Literal</code></a>.
+  Example: <code>tripper.Literal(3.14, datatype=XSD.float)</code></p>
+<p>Lets assume you have created a triplestore as showed in <a href="#creating-a-triplestore-interface">Creating a triplestore interface</a>.
+You can then start to add new triples to it with the <code>add()</code> and <code>add_triples()</code> methods:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># en(msg) is a convenient function for adding english literals.</span>
 <span class="c1"># It is equivalent to ``tripper.Literal(msg, lang=&quot;en&quot;)``.</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper.utils</span> <span class="kn">import</span> <span class="n">en</span>
@@ -865,10 +994,10 @@ It is needed, because the 'rdflib' backend is currently not able to load EMMO fr
 <span class="o">...</span>     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="s2">&quot;My briliant ontological concept.&quot;</span><span class="p">)),</span>
 <span class="o">...</span> <span class="p">])</span>
 </code></pre></div>
-<p>You can also load triples from a source using the <code>parse()</code> method (for backends that support it):</p>
+<p>You can also load triples from a source using the <code>parse()</code> method:</p>
 <div class="highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;onto.ttl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>For backends that support it the triplestore can be serialised using <code>serialize()</code>:</p>
+<p>You can also serialise the triplestore to a string or a file using <code>serialize()</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">&quot;onto2.ttl&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>A set of convenient functions exists for simple queries, including <code>triples()</code>, <code>subjects()</code>, <code>predicates()</code>, <code>objects()</code>, <code>subject_predicates()</code>, <code>subject_objects()</code>, <code>predicate_objects()</code> and <code>value()</code>.
@@ -880,21 +1009,57 @@ For example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">))</span>
 <span class="p">[</span><span class="s1">&#39;http://www.w3.org/2002/07/owl#Thing&#39;</span><span class="p">]</span>
 </code></pre></div>
-<p>The <code>query()</code> and <code>update()</code> methods can be used to query and update the triplestore using SPARQL.</p>
-<p>Finally Triplestore has two specialised methods <code>add_mapsTo()</code> and <code>add_function()</code> that simplify working with mappings.
-<code>add_mapsTo()</code> is convinient for defining new mappings:</p>
+<p>The <code>query()</code> and <code>update()</code> methods can be used to query and update the triplestore using SPARQL.
+See the next section.</p>
+<h2 id="writing-sparql-queries-using-tripper">Writing SPARQL queries using Tripper<a class="headerlink" href="#writing-sparql-queries-using-tripper" title="Permanent link">&para;</a></h2>
+<p>A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
+This challenge is greatly mitigated by using the <code>label_annotations</code> feature of Tripper namespaces.
+The example below shows how to write and execute a SPARQL query with Tripper that finds the IRI and unit symbol of all length units.
+Note:
+1. EMMO classes and properties are written as <code>{EMMO.LengthUnit}</code>, which would expand to <code>https://w3id.org/emmo#EMMO_b3600e73_3e05_479d_9714_c041c3acf5cc</code>.
+2. The curly brackets after the <code>WHERE</code> clause have to be written <code>{{</code>, <code>}}</code> because the query is an f-string.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Load pre-inferred EMMO</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="s2">&quot;https://w3id.org/emmo#&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;https://w3id.org/emmo#inferred&quot;</span><span class="p">)</span>
+
+<span class="c1"># Bind &quot;emmo&quot; prefix to base_iri</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Get IRI and symbol of all length units</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">... PREFIX owl:  &lt;http://www.w3.org/2002/07/owl#&gt;</span>
+<span class="s2">... PREFIX rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span>
+<span class="s2">... PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span>
+<span class="s2">...</span>
+<span class="s2">... SELECT ?unit ?symbol</span>
+<span class="s2">... WHERE </span><span class="se">{{</span>
+<span class="s2">...   ?unit rdfs:subClassOf &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">LengthUnit</span><span class="si">}</span><span class="s2">&gt; .</span>
+<span class="s2">...   ?unit rdfs:subClassOf ?r .</span>
+<span class="s2">...   ?r rdf:type owl:Restriction .</span>
+<span class="s2">...   ?r owl:onProperty &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasSymbolValue</span><span class="si">}</span><span class="s2">&gt; .</span>
+<span class="s2">...   ?r owl:hasValue ?symbol .</span>
+<span class="s2">... </span><span class="se">}}</span>
+<span class="s2">... &quot;&quot;&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">EMMO</span><span class="o">.</span><span class="n">Metre</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r</span>
+<span class="kc">True</span>
+</code></pre></div>
+<h1 id="specialised-methods">Specialised methods<a class="headerlink" href="#specialised-methods" title="Permanent link">&para;</a></h1>
+<h2 id="working-with-mappings">Working with mappings<a class="headerlink" href="#working-with-mappings" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> class has two specialised methods <code>map()</code> and <code>add_function()</code> that simplify working with mappings.</p>
+<p><code>map()</code> is convinient for defining new mappings:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="n">META</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="s2">&quot;http://onto-ns.com/meta/0.1/MyEntity#&quot;</span><span class="p">)</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">add_mapsTo</span><span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">META</span><span class="o">.</span><span class="n">my_property</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">META</span><span class="o">.</span><span class="n">my_property</span><span class="p">,</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">)</span>
 </code></pre></div>
 <p>It can also be used with DLite and SOFT7 data models.
 Here we repeat the above with DLite:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dlite</span>
 <span class="n">meta</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;http://onto-ns.com/meta/0.1/MyEntity&quot;</span><span class="p">)</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">add_mapsTo</span><span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="s2">&quot;my_property&quot;</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">my_property</span><span class="p">,</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>add_function()</code> describes a function and adds mappings for its arguments and return value(s).
-Currently it only supports the <a href="https://fno.io/">Function Ontology (FnO)</a>.</p>
+Currently <a href="https://emmc.eu/emmo/">EMMO</a> and the <a href="https://fno.io/">Function Ontology (FnO)</a> are supported.</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the mean value of `x` and `y`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
