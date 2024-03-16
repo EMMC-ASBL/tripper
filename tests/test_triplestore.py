@@ -418,3 +418,25 @@ def test_find_literal_triples() -> None:
             (FAM.Per, FAM.hasName, Literal("Per")),
         ]
     )
+
+
+# if True:
+def test_bind_errors():
+    """Test for errors in Triplestore.bind()."""
+    pytest.importorskip("rdflib")
+
+    from tripper import Triplestore
+
+    ts = Triplestore(backend="rdflib", base_iri="http://example.com#")
+    EX = ts.bind("ex")
+    assert EX == "http://example.com#"
+    assert "ex" in ts.namespaces
+
+    ts.bind("ex", None)
+    assert "ex" not in ts.namespaces
+
+    ts2 = Triplestore(backend="rdflib")
+    with pytest.raises(ValueError):
+        ts2.bind("ex")
+    with pytest.raises(TypeError):
+        ts2.bind("ex", Ellipsis)

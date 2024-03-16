@@ -41,6 +41,9 @@ class Namespace:
             Can be either a Triplestore object or an URL to load from.
             Defaults to `iri`.
         format: Format to use when loading from a triplestore.
+        cachemode: Deprecated. Use `reload` instead (with `cachemode=NO_CACHE`
+            corresponding to `reload=True`).
+        triplestore_url: Deprecated. Use the `triplestore` argument instead.
     """
 
     __slots__ = (
@@ -58,8 +61,34 @@ class Namespace:
         reload: "Optional[bool]" = None,
         triplestore: "Optional[Union[Triplestore, str]]" = None,
         format: "Optional[str]" = None,
+        cachemode: int = -1,
+        triplestore_url: "Optional[str]" = None,
     ):
         # pylint: disable=redefined-builtin
+        if cachemode != -1:
+            warnings.warn(
+                "The `cachemode` argument of Triplestore.__init__() is "
+                "deprecated.  Use `reload` instead (with `cachemode=NO_CACHE` "
+                "corresponding to `reload=True`).\n\n"
+                "Will be removed in v0.3.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            if reload is None and cachemode == 0:
+                reload = True
+
+        if triplestore_url:
+            warnings.warn(
+                "The `triplestore_url` argument of Triplestore.__init__() is "
+                "deprecated.  Use the `triplestore` argument instead (which "
+                "now accepts a string argument with the URL).\n\n"
+                "Will be removed in v0.3.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            if triplestore is None:
+                triplestore = triplestore_url
+
         if label_annotations is True:
             label_annotations = (SKOS.prefLabel, RDF.label, SKOS.altLabel)
 
@@ -163,7 +192,7 @@ class Namespace:
         return self.__getattr__(key)
 
     def __repr__(self):
-        return f"Namespace({self._iri})"
+        return f"Namespace('{self._iri}')"
 
     def __str__(self):
         return self._iri

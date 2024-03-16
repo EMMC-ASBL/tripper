@@ -46,7 +46,8 @@ The `check=True` enables checking for existing IRIs.
 
 ```python
 >>> EMMO = ts.bind(
-...     "emmo", "https://w3id.org/emmo#",
+...     prefix="emmo",
+...     namespace="https://w3id.org/emmo#",
 ...     label_annotations=True,
 ...     check=True,
 ... )
@@ -63,8 +64,13 @@ tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name
 
 ```
 
+The above example works, since the `namespace="https://w3id.org/emmo#"` is resolvable.
+In the case when the IRI in the `namespace` argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated Triplestore instance via the `triplestore` keyword argument.
+
 Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.
+
+
 
 
 Working with an interfaced triplestore
@@ -128,9 +134,9 @@ Writing SPARQL queries using Tripper
 A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
 This challenge is greatly mitigated by using the `label_annotations` feature of Tripper namespaces.
 The example below shows how to write and execute a SPARQL query with Tripper that finds the IRI and unit symbol of all length units.
-Note how:
+Note:
 1. EMMO classes and properties are written as `{EMMO.LengthUnit}`, which would expand to `https://w3id.org/emmo#EMMO_b3600e73_3e05_479d_9714_c041c3acf5cc`.
-2. That the curly brackets after the `WHERE` clause has to be written `{{` because the query is an f-string.
+2. The curly brackets after the `WHERE` clause have to be written `{{`, `}}` because the query is an f-string.
 
 ```python
 # Load pre-inferred EMMO

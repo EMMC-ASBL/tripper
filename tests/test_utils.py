@@ -323,3 +323,7 @@ def test_extend_namespace():
 
     extend_namespace(FOOD, ontodir / "food-more.ttl")
     assert FOOD.Fish == FOOD + "FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26"
+
+    EX = Namespace("http://example.com#")
+    with pytest.raises(TypeError):
+        extend_namespace(EX, {"Item": EX + "Item"})

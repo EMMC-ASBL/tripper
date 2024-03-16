@@ -66,14 +66,14 @@ class RdflibStrategy:
 
     def __init__(
         self,
-        base_iri: "Optional[str]" = None,
+        base_iri: "Optional[str]" = None,  # pylint: disable=unused-argument
         database: "Optional[str]" = None,
         triplestore_url: "Optional[str]" = None,
         format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
         graph: "Graph" = None,
     ) -> None:
-        if base_iri:
-            warnings.warn("base_iri", UnusedArgumentWarning, stacklevel=3)
+        # Note that although `base_iri` is unused in this backend, it may
+        # still be used by calling Triplestore object.
         if database:
             warnings.warn("database", UnusedArgumentWarning, stacklevel=3)
 
