@@ -94,6 +94,103 @@ def test_triplestore(  # pylint: disable=too-many-locals
     assert ts.value(func_iri, DCTERMS.description, lang="de") is None
 
 
+# if True:
+def test_restriction() -> None:
+    """Test add_restriction() method."""
+    pytest.importorskip("rdflib")
+
+    from tripper.errors import ArgumentTypeError, ArgumentValueError
+    from tripper.triplestore import OWL, RDF, RDFS, XSD, Literal, Triplestore
+
+    ts = Triplestore("rdflib")
+    EX = ts.bind("", "http://example.com/onto#")
+
+    # Test add existential restriction
+    iri = ts.add_restriction(
+        cls=EX.Animal,
+        property=EX.hasPart,
+        target=EX.Cell,
+        type="some",
+    )
+    txt = ts.serialize(format="ntriples")
+    assert f"<{EX.Animal}> <{RDFS.subClassOf}> {iri}" in txt
+    assert f"{iri} <{RDF.type}> <{OWL.Restriction}>" in txt
+    assert f"{iri} <{OWL.onProperty}> <{EX.hasPart}>" in txt
+    assert f"{iri} <{OWL.someValueFrom}> <{EX.Cell}>" in txt
+
+    # Test add cardinality restriction
+    iri2 = ts.add_restriction(
+        cls=EX.Kerberos,
+        property=EX.hasBodyPart,
+        target=EX.Head,
+        type="exactly",
+        cardinality=3,
+    )
+    txt2 = ts.serialize(format="ntriples")
+    assert f"<{EX.Kerberos}> <{RDFS.subClassOf}> {iri2}" in txt2
+    assert f"{iri2} <{RDF.type}> <{OWL.Restriction}>" in txt2
+    assert f"{iri2} <{OWL.onProperty}> <{EX.hasBodyPart}>" in txt2
+    assert f"{iri2} <{OWL.onClass}> <{EX.Head}>" in txt2
+    assert (
+        f"{iri2} <{OWL.qualifiedCardinality}> "
+        f"{Literal(3, datatype=XSD.nonNegativeInteger).n3()}"
+    ) in txt2
+
+    # Test add value restriction
+    iri3 = ts.add_restriction(
+        cls=EX.Kerberos,
+        property=EX.position,
+        target=Literal("The port of Hades"),
+        type="value",
+    )
+    txt3 = ts.serialize(format="ntriples")
+    assert f"<{EX.Kerberos}> <{RDFS.subClassOf}> {iri3}" in txt3
+    assert f"{iri3} <{RDF.type}> <{OWL.Restriction}>" in txt3
+    assert f"{iri3} <{OWL.onProperty}> <{EX.position}>" in txt3
+    assert (
+        f"{iri3} <{OWL.hasValue}> {Literal('The port of Hades').n3()}" in txt3
+    )
+
+    with pytest.raises(ArgumentValueError):
+        ts.add_restriction(
+            cls=EX.Kerberos,
+            property=EX.hasBodyPart,
+            target=EX.Head,
+            type="wrong_type",
+        )
+    with pytest.raises(ArgumentTypeError):
+        ts.add_restriction(
+            cls=EX.Kerberos,
+            property=EX.hasBodyPart,
+            target=EX.Head,
+            type="min",
+        )
+
+    # Test find restriction
+    assert set(ts.restrictions()) == {iri, iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Kerberos)) == {iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Animal)) == {iri}
+    assert not set(ts.restrictions(cls=EX.Dog))
+    assert set(ts.restrictions(cls=EX.Kerberos, cardinality=3)) == {iri2}
+    assert set(ts.restrictions(cardinality=3)) == {iri2}
+    assert not set(ts.restrictions(cls=EX.Kerberos, cardinality=2))
+    assert set(ts.restrictions(property=EX.hasBodyPart)) == {iri2}
+    assert set(ts.restrictions(property=EX.hasPart)) == {iri}
+    assert not set(ts.restrictions(property=EX.hasNoPart))
+    assert set(ts.restrictions(target=EX.Cell)) == {iri}
+    assert set(ts.restrictions(target=EX.Head)) == {iri2}
+    assert not set(ts.restrictions(target=EX.Leg))
+    assert set(ts.restrictions(target=EX.Cell, type="some")) == {iri}
+    assert set(ts.restrictions(target=EX.Head, type="exactly")) == {iri2}
+    assert set(ts.restrictions(target=Literal("The port of Hades"))) == {iri3}
+
+    with pytest.raises(ArgumentValueError):
+        set(ts.restrictions(target=EX.Cell, type="wrong_type"))
+
+    with pytest.raises(ArgumentValueError):
+        set(ts.restrictions(type="value", cardinality=2))
+
+
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
     """Specifically test the rdflib backend Triplestore.
 
