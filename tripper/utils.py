@@ -10,9 +10,10 @@ import string
 from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
-from tripper.namespace import XSD
+from tripper.namespace import XSD, Namespace
 
 if TYPE_CHECKING:  # pragma: no cover
+    from pathlib import Path
     from typing import (
         Any,
         Callable,
@@ -23,7 +24,9 @@ if TYPE_CHECKING:  # pragma: no cover
         Union,
     )
 
-    # There
+    from tripper import Triplestore
+
+    # Additional types
     OptionalTriple = Tuple[
         Union[str, None], Union[str, None], Union[str, Any, None]
     ]
@@ -38,8 +41,9 @@ __all__ = (
     "parse_literal",
     "parse_object",
     "as_python",
-    "check",
+    "check_function",
     "random_string",
+    "extend_namespace",
 )
 
 
@@ -323,9 +327,9 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Any]":
             return Literal(obj, datatype=XSD.boolean)
         if re.match(r"^\s*[+-]?\d+\s*$", obj):  # integer
             return Literal(obj, datatype=XSD.integer)
-        if check(float, obj, ValueError):  #  float
+        if check_function(float, obj, ValueError):  #  float
             return Literal(obj, datatype=XSD.double)
-        if check(
+        if check_function(
             datetime.datetime.fromisoformat, obj, ValueError
         ):  #  datetime
             return Literal(obj, datatype=XSD.dateTime)
@@ -348,7 +352,7 @@ def as_python(value: "Any") -> "Any":
     return value
 
 
-def check(func: "Callable", s: str, exceptions) -> bool:
+def check_function(func: "Callable", s: str, exceptions) -> bool:
     """Help function returning true if `func(s)` does not raise an exception.
 
     False is returned if `func(s)` raises an exception listed in `exceptions`.
@@ -367,3 +371,35 @@ def random_string(length=8):
     """Return a random string of the given length."""
     letters = string.ascii_letters + string.digits
     return "".join(random.choice(letters) for i in range(length))  # nosec
+
+
+def extend_namespace(
+    namespace: Namespace,
+    triplestore: "Union[Triplestore, str, Path, dict]",
+):
+    """Extend a namespace with additional known names.
+
+    This makes only sense if the namespace was created with
+    `label_annotations` or `check` set to true.
+
+    Arguments:
+        namespace: The namespace to extend.
+        triplestore: Source from which to extend the namespace. It can be
+            of one of the following types:
+              - Triplestore: triplestore object to read from
+              - str: URL to a triplestore to read from.  May also be a
+                path to a local file to read from
+              - Path: path to a local file to read from
+              - dict: dict mapping new IRI names to their corresponding IRIs
+    """
+    if namespace._iris is None:  # pylint: disable=protected-access
+        raise TypeError(
+            "only namespaces created with `label_annotations` or `check` set "
+            "to true can be extend"
+        )
+    if isinstance(triplestore, dict):
+        namespace._iris.update(triplestore)  # pylint: disable=protected-access
+    else:
+        namespace._update_iris(  # pylint: disable=protected-access
+            triplestore, reload=True
+        )

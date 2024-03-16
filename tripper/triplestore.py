@@ -419,29 +419,52 @@ class Triplestore:
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
 
-    def bind(
-        self, prefix: str, namespace: "Union[str, Namespace]", **kwargs
+    def bind(  # pylint: disable=inconsistent-return-statements
+        self,
+        prefix: str,
+        namespace: "Union[str, Namespace, Triplestore, None]" = "",
+        **kwargs,
     ) -> Namespace:
         """Bind prefix to namespace and return the new Namespace object.
 
-        The new Namespace is created with `namespace` as IRI.
-        Keyword arguments are passed to the Namespace() constructor.
+        Parameters:
+            prefix: Prefix to bind the the namespace.
+            namespace: Namespace to bind to.  The default is to bind to the
+                `base_iri` of the current triplestore.
+                If `namespace` is None, the corresponding prefix is removed.
+            kwargs: Keyword arguments are passed to the Namespace()
+                constructor.
 
-        If `namespace` is None, the corresponding prefix is removed.
+        Returns:
+            New Namespace object or None if namespace is removed.
         """
-        if hasattr(self.backend, "bind"):
-            self.backend.bind(prefix, namespace)
+        if namespace == "":
+            namespace = self
 
-        if namespace is None:
+        if isinstance(namespace, str):
+            ns = Namespace(namespace, **kwargs)
+        elif isinstance(namespace, Triplestore):
+            if not namespace.base_iri:
+                raise ValueError(
+                    f"triplestore object {namespace} has no `base_iri`"
+                )
+            ns = Namespace(namespace.base_iri, **kwargs)
+        elif isinstance(namespace, Namespace):
+            # pylint: disable=protected-access
+            ns = Namespace(namespace._iri, **kwargs)
+        elif namespace is None:
             del self.namespaces[prefix]
-            return None
+            return  # type: ignore
+        else:
+            raise TypeError(f"invalid `namespace` type: {type(namespace)}")
 
-        self.namespaces[prefix] = (
-            namespace
-            if isinstance(namespace, Namespace)
-            else Namespace(namespace, **kwargs)
-        )
-        return self.namespaces[prefix]
+        if hasattr(self.backend, "bind"):
+            self.backend.bind(
+                prefix, ns._iri  # pylint: disable=protected-access
+            )
+
+        self.namespaces[prefix] = ns
+        return ns
 
     @classmethod
     def create_database(cls, backend: str, database: str, **kwargs):
