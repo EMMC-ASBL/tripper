@@ -82,7 +82,7 @@ try:
     from importlib.metadata import entry_points
 except ImportError:
     # Use importlib_metadata backport for Python 3.6 and 3.7
-    from importlib_metadata import entry_points
+    from importlib_metadata import entry_points  # type: ignore
 
 
 # Default packages in which to look for tripper backends
