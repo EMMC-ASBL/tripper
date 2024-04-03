@@ -54,7 +54,8 @@ class RdflibStrategy:
     """Triplestore strategy for rdflib.
 
     Arguments:
-        base_iri: Unused by this backend.
+        base_iri: Unused by this backend.  But the `base_iri` argument is
+            still be used the encapsulating Triplestore class.
         database: Unused - rdflib does not support multiple databases.
         triplestore_url: If given, initialise the triplestore from this
             storage.  When `close()` is called, the storage will be
