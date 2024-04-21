@@ -85,13 +85,13 @@ def test_add_function():
     oteio:hasPythonModuleName "{__name__}"^^xsd:string ;
     dcterms:description "Returns the sum of `a` and `b`."@en .
 
-ex:arg1 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+ex:arg1 a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a ;
     rdfs:label "a"@en .
 
-ex:arg2 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+ex:arg2 a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a ;
     rdfs:label "b"@en .
 
-ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
+ex:sum a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a .
 """.strip()
     )
 
@@ -122,12 +122,12 @@ ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
     oteio:hasPythonModuleName "{__name__}"^^xsd:string ;
     dcterms:description "Returns the sum of `a` and `b`."@en .
 
-ex:arg1 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+ex:arg1 a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a ;
     rdfs:label "x"@en .
 
-ex:arg2 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
+ex:arg2 a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a ;
     rdfs:label "y"@en .
 
-ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
+ex:sum a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a .
 """.strip()
     )

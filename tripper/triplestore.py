@@ -1320,7 +1320,7 @@ class Triplestore:
 
         # Hardcode EMMO IRIs to avoid slow lookup
         Task = EMMO.EMMO_4299e344_a321_4ef2_a744_bacfcce80afc
-        DataSet = EMMO.EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
+        Datum = EMMO.EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a
         hasInput = EMMO.EMMO_36e69413_8c59_4799_946c_10b05d266e22
         hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
         # Software = EMMO.EMMO_8681074a_e225_4e38_b586_e85b0f43ce38
@@ -1353,11 +1353,11 @@ class Triplestore:
         self.add((func_iri, RDF.type, Task))
         self.add((func_iri, RDFS.label, en(name)))
         for parname, iri in pars:
-            self.add((iri, RDF.type, DataSet))
+            self.add((iri, RDF.type, Datum))
             self.add((iri, RDFS.label, en(parname)))
             self.add((func_iri, hasInput, iri))
         for iri in returns:
-            self.add((iri, RDF.type, DataSet))
+            self.add((iri, RDF.type, Datum))
             self.add((func_iri, hasOutput, iri))
         if doc_string:
             self.add((func_iri, DCTERMS.description, en(doc_string)))
