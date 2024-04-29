@@ -4,7 +4,7 @@
 #   pre-commit autoupdate && pre-commit autoupdate --freeze --repo https://github.com/SINTEF/ci-cd
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
     - id: end-of-file-fixer
       exclude: ^.*\.(svg)$
@@ -16,7 +16,7 @@ repos:
     - id: trailing-whitespace
       args: [--markdown-linebreak-ext=md]
 
-  - repo: https://github.com/timothycrosley/isort
+  - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
     - id: isort
@@ -25,8 +25,8 @@ repos:
       - --filter-files
       - --skip-gitignore
 
-  - repo: https://github.com/ambv/black
-    rev: 24.3.0
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
     hooks:
     - id: black
 
@@ -38,7 +38,7 @@ repos:
       files: ^tripper/.*$
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
+    rev: v1.10.0
     hooks:
     - id: mypy
       exclude: ^tests/.*$
