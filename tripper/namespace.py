@@ -154,6 +154,7 @@ class Namespace:
 
     def _get_cachefile(self) -> "Path":
         """Return path to cache file for this namespace."""
+        # pylint: disable=too-many-function-args
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
         hashno = hashlib.shake_128(self._iri.encode()).hexdigest(5)
         return get_cachedir() / f"{name}-{hashno}.cache"
@@ -259,9 +260,9 @@ TIME = Namespace("http://www.w3.org/2006/time#")
 FNO = Namespace("https://w3id.org/function/ontology#")
 
 # EMMO = Namespace("http://w3id.org/emmo#")
-# MAP = Namespace("http://w3id.org/domain-mappings#")
-# DM = Namespace("http://w3id.org/datamodel#")
-# OTEIO = Namespace("http://w3id.org/oteio#")
+# MAP = Namespace("http://w3id.org/emmo/domain/mappings#")
+# DM = Namespace("http://w3id.org/emmo/domain/datamodel#")
+# OTEIO = Namespace("http://w3id.org/emmo/domain/oteio#")
 EMMO = Namespace("http://emmo.info/emmo#")
 MAP = Namespace("http://emmo.info/domain-mappings#")
 DM = Namespace("http://emmo.info/datamodel#")
