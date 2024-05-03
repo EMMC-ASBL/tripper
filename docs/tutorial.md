@@ -79,7 +79,7 @@ The interface provided by Tripper is modelled after [rdflib], so if you know tha
 
 There are some differences, though. Most recognisable:
 * All IRIs are represented by Python strings.
-  Example: `"http://emmo.info/emmo#Atom"`
+  Example: `"https://w3id.org/emmo#Metre"`
 * Blank nodes are strings starting with "_:".
   Example: `"_:bnode1"`
 * Literals are constructed with [`tripper.Literal`][Literal].
