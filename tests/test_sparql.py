@@ -41,6 +41,7 @@ def test_sparql():
 # if True:
 def test_sparql_construct():
     """Test SPARQL construct query."""
+    pytest.importorskip("rdflib")
     from textwrap import dedent
 
     from tripper import Triplestore
