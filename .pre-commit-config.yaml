@@ -2,6 +2,21 @@
 #   pre-commit install
 # To update the pre-commit hooks run:
 #   pre-commit autoupdate && pre-commit autoupdate --freeze --repo https://github.com/SINTEF/ci-cd
+
+# pre-commit.ci
+ci:
+  autofix_commit_msg: |
+      [pre-commit.ci] auto fixes from pre-commit hooks
+
+      For more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: 'master'
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: 'weekly'
+  skip: [pylint, pylint-tests]
+  submodules: false
+
+# hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
