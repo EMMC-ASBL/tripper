@@ -18,7 +18,7 @@ It strives for simplicity and is modelled after [rdflib] (with a few simplificat
 In Tripper:
 
 * All IRIs are represented by Python strings.
-  Example: `"http://emmo.info/emmo#Atom"`
+  Example: `"https://w3id.org/emmo#Metre"`
 
 * Blank nodes are strings starting with "_:".
   Example: `"_:bnode1"`

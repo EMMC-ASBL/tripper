@@ -18,9 +18,6 @@ jobs:
       default_repo_branch: master
       pr_labels: "CI/CD,skip_changelog"
       extra_to_dos: "- [ ] Make sure that the PR is **squash** merged, with a sensible commit message."
-      update_pre-commit: true
-      python_version: "3.9"
-      install_extras: "[pre-commit]"
-      skip_pre-commit_hooks: "pylint,pylint-tests"
+      update_pre-commit: false
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
