@@ -5,17 +5,7 @@ import warnings
 from typing import TYPE_CHECKING, Mapping, Sequence
 from uuid import uuid4
 
-from tripper import (
-    DCAT,
-    DCTERMS,
-    EMMO,
-    MAP,
-    OWL,
-    RDF,
-    RDFS,
-    Literal,
-    Namespace,
-)
+from tripper import DCAT, DCTERMS, EMMO, MAP, OTEIO, OWL, RDF, RDFS, Literal
 from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -23,8 +13,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from tripper import Triplestore
 
-
-OTEIO = Namespace("http://emmo.info/oteio#")
 
 BASIC_RECOGNISED_KEYS = {
     "downloadUrl": DCAT.downloadUrl,
