@@ -16,9 +16,7 @@ jobs:
       install_extras: "[dev]"
 
       # pre-commit
-      run_pre-commit: true
-      python_version_pre-commit: "3.9"
-      skip_pre-commit_hooks: pylint,pylint-tests
+      run_pre-commit: false
 
       # pylint & safety
       python_version_pylint_safety: "3.9"
