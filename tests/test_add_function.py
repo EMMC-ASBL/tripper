@@ -25,23 +25,24 @@ def test_add_function():
         returns=EX.sum,
         standard="fno",
     )
+
     assert (
         ts.serialize().strip()
         == f"""
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ex: <http://example.com/ex#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
-@prefix map: <http://emmo.info/domain-mappings#> .
-@prefix oteio: <http://emmo.info/oteio#> .
+@prefix map: <https://w3id.org/emmo/domain/mappings#> .
+@prefix oteio: <https://w3id.org/emmo/domain/oteio#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <:func_{f_id}> a fno:Function ;
     rdfs:label "func"@en ;
+    dcterms:description "Returns the sum of `a` and `b`."@en ;
     oteio:hasPythonFunctionName "func"^^xsd:string ;
     oteio:hasPythonModuleName "{__name__}"^^xsd:string ;
-    dcterms:description "Returns the sum of `a` and `b`."@en ;
     fno:expects ( <:func_{f_id}_parameter1_a> <:func_{f_id}_parameter2_b> ) ;
     fno:returns ( <:func_{f_id}_output1> ) .
 
@@ -70,20 +71,20 @@ def test_add_function():
         ts2.serialize().strip()
         == f"""
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix emmo: <http://emmo.info/emmo#> .
+@prefix emmo: <https://w3id.org/emmo#> .
 @prefix ex: <http://example.com/ex#> .
-@prefix oteio: <http://emmo.info/oteio#> .
+@prefix oteio: <https://w3id.org/emmo/domain/oteio#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <:func_{f_id}> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
     rdfs:label "func"@en ;
+    dcterms:description "Returns the sum of `a` and `b`."@en ;
     emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 ex:arg1,
         ex:arg2 ;
     emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840 ex:sum ;
     oteio:hasPythonFunctionName "func"^^xsd:string ;
-    oteio:hasPythonModuleName "{__name__}"^^xsd:string ;
-    dcterms:description "Returns the sum of `a` and `b`."@en .
+    oteio:hasPythonModuleName "{__name__}"^^xsd:string .
 
 ex:arg1 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
     rdfs:label "a"@en .
@@ -107,20 +108,20 @@ ex:sum a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a .
         ts3.serialize().strip()
         == f"""
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix emmo: <http://emmo.info/emmo#> .
+@prefix emmo: <https://w3id.org/emmo#> .
 @prefix ex: <http://example.com/ex#> .
-@prefix oteio: <http://emmo.info/oteio#> .
+@prefix oteio: <https://w3id.org/emmo/domain/oteio#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <:func_{f_id}> a emmo:EMMO_4299e344_a321_4ef2_a744_bacfcce80afc ;
     rdfs:label "func"@en ;
+    dcterms:description "Returns the sum of `a` and `b`."@en ;
     emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22 ex:arg1,
         ex:arg2 ;
     emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840 ex:sum ;
     oteio:hasPythonFunctionName "func"^^xsd:string ;
-    oteio:hasPythonModuleName "{__name__}"^^xsd:string ;
-    dcterms:description "Returns the sum of `a` and `b`."@en .
+    oteio:hasPythonModuleName "{__name__}"^^xsd:string .
 
 ex:arg1 a emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
     rdfs:label "x"@en .
