@@ -2,102 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/CHANGELOG/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/LICENSE/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/backend_discovery/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/planned-backends/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/tutorial/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/errors/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/interface/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/literal/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/namespace/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/testutils/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/triplestore/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/tripper/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/utils/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/collection/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/ontopy/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/rdflib/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/sparqlwrapper/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/convert/convert/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/mappings/mappings/</loc>
-         <lastmod>2024-05-06</lastmod>
+         <lastmod>2024-05-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
