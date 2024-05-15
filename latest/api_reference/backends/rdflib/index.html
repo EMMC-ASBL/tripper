@@ -1174,7 +1174,8 @@ RdflibStrategy        </code>
       <tr>
         <td><code>base_iri</code></td>
         <td><code>Optional[str]</code></td>
-        <td><p>Unused by this backend.</p></td>
+        <td><p>Unused by the rdflib backend.  The <code>base_iri</code> argument is
+still used for encapsulating the Triplestore class.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -1212,7 +1213,8 @@ creating a new empty Graph object.</p></td>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for rdflib.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        base_iri: Unused by this backend.</span>
+<span class="sd">        base_iri: Unused by the rdflib backend.  The `base_iri` argument is</span>
+<span class="sd">            still used for encapsulating the Triplestore class.</span>
 <span class="sd">        database: Unused - rdflib does not support multiple databases.</span>
 <span class="sd">        triplestore_url: If given, initialise the triplestore from this</span>
 <span class="sd">            storage.  When `close()` is called, the storage will be</span>
