@@ -154,6 +154,7 @@ class Namespace:
 
     def _get_cachefile(self) -> "Path":
         """Return path to cache file for this namespace."""
+        # pylint: disable=too-many-function-args
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
         hashno = hashlib.shake_128(self._iri.encode()).hexdigest(5)
         return get_cachedir() / f"{name}-{hashno}.cache"
@@ -262,7 +263,3 @@ EMMO = Namespace("https://w3id.org/emmo#")
 MAP = Namespace("https://w3id.org/emmo/domain/mappings#")
 DM = Namespace("https://w3id.org/emmo/domain/datamodel#")
 OTEIO = Namespace("https://w3id.org/emmo/domain/oteio#")
-# EMMO = Namespace("http://emmo.info/emmo#")
-# MAP = Namespace("http://emmo.info/domain-mappings#")
-# DM = Namespace("http://emmo.info/datamodel#")
-# OTEIO = Namespace("http://emmo.info/oteio#")

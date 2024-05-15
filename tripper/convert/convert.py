@@ -36,6 +36,13 @@ BASIC_RECOGNISED_KEYS = {
     "label": RDFS.label,
     "comment": RDFS.comment,
     "mapsTo": MAP.mapsTo,
+    "dataresource": OTEIO.DataResourceStrategy,
+    "parse": OTEIO.ParseStrategy,  # add to ontology
+    "generate": OTEIO.GenerateStrategy,  # add to ontology
+    "mapping": OTEIO.MappingStrategy,
+    "function": OTEIO.FunctionStrategy,
+    "transformation": OTEIO.TransformationStrategy,
+    "configuration": OTEIO.Configuration,
 }
 
 
