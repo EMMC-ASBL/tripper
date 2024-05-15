@@ -99,7 +99,7 @@ hasCost = DM.hasCost
 
 
 # Regular expression matching a prefixed IRI
-_MATCH_PREFIXED_IRI = re.compile(r"^([a-z]+):([^/]{1}.*)$")
+_MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*):([^/]{1}.*)$")
 
 
 class Triplestore:
