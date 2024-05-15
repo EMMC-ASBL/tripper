@@ -1,5 +1,26 @@
 # Changelog
 
+## [v0.2.16](https://github.com/EMMC-ASBL/tripper/tree/v0.2.16) (2024-05-15)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.15...v0.2.16)
+
+**Closed issues:**
+
+- Add caching and extension to tripper.Namespace [\#194](https://github.com/EMMC-ASBL/tripper/issues/194)
+- Add support for adding and searching for restrictions [\#189](https://github.com/EMMC-ASBL/tripper/issues/189)
+
+**Merged pull requests:**
+
+- Allow prefix with digits [\#209](https://github.com/EMMC-ASBL/tripper/pull/209) ([jesper-friis](https://github.com/jesper-friis))
+- Added test for SPARQL CONSTRUCT query via tripper [\#207](https://github.com/EMMC-ASBL/tripper/pull/207) ([jesper-friis](https://github.com/jesper-friis))
+- Added more recognised keys to tripper.convert [\#206](https://github.com/EMMC-ASBL/tripper/pull/206) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#204](https://github.com/EMMC-ASBL/tripper/pull/204) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Changed EMMO representation of function arguments from datasets to datum [\#203](https://github.com/EMMC-ASBL/tripper/pull/203) ([jesper-friis](https://github.com/jesper-friis))
+- Added comment suggested by Francesca [\#201](https://github.com/EMMC-ASBL/tripper/pull/201) ([jesper-friis](https://github.com/jesper-friis))
+- Enhanced the use of namespaces [\#195](https://github.com/EMMC-ASBL/tripper/pull/195) ([jesper-friis](https://github.com/jesper-friis))
+- Support for restrictions [\#190](https://github.com/EMMC-ASBL/tripper/pull/190) ([jesper-friis](https://github.com/jesper-friis))
+- Correctly convert rdflib bnodes back to tripper [\#187](https://github.com/EMMC-ASBL/tripper/pull/187) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.2.15](https://github.com/EMMC-ASBL/tripper/tree/v0.2.15) (2024-03-12)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.14...v0.2.15)
