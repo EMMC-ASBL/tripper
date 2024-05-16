@@ -7,18 +7,26 @@ on:
 jobs:
   update-deps-branch-and-docs:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_cd_updated_default_branch.yml@v1
+    uses: SINTEF/ci-cd/.github/workflows/ci_cd_updated_default_branch.yml@v2.7.4
     if: github.repository_owner == 'EMMC-ASBL'
     with:
+      # General
       git_username: "TEAM 4.0[bot]"
       git_email: "Team4.0@SINTEF.no"
-      permanent_dependencies_branch: "ci/dependency-updates"
       default_repo_branch: master
-      package_dirs: tripper
+
+      # Permanent dependencies branch
+      update_dependencies_branch: true
+      permanent_dependencies_branch: "ci/dependency-updates"
+
+      # Build & publish documentation
       update_docs: true
       update_python_api_ref: true
+      package_dirs: tripper
       update_docs_landing_page: true
       python_version: "3.9"
       doc_extras: "[docs]"
+      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
+      docs_framework: mkdocs
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}

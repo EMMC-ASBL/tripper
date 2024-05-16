@@ -8,7 +8,7 @@ on:
 jobs:
   publish-package-and-docs:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v1
+    uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v2.7.4
     if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')
     with:
       # General
@@ -21,7 +21,8 @@ jobs:
       python_package: true
       package_dirs: tripper
       python_version_build: "3.9"
-      build_cmd: "pip install -U flit && flit build"
+      build_libs: "flit"
+      build_cmd: "flit build"
       publish_on_pypi: true
 
       # Build & publish documentation
@@ -29,6 +30,7 @@ jobs:
       python_version_docs: "3.9"
       doc_extras: "[docs]"
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
+      docs_framework: mkdocs
     secrets:
       PyPI_token: ${{ secrets.PYPI_TOKEN }}
       PAT: ${{ secrets.RELEASE_PAT }}
