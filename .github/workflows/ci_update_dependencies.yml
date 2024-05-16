@@ -9,7 +9,7 @@ on:
 jobs:
   create-collected-pr:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_update_dependencies.yml@v1
+    uses: SINTEF/ci-cd/.github/workflows/ci_update_dependencies.yml@v2.7.4
     if: github.repository_owner == 'EMMC-ASBL'
     with:
       git_username: "TEAM 4.0[bot]"
@@ -18,6 +18,8 @@ jobs:
       default_repo_branch: master
       pr_labels: "CI/CD,skip_changelog"
       extra_to_dos: "- [ ] Make sure that the PR is **squash** merged, with a sensible commit message."
+
+      # pre-commit will be updated through pre-commit.ci
       update_pre-commit: false
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}

@@ -10,20 +10,24 @@ on:
 jobs:
   basic-tests:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v1
+    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.7.4
     with:
-      # General settings:
+      ## General settings:
       install_extras: "[dev]"
 
-      # pre-commit
+      ## pre-commit
       run_pre-commit: false
 
-      # pylint & safety
+      ## pylint & safety
       python_version_pylint_safety: "3.9"
+
+      # pylint-specific settings
       run_pylint: true
       pylint_runs: |
         --rcfile=pyproject.toml tripper
         --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests
+
+      # safety-specific settings
       run_safety: true
       # 48547: RDFLib vulnerability: https://pyup.io/vulnerabilities/PVE-2022-48547/48547/
       # 44715-44717: NumPy vulnerabilities:
@@ -36,15 +40,19 @@ jobs:
         --ignore=44716
         --ignore=44717
 
-      # Build package
+      ## Build package
       run_build_package: true
       python_version_package: "3.9"
       build_libs: flit
       build_cmd: flit build
 
-      # Build documentation
+      ## Build documentation
       run_build_docs: true
       python_version_docs: "3.9"
+      warnings_as_errors: true
+      use_mkdocs: true
+
+      # mkdocs-specific settings
       update_python_api_ref: true
       update_docs_landing_page: true
       package_dirs: tripper
