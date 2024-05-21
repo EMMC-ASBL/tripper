@@ -1,6 +1,14 @@
 # Changelog
 
-## [v0.2.16](https://github.com/EMMC-ASBL/tripper/tree/v0.2.16) (2024-05-15)
+## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...HEAD)
+
+**Fixed bugs:**
+
+- cannot release [\#211](https://github.com/EMMC-ASBL/tripper/issues/211)
+
+## [v0.2.16](https://github.com/EMMC-ASBL/tripper/tree/v0.2.16) (2024-05-16)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.15...v0.2.16)
 
@@ -11,6 +19,8 @@
 
 **Merged pull requests:**
 
+- In tripper.convert, commented out recognised keys for oteapi strategies [\#212](https://github.com/EMMC-ASBL/tripper/pull/212) ([jesper-friis](https://github.com/jesper-friis))
+- Use latest SINTEF/ci-cd version [\#210](https://github.com/EMMC-ASBL/tripper/pull/210) ([CasperWA](https://github.com/CasperWA))
 - Allow prefix with digits [\#209](https://github.com/EMMC-ASBL/tripper/pull/209) ([jesper-friis](https://github.com/jesper-friis))
 - Added test for SPARQL CONSTRUCT query via tripper [\#207](https://github.com/EMMC-ASBL/tripper/pull/207) ([jesper-friis](https://github.com/jesper-friis))
 - Added more recognised keys to tripper.convert [\#206](https://github.com/EMMC-ASBL/tripper/pull/206) ([jesper-friis](https://github.com/jesper-friis))
