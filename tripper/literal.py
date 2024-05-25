@@ -31,8 +31,8 @@ class Literal(str):
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
         datetime: (XSD.dateTime,),
-        bytes: (XSD.hexBinary,),
-        bytearray: (XSD.hexBinary,),
+        bytes: (XSD.hexBinary, XSD.base64Binary),
+        bytearray: (XSD.hexBinary, XSD.base64Binary),
         bool: (XSD.boolean,),
         int: (
             XSD.integer,
@@ -57,12 +57,12 @@ class Literal(str):
         ),
         str: (
             XSD.string,
+            RDFS.Literal,
+            RDF.PlainLiteral,
             RDF.HTML,
             RDF.JSON,
             RDF.XMLLiteral,
-            RDF.PlainLiteral,
             RDF.langString,
-            RDFS.Literal,
             XSD.ENTITY,
             XSD.ID,
             XSD.IDREF,
@@ -71,8 +71,6 @@ class Literal(str):
             XSD.Name,
             XSD.QName,
             XSD.anyURI,
-            XSD.base64Binary,
-            XSD.hexBinary,
             XSD.language,
             XSD.normalizedString,
             XSD.token,
@@ -145,9 +143,6 @@ class Literal(str):
             string.datatype = XSD.hexBinary
         elif isinstance(value, datetime):
             string.datatype = XSD.dateTime
-            # TODO:
-            #   - XSD.base64Binary
-            #   - XSD.byte, XSD.unsignedByte
 
         # Some consistency checking
         if (
