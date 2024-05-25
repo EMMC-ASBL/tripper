@@ -31,7 +31,7 @@ def test_string() -> None:
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == f'"Hello world!"^^<{XSD.string}>'
-    assert literal != "Hello world!"
+    assert literal == "Hello world!"
 
 
 def test_string_lang() -> None:
@@ -45,6 +45,7 @@ def test_string_lang() -> None:
     assert literal.datatype is None
     assert literal.value == "Hello world!"
     assert literal.n3() == '"Hello world!"@en'
+    assert literal == "Hello world!"
 
 
 def test_cannot_combine_datatype_and_lang() -> None:
@@ -238,8 +239,8 @@ def test_equality() -> None:
     assert Literal("text", lang="en") != Literal("text", lang="dk")
     assert Literal("text") == "text"
     assert Literal("text") != "text2"
-    assert Literal("text", datatype=XSD.string) != "text"
-    assert Literal("text", datatype=RDF.HTML) != "text"
+    assert Literal("text", datatype=XSD.string) == "text"
+    assert Literal("text", datatype=RDF.HTML) == "text"
     assert Literal(1) == 1
     assert Literal(1) != 1.0
     assert Literal(1) != "1"

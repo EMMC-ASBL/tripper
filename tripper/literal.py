@@ -58,16 +58,26 @@ class Literal(str):
         str: (
             XSD.string,
             RDF.HTML,
-            RDF.PlainLiteral,
+            RDF.JSON,
             RDF.XMLLiteral,
+            RDF.PlainLiteral,
+            RDF.langString,
             RDFS.Literal,
-            XSD.anyURI,
-            XSD.language,
+            XSD.ENTITY,
+            XSD.ID,
+            XSD.IDREF,
+            XSD.NCName,
+            XSD.NMTOKEN,
             XSD.Name,
-            XSD.NMName,
+            XSD.QName,
+            XSD.anyURI,
+            XSD.base64Binary,
+            XSD.hexBinary,
+            XSD.language,
             XSD.normalizedString,
             XSD.token,
-            XSD.NMTOKEN,
+            # XSD.pattern,
+            # XSD.whiteSpace,
         ),
     }
 
@@ -177,7 +187,9 @@ class Literal(str):
 
     def __eq__(self, other):
         if not isinstance(other, Literal):
-            if isinstance(other, str) and self.lang:
+            if isinstance(other, str) and (
+                self.lang or self.datatype in self.datatypes[str]
+            ):
                 return str(self) == other
             other = Literal(other)
         return (
