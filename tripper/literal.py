@@ -31,8 +31,8 @@ class Literal(str):
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
         datetime: (XSD.dateTime,),
-        bytes: (XSD.hexBinary,),
-        bytearray: (XSD.hexBinary,),
+        bytes: (XSD.hexBinary, XSD.base64Binary),
+        bytearray: (XSD.hexBinary, XSD.base64Binary),
         bool: (XSD.boolean,),
         int: (
             XSD.integer,
@@ -57,17 +57,19 @@ class Literal(str):
         ),
         str: (
             XSD.string,
-            RDF.HTML,
-            RDF.PlainLiteral,
-            RDF.XMLLiteral,
             RDFS.Literal,
+            RDF.PlainLiteral,
+            RDF.HTML,
+            RDF.JSON,
+            RDF.XMLLiteral,
+            RDF.langString,
+            XSD.NCName,
+            XSD.NMTOKEN,
+            XSD.Name,
             XSD.anyURI,
             XSD.language,
-            XSD.Name,
-            XSD.NMName,
             XSD.normalizedString,
             XSD.token,
-            XSD.NMTOKEN,
         ),
     }
 
@@ -135,9 +137,6 @@ class Literal(str):
             string.datatype = XSD.hexBinary
         elif isinstance(value, datetime):
             string.datatype = XSD.dateTime
-            # TODO:
-            #   - XSD.base64Binary
-            #   - XSD.byte, XSD.unsignedByte
 
         # Some consistency checking
         if (
@@ -177,7 +176,9 @@ class Literal(str):
 
     def __eq__(self, other):
         if not isinstance(other, Literal):
-            if isinstance(other, str) and self.lang:
+            if isinstance(other, str) and (
+                self.lang or self.datatype in self.datatypes[str]
+            ):
                 return str(self) == other
             other = Literal(other)
         return (
