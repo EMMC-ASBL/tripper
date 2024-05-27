@@ -5,7 +5,7 @@
 
 def test_untyped() -> None:
     """Test creating a untyped literal."""
-    from tripper.literal import Literal
+    from tripper.literal import RDF, XSD, Literal
 
     literal = Literal("Hello world!")
     assert literal == "Hello world!"
@@ -16,6 +16,11 @@ def test_untyped() -> None:
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == '"Hello world!"'
+    assert literal == Literal("Hello world!", datatype=XSD.string)
+    assert literal == Literal("Hello world!", datatype=XSD.token)
+    assert literal == Literal("Hello world!", datatype=RDF.JSON)
+    assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
+    assert literal == Literal("Hello world!", lang="en")
 
 
 def test_string() -> None:
@@ -24,6 +29,9 @@ def test_string() -> None:
 
     literal = Literal("Hello world!", datatype=XSD.string)
     assert literal == Literal("Hello world!", datatype=XSD.string)
+    assert literal == Literal("Hello world!")
+    assert literal != Literal("Hello world!", datatype=XSD.token)
+    assert literal != Literal(2, datatype=XSD.int)
     assert Literal(literal) == Literal("Hello world!", datatype=XSD.string)
     assert isinstance(literal, str)
     assert literal.lang is None
