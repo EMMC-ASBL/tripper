@@ -31,8 +31,8 @@ class Literal(str):
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
         datetime: (XSD.dateTime,),
-        bytes: (XSD.hexBinary,),
-        bytearray: (XSD.hexBinary,),
+        bytes: (XSD.hexBinary, XSD.base64Binary),
+        bytearray: (XSD.hexBinary, XSD.base64Binary),
         bool: (XSD.boolean,),
         int: (
             XSD.integer,
@@ -57,17 +57,19 @@ class Literal(str):
         ),
         str: (
             XSD.string,
-            RDF.HTML,
-            RDF.PlainLiteral,
-            RDF.XMLLiteral,
             RDFS.Literal,
+            RDF.PlainLiteral,
+            RDF.HTML,
+            RDF.JSON,
+            RDF.XMLLiteral,
+            RDF.langString,
+            XSD.NCName,
+            XSD.NMTOKEN,
+            XSD.Name,
             XSD.anyURI,
             XSD.language,
-            XSD.Name,
-            XSD.NMName,
             XSD.normalizedString,
             XSD.token,
-            XSD.NMTOKEN,
         ),
     }
 
@@ -135,9 +137,6 @@ class Literal(str):
             string.datatype = XSD.hexBinary
         elif isinstance(value, datetime):
             string.datatype = XSD.dateTime
-            # TODO:
-            #   - XSD.base64Binary
-            #   - XSD.byte, XSD.unsignedByte
 
         # Some consistency checking
         if (
@@ -175,16 +174,29 @@ class Literal(str):
     def __hash__(self):
         return hash((str(self), self.lang, self.datatype))
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # pylint: disable=too-many-return-statements
         if not isinstance(other, Literal):
-            if isinstance(other, str) and self.lang:
+            if isinstance(other, str) and (
+                self.lang or self.datatype in self.datatypes[str]
+            ):
                 return str(self) == other
             other = Literal(other)
-        return (
-            str(self) == str(other)
-            and self.lang == other.lang
-            and self.datatype == other.datatype
-        )
+        if str(self) != str(other):
+            return False
+        if self.lang and other.lang and self.lang != other.lang:
+            return False
+        if (
+            self.datatype
+            and other.datatype
+            and self.datatype != other.datatype
+        ):
+            return False
+        strings = set(self.datatypes[str] + (None,))
+        if self.datatype is None and other.datatype not in strings:
+            return False
+        if other.datatype is None and self.datatype not in strings:
+            return False
+        return True
 
     def __ne__(self, other):
         return not self.__eq__(other)
