@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
     
     
       
@@ -1071,8 +1071,8 @@ not be combined with <code>lang</code>.</p></td>
     <span class="c1"># utils.parse_literal() when inferring the datatype of a literal.</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">datetime</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">,),</span>
-        <span class="nb">bytes</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">,),</span>
-        <span class="nb">bytearray</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">,),</span>
+        <span class="nb">bytes</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">base64Binary</span><span class="p">),</span>
+        <span class="nb">bytearray</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">base64Binary</span><span class="p">),</span>
         <span class="nb">bool</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">,),</span>
         <span class="nb">int</span><span class="p">:</span> <span class="p">(</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span>
@@ -1097,17 +1097,19 @@ not be combined with <code>lang</code>.</p></td>
         <span class="p">),</span>
         <span class="nb">str</span><span class="p">:</span> <span class="p">(</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">,</span>
-            <span class="n">RDF</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span>
-            <span class="n">RDF</span><span class="o">.</span><span class="n">PlainLiteral</span><span class="p">,</span>
-            <span class="n">RDF</span><span class="o">.</span><span class="n">XMLLiteral</span><span class="p">,</span>
             <span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span><span class="p">,</span>
+            <span class="n">RDF</span><span class="o">.</span><span class="n">PlainLiteral</span><span class="p">,</span>
+            <span class="n">RDF</span><span class="o">.</span><span class="n">HTML</span><span class="p">,</span>
+            <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">,</span>
+            <span class="n">RDF</span><span class="o">.</span><span class="n">XMLLiteral</span><span class="p">,</span>
+            <span class="n">RDF</span><span class="o">.</span><span class="n">langString</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">NCName</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">NMTOKEN</span><span class="p">,</span>
+            <span class="n">XSD</span><span class="o">.</span><span class="n">Name</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">language</span><span class="p">,</span>
-            <span class="n">XSD</span><span class="o">.</span><span class="n">Name</span><span class="p">,</span>
-            <span class="n">XSD</span><span class="o">.</span><span class="n">NMName</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">normalizedString</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
-            <span class="n">XSD</span><span class="o">.</span><span class="n">NMTOKEN</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">}</span>
 
@@ -1175,9 +1177,6 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
-            <span class="c1"># TODO:</span>
-            <span class="c1">#   - XSD.base64Binary</span>
-            <span class="c1">#   - XSD.byte, XSD.unsignedByte</span>
 
         <span class="c1"># Some consistency checking</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -1217,7 +1216,9 @@ not be combined with <code>lang</code>.</p></td>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="n">other</span>
             <span class="n">other</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -1388,9 +1389,6 @@ not be combined with <code>lang</code>.</p></td>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
-        <span class="c1"># TODO:</span>
-        <span class="c1">#   - XSD.base64Binary</span>
-        <span class="c1">#   - XSD.byte, XSD.unsignedByte</span>
 
     <span class="c1"># Some consistency checking</span>
     <span class="k">if</span> <span class="p">(</span>
@@ -1596,7 +1594,7 @@ literal.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
+      <script src="../../assets/javascripts/bundle.081f42fc.min.js"></script>
       
     
   </body>
