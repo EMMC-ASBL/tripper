@@ -92,27 +92,6 @@ class RdflibStrategy:
             self.graph.triples(astriple(triple))
         )
 
-        # for s, p, o in self.graph.triples(  # pylint: disable=not-an-iterable
-        #    astriple(triple)
-        # ):
-        #    yield (
-        #        (
-        #            f"_:{s}"
-        #            if isinstance(s, BNode) and not s.startswith("_:")
-        #            else str(s)
-        #        ),
-        #        str(p),
-        #        (
-        #            parse_literal(o)
-        #            if isinstance(o, rdflibLiteral)
-        #            else (
-        #                f"_:{o}"
-        #                if isinstance(o, BNode) and not o.startswith("_:")
-        #                else str(o)
-        #            )
-        #        ),
-        #    )
-
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
         for triple in triples:

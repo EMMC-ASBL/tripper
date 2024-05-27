@@ -174,18 +174,29 @@ class Literal(str):
     def __hash__(self):
         return hash((str(self), self.lang, self.datatype))
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # pylint: disable=too-many-return-statements
         if not isinstance(other, Literal):
             if isinstance(other, str) and (
                 self.lang or self.datatype in self.datatypes[str]
             ):
                 return str(self) == other
             other = Literal(other)
-        return (
-            str(self) == str(other)
-            and self.lang == other.lang
-            and self.datatype == other.datatype
-        )
+        if str(self) != str(other):
+            return False
+        if self.lang and other.lang and self.lang != other.lang:
+            return False
+        if (
+            self.datatype
+            and other.datatype
+            and self.datatype != other.datatype
+        ):
+            return False
+        strings = set(self.datatypes[str] + (None,))
+        if self.datatype is None and other.datatype not in strings:
+            return False
+        if other.datatype is None and self.datatype not in strings:
+            return False
+        return True
 
     def __ne__(self, other):
         return not self.__eq__(other)
