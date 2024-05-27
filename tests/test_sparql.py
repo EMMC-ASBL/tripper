@@ -76,7 +76,7 @@ def test_sparql_construct():
     ts.parse(data=data)
     VCARD = ts.bind("vcard", "http://www.w3.org/2001/vcard-rdf/3.0#")
 
-    r = ts.query(query)
+    r = list(ts.query(query))
 
     assert len(r) == 6
     assert len([s for s, p, o in r if p == VCARD.givenName]) == 2

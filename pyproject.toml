@@ -93,7 +93,7 @@ line_length = 79  # PEP8
 line-length = 79
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.11"
 ignore_missing_imports = true
 scripts_are_modules = true
 warn_unused_configs = true
