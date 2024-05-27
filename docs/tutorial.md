@@ -25,7 +25,7 @@ Most recognisable:
   Example: `XSD.float`
 
   Tripper namespaces has also additional features that make them very
-  convinient when working with ontologies, like like [EMMO] that uses
+  convinient when working with ontologies, like [EMMO] that uses
   numerical IRIs.
 
 
