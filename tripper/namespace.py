@@ -163,7 +163,7 @@ class Namespace:
         """Save current cache."""
         # pylint: disable=invalid-name
         cachefile = self._get_cachefile()
-        if self._iris:
+        if self._iris and not sys.is_finalizing():
             with open(cachefile, "wb") as f:
                 pickle.dump(self._iris, f)
 
@@ -186,7 +186,11 @@ class Namespace:
         if self._iris and name in self._iris:
             return self._iris[name]
         if self._check:
-            raise NoSuchIRIError(self._iri + name)
+            msg = ""
+            cachefile = self._get_cachefile()
+            if cachefile.exists():
+                msg = f"\nMaybe you have to remove the cache file: {cachefile}"
+            raise NoSuchIRIError(self._iri + name + msg)
         return self._iri + name
 
     def __getitem__(self, key):

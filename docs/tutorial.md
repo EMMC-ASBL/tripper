@@ -57,10 +57,11 @@ The `check=True` enables checking for existing IRIs.
 'https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
 
 # This fails because we set `check=True`
->>> EMMO.invalid_name
+>>> EMMO.invalid_name  # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
 tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name
+Maybe you have to remove the cache file: ...
 
 ```
 
