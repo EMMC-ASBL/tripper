@@ -99,7 +99,7 @@ class RdflibStrategy:
                 ),
                 str(p),
                 (
-                    parse_literal(o)
+                    parse_literal(o.n3())
                     if isinstance(o, rdflibLiteral)
                     else (
                         f"_:{o}"

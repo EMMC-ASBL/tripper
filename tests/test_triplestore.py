@@ -415,7 +415,7 @@ def test_find_literal_triples() -> None:
         ts.triples(predicate=FAM.hasName, object=Literal("Per"))
     ) == set(
         [
-            (FAM.Per, FAM.hasName, Literal("Per")),
+            (FAM.Per, FAM.hasName, Literal("Per", datatype=XSD.string)),
         ]
     )
 
