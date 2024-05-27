@@ -966,10 +966,11 @@ The <code>check=True</code> enables checking for existing IRIs.</p>
 <span class="s1">&#39;https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad&#39;</span>
 
 <span class="c1"># This fails because we set `check=True`</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">invalid_name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">invalid_name</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
     <span class="o">...</span>
 <span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">w3id</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">emmo</span><span class="c1">#invalid_name</span>
+<span class="n">Maybe</span> <span class="n">you</span> <span class="n">have</span> <span class="n">to</span> <span class="n">remove</span> <span class="n">the</span> <span class="n">cache</span> <span class="n">file</span><span class="p">:</span> <span class="o">...</span>
 </code></pre></div>
 <p>The above example works, since the <code>namespace="https://w3id.org/emmo#"</code> is resolvable.
 In the case when the IRI in the <code>namespace</code> argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated Triplestore instance via the <code>triplestore</code> keyword argument.</p>
