@@ -1258,7 +1258,7 @@ creating a new empty Graph object.</p></td>
                 <span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
                 <span class="p">(</span>
-                    <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                    <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">n3</span><span class="p">())</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
                     <span class="k">else</span> <span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1871,7 +1871,7 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
             <span class="p">),</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
             <span class="p">(</span>
-                <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+                <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">n3</span><span class="p">())</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
                 <span class="k">else</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
