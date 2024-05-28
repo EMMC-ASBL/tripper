@@ -1047,7 +1047,6 @@
 <p>Tripper is a Python library providing a common interface to a range of pre-defined triplestores.
 This is done via a plugin system for different triplestore <code>backends</code>.
 See the README file for a <a href="https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends">list of currently supported backends</a>.</p>
-<p>To interface a triplestore, you create an instance of <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> providing the name of the triplestore as the <code>backend</code> argument.</p>
 <p>The API provided by Tripper is modelled after <a href="https://rdflib.readthedocs.io/">rdflib</a>, so if you know that library, you will find Tripper rather familiar.
 But there are some differences that you should be aware of.
 Most recognisable:
@@ -1064,6 +1063,7 @@ Most recognisable:
   convinient when working with ontologies, like <a href="https://emmc.eu/emmo/">EMMO</a> that uses
   numerical IRIs.</p>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<p>To interface a triplestore, you create an instance of <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> providing the name of the triplestore as the <code>backend</code> argument.</p>
 <p>For example, to create an interface to an in-memory <a href="https://rdflib.readthedocs.io/">rdflib</a> triplestore, you can use the <code>rdflib</code> backend:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
