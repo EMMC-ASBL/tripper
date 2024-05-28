@@ -9,8 +9,6 @@ Tripper is a Python library providing a common interface to a range of pre-defin
 This is done via a plugin system for different triplestore `backends`.
 See the README file for a [list of currently supported backends].
 
-To interface a triplestore, you create an instance of [Triplestore] providing the name of the triplestore as the `backend` argument.
-
 The API provided by Tripper is modelled after [rdflib], so if you know that library, you will find Tripper rather familiar.
 But there are some differences that you should be aware of.
 Most recognisable:
@@ -31,6 +29,7 @@ Most recognisable:
 
 Getting started
 ---------------
+To interface a triplestore, you create an instance of [Triplestore] providing the name of the triplestore as the `backend` argument.
 
 For example, to create an interface to an in-memory [rdflib] triplestore, you can use the `rdflib` backend:
 
