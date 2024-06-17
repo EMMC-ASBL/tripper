@@ -5,7 +5,7 @@
 import pytest
 
 
-# if True:
+#if True:
 def test_convertions():
     """Test convertions. Uses rdflib as triplestore backend"""
 
@@ -35,7 +35,7 @@ def test_convertions():
             "key6": False,
             "key7": ["a", 1, 2.2, True, None],
             "key8": [{"a": 1, "b": 2}, {"a": 2.2, "b": 3.3}],
-            "key7": [["a11", "a12", "a13"], ["a21", "a22", "a23"]],
+            "key9": [["a11", "a12", "a13"], ["a21", "a22", "a23"]],
         },
     }
 
