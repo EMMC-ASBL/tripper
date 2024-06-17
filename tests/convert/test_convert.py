@@ -5,7 +5,7 @@
 import pytest
 
 
-#if True:
+# if True:
 def test_convertions():
     """Test convertions. Uses rdflib as triplestore backend"""
 
