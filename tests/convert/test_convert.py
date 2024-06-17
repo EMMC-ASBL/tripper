@@ -63,8 +63,6 @@ def test_convertions():
         },
     }
 
-
-
     # Store dictionaries to triplestore
     save_container(ts, config1, EX.config1)
     save_container(ts, config2, EX.config2)
