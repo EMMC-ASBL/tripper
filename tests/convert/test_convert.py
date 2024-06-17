@@ -5,6 +5,7 @@
 import pytest
 
 
+# if True:
 def test_convertions():
     """Test convertions. Uses rdflib as triplestore backend"""
 
@@ -33,12 +34,41 @@ def test_convertions():
             "key5": True,
             "key6": False,
             "key7": ["a", 1, 2.2, True, None],
+            "key8": [{"a": 1, "b": 2}, {"a": 2.2, "b": 3.3}],
+            "key7": [["a11", "a12", "a13"], ["a21", "a22", "a23"]],
         },
     }
+
+    config3 = {
+        "Simulation": {
+            "command": "run_sim",
+            "files": [
+                {"target_file": "run_sim.sh", "source_iri": "http://..."},
+                {"target_file": "other.txt", "source_iri": "http://..."},
+            ],
+            "input": {
+                "onto:DataSet": [
+                    {
+                        "function": {
+                            "functionType": "application/vnd.dlite-generate",
+                            "configuration": {
+                                "driver": "myplugin",
+                                "location": "myfile.inp",
+                                "datamodel": "http:...",
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    }
+
+
 
     # Store dictionaries to triplestore
     save_container(ts, config1, EX.config1)
     save_container(ts, config2, EX.config2)
+    save_container(ts, config3, EX.config3)
 
     # Print content of triplestore
     # print(ts.serialize())
@@ -46,17 +76,22 @@ def test_convertions():
     # Load dictionaries from triplestore
     d1 = load_container(ts, EX.config1)
     d2 = load_container(ts, EX.config2)
+    d3 = load_container(ts, EX.config3)
 
     # Check that we got back what we stored
     assert d1 == config1
     assert d2 == config2
+    assert d3 == config3
 
     # Now, test serialising using recognised_keys
     save_container(ts, config1, EX.config1b, recognised_keys="basic")
     save_container(ts, config2, EX.config2b, recognised_keys="basic")
+    save_container(ts, config3, EX.config3b, recognised_keys="basic")
 
     d1b = load_container(ts, EX.config1b, recognised_keys="basic")
     d2b = load_container(ts, EX.config2b, recognised_keys="basic")
+    d3b = load_container(ts, EX.config3b, recognised_keys="basic")
 
     assert d1b == config1
     assert d2b == config2
+    assert d3b == config3
