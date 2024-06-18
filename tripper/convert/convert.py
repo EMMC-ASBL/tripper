@@ -228,7 +228,9 @@ def load_container(
     if recognised_keys == "basic":
         recognised_keys = BASIC_RECOGNISED_KEYS
 
-    recognised_iris = {v: k for k, v in recognised_keys.items()}
+    recognised_iris = (
+        {v: k for k, v in recognised_keys.items()} if recognised_keys else {}
+    )
     parents = set(ts.objects(iri, RDF.type))
 
     def get_obj(value):

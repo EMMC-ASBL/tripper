@@ -93,3 +93,18 @@ def test_convertions():
     assert d1b == config1
     assert d2b == config2
     assert d3b == config3
+
+    # Check custom recognised keys
+    from tripper.convert import BASIC_RECOGNISED_KEYS
+
+    reg_keys = BASIC_RECOGNISED_KEYS.copy()
+    reg_keys.update(
+        Simulation=EX.Simulation,
+        files=EX.files,
+        command=EX.command,
+        input=EX.input,
+        output=EX.output,
+    )
+    save_container(ts, config3, EX.config3c, recognised_keys=reg_keys)
+    d3c = load_container(ts, EX.config3c, recognised_keys=reg_keys)
+    assert d3c == config3
