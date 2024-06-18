@@ -34,7 +34,7 @@ jobs:
       #  https://pyup.io/vulnerabilities/CVE-2021-41495/44715/
       #  https://pyup.io/vulnerabilities/CVE-2021-41496/44716/
       #  https://pyup.io/vulnerabilities/CVE-2021-34141/44717/
-      # 70612: Jinja2 vulnerability. Only used as subdepndency for mkdocs++ in tripper.
+      # 70612: Jinja2 vulnerability. Only used as subdependency for mkdocs++ in tripper.
       #  https://data.safetycli.com/v/70612/97c/
       safety_options: |
         --ignore=48547
