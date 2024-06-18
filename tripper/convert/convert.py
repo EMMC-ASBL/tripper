@@ -228,7 +228,8 @@ def load_container(
     if recognised_keys == "basic":
         recognised_keys = BASIC_RECOGNISED_KEYS
 
-    parents = set(o for s, p, o in ts.triples(subject=iri, predicate=RDF.type))
+    recognised_iris = {v: k for k, v in recognised_keys.items()}
+    parents = set(ts.objects(iri, RDF.type))
 
     def get_obj(value):
         """Return Python object for `value`."""
@@ -243,14 +244,19 @@ def load_container(
 
     if OTEIO.Dictionary in parents:
         container = {}
-        for _, _, pair in ts.triples(
-            subject=iri, predicate=OTEIO.hasKeyValuePair
-        ):
-            key_iri = ts.value(pair, OTEIO.hasDictionaryKey)
-            key = ts.value(key_iri, EMMO.hasStringValue)
-            value_iri = ts.value(pair, OTEIO.hasDictionaryValue)
-            value = ts.value(value_iri, EMMO.hasValue)
-            container[str(key)] = get_obj(value)
+        for pred, obj in ts.predicate_objects(iri):
+            if pred == OTEIO.hasKeyValuePair:
+                key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
+                key = ts.value(key_iri, EMMO.hasStringValue)
+                value_iri = ts.value(obj, OTEIO.hasDictionaryValue)
+                value = ts.value(value_iri, EMMO.hasValue)
+                container[str(key)] = get_obj(value)
+            elif pred in recognised_iris:
+                container[recognised_iris[pred]] = get_obj(obj)
+            elif pred not in (RDF.type,):
+                raise ValueError(
+                    f"Unrecognised predicate '{pred}' in dict: {iri}"
+                )
 
         # Recognised IRIs
         if recognised_keys:
