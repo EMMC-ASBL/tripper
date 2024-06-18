@@ -222,6 +222,7 @@ def load_container(
     Returns:
         A Python container object corresponding to `iri`.
     """
+    # pylint: disable=too-many-branches
     if iri == RDF.nil:
         return []
 
@@ -229,7 +230,9 @@ def load_container(
         recognised_keys = BASIC_RECOGNISED_KEYS
 
     recognised_iris = (
-        {v: k for k, v in recognised_keys.items()} if recognised_keys else {}
+        {v: k for k, v in recognised_keys.items()}  # type: ignore
+        if recognised_keys
+        else {}
     )
     parents = set(ts.objects(iri, RDF.type))
 
