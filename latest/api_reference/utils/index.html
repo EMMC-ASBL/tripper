@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
     
     
       
@@ -155,7 +155,7 @@
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -1498,12 +1498,16 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
             <span class="n">properties</span> <span class="o">=</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;uri&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;identity&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="k">elif</span> <span class="s2">&quot;identity&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
                 <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">],</span> <span class="nb">str</span>
             <span class="p">):</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]:</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;cannot infer IRI from pydantic object: </span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot infer IRI from object: </span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
@@ -2008,7 +2012,7 @@ Can be an iterable of objects.</p></td>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.081f42fc.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ad660dcc.min.js"></script>
       
     
   </body>
