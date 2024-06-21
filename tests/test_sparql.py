@@ -5,7 +5,7 @@
 import pytest
 
 
-#if True:
+# if True:
 def test_sparql_select():
     """Test SPARQL SELECT query."""
     pytest.importorskip("rdflib")
@@ -94,6 +94,7 @@ def test_sparql_select2():
     # From https://www.w3.org/TR/rdf-sparql-query/#construct
     pytest.importorskip("rdflib")
     from textwrap import dedent
+
     from tripper import Literal, Triplestore
 
     data = dedent(
@@ -127,10 +128,10 @@ def test_sparql_select2():
     ts.parse(data=data)
     r = ts.query(query)
 
-    assert set(r) == {('Alice', 'Bob', 'None'), ('Alice', 'Clare', 'CT')}
+    assert set(r) == {("Alice", "Bob", "None"), ("Alice", "Clare", "CT")}
 
 
-#if True:
+# if True:
 def test_sparql_construct2():
     """Test SPARQL CONSTRUCT query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#construct
@@ -171,12 +172,13 @@ def test_sparql_construct2():
     }
 
 
-#if True:
+# if True:
 def test_sparql_ask():
     """Test SPARQL ASK query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#construct
     pytest.importorskip("rdflib")
     from textwrap import dedent
+
     from tripper import Literal, Triplestore
 
     # Load pre-inferred EMMO
@@ -205,12 +207,13 @@ def test_sparql_ask():
     assert r == True
 
 
-#if True:
+# if True:
 def test_sparql_describe():
     """Test SPARQL DESCRIBE query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#construct
     pytest.importorskip("rdflib")
     from textwrap import dedent
+
     from tripper import Literal, Triplestore
 
     # Load pre-inferred EMMO
@@ -245,14 +248,14 @@ def test_sparql_describe():
     assert set(r) == set(
         [
             (
-                'http://org.example.com/employees#Allice',
-                'http://xmlns.com/foaf/0.1/mbox_sha1sum',
-                Literal('ABCD1234')
+                "http://org.example.com/employees#Allice",
+                "http://xmlns.com/foaf/0.1/mbox_sha1sum",
+                Literal("ABCD1234"),
             ),
             (
-                'http://org.example.com/employees#Allice',
-                'http://org.example.com/employees#employeeId',
-                Literal('1234')
+                "http://org.example.com/employees#Allice",
+                "http://org.example.com/employees#employeeId",
+                Literal("1234"),
             ),
         ]
     )
