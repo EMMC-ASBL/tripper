@@ -2,9 +2,33 @@ Basic tutorial
 ==============
 <!-- markdownlint-disable MD007 -->
 
-Creating a triplestore interface
---------------------------------
+
+Introduction
+------------
 Tripper is a Python library providing a common interface to a range of pre-defined triplestores.
+This is done via a plugin system for different triplestore `backends`.
+See the README file for a [list of currently supported backends].
+
+The API provided by Tripper is modelled after [rdflib], so if you know that library, you will find Tripper rather familiar.
+But there are some differences that you should be aware of.
+Most recognisable:
+* All IRIs are represented by Python strings.
+  Example: `"https://w3id.org/emmo#Metre"`
+* Blank nodes are strings starting with "_:".
+  Example: `"_:bnode1"`
+* Literals are constructed with [`tripper.Literal`][Literal].
+  Example: `tripper.Literal(3.14, datatype=XSD.float)`
+* Namespace object works similar to namespace objects in rdflib, but its
+  attribution access expands to plain Python strings.
+  Example: `XSD.float`
+
+  Tripper namespaces has also additional features that make them very
+  convinient when working with ontologies, like [EMMO] that uses
+  numerical IRIs.
+
+
+Getting started
+---------------
 To interface a triplestore, you create an instance of [Triplestore] providing the name of the triplestore as the `backend` argument.
 
 For example, to create an interface to an in-memory [rdflib] triplestore, you can use the `rdflib` backend:
@@ -15,14 +39,13 @@ For example, to create an interface to an in-memory [rdflib] triplestore, you ca
 
 ```
 
-
-Creating a namespace
---------------------
-Tripper provides a set of pre-defined namespaces that simplifies writing IRIs.
+### Namespace objects
+Namespace objects are a very convenient feature that simplifies writing IRIs.
+Tripper provides a set of standard pre-defined namespaces that can simply be imported.
 For example:
 
 ```python
->>> from tripper import RDFS, OWL
+>>> from tripper import OWL, RDFS
 >>> RDFS.subClassOf
 'http://www.w3.org/2000/01/rdf-schema#subClassOf'
 
@@ -37,6 +60,59 @@ New namespaces can be created using the [Namespace] class, but are usually added
 
 ```
 
+### Adding triples to the triplestore
+We can now start to add triples to the triplestore, using the `add()` and `add_triples()` methods:
+
+```python
+>>> from tripper.utils import en
+>>> ts.add_triples([
+...     (ONTO.MyConcept, RDFS.subClassOf, OWL.Thing),
+...     (ONTO.MyConcept, RDFS.label, en("My briliant ontological concept.")),
+... ])
+
+```
+
+The function `en(msg)` is just a convenient function for adding english literals.
+It is equivalent to `tripper.Literal(msg, lang="en")`.
+
+You can also load triples from a source using the `parse()` method.
+For example will
+
+```python
+ts.parse("onto.ttl", format="turtle")
+```
+
+load all triples in turtle file `onto.ttl` into the triplestore.
+
+Similarly you can serialise the triplestore to a string or a file using the `serialize()` method:
+
+```python
+ts.serialize("onto2.ttl")  # serialise to file `onto2.ttl`
+s = ts.serialize(format="ntriples")  # serialise to string s in ntriples format
+```
+
+### Retrieving triples from and querying a triplestore
+A set of convenient functions exists for simple queries, including `triples()`, `subjects()`, `predicates()`, `objects()`, `subject_predicates()`, `subject_objects()`, `predicate_objects()` and `value()`.
+Except for `value()`, they return the result as generators.
+For example:
+
+```python
+>>> ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf)  # doctest: +ELLIPSIS
+<generator object Triplestore.objects at 0x...>
+
+>>> list(ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf))
+['http://www.w3.org/2002/07/owl#Thing']
+
+```
+
+The `query()` and `update()` methods can be used to query and update the triplestore using SPARQL.
+See the next section.
+
+
+Slightly more advanced features
+-------------------------------
+
+### More advanced use of namespaces
 Namespace also supports access by label and IRI checking.
 Both of these features requires loading an ontology.
 The following example shows how to create an EMMO namespace with IRI checking.
@@ -73,65 +149,7 @@ More about this below.
 
 
 
-
-Working with an interfaced triplestore
---------------------------------------
-The interface provided by Tripper is modelled after [rdflib], so if you know that library, you will find Tripper rather familiar.
-
-There are some differences, though. Most recognisable:
-* All IRIs are represented by Python strings.
-  Example: `"https://w3id.org/emmo#Metre"`
-* Blank nodes are strings starting with "_:".
-  Example: `"_:bnode1"`
-* Literals are constructed with [`tripper.Literal`][Literal].
-  Example: `tripper.Literal(3.14, datatype=XSD.float)`
-
-Lets assume you have created a triplestore as showed in [Creating a triplestore interface].
-You can then start to add new triples to it with the `add()` and `add_triples()` methods:
-
-```python
-# en(msg) is a convenient function for adding english literals.
-# It is equivalent to ``tripper.Literal(msg, lang="en")``.
->>> from tripper.utils import en
->>> ts.add_triples([
-...     (ONTO.MyConcept, RDFS.subClassOf, OWL.Thing),
-...     (ONTO.MyConcept, RDFS.label, en("My briliant ontological concept.")),
-... ])
-
-```
-
-You can also load triples from a source using the `parse()` method:
-
-```python
-ts.parse("onto.ttl", format="turtle")
-```
-
-
-You can also serialise the triplestore to a string or a file using `serialize()`:
-
-```python
-ts.serialize("onto2.ttl")
-```
-
-A set of convenient functions exists for simple queries, including `triples()`, `subjects()`, `predicates()`, `objects()`, `subject_predicates()`, `subject_objects()`, `predicate_objects()` and `value()`.
-Except for `value()`, they return the result as generators.
-For example:
-
-```python
->>> ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf)  # doctest: +ELLIPSIS
-<generator object Triplestore.objects at 0x...>
-
->>> list(ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf))
-['http://www.w3.org/2002/07/owl#Thing']
-
-```
-
-The `query()` and `update()` methods can be used to query and update the triplestore using SPARQL.
-See the next section.
-
-
-Writing SPARQL queries using Tripper
-------------------------------------
+### Writing SPARQL queries using Tripper
 A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
 This challenge is greatly mitigated by using the `label_annotations` feature of Tripper namespaces.
 The example below shows how to write and execute a SPARQL query with Tripper that finds the IRI and unit symbol of all length units.
@@ -168,34 +186,57 @@ True
 
 ```
 
+### Utilities
+*Todo: Describe the `tripper.utils` module*
 
-Specialised methods
-===================
+
+
+Specialised features
+====================
 
 
 Working with mappings
 ---------------------
-The [Triplestore] class has two specialised methods `map()` and `add_function()` that simplify working with mappings.
+With a *data model*, we here mean an abstract model that describes the structure of a dataset.
+To provide a shared semantic meaning of a data model and its *properties* (structural elements), one can create *mappings* between these elements and ontological concepts (typically a class in an OWL ontology).
 
-`map()` is convinient for defining new mappings:
+Mappings can also be used to semantically document the arguments and return values of a function.
+
+The [Triplestore] class has two specialised methods for adding mappings, `map()` and `add_function()`.
+The purpose of the `map()` method, is to map a data models and its properties to ontological concepts, while `add_function()` maps the arguments and return value of a function to ontological concepts.
+
+**Note**, the name of the `map()` and `add_function()` methods are not very intuitive and may be changed in the future.
+
+
+### Adding mappings
+Lets assume that you have a data model identified by the IRI `http://onto-ns.com/meta/ex/0.1/MyDataModel`, which has a property (structural element) called *velocity*.
+A namespace object for this data model can be created with
 
 ```python
 from tripper import Namespace
-META = Namespace("http://onto-ns.com/meta/0.1/MyEntity#")
-ts.map(META.my_property, ONTO.MyConcept)
+DM = Namespace("http://onto-ns.com/meta/ex/0.1/MyDataModel#")
 ```
 
-It can also be used with DLite and SOFT7 data models.
+and use to map the data model property `velocity` to the concept `ONTO.Velocity` in the ontology
+
+
+```python
+ts.map(DM.velocity, ONTO.Velocity)
+```
+
+One can also work directly with DLite and SOFT7 data models.
 Here we repeat the above with DLite:
 
 ```python
 import dlite
-meta = dlite.get_instance("http://onto-ns.com/meta/0.1/MyEntity")
-ts.map(meta.my_property, ONTO.MyConcept)
+mymodel = dlite.get_instance("http://onto-ns.com/meta/ex/0.1/MyDataModel")
+ts.map(mymodel.velocity, ONTO.Velocity)
 ```
 
-The `add_function()` describes a function and adds mappings for its arguments and return value(s).
-Currently [EMMO] and the [Function Ontology (FnO)] are supported.
+The `add_function()` method documents a Python function semantically and adds mappings for its arguments and return value(s).
+Currently, it supports both [EMMO] and the [Function Ontology (FnO)] for the semantic documentation.
+
+For example, to semantically document the general function `mean()` applied to the special context of arm lengths, one can do
 
 ```python
 def mean(x, y):
@@ -209,6 +250,18 @@ ts.add_function(
 )
 ```
 
+
+### Using mappings
+*Todo: Describe the `tripper.mappings` subpackage...*
+
+
+
+### Representing pydantic data models as RDF
+*Todo: Describe the `tripper.convert` subpackage...*
+
+
+
+
 [rdflib]: https://rdflib.readthedocs.io/
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
 [Namespace]:
@@ -218,3 +271,4 @@ https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.litera
 [Creating a triplestore interface]: #creating-a-triplestore-interface
 [EMMO]: https://emmc.eu/emmo/
 [Function Ontology (FnO)]: https://fno.io/
+[list of currently supported backends]: https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends

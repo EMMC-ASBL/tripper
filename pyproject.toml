@@ -35,7 +35,7 @@ dependencies = [
 
 [project.optional-dependencies]
 docs = [
-    "mike ~=2.0",
+    "mike ~=2.1",
     "mkdocs ~=1.5",
     "mkdocs-awesome-pages-plugin ~=2.9",
     "mkdocs-material >=9.2.8",
@@ -64,7 +64,7 @@ testing-core = [
     "pytest-cov ~=4.1",
 ]
 dev = [
-    "mike ~=2.0",
+    "mike ~=2.1",
     "mkdocs ~=1.5",
     "mkdocs-awesome-pages-plugin ~=2.9",
     "mkdocs-material >=9.2.8",
