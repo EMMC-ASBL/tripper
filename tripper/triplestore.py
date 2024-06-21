@@ -798,6 +798,7 @@ class Triplestore:
         target: "Optional[Union[str, Literal]]" = None,
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
+        return_dicts: bool = False,
     ) -> "Generator[Triple, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
@@ -816,6 +817,13 @@ class Triplestore:
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
+            return_dicts: Whether to returned generator is over dicts (see
+                _get_restriction_dict()). Default is to return a generator
+                over blank node IRIs.
+
+        Returns:
+            A generator over matching restrictions.  See `return_dicts`
+            argument for types iterated over.
         """
         if type is None:
             types = set(self._restriction_types.keys())
@@ -852,7 +860,7 @@ class Triplestore:
         for iri in self.subjects(predicate=OWL.onProperty, object=property):
             if (
                 self.has(iri, RDF.type, OWL.Restriction)
-                and self.has(cls, RDFS.subClassOf, iri)
+                and (not cls or self.has(cls, RDFS.subClassOf, iri))
                 and any(self.has(iri, p, target) for p in pred)
                 and (
                     not card
@@ -860,7 +868,31 @@ class Triplestore:
                     or any(self.has(iri, c, lcard) for c in card)
                 )
             ):
-                yield iri
+                yield self._get_restriction_dict(iri) if return_dicts else iri
+
+    def _get_restriction_dict(self, iri):
+        """Return a dict describing restriction with `iri`.
+
+        The returned dict has the following keys:
+        - iri: (str) IRI of the restriction itself (blank node).
+        - cls: (str) IRI of class to which the restriction applies.
+        - property: (str) IRI of restriction property
+        - type: (str) One of: "some", "only", "exactly", "min", "max", "value".
+        - target: (str|Literal) IRI or literal value of the restriction target.
+        - cardinality: (int) Restriction cardinality (optional).
+        """
+        dct = {p: o for s, p, o in self.triples(iri)}
+        ((t, p, c),) = [
+            (t, p, c) for t, (p, c) in self._restriction_types if p in dct
+        ]
+        return {
+            "iri": iri,
+            "cls": self.value(predicate=RDFS.subClassOf, object=iri),
+            "property": dct[OWL.onProperty],
+            "type": t,
+            "target": dct[p],
+            "cardinality": dct.get(c, None),
+        }
 
     def map(
         self,
