@@ -95,7 +95,7 @@ def test_sparql_select2():
     pytest.importorskip("rdflib")
     from textwrap import dedent
 
-    from tripper import Literal, Triplestore
+    from tripper import Triplestore
 
     data = dedent(
         """
@@ -179,7 +179,7 @@ def test_sparql_ask():
     pytest.importorskip("rdflib")
     from textwrap import dedent
 
-    from tripper import Literal, Triplestore
+    from tripper import Triplestore
 
     # Load pre-inferred EMMO
     ts = Triplestore("rdflib")
@@ -204,7 +204,7 @@ def test_sparql_ask():
     ts = Triplestore("rdflib")
     ts.parse(data=data)
     r = ts.query(query)
-    assert r == True
+    assert r is True
 
 
 # if True:
