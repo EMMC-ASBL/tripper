@@ -6,8 +6,8 @@ import pytest
 
 
 # if True:
-def test_sparql():
-    """Test SPARQL query."""
+def test_sparql_select():
+    """Test SPARQL SELECT query."""
     pytest.importorskip("rdflib")
     from tripper import Triplestore
 
@@ -86,3 +86,43 @@ def test_sparql_construct():
     assert (
         len([s for s, p, o in r if p == VCARD.givenName and o == "Cyril"]) == 0
     )
+
+
+#if True:
+def test_sparql_construct():
+    """Test SPARQL CONSTRUCT query."""
+    # From https://www.w3.org/TR/rdf-sparql-query/#construct
+    pytest.importorskip("rdflib")
+    from textwrap import dedent
+    from tripper import Literal, Triplestore
+
+    # Load pre-inferred EMMO
+    ts = Triplestore("rdflib")
+
+    data = dedent(
+        """
+        @prefix  foaf:  <http://xmlns.com/foaf/0.1/> .
+
+        _:a    foaf:name   "Alice" .
+        _:a    foaf:mbox   <mailto:alice@example.org> .
+        """
+    )
+    query = dedent(
+        """
+        PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+        PREFIX vcard:   <http://www.w3.org/2001/vcard-rdf/3.0#>
+        CONSTRUCT   { <http://example.org/person#Alice> vcard:FN ?name }
+        WHERE       { ?x foaf:name ?name }
+        """
+    )
+    ts = Triplestore("rdflib")
+    ts.parse(data=data)
+    r = ts.query(query)
+
+    assert set(r) == {
+        (
+            'http://example.org/person#Alice',
+            'http://www.w3.org/2001/vcard-rdf/3.0#FN',
+            Literal('Alice')
+        )
+    }
