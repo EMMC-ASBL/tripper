@@ -74,12 +74,16 @@ def infer_iri(obj):
             properties = schema["properties"]
             if "uri" in properties and isinstance(properties["uri"], str):
                 iri = properties["uri"]
-            if "identity" in properties and isinstance(
+            elif "identity" in properties and isinstance(
                 properties["identity"], str
             ):
                 iri = properties["identity"]
-            if "uuid" in properties and properties["uuid"]:
+            elif "uuid" in properties and properties["uuid"]:
                 iri = str(properties["uuid"])
+            else:
+                raise TypeError(
+                    f"cannot infer IRI from pydantic object: {obj!r}"
+                )
     else:
         raise TypeError(f"cannot infer IRI from object: {obj!r}")
     return str(iri)
