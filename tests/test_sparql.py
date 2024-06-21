@@ -136,6 +136,7 @@ def test_sparql_construct2():
     # From https://www.w3.org/TR/rdf-sparql-query/#construct
     pytest.importorskip("rdflib")
     from textwrap import dedent
+
     from tripper import Literal, Triplestore
 
     # Load pre-inferred EMMO
@@ -163,9 +164,9 @@ def test_sparql_construct2():
 
     assert set(r) == {
         (
-            'http://example.org/person#Alice',
-            'http://www.w3.org/2001/vcard-rdf/3.0#FN',
-            Literal('Alice')
+            "http://example.org/person#Alice",
+            "http://www.w3.org/2001/vcard-rdf/3.0#FN",
+            Literal("Alice"),
         )
     }
 
