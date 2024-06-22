@@ -148,6 +148,52 @@ In the case when the IRI in the `namespace` argument is not resolvable, it is po
 Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.
 
+The utility function [`extend_namespace()`] can be used to add additional known labels to a namespace.
+For example:
+
+```python
+>>> from tripper import Namespace
+>>> from tripper.utils import extend_namespace
+>>> FOOD = Namespace(
+...     "http://onto-ns.com/ontologies/examples/food#",
+...     label_annotations=True,
+...     check=True,
+...     reload=True,
+...     triplestore="https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food.ttl",
+...     format="turtle",
+... )
+
+# Hamburger is not a known label
+>>> FOOD.Hamburger  # doctest: +ELLIPSIS
+Traceback (most recent call last):
+    ...
+tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Hamburger
+...
+
+# Add Hamburger to known labels
+>>> extend_namespace(FOOD, {"Hamburger": FOOD + "Hamburger"})
+>>> FOOD.Hamburger == FOOD + "Hamburger"
+True
+
+# Fish is not a known label
+>>> FOOD.Fish  # doctest: +ELLIPSIS
+Traceback (most recent call last):
+    ...
+tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Fish
+...
+
+# Extend FOOD from an online turtle file
+>>> extend_namespace(
+...    FOOD,
+...    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food-more.ttl",
+...    format="turtle",
+... )
+
+# Now Fish is in the namespace
+>>> FOOD.Fish
+'http://onto-ns.com/ontologies/examples/food#FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26'
+
+```
 
 
 ### Writing SPARQL queries using Tripper
@@ -316,26 +362,34 @@ ts.add_function(
 
 
 
-### Representing pydantic data models as RDF
-*Todo: Describe the `tripper.convert` subpackage...*
-
-
 
 
 [rdflib]: https://rdflib.readthedocs.io/
 [EMMO]: https://emmc.eu/emmo/
+[OTEIO]: https://github.com/emmo-repo/domain-oteio/
 [Function Ontology (FnO)]: https://fno.io/
 [EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/
 [Owlready2]: https://pypi.org/project/owlready2/
 [restriction]: https://www.w3.org/TR/owl-ref/#Restriction
+[JSON-LD]: https://json-ld.org/
+
 [Creating a triplestore interface]: #creating-a-triplestore-interface
 [list of currently supported backends]: https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends
+
+[tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
+
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
 [Namespace]:
 https://emmc-asbl.github.io/tripper/latest/api_reference/namespace/#tripper.namespace.Namespace
 [Literal]:
 https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.literal.Literal
+
 [`en()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.utils.en
+[`extend_namespace()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.utils.extend_namespace
+
+[`load_container()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/#tripper.convert.convert.load_container
+[`save_container()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/#tripper.convert.convert.save_container
+
 [`add()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add
 [`add_function()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add_function
 [`add_restriction()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add_restriction
