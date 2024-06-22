@@ -1200,7 +1200,7 @@ overwritten with the current content of the triplestore.</p></td>
       </tr>
       <tr>
         <td><code>graph</code></td>
-        <td><code>Graph</code></td>
+        <td><code>Optional[Graph]</code></td>
         <td><p>A rdflib.Graph instance to expose with tripper, instead of
 creating a new empty Graph object.</p></td>
         <td><code>None</code></td>
@@ -1230,7 +1230,7 @@ creating a new empty Graph object.</p></td>
         <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
-        <span class="n">graph</span><span class="p">:</span> <span class="s2">&quot;Graph&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">graph</span><span class="p">:</span> <span class="s2">&quot;Optional[Graph]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Note that although `base_iri` is unused in this backend, it may</span>
         <span class="c1"># still be used by calling Triplestore object.</span>
@@ -1247,26 +1247,9 @@ creating a new empty Graph object.</p></td>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-an-iterable</span>
-            <span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">yield</span> <span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-                <span class="p">(</span>
-                    <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">n3</span><span class="p">())</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
-                        <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
@@ -1341,7 +1324,9 @@ creating a new empty Graph object.</p></td>
             <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[str, ...]]&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -1349,11 +1334,39 @@ creating a new empty Graph object.</p></td>
 <span class="sd">            kwargs: Keyword arguments passed to rdflib.Graph.query().</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List of tuples of IRIs for each matching row.</span>
+<span class="sd">            The return type depends on type of query:</span>
+<span class="sd">              - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">              - ASK: bool</span>
+<span class="sd">              - CONSTRUCT, DESCRIBE: generator over triples</span>
 
+<span class="sd">            For more info, see</span>
+<span class="sd">            https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># The type of the result object depends not only on the type of query,</span>
+        <span class="c1"># but also on the version of rdflib...  We try to be general here.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">):</span>
+            <span class="n">resulttype</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ResultRow&quot;</span><span class="p">:</span>
+            <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">&quot;SELECT&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">&quot;ASK&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>
+            <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">&quot;CONSTRUCT&quot;</span>  <span class="c1"># also DESCRIBE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown return type from rdflib.query(). Return it unprocessed.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore</span>
+
+        <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resulttype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">,</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;should never be reached&quot;</span>  <span class="c1"># nosec</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
@@ -1689,14 +1702,22 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
   </thead>
   <tbody>
     <tr>
-      <td><code>List[Tuple[str, ...]]</code></td>
-      <td><p>List of tuples of IRIs for each matching row.</p></td>
+      <td><code>The return type depends on type of query</code></td>
+      <td><ul>
+<li>SELECT: list of tuples of IRIs for each matching row</li>
+<li>ASK: bool</li>
+<li>CONSTRUCT, DESCRIBE: generator over triples</li>
+</ul>
+<p>For more info, see
+https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result</p></td>
     </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[str, ...]]&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -1704,11 +1725,39 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.par
 <span class="sd">        kwargs: Keyword arguments passed to rdflib.Graph.query().</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List of tuples of IRIs for each matching row.</span>
+<span class="sd">        The return type depends on type of query:</span>
+<span class="sd">          - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">          - ASK: bool</span>
+<span class="sd">          - CONSTRUCT, DESCRIBE: generator over triples</span>
 
+<span class="sd">        For more info, see</span>
+<span class="sd">        https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query_object</span><span class="o">=</span><span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># The type of the result object depends not only on the type of query,</span>
+    <span class="c1"># but also on the version of rdflib...  We try to be general here.</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">):</span>
+        <span class="n">resulttype</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">type</span>
+    <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;ResultRow&quot;</span><span class="p">:</span>
+        <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">&quot;SELECT&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">&quot;ASK&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>
+        <span class="n">resulttype</span> <span class="o">=</span> <span class="s2">&quot;CONSTRUCT&quot;</span>  <span class="c1"># also DESCRIBE</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Unknown return type from rdflib.query(). Return it unprocessed.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resulttype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">,</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;should never be reached&quot;</span>  <span class="c1"># nosec</span>
 </code></pre></div>
         </details>
     </div>
@@ -1860,26 +1909,9 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-an-iterable</span>
-        <span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="k">yield</span> <span class="p">(</span>
-            <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
-                <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-            <span class="p">),</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span>
-            <span class="p">(</span>
-                <span class="n">parse_literal</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">n3</span><span class="p">())</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">)</span>
-                <span class="k">else</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>

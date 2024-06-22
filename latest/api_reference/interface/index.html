@@ -1046,7 +1046,10 @@ may also implement the following optional methods:</p>
 <span class="sd">        kwargs: Additional backend-specific keyword arguments.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List of tuples of IRIs for each matching row.</span>
+<span class="sd">        The return type depends on type of query:</span>
+<span class="sd">          - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">          - ASK: bool</span>
+<span class="sd">          - CONSTRUCT, DESCRIBE: generator over triples</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1177,7 +1180,10 @@ may also implement the following optional methods:</p>
 <span class="sd">            kwargs: Additional backend-specific keyword arguments.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List of tuples of IRIs for each matching row.</span>
+<span class="sd">            The return type depends on type of query:</span>
+<span class="sd">              - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">              - ASK: bool</span>
+<span class="sd">              - CONSTRUCT, DESCRIBE: generator over triples</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
 <span class="sd">    def update(self, update_object: str, **kwargs):</span>

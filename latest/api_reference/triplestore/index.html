@@ -1798,7 +1798,9 @@ Triplestore        </code>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[str, ...]]&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -1806,11 +1808,17 @@ Triplestore        </code>
 <span class="sd">            kwargs: Keyword arguments passed to the backend query() method.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List of tuples of IRIs for each matching row.</span>
+<span class="sd">            The return type depends on type of query:</span>
+<span class="sd">              - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">              - ASK: bool</span>
+<span class="sd">              - CONSTRUCT, DESCRIBE: generator over triples</span>
 
 <span class="sd">        Note:</span>
-<span class="sd">            This method is intended for SELECT queries. Use</span>
-<span class="sd">            the update() method for INSERT and DELETE queries.</span>
+<span class="sd">            This method is intended for SELECT, ASK, CONSTRUCT and</span>
+<span class="sd">            DESCRIBE queries.  Use the update() method for INSERT and</span>
+<span class="sd">            DELETE queries.</span>
+
+<span class="sd">            Not all backends may support all types of queries.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">)</span>
@@ -1825,7 +1833,7 @@ Triplestore        </code>
 
 <span class="sd">        Note:</span>
 <span class="sd">            This method is intended for INSERT and DELETE queries. Use</span>
-<span class="sd">            the query() method for SELECT queries.</span>
+<span class="sd">            the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">)</span>
@@ -4362,19 +4370,27 @@ if no prefix can be found.</p>
   </thead>
   <tbody>
     <tr>
-      <td><code>&#39;List[Tuple[str, ...]]&#39;</code></td>
-      <td><p>List of tuples of IRIs for each matching row.</p></td>
+      <td><code>The return type depends on type of query</code></td>
+      <td><ul>
+<li>SELECT: list of tuples of IRIs for each matching row</li>
+<li>ASK: bool</li>
+<li>CONSTRUCT, DESCRIBE: generator over triples</li>
+</ul></td>
     </tr>
   </tbody>
 </table>      <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This method is intended for SELECT queries. Use
-the update() method for INSERT and DELETE queries.</p>
+<p>This method is intended for SELECT, ASK, CONSTRUCT and
+DESCRIBE queries.  Use the update() method for INSERT and
+DELETE queries.</p>
+<p>Not all backends may support all types of queries.</p>
 </div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[str, ...]]&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -4382,11 +4398,17 @@ the update() method for INSERT and DELETE queries.</p>
 <span class="sd">        kwargs: Keyword arguments passed to the backend query() method.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List of tuples of IRIs for each matching row.</span>
+<span class="sd">        The return type depends on type of query:</span>
+<span class="sd">          - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">          - ASK: bool</span>
+<span class="sd">          - CONSTRUCT, DESCRIBE: generator over triples</span>
 
 <span class="sd">    Note:</span>
-<span class="sd">        This method is intended for SELECT queries. Use</span>
-<span class="sd">        the update() method for INSERT and DELETE queries.</span>
+<span class="sd">        This method is intended for SELECT, ASK, CONSTRUCT and</span>
+<span class="sd">        DESCRIBE queries.  Use the update() method for INSERT and</span>
+<span class="sd">        DELETE queries.</span>
+
+<span class="sd">        Not all backends may support all types of queries.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">)</span>
@@ -5121,7 +5143,7 @@ to match.</p></td>
 </table>      <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This method is intended for INSERT and DELETE queries. Use
-the query() method for SELECT queries.</p>
+the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.</p>
 </div>
 
         <details class="quote">
@@ -5135,7 +5157,7 @@ the query() method for SELECT queries.</p>
 
 <span class="sd">    Note:</span>
 <span class="sd">        This method is intended for INSERT and DELETE queries. Use</span>
-<span class="sd">        the query() method for SELECT queries.</span>
+<span class="sd">        the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_method</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">)</span>
