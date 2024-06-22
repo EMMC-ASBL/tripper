@@ -210,7 +210,7 @@ def test_restriction() -> None:  # pylint: disable=too-many-statements
                 "property": "http://example.com/onto#hasBodyPart",
                 "type": "exactly",
                 "value": "http://example.com/onto#Head",
-                "cardinality": Literal("3", datatype=XSD.nonNegativeInteger),
+                "cardinality": 3,
             },
             {
                 "cls": "http://example.com/onto#Kerberos",

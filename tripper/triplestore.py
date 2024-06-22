@@ -721,8 +721,6 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    # xtype: "TypeLiteral['some', 'only', 'exactly', 'min', 'max', 'value']",
-
     def add_restriction(  # pylint: disable=redefined-builtin
         self,
         cls: str,
@@ -785,11 +783,6 @@ class Triplestore:
 
         self.add_triples(triples)
         return iri
-
-        # xtype: (
-        #     "Optional[TypeLiteral['some', 'only', 'exactly', 'min', "
-        #     "'max', 'value']]"
-        # ) = None,
 
     def restrictions(  # pylint: disable=redefined-builtin
         self,
@@ -878,8 +871,8 @@ class Triplestore:
         - cls: (str) IRI of class to which the restriction applies.
         - property: (str) IRI of restriction property
         - type: (str) One of: "some", "only", "exactly", "min", "max", "value".
-        - value: (str|Literal) IRI or literal value of the restriction target.
         - cardinality: (int) Restriction cardinality (optional).
+        - value: (str|Literal) IRI or literal value of the restriction target.
         """
         dct = dict(self.predicate_objects(iri))
         if OWL.onClass in dct:
@@ -899,8 +892,8 @@ class Triplestore:
             "cls": self.value(predicate=RDFS.subClassOf, object=iri),
             "property": dct[OWL.onProperty],
             "type": t,
+            "cardinality": int(dct[c]) if c else None,
             "value": dct[p],
-            "cardinality": dct.get(c, None),
         }
 
     def map(
