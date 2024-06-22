@@ -95,7 +95,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
 
 
 # if True:
-def test_restriction() -> None:
+def test_restriction() -> None:  # pylint: disable=too-many-statements
     """Test add_restriction() method."""
     pytest.importorskip("rdflib")
 
@@ -109,7 +109,7 @@ def test_restriction() -> None:
     iri = ts.add_restriction(
         cls=EX.Animal,
         property=EX.hasPart,
-        target=EX.Cell,
+        value=EX.Cell,
         type="some",
     )
     txt = ts.serialize(format="ntriples")
@@ -122,7 +122,7 @@ def test_restriction() -> None:
     iri2 = ts.add_restriction(
         cls=EX.Kerberos,
         property=EX.hasBodyPart,
-        target=EX.Head,
+        value=EX.Head,
         type="exactly",
         cardinality=3,
     )
@@ -140,7 +140,7 @@ def test_restriction() -> None:
     iri3 = ts.add_restriction(
         cls=EX.Kerberos,
         property=EX.position,
-        target=Literal("The port of Hades"),
+        value=Literal("The port of Hades"),
         type="value",
     )
     txt3 = ts.serialize(format="ntriples")
@@ -155,14 +155,14 @@ def test_restriction() -> None:
         ts.add_restriction(
             cls=EX.Kerberos,
             property=EX.hasBodyPart,
-            target=EX.Head,
+            value=EX.Head,
             type="wrong_type",
         )
     with pytest.raises(ArgumentTypeError):
         ts.add_restriction(
             cls=EX.Kerberos,
             property=EX.hasBodyPart,
-            target=EX.Head,
+            value=EX.Head,
             type="min",
         )
 
@@ -177,18 +177,64 @@ def test_restriction() -> None:
     assert set(ts.restrictions(property=EX.hasBodyPart)) == {iri2}
     assert set(ts.restrictions(property=EX.hasPart)) == {iri}
     assert not set(ts.restrictions(property=EX.hasNoPart))
-    assert set(ts.restrictions(target=EX.Cell)) == {iri}
-    assert set(ts.restrictions(target=EX.Head)) == {iri2}
-    assert not set(ts.restrictions(target=EX.Leg))
-    assert set(ts.restrictions(target=EX.Cell, type="some")) == {iri}
-    assert set(ts.restrictions(target=EX.Head, type="exactly")) == {iri2}
-    assert set(ts.restrictions(target=Literal("The port of Hades"))) == {iri3}
+    assert set(ts.restrictions(value=EX.Cell)) == {iri}
+    assert set(ts.restrictions(value=EX.Head)) == {iri2}
+    assert not set(ts.restrictions(value=EX.Leg))
+    assert set(ts.restrictions(value=EX.Cell, type="some")) == {iri}
+    assert set(ts.restrictions(value=EX.Head, type="exactly")) == {iri2}
+    assert set(ts.restrictions(value=Literal("The port of Hades"))) == {iri3}
 
     with pytest.raises(ArgumentValueError):
-        set(ts.restrictions(target=EX.Cell, type="wrong_type"))
+        set(ts.restrictions(value=EX.Cell, type="wrong_type"))
 
     with pytest.raises(ArgumentValueError):
         set(ts.restrictions(type="value", cardinality=2))
+
+    # Test return_dicts
+    dicts = sorted(
+        ts.restrictions(return_dicts=True), key=lambda d: d["value"]
+    )
+    for d in dicts:  # Remove iri keys, since they refer to blank nodes
+        d.pop("iri")
+    assert dicts == sorted(
+        [
+            {
+                "cls": "http://example.com/onto#Animal",
+                "property": "http://example.com/onto#hasPart",
+                "type": "some",
+                "value": "http://example.com/onto#Cell",
+                "cardinality": None,
+            },
+            {
+                "cls": "http://example.com/onto#Kerberos",
+                "property": "http://example.com/onto#hasBodyPart",
+                "type": "exactly",
+                "value": "http://example.com/onto#Head",
+                "cardinality": Literal("3", datatype=XSD.nonNegativeInteger),
+            },
+            {
+                "cls": "http://example.com/onto#Kerberos",
+                "property": "http://example.com/onto#position",
+                "type": "value",
+                "value": Literal("The port of Hades", datatype=XSD.string),
+                "cardinality": None,
+            },
+        ],
+        key=lambda d: d["value"],
+    )
+
+    dicts = list(ts.restrictions(type="some", return_dicts=True))
+    for d in dicts:  # Remove iri keys, since they refer to blank nodes
+        d.pop("iri")
+    assert dicts == [
+        {
+            "cls": "http://example.com/onto#Animal",
+            "property": "http://example.com/onto#hasPart",
+            "type": "some",
+            "value": "http://example.com/onto#Cell",
+            "cardinality": None,
+        },
+    ]
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
