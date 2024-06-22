@@ -415,12 +415,11 @@ def test_find_literal_triples() -> None:
         ts.triples(predicate=FAM.hasName, object=Literal("Per"))
     ) == set(
         [
-            (FAM.Per, FAM.hasName, Literal("Per", datatype=XSD.string)),
+            (FAM.Per, FAM.hasName, Literal("Per")),
         ]
     )
 
 
-# if True:
 def test_bind_errors():
     """Test for errors in Triplestore.bind()."""
     pytest.importorskip("rdflib")
