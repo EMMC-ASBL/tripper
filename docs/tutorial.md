@@ -240,8 +240,8 @@ With the `return_dicts` argument set to false, you will instead get an iterator 
 
 ```python
 >>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, return_dicts=False)
->>> list(g)  # doctest: +ELLIPSIS
-['_:...']
+>>> next(g) == iri
+True
 
 ```
 
