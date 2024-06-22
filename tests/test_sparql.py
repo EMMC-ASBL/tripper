@@ -91,7 +91,7 @@ def test_sparql_construct():
 # if True:
 def test_sparql_select2():
     """Test SPARQL SELECT query."""
-    # From https://www.w3.org/TR/rdf-sparql-query/#construct
+    # From https://www.w3.org/TR/rdf-sparql-query/#select
     pytest.importorskip("rdflib")
     from textwrap import dedent
 
@@ -175,7 +175,7 @@ def test_sparql_construct2():
 # if True:
 def test_sparql_ask():
     """Test SPARQL ASK query."""
-    # From https://www.w3.org/TR/rdf-sparql-query/#construct
+    # From https://www.w3.org/TR/rdf-sparql-query/#ask
     pytest.importorskip("rdflib")
     from textwrap import dedent
 
@@ -210,7 +210,7 @@ def test_sparql_ask():
 # if True:
 def test_sparql_describe():
     """Test SPARQL DESCRIBE query."""
-    # From https://www.w3.org/TR/rdf-sparql-query/#construct
+    # From https://www.w3.org/TR/rdf-sparql-query/#describe
     pytest.importorskip("rdflib")
     from textwrap import dedent
 
