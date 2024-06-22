@@ -12,6 +12,7 @@ See the README file for a [list of currently supported backends].
 The API provided by Tripper is modelled after [rdflib], so if you know that library, you will find Tripper rather familiar.
 But there are some differences that you should be aware of.
 Most recognisable:
+
 * All IRIs are represented by Python strings.
   Example: `"https://w3id.org/emmo#Metre"`
 * Blank nodes are strings starting with "_:".
@@ -51,7 +52,7 @@ For example:
 
 ```
 
-New namespaces can be created using the [Namespace] class, but are usually added with the `bind()` method:
+New namespaces can be created using the [Namespace] class, but are usually added with the [`bind()`] method:
 
 ```python
 >>> ONTO = ts.bind("onto", "http://example.com/onto#")
@@ -61,7 +62,7 @@ New namespaces can be created using the [Namespace] class, but are usually added
 ```
 
 ### Adding triples to the triplestore
-We can now start to add triples to the triplestore, using the `add()` and `add_triples()` methods:
+We can now start to add triples to the triplestore, using the [`add()`] and [`add_triples()`] methods:
 
 ```python
 >>> from tripper.utils import en
@@ -72,10 +73,10 @@ We can now start to add triples to the triplestore, using the `add()` and `add_t
 
 ```
 
-The function `en(msg)` is just a convenient function for adding english literals.
+The function [`en()`] is just a convenient function for adding English literals.
 It is equivalent to `tripper.Literal(msg, lang="en")`.
 
-You can also load triples from a source using the `parse()` method.
+You can also load triples from a source using the [`parse()`] method.
 For example will
 
 ```python
@@ -84,7 +85,7 @@ ts.parse("onto.ttl", format="turtle")
 
 load all triples in turtle file `onto.ttl` into the triplestore.
 
-Similarly you can serialise the triplestore to a string or a file using the `serialize()` method:
+Similarly you can serialise the triplestore to a string or a file using the [`serialize()`] method:
 
 ```python
 ts.serialize("onto2.ttl")  # serialise to file `onto2.ttl`
@@ -92,8 +93,8 @@ s = ts.serialize(format="ntriples")  # serialise to string s in ntriples format
 ```
 
 ### Retrieving triples from and querying a triplestore
-A set of convenient functions exists for simple queries, including `triples()`, `subjects()`, `predicates()`, `objects()`, `subject_predicates()`, `subject_objects()`, `predicate_objects()` and `value()`.
-Except for `value()`, they return the result as generators.
+A set of convenient functions exists for simple queries, including [`triples()`], [`subjects()`], [`predicates()`], [`objects()`], [`subject_predicates()`], [`subject_objects()`], [`predicate_objects()`] and [`value()`].
+Except for [`value()`], they return the result as generators.
 For example:
 
 ```python
@@ -105,7 +106,7 @@ For example:
 
 ```
 
-The `query()` and `update()` methods can be used to query and update the triplestore using SPARQL.
+The [`query()`] and [`update()`] methods can be used to query and update the triplestore using SPARQL.
 See the next section.
 
 
@@ -142,7 +143,7 @@ Maybe you have to remove the cache file: ...
 ```
 
 The above example works, since the `namespace="https://w3id.org/emmo#"` is resolvable.
-In the case when the IRI in the `namespace` argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated Triplestore instance via the `triplestore` keyword argument.
+In the case when the IRI in the `namespace` argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated [Triplestore] instance via the `triplestore` keyword argument.
 
 Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.
@@ -189,7 +190,7 @@ True
 ### Class restrictions
 When working with OWL ontologies, you often need to look up or add class restrictions.
 A [restriction] restricts a class to only those individuals that satisfy the restriction.
-The Triplestore class has two convenient methods for this, that don't require knowledge about how restrictions are represented in RDF.
+The Triplestore class has two convenient methods for this, [`add_restriction()`] and [`restrictions()`], that don't require knowledge about how restrictions are represented in RDF.
 They only support basic restrictions without any nested logical constructs.
 For more advanced restrictions, we recommend to use [EMMOntoPy] or [Owlready2].
 
@@ -224,8 +225,7 @@ With tripper, you can state it with
 ```
 The returned `iri` is the blank node IRI of the new restriction.
 
-
-To find the above restriction, you can use the `restrictions()` method.
+To find the above restriction, you can use the [`restrictions()`] method.
 It returns an iterator over all restrictions that matches the provided criteria.
 For example:
 
@@ -262,10 +262,10 @@ To provide a shared semantic meaning of a data model and its *properties* (struc
 
 Mappings can also be used to semantically document the arguments and return values of a function.
 
-The [Triplestore] class has two specialised methods for adding mappings, `map()` and `add_function()`.
-The purpose of the `map()` method, is to map a data models and its properties to ontological concepts, while `add_function()` maps the arguments and return value of a function to ontological concepts.
+The [Triplestore] class has two specialised methods for adding mappings, [`map()`] and [`add_function()`].
+The purpose of the [`map()`] method, is to map a data models and its properties to ontological concepts, while [`add_function()`] maps the arguments and return value of a function to ontological concepts.
 
-**Note**, the name of the `map()` and `add_function()` methods are not very intuitive and may be changed in the future.
+**Note**, the name of the [`map()`] and [`add_function()`] methods are not very intuitive and may be changed in the future.
 
 
 ### Adding mappings
@@ -323,15 +323,35 @@ ts.add_function(
 
 
 [rdflib]: https://rdflib.readthedocs.io/
+[EMMO]: https://emmc.eu/emmo/
+[Function Ontology (FnO)]: https://fno.io/
+[EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/
+[Owlready2]: https://pypi.org/project/owlready2/
+[restriction]: https://www.w3.org/TR/owl-ref/#Restriction
+[Creating a triplestore interface]: #creating-a-triplestore-interface
+[list of currently supported backends]: https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
 [Namespace]:
 https://emmc-asbl.github.io/tripper/latest/api_reference/namespace/#tripper.namespace.Namespace
 [Literal]:
 https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.literal.Literal
-[Creating a triplestore interface]: #creating-a-triplestore-interface
-[EMMO]: https://emmc.eu/emmo/
-[Function Ontology (FnO)]: https://fno.io/
-[list of currently supported backends]: https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends
-[EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/
-[Owlready2]: https://pypi.org/project/owlready2/
-[restriction]: https://www.w3.org/TR/owl-ref/#Restriction
+[`en()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.utils.en
+[`add()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add
+[`add_function()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add_function
+[`add_restriction()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add_restriction
+[`add_triples()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.add_triples
+[`bind()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.bind
+[`map()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.map
+[`objects()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.objects
+[`parse()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.parse
+[`predicates()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.predicates
+[`predicate_objects()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.predicate_objects
+[`query()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.query
+[`restrictions()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.restrictions
+[`serialize()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.serialize
+[`subject_objects()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.subject_objects
+[`subject_predicates()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.subject_predicates
+[`subjects()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.subjects
+[`triples()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.triples
+[`update()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.update
+[`value()`]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore.value

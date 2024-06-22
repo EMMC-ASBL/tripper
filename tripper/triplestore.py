@@ -565,10 +565,12 @@ class Triplestore:
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
+        Two of `subject`, `predicate` or `object` must be provided.
 
         Parameters:
-            subject, predicate, object: Criteria to match. Two of these must
-                be provided.
+            subject: Possible criteria to match.
+            predicate: Possible criteria to match.
+            object: Possible criteria to match.
             default: Value to return if no matches are found.
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
