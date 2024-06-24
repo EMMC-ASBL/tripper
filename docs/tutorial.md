@@ -229,7 +229,7 @@ It returns an iterator over all restrictions that matches the provided criteria.
 For example:
 
 ```python
->>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, return_dicts=True)
+>>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, asdict=True)
 >>> list(g)  # doctest: +ELLIPSIS
 [{'iri': '_:...', 'cls': 'http://example.com/onto#Bacteria', 'property': 'https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f', 'type': 'exactly', 'cardinality': 1, 'value': 'http://example.com/onto#Cell'}]
 
@@ -238,7 +238,7 @@ For example:
 With the `return_dicts` argument set to false, an iterator over the IRIs of all matching restrictions is returned:
 
 ```python
->>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, return_dicts=False)
+>>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, asdict=False)
 >>> next(g) == iri
 True
 
