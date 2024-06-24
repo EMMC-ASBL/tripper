@@ -380,6 +380,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#class-restrictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class restrictions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#utilities" class="md-nav__link">
     <span class="md-ellipsis">
       Utilities
@@ -1012,6 +1021,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#class-restrictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class restrictions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#utilities" class="md-nav__link">
     <span class="md-ellipsis">
       Utilities
@@ -1173,6 +1191,55 @@ Note:
 <span class="s2">... &quot;&quot;&quot;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">EMMO</span><span class="o">.</span><span class="n">Metre</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r</span>
+<span class="kc">True</span>
+</code></pre></div>
+<h3 id="class-restrictions">Class restrictions<a class="headerlink" href="#class-restrictions" title="Permanent link">&para;</a></h3>
+<p>When working with OWL ontologies, it is often required to inspect or add class <a href="https://www.w3.org/TR/owl-ref/#Restriction">restriction</a>s.
+The Triplestore class has two convenient methods for this, that do not require knowledge about how restrictions are represented in RDF.
+Only support basic restrictions, without any nested logical constructs, are supoprted.
+For more advanced restrictions, we recommend to use <a href="https://emmo-repo.github.io/EMMOntoPy/">EMMOntoPy</a> or <a href="https://pypi.org/project/owlready2/">Owlready2</a>.</p>
+<p>A <a href="https://www.w3.org/TR/owl-ref/#Restriction">restriction</a> is described by the following set of parameters.</p>
+<ul>
+<li><strong>cls</strong>: IRI of class to which the restriction applies.</li>
+<li><strong>property</strong>: IRI of restriction property.</li>
+<li>
+<p><strong>type</strong>: The type of the restriction.  Should be one of:</p>
+<ul>
+<li><em>some</em>: existential restriction (target is a class IRI)</li>
+<li><em>only</em>: universal restriction (target is a class IRI)</li>
+<li><em>exactly</em>: cardinality restriction (target is a class IRI)</li>
+<li><em>min</em>: minimum cardinality restriction (target is a class IRI)</li>
+<li><em>max</em>: maximum cardinality restriction (target is a class IRI)</li>
+<li><em>value</em>: Value restriction (target is an IRI of an individual or a literal)</li>
+</ul>
+</li>
+<li>
+<p><strong>cardinality</strong>: the cardinality value for cardinality restrictions.</p>
+</li>
+<li><strong>value</strong>: The IRI or literal value of the restriction target.</li>
+</ul>
+<p>As an example, the class <code>onto:Bacteria</code> can be logically restricted to be unicellular.
+In Manchester syntax, this can be stated as <code>onto:Bacteria emmo:hasPart exactly 1 onto:Cell</code>.
+With Tripper this can be stated as:</p>
+<p><div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">add_restriction</span><span class="p">(</span>
+<span class="o">...</span>     <span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span>
+<span class="o">...</span>     <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span>
+<span class="o">...</span>     <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exactly&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">cardinality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">value</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Cell</span><span class="p">,</span>
+<span class="o">...</span> <span class="p">)</span>
+</code></pre></div>
+The returned <code>iri</code> is the blank node IRI of the new restriction.</p>
+<p>To find the above restriction, the <code>restrictions()</code> method can be used.
+It returns an iterator over all restrictions that matches the provided criteria.
+For example:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="p">[{</span><span class="s1">&#39;iri&#39;</span><span class="p">:</span> <span class="s1">&#39;_:...&#39;</span><span class="p">,</span> <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="s1">&#39;http://example.com/onto#Bacteria&#39;</span><span class="p">,</span> <span class="s1">&#39;property&#39;</span><span class="p">:</span> <span class="s1">&#39;https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;exactly&#39;</span><span class="p">,</span> <span class="s1">&#39;cardinality&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;http://example.com/onto#Cell&#39;</span><span class="p">}]</span>
+</code></pre></div>
+<p>With the <code>return_dicts</code> argument set to false, an iterator over the IRIs of all matching restrictions is returned:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">==</span> <span class="n">iri</span>
 <span class="kc">True</span>
 </code></pre></div>
 <h3 id="utilities">Utilities<a class="headerlink" href="#utilities" title="Permanent link">&para;</a></h3>

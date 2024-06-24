@@ -2141,13 +2141,11 @@ Triplestore        </code>
         <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="c1"># xtype: &quot;TypeLiteral[&#39;some&#39;, &#39;only&#39;, &#39;exactly&#39;, &#39;min&#39;, &#39;max&#39;, &#39;value&#39;]&quot;,</span>
-
     <span class="k">def</span> <span class="nf">add_restriction</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="nb">property</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">target</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;RestrictionType&quot;</span><span class="p">,</span>
         <span class="n">cardinality</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">hashlength</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
@@ -2157,14 +2155,14 @@ Triplestore        </code>
 <span class="sd">        Parameters:</span>
 <span class="sd">            cls: IRI of class to which the restriction applies.</span>
 <span class="sd">            property: IRI of restriction property.</span>
-<span class="sd">            target: The IRI or literal value of the restriction target.</span>
+<span class="sd">            value: The IRI or literal value of the restriction target.</span>
 <span class="sd">            type: The type of the restriction.  Should be one of:</span>
-<span class="sd">                - some: existential restriction (target is a class IRI)</span>
-<span class="sd">                - only: universal restriction (target is a class IRI)</span>
-<span class="sd">                - exactly: cardinality restriction (target is a class IRI)</span>
-<span class="sd">                - min: minimum cardinality restriction (target is a class IRI)</span>
-<span class="sd">                - max: maximum cardinality restriction (target is a class IRI)</span>
-<span class="sd">                - value: Value restriction (target is an IRI of an individual</span>
+<span class="sd">                - some: existential restriction (value is a class IRI)</span>
+<span class="sd">                - only: universal restriction (value is a class IRI)</span>
+<span class="sd">                - exactly: cardinality restriction (value is a class IRI)</span>
+<span class="sd">                - min: minimum cardinality restriction (value is a class IRI)</span>
+<span class="sd">                - max: maximum cardinality restriction (value is a class IRI)</span>
+<span class="sd">                - value: Value restriction (value is an IRI of an individual</span>
 <span class="sd">                  or a literal)</span>
 
 <span class="sd">            cardinality: the cardinality value for cardinality restrictions.</span>
@@ -2175,7 +2173,7 @@ Triplestore        </code>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">iri</span> <span class="o">=</span> <span class="n">bnode_iri</span><span class="p">(</span>
             <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;restriction&quot;</span><span class="p">,</span>
-            <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cardinality</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cardinality</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">length</span><span class="o">=</span><span class="n">hashlength</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">triples</span> <span class="o">=</span> <span class="p">[</span>
@@ -2189,7 +2187,7 @@ Triplestore        </code>
                 <span class="s1">&#39;&quot;max&quot; or &quot;value&quot;&#39;</span>
             <span class="p">)</span>
         <span class="n">pred</span><span class="p">,</span> <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
-        <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+        <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">card</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">cardinality</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span>
@@ -2206,18 +2204,14 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">iri</span>
 
-        <span class="c1"># xtype: (</span>
-        <span class="c1">#     &quot;Optional[TypeLiteral[&#39;some&#39;, &#39;only&#39;, &#39;exactly&#39;, &#39;min&#39;, &quot;</span>
-        <span class="c1">#     &quot;&#39;max&#39;, &#39;value&#39;]]&quot;</span>
-        <span class="c1"># ) = None,</span>
-
     <span class="k">def</span> <span class="nf">restrictions</span><span class="p">(</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="bp">cls</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">property</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[RestrictionType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cardinality</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asdict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
         <span class="c1"># pylint: disable=too-many-boolean-expressions</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching restrictions.</span>
@@ -2225,17 +2219,24 @@ Triplestore        </code>
 <span class="sd">        Parameters:</span>
 <span class="sd">            cls: IRI of class to which the restriction applies.</span>
 <span class="sd">            property: IRI of restriction property.</span>
-<span class="sd">            target: The IRI or literal value of the restriction target.</span>
+<span class="sd">            value: The IRI or literal value of the restriction target.</span>
 <span class="sd">            type: The type of the restriction.  Should be one of:</span>
-<span class="sd">                - some: existential restriction (target is a class IRI)</span>
-<span class="sd">                - only: universal restriction (target is a class IRI)</span>
-<span class="sd">                - exactly: cardinality restriction (target is a class IRI)</span>
-<span class="sd">                - min: minimum cardinality restriction (target is a class IRI)</span>
-<span class="sd">                - max: maximum cardinality restriction (target is a class IRI)</span>
-<span class="sd">                - value: Value restriction (target is an IRI of an individual</span>
+<span class="sd">                - some: existential restriction (value is a class IRI)</span>
+<span class="sd">                - only: universal restriction (value is a class IRI)</span>
+<span class="sd">                - exactly: cardinality restriction (value is a class IRI)</span>
+<span class="sd">                - min: minimum cardinality restriction (value is a class IRI)</span>
+<span class="sd">                - max: maximum cardinality restriction (value is a class IRI)</span>
+<span class="sd">                - value: Value restriction (value is an IRI of an individual</span>
 <span class="sd">                  or a literal)</span>
 
 <span class="sd">            cardinality: the cardinality value for cardinality restrictions.</span>
+<span class="sd">            asdict: Whether to returned generator is over dicts (see</span>
+<span class="sd">                _get_restriction_dict()). Default is to return a generator</span>
+<span class="sd">                over blank node IRIs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A generator over matching restrictions.  See `asdict` argument</span>
+<span class="sd">            for types iterated over.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -2247,16 +2248,16 @@ Triplestore        </code>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">}</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
             <span class="n">types</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">})</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">types</span><span class="o">.</span><span class="n">difference_update</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">})</span>
 
         <span class="k">if</span> <span class="n">cardinality</span><span class="p">:</span>
             <span class="n">types</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">({</span><span class="s2">&quot;exactly&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">})</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">types</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ArgumentValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Inconsistent type=&#39;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&#39;, target=&#39;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&#39; and &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Inconsistent type=&#39;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&#39;, value=&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; and &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;cardinality=&#39;</span><span class="si">{</span><span class="n">cardinality</span><span class="si">}</span><span class="s2">&#39; arguments&quot;</span>
             <span class="p">)</span>
         <span class="n">pred</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">}</span>
@@ -2272,15 +2273,48 @@ Triplestore        </code>
         <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">property</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">cls</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="p">(</span>
                     <span class="ow">not</span> <span class="n">card</span>
                     <span class="ow">or</span> <span class="ow">not</span> <span class="n">cardinality</span>
                     <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">lcard</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">card</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">):</span>
-                <span class="k">yield</span> <span class="n">iri</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_restriction_dict</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span> <span class="k">if</span> <span class="n">asdict</span> <span class="k">else</span> <span class="n">iri</span>
+
+    <span class="k">def</span> <span class="nf">_get_restriction_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dict describing restriction with `iri`.</span>
+
+<span class="sd">        The returned dict has the following keys:</span>
+<span class="sd">        - iri: (str) IRI of the restriction itself (blank node).</span>
+<span class="sd">        - cls: (str) IRI of class to which the restriction applies.</span>
+<span class="sd">        - property: (str) IRI of restriction property</span>
+<span class="sd">        - type: (str) One of: &quot;some&quot;, &quot;only&quot;, &quot;exactly&quot;, &quot;min&quot;, &quot;max&quot;, &quot;value&quot;.</span>
+<span class="sd">        - cardinality: (int) Restriction cardinality (optional).</span>
+<span class="sd">        - value: (str|Literal) IRI or literal value of the restriction target.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predicate_objects</span><span class="p">(</span><span class="n">iri</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onClass</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
+            <span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">),)</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dct</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">),)</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">dct</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;iri&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span>
+            <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="n">iri</span><span class="p">),</span>
+            <span class="s2">&quot;property&quot;</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span>
+            <span class="s2">&quot;cardinality&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="k">if</span> <span class="n">c</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">dct</span><span class="p">[</span><span class="n">p</span><span class="p">],</span>
+        <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">map</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3292,7 +3326,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
 
 
 <h3 id="tripper.triplestore.Triplestore.add_restriction" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">add_restriction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">cardinality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hashlength</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">add_restriction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">cardinality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hashlength</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span></code>
 
 
 <a href="#tripper.triplestore.Triplestore.add_restriction" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3325,7 +3359,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
         <td><em>required</em></td>
       </tr>
       <tr>
-        <td><code>target</code></td>
+        <td><code>value</code></td>
         <td><code>&#39;Union[str, Literal]&#39;</code></td>
         <td><p>The IRI or literal value of the restriction target.</p></td>
         <td><em>required</em></td>
@@ -3334,12 +3368,12 @@ two first arguments and adds the <code>property_name</code> argument.</p>
         <td><code>type</code></td>
         <td><code>&#39;RestrictionType&#39;</code></td>
         <td><p>The type of the restriction.  Should be one of:
-- some: existential restriction (target is a class IRI)
-- only: universal restriction (target is a class IRI)
-- exactly: cardinality restriction (target is a class IRI)
-- min: minimum cardinality restriction (target is a class IRI)
-- max: maximum cardinality restriction (target is a class IRI)
-- value: Value restriction (target is an IRI of an individual
+- some: existential restriction (value is a class IRI)
+- only: universal restriction (value is a class IRI)
+- exactly: cardinality restriction (value is a class IRI)
+- min: minimum cardinality restriction (value is a class IRI)
+- max: maximum cardinality restriction (value is a class IRI)
+- value: Value restriction (value is an IRI of an individual
   or a literal)</p></td>
         <td><em>required</em></td>
       </tr>
@@ -3378,7 +3412,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="bp">cls</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="nb">property</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">target</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;RestrictionType&quot;</span><span class="p">,</span>
     <span class="n">cardinality</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">hashlength</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
@@ -3388,14 +3422,14 @@ two first arguments and adds the <code>property_name</code> argument.</p>
 <span class="sd">    Parameters:</span>
 <span class="sd">        cls: IRI of class to which the restriction applies.</span>
 <span class="sd">        property: IRI of restriction property.</span>
-<span class="sd">        target: The IRI or literal value of the restriction target.</span>
+<span class="sd">        value: The IRI or literal value of the restriction target.</span>
 <span class="sd">        type: The type of the restriction.  Should be one of:</span>
-<span class="sd">            - some: existential restriction (target is a class IRI)</span>
-<span class="sd">            - only: universal restriction (target is a class IRI)</span>
-<span class="sd">            - exactly: cardinality restriction (target is a class IRI)</span>
-<span class="sd">            - min: minimum cardinality restriction (target is a class IRI)</span>
-<span class="sd">            - max: maximum cardinality restriction (target is a class IRI)</span>
-<span class="sd">            - value: Value restriction (target is an IRI of an individual</span>
+<span class="sd">            - some: existential restriction (value is a class IRI)</span>
+<span class="sd">            - only: universal restriction (value is a class IRI)</span>
+<span class="sd">            - exactly: cardinality restriction (value is a class IRI)</span>
+<span class="sd">            - min: minimum cardinality restriction (value is a class IRI)</span>
+<span class="sd">            - max: maximum cardinality restriction (value is a class IRI)</span>
+<span class="sd">            - value: Value restriction (value is an IRI of an individual</span>
 <span class="sd">              or a literal)</span>
 
 <span class="sd">        cardinality: the cardinality value for cardinality restrictions.</span>
@@ -3406,7 +3440,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">iri</span> <span class="o">=</span> <span class="n">bnode_iri</span><span class="p">(</span>
         <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;restriction&quot;</span><span class="p">,</span>
-        <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cardinality</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cardinality</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">length</span><span class="o">=</span><span class="n">hashlength</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">triples</span> <span class="o">=</span> <span class="p">[</span>
@@ -3420,7 +3454,7 @@ two first arguments and adds the <code>property_name</code> argument.</p>
             <span class="s1">&#39;&quot;max&quot; or &quot;value&quot;&#39;</span>
         <span class="p">)</span>
     <span class="n">pred</span><span class="p">,</span> <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
-    <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+    <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">card</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cardinality</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ArgumentTypeError</span><span class="p">(</span>
@@ -3436,11 +3470,6 @@ two first arguments and adds the <code>property_name</code> argument.</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">iri</span>
-
-    <span class="c1"># xtype: (</span>
-    <span class="c1">#     &quot;Optional[TypeLiteral[&#39;some&#39;, &#39;only&#39;, &#39;exactly&#39;, &#39;min&#39;, &quot;</span>
-    <span class="c1">#     &quot;&#39;max&#39;, &#39;value&#39;]]&quot;</span>
-    <span class="c1"># ) = None,</span>
 </code></pre></div>
         </details>
     </div>
@@ -4601,7 +4630,7 @@ triplestore without connecting to it.</p>
 
 
 <h3 id="tripper.triplestore.Triplestore.restrictions" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">restrictions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cardinality</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">restrictions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cardinality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.triplestore.Triplestore.restrictions" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -4634,7 +4663,7 @@ triplestore without connecting to it.</p>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>target</code></td>
+        <td><code>value</code></td>
         <td><code>&#39;Optional[Union[str, Literal]]&#39;</code></td>
         <td><p>The IRI or literal value of the restriction target.</p></td>
         <td><code>None</code></td>
@@ -4643,12 +4672,12 @@ triplestore without connecting to it.</p>
         <td><code>type</code></td>
         <td><code>&#39;Optional[RestrictionType]&#39;</code></td>
         <td><p>The type of the restriction.  Should be one of:
-- some: existential restriction (target is a class IRI)
-- only: universal restriction (target is a class IRI)
-- exactly: cardinality restriction (target is a class IRI)
-- min: minimum cardinality restriction (target is a class IRI)
-- max: maximum cardinality restriction (target is a class IRI)
-- value: Value restriction (target is an IRI of an individual
+- some: existential restriction (value is a class IRI)
+- only: universal restriction (value is a class IRI)
+- exactly: cardinality restriction (value is a class IRI)
+- min: minimum cardinality restriction (value is a class IRI)
+- max: maximum cardinality restriction (value is a class IRI)
+- value: Value restriction (value is an IRI of an individual
   or a literal)</p></td>
         <td><code>None</code></td>
       </tr>
@@ -4658,6 +4687,30 @@ triplestore without connecting to it.</p>
         <td><p>the cardinality value for cardinality restrictions.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>asdict</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to returned generator is over dicts (see
+_get_restriction_dict()). Default is to return a generator
+over blank node IRIs.</p></td>
+        <td><code>True</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Generator[Triple, None, None]&#39;</code></td>
+      <td><p>A generator over matching restrictions.  See <code>asdict</code> argument
+for types iterated over.</p></td>
+    </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -4666,9 +4719,10 @@ triplestore without connecting to it.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="bp">cls</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="nb">property</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">target</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[RestrictionType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">cardinality</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">asdict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
     <span class="c1"># pylint: disable=too-many-boolean-expressions</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching restrictions.</span>
@@ -4676,17 +4730,24 @@ triplestore without connecting to it.</p>
 <span class="sd">    Parameters:</span>
 <span class="sd">        cls: IRI of class to which the restriction applies.</span>
 <span class="sd">        property: IRI of restriction property.</span>
-<span class="sd">        target: The IRI or literal value of the restriction target.</span>
+<span class="sd">        value: The IRI or literal value of the restriction target.</span>
 <span class="sd">        type: The type of the restriction.  Should be one of:</span>
-<span class="sd">            - some: existential restriction (target is a class IRI)</span>
-<span class="sd">            - only: universal restriction (target is a class IRI)</span>
-<span class="sd">            - exactly: cardinality restriction (target is a class IRI)</span>
-<span class="sd">            - min: minimum cardinality restriction (target is a class IRI)</span>
-<span class="sd">            - max: maximum cardinality restriction (target is a class IRI)</span>
-<span class="sd">            - value: Value restriction (target is an IRI of an individual</span>
+<span class="sd">            - some: existential restriction (value is a class IRI)</span>
+<span class="sd">            - only: universal restriction (value is a class IRI)</span>
+<span class="sd">            - exactly: cardinality restriction (value is a class IRI)</span>
+<span class="sd">            - min: minimum cardinality restriction (value is a class IRI)</span>
+<span class="sd">            - max: maximum cardinality restriction (value is a class IRI)</span>
+<span class="sd">            - value: Value restriction (value is an IRI of an individual</span>
 <span class="sd">              or a literal)</span>
 
 <span class="sd">        cardinality: the cardinality value for cardinality restrictions.</span>
+<span class="sd">        asdict: Whether to returned generator is over dicts (see</span>
+<span class="sd">            _get_restriction_dict()). Default is to return a generator</span>
+<span class="sd">            over blank node IRIs.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A generator over matching restrictions.  See `asdict` argument</span>
+<span class="sd">        for types iterated over.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -4698,16 +4759,16 @@ triplestore without connecting to it.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="nb">type</span><span class="p">}</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
         <span class="n">types</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">})</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">types</span><span class="o">.</span><span class="n">difference_update</span><span class="p">({</span><span class="s2">&quot;value&quot;</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="n">cardinality</span><span class="p">:</span>
         <span class="n">types</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">({</span><span class="s2">&quot;exactly&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">})</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">types</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ArgumentValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Inconsistent type=&#39;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&#39;, target=&#39;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&#39; and &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Inconsistent type=&#39;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&#39;, value=&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; and &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;cardinality=&#39;</span><span class="si">{</span><span class="n">cardinality</span><span class="si">}</span><span class="s2">&#39; arguments&quot;</span>
         <span class="p">)</span>
     <span class="n">pred</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_restriction_types</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">}</span>
@@ -4723,15 +4784,15 @@ triplestore without connecting to it.</p>
     <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">property</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">cls</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">)</span>
             <span class="ow">and</span> <span class="p">(</span>
                 <span class="ow">not</span> <span class="n">card</span>
                 <span class="ow">or</span> <span class="ow">not</span> <span class="n">cardinality</span>
                 <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">lcard</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">card</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">):</span>
-            <span class="k">yield</span> <span class="n">iri</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_restriction_dict</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span> <span class="k">if</span> <span class="n">asdict</span> <span class="k">else</span> <span class="n">iri</span>
 </code></pre></div>
         </details>
     </div>
