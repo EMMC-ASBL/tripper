@@ -799,7 +799,7 @@ class Triplestore:
         value: "Optional[Union[str, Literal]]" = None,
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
-        return_dicts: bool = False,
+        asdict: bool = True,
     ) -> "Generator[Triple, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
@@ -818,13 +818,13 @@ class Triplestore:
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
-            return_dicts: Whether to returned generator is over dicts (see
+            asdict: Whether to returned generator is over dicts (see
                 _get_restriction_dict()). Default is to return a generator
                 over blank node IRIs.
 
         Returns:
-            A generator over matching restrictions.  See `return_dicts`
-            argument for types iterated over.
+            A generator over matching restrictions.  See `asdict` argument
+            for types iterated over.
         """
         if type is None:
             types = set(self._restriction_types.keys())
@@ -869,7 +869,7 @@ class Triplestore:
                     or any(self.has(iri, c, lcard) for c in card)
                 )
             ):
-                yield self._get_restriction_dict(iri) if return_dicts else iri
+                yield self._get_restriction_dict(iri) if asdict else iri
 
     def _get_restriction_dict(self, iri):
         """Return a dict describing restriction with `iri`.
