@@ -186,6 +186,65 @@ True
 
 ```
 
+### Class restrictions
+When working with OWL ontologies, it is often required to inspect or add class [restriction]s.
+The Triplestore class has two convenient methods for this, that do not require knowledge about how restrictions are represented in RDF.
+Only support basic restrictions, without any nested logical constructs, are supoprted.
+For more advanced restrictions, we recommend to use [EMMOntoPy] or [Owlready2].
+
+A [restriction] is described by the following set of parameters.
+
+  * **cls**: IRI of class to which the restriction applies.
+  * **property**: IRI of restriction property.
+  * **type**: The type of the restriction.  Should be one of:
+    - *some*: existential restriction (target is a class IRI)
+    - *only*: universal restriction (target is a class IRI)
+    - *exactly*: cardinality restriction (target is a class IRI)
+    - *min*: minimum cardinality restriction (target is a class IRI)
+    - *max*: maximum cardinality restriction (target is a class IRI)
+    - *value*: Value restriction (target is an IRI of an individual or a literal)
+
+  * **cardinality**: the cardinality value for cardinality restrictions.
+  * **value**: The IRI or literal value of the restriction target.
+
+As an example, the class `onto:Bacteria` can be logically restricted to be unicellular.
+In Manchester syntax, this can be stated as `onto:Bacteria emmo:hasPart exactly 1 onto:Cell`.
+With Tripper this can be stated as:
+
+```python
+>>> iri = ts.add_restriction(
+...     cls=ONTO.Bacteria,
+...     property=EMMO.hasPart,
+...     type="exactly",
+...     cardinality=1,
+...     value=ONTO.Cell,
+... )
+
+```
+The returned `iri` is the blank node IRI of the new restriction.
+
+
+To find the above restriction, the `restrictions()` method can be used.
+It returns an iterator over all restrictions that matches the provided criteria.
+For example:
+
+```python
+>>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, asdict=True)
+>>> list(g)  # doctest: +ELLIPSIS
+[{'iri': '_:...', 'cls': 'http://example.com/onto#Bacteria', 'property': 'https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f', 'type': 'exactly', 'cardinality': 1, 'value': 'http://example.com/onto#Cell'}]
+
+```
+
+With the `return_dicts` argument set to false, an iterator over the IRIs of all matching restrictions is returned:
+
+```python
+>>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, asdict=False)
+>>> next(g) == iri
+True
+
+```
+
+
 ### Utilities
 *Todo: Describe the `tripper.utils` module*
 
@@ -272,3 +331,6 @@ https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.litera
 [EMMO]: https://emmc.eu/emmo/
 [Function Ontology (FnO)]: https://fno.io/
 [list of currently supported backends]: https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends
+[EMMOntoPy]: https://emmo-repo.github.io/EMMOntoPy/
+[Owlready2]: https://pypi.org/project/owlready2/
+[restriction]: https://www.w3.org/TR/owl-ref/#Restriction
