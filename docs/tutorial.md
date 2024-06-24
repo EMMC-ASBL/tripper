@@ -234,13 +234,13 @@ True
 ```
 
 ### Class restrictions
-When working with OWL ontologies, you often need to look up or add class restrictions.
-A [restriction] restricts a class to only those individuals that satisfy the restriction.
-The Triplestore class has two convenient methods for this, [`add_restriction()`] and [`restrictions()`], that don't require knowledge about how restrictions are represented in RDF.
-They only support basic restrictions without any nested logical constructs.
+When working with OWL ontologies, it is often required to inspect or add class [restriction]s.
+The Triplestore class has two convenient methods for this, that do not require knowledge about how restrictions are represented in RDF.
+Only support basic restrictions, without any nested logical constructs, are supoprted.
 For more advanced restrictions, we recommend to use [EMMOntoPy] or [Owlready2].
 
-A restriction is described by the following set of parameters.
+A [restriction] restricts a class to only those individuals that satisfy the restriction.
+It is described by the following set of parameters.
 
   * **cls**: IRI of class to which the restriction applies.
   * **property**: IRI of restriction property.
@@ -255,9 +255,9 @@ A restriction is described by the following set of parameters.
   * **cardinality**: the cardinality value for cardinality restrictions.
   * **value**: The IRI or literal value of the restriction target.
 
-For example. Lets assume that you have a class `onto:Bacteria` that you want to logically restrict to be unicellular.
+As an example, the class `onto:Bacteria` can be logically restricted to be unicellular.
 In Manchester syntax, this can be stated as `onto:Bacteria emmo:hasPart exactly 1 onto:Cell`.
-With tripper, you can state it with
+With Tripper this can be stated as:
 
 ```python
 >>> iri = ts.add_restriction(
@@ -271,21 +271,21 @@ With tripper, you can state it with
 ```
 The returned `iri` is the blank node IRI of the new restriction.
 
-To find the above restriction, you can use the [`restrictions()`] method.
+To find the above restriction, the [`restrictions()`] method can be used.
 It returns an iterator over all restrictions that matches the provided criteria.
 For example:
 
 ```python
->>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, return_dicts=True)
+>>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, asdict=True)
 >>> list(g)  # doctest: +ELLIPSIS
 [{'iri': '_:...', 'cls': 'http://example.com/onto#Bacteria', 'property': 'https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f', 'type': 'exactly', 'cardinality': 1, 'value': 'http://example.com/onto#Cell'}]
 
 ```
 
-With the `return_dicts` argument set to false, you will instead get an iterator over the IRIs of all matching restrictions:
+With the `asdict` argument set to false, an iterator over the IRIs of all matching restrictions is returned:
 
 ```python
->>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, return_dicts=False)
+>>> g = ts.restrictions(cls=ONTO.Bacteria, property=EMMO.hasPart, asdict=False)
 >>> next(g) == iri
 True
 

@@ -386,7 +386,9 @@ class Triplestore:
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+    def query(
+        self, query_object, **kwargs
+    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
@@ -394,11 +396,17 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend query() method.
 
         Returns:
-            List of tuples of IRIs for each matching row.
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: bool
+              - CONSTRUCT, DESCRIBE: generator over triples
 
         Note:
-            This method is intended for SELECT queries. Use
-            the update() method for INSERT and DELETE queries.
+            This method is intended for SELECT, ASK, CONSTRUCT and
+            DESCRIBE queries.  Use the update() method for INSERT and
+            DELETE queries.
+
+            Not all backends may support all types of queries.
 
         """
         self._check_method("query")
@@ -413,7 +421,7 @@ class Triplestore:
 
         Note:
             This method is intended for INSERT and DELETE queries. Use
-            the query() method for SELECT queries.
+            the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.
 
         """
         self._check_method("update")
@@ -793,7 +801,7 @@ class Triplestore:
         value: "Optional[Union[str, Literal]]" = None,
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
-        return_dicts: bool = False,
+        asdict: bool = True,
     ) -> "Generator[Triple, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
@@ -812,13 +820,13 @@ class Triplestore:
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
-            return_dicts: Whether to returned generator is over dicts (see
+            asdict: Whether to returned generator is over dicts (see
                 _get_restriction_dict()). Default is to return a generator
                 over blank node IRIs.
 
         Returns:
-            A generator over matching restrictions.  See `return_dicts`
-            argument for types iterated over.
+            A generator over matching restrictions.  See `asdict` argument
+            for types iterated over.
         """
         if type is None:
             types = set(self._restriction_types.keys())
@@ -863,7 +871,7 @@ class Triplestore:
                     or any(self.has(iri, c, lcard) for c in card)
                 )
             ):
-                yield self._get_restriction_dict(iri) if return_dicts else iri
+                yield self._get_restriction_dict(iri) if asdict else iri
 
     def _get_restriction_dict(self, iri):
         """Return a dict describing restriction with `iri`.

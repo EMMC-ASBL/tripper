@@ -5,6 +5,8 @@
 
 def test_untyped() -> None:
     """Test creating a untyped literal."""
+    import pytest
+
     from tripper.literal import RDF, XSD, Literal
 
     literal = Literal("Hello world!")
@@ -19,8 +21,13 @@ def test_untyped() -> None:
     assert literal == Literal("Hello world!", datatype=XSD.string)
     assert literal == Literal("Hello world!", datatype=XSD.token)
     assert literal == Literal("Hello world!", datatype=RDF.JSON)
-    assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
     assert literal == Literal("Hello world!", lang="en")
+
+    # Check two things here:
+    #   1) that a plain literal compares false to a non-string literal
+    #   2) that we get a warning about unknown XSD.ENTITY datatype
+    with pytest.warns(UserWarning):
+        assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
 
 
 def test_string() -> None:

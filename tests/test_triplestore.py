@@ -167,22 +167,35 @@ def test_restriction() -> None:  # pylint: disable=too-many-statements
         )
 
     # Test find restriction
-    assert set(ts.restrictions()) == {iri, iri2, iri3}
-    assert set(ts.restrictions(cls=EX.Kerberos)) == {iri2, iri3}
-    assert set(ts.restrictions(cls=EX.Animal)) == {iri}
-    assert not set(ts.restrictions(cls=EX.Dog))
-    assert set(ts.restrictions(cls=EX.Kerberos, cardinality=3)) == {iri2}
-    assert set(ts.restrictions(cardinality=3)) == {iri2}
-    assert not set(ts.restrictions(cls=EX.Kerberos, cardinality=2))
-    assert set(ts.restrictions(property=EX.hasBodyPart)) == {iri2}
-    assert set(ts.restrictions(property=EX.hasPart)) == {iri}
-    assert not set(ts.restrictions(property=EX.hasNoPart))
-    assert set(ts.restrictions(value=EX.Cell)) == {iri}
-    assert set(ts.restrictions(value=EX.Head)) == {iri2}
-    assert not set(ts.restrictions(value=EX.Leg))
-    assert set(ts.restrictions(value=EX.Cell, type="some")) == {iri}
-    assert set(ts.restrictions(value=EX.Head, type="exactly")) == {iri2}
-    assert set(ts.restrictions(value=Literal("The port of Hades"))) == {iri3}
+
+    assert set(ts.restrictions(asdict=False)) == {iri, iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Kerberos, asdict=False)) == {iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Animal, asdict=False)) == {iri}
+    assert not set(ts.restrictions(cls=EX.Dog, asdict=False))
+    assert set(
+        ts.restrictions(cls=EX.Kerberos, cardinality=3, asdict=False)
+    ) == {iri2}
+    assert set(ts.restrictions(cardinality=3, asdict=False)) == {iri2}
+    assert not set(
+        ts.restrictions(cls=EX.Kerberos, cardinality=2, asdict=False)
+    )
+    assert set(ts.restrictions(property=EX.hasBodyPart, asdict=False)) == {
+        iri2
+    }
+    assert set(ts.restrictions(property=EX.hasPart, asdict=False)) == {iri}
+    assert not set(ts.restrictions(property=EX.hasNoPart, asdict=False))
+    assert set(ts.restrictions(value=EX.Cell, asdict=False)) == {iri}
+    assert set(ts.restrictions(value=EX.Head, asdict=False)) == {iri2}
+    assert not set(ts.restrictions(value=EX.Leg, asdict=False))
+    assert set(ts.restrictions(value=EX.Cell, type="some", asdict=False)) == {
+        iri
+    }
+    assert set(
+        ts.restrictions(value=EX.Head, type="exactly", asdict=False)
+    ) == {iri2}
+    assert set(
+        ts.restrictions(value=Literal("The port of Hades"), asdict=False)
+    ) == {iri3}
 
     with pytest.raises(ArgumentValueError):
         set(ts.restrictions(value=EX.Cell, type="wrong_type"))
@@ -190,10 +203,8 @@ def test_restriction() -> None:  # pylint: disable=too-many-statements
     with pytest.raises(ArgumentValueError):
         set(ts.restrictions(type="value", cardinality=2))
 
-    # Test return_dicts
-    dicts = sorted(
-        ts.restrictions(return_dicts=True), key=lambda d: d["value"]
-    )
+    # Test returning as dicts (asdict=True)
+    dicts = sorted(ts.restrictions(asdict=True), key=lambda d: d["value"])
     for d in dicts:  # Remove iri keys, since they refer to blank nodes
         d.pop("iri")
     assert dicts == sorted(
@@ -223,7 +234,7 @@ def test_restriction() -> None:  # pylint: disable=too-many-statements
         key=lambda d: d["value"],
     )
 
-    dicts = list(ts.restrictions(type="some", return_dicts=True))
+    dicts = list(ts.restrictions(type="some", asdict=True))
     for d in dicts:  # Remove iri keys, since they refer to blank nodes
         d.pop("iri")
     assert dicts == [
@@ -461,12 +472,11 @@ def test_find_literal_triples() -> None:
         ts.triples(predicate=FAM.hasName, object=Literal("Per"))
     ) == set(
         [
-            (FAM.Per, FAM.hasName, Literal("Per", datatype=XSD.string)),
+            (FAM.Per, FAM.hasName, Literal("Per")),
         ]
     )
 
 
-# if True:
 def test_bind_errors():
     """Test for errors in Triplestore.bind()."""
     pytest.importorskip("rdflib")
