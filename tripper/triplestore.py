@@ -386,7 +386,9 @@ class Triplestore:
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+    def query(
+        self, query_object, **kwargs
+    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
@@ -394,11 +396,17 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend query() method.
 
         Returns:
-            List of tuples of IRIs for each matching row.
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: bool
+              - CONSTRUCT, DESCRIBE: generator over triples
 
         Note:
-            This method is intended for SELECT queries. Use
-            the update() method for INSERT and DELETE queries.
+            This method is intended for SELECT, ASK, CONSTRUCT and
+            DESCRIBE queries.  Use the update() method for INSERT and
+            DELETE queries.
+
+            Not all backends may support all types of queries.
 
         """
         self._check_method("query")
@@ -413,7 +421,7 @@ class Triplestore:
 
         Note:
             This method is intended for INSERT and DELETE queries. Use
-            the query() method for SELECT queries.
+            the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.
 
         """
         self._check_method("update")

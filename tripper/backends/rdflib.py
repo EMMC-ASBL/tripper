@@ -6,7 +6,7 @@ an RDF Triple: subject, predicate, and object.
 
 # pylint: disable=line-too-long
 import warnings
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generator
 
 try:
     import rdflib  # pylint: disable=unused-import
@@ -26,7 +26,7 @@ from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, List, Optional, Tuple, Union
+    from typing import List, Optional, Tuple, Union
 
     from tripper.triplestore import Triple
 
@@ -71,7 +71,7 @@ class RdflibStrategy:
         database: "Optional[str]" = None,
         triplestore_url: "Optional[str]" = None,
         format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
-        graph: "Graph" = None,
+        graph: "Optional[Graph]" = None,
     ) -> None:
         # Note that although `base_iri` is unused in this backend, it may
         # still be used by calling Triplestore object.
@@ -88,26 +88,9 @@ class RdflibStrategy:
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
-        for s, p, o in self.graph.triples(  # pylint: disable=not-an-iterable
-            astriple(triple)
-        ):
-            yield (
-                (
-                    f"_:{s}"
-                    if isinstance(s, BNode) and not s.startswith("_:")
-                    else str(s)
-                ),
-                str(p),
-                (
-                    parse_literal(o.n3())
-                    if isinstance(o, rdflibLiteral)
-                    else (
-                        f"_:{o}"
-                        if isinstance(o, BNode) and not o.startswith("_:")
-                        else str(o)
-                    )
-                ),
-            )
+        return _convert_triples_to_tripper(
+            self.graph.triples(astriple(triple))
+        )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
@@ -182,7 +165,9 @@ class RdflibStrategy:
             return result if isinstance(result, str) else result.decode()
         return None
 
-    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+    def query(
+        self, query_object, **kwargs
+    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
@@ -190,11 +175,39 @@ class RdflibStrategy:
             kwargs: Keyword arguments passed to rdflib.Graph.query().
 
         Returns:
-            List of tuples of IRIs for each matching row.
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: bool
+              - CONSTRUCT, DESCRIBE: generator over triples
 
+            For more info, see
+            https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result
         """
-        rows = self.graph.query(query_object=query_object, **kwargs)
-        return [tuple(str(v) for v in row) for row in rows]
+        result = self.graph.query(query_object=query_object, **kwargs)
+
+        # The type of the result object depends not only on the type of query,
+        # but also on the version of rdflib...  We try to be general here.
+        if hasattr(result, "type"):
+            resulttype = result.type
+        elif result.__class__.__name__ == "ResultRow":
+            resulttype = "SELECT"
+        elif isinstance(result, bool):
+            resulttype = "ASK"
+        elif isinstance(result, Generator):
+            resulttype = "CONSTRUCT"  # also DESCRIBE
+        else:
+            warnings.warn(
+                "Unknown return type from rdflib.query(). Return it unprocessed."
+            )
+            return result  # type: ignore
+
+        if resulttype == "SELECT":
+            return [tuple(str(v) for v in row) for row in result]  # type: ignore
+        if resulttype == "ASK":
+            return bool(result)
+        if resulttype in ("CONSTRUCT", "DESCRIBE"):
+            return _convert_triples_to_tripper(result)
+        assert False, "should never be reached"  # nosec
 
     def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
@@ -234,3 +247,26 @@ class RdflibStrategy:
             prefix: str(namespace)
             for prefix, namespace in self.graph.namespaces()
         }
+
+
+def _convert_triples_to_tripper(triples) -> "Generator[Triple, None, None]":
+    """Help function that converts a iterator/generator of rdflib triples
+    to tripper triples."""
+    for s, p, o in triples:  ### p ylint: disable=not-an-iterable
+        yield (
+            (
+                f"_:{s}"
+                if isinstance(s, BNode) and not s.startswith("_:")
+                else str(s)
+            ),
+            str(p),
+            (
+                parse_literal(o)
+                if isinstance(o, rdflibLiteral)
+                else (
+                    f"_:{o}"
+                    if isinstance(o, BNode) and not o.startswith("_:")
+                    else str(o)
+                )
+            ),
+        )
