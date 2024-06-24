@@ -10,8 +10,8 @@ This is done via a plugin system for different triplestore `backends`.
 See the README file for a [list of currently supported backends].
 
 The API provided by Tripper is modelled after [rdflib], so if you know that library, you will find Tripper rather familiar.
-But there are some differences that you should be aware of.
-Most recognisable:
+But there are some differences to be aware of.
+Most important are:
 
 * All IRIs are represented by Python strings.
   Example: `"https://w3id.org/emmo#Metre"`
@@ -62,7 +62,7 @@ New namespaces can be created using the [Namespace] class, but are usually added
 ```
 
 ### Adding triples to the triplestore
-We can now start to add triples to the triplestore, using the [`add()`] and [`add_triples()`] methods:
+Triples can now be added to the triplestore, using the [`add()`] and [`add_triples()`] methods:
 
 ```python
 >>> from tripper.utils import en
@@ -76,7 +76,7 @@ We can now start to add triples to the triplestore, using the [`add()`] and [`ad
 The function [`en()`] is just a convenient function for adding English literals.
 It is equivalent to `tripper.Literal(msg, lang="en")`.
 
-You can also load triples from a source using the [`parse()`] method.
+Triples can also be added from a source using the [`parse()`] method.
 For example will
 
 ```python
@@ -85,7 +85,7 @@ ts.parse("onto.ttl", format="turtle")
 
 load all triples in turtle file `onto.ttl` into the triplestore.
 
-Similarly you can serialise the triplestore to a string or a file using the [`serialize()`] method:
+Similarly, the triplestore can be serialised to a string or a file using the [`serialize()`] method:
 
 ```python
 ts.serialize("onto2.ttl")  # serialise to file `onto2.ttl`
@@ -93,8 +93,8 @@ s = ts.serialize(format="ntriples")  # serialise to string s in ntriples format
 ```
 
 ### Retrieving triples from and querying a triplestore
-A set of convenient functions exists for simple queries, including [`triples()`], [`subjects()`], [`predicates()`], [`objects()`], [`subject_predicates()`], [`subject_objects()`], [`predicate_objects()`] and [`value()`].
-Except for [`value()`], they return the result as generators.
+A set of convenient functions exist for simple queries, including [`triples()`], [`subjects()`], [`predicates()`], [`objects()`], [`subject_predicates()`], [`subject_objects()`], [`predicate_objects()`] and [`value()`].
+Except for [`value()`], they return iterators.
 For example:
 
 ```python
@@ -143,7 +143,7 @@ Maybe you have to remove the cache file: ...
 ```
 
 The above example works, since the `namespace="https://w3id.org/emmo#"` is resolvable.
-In the case when the IRI in the `namespace` argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated [Triplestore] instance via the `triplestore` keyword argument.
+When the IRI in the `namespace` argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated [Triplestore] instance via the `triplestore` keyword argument.
 
 Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.
