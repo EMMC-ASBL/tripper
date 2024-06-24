@@ -1066,17 +1066,19 @@
 This is done via a plugin system for different triplestore <code>backends</code>.
 See the README file for a <a href="https://github.com/EMMC-ASBL/tripper?tab=readme-ov-file#available-backends">list of currently supported backends</a>.</p>
 <p>The API provided by Tripper is modelled after <a href="https://rdflib.readthedocs.io/">rdflib</a>, so if you know that library, you will find Tripper rather familiar.
-But there are some differences that you should be aware of.
-Most recognisable:
-* All IRIs are represented by Python strings.
-  Example: <code>"https://w3id.org/emmo#Metre"</code>
-* Blank nodes are strings starting with "_:".
-  Example: <code>"_:bnode1"</code>
-* Literals are constructed with <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.literal.Literal"><code>tripper.Literal</code></a>.
-  Example: <code>tripper.Literal(3.14, datatype=XSD.float)</code>
-* Namespace object works similar to namespace objects in rdflib, but its
+But there are some differences to be aware of.
+Most important are:</p>
+<ul>
+<li>All IRIs are represented by Python strings.
+  Example: <code>"https://w3id.org/emmo#Metre"</code></li>
+<li>Blank nodes are strings starting with "_:".
+  Example: <code>"_:bnode1"</code></li>
+<li>Literals are constructed with <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/literal/#tripper.literal.Literal"><code>tripper.Literal</code></a>.
+  Example: <code>tripper.Literal(3.14, datatype=XSD.float)</code></li>
+<li>Namespace object works similar to namespace objects in rdflib, but its
   attribution access expands to plain Python strings.
-  Example: <code>XSD.float</code></p>
+  Example: <code>XSD.float</code></li>
+</ul>
 <p>Tripper namespaces has also additional features that make them very
   convinient when working with ontologies, like <a href="https://emmc.eu/emmo/">EMMO</a> that uses
   numerical IRIs.</p>
@@ -1094,33 +1096,33 @@ For example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span>
 <span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span>
 </code></pre></div>
-<p>New namespaces can be created using the <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/namespace/#tripper.namespace.Namespace">Namespace</a> class, but are usually added with the <code>bind()</code> method:</p>
+<p>New namespaces can be created using the <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/namespace/#tripper.namespace.Namespace">Namespace</a> class, but are usually added with the [<code>bind()</code>] method:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;onto&quot;</span><span class="p">,</span> <span class="s2">&quot;http://example.com/onto#&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span>
 <span class="s1">&#39;http://example.com/onto#MyConcept&#39;</span>
 </code></pre></div>
 <h3 id="adding-triples-to-the-triplestore">Adding triples to the triplestore<a class="headerlink" href="#adding-triples-to-the-triplestore" title="Permanent link">&para;</a></h3>
-<p>We can now start to add triples to the triplestore, using the <code>add()</code> and <code>add_triples()</code> methods:</p>
+<p>Triples can now be added to the triplestore, using the [<code>add()</code>] and [<code>add_triples()</code>] methods:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper.utils</span> <span class="kn">import</span> <span class="n">en</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span>
 <span class="o">...</span>     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span><span class="p">),</span>
 <span class="o">...</span>     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="s2">&quot;My briliant ontological concept.&quot;</span><span class="p">)),</span>
 <span class="o">...</span> <span class="p">])</span>
 </code></pre></div>
-<p>The function <code>en(msg)</code> is just a convenient function for adding english literals.
+<p>The function [<code>en()</code>] is just a convenient function for adding English literals.
 It is equivalent to <code>tripper.Literal(msg, lang="en")</code>.</p>
-<p>You can also load triples from a source using the <code>parse()</code> method.
+<p>Triples can also be added from a source using the [<code>parse()</code>] method.
 For example will</p>
 <div class="highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;onto.ttl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>load all triples in turtle file <code>onto.ttl</code> into the triplestore.</p>
-<p>Similarly you can serialise the triplestore to a string or a file using the <code>serialize()</code> method:</p>
+<p>Similarly, the triplestore can be serialised to a string or a file using the [<code>serialize()</code>] method:</p>
 <div class="highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">&quot;onto2.ttl&quot;</span><span class="p">)</span>  <span class="c1"># serialise to file `onto2.ttl`</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>  <span class="c1"># serialise to string s in ntriples format</span>
 </code></pre></div>
 <h3 id="retrieving-triples-from-and-querying-a-triplestore">Retrieving triples from and querying a triplestore<a class="headerlink" href="#retrieving-triples-from-and-querying-a-triplestore" title="Permanent link">&para;</a></h3>
-<p>A set of convenient functions exists for simple queries, including <code>triples()</code>, <code>subjects()</code>, <code>predicates()</code>, <code>objects()</code>, <code>subject_predicates()</code>, <code>subject_objects()</code>, <code>predicate_objects()</code> and <code>value()</code>.
-Except for <code>value()</code>, they return the result as generators.
+<p>A set of convenient functions exist for simple queries, including [<code>triples()</code>], [<code>subjects()</code>], [<code>predicates()</code>], [<code>objects()</code>], [<code>subject_predicates()</code>], [<code>subject_objects()</code>], [<code>predicate_objects()</code>] and [<code>value()</code>].
+Except for [<code>value()</code>], they return iterators.
 For example:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="o">&lt;</span><span class="n">generator</span> <span class="nb">object</span> <span class="n">Triplestore</span><span class="o">.</span><span class="n">objects</span> <span class="n">at</span> <span class="mi">0</span><span class="n">x</span><span class="o">...&gt;</span>
@@ -1128,7 +1130,7 @@ For example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">))</span>
 <span class="p">[</span><span class="s1">&#39;http://www.w3.org/2002/07/owl#Thing&#39;</span><span class="p">]</span>
 </code></pre></div>
-<p>The <code>query()</code> and <code>update()</code> methods can be used to query and update the triplestore using SPARQL.
+<p>The [<code>query()</code>] and [<code>update()</code>] methods can be used to query and update the triplestore using SPARQL.
 See the next section.</p>
 <h2 id="slightly-more-advanced-features">Slightly more advanced features<a class="headerlink" href="#slightly-more-advanced-features" title="Permanent link">&para;</a></h2>
 <h3 id="more-advanced-use-of-namespaces">More advanced use of namespaces<a class="headerlink" href="#more-advanced-use-of-namespaces" title="Permanent link">&para;</a></h3>
@@ -1157,9 +1159,52 @@ The <code>check=True</code> enables checking for existing IRIs.</p>
 <span class="n">Maybe</span> <span class="n">you</span> <span class="n">have</span> <span class="n">to</span> <span class="n">remove</span> <span class="n">the</span> <span class="n">cache</span> <span class="n">file</span><span class="p">:</span> <span class="o">...</span>
 </code></pre></div>
 <p>The above example works, since the <code>namespace="https://w3id.org/emmo#"</code> is resolvable.
-In the case when the IRI in the <code>namespace</code> argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated Triplestore instance via the <code>triplestore</code> keyword argument.</p>
+When the IRI in the <code>namespace</code> argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> instance via the <code>triplestore</code> keyword argument.</p>
 <p>Access by label makes it much easier to work with ontologies, like EMMO, that uses non-human readable IDs for the IRIs.
 More about this below.</p>
+<p>The utility function [<code>extend_namespace()</code>] can be used to add additional known labels to a namespace.
+For example:</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper.utils</span> <span class="kn">import</span> <span class="n">extend_namespace</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
+<span class="o">...</span>     <span class="s2">&quot;http://onto-ns.com/ontologies/examples/food#&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">triplestore</span><span class="o">=</span><span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food.ttl&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="c1"># Hamburger is not a known label</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Hamburger</span>  <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Hamburger</span>
+<span class="o">...</span>
+
+<span class="c1"># Add Hamburger to known labels</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span><span class="n">FOOD</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;Hamburger&quot;</span><span class="p">:</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">&quot;Hamburger&quot;</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Hamburger</span> <span class="o">==</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">&quot;Hamburger&quot;</span>
+<span class="kc">True</span>
+
+<span class="c1"># Fish is not a known label</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Fish</span>  <span class="c1"># doctest: +ELLIPSIS</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Fish</span>
+<span class="o">...</span>
+
+<span class="c1"># Extend FOOD from an online turtle file</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span>
+<span class="o">...</span>    <span class="n">FOOD</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food-more.ttl&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
+<span class="o">...</span> <span class="p">)</span>
+
+<span class="c1"># Now Fish is in the namespace</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Fish</span>
+<span class="s1">&#39;http://onto-ns.com/ontologies/examples/food#FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26&#39;</span>
+</code></pre></div>
 <h3 id="writing-sparql-queries-using-tripper">Writing SPARQL queries using Tripper<a class="headerlink" href="#writing-sparql-queries-using-tripper" title="Permanent link">&para;</a></h3>
 <p>A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
 This challenge is greatly mitigated by using the <code>label_annotations</code> feature of Tripper namespaces.
@@ -1198,7 +1243,8 @@ Note:
 The Triplestore class has two convenient methods for this, that do not require knowledge about how restrictions are represented in RDF.
 Only support basic restrictions, without any nested logical constructs, are supoprted.
 For more advanced restrictions, we recommend to use <a href="https://emmo-repo.github.io/EMMOntoPy/">EMMOntoPy</a> or <a href="https://pypi.org/project/owlready2/">Owlready2</a>.</p>
-<p>A <a href="https://www.w3.org/TR/owl-ref/#Restriction">restriction</a> is described by the following set of parameters.</p>
+<p>A <a href="https://www.w3.org/TR/owl-ref/#Restriction">restriction</a> restricts a class to only those individuals that satisfy the restriction.
+It is described by the following set of parameters.</p>
 <ul>
 <li><strong>cls</strong>: IRI of class to which the restriction applies.</li>
 <li><strong>property</strong>: IRI of restriction property.</li>
@@ -1230,14 +1276,14 @@ With Tripper this can be stated as:</p>
 <span class="o">...</span> <span class="p">)</span>
 </code></pre></div>
 The returned <code>iri</code> is the blank node IRI of the new restriction.</p>
-<p>To find the above restriction, the <code>restrictions()</code> method can be used.
+<p>To find the above restriction, the [<code>restrictions()</code>] method can be used.
 It returns an iterator over all restrictions that matches the provided criteria.
 For example:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="p">[{</span><span class="s1">&#39;iri&#39;</span><span class="p">:</span> <span class="s1">&#39;_:...&#39;</span><span class="p">,</span> <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="s1">&#39;http://example.com/onto#Bacteria&#39;</span><span class="p">,</span> <span class="s1">&#39;property&#39;</span><span class="p">:</span> <span class="s1">&#39;https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;exactly&#39;</span><span class="p">,</span> <span class="s1">&#39;cardinality&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;http://example.com/onto#Cell&#39;</span><span class="p">}]</span>
 </code></pre></div>
-<p>With the <code>return_dicts</code> argument set to false, an iterator over the IRIs of all matching restrictions is returned:</p>
+<p>With the <code>asdict</code> argument set to false, an iterator over the IRIs of all matching restrictions is returned:</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">==</span> <span class="n">iri</span>
 <span class="kc">True</span>
@@ -1249,9 +1295,9 @@ For example:</p>
 <p>With a <em>data model</em>, we here mean an abstract model that describes the structure of a dataset.
 To provide a shared semantic meaning of a data model and its <em>properties</em> (structural elements), one can create <em>mappings</em> between these elements and ontological concepts (typically a class in an OWL ontology).</p>
 <p>Mappings can also be used to semantically document the arguments and return values of a function.</p>
-<p>The <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> class has two specialised methods for adding mappings, <code>map()</code> and <code>add_function()</code>.
-The purpose of the <code>map()</code> method, is to map a data models and its properties to ontological concepts, while <code>add_function()</code> maps the arguments and return value of a function to ontological concepts.</p>
-<p><strong>Note</strong>, the name of the <code>map()</code> and <code>add_function()</code> methods are not very intuitive and may be changed in the future.</p>
+<p>The <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> class has two specialised methods for adding mappings, [<code>map()</code>] and [<code>add_function()</code>].
+The purpose of the [<code>map()</code>] method, is to map a data models and its properties to ontological concepts, while [<code>add_function()</code>] maps the arguments and return value of a function to ontological concepts.</p>
+<p><strong>Note</strong>, the name of the [<code>map()</code>] and [<code>add_function()</code>] methods are not very intuitive and may be changed in the future.</p>
 <h3 id="adding-mappings">Adding mappings<a class="headerlink" href="#adding-mappings" title="Permanent link">&para;</a></h3>
 <p>Lets assume that you have a data model identified by the IRI <code>http://onto-ns.com/meta/ex/0.1/MyDataModel</code>, which has a property (structural element) called <em>velocity</em>.
 A namespace object for this data model can be created with</p>
@@ -1282,8 +1328,6 @@ Currently, it supports both <a href="https://emmc.eu/emmo/">EMMO</a> and the <a 
 </code></pre></div>
 <h3 id="using-mappings">Using mappings<a class="headerlink" href="#using-mappings" title="Permanent link">&para;</a></h3>
 <p><em>Todo: Describe the <code>tripper.mappings</code> subpackage...</em></p>
-<h3 id="representing-pydantic-data-models-as-rdf">Representing pydantic data models as RDF<a class="headerlink" href="#representing-pydantic-data-models-as-rdf" title="Permanent link">&para;</a></h3>
-<p><em>Todo: Describe the <code>tripper.convert</code> subpackage...</em></p>
 
 
 

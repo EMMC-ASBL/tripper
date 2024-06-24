@@ -1985,10 +1985,12 @@ Triplestore        </code>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
 
 <span class="sd">        Useful if one knows that there may only be one value.</span>
+<span class="sd">        Two of `subject`, `predicate` or `object` must be provided.</span>
 
 <span class="sd">        Parameters:</span>
-<span class="sd">            subject, predicate, object: Criteria to match. Two of these must</span>
-<span class="sd">                be provided.</span>
+<span class="sd">            subject: Possible criteria to match.</span>
+<span class="sd">            predicate: Possible criteria to match.</span>
+<span class="sd">            object: Possible criteria to match.</span>
 <span class="sd">            default: Value to return if no matches are found.</span>
 <span class="sd">            any: If true, return any matching value, otherwise raise</span>
 <span class="sd">                UniquenessError.</span>
@@ -5244,7 +5246,8 @@ the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.</p>
     <div class="doc doc-contents ">
 
       <p>Return the value for a pair of two criteria.</p>
-<p>Useful if one knows that there may only be one value.</p>
+<p>Useful if one knows that there may only be one value.
+Two of <code>subject</code>, <code>predicate</code> or <code>object</code> must be provided.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -5258,11 +5261,22 @@ the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>subject,</code></td>
-        <td><code>predicate, object</code></td>
-        <td><p>Criteria to match. Two of these must
-be provided.</p></td>
-        <td><em>required</em></td>
+        <td><code>subject</code></td>
+        <td></td>
+        <td><p>Possible criteria to match.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>predicate</code></td>
+        <td></td>
+        <td><p>Possible criteria to match.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>object</code></td>
+        <td></td>
+        <td><p>Possible criteria to match.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>default</code></td>
@@ -5316,10 +5330,12 @@ None.</p></td>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the value for a pair of two criteria.</span>
 
 <span class="sd">    Useful if one knows that there may only be one value.</span>
+<span class="sd">    Two of `subject`, `predicate` or `object` must be provided.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        subject, predicate, object: Criteria to match. Two of these must</span>
-<span class="sd">            be provided.</span>
+<span class="sd">        subject: Possible criteria to match.</span>
+<span class="sd">        predicate: Possible criteria to match.</span>
+<span class="sd">        object: Possible criteria to match.</span>
 <span class="sd">        default: Value to return if no matches are found.</span>
 <span class="sd">        any: If true, return any matching value, otherwise raise</span>
 <span class="sd">            UniquenessError.</span>

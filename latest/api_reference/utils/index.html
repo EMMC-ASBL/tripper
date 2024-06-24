@@ -1331,7 +1331,7 @@ Otherwise the exception is propagated.</p>
 
 
 <h2 id="tripper.utils.extend_namespace" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">extend_namespace</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">extend_namespace</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.utils.extend_namespace" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1371,6 +1371,12 @@ of one of the following types:
   - dict: dict mapping new IRI names to their corresponding IRIs</p></td>
         <td><em>required</em></td>
       </tr>
+      <tr>
+        <td><code>format</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Format to use when loading from a triplestore.</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -1378,6 +1384,7 @@ of one of the following types:
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">extend_namespace</span><span class="p">(</span>
     <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
     <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Union[Triplestore, str, Path, dict]&quot;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend a namespace with additional known names.</span>
 
@@ -1393,6 +1400,7 @@ of one of the following types:
 <span class="sd">                path to a local file to read from</span>
 <span class="sd">              - Path: path to a local file to read from</span>
 <span class="sd">              - dict: dict mapping new IRI names to their corresponding IRIs</span>
+<span class="sd">        format: Format to use when loading from a triplestore.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">namespace</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=protected-access</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1403,7 +1411,7 @@ of one of the following types:
         <span class="n">namespace</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">triplestore</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">namespace</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span>  <span class="c1"># pylint: disable=protected-access</span>
-            <span class="n">triplestore</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">triplestore</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span>
         <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1467,12 +1475,22 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Return IRI of the individual that stands for object <code>obj</code>.</p>
+      <p>Return IRI of the individual that stands for Python object <code>obj</code>.</p>
+<p>Valid Python objects are <a href="https://github.com/SINTEF/dlite">DLite</a> and <a href="https://docs.pydantic.dev/">Pydantic</a> instances.</p>
+<p>References:</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">infer_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return IRI of the individual that stands for object `obj`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return IRI of the individual that stands for Python object `obj`.</span>
+
+<span class="sd">    Valid Python objects are [DLite] and [Pydantic] instances.</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">    [DLite]: https://github.com/SINTEF/dlite</span>
+<span class="sd">    [Pydantic]: https://docs.pydantic.dev/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Please note that tripper does not depend on neither DLite nor Pydantic.</span>
     <span class="c1"># Hence neither of these packages are imported.  However, due to duck-</span>
