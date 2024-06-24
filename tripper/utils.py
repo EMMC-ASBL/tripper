@@ -48,7 +48,15 @@ __all__ = (
 
 
 def infer_iri(obj):
-    """Return IRI of the individual that stands for object `obj`."""
+    """Return IRI of the individual that stands for Python object `obj`.
+
+    Valid Python objects are [DLite] and [Pydantic] instances.
+
+    References:
+
+    [DLite]: https://github.com/SINTEF/dlite
+    [Pydantic]: https://docs.pydantic.dev/
+    """
 
     # Please note that tripper does not depend on neither DLite nor Pydantic.
     # Hence neither of these packages are imported.  However, due to duck-
@@ -380,6 +388,7 @@ def random_string(length=8):
 def extend_namespace(
     namespace: Namespace,
     triplestore: "Union[Triplestore, str, Path, dict]",
+    format: "Optional[str]" = None,
 ):
     """Extend a namespace with additional known names.
 
@@ -395,6 +404,7 @@ def extend_namespace(
                 path to a local file to read from
               - Path: path to a local file to read from
               - dict: dict mapping new IRI names to their corresponding IRIs
+        format: Format to use when loading from a triplestore.
     """
     if namespace._iris is None:  # pylint: disable=protected-access
         raise TypeError(
@@ -405,5 +415,5 @@ def extend_namespace(
         namespace._iris.update(triplestore)  # pylint: disable=protected-access
     else:
         namespace._update_iris(  # pylint: disable=protected-access
-            triplestore, reload=True
+            triplestore, reload=True, format=format
         )

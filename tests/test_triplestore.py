@@ -167,6 +167,7 @@ def test_restriction() -> None:  # pylint: disable=too-many-statements
         )
 
     # Test find restriction
+
     assert set(ts.restrictions(asdict=False)) == {iri, iri2, iri3}
     assert set(ts.restrictions(cls=EX.Kerberos, asdict=False)) == {iri2, iri3}
     assert set(ts.restrictions(cls=EX.Animal, asdict=False)) == {iri}
