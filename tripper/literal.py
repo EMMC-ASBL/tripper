@@ -1,5 +1,6 @@
 """Literal rdf values."""
 
+import json
 import warnings
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -14,10 +15,10 @@ class Literal(str):
     """A literal RDF value.
 
     Arguments:
-        value (Union[datetime, bytes, bytearray, bool, int, float, str]):
-            The literal value. See the `datatypes` class attribute for valid
-            supported data types.  A localised string is provided as a string
-            with `lang` set to a language code.
+        value (Union[datetime, bytes, bytearray, bool, int, float, str, None,
+            dict, list]): The literal value. See the `datatypes` class
+            attribute for valid supported data types.  A localised string
+            is provided as a string with `lang` set to a language code.
         lang (Optional[str]): A standard language code, like "en", "no", etc.
             Implies that the `value` is a localised string.
         datatype (Any): Explicit specification of the type of `value`. Should
@@ -75,7 +76,10 @@ class Literal(str):
 
     def __new__(
         cls,
-        value: "Union[datetime, bytes, bytearray, bool, int, float, str]",
+        value: (
+            "Union[datetime, bytes, bytearray, bool, int, float, str, None, "
+            "dict, list]"
+        ),
         lang: "Optional[str]" = None,
         datatype: "Optional[Any]" = None,
     ):
@@ -137,6 +141,10 @@ class Literal(str):
             string.datatype = XSD.hexBinary
         elif isinstance(value, datetime):
             string.datatype = XSD.dateTime
+        elif value is None or isinstance(value, (dict, list)):
+            string = super().__new__(cls, json.dumps(value))
+            string.lang == None
+            string.datatype == RDF.JSON
 
         # Some consistency checking
         if (
@@ -224,6 +232,8 @@ class Literal(str):
             value = float(self)
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
+        elif self.datatype == RDF.JSON:
+            value = json.loads(value)
 
         return value
 
