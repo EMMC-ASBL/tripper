@@ -244,6 +244,11 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
+    literal = parse_literal(f'"""["a", 1, 2]"""^^<{RDF.JSON}>')
+    assert literal.value == '["a", 1, 2]'
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
     with pytest.warns(UserWarning, match="unknown datatype"):
         literal = parse_literal('"value"^^http://example.com/vocab#mytype')
     assert literal.value == "value"
