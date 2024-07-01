@@ -234,10 +234,16 @@ def parse_literal(literal: "Any") -> "Any":
     ):
         datatype = str(literal.datatype)
 
-    # This will handle rdflib literals correctly and probably most other
-    # literal representations as well.
+    # This should handle rdflib literals correctly (and probably most other
+    # literal representations as well)
     if hasattr(literal, "value"):
-        return Literal(literal.value, lang=lang, datatype=datatype)
+        # Note that in rdflib 6.3, the `value` attribute may be None for some
+        # datatypes (like rdf:JSON) even though a non-empty value exists.
+        # As a workaround, we use the string representation if the value
+        # attribute is None.
+        if literal.value is not None:
+            return Literal(literal.value, lang=lang, datatype=datatype)
+        return Literal(str(literal), lang=lang, datatype=datatype)
 
     if not isinstance(literal, str):
         if isinstance(literal, tuple(Literal.datatypes)):
