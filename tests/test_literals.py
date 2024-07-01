@@ -256,6 +256,33 @@ def test_parse_literal() -> None:
     assert literal.datatype == "http://example.com/vocab#mytype"
 
 
+def test_rdflib_literal():
+    """Test parsing rdflib literals."""
+    import pytest
+
+    rdflib = pytest.importorskip("rdflib")
+    from tripper import RDF, XSD
+    from tripper.utils import parse_literal
+
+    rdflib_literal = rdflib.Literal(1, datatype=rdflib.XSD.integer)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == 1
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
+
+    rdflib_literal = rdflib.Literal("abc", datatype=rdflib.XSD.string)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == "abc"
+    assert literal.lang is None
+    assert literal.datatype == XSD.string
+
+    rdflib_literal = rdflib.Literal('["a", 1, 2]', datatype=rdflib.RDF.JSON)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == '["a", 1, 2]'
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+
 def test_equality() -> None:
     """Test equality."""
     from tripper import RDF, XSD, Literal
