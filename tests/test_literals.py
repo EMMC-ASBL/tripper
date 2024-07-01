@@ -26,7 +26,7 @@ def test_untyped() -> None:
     # Check two things here:
     #   1) that a plain literal compares false to a non-string literal
     #   2) that we get a warning about unknown XSD.ENTITY datatype
-    with pytest.warns(UserWarning):
+    with pytest.warns(UserWarning, match="^unknown datatype"):
         assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
 
 

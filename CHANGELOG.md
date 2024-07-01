@@ -1,16 +1,31 @@
 # Changelog
 
-## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+## [v0.3.0](https://github.com/EMMC-ASBL/tripper/tree/v0.3.0) (2024-06-24)
 
-[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...HEAD)
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...v0.3.0)
 
-**Fixed bugs:**
+**Merged pull requests:**
 
-- cannot release [\#211](https://github.com/EMMC-ASBL/tripper/issues/211)
+- Tutorial update [\#227](https://github.com/EMMC-ASBL/tripper/pull/227) ([jesper-friis](https://github.com/jesper-friis))
+- Get rid of the last warning in the tests [\#226](https://github.com/EMMC-ASBL/tripper/pull/226) ([jesper-friis](https://github.com/jesper-friis))
+- Get restrictions as dicts [\#225](https://github.com/EMMC-ASBL/tripper/pull/225) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#224](https://github.com/EMMC-ASBL/tripper/pull/224) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added an additional test for convert [\#223](https://github.com/EMMC-ASBL/tripper/pull/223) ([jesper-friis](https://github.com/jesper-friis))
+- Minor fix in tutorial [\#221](https://github.com/EMMC-ASBL/tripper/pull/221) ([jesper-friis](https://github.com/jesper-friis))
+- Updated the tutorial [\#220](https://github.com/EMMC-ASBL/tripper/pull/220) ([jesper-friis](https://github.com/jesper-friis))
+- Improved the handling of different return types from the query\(\) method [\#219](https://github.com/EMMC-ASBL/tripper/pull/219) ([jesper-friis](https://github.com/jesper-friis))
+- Correct parsing literals from the rdflib backend. [\#217](https://github.com/EMMC-ASBL/tripper/pull/217) ([jesper-friis](https://github.com/jesper-friis))
+- Do not save cache while interpreter shotdown. [\#216](https://github.com/EMMC-ASBL/tripper/pull/216) ([jesper-friis](https://github.com/jesper-friis))
+- Allow string literal to compare equal to strings. [\#215](https://github.com/EMMC-ASBL/tripper/pull/215) ([jesper-friis](https://github.com/jesper-friis))
+- Also test for Python 3.12 [\#213](https://github.com/EMMC-ASBL/tripper/pull/213) ([jesper-friis](https://github.com/jesper-friis))
 
 ## [v0.2.16](https://github.com/EMMC-ASBL/tripper/tree/v0.2.16) (2024-05-16)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.15...v0.2.16)
+
+**Fixed bugs:**
+
+- cannot release [\#211](https://github.com/EMMC-ASBL/tripper/issues/211)
 
 **Closed issues:**
 

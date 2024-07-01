@@ -27,7 +27,7 @@ from .namespace import (
 from .triplestore import Triplestore, backend_packages
 from .tripper import Tripper
 
-__version__ = "0.2.16"
+__version__ = "0.3.0"
 
 __all__ = (
     "Literal",

@@ -573,10 +573,12 @@ class Triplestore:
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
+        Two of `subject`, `predicate` or `object` must be provided.
 
         Parameters:
-            subject, predicate, object: Criteria to match. Two of these must
-                be provided.
+            subject: Possible criteria to match.
+            predicate: Possible criteria to match.
+            object: Possible criteria to match.
             default: Value to return if no matches are found.
             any: If true, return any matching value, otherwise raise
                 UniquenessError.
@@ -729,13 +731,11 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    # xtype: "TypeLiteral['some', 'only', 'exactly', 'min', 'max', 'value']",
-
     def add_restriction(  # pylint: disable=redefined-builtin
         self,
         cls: str,
         property: str,
-        target: "Union[str, Literal]",
+        value: "Union[str, Literal]",
         type: "RestrictionType",
         cardinality: "Optional[int]" = None,
         hashlength: int = 16,
@@ -745,14 +745,14 @@ class Triplestore:
         Parameters:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
-            target: The IRI or literal value of the restriction target.
+            value: The IRI or literal value of the restriction target.
             type: The type of the restriction.  Should be one of:
-                - some: existential restriction (target is a class IRI)
-                - only: universal restriction (target is a class IRI)
-                - exactly: cardinality restriction (target is a class IRI)
-                - min: minimum cardinality restriction (target is a class IRI)
-                - max: maximum cardinality restriction (target is a class IRI)
-                - value: Value restriction (target is an IRI of an individual
+                - some: existential restriction (value is a class IRI)
+                - only: universal restriction (value is a class IRI)
+                - exactly: cardinality restriction (value is a class IRI)
+                - min: minimum cardinality restriction (value is a class IRI)
+                - max: maximum cardinality restriction (value is a class IRI)
+                - value: Value restriction (value is an IRI of an individual
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
@@ -763,7 +763,7 @@ class Triplestore:
         """
         iri = bnode_iri(
             prefix="restriction",
-            source=f"{cls} {property} {target} {type} {cardinality}",
+            source=f"{cls} {property} {value} {type} {cardinality}",
             length=hashlength,
         )
         triples = [
@@ -777,7 +777,7 @@ class Triplestore:
                 '"max" or "value"'
             )
         pred, card = self._restriction_types[type]
-        triples.append((iri, pred, target))
+        triples.append((iri, pred, value))
         if card:
             if not cardinality:
                 raise ArgumentTypeError(
@@ -794,18 +794,14 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
-        # xtype: (
-        #     "Optional[TypeLiteral['some', 'only', 'exactly', 'min', "
-        #     "'max', 'value']]"
-        # ) = None,
-
     def restrictions(  # pylint: disable=redefined-builtin
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
-        target: "Optional[Union[str, Literal]]" = None,
+        value: "Optional[Union[str, Literal]]" = None,
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
+        asdict: bool = True,
     ) -> "Generator[Triple, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
@@ -813,17 +809,24 @@ class Triplestore:
         Parameters:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
-            target: The IRI or literal value of the restriction target.
+            value: The IRI or literal value of the restriction target.
             type: The type of the restriction.  Should be one of:
-                - some: existential restriction (target is a class IRI)
-                - only: universal restriction (target is a class IRI)
-                - exactly: cardinality restriction (target is a class IRI)
-                - min: minimum cardinality restriction (target is a class IRI)
-                - max: maximum cardinality restriction (target is a class IRI)
-                - value: Value restriction (target is an IRI of an individual
+                - some: existential restriction (value is a class IRI)
+                - only: universal restriction (value is a class IRI)
+                - exactly: cardinality restriction (value is a class IRI)
+                - min: minimum cardinality restriction (value is a class IRI)
+                - max: maximum cardinality restriction (value is a class IRI)
+                - value: Value restriction (value is an IRI of an individual
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
+            asdict: Whether to returned generator is over dicts (see
+                _get_restriction_dict()). Default is to return a generator
+                over blank node IRIs.
+
+        Returns:
+            A generator over matching restrictions.  See `asdict` argument
+            for types iterated over.
         """
         if type is None:
             types = set(self._restriction_types.keys())
@@ -835,16 +838,16 @@ class Triplestore:
         else:
             types = {type} if isinstance(type, str) else set(type)
 
-        if isinstance(target, Literal):
+        if isinstance(value, Literal):
             types.intersection_update({"value"})
-        elif isinstance(target, str):
+        elif isinstance(value, str):
             types.difference_update({"value"})
 
         if cardinality:
             types.intersection_update({"exactly", "min", "max"})
         if not types:
             raise ArgumentValueError(
-                f"Inconsistent type='{type}', target='{target}' and "
+                f"Inconsistent type='{type}', value='{value}' and "
                 f"cardinality='{cardinality}' arguments"
             )
         pred = {self._restriction_types[t][0] for t in types}
@@ -860,15 +863,48 @@ class Triplestore:
         for iri in self.subjects(predicate=OWL.onProperty, object=property):
             if (
                 self.has(iri, RDF.type, OWL.Restriction)
-                and self.has(cls, RDFS.subClassOf, iri)
-                and any(self.has(iri, p, target) for p in pred)
+                and (not cls or self.has(cls, RDFS.subClassOf, iri))
+                and any(self.has(iri, p, value) for p in pred)
                 and (
                     not card
                     or not cardinality
                     or any(self.has(iri, c, lcard) for c in card)
                 )
             ):
-                yield iri
+                yield self._get_restriction_dict(iri) if asdict else iri
+
+    def _get_restriction_dict(self, iri):
+        """Return a dict describing restriction with `iri`.
+
+        The returned dict has the following keys:
+        - iri: (str) IRI of the restriction itself (blank node).
+        - cls: (str) IRI of class to which the restriction applies.
+        - property: (str) IRI of restriction property
+        - type: (str) One of: "some", "only", "exactly", "min", "max", "value".
+        - cardinality: (int) Restriction cardinality (optional).
+        - value: (str|Literal) IRI or literal value of the restriction target.
+        """
+        dct = dict(self.predicate_objects(iri))
+        if OWL.onClass in dct:
+            ((t, p, c),) = [
+                (t, p, c)
+                for t, (p, c) in self._restriction_types.items()
+                if c in dct
+            ]
+        else:
+            ((t, p, c),) = [
+                (t, p, c)
+                for t, (p, c) in self._restriction_types.items()
+                if p in dct
+            ]
+        return {
+            "iri": iri,
+            "cls": self.value(predicate=RDFS.subClassOf, object=iri),
+            "property": dct[OWL.onProperty],
+            "type": t,
+            "cardinality": int(dct[c]) if c else None,
+            "value": dct[p],
+        }
 
     def map(
         self,
