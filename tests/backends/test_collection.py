@@ -1,10 +1,10 @@
 """Test collection."""
 
-import pytest
-
 
 def test_collection():
     """Test if we can use a DLite collection as backend."""
+    import pytest
+
     dlite = pytest.importorskip("dlite")  # pylint: disable=unused-variable
     from tripper import DM, EMMO, MAP, XSD, Literal, Triplestore
     from tripper.utils import en
