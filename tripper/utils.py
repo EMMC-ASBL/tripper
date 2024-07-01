@@ -237,7 +237,7 @@ def parse_literal(literal: "Any") -> "Any":
     # This should handle rdflib literals correctly (and probably most other
     # literal representations as well)
     if hasattr(literal, "value"):
-        # Note that in rdflib 6.3, the `value` attribute may None for some
+        # Note that in rdflib 6.3, the `value` attribute may be None for some
         # datatypes (like rdf:JSON) even though a non-empty value exists.
         # As a workaround, we use the string representation if the value
         # attribute is None.
