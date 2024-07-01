@@ -130,6 +130,8 @@ good-names = [
     "ts",
     # Triple components: subject, predicate, object
     "s", "p", "o",
+    # Namespaces
+    "EX",
 ]
 
 [tool.pytest.ini_options]
