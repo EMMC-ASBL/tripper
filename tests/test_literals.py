@@ -164,6 +164,7 @@ def test_split_iri() -> None:
     assert name == "subClassOf"
 
 
+# if True:
 def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
     from datetime import datetime
@@ -249,6 +250,13 @@ def test_parse_literal() -> None:
     assert literal.value == "value"
     assert literal.lang is None
     assert literal.datatype == "http://example.com/vocab#mytype"
+
+    literal = parse_literal(
+        f'"""{{"a": 1, "b": [2.2, null, true]}}"""^^<{RDF.JSON}>'
+    )
+    assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
 
 
 def test_equality() -> None:
