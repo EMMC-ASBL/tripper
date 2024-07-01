@@ -8,6 +8,10 @@ Most of the rdflib backend is already tested in tests/test_triplestore.py.
 
 def test_rdflib_backend():
     """Test rdflib backend."""
+    import pytest
+
+    pytest.importorskip("rdflib")
+
     from tripper import RDFS, Literal, Triplestore
 
     ts = Triplestore("rdflib")
