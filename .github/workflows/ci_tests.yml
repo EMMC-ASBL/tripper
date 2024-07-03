@@ -84,6 +84,9 @@ jobs:
         pip install -U setuptools wheel flit
         pip install -e .[testing]
 
+    - name: List installed packages
+      run: pip freeze
+
     - name: Test with pytest
       run: pytest -vvv --cov-report=xml --doctest-modules
 
