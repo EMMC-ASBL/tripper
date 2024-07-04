@@ -1579,10 +1579,16 @@ is that this function correctly interprets n3-encoded literal strings.</p>
     <span class="p">):</span>
         <span class="n">datatype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
 
-    <span class="c1"># This will handle rdflib literals correctly and probably most other</span>
-    <span class="c1"># literal representations as well.</span>
+    <span class="c1"># This should handle rdflib literals correctly (and probably most other</span>
+    <span class="c1"># literal representations as well)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="c1"># Note that in rdflib 6.3, the `value` attribute may be None for some</span>
+        <span class="c1"># datatypes (like rdf:JSON) even though a non-empty value exists.</span>
+        <span class="c1"># As a workaround, we use the string representation if the value</span>
+        <span class="c1"># attribute is None.</span>
+        <span class="k">if</span> <span class="n">literal</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">literal</span><span class="p">),</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="p">)):</span>
