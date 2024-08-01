@@ -7,7 +7,7 @@ on:
 jobs:
   update-dependencies-branch:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_automerge_prs.yml@v2.7.4
+    uses: SINTEF/ci-cd/.github/workflows/ci_automerge_prs.yml@v2.8.0
     if: github.repository_owner == 'EMMC-ASBL' && ( ( startsWith(github.event.pull_request.head.ref, 'dependabot/') && github.actor == 'dependabot[bot]' ) || ( github.event.pull_request.head.ref == 'ci/update-pyproject' && github.actor == 'TEAM4-0' ) )
     secrets:
       PAT: ${{ secrets.RELEASE_PAT }}
