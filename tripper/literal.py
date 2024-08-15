@@ -72,6 +72,9 @@ class Literal(str):
             XSD.normalizedString,
             XSD.token,
         ),
+        list: (RDF.JSON,),
+        dict: (RDF.JSON,),
+        None.__class__: (RDF.JSON,),
     }
 
     def __new__(
@@ -83,7 +86,7 @@ class Literal(str):
         lang: "Optional[str]" = None,
         datatype: "Optional[Any]" = None,
     ):
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-statements
         string = super().__new__(cls, value)
         string.lang = None
         string.datatype = None
@@ -99,6 +102,15 @@ class Literal(str):
         # Get datatype
         elif datatype in cls.datatypes:
             string.datatype = cls.datatypes[datatype][0]
+        elif datatype == RDF.JSON:
+            if isinstance(value, str):
+                # Raises an exception if `value` is not a valid JSON string
+                json.loads(value)
+            else:
+                value = json.dumps(value)
+            string = super().__new__(cls, value)
+            string.lang = None
+            string.datatype = RDF.JSON
         elif datatype:
             # Create canonical representation of value for
             # given datatype
@@ -143,8 +155,8 @@ class Literal(str):
             string.datatype = XSD.dateTime
         elif value is None or isinstance(value, (dict, list)):
             string = super().__new__(cls, json.dumps(value))
-            string.lang == None
-            string.datatype == RDF.JSON
+            string.lang = None
+            string.datatype = RDF.JSON
 
         # Some consistency checking
         if (
@@ -222,8 +234,6 @@ class Literal(str):
     def to_python(self):
         """Returns an appropriate python datatype derived from this RDF
         literal."""
-        value = str(self)
-
         if self.datatype == XSD.boolean:
             value = False if str(self) == "False" else bool(self)
         elif self.datatype in self.datatypes[int]:
@@ -233,7 +243,9 @@ class Literal(str):
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
         elif self.datatype == RDF.JSON:
-            value = json.loads(value)
+            value = json.loads(str(self))
+        else:
+            value = str(self)
 
         return value
 

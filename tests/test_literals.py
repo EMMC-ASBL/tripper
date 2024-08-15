@@ -7,7 +7,7 @@ def test_untyped() -> None:
     """Test creating a untyped literal."""
     import pytest
 
-    from tripper.literal import RDF, XSD, Literal
+    from tripper.literal import XSD, Literal
 
     literal = Literal("Hello world!")
     assert literal == "Hello world!"
@@ -18,9 +18,6 @@ def test_untyped() -> None:
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == '"Hello world!"'
-    assert literal == Literal("Hello world!", datatype=XSD.string)
-    assert literal == Literal("Hello world!", datatype=XSD.token)
-    assert literal == Literal("Hello world!", datatype=RDF.JSON)
     assert literal == Literal("Hello world!", lang="en")
 
     # Check two things here:
@@ -129,6 +126,43 @@ def test_hexbinary() -> None:
     assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
 
+def test_json() -> None:
+    """Test creating JSON literal."""
+    import json
+
+    import pytest
+
+    from tripper import RDF, Literal
+
+    literal = Literal(None)
+    assert literal.value is None
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal({"a": 1, "b": [2.2, None, True]})
+    assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal(["a", 1, True, {"a": 2.2, "b": None}])
+    assert literal.value == ["a", 1, True, {"a": 2.2, "b": None}]
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal('{"a": 1}', datatype=RDF.JSON)
+    assert literal.value == {"a": 1}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal('"a"', datatype=RDF.JSON)
+    assert literal.value == "a"
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    with pytest.raises(json.JSONDecodeError):
+        literal = Literal("a", datatype=RDF.JSON)
+
+
 def test_float_through_datatype() -> None:
     """Test creating a float literal from an int through datatype."""
     from tripper import XSD, Literal
@@ -164,7 +198,6 @@ def test_split_iri() -> None:
     assert name == "subClassOf"
 
 
-# if True:
 def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
     from datetime import datetime
@@ -220,10 +253,20 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.string
 
+    literal = parse_literal(3)
+    assert literal.value == 3
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
+
     literal = parse_literal("3")
     assert literal.value == 3
     assert literal.lang is None
     assert literal.datatype == XSD.integer
+
+    literal = parse_literal(3.14)
+    assert literal.value == 3.14
+    assert literal.lang is None
+    assert literal.datatype == XSD.double
 
     literal = parse_literal("3.14")
     assert literal.value == 3.14
@@ -250,6 +293,11 @@ def test_parse_literal() -> None:
     assert literal.value == "value"
     assert literal.lang is None
     assert literal.datatype == "http://example.com/vocab#mytype"
+
+    literal = parse_literal({"a": 1, "b": [2.2, None, True]})
+    assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
 
     literal = parse_literal(
         f'"""{{"a": 1, "b": [2.2, null, true]}}"""^^<{RDF.JSON}>'
