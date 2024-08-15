@@ -283,13 +283,13 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
-    literal = parse_literal(f'"text"^^<{RDF.HTML}>')
+    literal = parse_literal(f'"""text"""^^<{RDF.HTML}>')
     assert literal.value == "text"
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
     literal = parse_literal(f'"""["a", 1, 2]"""^^<{RDF.JSON}>')
-    assert literal.value == '["a", 1, 2]'
+    assert literal.value == ["a", 1, 2]
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
 
@@ -334,7 +334,7 @@ def test_rdflib_literal():
 
     rdflib_literal = rdflib.Literal('["a", 1, 2]', datatype=rdflib.RDF.JSON)
     literal = parse_literal(rdflib_literal)
-    assert literal.value == '["a", 1, 2]'
+    assert literal.value == ["a", 1, 2]
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
 
