@@ -288,6 +288,11 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
+    literal = parse_literal(f'"""["a", 1, 2]"""^^<{RDF.JSON}>')
+    assert literal.value == '["a", 1, 2]'
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
     with pytest.warns(UserWarning, match="unknown datatype"):
         literal = parse_literal('"value"^^http://example.com/vocab#mytype')
     assert literal.value == "value"
@@ -303,6 +308,33 @@ def test_parse_literal() -> None:
         f'"""{{"a": 1, "b": [2.2, null, true]}}"""^^<{RDF.JSON}>'
     )
     assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+
+def test_rdflib_literal():
+    """Test parsing rdflib literals."""
+    import pytest
+
+    rdflib = pytest.importorskip("rdflib")
+    from tripper import RDF, XSD
+    from tripper.utils import parse_literal
+
+    rdflib_literal = rdflib.Literal(1, datatype=rdflib.XSD.integer)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == 1
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
+
+    rdflib_literal = rdflib.Literal("abc", datatype=rdflib.XSD.string)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == "abc"
+    assert literal.lang is None
+    assert literal.datatype == XSD.string
+
+    rdflib_literal = rdflib.Literal('["a", 1, 2]', datatype=rdflib.RDF.JSON)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == '["a", 1, 2]'
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
 
