@@ -168,7 +168,11 @@ class Namespace:
                 with open(cachefile, "wb") as f:
                     pickle.dump(self._iris, f)
         except OSError as exc:
-            warnings.warn(f"Cannot access cache file: {exc}")
+            warnings.warn(
+                f"Cannot access cache file: {exc}\n\n"
+                "You can select cache directory with the XDG_CACHE_HOME "
+                "environment variable."
+            )
 
     def _load_cache(self) -> bool:
         """Update cache with cache file.
@@ -186,7 +190,11 @@ class Namespace:
                 return True
             return False
         except OSError as exc:
-            warnings.warn(f"Cannot create cache directory: {exc}")
+            warnings.warn(
+                f"Cannot create cache directory: {exc}\n\n"
+                "You can select cache directory with the XDG_CACHE_HOME "
+                "environment variable."
+            )
             return False
 
     def __getattr__(self, name):
@@ -202,7 +210,11 @@ class Namespace:
                         f"{cachefile}"
                     )
             except OSError as exc:
-                warnings.warn(f"Cannot access cache file: {exc}")
+                warnings.warn(
+                    f"Cannot access cache file: {exc}\n\n"
+                    "You can select cache directory with the XDG_CACHE_HOME "
+                    "environment variable."
+                )
             raise NoSuchIRIError(self._iri + name + msg)
         return self._iri + name
 
