@@ -16,7 +16,7 @@
         <link rel="prev" href="../api_reference/mappings/mappings/">
       
       
-        <link rel="next" href="../LICENSE/">
+        <link rel="next" href="../CHANGELOG/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -790,11 +790,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../LICENSE/" class="md-nav__link">
+      <a href="../CHANGELOG/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    License
+    Changelog
   </span>
   
 
@@ -810,11 +810,11 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG/" class="md-nav__link">
+      <a href="../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Changelog
+    License
   </span>
   
 
@@ -858,13 +858,15 @@
 
 <h1 id="known-issues">Known issues<a class="headerlink" href="#known-issues" title="Permanent link">&para;</a></h1>
 <ul>
-<li>If you use the rdflib backend and don't have write permissions to
-  the cache directory (which e.g. can happen if you run Python in
-  docker as a non-root user), you may get a <code>urllib.error.HTTPError</code>
-  error when accessing an online rdf resource.</li>
-</ul>
+<li>
+<p>If you use the rdflib backend and don't have write permissions to
+    the cache directory (which e.g. can happen if you run Python in
+    docker as a non-root user), you may get a <code>urllib.error.HTTPError</code>
+    error when accessing an online rdf resource.</p>
 <p>Setting the environment variable <code>XDG_CACHE_HOME</code> to a directory
-  that you have write access to will solve the problem.</p>
+that you have write access to will solve the problem.</p>
+</li>
+</ul>
 
 
 
