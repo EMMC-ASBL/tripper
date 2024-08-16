@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.3.1](https://github.com/EMMC-ASBL/tripper/tree/v0.3.1) (2024-08-16)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.0...v0.3.1)
+
+**Merged pull requests:**
+
+- Avoid that tripper.Namespace crashes if the cache directory cannot be accessed [\#235](https://github.com/EMMC-ASBL/tripper/pull/235) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#232](https://github.com/EMMC-ASBL/tripper/pull/232) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#231](https://github.com/EMMC-ASBL/tripper/pull/231) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Cleaned up backend tests [\#230](https://github.com/EMMC-ASBL/tripper/pull/230) ([jesper-friis](https://github.com/jesper-friis))
+- Added a fix for parsing rdflib literals. [\#229](https://github.com/EMMC-ASBL/tripper/pull/229) ([jesper-friis](https://github.com/jesper-friis))
+- Add better and more convenient support for rdf:JSON datatype [\#228](https://github.com/EMMC-ASBL/tripper/pull/228) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.3.0](https://github.com/EMMC-ASBL/tripper/tree/v0.3.0) (2024-06-24)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...v0.3.0)
