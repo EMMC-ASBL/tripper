@@ -759,18 +759,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.backends.rdflib.astriple" class="md-nav__link">
+  <a href="#tripper.backends.rdflib.tordflib" class="md-nav__link">
     <span class="md-ellipsis">
-      astriple()
+      tordflib()
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.backends.rdflib.asuri" class="md-nav__link">
+  <a href="#tripper.backends.rdflib.totriple" class="md-nav__link">
     <span class="md-ellipsis">
-      asuri()
+      totriple()
     </span>
   </a>
   
@@ -1090,18 +1090,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.backends.rdflib.astriple" class="md-nav__link">
+  <a href="#tripper.backends.rdflib.tordflib" class="md-nav__link">
     <span class="md-ellipsis">
-      astriple()
+      tordflib()
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.backends.rdflib.asuri" class="md-nav__link">
+  <a href="#tripper.backends.rdflib.totriple" class="md-nav__link">
     <span class="md-ellipsis">
-      asuri()
+      totriple()
     </span>
   </a>
   
@@ -1252,17 +1252,17 @@ creating a new empty Graph object.</p></td>
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
 
     <span class="c1"># Optional methods</span>
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1445,7 +1445,7 @@ creating a new empty Graph object.</p></td>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
@@ -1788,7 +1788,7 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
@@ -1914,7 +1914,7 @@ See https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.Graph.ser
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">))</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2006,22 +2006,27 @@ the query() method for SELECT queries.</p>
 
 
 
-<h2 id="tripper.backends.rdflib.astriple" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span></code>
+<h2 id="tripper.backends.rdflib.tordflib" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tordflib</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.astriple" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.backends.rdflib.tordflib" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Help function converting a triple to rdflib triple.</p>
+      <p>Help function converting a spo-value to proper rdflib type.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">astriple</span><span class="p">(</span><span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function converting a triple to rdflib triple.&quot;&quot;&quot;</span>
-    <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
-    <span class="k">return</span> <span class="n">asuri</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">asuri</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">asuri</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">tordflib</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[None, Literal, str]&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function converting a spo-value to proper rdflib type.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">rdflibLiteral</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BNode</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2034,29 +2039,22 @@ the query() method for SELECT queries.</p>
 
 
 
-<h2 id="tripper.backends.rdflib.asuri" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">asuri</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+<h2 id="tripper.backends.rdflib.totriple" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span></code>
 
 
-<a href="#tripper.backends.rdflib.asuri" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.backends.rdflib.totriple" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Help function converting a spo-value to proper rdflib type.</p>
+      <p>Help function converting a triple to rdflib triple.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">asuri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[None, Literal, str]&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function converting a spo-value to proper rdflib type.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">rdflibLiteral</span><span class="p">(</span>
-            <span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">datatype</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">BNode</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
-    <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">totriple</span><span class="p">(</span><span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function converting a triple to rdflib triple.&quot;&quot;&quot;</span>
+    <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
+    <span class="k">return</span> <span class="n">tordflib</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">tordflib</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">tordflib</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>

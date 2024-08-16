@@ -459,6 +459,60 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--inferring-the-data-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inferring the data type
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--string-values-with-no-datatype-are-assumed-to-be-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      String values with no datatype are assumed to be strings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--explicit-providing-the-datatype" class="md-nav__link">
+    <span class="md-ellipsis">
+      Explicit providing the datatype
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--localised-or-language-tagged-string-literal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Localised or language-tagged string literal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--dicts-lists-and-none-are-assumed-to-be-of-type-rdfjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dicts, lists and None are assumed to be of type rdf:JSON
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--literal-of-custom-datatype-value-must-be-a-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      Literal of custom datatype ( Literal RDF values. Literals may be used as objects in RDF triples to provide a value to a resource. See also https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal Literal (str) &para; A literal RDF value. Parameters: Name Type Description Default value Union[datetime, bytes, bytearray, bool, int, float, str, None, dict, list] The literal value. Can be given as a string or a Python object. required lang Optional[str] A standard language code, like "en", "no", etc. Implies that the value is a language-tagged string. required datatype Optional[str, type] The datatype of this literal. Can be given either as a string with the datatype IRI (ex: "http://www.w3.org/2001/XMLSchema#integer") or as a Python type (ex: int). If not given, the datatype is inferred from value. Should not be combined with lang. required Examples: &gt;&gt;&gt; from tripper import XSD, Literal Inferring the data type&para; &gt;&gt;&gt; l1 = Literal(42) &gt;&gt;&gt; l1 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l1.value 42 String values with no datatype are assumed to be strings&para; &gt;&gt;&gt; l2 = Literal(&quot;42&quot;) &gt;&gt;&gt; l2.value &#39;42&#39; Explicit providing the datatype&para; &gt;&gt;&gt; l3 = Literal(&quot;42&quot;, datatype=XSD.integer) &gt;&gt;&gt; l3 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l3.value 42 Localised or language-tagged string literal&para; &gt;&gt;&gt; Literal(&quot;Hello world&quot;, lang=&quot;en&quot;) Literal(&#39;Hello world&#39;, lang=&#39;en&#39;) Dicts, lists and None are assumed to be of type rdf:JSON&para; &gt;&gt;&gt; l4 = Literal({&quot;name&quot;: &quot;Jon Doe&quot;}) &gt;&gt;&gt; l4.datatype &#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39; &gt;&gt;&gt; l4.value {&#39;name&#39;: &#39;Jon Doe&#39;} Literal of custom datatype (value must be a string)&para; &gt;&gt;&gt; Literal(&quot;my value...&quot;, datatype=&quot;http://example.com/onto#MyType&quot;) Literal(&#39;my value...&#39;, datatype=&#39;http://example.com/onto#MyType&#39;) Source code in tripper/literal.py class Literal(str): &quot;&quot;&quot;A literal RDF value. Arguments: value (Union[datetime, bytes, bytearray, bool, int, float, str, None, dict, list]): The literal value. Can be given as a string or a Python object. lang (Optional[str]): A standard language code, like &quot;en&quot;, &quot;no&quot;, etc. Implies that the `value` is a language-tagged string. datatype (Optional[str, type]): The datatype of this literal. Can be given either as a string with the datatype IRI (ex: `&quot;http://www.w3.org/2001/XMLSchema#integer&quot;`) or as a Python type (ex: `int`). If not given, the datatype is inferred from `value`. Should not be combined with `lang`. Examples: &gt;&gt;&gt; from tripper import XSD, Literal # Inferring the data type &gt;&gt;&gt; l1 = Literal(42) &gt;&gt;&gt; l1 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l1.value 42 # String values with no datatype are assumed to be strings &gt;&gt;&gt; l2 = Literal(&quot;42&quot;) &gt;&gt;&gt; l2.value &#39;42&#39; # Explicit providing the datatype &gt;&gt;&gt; l3 = Literal(&quot;42&quot;, datatype=XSD.integer) &gt;&gt;&gt; l3 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l3.value 42 # Localised or language-tagged string literal &gt;&gt;&gt; Literal(&quot;Hello world&quot;, lang=&quot;en&quot;) Literal(&#39;Hello world&#39;, lang=&#39;en&#39;) # Dicts, lists and None are assumed to be of type rdf:JSON &gt;&gt;&gt; l4 = Literal({&quot;name&quot;: &quot;Jon Doe&quot;}) &gt;&gt;&gt; l4.datatype &#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39; &gt;&gt;&gt; l4.value {&#39;name&#39;: &#39;Jon Doe&#39;} # Literal of custom datatype (`value` must be a string) &gt;&gt;&gt; Literal(&quot;my value...&quot;, datatype=&quot;http://example.com/onto#MyType&quot;) Literal(&#39;my value...&#39;, datatype=&#39;http://example.com/onto#MyType&#39;) &quot;&quot;&quot; # Note that the order of datatypes matters - it is used by # utils.parse_literal() when inferring the datatype of a literal. datatypes = { datetime: (XSD.dateTime,), bytes: (XSD.hexBinary, XSD.base64Binary), bytearray: (XSD.hexBinary, XSD.base64Binary), bool: (XSD.boolean,), int: ( XSD.integer, XSD.int, XSD.short, XSD.long, XSD.nonNegativeInteger, XSD.nonPositiveInteger, XSD.negativeInteger, XSD.unsignedInt, XSD.unsignedShort, XSD.unsignedLong, XSD.byte, XSD.unsignedByte, ), float: ( XSD.double, XSD.decimal, XSD.dateTimeStamp, XSD.real, XSD.rational, ), str: ( XSD.string, RDFS.Literal, RDF.PlainLiteral, RDF.HTML, RDF.JSON, RDF.XMLLiteral, RDF.langString, XSD.NCName, XSD.NMTOKEN, XSD.Name, XSD.anyURI, XSD.language, XSD.normalizedString, XSD.token, ), list: (RDF.JSON,), dict: (RDF.JSON,), None.__class__: (RDF.JSON,), } lang: &quot;Union[str, None]&quot; datatype: &quot;Union[str, None]&quot; def __new__( cls, value: ( &quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot; &quot;dict, list]&quot; ), lang: &quot;Optional[str]&quot; = None, datatype: &quot;Optional[Union[str, type]]&quot; = None, ): # pylint: disable=too-many-branches,too-many-statements string = super().__new__(cls, value) string.lang = None string.datatype = None # Get lang if lang: if datatype: raise TypeError( &quot;A literal can only have one of `lang` or `datatype`.&quot; ) string.lang = str(lang) # Get datatype elif datatype in cls.datatypes: string.datatype = cls.datatypes[datatype][0] # type: ignore elif datatype == RDF.JSON: if isinstance(value, str): # Raises an exception if `value` is not a valid JSON string json.loads(value) else: value = json.dumps(value) string = super().__new__(cls, value) string.lang = None string.datatype = RDF.JSON elif datatype: assert isinstance(datatype, str) # nosec # Create canonical representation of value for # given datatype val = None for typ, names in cls.datatypes.items(): for name in names: if name == datatype: try: val = typ(value) break except: # pylint: disable=bare-except pass # nosec if val: break if val is not None: # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, val) string.lang = None string.datatype = datatype # Infer datatype from value elif isinstance(value, Literal): string.lang = value.lang string.datatype = value.datatype elif isinstance(value, str): string.datatype = None elif isinstance(value, bool): string.datatype = XSD.boolean elif isinstance(value, int): string.datatype = XSD.integer elif isinstance(value, float): string.datatype = XSD.double elif isinstance(value, (bytes, bytearray)): # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, value.hex()) string.lang = None string.datatype = XSD.hexBinary elif isinstance(value, datetime): string.datatype = XSD.dateTime elif value is None or isinstance(value, (dict, list)): string = super().__new__(cls, json.dumps(value)) string.lang = None string.datatype = RDF.JSON # Some consistency checking if ( string.datatype == XSD.nonPositiveInteger and int(value) &gt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonPositiveInteger: &#39;{string}&#39;&quot;) if ( string.datatype == XSD.nonNegativeInteger and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonNegativeInteger: &#39;{string}&#39;&quot;) if ( string.datatype in ( XSD.unsignedInt, XSD.unsignedShort, XSD.unsignedLong, XSD.unsignedByte, ) and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not an unsigned integer: &#39;{string}&#39;&quot;) # Check if datatype is known if string.datatype and not any( string.datatype in types for types in cls.datatypes.values() ): warnings.warn( f&quot;unknown datatype: {string.datatype} - assuming xsd:string&quot; ) return string def __hash__(self): return hash((str(self), self.lang, self.datatype)) def __eq__(self, other): # pylint: disable=too-many-return-statements if not isinstance(other, Literal): if isinstance(other, str) and ( self.lang or self.datatype in self.datatypes[str] ): return str(self) == other other = Literal(other) if str(self) != str(other): return False if self.lang and other.lang and self.lang != other.lang: return False if ( self.datatype and other.datatype and self.datatype != other.datatype ): return False strings = set(self.datatypes[str] + (None,)) if self.datatype is None and other.datatype not in strings: return False if other.datatype is None and self.datatype not in strings: return False return True def __ne__(self, other): return not self.__eq__(other) def __repr__(self) -&gt; str: lang = f&quot;, lang=&#39;{self.lang}&#39;&quot; if self.lang else &quot;&quot; datatype = f&quot;, datatype=&#39;{self.datatype}&#39;&quot; if self.datatype else &quot;&quot; return f&quot;Literal(&#39;{self}&#39;{lang}{datatype})&quot; value = property( fget=lambda self: self.to_python(), doc=&quot;Appropriate python datatype derived from this RDF literal.&quot;, ) def to_python(self): &quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF literal.&quot;&quot;&quot; if self.datatype == XSD.boolean: value = False if str(self) == &quot;False&quot; else bool(self) elif self.datatype in self.datatypes[int]: value = int(self) elif self.datatype in self.datatypes[float]: value = float(self) elif self.datatype == XSD.dateTime: value = datetime.fromisoformat(self) elif self.datatype == RDF.JSON: value = json.loads(str(self)) else: value = str(self) return value def n3(self) -&gt; str: # pylint: disable=invalid-name &quot;&quot;&quot;Returns a representation in n3 format.&quot;&quot;&quot; if self.lang: return f&#39;&quot;{self}&quot;@{self.lang}&#39; if self.datatype: return f&#39;&quot;{self}&quot;^^&lt;{self.datatype}&gt;&#39; return f&#39;&quot;{self}&quot;&#39; value property readonly &para; Appropriate python datatype derived from this RDF literal. __new__(cls, value, lang=None, datatype=None) special staticmethod &para; Create and return a new object. See help(type) for accurate signature. Source code in tripper/literal.py def __new__( cls, value: ( &quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot; &quot;dict, list]&quot; ), lang: &quot;Optional[str]&quot; = None, datatype: &quot;Optional[Union[str, type]]&quot; = None, ): # pylint: disable=too-many-branches,too-many-statements string = super().__new__(cls, value) string.lang = None string.datatype = None # Get lang if lang: if datatype: raise TypeError( &quot;A literal can only have one of `lang` or `datatype`.&quot; ) string.lang = str(lang) # Get datatype elif datatype in cls.datatypes: string.datatype = cls.datatypes[datatype][0] # type: ignore elif datatype == RDF.JSON: if isinstance(value, str): # Raises an exception if `value` is not a valid JSON string json.loads(value) else: value = json.dumps(value) string = super().__new__(cls, value) string.lang = None string.datatype = RDF.JSON elif datatype: assert isinstance(datatype, str) # nosec # Create canonical representation of value for # given datatype val = None for typ, names in cls.datatypes.items(): for name in names: if name == datatype: try: val = typ(value) break except: # pylint: disable=bare-except pass # nosec if val: break if val is not None: # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, val) string.lang = None string.datatype = datatype # Infer datatype from value elif isinstance(value, Literal): string.lang = value.lang string.datatype = value.datatype elif isinstance(value, str): string.datatype = None elif isinstance(value, bool): string.datatype = XSD.boolean elif isinstance(value, int): string.datatype = XSD.integer elif isinstance(value, float): string.datatype = XSD.double elif isinstance(value, (bytes, bytearray)): # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, value.hex()) string.lang = None string.datatype = XSD.hexBinary elif isinstance(value, datetime): string.datatype = XSD.dateTime elif value is None or isinstance(value, (dict, list)): string = super().__new__(cls, json.dumps(value)) string.lang = None string.datatype = RDF.JSON # Some consistency checking if ( string.datatype == XSD.nonPositiveInteger and int(value) &gt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonPositiveInteger: &#39;{string}&#39;&quot;) if ( string.datatype == XSD.nonNegativeInteger and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonNegativeInteger: &#39;{string}&#39;&quot;) if ( string.datatype in ( XSD.unsignedInt, XSD.unsignedShort, XSD.unsignedLong, XSD.unsignedByte, ) and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not an unsigned integer: &#39;{string}&#39;&quot;) # Check if datatype is known if string.datatype and not any( string.datatype in types for types in cls.datatypes.values() ): warnings.warn( f&quot;unknown datatype: {string.datatype} - assuming xsd:string&quot; ) return string n3(self) &para; Returns a representation in n3 format. Source code in tripper/literal.py def n3(self) -&gt; str: # pylint: disable=invalid-name &quot;&quot;&quot;Returns a representation in n3 format.&quot;&quot;&quot; if self.lang: return f&#39;&quot;{self}&quot;@{self.lang}&#39; if self.datatype: return f&#39;&quot;{self}&quot;^^&lt;{self.datatype}&gt;&#39; return f&#39;&quot;{self}&quot;&#39; to_python(self) &para; Returns an appropriate python datatype derived from this RDF literal. Source code in tripper/literal.py def to_python(self): &quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF literal.&quot;&quot;&quot; if self.datatype == XSD.boolean: value = False if str(self) == &quot;False&quot; else bool(self) elif self.datatype in self.datatypes[int]: value = int(self) elif self.datatype in self.datatypes[float]: value = float(self) elif self.datatype == XSD.dateTime: value = datetime.fromisoformat(self) elif self.datatype == RDF.JSON: value = json.loads(str(self)) else: value = str(self) return value must be a string)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.literal.Literal.value" class="md-nav__link">
     <span class="md-ellipsis">
       value
@@ -921,6 +975,60 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--inferring-the-data-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inferring the data type
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--string-values-with-no-datatype-are-assumed-to-be-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      String values with no datatype are assumed to be strings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--explicit-providing-the-datatype" class="md-nav__link">
+    <span class="md-ellipsis">
+      Explicit providing the datatype
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--localised-or-language-tagged-string-literal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Localised or language-tagged string literal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--dicts-lists-and-none-are-assumed-to-be-of-type-rdfjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dicts, lists and None are assumed to be of type rdf:JSON
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.literal.Literal--literal-of-custom-datatype-value-must-be-a-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      Literal of custom datatype ( Literal RDF values. Literals may be used as objects in RDF triples to provide a value to a resource. See also https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal Literal (str) &para; A literal RDF value. Parameters: Name Type Description Default value Union[datetime, bytes, bytearray, bool, int, float, str, None, dict, list] The literal value. Can be given as a string or a Python object. required lang Optional[str] A standard language code, like "en", "no", etc. Implies that the value is a language-tagged string. required datatype Optional[str, type] The datatype of this literal. Can be given either as a string with the datatype IRI (ex: "http://www.w3.org/2001/XMLSchema#integer") or as a Python type (ex: int). If not given, the datatype is inferred from value. Should not be combined with lang. required Examples: &gt;&gt;&gt; from tripper import XSD, Literal Inferring the data type&para; &gt;&gt;&gt; l1 = Literal(42) &gt;&gt;&gt; l1 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l1.value 42 String values with no datatype are assumed to be strings&para; &gt;&gt;&gt; l2 = Literal(&quot;42&quot;) &gt;&gt;&gt; l2.value &#39;42&#39; Explicit providing the datatype&para; &gt;&gt;&gt; l3 = Literal(&quot;42&quot;, datatype=XSD.integer) &gt;&gt;&gt; l3 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l3.value 42 Localised or language-tagged string literal&para; &gt;&gt;&gt; Literal(&quot;Hello world&quot;, lang=&quot;en&quot;) Literal(&#39;Hello world&#39;, lang=&#39;en&#39;) Dicts, lists and None are assumed to be of type rdf:JSON&para; &gt;&gt;&gt; l4 = Literal({&quot;name&quot;: &quot;Jon Doe&quot;}) &gt;&gt;&gt; l4.datatype &#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39; &gt;&gt;&gt; l4.value {&#39;name&#39;: &#39;Jon Doe&#39;} Literal of custom datatype (value must be a string)&para; &gt;&gt;&gt; Literal(&quot;my value...&quot;, datatype=&quot;http://example.com/onto#MyType&quot;) Literal(&#39;my value...&#39;, datatype=&#39;http://example.com/onto#MyType&#39;) Source code in tripper/literal.py class Literal(str): &quot;&quot;&quot;A literal RDF value. Arguments: value (Union[datetime, bytes, bytearray, bool, int, float, str, None, dict, list]): The literal value. Can be given as a string or a Python object. lang (Optional[str]): A standard language code, like &quot;en&quot;, &quot;no&quot;, etc. Implies that the `value` is a language-tagged string. datatype (Optional[str, type]): The datatype of this literal. Can be given either as a string with the datatype IRI (ex: `&quot;http://www.w3.org/2001/XMLSchema#integer&quot;`) or as a Python type (ex: `int`). If not given, the datatype is inferred from `value`. Should not be combined with `lang`. Examples: &gt;&gt;&gt; from tripper import XSD, Literal # Inferring the data type &gt;&gt;&gt; l1 = Literal(42) &gt;&gt;&gt; l1 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l1.value 42 # String values with no datatype are assumed to be strings &gt;&gt;&gt; l2 = Literal(&quot;42&quot;) &gt;&gt;&gt; l2.value &#39;42&#39; # Explicit providing the datatype &gt;&gt;&gt; l3 = Literal(&quot;42&quot;, datatype=XSD.integer) &gt;&gt;&gt; l3 Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;) &gt;&gt;&gt; l3.value 42 # Localised or language-tagged string literal &gt;&gt;&gt; Literal(&quot;Hello world&quot;, lang=&quot;en&quot;) Literal(&#39;Hello world&#39;, lang=&#39;en&#39;) # Dicts, lists and None are assumed to be of type rdf:JSON &gt;&gt;&gt; l4 = Literal({&quot;name&quot;: &quot;Jon Doe&quot;}) &gt;&gt;&gt; l4.datatype &#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39; &gt;&gt;&gt; l4.value {&#39;name&#39;: &#39;Jon Doe&#39;} # Literal of custom datatype (`value` must be a string) &gt;&gt;&gt; Literal(&quot;my value...&quot;, datatype=&quot;http://example.com/onto#MyType&quot;) Literal(&#39;my value...&#39;, datatype=&#39;http://example.com/onto#MyType&#39;) &quot;&quot;&quot; # Note that the order of datatypes matters - it is used by # utils.parse_literal() when inferring the datatype of a literal. datatypes = { datetime: (XSD.dateTime,), bytes: (XSD.hexBinary, XSD.base64Binary), bytearray: (XSD.hexBinary, XSD.base64Binary), bool: (XSD.boolean,), int: ( XSD.integer, XSD.int, XSD.short, XSD.long, XSD.nonNegativeInteger, XSD.nonPositiveInteger, XSD.negativeInteger, XSD.unsignedInt, XSD.unsignedShort, XSD.unsignedLong, XSD.byte, XSD.unsignedByte, ), float: ( XSD.double, XSD.decimal, XSD.dateTimeStamp, XSD.real, XSD.rational, ), str: ( XSD.string, RDFS.Literal, RDF.PlainLiteral, RDF.HTML, RDF.JSON, RDF.XMLLiteral, RDF.langString, XSD.NCName, XSD.NMTOKEN, XSD.Name, XSD.anyURI, XSD.language, XSD.normalizedString, XSD.token, ), list: (RDF.JSON,), dict: (RDF.JSON,), None.__class__: (RDF.JSON,), } lang: &quot;Union[str, None]&quot; datatype: &quot;Union[str, None]&quot; def __new__( cls, value: ( &quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot; &quot;dict, list]&quot; ), lang: &quot;Optional[str]&quot; = None, datatype: &quot;Optional[Union[str, type]]&quot; = None, ): # pylint: disable=too-many-branches,too-many-statements string = super().__new__(cls, value) string.lang = None string.datatype = None # Get lang if lang: if datatype: raise TypeError( &quot;A literal can only have one of `lang` or `datatype`.&quot; ) string.lang = str(lang) # Get datatype elif datatype in cls.datatypes: string.datatype = cls.datatypes[datatype][0] # type: ignore elif datatype == RDF.JSON: if isinstance(value, str): # Raises an exception if `value` is not a valid JSON string json.loads(value) else: value = json.dumps(value) string = super().__new__(cls, value) string.lang = None string.datatype = RDF.JSON elif datatype: assert isinstance(datatype, str) # nosec # Create canonical representation of value for # given datatype val = None for typ, names in cls.datatypes.items(): for name in names: if name == datatype: try: val = typ(value) break except: # pylint: disable=bare-except pass # nosec if val: break if val is not None: # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, val) string.lang = None string.datatype = datatype # Infer datatype from value elif isinstance(value, Literal): string.lang = value.lang string.datatype = value.datatype elif isinstance(value, str): string.datatype = None elif isinstance(value, bool): string.datatype = XSD.boolean elif isinstance(value, int): string.datatype = XSD.integer elif isinstance(value, float): string.datatype = XSD.double elif isinstance(value, (bytes, bytearray)): # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, value.hex()) string.lang = None string.datatype = XSD.hexBinary elif isinstance(value, datetime): string.datatype = XSD.dateTime elif value is None or isinstance(value, (dict, list)): string = super().__new__(cls, json.dumps(value)) string.lang = None string.datatype = RDF.JSON # Some consistency checking if ( string.datatype == XSD.nonPositiveInteger and int(value) &gt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonPositiveInteger: &#39;{string}&#39;&quot;) if ( string.datatype == XSD.nonNegativeInteger and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonNegativeInteger: &#39;{string}&#39;&quot;) if ( string.datatype in ( XSD.unsignedInt, XSD.unsignedShort, XSD.unsignedLong, XSD.unsignedByte, ) and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not an unsigned integer: &#39;{string}&#39;&quot;) # Check if datatype is known if string.datatype and not any( string.datatype in types for types in cls.datatypes.values() ): warnings.warn( f&quot;unknown datatype: {string.datatype} - assuming xsd:string&quot; ) return string def __hash__(self): return hash((str(self), self.lang, self.datatype)) def __eq__(self, other): # pylint: disable=too-many-return-statements if not isinstance(other, Literal): if isinstance(other, str) and ( self.lang or self.datatype in self.datatypes[str] ): return str(self) == other other = Literal(other) if str(self) != str(other): return False if self.lang and other.lang and self.lang != other.lang: return False if ( self.datatype and other.datatype and self.datatype != other.datatype ): return False strings = set(self.datatypes[str] + (None,)) if self.datatype is None and other.datatype not in strings: return False if other.datatype is None and self.datatype not in strings: return False return True def __ne__(self, other): return not self.__eq__(other) def __repr__(self) -&gt; str: lang = f&quot;, lang=&#39;{self.lang}&#39;&quot; if self.lang else &quot;&quot; datatype = f&quot;, datatype=&#39;{self.datatype}&#39;&quot; if self.datatype else &quot;&quot; return f&quot;Literal(&#39;{self}&#39;{lang}{datatype})&quot; value = property( fget=lambda self: self.to_python(), doc=&quot;Appropriate python datatype derived from this RDF literal.&quot;, ) def to_python(self): &quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF literal.&quot;&quot;&quot; if self.datatype == XSD.boolean: value = False if str(self) == &quot;False&quot; else bool(self) elif self.datatype in self.datatypes[int]: value = int(self) elif self.datatype in self.datatypes[float]: value = float(self) elif self.datatype == XSD.dateTime: value = datetime.fromisoformat(self) elif self.datatype == RDF.JSON: value = json.loads(str(self)) else: value = str(self) return value def n3(self) -&gt; str: # pylint: disable=invalid-name &quot;&quot;&quot;Returns a representation in n3 format.&quot;&quot;&quot; if self.lang: return f&#39;&quot;{self}&quot;@{self.lang}&#39; if self.datatype: return f&#39;&quot;{self}&quot;^^&lt;{self.datatype}&gt;&#39; return f&#39;&quot;{self}&quot;&#39; value property readonly &para; Appropriate python datatype derived from this RDF literal. __new__(cls, value, lang=None, datatype=None) special staticmethod &para; Create and return a new object. See help(type) for accurate signature. Source code in tripper/literal.py def __new__( cls, value: ( &quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot; &quot;dict, list]&quot; ), lang: &quot;Optional[str]&quot; = None, datatype: &quot;Optional[Union[str, type]]&quot; = None, ): # pylint: disable=too-many-branches,too-many-statements string = super().__new__(cls, value) string.lang = None string.datatype = None # Get lang if lang: if datatype: raise TypeError( &quot;A literal can only have one of `lang` or `datatype`.&quot; ) string.lang = str(lang) # Get datatype elif datatype in cls.datatypes: string.datatype = cls.datatypes[datatype][0] # type: ignore elif datatype == RDF.JSON: if isinstance(value, str): # Raises an exception if `value` is not a valid JSON string json.loads(value) else: value = json.dumps(value) string = super().__new__(cls, value) string.lang = None string.datatype = RDF.JSON elif datatype: assert isinstance(datatype, str) # nosec # Create canonical representation of value for # given datatype val = None for typ, names in cls.datatypes.items(): for name in names: if name == datatype: try: val = typ(value) break except: # pylint: disable=bare-except pass # nosec if val: break if val is not None: # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, val) string.lang = None string.datatype = datatype # Infer datatype from value elif isinstance(value, Literal): string.lang = value.lang string.datatype = value.datatype elif isinstance(value, str): string.datatype = None elif isinstance(value, bool): string.datatype = XSD.boolean elif isinstance(value, int): string.datatype = XSD.integer elif isinstance(value, float): string.datatype = XSD.double elif isinstance(value, (bytes, bytearray)): # Re-initialize the value anew, similarly to what is done in # the first line of this method. string = super().__new__(cls, value.hex()) string.lang = None string.datatype = XSD.hexBinary elif isinstance(value, datetime): string.datatype = XSD.dateTime elif value is None or isinstance(value, (dict, list)): string = super().__new__(cls, json.dumps(value)) string.lang = None string.datatype = RDF.JSON # Some consistency checking if ( string.datatype == XSD.nonPositiveInteger and int(value) &gt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonPositiveInteger: &#39;{string}&#39;&quot;) if ( string.datatype == XSD.nonNegativeInteger and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not a xsd:nonNegativeInteger: &#39;{string}&#39;&quot;) if ( string.datatype in ( XSD.unsignedInt, XSD.unsignedShort, XSD.unsignedLong, XSD.unsignedByte, ) and int(value) &lt; 0 # type: ignore[arg-type] ): raise TypeError(f&quot;not an unsigned integer: &#39;{string}&#39;&quot;) # Check if datatype is known if string.datatype and not any( string.datatype in types for types in cls.datatypes.values() ): warnings.warn( f&quot;unknown datatype: {string.datatype} - assuming xsd:string&quot; ) return string n3(self) &para; Returns a representation in n3 format. Source code in tripper/literal.py def n3(self) -&gt; str: # pylint: disable=invalid-name &quot;&quot;&quot;Returns a representation in n3 format.&quot;&quot;&quot; if self.lang: return f&#39;&quot;{self}&quot;@{self.lang}&#39; if self.datatype: return f&#39;&quot;{self}&quot;^^&lt;{self.datatype}&gt;&#39; return f&#39;&quot;{self}&quot;&#39; to_python(self) &para; Returns an appropriate python datatype derived from this RDF literal. Source code in tripper/literal.py def to_python(self): &quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF literal.&quot;&quot;&quot; if self.datatype == XSD.boolean: value = False if str(self) == &quot;False&quot; else bool(self) elif self.datatype in self.datatypes[int]: value = int(self) elif self.datatype in self.datatypes[float]: value = float(self) elif self.datatype == XSD.dateTime: value = datetime.fromisoformat(self) elif self.datatype == RDF.JSON: value = json.loads(str(self)) else: value = str(self) return value must be a string)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.literal.Literal.value" class="md-nav__link">
     <span class="md-ellipsis">
       value
@@ -984,7 +1092,10 @@
 <a id="tripper.literal"></a>
     <div class="doc doc-contents first">
 
-      <p>Literal rdf values.</p>
+      <p>Literal RDF values.</p>
+<p>Literals may be used as objects in RDF triples to provide a value to a
+resource.</p>
+<p>See also https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal</p>
 
 
 
@@ -1026,46 +1137,135 @@ Literal            (<span title="str">str</span>)
   <tbody>
       <tr>
         <td><code>value</code></td>
-        <td><code>Union[datetime, bytes, bytearray, bool, int, float, str]</code></td>
-        <td><p>The literal value. See the <code>datatypes</code> class attribute for valid
-supported data types.  A localised string is provided as a string
-with <code>lang</code> set to a language code.</p></td>
+        <td><code>Union[datetime, bytes, bytearray, bool, int, float,
+str, None, dict, list]</code></td>
+        <td><p>The literal value. Can be
+given as a string or a Python object.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>lang</code></td>
         <td><code>Optional[str]</code></td>
-        <td><p>A standard language code, like "en", "no", etc.
-Implies that the <code>value</code> is a localised string.</p></td>
+        <td><p>A standard language code, like "en",
+"no", etc.  Implies that the <code>value</code> is a language-tagged
+string.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>datatype</code></td>
-        <td><code>Any</code></td>
-        <td><p>Explicit specification of the type of <code>value</code>. Should
-not be combined with <code>lang</code>.</p></td>
+        <td><code>Optional[str, type]</code></td>
+        <td><p>The datatype of this literal.
+Can be given either as a string with the datatype IRI (ex:
+<code>"http://www.w3.org/2001/XMLSchema#integer"</code>) or as a
+Python type (ex: <code>int</code>).  If not given, the datatype is
+inferred from <code>value</code>.  Should not be combined with
+<code>lang</code>.</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
 </table>
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">tripper</span> <span class="kn">import</span> <span class="n">XSD</span><span class="p">,</span> <span class="n">Literal</span>
+</code></pre></div>
+    <h3 id="tripper.literal.Literal--inferring-the-data-type">Inferring the data type<a class="headerlink" href="#tripper.literal.Literal--inferring-the-data-type" title="Permanent link">&para;</a></h3>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l1</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l1</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;42&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2001/XMLSchema#integer&#39;</span><span class="p">)</span>
+</code></pre></div>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l1</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">42</span>
+</code></pre></div>
+    <h3 id="tripper.literal.Literal--string-values-with-no-datatype-are-assumed-to-be-strings">String values with no datatype are assumed to be strings<a class="headerlink" href="#tripper.literal.Literal--string-values-with-no-datatype-are-assumed-to-be-strings" title="Permanent link">&para;</a></h3>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;42&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l2</span><span class="o">.</span><span class="n">value</span>
+<span class="s1">&#39;42&#39;</span>
+</code></pre></div>
+    <h3 id="tripper.literal.Literal--explicit-providing-the-datatype">Explicit providing the datatype<a class="headerlink" href="#tripper.literal.Literal--explicit-providing-the-datatype" title="Permanent link">&para;</a></h3>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;42&quot;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;42&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2001/XMLSchema#integer&#39;</span><span class="p">)</span>
+</code></pre></div>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span><span class="o">.</span><span class="n">value</span>
+<span class="mi">42</span>
+</code></pre></div>
+    <h3 id="tripper.literal.Literal--localised-or-language-tagged-string-literal">Localised or language-tagged string literal<a class="headerlink" href="#tripper.literal.Literal--localised-or-language-tagged-string-literal" title="Permanent link">&para;</a></h3>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;Hello world&#39;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+</code></pre></div>
+    <h3 id="tripper.literal.Literal--dicts-lists-and-none-are-assumed-to-be-of-type-rdfjson">Dicts, lists and None are assumed to be of type rdf:JSON<a class="headerlink" href="#tripper.literal.Literal--dicts-lists-and-none-are-assumed-to-be-of-type-rdfjson" title="Permanent link">&para;</a></h3>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Jon Doe&quot;</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span><span class="o">.</span><span class="n">datatype</span>
+<span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39;</span>
+</code></pre></div>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span><span class="o">.</span><span class="n">value</span>
+<span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Jon Doe&#39;</span><span class="p">}</span>
+</code></pre></div>
+    <h3 id="tripper.literal.Literal--literal-of-custom-datatype-value-must-be-a-string">Literal of custom datatype (<code>value</code> must be a string)<a class="headerlink" href="#tripper.literal.Literal--literal-of-custom-datatype-value-must-be-a-string" title="Permanent link">&para;</a></h3>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;my value...&quot;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;http://example.com/onto#MyType&quot;</span><span class="p">)</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;my value...&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;http://example.com/onto#MyType&#39;</span><span class="p">)</span>
+</code></pre></div>
+
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Literal</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A literal RDF value.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        value (Union[datetime, bytes, bytearray, bool, int, float, str]):</span>
-<span class="sd">            The literal value. See the `datatypes` class attribute for valid</span>
-<span class="sd">            supported data types.  A localised string is provided as a string</span>
-<span class="sd">            with `lang` set to a language code.</span>
-<span class="sd">        lang (Optional[str]): A standard language code, like &quot;en&quot;, &quot;no&quot;, etc.</span>
-<span class="sd">            Implies that the `value` is a localised string.</span>
-<span class="sd">        datatype (Any): Explicit specification of the type of `value`. Should</span>
-<span class="sd">            not be combined with `lang`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        value (Union[datetime, bytes, bytearray, bool, int, float,</span>
+<span class="sd">            str, None, dict, list]): The literal value. Can be</span>
+<span class="sd">            given as a string or a Python object.</span>
+<span class="sd">        lang (Optional[str]): A standard language code, like &quot;en&quot;,</span>
+<span class="sd">            &quot;no&quot;, etc.  Implies that the `value` is a language-tagged</span>
+<span class="sd">            string.</span>
+<span class="sd">        datatype (Optional[str, type]): The datatype of this literal.</span>
+<span class="sd">            Can be given either as a string with the datatype IRI (ex:</span>
+<span class="sd">            `&quot;http://www.w3.org/2001/XMLSchema#integer&quot;`) or as a</span>
+<span class="sd">            Python type (ex: `int`).  If not given, the datatype is</span>
+<span class="sd">            inferred from `value`.  Should not be combined with</span>
+<span class="sd">            `lang`.</span>
 
-    <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Union[str, None]&quot;</span>
-    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span>
+<span class="sd">    Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; from tripper import XSD, Literal</span>
+
+<span class="sd">        # Inferring the data type</span>
+<span class="sd">        &gt;&gt;&gt; l1 = Literal(42)</span>
+<span class="sd">        &gt;&gt;&gt; l1</span>
+<span class="sd">        Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;)</span>
+
+<span class="sd">        &gt;&gt;&gt; l1.value</span>
+<span class="sd">        42</span>
+
+<span class="sd">        # String values with no datatype are assumed to be strings</span>
+<span class="sd">        &gt;&gt;&gt; l2 = Literal(&quot;42&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; l2.value</span>
+<span class="sd">        &#39;42&#39;</span>
+
+<span class="sd">        # Explicit providing the datatype</span>
+<span class="sd">        &gt;&gt;&gt; l3 = Literal(&quot;42&quot;, datatype=XSD.integer)</span>
+<span class="sd">        &gt;&gt;&gt; l3</span>
+<span class="sd">        Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;)</span>
+
+<span class="sd">        &gt;&gt;&gt; l3.value</span>
+<span class="sd">        42</span>
+
+<span class="sd">        # Localised or language-tagged string literal</span>
+<span class="sd">        &gt;&gt;&gt; Literal(&quot;Hello world&quot;, lang=&quot;en&quot;)</span>
+<span class="sd">        Literal(&#39;Hello world&#39;, lang=&#39;en&#39;)</span>
+
+<span class="sd">        # Dicts, lists and None are assumed to be of type rdf:JSON</span>
+<span class="sd">        &gt;&gt;&gt; l4 = Literal({&quot;name&quot;: &quot;Jon Doe&quot;})</span>
+<span class="sd">        &gt;&gt;&gt; l4.datatype</span>
+<span class="sd">        &#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; l4.value</span>
+<span class="sd">        {&#39;name&#39;: &#39;Jon Doe&#39;}</span>
+
+<span class="sd">        # Literal of custom datatype (`value` must be a string)</span>
+<span class="sd">        &gt;&gt;&gt; Literal(&quot;my value...&quot;, datatype=&quot;http://example.com/onto#MyType&quot;)</span>
+<span class="sd">        Literal(&#39;my value...&#39;, datatype=&#39;http://example.com/onto#MyType&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Note that the order of datatypes matters - it is used by</span>
     <span class="c1"># utils.parse_literal() when inferring the datatype of a literal.</span>
@@ -1111,15 +1311,24 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">XSD</span><span class="o">.</span><span class="n">normalizedString</span><span class="p">,</span>
             <span class="n">XSD</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
         <span class="p">),</span>
+        <span class="nb">list</span><span class="p">:</span> <span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">,),</span>
+        <span class="nb">dict</span><span class="p">:</span> <span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">,),</span>
+        <span class="kc">None</span><span class="o">.</span><span class="vm">__class__</span><span class="p">:</span> <span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">,),</span>
     <span class="p">}</span>
+
+    <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Union[str, None]&quot;</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Union[str, None]&quot;</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str]&quot;</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot;</span>
+            <span class="s2">&quot;dict, list]&quot;</span>
+        <span class="p">),</span>
         <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Any]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, type]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># pylint: disable=too-many-branches</span>
+        <span class="c1"># pylint: disable=too-many-branches,too-many-statements</span>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1134,8 +1343,18 @@ not be combined with <code>lang</code>.</p></td>
 
         <span class="c1"># Get datatype</span>
         <span class="k">elif</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="p">:</span>
-            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="n">datatype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="n">datatype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># Raises an exception if `value` is not a valid JSON string</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
         <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
             <span class="c1"># Create canonical representation of value for</span>
             <span class="c1"># given datatype</span>
             <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1177,6 +1396,10 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
 
         <span class="c1"># Some consistency checking</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -1254,8 +1477,6 @@ not be combined with <code>lang</code>.</p></td>
     <span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF</span>
 <span class="sd">        literal.&quot;&quot;&quot;</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -1264,6 +1485,10 @@ not be combined with <code>lang</code>.</p></td>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span>
 
@@ -1338,11 +1563,14 @@ not be combined with <code>lang</code>.</p></td>
           <summary>Source code in <code>tripper/literal.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str]&quot;</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="p">(</span>
+        <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot;</span>
+        <span class="s2">&quot;dict, list]&quot;</span>
+    <span class="p">),</span>
     <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Any]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, type]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="c1"># pylint: disable=too-many-branches,too-many-statements</span>
     <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1357,8 +1585,18 @@ not be combined with <code>lang</code>.</p></td>
 
     <span class="c1"># Get datatype</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="p">:</span>
-        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="n">datatype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="n">datatype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Raises an exception if `value` is not a valid JSON string</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
     <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
         <span class="c1"># Create canonical representation of value for</span>
         <span class="c1"># given datatype</span>
         <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1400,6 +1638,10 @@ not be combined with <code>lang</code>.</p></td>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
+    <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
 
     <span class="c1"># Some consistency checking</span>
     <span class="k">if</span> <span class="p">(</span>
@@ -1493,8 +1735,6 @@ literal.</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF</span>
 <span class="sd">    literal.&quot;&quot;&quot;</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -1503,6 +1743,10 @@ literal.</p>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">value</span>
 </code></pre></div>
