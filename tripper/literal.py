@@ -53,8 +53,8 @@ class Literal(str):
         # Explicit providing the datatype
         >>> l3 = Literal("42", datatype=XSD.integer)
         >>> l3
-
         Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')
+
         >>> l3.value
         42
 
