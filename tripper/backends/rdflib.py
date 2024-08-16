@@ -37,23 +37,21 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.triplestore import Triple
 
 
-def asuri(value: "Union[None, Literal, str]"):
+def tordflib(value: "Union[None, Literal, str]"):
     """Help function converting a spo-value to proper rdflib type."""
     if value is None:
         return None
     if isinstance(value, Literal):
-        return rdflibLiteral(
-            value.value, lang=value.lang, datatype=value.datatype
-        )
+        return rdflibLiteral(value, lang=value.lang, datatype=value.datatype)
     if value.startswith("_:"):
         return BNode(value[2:])
     return URIRef(value)
 
 
-def astriple(triple: "Triple"):
+def totriple(triple: "Triple"):
     """Help function converting a triple to rdflib triple."""
     s, p, o = triple
-    return asuri(s), asuri(p), asuri(o)
+    return tordflib(s), tordflib(p), tordflib(o)
 
 
 class RdflibStrategy:
@@ -95,17 +93,17 @@ class RdflibStrategy:
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
         return _convert_triples_to_tripper(
-            self.graph.triples(astriple(triple))
+            self.graph.triples(totriple(triple))
         )
 
     def add_triples(self, triples: "Sequence[Triple]"):
         """Add a sequence of triples."""
         for triple in triples:
-            self.graph.add(astriple(triple))
+            self.graph.add(totriple(triple))
 
     def remove(self, triple: "Triple"):
         """Remove all matching triples from the backend."""
-        self.graph.remove(astriple(triple))
+        self.graph.remove(totriple(triple))
 
     # Optional methods
     def close(self):

@@ -1,5 +1,13 @@
-"""Literal rdf values."""
+"""Literal RDF values.
 
+Literals may be used as objects in RDF triples to provide a value to a
+resource.
+
+See also https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal
+
+"""
+
+import json
 import warnings
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -7,25 +15,68 @@ from typing import TYPE_CHECKING
 from tripper.namespace import RDF, RDFS, XSD
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Optional, Union
+    from typing import Optional, Union
 
 
 class Literal(str):
     """A literal RDF value.
 
     Arguments:
-        value (Union[datetime, bytes, bytearray, bool, int, float, str]):
-            The literal value. See the `datatypes` class attribute for valid
-            supported data types.  A localised string is provided as a string
-            with `lang` set to a language code.
-        lang (Optional[str]): A standard language code, like "en", "no", etc.
-            Implies that the `value` is a localised string.
-        datatype (Any): Explicit specification of the type of `value`. Should
-            not be combined with `lang`.
-    """
+        value (Union[datetime, bytes, bytearray, bool, int, float,
+            str, None, dict, list]): The literal value. Can be
+            given as a string or a Python object.
+        lang (Optional[str]): A standard language code, like "en",
+            "no", etc.  Implies that the `value` is a language-tagged
+            string.
+        datatype (Optional[str, type]): The datatype of this literal.
+            Can be given either as a string with the datatype IRI (ex:
+            `"http://www.w3.org/2001/XMLSchema#integer"`) or as a
+            Python type (ex: `int`).  If not given, the datatype is
+            inferred from `value`.  Should not be combined with
+            `lang`.
 
-    lang: "Union[str, None]"
-    datatype: "Any"
+    Examples:
+
+        >>> from tripper import XSD, Literal
+
+        # Inferring the data type
+        >>> l1 = Literal(42)
+        >>> l1
+        Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')
+
+        >>> l1.value
+        42
+
+        # String values with no datatype are assumed to be strings
+        >>> l2 = Literal("42")
+        >>> l2.value
+        '42'
+
+        # Explicit providing the datatype
+        >>> l3 = Literal("42", datatype=XSD.integer)
+        >>> l3
+        Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')
+
+        >>> l3.value
+        42
+
+        # Localised or language-tagged string literal
+        >>> Literal("Hello world", lang="en")
+        Literal('Hello world', lang='en')
+
+        # Dicts, lists and None are assumed to be of type rdf:JSON
+        >>> l4 = Literal({"name": "Jon Doe"})
+        >>> l4.datatype
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON'
+
+        >>> l4.value
+        {'name': 'Jon Doe'}
+
+        # Literal of custom datatype (`value` must be a string)
+        >>> Literal("my value...", datatype="http://example.com/onto#MyType")
+        Literal('my value...', datatype='http://example.com/onto#MyType')
+
+    """
 
     # Note that the order of datatypes matters - it is used by
     # utils.parse_literal() when inferring the datatype of a literal.
@@ -71,15 +122,24 @@ class Literal(str):
             XSD.normalizedString,
             XSD.token,
         ),
+        list: (RDF.JSON,),
+        dict: (RDF.JSON,),
+        None.__class__: (RDF.JSON,),
     }
+
+    lang: "Union[str, None]"
+    datatype: "Union[str, None]"
 
     def __new__(
         cls,
-        value: "Union[datetime, bytes, bytearray, bool, int, float, str]",
+        value: (
+            "Union[datetime, bytes, bytearray, bool, int, float, str, None, "
+            "dict, list]"
+        ),
         lang: "Optional[str]" = None,
-        datatype: "Optional[Any]" = None,
+        datatype: "Optional[Union[str, type]]" = None,
     ):
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-statements
         string = super().__new__(cls, value)
         string.lang = None
         string.datatype = None
@@ -94,8 +154,18 @@ class Literal(str):
 
         # Get datatype
         elif datatype in cls.datatypes:
-            string.datatype = cls.datatypes[datatype][0]
+            string.datatype = cls.datatypes[datatype][0]  # type: ignore
+        elif datatype == RDF.JSON:
+            if isinstance(value, str):
+                # Raises an exception if `value` is not a valid JSON string
+                json.loads(value)
+            else:
+                value = json.dumps(value)
+            string = super().__new__(cls, value)
+            string.lang = None
+            string.datatype = RDF.JSON
         elif datatype:
+            assert isinstance(datatype, str)  # nosec
             # Create canonical representation of value for
             # given datatype
             val = None
@@ -137,6 +207,10 @@ class Literal(str):
             string.datatype = XSD.hexBinary
         elif isinstance(value, datetime):
             string.datatype = XSD.dateTime
+        elif value is None or isinstance(value, (dict, list)):
+            string = super().__new__(cls, json.dumps(value))
+            string.lang = None
+            string.datatype = RDF.JSON
 
         # Some consistency checking
         if (
@@ -214,8 +288,6 @@ class Literal(str):
     def to_python(self):
         """Returns an appropriate python datatype derived from this RDF
         literal."""
-        value = str(self)
-
         if self.datatype == XSD.boolean:
             value = False if str(self) == "False" else bool(self)
         elif self.datatype in self.datatypes[int]:
@@ -224,6 +296,10 @@ class Literal(str):
             value = float(self)
         elif self.datatype == XSD.dateTime:
             value = datetime.fromisoformat(self)
+        elif self.datatype == RDF.JSON:
+            value = json.loads(str(self))
+        else:
+            value = str(self)
 
         return value
 
