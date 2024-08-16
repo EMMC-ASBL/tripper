@@ -2,6 +2,12 @@
 
 For developers: The usage of `s`, `p`, and `o` represent the different parts of
 an RDF Triple: subject, predicate, and object.
+
+There is a issue with rdflib raising an `urllib.error.HTTPError`
+exception if you don't have write permissions to the cache directory.
+See [Known issues](https://emmc-asbl.github.io/tripper/latest/known-issues.md)
+for more details.
+
 """
 
 # pylint: disable=line-too-long
