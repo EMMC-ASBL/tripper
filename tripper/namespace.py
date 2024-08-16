@@ -152,7 +152,7 @@ class Namespace:
             if s.startswith(iri)
         )
 
-    def _get_cachefile(self) -> "Path":
+    def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
         # pylint: disable=too-many-function-args
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
@@ -162,10 +162,17 @@ class Namespace:
     def _save_cache(self):
         """Save current cache."""
         # pylint: disable=invalid-name
-        cachefile = self._get_cachefile()
-        if self._iris and not sys.is_finalizing():
-            with open(cachefile, "wb") as f:
-                pickle.dump(self._iris, f)
+        try:
+            cachefile = self._get_cachefile()
+            if self._iris and not sys.is_finalizing():
+                with open(cachefile, "wb") as f:
+                    pickle.dump(self._iris, f)
+        except OSError as exc:
+            warnings.warn(
+                f"Cannot access cache file: {exc}\n\n"
+                "You can select cache directory with the XDG_CACHE_HOME "
+                "environment variable."
+            )
 
     def _load_cache(self) -> bool:
         """Update cache with cache file.
@@ -173,23 +180,41 @@ class Namespace:
         Returns true if there exists a cache file to load from.
         """
         # pylint: disable=invalid-name
-        cachefile = self._get_cachefile()
-        if self._iris is None:
-            self._iris = {}
-        if cachefile.exists():
-            with open(cachefile, "rb") as f:
-                self._iris.update(pickle.load(f))  # nosec
-            return True
-        return False
+        try:
+            cachefile = self._get_cachefile()
+            if self._iris is None:
+                self._iris = {}
+            if cachefile.exists():
+                with open(cachefile, "rb") as f:
+                    self._iris.update(pickle.load(f))  # nosec
+                return True
+            return False
+        except OSError as exc:
+            warnings.warn(
+                f"Cannot create cache directory: {exc}\n\n"
+                "You can select cache directory with the XDG_CACHE_HOME "
+                "environment variable."
+            )
+            return False
 
     def __getattr__(self, name):
         if self._iris and name in self._iris:
             return self._iris[name]
         if self._check:
             msg = ""
-            cachefile = self._get_cachefile()
-            if cachefile.exists():
-                msg = f"\nMaybe you have to remove the cache file: {cachefile}"
+            try:
+                cachefile = self._get_cachefile()
+                if cachefile.exists():
+                    msg = (
+                        "\nMaybe you have to remove the cache file: "
+                        f"{cachefile}"
+                    )
+            except OSError as exc:
+                warnings.warn(
+                    f"Cannot access cache file: {exc}\n\n"
+                    "You can select cache directory with the XDG_CACHE_HOME "
+                    "environment variable."
+                )
             raise NoSuchIRIError(self._iri + name + msg)
         return self._iri + name
 
