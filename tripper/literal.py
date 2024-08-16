@@ -40,8 +40,8 @@ class Literal(str):
         # Inferring the data type
         >>> l1 = Literal(42)
         >>> l1
-
         Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')
+
         >>> l1.value
         42
 
