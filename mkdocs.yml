@@ -83,8 +83,8 @@ nav:
   - Backend discovery: backend_discovery.md
   - ... | api_reference/**
   - Known issues: known-issues.md
-  - License: LICENSE.md
   - Changelog: CHANGELOG.md
+  - License: LICENSE.md
 
 watch:
   - tripper
