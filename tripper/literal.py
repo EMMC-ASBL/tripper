@@ -24,8 +24,7 @@ class Literal(str):
     Arguments:
         value (Union[datetime, bytes, bytearray, bool, int, float,
             str, None, dict, list]): The literal value. Can be
-            given as a string or a Python object of any of the types
-            listed as keys in the `datatypes` attribute.
+            given as a string or a Python object.
         lang (Optional[str]): A standard language code, like "en",
             "no", etc.  Implies that the `value` is a language-tagged
             string.
@@ -73,9 +72,9 @@ class Literal(str):
         >>> l4.value
         {'name': 'Jon Doe'}
 
-    Attributes:
-        datatypes (dict): A dict mapping supported Python types to
-            a sequence of corresponding RDF types.
+        # Literal of custom datatype (`value` must be a string)
+        >>> Literal("my value...", datatype="http://example.com/onto#MyType")
+        Literal('my value...', datatype='http://example.com/onto#MyType')
 
     """
 
