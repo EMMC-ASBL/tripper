@@ -14,7 +14,6 @@ Getting started
 * [Tutorial]
 * [Discovery of custom backends]
 * [Reference manual]
-* [Known issues]
 
 
 Basic concepts
@@ -85,7 +84,7 @@ pip install rdflib pint
 
 License and copyright
 ---------------------
-All files in this repository are licensed under the [MIT license](LICENSE).
+All files in this repository are licensed under the [MIT license].
 If not stated otherwise in the top of the files, they have copyright &copy; 2022
 SINTEF.
 
@@ -104,10 +103,11 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 
-[Tutorial]: docs/tutorial.md
-[Discovery of custom backends]: docs/backend_discovery.md
+[Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
+[Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
 [Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
-[Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues.md
+[Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues/
+[MIT license]: https://emmc-asbl.github.io/tripper/latest/LICENSE/
 [tripper]: https://emmc-asbl.github.io/tripper
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
