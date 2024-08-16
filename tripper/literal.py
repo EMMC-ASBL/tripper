@@ -1,4 +1,11 @@
-"""Literal rdf values."""
+"""Literal RDF values.
+
+Literals may be used as objects in RDF triples to provide a value to a
+resource.
+
+See also https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal
+
+"""
 
 import json
 import warnings
@@ -8,25 +15,62 @@ from typing import TYPE_CHECKING
 from tripper.namespace import RDF, RDFS, XSD
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Optional, Union
+    from typing import Optional, Union
 
 
 class Literal(str):
     """A literal RDF value.
 
     Arguments:
-        value (Union[datetime, bytes, bytearray, bool, int, float, str, None,
-            dict, list]): The literal value. See the `datatypes` class
-            attribute for valid supported data types.  A localised string
-            is provided as a string with `lang` set to a language code.
-        lang (Optional[str]): A standard language code, like "en", "no", etc.
-            Implies that the `value` is a localised string.
-        datatype (Any): Explicit specification of the type of `value`. Should
-            not be combined with `lang`.
-    """
+        value: The literal value. Can be given as a string or a Python
+            object of any of the types listed as keys in the `datatypes`
+            attribute.
+        lang: A standard language code, like "en", "no", etc.
+            Implies that the `value` is a language-tagged string.
+        datatype: The datatype of this literal.  Can be given either as
+            a string with the datatype IRI
+            (ex: `"http://www.w3.org/2001/XMLSchema#integer"`)
+            or as a Python type (ex: `int`).  If not given, the datatype is
+            inferred from `value`.  Should not be combined with `lang`.
 
-    lang: "Union[str, None]"
-    datatype: "Any"
+    Examples:
+
+        >>> from tripper import XSD, Literal
+
+        # Inferring the data type
+        >>> l1 = Literal(42)
+        >>> l1
+
+        Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')
+        >>> l1.value
+        42
+
+        # String values with no datatype are assumed to be strings
+        >>> l2 = Literal("42")
+        >>> l2.value
+        '42'
+
+        # Explicit providing the datatype
+        >>> l3 = Literal("42", datatype=XSD.integer)
+        >>> l3
+
+        Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')
+        >>> l3.value
+        42
+
+        # Localised or language-tagged string literal
+        >>> Literal("Hello world", lang="en")
+        Literal('Hello world', lang='en')
+
+        # Dicts, lists and None are assumed to be of type rdf:JSON
+        >>> l4 = Literal({"name": "Jon Doe"})
+        >>> l4.datatype
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON'
+
+        >>> l4.value
+        {'name': 'Jon Doe'}
+
+    """
 
     # Note that the order of datatypes matters - it is used by
     # utils.parse_literal() when inferring the datatype of a literal.
@@ -77,6 +121,9 @@ class Literal(str):
         None.__class__: (RDF.JSON,),
     }
 
+    lang: "Union[str, None]"
+    datatype: "Union[str, None]"
+
     def __new__(
         cls,
         value: (
@@ -84,7 +131,7 @@ class Literal(str):
             "dict, list]"
         ),
         lang: "Optional[str]" = None,
-        datatype: "Optional[Any]" = None,
+        datatype: "Optional[Union[str, type]]" = None,
     ):
         # pylint: disable=too-many-branches,too-many-statements
         string = super().__new__(cls, value)
@@ -101,7 +148,7 @@ class Literal(str):
 
         # Get datatype
         elif datatype in cls.datatypes:
-            string.datatype = cls.datatypes[datatype][0]
+            string.datatype = cls.datatypes[datatype][0]  # type: ignore
         elif datatype == RDF.JSON:
             if isinstance(value, str):
                 # Raises an exception if `value` is not a valid JSON string
@@ -112,6 +159,7 @@ class Literal(str):
             string.lang = None
             string.datatype = RDF.JSON
         elif datatype:
+            assert isinstance(datatype, str)  # nosec
             # Create canonical representation of value for
             # given datatype
             val = None
