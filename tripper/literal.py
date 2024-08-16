@@ -73,6 +73,10 @@ class Literal(str):
         >>> l4.value
         {'name': 'Jon Doe'}
 
+    Attributes:
+        datatypes (dict): A dict mapping supported Python types to
+            a sequence of corresponding RDF types.
+
     """
 
     # Note that the order of datatypes matters - it is used by
