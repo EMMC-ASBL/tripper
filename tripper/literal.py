@@ -22,16 +22,19 @@ class Literal(str):
     """A literal RDF value.
 
     Arguments:
-        value: The literal value. Can be given as a string or a Python
-            object of any of the types listed as keys in the `datatypes`
-            attribute.
-        lang: A standard language code, like "en", "no", etc.
-            Implies that the `value` is a language-tagged string.
-        datatype: The datatype of this literal.  Can be given either as
-            a string with the datatype IRI
-            (ex: `"http://www.w3.org/2001/XMLSchema#integer"`)
-            or as a Python type (ex: `int`).  If not given, the datatype is
-            inferred from `value`.  Should not be combined with `lang`.
+        value (Union[datetime, bytes, bytearray, bool, int, float,
+            str, None, " "dict, list]): The literal value. Can be
+            given as a string or a Python object of any of the types
+            listed as keys in the `datatypes` attribute.
+        lang (Optional[str]): A standard language code, like "en",
+            "no", etc.  Implies that the `value` is a language-tagged
+            string.
+        datatype (Optional[str, type]): The datatype of this literal.
+            Can be given either as a string with the datatype IRI (ex:
+            `"http://www.w3.org/2001/XMLSchema#integer"`) or as a
+            Python type (ex: `int`).  If not given, the datatype is
+            inferred from `value`.  Should not be combined with
+            `lang`.
 
     Examples:
 
