@@ -1171,7 +1171,7 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_cachefile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Path&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_cachefile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return path to cache file for this namespace.&quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=too-many-function-args</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;#/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -1181,10 +1181,17 @@ corresponding to <code>reload=True</code>).</p></td>
     <span class="k">def</span> <span class="nf">_save_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save current cache.&quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=invalid-name</span>
-        <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">is_finalizing</span><span class="p">():</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">is_finalizing</span><span class="p">():</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;You can select cache directory with the XDG_CACHE_HOME &quot;</span>
+                <span class="s2">&quot;environment variable.&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update cache with cache file.</span>
@@ -1192,23 +1199,41 @@ corresponding to <code>reload=True</code>).</p></td>
 <span class="sd">        Returns true if there exists a cache file to load from.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=invalid-name</span>
-        <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>  <span class="c1"># nosec</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>  <span class="c1"># nosec</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot create cache directory: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;You can select cache directory with the XDG_CACHE_HOME &quot;</span>
+                <span class="s2">&quot;environment variable.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Maybe you have to remove the cache file: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;You can select cache directory with the XDG_CACHE_HOME &quot;</span>
+                    <span class="s2">&quot;environment variable.&quot;</span>
+                <span class="p">)</span>
             <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span>
 

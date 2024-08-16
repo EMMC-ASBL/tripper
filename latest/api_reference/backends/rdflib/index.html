@@ -1133,6 +1133,10 @@
       <p>Backend for RDFLib.</p>
 <p>For developers: The usage of <code>s</code>, <code>p</code>, and <code>o</code> represent the different parts of
 an RDF Triple: subject, predicate, and object.</p>
+<p>There is a issue with rdflib raising an <code>urllib.error.HTTPError</code>
+exception if you don't have write permissions to the cache directory.
+See <a href="https://emmc-asbl.github.io/tripper/latest/known-issues.md">Known issues</a>
+for more details.</p>
 
 
 
