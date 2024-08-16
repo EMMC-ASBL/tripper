@@ -9,6 +9,13 @@ Tripper
 [![DOI](https://zenodo.org/badge/547162834.svg)](https://zenodo.org/badge/latestdoi/547162834)
 
 
+Getting started
+---------------
+* [Tutorial]
+* [Discovery of custom backends]
+* [Reference manual]
+* [Known issues]
+
 
 Basic concepts
 --------------
@@ -37,13 +44,6 @@ Advanced features
 The submodules `mappings` and `convert` provide additional functionality beyond interfacing triplestore backends:
 - **tripper.mappings**: traverse mappings stored in the triplestore and find possible mapping routes.
 - **tripper.convert**: convert between RDF and other data representations.
-
-
-Documentation
--------------
-* Getting started: See the [tutorial](tutorial.md)
-* [Discovery of custom backends](backend_discovery.md)
-* [Reference manual]
 
 
 Available backends
@@ -104,11 +104,14 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 
+[Tutorial]: tutorial.md
+[Discovery of custom backends]: backend_discovery.md
+[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
+[Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues.md
 [tripper]: https://emmc-asbl.github.io/tripper
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
 [PyBackTrip]: https://github.com/EMMC-ASBL/PyBackTrip/
-[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
 [Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore
