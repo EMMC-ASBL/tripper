@@ -23,7 +23,7 @@ class Literal(str):
 
     Arguments:
         value (Union[datetime, bytes, bytearray, bool, int, float,
-            str, None, " "dict, list]): The literal value. Can be
+            str, None, dict, list]): The literal value. Can be
             given as a string or a Python object of any of the types
             listed as keys in the `datatypes` attribute.
         lang (Optional[str]): A standard language code, like "en",
