@@ -38,7 +38,7 @@ jobs:
 
   publish:
     name: Publish on PyPI
-    needs: build
+    needs: publish-package-and-docs
     runs-on: ubuntu-latest
 
     #environment: release
