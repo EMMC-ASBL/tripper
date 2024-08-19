@@ -80,9 +80,11 @@ plugins:
 nav:
   - Home: index.md
   - Tutorial: tutorial.md
-  - License: LICENSE.md
-  - Changelog: CHANGELOG.md
+  - Backend discovery: backend_discovery.md
   - ... | api_reference/**
+  - Known issues: known-issues.md
+  - Changelog: CHANGELOG.md
+  - License: LICENSE.md
 
 watch:
   - tripper
