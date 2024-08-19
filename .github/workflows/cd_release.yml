@@ -23,7 +23,8 @@ jobs:
       python_version_build: "3.9"
       build_libs: "flit"
       build_cmd: "flit build"
-      publish_on_pypi: true
+      publish_on_pypi: false
+      upload_distribution: true
 
       # Build & publish documentation
       update_docs: true
@@ -32,5 +33,23 @@ jobs:
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
       docs_framework: mkdocs
     secrets:
-      PyPI_token: ${{ secrets.PYPI_TOKEN }}
+      #PyPI_token: ${{ secrets.PYPI_TOKEN }}
       PAT: ${{ secrets.RELEASE_PAT }}
+
+  publish:
+    name: Publish on PyPI
+    needs: build
+    runs-on: ubuntu-latest
+
+    #environment: release
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download built distritbution
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Publish on PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
