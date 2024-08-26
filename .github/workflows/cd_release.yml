@@ -6,7 +6,7 @@ on:
     - published
 
 jobs:
-  publish-package-and-docs:
+  build:
     name: External
     uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v2.8.2
     if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')
@@ -23,6 +23,7 @@ jobs:
       python_version_build: "3.9"
       build_libs: "flit"
       build_cmd: "flit build"
+      build_dir: "dist"
       publish_on_pypi: false
       upload_distribution: true
 
@@ -33,7 +34,6 @@ jobs:
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
       docs_framework: mkdocs
     secrets:
-      #PyPI_token: ${{ secrets.PYPI_TOKEN }}
       PAT: ${{ secrets.RELEASE_PAT }}
 
   publish:
@@ -41,7 +41,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
-    #environment: release
+    environment:
+      name: release
+      url: https://pypi.org/project/tripper/
     permissions:
       id-token: write
 
@@ -49,6 +51,7 @@ jobs:
       - name: Download built distritbution
         uses: actions/download-artifact@v4
         with:
+          name: dist
           path: dist
 
       - name: Publish on PyPI
