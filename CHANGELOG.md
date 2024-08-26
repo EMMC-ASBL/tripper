@@ -1,5 +1,39 @@
 # Changelog
 
+## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.3...HEAD)
+
+**Implemented enhancements:**
+
+- Use Trusted Publishers for PyPI [\#242](https://github.com/EMMC-ASBL/tripper/issues/242)
+
+**Closed issues:**
+
+- Add instructions of how to release a new version [\#47](https://github.com/EMMC-ASBL/tripper/issues/47)
+
+## [v0.3.3](https://github.com/EMMC-ASBL/tripper/tree/v0.3.3) (2024-08-26)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.2...v0.3.3)
+
+**Closed issues:**
+
+- Update Python API references in README [\#22](https://github.com/EMMC-ASBL/tripper/issues/22)
+
+**Merged pull requests:**
+
+- Use Trusted Publishers on PyPI [\#243](https://github.com/EMMC-ASBL/tripper/pull/243) ([CasperWA](https://github.com/CasperWA))
+
+## [v0.3.2](https://github.com/EMMC-ASBL/tripper/tree/v0.3.2) (2024-08-19)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.1...v0.3.2)
+
+**Merged pull requests:**
+
+- Minor fix for documentation layout  [\#238](https://github.com/EMMC-ASBL/tripper/pull/238) ([jesper-friis](https://github.com/jesper-friis))
+- Updated documentation navigation [\#237](https://github.com/EMMC-ASBL/tripper/pull/237) ([jesper-friis](https://github.com/jesper-friis))
+- Updated cd\_release workflow [\#236](https://github.com/EMMC-ASBL/tripper/pull/236) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.3.1](https://github.com/EMMC-ASBL/tripper/tree/v0.3.1) (2024-08-16)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.0...v0.3.1)
