@@ -1,4 +1,28 @@
-"""Tripper module for converting between RDF and other repetations."""
+# pylint: disable=line-too-long
+"""Tripper module for converting between RDF and other repetations.
+
+Example use:
+
+>>> from tripper import DCTERMS, Literal, Triplestore
+>>> from tripper.convert import load_container, save_container
+
+>>> ts = Triplestore("rdflib")
+>>> dataset = {"a": 1, "b": 2}
+>>> save_container(ts, dataset, ":data_indv")
+>>> load_container(ts, ":data_indv")
+{'a': 1, 'b': 2}
+
+# Add additional context to our data individual
+>>> ts.add((":data_indv", DCTERMS.title, Literal("My wonderful data")))
+
+>>> load_container(ts, ":data_indv")  # doctest: +IGNORE_EXCEPTION_DETAIL
+Traceback (most recent call last):
+ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :data_indv
+
+>>> load_container(ts, ":data_indv", ignore_unrecognised=True)
+{'a': 1, 'b': 2}
+
+"""
 
 # pylint: disable=invalid-name,redefined-builtin
 import warnings
