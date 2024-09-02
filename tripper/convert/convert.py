@@ -208,6 +208,7 @@ def load_container(
     ts: "Triplestore",
     iri: str,
     recognised_keys: "Optional[Union[Dict, str]]" = None,
+    ignore_unrecognised: bool = False,
 ) -> "Union[dict, list]":
     """Deserialise a Python container object from a triplestore.
 
@@ -218,6 +219,9 @@ def load_container(
             correspond to IRIs of recognised RDF properties.
             If set to the special string "basic", the
             `BASIC_RECOGNISED_KEYS` module will be used.
+        ignore_unrecognised: Ignore relations that has `iri` as subject and
+            a predicate that is not among the values of `recognised_keys`
+            or `rdf:type`.  The default is to raise an exception.
 
     Returns:
         A Python container object corresponding to `iri`.
@@ -258,7 +262,7 @@ def load_container(
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)
-            elif pred not in (RDF.type,):
+            elif not ignore_unrecognised and pred not in (RDF.type,):
                 raise ValueError(
                     f"Unrecognised predicate '{pred}' in dict: {iri}"
                 )
