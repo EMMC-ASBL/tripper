@@ -719,6 +719,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.convert.convert--add-additional-context-to-our-data-individual" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add additional context to our data individual
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.convert.convert.from_container" class="md-nav__link">
     <span class="md-ellipsis">
       from_container()
@@ -976,6 +985,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.convert.convert--add-additional-context-to-our-data-individual" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add additional context to our data individual
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.convert.convert.from_container" class="md-nav__link">
     <span class="md-ellipsis">
       from_container()
@@ -1053,6 +1071,31 @@
     <div class="doc doc-contents first">
 
       <p>Tripper module for converting between RDF and other repetations.</p>
+<p>Example use:</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>from tripper import DCTERMS, Literal, Triplestore
+from tripper.convert import load_container, save_container</p>
+<p 1_="1," 2="2" _a_:="'a':" _b_:="'b':">ts = Triplestore("rdflib")
+dataset = {"a": 1, "b": 2}
+save_container(ts, dataset, ":data_indv")
+load_container(ts, ":data_indv")</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h2 id="tripper.convert.convert--add-additional-context-to-our-data-individual">Add additional context to our data individual<a class="headerlink" href="#tripper.convert.convert--add-additional-context-to-our-data-individual" title="Permanent link">&para;</a></h2>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>ts.add((":data_indv", DCTERMS.title, Literal("My wonderful data")))</p>
+<p>load_container(ts, ":data_indv")  # doctest: +IGNORE_EXCEPTION_DETAIL
+Traceback (most recent call last):
+ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :data_indv</p>
+<p 1_="1," 2="2" _a_:="'a':" _b_:="'b':">load_container(ts, ":data_indv", ignore_unrecognised=True)</p>
+</blockquote>
+</blockquote>
+</blockquote>
 
 
 
@@ -1407,7 +1450,7 @@ will duplicate potential large literal values.</p></td>
 
 
 <h2 id="tripper.convert.convert.load_container" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_unrecognised</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a href="#tripper.convert.convert.load_container" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1448,6 +1491,14 @@ If set to the special string "basic", the
 <code>BASIC_RECOGNISED_KEYS</code> module will be used.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>ignore_unrecognised</code></td>
+        <td><code>bool</code></td>
+        <td><p>Ignore relations that has <code>iri</code> as subject and
+a predicate that is not among the values of <code>recognised_keys</code>
+or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
+        <td><code>False</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -1471,6 +1522,7 @@ If set to the special string "basic", the
     <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ignore_unrecognised</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Deserialise a Python container object from a triplestore.</span>
 
@@ -1481,6 +1533,9 @@ If set to the special string "basic", the
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
 <span class="sd">            If set to the special string &quot;basic&quot;, the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
+<span class="sd">        ignore_unrecognised: Ignore relations that has `iri` as subject and</span>
+<span class="sd">            a predicate that is not among the values of `recognised_keys`</span>
+<span class="sd">            or `rdf:type`.  The default is to raise an exception.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A Python container object corresponding to `iri`.</span>
@@ -1521,7 +1576,7 @@ If set to the special string "basic", the
                 <span class="n">container</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">get_obj</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">recognised_iris</span><span class="p">:</span>
                 <span class="n">container</span><span class="p">[</span><span class="n">recognised_iris</span><span class="p">[</span><span class="n">pred</span><span class="p">]]</span> <span class="o">=</span> <span class="n">get_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">pred</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,):</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">ignore_unrecognised</span> <span class="ow">and</span> <span class="n">pred</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Unrecognised predicate &#39;</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">&#39; in dict: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
