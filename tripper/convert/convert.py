@@ -263,7 +263,7 @@ def load_container(
         else {}
     )
     parents = set(ts.objects(iri, RDF.type))
-
+    print(parents)
     def get_obj(value):
         """Return Python object for `value`."""
         value_type = ts.value(value, RDF.type)
@@ -274,6 +274,9 @@ def load_container(
         if value == OWL.Nothing:
             return None
         return value.value if isinstance(value, Literal) else value
+    print('parents again', parents)
+    print('dict in parents', OTEIO.Dictionary in parents)
+    print('RDF.List in parents', RDF.List in parents)
 
     if OTEIO.Dictionary in parents:
         container = {}
@@ -302,12 +305,14 @@ def load_container(
                         if isinstance(o, Literal)  # type: ignore
                         else o
                     )
-
     elif RDF.List in parents:
         container = []  # type: ignore
         while True:
+            print('iri', iri)
             first = ts.value(iri, RDF.first)
+            print('first', first)
             rest = ts.value(iri, RDF.rest)
+            print('rest', rest)
             container.append(get_obj(first))  # type: ignore
             if rest == RDF.nil:
                 break

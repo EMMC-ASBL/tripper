@@ -600,6 +600,9 @@ class Triplestore:
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         triples = self.triples(subject, predicate, object)
+        triples2 = self.triples(subject, predicate, object)
+
+        print(set(triples2))
         if lang:
             first = None
             if idx != 2:
