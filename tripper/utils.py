@@ -48,7 +48,15 @@ __all__ = (
 
 
 def infer_iri(obj):
-    """Return IRI of the individual that stands for object `obj`."""
+    """Return IRI of the individual that stands for Python object `obj`.
+
+    Valid Python objects are [DLite] and [Pydantic] instances.
+
+    References:
+
+    [DLite]: https://github.com/SINTEF/dlite
+    [Pydantic]: https://docs.pydantic.dev/
+    """
 
     # Please note that tripper does not depend on neither DLite nor Pydantic.
     # Hence neither of these packages are imported.  However, due to duck-
@@ -74,12 +82,16 @@ def infer_iri(obj):
             properties = schema["properties"]
             if "uri" in properties and isinstance(properties["uri"], str):
                 iri = properties["uri"]
-            if "identity" in properties and isinstance(
+            elif "identity" in properties and isinstance(
                 properties["identity"], str
             ):
                 iri = properties["identity"]
-            if "uuid" in properties and properties["uuid"]:
+            elif "uuid" in properties and properties["uuid"]:
                 iri = str(properties["uuid"])
+            else:
+                raise TypeError(
+                    f"cannot infer IRI from pydantic object: {obj!r}"
+                )
     else:
         raise TypeError(f"cannot infer IRI from object: {obj!r}")
     return str(iri)
@@ -222,10 +234,16 @@ def parse_literal(literal: "Any") -> "Any":
     ):
         datatype = str(literal.datatype)
 
-    # This will handle rdflib literals correctly and probably most other
-    # literal representations as well.
+    # This should handle rdflib literals correctly (and probably most other
+    # literal representations as well)
     if hasattr(literal, "value"):
-        return Literal(literal.value, lang=lang, datatype=datatype)
+        # Note that in rdflib 6.3, the `value` attribute may be None for some
+        # datatypes (like rdf:JSON) even though a non-empty value exists.
+        # As a workaround, we use the string representation if the value
+        # attribute is None.
+        if literal.value is not None:
+            return Literal(literal.value, lang=lang, datatype=datatype)
+        return Literal(str(literal), lang=lang, datatype=datatype)
 
     if not isinstance(literal, str):
         if isinstance(literal, tuple(Literal.datatypes)):
@@ -376,6 +394,7 @@ def random_string(length=8):
 def extend_namespace(
     namespace: Namespace,
     triplestore: "Union[Triplestore, str, Path, dict]",
+    format: "Optional[str]" = None,
 ):
     """Extend a namespace with additional known names.
 
@@ -391,6 +410,7 @@ def extend_namespace(
                 path to a local file to read from
               - Path: path to a local file to read from
               - dict: dict mapping new IRI names to their corresponding IRIs
+        format: Format to use when loading from a triplestore.
     """
     if namespace._iris is None:  # pylint: disable=protected-access
         raise TypeError(
@@ -401,5 +421,5 @@ def extend_namespace(
         namespace._iris.update(triplestore)  # pylint: disable=protected-access
     else:
         namespace._update_iris(  # pylint: disable=protected-access
-            triplestore, reload=True
+            triplestore, reload=True, format=format
         )

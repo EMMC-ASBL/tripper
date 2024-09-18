@@ -2,15 +2,77 @@
 
 ## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
 
-[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...HEAD)
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.3...HEAD)
 
-**Fixed bugs:**
+**Implemented enhancements:**
 
-- cannot release [\#211](https://github.com/EMMC-ASBL/tripper/issues/211)
+- Use Trusted Publishers for PyPI [\#242](https://github.com/EMMC-ASBL/tripper/issues/242)
+
+**Closed issues:**
+
+- Add instructions of how to release a new version [\#47](https://github.com/EMMC-ASBL/tripper/issues/47)
+
+## [v0.3.3](https://github.com/EMMC-ASBL/tripper/tree/v0.3.3) (2024-08-26)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.2...v0.3.3)
+
+**Closed issues:**
+
+- Update Python API references in README [\#22](https://github.com/EMMC-ASBL/tripper/issues/22)
+
+**Merged pull requests:**
+
+- Use Trusted Publishers on PyPI [\#243](https://github.com/EMMC-ASBL/tripper/pull/243) ([CasperWA](https://github.com/CasperWA))
+
+## [v0.3.2](https://github.com/EMMC-ASBL/tripper/tree/v0.3.2) (2024-08-19)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.1...v0.3.2)
+
+**Merged pull requests:**
+
+- Minor fix for documentation layout  [\#238](https://github.com/EMMC-ASBL/tripper/pull/238) ([jesper-friis](https://github.com/jesper-friis))
+- Updated documentation navigation [\#237](https://github.com/EMMC-ASBL/tripper/pull/237) ([jesper-friis](https://github.com/jesper-friis))
+- Updated cd\_release workflow [\#236](https://github.com/EMMC-ASBL/tripper/pull/236) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.3.1](https://github.com/EMMC-ASBL/tripper/tree/v0.3.1) (2024-08-16)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.0...v0.3.1)
+
+**Merged pull requests:**
+
+- Avoid that tripper.Namespace crashes if the cache directory cannot be accessed [\#235](https://github.com/EMMC-ASBL/tripper/pull/235) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#232](https://github.com/EMMC-ASBL/tripper/pull/232) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#231](https://github.com/EMMC-ASBL/tripper/pull/231) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Cleaned up backend tests [\#230](https://github.com/EMMC-ASBL/tripper/pull/230) ([jesper-friis](https://github.com/jesper-friis))
+- Added a fix for parsing rdflib literals. [\#229](https://github.com/EMMC-ASBL/tripper/pull/229) ([jesper-friis](https://github.com/jesper-friis))
+- Add better and more convenient support for rdf:JSON datatype [\#228](https://github.com/EMMC-ASBL/tripper/pull/228) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.3.0](https://github.com/EMMC-ASBL/tripper/tree/v0.3.0) (2024-06-24)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...v0.3.0)
+
+**Merged pull requests:**
+
+- Tutorial update [\#227](https://github.com/EMMC-ASBL/tripper/pull/227) ([jesper-friis](https://github.com/jesper-friis))
+- Get rid of the last warning in the tests [\#226](https://github.com/EMMC-ASBL/tripper/pull/226) ([jesper-friis](https://github.com/jesper-friis))
+- Get restrictions as dicts [\#225](https://github.com/EMMC-ASBL/tripper/pull/225) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#224](https://github.com/EMMC-ASBL/tripper/pull/224) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added an additional test for convert [\#223](https://github.com/EMMC-ASBL/tripper/pull/223) ([jesper-friis](https://github.com/jesper-friis))
+- Minor fix in tutorial [\#221](https://github.com/EMMC-ASBL/tripper/pull/221) ([jesper-friis](https://github.com/jesper-friis))
+- Updated the tutorial [\#220](https://github.com/EMMC-ASBL/tripper/pull/220) ([jesper-friis](https://github.com/jesper-friis))
+- Improved the handling of different return types from the query\(\) method [\#219](https://github.com/EMMC-ASBL/tripper/pull/219) ([jesper-friis](https://github.com/jesper-friis))
+- Correct parsing literals from the rdflib backend. [\#217](https://github.com/EMMC-ASBL/tripper/pull/217) ([jesper-friis](https://github.com/jesper-friis))
+- Do not save cache while interpreter shotdown. [\#216](https://github.com/EMMC-ASBL/tripper/pull/216) ([jesper-friis](https://github.com/jesper-friis))
+- Allow string literal to compare equal to strings. [\#215](https://github.com/EMMC-ASBL/tripper/pull/215) ([jesper-friis](https://github.com/jesper-friis))
+- Also test for Python 3.12 [\#213](https://github.com/EMMC-ASBL/tripper/pull/213) ([jesper-friis](https://github.com/jesper-friis))
 
 ## [v0.2.16](https://github.com/EMMC-ASBL/tripper/tree/v0.2.16) (2024-05-16)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.2.15...v0.2.16)
+
+**Fixed bugs:**
+
+- cannot release [\#211](https://github.com/EMMC-ASBL/tripper/issues/211)
 
 **Closed issues:**
 

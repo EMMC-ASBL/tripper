@@ -10,7 +10,7 @@ on:
 jobs:
   basic-tests:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.7.4
+    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.8.2
     with:
       ## General settings:
       install_extras: "[dev]"
@@ -34,11 +34,14 @@ jobs:
       #  https://pyup.io/vulnerabilities/CVE-2021-41495/44715/
       #  https://pyup.io/vulnerabilities/CVE-2021-41496/44716/
       #  https://pyup.io/vulnerabilities/CVE-2021-34141/44717/
+      # 70612: Jinja2 vulnerability. Only used as subdependency for mkdocs++ in tripper.
+      #  https://data.safetycli.com/v/70612/97c/
       safety_options: |
         --ignore=48547
         --ignore=44715
         --ignore=44716
         --ignore=44717
+        --ignore=70612
 
       ## Build package
       run_build_package: true
@@ -63,7 +66,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - name: Checkout tripper
@@ -80,6 +83,9 @@ jobs:
         python -m pip install -U pip
         pip install -U setuptools wheel flit
         pip install -e .[testing]
+
+    - name: List installed packages
+      run: pip freeze
 
     - name: Test with pytest
       run: pytest -vvv --cov-report=xml --doctest-modules
@@ -99,7 +105,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - name: Checkout tripper
