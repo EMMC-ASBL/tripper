@@ -165,10 +165,10 @@ class Triplestore:
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
         self.backend_name = backend_name
-        self.backend = cls(base_iri=base_iri, database=database, **kwargs)
         self.database = database
         self.package = package
-        self.kwargs = kwargs
+        self.kwargs = kwargs.copy()
+        self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
         # Cache functions in the triplestore for fast access
         self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
