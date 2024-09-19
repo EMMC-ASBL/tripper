@@ -286,7 +286,10 @@ def load_container(
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)
-            elif not ignore_unrecognised and pred not in (RDF.type,RDFS.subClassOf):
+            elif not ignore_unrecognised and pred not in (
+                RDF.type,
+                RDFS.subClassOf,
+            ):
                 raise ValueError(
                     f"Unrecognised predicate '{pred}' in dict: {iri}"
                 )
