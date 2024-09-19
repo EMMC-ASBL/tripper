@@ -1,4 +1,28 @@
-"""Tripper module for converting between RDF and other repetations."""
+# pylint: disable=line-too-long
+"""Tripper module for converting between RDF and other repetations.
+
+Example use:
+
+>>> from tripper import DCTERMS, Literal, Triplestore
+>>> from tripper.convert import load_container, save_container
+
+>>> ts = Triplestore("rdflib")
+>>> dataset = {"a": 1, "b": 2}
+>>> save_container(ts, dataset, ":data_indv")
+>>> load_container(ts, ":data_indv")
+{'a': 1, 'b': 2}
+
+# Add additional context to our data individual
+>>> ts.add((":data_indv", DCTERMS.title, Literal("My wonderful data")))
+
+>>> load_container(ts, ":data_indv")  # doctest: +IGNORE_EXCEPTION_DETAIL
+Traceback (most recent call last):
+ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :data_indv
+
+>>> load_container(ts, ":data_indv", ignore_unrecognised=True)
+{'a': 1, 'b': 2}
+
+"""
 
 # pylint: disable=invalid-name,redefined-builtin
 import warnings
@@ -208,6 +232,7 @@ def load_container(
     ts: "Triplestore",
     iri: str,
     recognised_keys: "Optional[Union[Dict, str]]" = None,
+    ignore_unrecognised: bool = False,
 ) -> "Union[dict, list]":
     """Deserialise a Python container object from a triplestore.
 
@@ -218,6 +243,9 @@ def load_container(
             correspond to IRIs of recognised RDF properties.
             If set to the special string "basic", the
             `BASIC_RECOGNISED_KEYS` module will be used.
+        ignore_unrecognised: Ignore relations that has `iri` as subject and
+            a predicate that is not among the values of `recognised_keys`
+            or `rdf:type`.  The default is to raise an exception.
 
     Returns:
         A Python container object corresponding to `iri`.
@@ -258,7 +286,7 @@ def load_container(
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)
-            elif pred not in (RDF.type,):
+            elif not ignore_unrecognised and pred not in (RDF.type,):
                 raise ValueError(
                     f"Unrecognised predicate '{pred}' in dict: {iri}"
                 )
