@@ -105,6 +105,8 @@ _MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*):([^/]{1}.*)$")
 class Triplestore:
     """Provides a common frontend to a range of triplestore backends."""
 
+    # pylint: disable=too-many-instance-attributes
+
     default_namespaces = {
         "xml": XML,
         "rdf": RDF,
