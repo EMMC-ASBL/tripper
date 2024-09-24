@@ -581,10 +581,10 @@ class Triplestore:
             object: Possible criteria to match.
             default: Value to return if no matches are found.
             any: Used to define how many values to return. Can be set to:
-                'False' (default): return the value or raise UniquenessError
+                `False` (default): return the value or raise UniquenessError
                 if there is more than one matching value.
-                 'True': return any matching value if there is more than one.
-                 'None': return a generator over all matching values.
+                `True`: return any matching value if there is more than one.
+                `None`: return a generator over all matching values.
             lang: If provided, require that the value must be a localised
                 literal with the given language code.
 
@@ -625,7 +625,7 @@ class Triplestore:
         except StopIteration:
             return value
 
-        if any:
+        if any is True:
             return value
         raise UniquenessError("More than one match")
 
