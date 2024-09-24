@@ -498,34 +498,67 @@ def test_bind_errors():
         ts2.bind("ex", Ellipsis)
 
 
-if True:
-    # def test_value():
-    #    """Test Triplestore.value()."""
+def test_value():
+    """Test Triplestore.value()."""
     pytest.importorskip("rdflib")
 
     from tripper import DCTERMS, RDF, RDFS, Literal, Triplestore
+    from tripper.errors import UniquenessError
 
     ts = Triplestore(backend="rdflib")
     EX = ts.bind("ex", "http://example.com#")
+    l1 = Literal("First comment...")
+    l2en = Literal("Second comment...", lang="en")
+    l2da = Literal("Anden kommentar...", lang="da")
+    l3en = Literal("Third comment...", lang="en")
     ts.add_triples(
         [
             (EX.mydata, RDF.type, EX.Dataset),
             (EX.mydata, DCTERMS.title, Literal("My little data")),
-            (EX.mydata, RDFS.comment, Literal("First comment...")),
-            (EX.mydata, RDFS.comment, Literal("Second comment...", lang="en")),
-            (
-                EX.mydata,
-                RDFS.comment,
-                Literal("Anden kommentar...", lang="da"),
-            ),
+            (EX.mydata, RDFS.comment, l1),
+            (EX.mydata, RDFS.comment, l2en),
+            (EX.mydata, RDFS.comment, l2da),
+            (EX.mydata, RDFS.comment, l3en),
         ]
     )
+
     assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
+    assert ts.value(predicate=RDF.type, object=EX.Dataset) == EX.mydata
     assert ts.value(subject=EX.mydata, predicate=DCTERMS.title) == Literal(
         "My little data"
     )
+
+    with pytest.raises(UniquenessError):
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="en")
+
+    assert (
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="da") == l2da
+    )
+
     assert ts.value(
-        subject=EX.mydata, predicate=DCTERMS.title, lang="en"
-    ) == Literal("My little data")
-    # assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
-    # assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
+        subject=EX.mydata,
+        predicate=RDFS.comment,
+        lang="en",
+        any=True,
+    ) in (l2en, l3en)
+
+    assert set(
+        ts.value(
+            subject=EX.mydata,
+            predicate=RDFS.comment,
+            lang="en",
+            any=None,
+        )
+    ) == {l2en, l3en}
+
+    assert (
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="no") is None
+    )
+
+    t = ts.value(
+        subject=EX.mydata,
+        predicate=RDFS.comment,
+        lang="no",
+        default="a",
+    )
+    assert t == "a"

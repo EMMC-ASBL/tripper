@@ -602,42 +602,30 @@ class Triplestore:
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         triples = self.triples(subject, predicate, object)
+
         if lang:
-            first = None
-            if idx != 2:
-                raise ValueError("`object` must be None if `lang` is given")
-            for triple in triples:
-                value = triple[idx]
-                if isinstance(value, Literal) and value.lang == lang:
-                    if any is True:
-                        return value
-                    if any is None:
-                        yield value
-                    if first:
-                        raise UniquenessError("More than one match")
-                    first = value
-            if first is None:
-                return default
-        elif any is None:
-            for triple in triples:
-                print("xxx0")
-                yield triple[idx]
-        else:
-            try:
-                triple = next(triples)
-            except StopIteration:
-                print("xxx1")
-                return default
+            triples = (
+                t
+                for t in triples
+                if isinstance(t[idx], Literal)
+                and t[idx].lang == lang  # type: ignore
+            )
+
+        if any is None:
+            return (t[idx] for t in triples)  # type: ignore
+
+        try:
+            value = next(triples)[idx]
+        except StopIteration:
+            return default
 
         try:
             next(triples)
         except StopIteration:
-            print("xxx2")
-            return triple[idx]
+            return value
 
         if any:
-            print("xxx3")
-            return triple[idx]
+            return value
         raise UniquenessError("More than one match")
 
     def subjects(
