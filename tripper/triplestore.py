@@ -696,7 +696,27 @@ class Triplestore:
     # ------------------------------------------
     def expand_iri(self, iri: str):
         """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-        returned."""
+        returned.
+
+        Examples:
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
+
+        # Unknown prefix raises an exception
+        >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: unknown namespace: 'ex'
+
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.expand_iri("ex:Concept")
+        'http://example.com#Concept'
+
+        # Returns `iri` if it has no prefix
+        >>> ts.expand_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        """
         match = re.match(_MATCH_PREFIXED_IRI, iri)
         if match:
             prefix, name = match.groups()
@@ -708,12 +728,31 @@ class Triplestore:
         return iri
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
+        # pylint: disable=line-too-long
         """Return prefixed IRI.
 
         This is the reverse of expand_iri().
 
         If `require_prefixed` is true, a NamespaceError exception is raised
         if no prefix can be found.
+
+        Examples:
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
+        >>> ts.prefix_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        >>> ts.prefix_iri(
+        ...     "http://example.com#Concept", require_prefixed=True
+        ... )  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: No prefix defined for IRI: http://example.com#Concept
+
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.prefix_iri("http://example.com#Concept")
+        'ex:Concept'
+
         """
         if not re.match(_MATCH_PREFIXED_IRI, iri):
             for prefix, namespace in self.namespaces.items():
