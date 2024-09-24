@@ -580,8 +580,10 @@ class Triplestore:
             predicate: Possible criteria to match.
             object: Possible criteria to match.
             default: Value to return if no matches are found.
-            any: If true, return any matching value, otherwise raise
-                UniquenessError.
+            any: If True, return any matching value if there is more than one.
+                 If False, raise UniquenessError if there is more than one
+                 matching value.
+                 If None, return a generator over all matching values.
             lang: If provided, require that the value must be a localised
                 literal with the given language code.
 
@@ -607,25 +609,34 @@ class Triplestore:
             for triple in triples:
                 value = triple[idx]
                 if isinstance(value, Literal) and value.lang == lang:
-                    if any:
+                    if any is True:
                         return value
+                    if any is None:
+                        yield value
                     if first:
                         raise UniquenessError("More than one match")
                     first = value
             if first is None:
                 return default
+        elif any is None:
+            for triple in triples:
+                print("xxx0")
+                yield triple[idx]
         else:
             try:
                 triple = next(triples)
             except StopIteration:
+                print("xxx1")
                 return default
 
         try:
             next(triples)
         except StopIteration:
+            print("xxx2")
             return triple[idx]
 
         if any:
+            print("xxx3")
             return triple[idx]
         raise UniquenessError("More than one match")
 

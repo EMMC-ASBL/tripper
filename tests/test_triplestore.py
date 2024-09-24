@@ -496,3 +496,36 @@ def test_bind_errors():
         ts2.bind("ex")
     with pytest.raises(TypeError):
         ts2.bind("ex", Ellipsis)
+
+
+if True:
+    # def test_value():
+    #    """Test Triplestore.value()."""
+    pytest.importorskip("rdflib")
+
+    from tripper import DCTERMS, RDF, RDFS, Literal, Triplestore
+
+    ts = Triplestore(backend="rdflib")
+    EX = ts.bind("ex", "http://example.com#")
+    ts.add_triples(
+        [
+            (EX.mydata, RDF.type, EX.Dataset),
+            (EX.mydata, DCTERMS.title, Literal("My little data")),
+            (EX.mydata, RDFS.comment, Literal("First comment...")),
+            (EX.mydata, RDFS.comment, Literal("Second comment...", lang="en")),
+            (
+                EX.mydata,
+                RDFS.comment,
+                Literal("Anden kommentar...", lang="da"),
+            ),
+        ]
+    )
+    assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
+    assert ts.value(subject=EX.mydata, predicate=DCTERMS.title) == Literal(
+        "My little data"
+    )
+    assert ts.value(
+        subject=EX.mydata, predicate=DCTERMS.title, lang="en"
+    ) == Literal("My little data")
+    # assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
+    # assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
