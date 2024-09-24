@@ -595,7 +595,6 @@ class Triplestore:
             None.
         """
         spo = (subject, predicate, object)
-        print("spo", spo)
         if sum(iri is None for iri in spo) != 1:
             raise ValueError(
                 "Exactly one of `subject`, `predicate` or `object` must be "
