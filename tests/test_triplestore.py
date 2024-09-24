@@ -35,14 +35,30 @@ def test_triplestore(  # pylint: disable=too-many-locals
     pytest.importorskip("rdflib")
     pytest.importorskip("dlite")
     pytest.importorskip("SPARQLWrapper")
+    from tripper.errors import NamespaceError
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
     ts = Triplestore(backend)
     assert ts.expand_iri("xsd:integer") == XSD.integer
     assert ts.prefix_iri(RDF.type) == "rdf:type"
+
+    with pytest.raises(NamespaceError):
+        ts.expand_iri(":MyConcept")
+
+    assert ts.prefix_iri("http://example.com#MyConcept") == (
+        "http://example.com#MyConcept"
+    )
+    with pytest.raises(NamespaceError):
+        ts.prefix_iri("http://example.com#MyConcept", require_prefixed=True)
+
     EX = ts.bind(
         "ex", "http://example.com/onto#"
     )  # pylint: disable=invalid-name
+    BASE = ts.bind("", "http://example.com#")  # pylint: disable=invalid-name
+
+    assert ts.expand_iri(":MyConcept") == BASE.MyConcept
+    assert ts.prefix_iri(BASE.MyConcept) == ":MyConcept"
+
     assert str(EX) == "http://example.com/onto#"
     ts.add_mapsTo(
         EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop"
