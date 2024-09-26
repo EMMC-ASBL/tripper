@@ -585,8 +585,11 @@ class Triplestore:
             predicate: Possible criteria to match.
             object: Possible criteria to match.
             default: Value to return if no matches are found.
-            any: If true, return any matching value, otherwise raise
-                UniquenessError.
+            any: Used to define how many values to return. Can be set to:
+                `False` (default): return the value or raise UniquenessError
+                if there is more than one matching value.
+                `True`: return any matching value if there is more than one.
+                `None`: return a generator over all matching values.
             lang: If provided, require that the value must be a localised
                 literal with the given language code.
 
@@ -605,33 +608,30 @@ class Triplestore:
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         triples = self.triples(subject, predicate, object)
+
         if lang:
-            first = None
-            if idx != 2:
-                raise ValueError("`object` must be None if `lang` is given")
-            for triple in triples:
-                value = triple[idx]
-                if isinstance(value, Literal) and value.lang == lang:
-                    if any:
-                        return value
-                    if first:
-                        raise UniquenessError("More than one match")
-                    first = value
-            if first is None:
-                return default
-        else:
-            try:
-                triple = next(triples)
-            except StopIteration:
-                return default
+            triples = (
+                t
+                for t in triples
+                if isinstance(t[idx], Literal)
+                and t[idx].lang == lang  # type: ignore
+            )
+
+        if any is None:
+            return (t[idx] for t in triples)  # type: ignore
+
+        try:
+            value = next(triples)[idx]
+        except StopIteration:
+            return default
 
         try:
             next(triples)
         except StopIteration:
-            return triple[idx]
+            return value
 
-        if any:
-            return triple[idx]
+        if any is True:
+            return value
         raise UniquenessError("More than one match")
 
     def subjects(
