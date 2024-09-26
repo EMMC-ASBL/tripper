@@ -105,6 +105,8 @@ _MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
 class Triplestore:
     """Provides a common frontend to a range of triplestore backends."""
 
+    # pylint: disable=too-many-instance-attributes
+
     default_namespaces = {
         "xml": XML,
         "rdf": RDF,
@@ -165,6 +167,9 @@ class Triplestore:
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
         self.backend_name = backend_name
+        self.database = database
+        self.package = package
+        self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
         # Cache functions in the triplestore for fast access
