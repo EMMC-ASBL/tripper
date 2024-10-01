@@ -306,11 +306,7 @@ class Literal(str):
     def n3(self) -> str:  # pylint: disable=invalid-name
         """Returns a representation in n3 format."""
 
-        form = (
-            self[1:-1].replace('"', r'\"')
-            if self[0] == '"' and self[-1] == '"'
-            else self
-        )
+        form = self.replace("\\", r"\\").replace('"', r"\"")
 
         if self.lang:
             return f'"{form}"@{self.lang}'
