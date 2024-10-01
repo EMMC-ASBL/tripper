@@ -307,7 +307,7 @@ class Literal(str):
         """Returns a representation in n3 format."""
 
         form = (
-            self[1:-1].replace('"', r'\"')
+            self[1:-1].replace('"', r"\"")
             if self[0] == '"' and self[-1] == '"'
             else self
         )
