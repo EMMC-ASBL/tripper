@@ -112,11 +112,11 @@ def from_container(
         if isinstance(obj, Mapping):
             if not obj:
                 return OTEIO.Dictionary
-            obj_iri = f"_:{dict}_{uuid}"
+            obj_iri = f"_:dict_{uuid}"
         elif isinstance(obj, Sequence) and not isinstance(obj, str):
             if not obj:
                 return RDF.List
-            obj_iri = f"_:{list}_{uuid}"
+            obj_iri = f"_:list_{uuid}"
         elif obj is None:
             return OWL.Nothing
         else:
@@ -286,7 +286,10 @@ def load_container(
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)
-            elif not ignore_unrecognised and pred not in (RDF.type,):
+            elif not ignore_unrecognised and pred not in (
+                RDF.type,
+                RDFS.subClassOf,
+            ):
                 raise ValueError(
                     f"Unrecognised predicate '{pred}' in dict: {iri}"
                 )

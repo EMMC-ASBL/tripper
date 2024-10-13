@@ -99,11 +99,13 @@ hasCost = DM.hasCost
 
 
 # Regular expression matching a prefixed IRI
-_MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*):([^/]{1}.*)$")
+_MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
 
 
 class Triplestore:
     """Provides a common frontend to a range of triplestore backends."""
+
+    # pylint: disable=too-many-instance-attributes
 
     default_namespaces = {
         "xml": XML,
@@ -165,6 +167,9 @@ class Triplestore:
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
         self.backend_name = backend_name
+        self.database = database
+        self.package = package
+        self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
         # Cache functions in the triplestore for fast access
@@ -588,8 +593,11 @@ class Triplestore:
             predicate: Possible criteria to match.
             object: Possible criteria to match.
             default: Value to return if no matches are found.
-            any: If true, return any matching value, otherwise raise
-                UniquenessError.
+            any: Used to define how many values to return. Can be set to:
+                `False` (default): return the value or raise UniquenessError
+                if there is more than one matching value.
+                `True`: return any matching value if there is more than one.
+                `None`: return a generator over all matching values.
             lang: If provided, require that the value must be a localised
                 literal with the given language code.
 
@@ -608,33 +616,30 @@ class Triplestore:
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         triples = self.triples(subject, predicate, object)
+
         if lang:
-            first = None
-            if idx != 2:
-                raise ValueError("`object` must be None if `lang` is given")
-            for triple in triples:
-                value = triple[idx]
-                if isinstance(value, Literal) and value.lang == lang:
-                    if any:
-                        return value
-                    if first:
-                        raise UniquenessError("More than one match")
-                    first = value
-            if first is None:
-                return default
-        else:
-            try:
-                triple = next(triples)
-            except StopIteration:
-                return default
+            triples = (
+                t
+                for t in triples
+                if isinstance(t[idx], Literal)
+                and t[idx].lang == lang  # type: ignore
+            )
+
+        if any is None:
+            return (t[idx] for t in triples)  # type: ignore
+
+        try:
+            value = next(triples)[idx]
+        except StopIteration:
+            return default
 
         try:
             next(triples)
         except StopIteration:
-            return triple[idx]
+            return value
 
-        if any:
-            return triple[idx]
+        if any is True:
+            return value
         raise UniquenessError("More than one match")
 
     def subjects(
@@ -704,22 +709,63 @@ class Triplestore:
     # ------------------------------------------
     def expand_iri(self, iri: str):
         """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-        returned."""
+        returned.
+
+        Examples:
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
+
+        # Unknown prefix raises an exception
+        >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: unknown namespace: 'ex'
+
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.expand_iri("ex:Concept")
+        'http://example.com#Concept'
+
+        # Returns `iri` if it has no prefix
+        >>> ts.expand_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        """
         match = re.match(_MATCH_PREFIXED_IRI, iri)
         if match:
             prefix, name = match.groups()
+            if prefix is None:
+                prefix = ""
             if prefix not in self.namespaces:
-                raise NamespaceError(f"unknown namespace: {prefix}")
+                raise NamespaceError(f"unknown namespace: '{prefix}'")
             return f"{self.namespaces[prefix]}{name}"
         return iri
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
+        # pylint: disable=line-too-long
         """Return prefixed IRI.
 
         This is the reverse of expand_iri().
 
         If `require_prefixed` is true, a NamespaceError exception is raised
         if no prefix can be found.
+
+        Examples:
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
+        >>> ts.prefix_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        >>> ts.prefix_iri(
+        ...     "http://example.com#Concept", require_prefixed=True
+        ... )  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: No prefix defined for IRI: http://example.com#Concept
+
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.prefix_iri("http://example.com#Concept")
+        'ex:Concept'
+
         """
         if not re.match(_MATCH_PREFIXED_IRI, iri):
             for prefix, namespace in self.namespaces.items():

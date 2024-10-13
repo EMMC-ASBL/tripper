@@ -185,6 +185,28 @@ def test_repr() -> None:
     )
 
 
+def test_n3() -> None:
+    """Test n3()."""
+    from tripper import RDF, Literal
+
+    s = Literal(42, datatype=float).n3()
+    assert s == '"42"^^<http://www.w3.org/2001/XMLSchema#double>'
+    s = Literal("a string").n3()
+    assert s == '"a string"'
+    s = Literal('a string with "embedded" quotes').n3()
+    assert s == r'"a string with \"embedded\" quotes"'
+    s = Literal(r"a string with \"escaped\" quotes").n3()
+    assert s == r'"a string with \\\"escaped\\\" quotes"'
+    s = Literal('"json string"', datatype=RDF.JSON).n3()
+    assert s == (
+        r'"\"json string\""^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON>'
+    )
+    s = Literal('{"a": 1}', datatype=RDF.JSON).n3()
+    assert (
+        s == r'"{\"a\": 1}"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON>'
+    )
+
+
 def test_split_iri() -> None:
     """Test parse n3-encoded literal value."""
     from tripper import DCTERMS, RDFS

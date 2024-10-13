@@ -35,14 +35,30 @@ def test_triplestore(  # pylint: disable=too-many-locals
     pytest.importorskip("rdflib")
     pytest.importorskip("dlite")
     pytest.importorskip("SPARQLWrapper")
+    from tripper.errors import NamespaceError
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
     ts = Triplestore(backend)
     assert ts.expand_iri("xsd:integer") == XSD.integer
     assert ts.prefix_iri(RDF.type) == "rdf:type"
+
+    with pytest.raises(NamespaceError):
+        ts.expand_iri(":MyConcept")
+
+    assert ts.prefix_iri("http://example.com#MyConcept") == (
+        "http://example.com#MyConcept"
+    )
+    with pytest.raises(NamespaceError):
+        ts.prefix_iri("http://example.com#MyConcept", require_prefixed=True)
+
     EX = ts.bind(
         "ex", "http://example.com/onto#"
     )  # pylint: disable=invalid-name
+    BASE = ts.bind("", "http://example.com#")  # pylint: disable=invalid-name
+
+    assert ts.expand_iri(":MyConcept") == BASE.MyConcept
+    assert ts.prefix_iri(BASE.MyConcept) == ":MyConcept"
+
     assert str(EX) == "http://example.com/onto#"
     ts.add_mapsTo(
         EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop"
@@ -497,3 +513,69 @@ def test_bind_errors():
         ts2.bind("ex")
     with pytest.raises(TypeError):
         ts2.bind("ex", Ellipsis)
+
+
+def test_value():
+    """Test Triplestore.value()."""
+    pytest.importorskip("rdflib")
+
+    from tripper import DCTERMS, RDF, RDFS, Literal, Triplestore
+    from tripper.errors import UniquenessError
+
+    ts = Triplestore(backend="rdflib")
+    EX = ts.bind("ex", "http://example.com#")
+    l1 = Literal("First comment...")
+    l2en = Literal("Second comment...", lang="en")
+    l2da = Literal("Anden kommentar...", lang="da")
+    l3en = Literal("Third comment...", lang="en")
+    ts.add_triples(
+        [
+            (EX.mydata, RDF.type, EX.Dataset),
+            (EX.mydata, DCTERMS.title, Literal("My little data")),
+            (EX.mydata, RDFS.comment, l1),
+            (EX.mydata, RDFS.comment, l2en),
+            (EX.mydata, RDFS.comment, l2da),
+            (EX.mydata, RDFS.comment, l3en),
+        ]
+    )
+
+    assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
+    assert ts.value(predicate=RDF.type, object=EX.Dataset) == EX.mydata
+    assert ts.value(subject=EX.mydata, predicate=DCTERMS.title) == Literal(
+        "My little data"
+    )
+
+    with pytest.raises(UniquenessError):
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="en")
+
+    assert (
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="da") == l2da
+    )
+
+    assert ts.value(
+        subject=EX.mydata,
+        predicate=RDFS.comment,
+        lang="en",
+        any=True,
+    ) in (l2en, l3en)
+
+    assert set(
+        ts.value(
+            subject=EX.mydata,
+            predicate=RDFS.comment,
+            lang="en",
+            any=None,
+        )
+    ) == {l2en, l3en}
+
+    assert (
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="no") is None
+    )
+
+    t = ts.value(
+        subject=EX.mydata,
+        predicate=RDFS.comment,
+        lang="no",
+        default="a",
+    )
+    assert t == "a"
