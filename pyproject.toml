@@ -30,10 +30,16 @@ dynamic = ["version"]
 
 dependencies = [
     "typing-extensions>=4.7.0,<4.7.1; python_version<'3.8'",
-    "pint>=0.16.1,<0.24",
 ]
 
 [project.optional-dependencies]
+mappings = [
+    "pint>=0.16.1,<0.24",
+]
+dataset = [
+    "pint>=0.16.1,<0.24",
+    "PyYaml>=5.0.0,<6.0.3",
+]
 pre-commit = [
     "pre-commit==2.21.0",
     "pylint==2.15.5",
@@ -43,12 +49,7 @@ testing-core = [
     "pytest-cov==4.1.0",
 ]
 testing = [
-    # Consistent with: dependencies (is this needed?)
-    "pint>=0.16.1,<0.24",
-    # Consistent with: testing-core
-    "pytest==7.4.4",
-    "pytest-cov==4.1.0",
-    # testing
+    "tripper[testing-core,mappings,dataset]",
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
@@ -56,12 +57,7 @@ testing = [
     "graphviz>=0.20.1,<0.20.2",
 ]
 docs = [
-    # Consistent with: testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
-    "rdflib>=6.3.0,<7.0.0",
-    "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
-    # docs
+    "tripper[testing]",
     "mike==2.1.2",
     "mkdocs==1.5.3",
     "mkdocs-autorefs==0.4.1",
@@ -71,26 +67,7 @@ docs = [
     "mkdocstrings-python-legacy==0.2.3",
 ]
 dev = [
-    # Consistent with: pre-commit
-    "pre-commit==2.21.0",
-    "pylint==2.15.5",
-    # Consistent with: testing-core
-    "pytest==7.4.4",
-    "pytest-cov==4.1.0",
-    # Consistent with testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
-    "rdflib>=6.3.0,<7.0.0",
-    "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
-    "graphviz>=0.20.1,<0.20.2",
-    # Consistent with: docs
-    "mike==2.1.2",
-    "mkdocs==1.5.3",
-    "mkdocs-autorefs==0.4.1",
-    "mkdocs-awesome-pages-plugin==2.9.2",
-    "mkdocs-material==9.5.17",
-    "mkdocstrings==0.22.0",
-    "mkdocstrings-python-legacy==0.2.3",
+    "tripper[pre-commit,docs]",
 ]
 
 [project.urls]

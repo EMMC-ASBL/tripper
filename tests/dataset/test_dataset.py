@@ -2,6 +2,10 @@
 
 from pathlib import Path
 
+import pytest
+
+pytest.importorskip("yaml")
+
 thisdir = Path(__file__).resolve().parent
 testdir = thisdir.parent
 inputdir = testdir / "input"
