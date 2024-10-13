@@ -1,0 +1,111 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "adms": "http://www.w3.org/ns/adms#",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dctype": "http://purl.org/dc/dcmitype/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "http://schema.org/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "spdx": "http://spdx.org/rdf/terms#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "emmo": "https://w3id.org/emmo#",
+    "oteio": "https://w3id.org/emmo/domain/oteio#",
+    "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
+
+    "status": "adms:status",
+    "versionNotes": "adms:versionNotes",
+    "distribution": "dcat:distribution",
+    "contactPoint": "dcat:contactPoint",
+    "hasCurrentVersion": "dcat:hasCurrentVersion",
+    "hasVersion": "dcat:hasVersion",
+    "inSeries": "dcat:inSeries",
+    "keyword": "dcat:keyword",
+    "landingPage": "dcat:landingPage",
+    "qualifiedRelation": "dcat:qualifiedRelation",
+    "theme": "dcat:theme",
+    "version": "dcat:version",
+    "accessRights": "dcterms:accessRights",
+    "conformsTo": "dcterms:conformsTo",
+    "creator": "dcterms:creator",
+    "description": "dcterms:description",
+    "hasPart": "dcterms:hasPart",
+    "identifier": "dcterms:identifier",
+    "isReferencedBy": "dcterms:isReferencedBy",
+    "issued": "dcterms:issued",
+    "language": "dcterms:language",
+    "license": "dcterms:license",
+    "modified": "dcterms:modified",
+    "publisher": "dcterms:publisher",
+    "relation": "dcterms:relation",
+    "replaces": "dcterms:replaces",
+    "rights": "dcterms:rights",
+    "title": "dcterms:title",
+    "type": "dcterms:type",
+    "hasPolicy": "odrl:hasPolicy",
+    "qualifiedAttribution": "prov:qualifiedAttribution",
+
+    "accessService": "dcat:accessService",
+    "accessURL": "dcat:accessURL",
+    "byteSize": "dcat:byteSize",
+    "compressFormat": "dcat:compressFormat",
+    "downloadURL": "dcat:downloadURL",
+    "mediaType": "dcat:mediaType",
+    "packageFormat": "dcat:packageFormat",
+    "spatialResolutionInMeters": "dcat:spatialResolutionInMeters",
+    "temporalResolution": "dcat:temporalResolution",
+    "format": "dcterms:format",
+    "checksum": "spdx:checksum",
+
+    "dataResource": "oteio:dataResource",
+    "parser": "oteio:parser",
+    "generator": "oteio:generator",
+    "function": "oteio:function",
+    "filter": "oteio:filter",
+
+    "parserType": "oteio:parserType",
+    "generatorType": "oteio:generatorType",
+    "functionType": "oteio:functionType",
+    "filterType": "oteio:filterType",
+
+    "datasets": "oteio:hasDataSet",
+    "datamodel": "oteio:hasDatamodel",
+    "hasDataSink": "oteio:hasDataSink",
+    "storeURL": "oteio:storeURL",
+    "mappingURL": "oteio.mappingURL",
+    "mappingFormat": "oteio.mappingFormat",
+
+    "subject": "rdf:subject",
+    "predicate": "rdf:predicate",
+    "object": "rdf:object",
+
+    "prefixes": {
+      "@id": "oteio:prefix",
+      "@type": "@json"
+    },
+
+    "configuration": {
+      "@id": "oteio:hasConfiguration",
+      "@type": "@json"
+    },
+
+    "mappings": {
+      "@id": "oteio:mapping",
+      "@type": "@json"
+    },
+
+    "statements": {
+      "@id": "oteio:statements",
+      "@type": "@json"
+    }
+  }
+}

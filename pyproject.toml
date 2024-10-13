@@ -132,6 +132,8 @@ good-names = [
     "s", "p", "o",
     # Namespaces
     "EX",
+    # dict, file, ...
+    "d", "f",
 ]
 
 [tool.pytest.ini_options]

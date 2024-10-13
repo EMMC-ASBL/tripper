@@ -56,6 +56,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Dict,
         Generator,
+        Iterable,
         List,
         Optional,
         Tuple,
@@ -259,9 +260,7 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(
-        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
-    ):
+    def add_triples(self, triples: "Iterable[Triple]") -> None:
         """Add a sequence of triples.
 
         Arguments:
@@ -281,6 +280,8 @@ class Triplestore:
 
         Arguments:
             subject: If given, match triples with this subject.
+                For backward compatibility `subject` may also be an
+                `(s, p, o)` triple.
             predicate: If given, match triples with this predicate.
             object: If given, match triples with this object.
             triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`
@@ -304,7 +305,7 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
-    def close(self):
+    def close(self) -> None:
         """Calls the backend close() method if it is implemented.
         Otherwise, this method has no effect.
         """
