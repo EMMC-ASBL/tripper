@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 pytest.importorskip("yaml")
+pytest.importorskip("requests")
 
 thisdir = Path(__file__).resolve().parent
 testdir = thisdir.parent
