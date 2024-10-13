@@ -31,6 +31,8 @@ class SparqlwrapperStrategy:
 
     """
 
+    prefer_sparql = True
+
     def __init__(self, base_iri: str, **kwargs) -> None:
         kwargs.pop(
             "database", None

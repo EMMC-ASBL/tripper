@@ -392,6 +392,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
 def test_backend_sparqlwrapper() -> None:
     """Specifically test the SPARQLWrapper backend Triplestore."""
     from tripper import SKOS, Triplestore
+    from tripper.errors import UnknownDatatypeWarning
 
     pytest.importorskip("SPARQLWrapper")
     ts = Triplestore(
@@ -400,7 +401,7 @@ def test_backend_sparqlwrapper() -> None:
         "csiro_international-chronostratigraphic-chart_geologic-"
         "time-scale-2020",
     )
-    with pytest.warns(UserWarning, match="unknown datatype"):
+    with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
         for s, p, o in ts.triples(predicate=SKOS.notation):
             assert s
             assert p

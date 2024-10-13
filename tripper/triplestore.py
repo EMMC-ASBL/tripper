@@ -29,7 +29,7 @@ from tripper.errors import (
     ArgumentValueError,
     CannotGetFunctionError,
     NamespaceError,
-    TriplestoreError,
+    TripperError,
     UniquenessError,
 )
 from tripper.literal import Literal
@@ -534,6 +534,14 @@ class Triplestore:
     # interfaces to the triples(), add_triples() and remove() methods
     # implemented by all backends.
 
+    prefer_sparql = property(
+        fget=lambda self: getattr(self.backend, "prefer_sparql", None),
+        doc=(
+            "Whether the backend prefer SPARQL over the triples() interface. "
+            "Is None if not specified by the backend."
+        ),
+    )
+
     @classmethod
     def _get_backend(cls, backend: str, package: "Optional[str]" = None):
         """Returns the class implementing the given backend."""
@@ -967,7 +975,7 @@ class Triplestore:
         self.bind("map", MAP)
 
         if not property_name and not isinstance(source, str):
-            raise TriplestoreError(
+            raise TripperError(
                 "`property_name` is required when `target` is not a string."
             )
 

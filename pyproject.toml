@@ -139,4 +139,5 @@ minversion = "7.0"
 addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
+    "ignore:::tripper.literal:243",  # Ignore warning in doctest
 ]

@@ -2,15 +2,15 @@
 
 
 # === Exceptions ===
-class TriplestoreError(Exception):
-    """Base exception for triplestore errors."""
+class TripperError(Exception):
+    """Base exception for tripper errors."""
 
 
-class UniquenessError(TriplestoreError):
+class UniquenessError(TripperError):
     """More than one matching triple."""
 
 
-class NamespaceError(TriplestoreError):
+class NamespaceError(TripperError):
     """Namespace error."""
 
 
@@ -18,18 +18,26 @@ class NoSuchIRIError(NamespaceError):
     """Namespace has no such IRI."""
 
 
-class CannotGetFunctionError(TriplestoreError):
+class CannotGetFunctionError(TripperError):
     """Not able to get function documented in the triplestore."""
 
 
-class ArgumentTypeError(TriplestoreError, TypeError):
+class ArgumentTypeError(TripperError, TypeError):
     """Invalid argument type."""
 
 
-class ArgumentValueError(TriplestoreError, ValueError):
+class ArgumentValueError(TripperError, ValueError):
     """Invalid argument value (of correct type)."""
 
 
 # === Warnings ===
-class UnusedArgumentWarning(Warning):
+class TripperWarning(Warning):
+    """Base class for tripper warnings."""
+
+
+class UnusedArgumentWarning(TripperWarning):
     """Argument is unused."""
+
+
+class UnknownDatatypeWarning(TripperWarning):
+    """Unknown datatype."""

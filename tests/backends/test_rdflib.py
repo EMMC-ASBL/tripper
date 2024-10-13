@@ -36,3 +36,5 @@ def test_rdflib_backend():
     # Test for bnode
     ts.add_triples([("_:bn1", RDFS.subClassOf, EX.s)])
     assert ts.value(predicate=RDFS.subClassOf, object=EX.s) == "_:bn1"
+
+    assert ts.prefer_sparql is False

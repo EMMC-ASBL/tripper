@@ -33,6 +33,8 @@ class CollectionStrategy:
             triplestore from.
     """
 
+    prefer_sparql = False
+
     def __init__(
         self,
         base_iri: "Optional[str]" = None,

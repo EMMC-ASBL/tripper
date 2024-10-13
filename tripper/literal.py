@@ -12,6 +12,7 @@ import warnings
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from tripper.errors import UnknownDatatypeWarning
 from tripper.namespace import RDF, RDFS, XSD
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -240,7 +241,8 @@ class Literal(str):
             string.datatype in types for types in cls.datatypes.values()
         ):
             warnings.warn(
-                f"unknown datatype: {string.datatype} - assuming xsd:string"
+                f"unknown datatype: {string.datatype} - assuming xsd:string",
+                category=UnknownDatatypeWarning,
             )
 
         return string
