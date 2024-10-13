@@ -23,6 +23,14 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from tripper.utils import Triple
 
+# Cache decorator
+cache = (
+    functools.cache  # new in Python 3.9, smaller and faster than lru_cache()
+    if hasattr(functools, "cache")
+    else functools.lru_cache(maxsize=1)
+)
+
+
 # Pytest can't cope with this
 # EMMO = Namespace(
 #     iri="https://w3id.org/emmo#",
@@ -183,7 +191,7 @@ def load_dataset_sparql(ts: Triplestore, iri: str) -> dict:
     return dataset
 
 
-@functools.cache
+@cache  # type: ignore
 def get_context(timeout: float = 5, fromfile: bool = True) -> dict:
     """Return context as a dict.
 

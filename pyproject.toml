@@ -38,7 +38,8 @@ mappings = [
 ]
 dataset = [
     "pint>=0.16.1,<0.24",
-    "PyYaml>=5.0.0,<6.0.3",
+    "PyYaml>=5.0.0,<6.0.3",  # todo: check lower version
+    "requests>=3.0.0,<3.4.1",  # todo: check lower version
 ]
 pre-commit = [
     "pre-commit==2.21.0",
