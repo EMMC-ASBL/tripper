@@ -17,42 +17,32 @@ def test_save_and_load_dataset():
     """Test save_dataset() and load_dataset()."""
     # pylint: disable=too-many-locals,invalid-name
 
-    import os
-
-    # from paths import inputdir, outputdir
     from tripper import Triplestore
-    from tripper.dataset import load_datadoc
+    from tripper.dataset import load_datadoc, load_dataset, save_dataset
 
-    backend = "rdflib"
-    TRIPLESTORE_HOST = os.getenv("TRIPLESTORE_HOST", "localhost")
-    TRIPLESTORE_PORT = os.getenv("TRIPLESTORE_PORT", "3030")
-    fuseki_args = {
-        "backend": "fuseki",
-        "base_iri": "http://example.com/ontology#",
-        "triplestore_url": f"http://{TRIPLESTORE_HOST}:{TRIPLESTORE_PORT}",
-        "database": "openmodel",
-    }
-
-    # Connect to triplestore
-    if backend == "fuseki":
-        ts = Triplestore(**fuseki_args)
-        ts.remove_database(**fuseki_args)
-    else:
-        ts = Triplestore("rdflib")
+    ts = Triplestore("rdflib")
 
     # Load data documentation
     datadoc = load_datadoc(inputdir / "datasets.yaml")
     assert isinstance(datadoc, dict)
     assert "@context" in datadoc
 
-    # # Store dict representation of the dataset to triplestore
-    # ds = save_dataset(ts, dataset, prefixes=prefixes)
-    # repr1 = set(ts.triples())
-    #
-    # # Load back dict representation from the triplestore
-    # EX = ts.namespaces["ex"]
-    # d = load_dataset(ts, iri=EX.mydata)
-    #
+    prefixes = datadoc["prefixes"]
+    for dataset in datadoc["datasets"]:
+        ds = save_dataset(ts, dataset, prefixes=prefixes)
+        repr1 = set(ts.triples())
+
+    # Load back dict representation from the triplestore
+    SEMDATA = ts.namespaces["semdata"]
+    d = load_dataset(ts, iri=SEMDATA["sample3/pos1_01_grid_200x"])
+
+    # Should the prefix be expanded?
+    assert ds["@id"] == "semdata:sample3/pos1_01_grid_200x"
+
+    assert "semdata:sample3/pos1_01_grid_200x" in repr1
+    assert d["@id"] == (
+        "http://sintef.no/data/matchmaker/SEM/sample3/pos1_01_grid_200x"
+    )
     # # Store the new dict representation to another triplestore
     # ts2 = Triplestore("rdflib")
     # ds2 = save_dataset(ts2, d)
@@ -89,3 +79,24 @@ def test_datadoc():
     # ts2.close()  # explicit close ts2
 
     print(ts.serialize())
+
+
+def test_fuseki():
+    """Test save and load dataset with Fuseki."""
+    import os
+
+    from tripper import Triplestore
+
+    host = os.getenv("TRIPLESTORE_HOST", "localhost")
+    port = os.getenv("TRIPLESTORE_PORT", "3030")
+    fuseki_args = {
+        "backend": "fusekix",
+        "base_iri": "http://example.com/ontology#",
+        "triplestore_url": f"http://{host}:{port}",
+        "database": "openmodel",
+    }
+    try:
+        ts = Triplestore(**fuseki_args)
+    except ModuleNotFoundError:
+        pytest.skip("Cannot connect to Fuseki server")
+    ts.remove_database(**fuseki_args)

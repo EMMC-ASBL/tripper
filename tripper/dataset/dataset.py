@@ -39,7 +39,7 @@ cache = (
 # )
 
 CONTEXT_PATH = (
-    Path(__file__).parent.parent / "context" / "0.1" / "context.json"
+    Path(__file__).parent.parent / "context" / "0.2" / "context.json"
 ).as_uri()
 
 # __TODO__: Update URI when merged to master

@@ -14,7 +14,7 @@ datasets:
     # Dataset type as defined in the SEM domain ontology
     "@type": "https://w3id.com/emmo/domain/sem/0.1#"
     title: SEM image of cement
-    description:  Back-scattered SEM image of cement sample 3, polished with 1 Âµm diamond compound.
+    description: Back-scattered SEM image of cement sample 3, polished with 1 µm diamond compound.
     creator: Sigurd Wenner
     contactPoint: "Sigurd Wenner <Sigurd.Wenner@sintef.no>"
 
