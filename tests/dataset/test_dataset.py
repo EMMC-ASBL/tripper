@@ -17,7 +17,7 @@ def test_save_and_load_dataset():
     """Test save_dataset() and load_dataset()."""
     # pylint: disable=too-many-locals,invalid-name
 
-    from tripper import Triplestore
+    from tripper import DCAT, RDF, Triplestore
     from tripper.dataset import load_datadoc, load_dataset, save_dataset
 
     ts = Triplestore("rdflib")
@@ -39,7 +39,11 @@ def test_save_and_load_dataset():
     # Should the prefix be expanded?
     assert ds["@id"] == "semdata:sample3/pos1_01_grid_200x"
 
-    assert "semdata:sample3/pos1_01_grid_200x" in repr1
+    assert (
+        "semdata:sample3/pos1_01_grid_200x",
+        RDF.type,
+        DCAT.Dataset,
+    ) in repr1
     assert d["@id"] == (
         "http://sintef.no/data/matchmaker/SEM/sample3/pos1_01_grid_200x"
     )
