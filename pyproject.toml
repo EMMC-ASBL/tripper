@@ -35,7 +35,7 @@ dependencies = [
 
 [project.optional-dependencies]
 pre-commit = [
-    "pre-commit==2.21.0",
+    "pre-commit==4.0.1",
     "pylint==2.15.5",
 ]
 testing-core = [
