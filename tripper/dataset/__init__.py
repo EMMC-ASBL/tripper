@@ -6,6 +6,7 @@ from .dataset import (
     get_prefixes,
     get_shortnames,
     load_dataset,
+    load_parser,
     read_datadoc,
     save_datadoc,
     save_dataset,

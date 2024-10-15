@@ -85,8 +85,8 @@ def test_save_and_load_dataset():
     """Test save_dataset() and load_dataset()."""
     ## pylint: disable=too-many-locals,invalid-name
 
-    from tripper import Triplestore
-    from tripper.dataset import load_dataset, save_datadoc
+    from tripper import DCAT, OTEIO, Triplestore
+    from tripper.dataset import load_dataset, load_parser, save_datadoc
 
     ts = Triplestore("rdflib")
 
@@ -96,16 +96,24 @@ def test_save_and_load_dataset():
     assert "@context" in datadoc
 
     # Load back dict representation from the triplestore
+    SEM = ts.namespaces["sem"]
     SEMDATA = ts.namespaces["semdata"]
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = load_dataset(ts, iri)
-
     assert d["@id"] == iri
+    assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution["downloadURL"] == (
         "file://SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
     )
     assert d.distribution["mediaType"] == "image/tiff"
+
+    PARSER = ts.namespaces["parser"]
+    parser = load_parser(ts, PARSER.sem_hitachi)
+    assert parser["@id"] == PARSER.sem_hitachi
+    assert parser["@type"] == OTEIO.Parser
+    assert parser.configuration == {"driver": "hitachi"}
+    assert parser.parserType == "application/vnd.dlite-parse"
 
 
 def test_fuseki():

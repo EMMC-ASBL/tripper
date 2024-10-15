@@ -119,11 +119,12 @@ def load_dataset(ts: Triplestore, iri: str) -> dict:
     context = get_context()
     shortnames = get_shortnames()
 
-    dataset = AttrDict()
+    # dataset = AttrDict()
+    dataset = AttrDict({"@id": iri})
     for p, o in ts.predicate_objects(ts.expand_iri(iri)):
         add(dataset, shortnames.get(p, p), as_python(o))
     _update_dataset(ts, iri, dataset, context, shortnames)
-    add(dataset, "@id", iri)
+    # add(dataset, "@id", iri)
 
     return dataset
 
@@ -152,6 +153,27 @@ def load_dataset_sparql(ts: Triplestore, iri: str) -> dict:
     dataset = load_dataset(ts2, iri)
     ts2.close()
     return dataset
+
+
+def load_parser(ts: Triplestore, iri: str) -> dict:
+    """Load parser from triplestore.
+
+    Arguments:
+        ts: Triplestore to load parser from.
+        iri: IRI of the parser to load.
+
+    Returns:
+        Dict-representation of the loaded parser.
+    """
+    context = get_context()
+    shortnames = get_shortnames()
+
+    parser = AttrDict({"@id": iri})
+    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
+        add(parser, shortnames.get(p, p), as_python(o))
+    _update_dataset(ts, iri, parser, context, shortnames)
+
+    return parser
 
 
 def add_distribution(
@@ -358,28 +380,6 @@ def expand_prefixes(obj: "Union[dict, list]", prefixes: dict) -> None:
                 expand_prefixes(e, prefixes)
 
 
-# def _expand_prefixes(d: dict, prefixes: dict) -> None:
-#    """Recursively expand IRI prefixes in the values of dict `d`."""
-#    for k, v in d.items():
-#        if isinstance(v, str):
-#            d[k] = expand_iri(v, prefixes)
-#        elif isinstance(v, list):
-#            _expand_elements(v, prefixes)
-#        elif isinstance(v, dict):
-#            _expand_prefixes(v, prefixes)
-#
-#
-# def _expand_elements(lst: list, prefixes: dict) -> None:
-#    """Recursively expand IRI prefixes in the elements of list `lst`."""
-#    for i, e in enumerate(lst):
-#        if isinstance(e, str):
-#            lst[i] = expand_iri(e, prefixes)
-#        elif isinstance(e, list):
-#            _expand_elements(e, prefixes)
-#        elif isinstance(e, dict):
-#            _expand_prefixes(e, prefixes)
-
-
 def expand_iri(iri: str, prefixes: dict) -> str:
     """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
     returned."""
@@ -422,10 +422,21 @@ def save_datadoc(
         ts.bind(prefix, ns)
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    f = io.StringIO(json.dumps(d))
-    with Triplestore(backend="rdflib") as ts2:
-        ts2.parse(f, format="json-ld")
-        ts.add_triples(ts2.triples())
+    datasets = d.datasets  # type: ignore[attr-defined]
+    datasets = datasets if isinstance(datasets, list) else [datasets]
+    for dataset in datasets:
+        f = io.StringIO(json.dumps(dataset))
+        with Triplestore(backend="rdflib") as ts2:
+            ts2.parse(f, format="json-ld")
+            ts.add_triples(ts2.triples())
+
+    parsers = d.parsers  # type: ignore[attr-defined]
+    parsers = parsers if isinstance(parsers, list) else [parsers]
+    for parser in parsers:
+        f = io.StringIO(json.dumps(parser))
+        with Triplestore(backend="rdflib") as ts2:
+            ts2.parse(f, format="json-ld")
+            ts.add_triples(ts2.triples())
 
     return d
 
@@ -448,8 +459,6 @@ def prepare_datadoc(datadoc: dict) -> dict:
     for i, parser in enumerate(get(d, "parsers", ())):
         d.parsers[i] = prepare_parser(parser, prefixes=d.prefixes)
 
-    # expand_prefixes(d, d.prefixes)
-
     return d
 
 
@@ -457,8 +466,7 @@ def prepare_dataset(dataset: dict, prefixes: dict) -> dict:
     """Return an updated copy of `dataset` with additional key-value pairs
     needed for serialisation to RDF.
     """
-    # d = AttrDict({"@context": CONTEXT_URL, "@type": DCAT.Dataset})
-    d = AttrDict()
+    d = AttrDict({"@context": CONTEXT_URL, "@type": DCAT.Dataset})
     d.update(dataset)
     add(d, "@type", DCAT.Dataset)
 
@@ -471,8 +479,7 @@ def prepare_parser(parser: dict, prefixes: dict) -> dict:
     """Return an updated copy of `parser` with additional key-value pairs
     needed for serialisation to RDF.
     """
-    # d = AttrDict({"@context": CONTEXT_URL, "@type": OTEIO.Parser})
-    d = AttrDict()
+    d = AttrDict({"@context": CONTEXT_URL, "@type": OTEIO.Parser})
     d.update(parser)
     add(d, "@type", OTEIO.Parser)
 

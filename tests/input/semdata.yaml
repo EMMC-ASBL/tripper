@@ -11,7 +11,7 @@ prefixes:
 # List of documented datasets
 datasets:
   - "@id": "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
-    "@type": "https://w3id.com/emmo/domain/sem/0.1#SEMImage"
+    "@type": "sem:SEMImage"
     title: SEM image of cement
     description: |
       Back-scattered SEM image of cement sample 77600 from Heidelberg,
