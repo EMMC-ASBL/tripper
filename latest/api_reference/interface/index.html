@@ -1057,7 +1057,11 @@ ITriplestore            (<span title="typing.Protocol">Protocol</span>)
       <p>Interface for triplestore backends.</p>
 <p>In addition to the methods specified by this interface, a backend
 may also implement the following optional methods:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Whether the backend perfers SPQRQL queries instead of using the</span>
+<span class="c1"># triples() method.</span>
+<span class="n">prefer_sparql</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">def</span> <span class="nf">parse</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">IO</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1190,6 +1194,10 @@ may also implement the following optional methods:</p>
 <span class="sd">    may also implement the following optional methods:</span>
 
 <span class="sd">    ```python</span>
+
+<span class="sd">    # Whether the backend perfers SPQRQL queries instead of using the</span>
+<span class="sd">    # triples() method.</span>
+<span class="sd">    prefer_sparql = True</span>
 
 <span class="sd">    def parse(</span>
 <span class="sd">            self,</span>

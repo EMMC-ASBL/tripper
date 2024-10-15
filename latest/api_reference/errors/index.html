@@ -432,9 +432,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.errors.TriplestoreError" class="md-nav__link">
+  <a href="#tripper.errors.TripperError" class="md-nav__link">
     <span class="md-ellipsis">
-      TriplestoreError
+      TripperError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.errors.TripperWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      TripperWarning
     </span>
   </a>
   
@@ -444,6 +453,15 @@
   <a href="#tripper.errors.UniquenessError" class="md-nav__link">
     <span class="md-ellipsis">
       UniquenessError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.errors.UnknownDatatypeWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      UnknownDatatypeWarning
     </span>
   </a>
   
@@ -1037,9 +1055,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.errors.TriplestoreError" class="md-nav__link">
+  <a href="#tripper.errors.TripperError" class="md-nav__link">
     <span class="md-ellipsis">
-      TriplestoreError
+      TripperError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.errors.TripperWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      TripperWarning
     </span>
   </a>
   
@@ -1049,6 +1076,15 @@
   <a href="#tripper.errors.UniquenessError" class="md-nav__link">
     <span class="md-ellipsis">
       UniquenessError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.errors.UnknownDatatypeWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      UnknownDatatypeWarning
     </span>
   </a>
   
@@ -1104,7 +1140,7 @@
 
 <h2 id="tripper.errors.ArgumentTypeError" class="doc doc-heading">
         <code>
-ArgumentTypeError            (<a class="autorefs autorefs-internal" title="tripper.errors.TriplestoreError" href="#tripper.errors.TriplestoreError">TriplestoreError</a>, <span title="TypeError">TypeError</span>)
+ArgumentTypeError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="#tripper.errors.TripperError">TripperError</a>, <span title="TypeError">TypeError</span>)
         </code>
 
 
@@ -1117,7 +1153,7 @@ ArgumentTypeError            (<a class="autorefs autorefs-internal" title="tripp
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ArgumentTypeError</span><span class="p">(</span><span class="n">TriplestoreError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ArgumentTypeError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid argument type.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
@@ -1135,7 +1171,7 @@ ArgumentTypeError            (<a class="autorefs autorefs-internal" title="tripp
 
 <h2 id="tripper.errors.ArgumentValueError" class="doc doc-heading">
         <code>
-ArgumentValueError            (<a class="autorefs autorefs-internal" title="tripper.errors.TriplestoreError" href="#tripper.errors.TriplestoreError">TriplestoreError</a>, <span title="ValueError">ValueError</span>)
+ArgumentValueError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="#tripper.errors.TripperError">TripperError</a>, <span title="ValueError">ValueError</span>)
         </code>
 
 
@@ -1148,7 +1184,7 @@ ArgumentValueError            (<a class="autorefs autorefs-internal" title="trip
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ArgumentValueError</span><span class="p">(</span><span class="n">TriplestoreError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ArgumentValueError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid argument value (of correct type).&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
@@ -1166,7 +1202,7 @@ ArgumentValueError            (<a class="autorefs autorefs-internal" title="trip
 
 <h2 id="tripper.errors.CannotGetFunctionError" class="doc doc-heading">
         <code>
-CannotGetFunctionError            (<a class="autorefs autorefs-internal" title="tripper.errors.TriplestoreError" href="#tripper.errors.TriplestoreError">TriplestoreError</a>)
+CannotGetFunctionError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="#tripper.errors.TripperError">TripperError</a>)
         </code>
 
 
@@ -1179,7 +1215,7 @@ CannotGetFunctionError            (<a class="autorefs autorefs-internal" title="
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CannotGetFunctionError</span><span class="p">(</span><span class="n">TriplestoreError</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CannotGetFunctionError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Not able to get function documented in the triplestore.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
@@ -1197,7 +1233,7 @@ CannotGetFunctionError            (<a class="autorefs autorefs-internal" title="
 
 <h2 id="tripper.errors.NamespaceError" class="doc doc-heading">
         <code>
-NamespaceError            (<a class="autorefs autorefs-internal" title="tripper.errors.TriplestoreError" href="#tripper.errors.TriplestoreError">TriplestoreError</a>)
+NamespaceError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="#tripper.errors.TripperError">TripperError</a>)
         </code>
 
 
@@ -1210,7 +1246,7 @@ NamespaceError            (<a class="autorefs autorefs-internal" title="tripper.
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">NamespaceError</span><span class="p">(</span><span class="n">TriplestoreError</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">NamespaceError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Namespace error.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
@@ -1257,23 +1293,54 @@ NoSuchIRIError            (<a class="autorefs autorefs-internal" title="tripper.
 
 
 
-<h2 id="tripper.errors.TriplestoreError" class="doc doc-heading">
+<h2 id="tripper.errors.TripperError" class="doc doc-heading">
         <code>
-TriplestoreError            (<span title="Exception">Exception</span>)
+TripperError            (<span title="Exception">Exception</span>)
         </code>
 
 
 
-<a href="#tripper.errors.TriplestoreError" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.errors.TripperError" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Base exception for triplestore errors.</p>
+      <p>Base exception for tripper errors.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TriplestoreError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for triplestore errors.&quot;&quot;&quot;</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TripperError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for tripper errors.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.errors.TripperWarning" class="doc doc-heading">
+        <code>
+TripperWarning            (<span title="Warning">Warning</span>)
+        </code>
+
+
+
+<a href="#tripper.errors.TripperWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Base class for tripper warnings.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/errors.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TripperWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for tripper warnings.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 
@@ -1290,7 +1357,7 @@ TriplestoreError            (<span title="Exception">Exception</span>)
 
 <h2 id="tripper.errors.UniquenessError" class="doc doc-heading">
         <code>
-UniquenessError            (<a class="autorefs autorefs-internal" title="tripper.errors.TriplestoreError" href="#tripper.errors.TriplestoreError">TriplestoreError</a>)
+UniquenessError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="#tripper.errors.TripperError">TripperError</a>)
         </code>
 
 
@@ -1303,8 +1370,39 @@ UniquenessError            (<a class="autorefs autorefs-internal" title="tripper
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UniquenessError</span><span class="p">(</span><span class="n">TriplestoreError</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UniquenessError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;More than one matching triple.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.errors.UnknownDatatypeWarning" class="doc doc-heading">
+        <code>
+UnknownDatatypeWarning            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperWarning" href="#tripper.errors.TripperWarning">TripperWarning</a>)
+        </code>
+
+
+
+<a href="#tripper.errors.UnknownDatatypeWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Unknown datatype.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/errors.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UnknownDatatypeWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unknown datatype.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 
@@ -1321,7 +1419,7 @@ UniquenessError            (<a class="autorefs autorefs-internal" title="tripper
 
 <h2 id="tripper.errors.UnusedArgumentWarning" class="doc doc-heading">
         <code>
-UnusedArgumentWarning            (<span title="Warning">Warning</span>)
+UnusedArgumentWarning            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperWarning" href="#tripper.errors.TripperWarning">TripperWarning</a>)
         </code>
 
 
@@ -1334,7 +1432,7 @@ UnusedArgumentWarning            (<span title="Warning">Warning</span>)
 
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UnusedArgumentWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UnusedArgumentWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Argument is unused.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
