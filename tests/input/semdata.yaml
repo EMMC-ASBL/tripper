@@ -1,24 +1,23 @@
 ---
 # This extends the list of prefixes that are already defined in the context
 prefixes:
-  sem: "https://w3id.com/emmo/domain/sem/0.1#"
-  semdata: "https://he-matchmaker.eu/data/sem/"
-  sample: "https://he-matchmaker.eu/sample/"
-  mat: "https://he-matchmaker.eu/material/"
-  dm: "http://onto-ns.com/meta/characterisation/0.1/SEMImage#"
-  parser: "http://sintef.no/dlite/parser#"
+  sem: https://w3id.com/emmo/domain/sem/0.1#
+  semdata: https://he-matchmaker.eu/data/sem/
+  sample: https://he-matchmaker.eu/sample/
+  mat: https://he-matchmaker.eu/material/
+  dm: http://onto-ns.com/meta/characterisation/0.1/SEMImage#
+  parser: http://sintef.no/dlite/parser#
+
 
 # List of documented datasets
 datasets:
-  - "@id": "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
-    "@type": "sem:SEMImage"
+  - "@id": semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001
+    "@type": sem:SEMImage
     title: SEM image of cement
-    description: |
-      Back-scattered SEM image of cement sample 77600 from Heidelberg,
-      polished with 1 µm diamond compound.
+    description: Back-scattered SEM image of cement sample 77600 from Heidelberg, polished with 1 µm diamond compound.
     creator: Sigurd Wenner
-    contactPoint: "Sigurd Wenner <Sigurd.Wenner@sintef.no>"
-    inSeries: "semdata:SEM_cement_batch2/77600-23-001"
+    contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
+    inSeries: semdata:SEM_cement_batch2/77600-23-001
 
     datamodel: http://onto-ns.com/meta/characterisation/0.1/SEMImage
     mappingURL: https://raw.githubusercontent.com/HEU-MatCHMaker/DataDocumentation/refs/heads/master/SEM/datamodels/SEMImage.ttl
@@ -29,43 +28,41 @@ datasets:
       - ["@id", "emmo:isDescriptionOf", "mat:concrete1"]
 
     distribution:
-      downloadURL: "file://SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
+      downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif
       mediaType: image/tiff
-      parser: "parser:sem_hitachi"
+      parser: parser:sem_hitachi
 
-
-  - "@id": "semdata:SEM_cement_batch2/77600-23-001"
-    "@type": "sem:SEMImageSeries"
+  - "@id": semdata:SEM_cement_batch2/77600-23-001
+    "@type": sem:SEMImageSeries
     title: Series of SEM image of cement sample 77600
     description: Back-scattered SEM image of cement sample 77600, polished with 1 µm diamond compound.
     creator: Sigurd Wenner
-    contactPoint: "Sigurd Wenner <Sigurd.Wenner@sintef.no>"
-    inSeries: "semdata:SEM_cement_batch2"
+    contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
+    inSeries: semdata:SEM_cement_batch2
 
     distribution:
-      downloadURL: "file://SEM_cement_batch2/77600-23-001"
+      downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001
       mediaType: inode/directory
 
-
-  - "@id": "semdata:SEM_cement_batch2"
-    "@type": "sem:SEMImageSeries"
+  - "@id": semdata:SEM_cement_batch2
+    "@type": sem:SEMImageSeries
     title: Nested series of SEM images of cement batch2
     description:  ...
     creator: Sigurd Wenner
-    contactPoint: "Sigurd Wenner <Sigurd.Wenner@sintef.no>"
+    contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
 
     distribution:
-      downloadURL: "file://SEM_cement_batch2"
+      downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2
       mediaType: inode/directory
 
+  - "@id": sample:SEM_cement_batch2/77600-23-001
+    "@type": chameo:Sample
+    title: Series for SEM images for sample 77600-23-001.
 
-  - "@id": "sample:SEM_cement_batch2/77600-23-001"
-    "@type": "chameo:Sample"
-    title: "Series for SEM images for sample 77600-23-001."
 
 parsers:
-  - "@id": "parser:sem_hitachi"
-    "@type": "oteio:Parser"
+  - "@id": parser:sem_hitachi
+    "@type": oteio:Parser
     parserType: application/vnd.dlite-parse
     configuration:
       driver: hitachi

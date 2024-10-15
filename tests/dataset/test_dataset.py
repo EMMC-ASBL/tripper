@@ -104,7 +104,8 @@ def test_save_and_load_dataset():
     assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution["downloadURL"] == (
-        "file://SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
+        "sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/"
+        "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
     )
     assert d.distribution["mediaType"] == "image/tiff"
 
