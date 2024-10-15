@@ -109,6 +109,15 @@ def test_triplestore(  # pylint: disable=too-many-locals
     # ) == example_function.__doc__
     assert ts.value(func_iri, DCTERMS.description, lang="de") is None
 
+    # Test the `prefer_sparql` property
+    facit = {
+        "collection": False,
+        "ontopy": False,
+        "rdflib": False,
+        "sparqlwrapper": True,
+    }
+    assert ts.prefer_sparql == facit[backend]
+
 
 # if True:
 def test_restriction() -> None:  # pylint: disable=too-many-statements

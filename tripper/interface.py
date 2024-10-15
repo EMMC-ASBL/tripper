@@ -24,7 +24,7 @@ class ITriplestore(Protocol):
 
     ```python
 
-    # Whether the backend perfers SPQRQL queries instead calling the
+    # Whether the backend perfers SPQRQL queries instead of using the
     # triples() method.
     prefer_sparql = True
 

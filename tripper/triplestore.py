@@ -545,6 +545,15 @@ class Triplestore:
         doc=(
             "Whether the backend prefer SPARQL over the triples() interface. "
             "Is None if not specified by the backend."
+            "\n\n"
+            "Even though Tripper requires that the Triplestore.triples() is "
+            "implemented, Triplestore.query() must be used for some "
+            "backends in specific cases (like fuseki when working on RDF "
+            "lists) because of how blank nodes are treated. "
+            "\n\n"
+            "The purpose of this property is to let tripper "
+            "automatically select the most appropriate interface depending "
+            "on the current backend settings."
         ),
     )
 
