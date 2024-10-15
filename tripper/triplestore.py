@@ -546,13 +546,13 @@ class Triplestore:
             "Is None if not specified by the backend."
             "\n\n"
             "Even though Tripper requires that the Triplestore.triples() is "
-            "implemented, we have to use Triplestore.query() for some "
-            "backends in some cases (like fuseki when working on RDF lists) "
-            "because of the issue with blank nodes getting renamed. "
+            "implemented, Triplestore.query() must be used for some "
+            "backends in specific cases (like fuseki when working on RDF lists) "
+            "because of how blank nodes are treated. "
             "\n\n"
-            "The purpose of this property is to allow a user of tripper to "
+            "The purpose of this property is to let tripper "
             "automatically select the most appropriate interface depending "
-            "on the current backend."
+            "on the current backend settings."
         ),
     )
 
