@@ -7,7 +7,7 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 import uuid
 from typing import TYPE_CHECKING
 
-from tripper.errors import TriplestoreError
+from tripper.errors import TripperError
 from tripper.literal import Literal
 from tripper.namespace import MAP, RDF
 from tripper.triplestore import (
@@ -186,7 +186,7 @@ class Tripper(Triplestore):
                     )
                 return retval
 
-            raise TriplestoreError(
+            raise TripperError(
                 f"data source {iri} has neither a 'hasDataValue' or a "
                 f"'hasAccessFunction' property"
             )

@@ -51,3 +51,5 @@ def test_collection():
     label = ts3.value(STRUCTURE.name, DM.hasLabel)
     assert isinstance(label, Literal)
     assert label == Literal("Strontium titanate", lang="en")
+
+    assert ts.prefer_sparql is False

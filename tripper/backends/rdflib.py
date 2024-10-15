@@ -69,6 +69,8 @@ class RdflibStrategy:
             creating a new empty Graph object.
     """
 
+    prefer_sparql = False
+
     def __init__(
         self,
         base_iri: "Optional[str]" = None,  # pylint: disable=unused-argument

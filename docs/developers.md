@@ -1,6 +1,12 @@
 # For developers
 
-## New release
+## Adding new backends
+
+See [interface.py], which defines the interface of a backend and may serve as a template for creating new backends.
+
+
+
+## Creating new release
 
 To create a new release, it is good to have a release summary.
 
@@ -15,3 +21,8 @@ Then, go to [create a new GitHub releases](https://github.com/EMMC-ASBL/tripper/
 Add again the tag as the release title (optionally write something else that defines this release as a title).
 
 Finally, press the "Publish release" button and ensure the release workflow succeeds (check [the release workflow](https://github.com/EMMC-ASBL/tripper/actions/workflows/cd_release.yml)).
+
+
+
+
+[interface.py]: https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py

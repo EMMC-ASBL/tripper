@@ -109,6 +109,15 @@ def test_triplestore(  # pylint: disable=too-many-locals
     # ) == example_function.__doc__
     assert ts.value(func_iri, DCTERMS.description, lang="de") is None
 
+    # Test the `prefer_sparql` property
+    facit = {
+        "collection": False,
+        "ontopy": False,
+        "rdflib": False,
+        "sparqlwrapper": True,
+    }
+    assert ts.prefer_sparql == facit[backend]
+
 
 # if True:
 def test_restriction() -> None:  # pylint: disable=too-many-statements
@@ -408,6 +417,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
 def test_backend_sparqlwrapper() -> None:
     """Specifically test the SPARQLWrapper backend Triplestore."""
     from tripper import SKOS, Triplestore
+    from tripper.errors import UnknownDatatypeWarning
 
     pytest.importorskip("SPARQLWrapper")
     ts = Triplestore(
@@ -416,7 +426,7 @@ def test_backend_sparqlwrapper() -> None:
         "csiro_international-chronostratigraphic-chart_geologic-"
         "time-scale-2020",
     )
-    with pytest.warns(UserWarning, match="unknown datatype"):
+    with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
         for s, p, o in ts.triples(predicate=SKOS.notation):
             assert s
             assert p

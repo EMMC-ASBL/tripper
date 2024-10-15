@@ -7,6 +7,7 @@ def test_untyped() -> None:
     """Test creating a untyped literal."""
     import pytest
 
+    from tripper.errors import UnknownDatatypeWarning
     from tripper.literal import XSD, Literal
 
     literal = Literal("Hello world!")
@@ -23,7 +24,7 @@ def test_untyped() -> None:
     # Check two things here:
     #   1) that a plain literal compares false to a non-string literal
     #   2) that we get a warning about unknown XSD.ENTITY datatype
-    with pytest.warns(UserWarning, match="^unknown datatype"):
+    with pytest.warns(UnknownDatatypeWarning, match="^unknown datatype"):
         assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
 
 
@@ -227,6 +228,7 @@ def test_parse_literal() -> None:
     import pytest
 
     from tripper import RDF, XSD, Literal
+    from tripper.errors import UnknownDatatypeWarning
     from tripper.utils import parse_literal
 
     literal = parse_literal(Literal("abc").n3())
@@ -315,7 +317,7 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
 
-    with pytest.warns(UserWarning, match="unknown datatype"):
+    with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
         literal = parse_literal('"value"^^http://example.com/vocab#mytype')
     assert literal.value == "value"
     assert literal.lang is None

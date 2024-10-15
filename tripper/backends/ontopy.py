@@ -43,6 +43,8 @@ class OntopyStrategy:
     Either the `base_iri` or `onto` argument must be provided.
     """
 
+    prefer_sparql = False
+
     def __init__(
         self,
         base_iri: "Optional[str]" = None,
