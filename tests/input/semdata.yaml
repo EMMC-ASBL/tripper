@@ -35,7 +35,7 @@ datasets:
 
 
   - "@id": "semdata:SEM_cement_batch2/77600-23-001"
-    "@type": "https://w3id.com/emmo/domain/sem/0.1#SEMImageSeries"
+    "@type": "sem:SEMImageSeries"
     title: Series of SEM image of cement sample 77600
     description: Back-scattered SEM image of cement sample 77600, polished with 1 µm diamond compound.
     creator: Sigurd Wenner
@@ -48,8 +48,8 @@ datasets:
 
 
   - "@id": "semdata:SEM_cement_batch2"
-    "@type": "https://w3id.com/emmo/domain/sem/0.1#SEMImageSeries"
-    title: Series of SEM images of cement batch2
+    "@type": "sem:SEMImageSeries"
+    title: Nested series of SEM images of cement batch2
     description:  ...
     creator: Sigurd Wenner
     contactPoint: "Sigurd Wenner <Sigurd.Wenner@sintef.no>"
@@ -61,8 +61,7 @@ datasets:
 
   - "@id": "sample:SEM_cement_batch2/77600-23-001"
     "@type": "chameo:Sample"
-    title:
-
+    title: "Series for SEM images for sample 77600-23-001."
 
 parsers:
   - "@id": "parser:sem_hitachi"

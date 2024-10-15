@@ -44,13 +44,15 @@ CONTEXT_PATH = (
 
 # __TODO__: Update URI when merged to master
 CONTEXT_URL = (
-    "https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/"
-    "rdf-serialisation/oteapi_dlite/context/0.2/context.json"
+    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
+    "dataset/tripper/context/0.2/context.json"
 )
 # CONTEXT_URL = "file:tripper/context/0.2/context.json"
 
 
-_MATCH_PREFIXED_IRI = re.compile(r"^([a-z0-9]*):([a-zA-Z_][a-zA-Z0-9_+-]*)$")
+_MATCH_PREFIXED_IRI = re.compile(
+    r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
+)
 
 DataSet = "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
 
@@ -185,10 +187,10 @@ def add_distribution(
     # Add distribution(s) to dataset
     if isinstance(distribution, Sequence):
         for distr in distribution:
-            _expand_prefixes(distr, prefixes if prefixes else {})
+            expand_prefixes(distr, prefixes if prefixes else {})
             add(dataset, "distribution", distr)
     elif isinstance(distribution, dict):
-        _expand_prefixes(distribution, prefixes if prefixes else {})
+        expand_prefixes(distribution, prefixes if prefixes else {})
         add(dataset, "distribution", distribution)
     else:
         raise TypeError(
@@ -240,7 +242,7 @@ def get_shortnames(timeout: float = 5) -> dict:
     context = get_context(timeout=timeout)
     prefixes = get_prefixes()
     shortnames = {
-        _expand_prefix(v, prefixes): k
+        expand_iri(v, prefixes): k
         for k, v in context.items()
         if isinstance(v, str) and not v.endswith(("#", "/"))
     }
@@ -249,13 +251,6 @@ def get_shortnames(timeout: float = 5) -> dict:
     shortnames.setdefault(OTEIO.hasConfiguration, "configuration")
     shortnames.setdefault(OTEIO.statement, "statements")
     return shortnames
-
-
-def _expand_prefix(s: str, prefixes: dict) -> str:
-    """Expand prefixes in string `s`."""
-    for prefix, ns in prefixes.items():
-        s = re.sub(f"^{prefix}:", ns, s, count=1)
-    return s
 
 
 def _update_dataset(
@@ -347,26 +342,42 @@ def get(
     return value
 
 
-def _expand_prefixes(d: dict, prefixes: dict) -> None:
+def expand_prefixes(obj: "Union[dict, list]", prefixes: dict) -> None:
     """Recursively expand IRI prefixes in the values of dict `d`."""
-    for k, v in d.items():
-        if isinstance(v, str):
-            d[k] = expand_iri(v, prefixes)
-        elif isinstance(v, list):
-            _expand_elements(v, prefixes)
-        elif isinstance(v, dict):
-            _expand_prefixes(v, prefixes)
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(v, str):
+                obj[k] = expand_iri(v, prefixes)
+            elif isinstance(v, (dict, list)):
+                expand_prefixes(v, prefixes)
+    elif isinstance(obj, list):
+        for i, e in enumerate(obj):
+            if isinstance(e, str):
+                obj[i] = expand_iri(e, prefixes)
+            elif isinstance(e, (dict, list)):
+                expand_prefixes(e, prefixes)
 
 
-def _expand_elements(lst: list, prefixes: dict) -> None:
-    """Recursively expand IRI prefixes in the elements of list `lst`."""
-    for i, e in enumerate(lst):
-        if isinstance(e, str):
-            lst[i] = expand_iri(e, prefixes)
-        elif isinstance(e, list):
-            _expand_elements(e, prefixes)
-        elif isinstance(e, dict):
-            _expand_prefixes(e, prefixes)
+# def _expand_prefixes(d: dict, prefixes: dict) -> None:
+#    """Recursively expand IRI prefixes in the values of dict `d`."""
+#    for k, v in d.items():
+#        if isinstance(v, str):
+#            d[k] = expand_iri(v, prefixes)
+#        elif isinstance(v, list):
+#            _expand_elements(v, prefixes)
+#        elif isinstance(v, dict):
+#            _expand_prefixes(v, prefixes)
+#
+#
+# def _expand_elements(lst: list, prefixes: dict) -> None:
+#    """Recursively expand IRI prefixes in the elements of list `lst`."""
+#    for i, e in enumerate(lst):
+#        if isinstance(e, str):
+#            lst[i] = expand_iri(e, prefixes)
+#        elif isinstance(e, list):
+#            _expand_elements(e, prefixes)
+#        elif isinstance(e, dict):
+#            _expand_prefixes(e, prefixes)
 
 
 def expand_iri(iri: str, prefixes: dict) -> str:
@@ -374,7 +385,7 @@ def expand_iri(iri: str, prefixes: dict) -> str:
     returned."""
     match = re.match(_MATCH_PREFIXED_IRI, iri)
     if match:
-        prefix, name = match.groups()
+        prefix, name, _ = match.groups()
         if prefix in prefixes:
             return f"{prefixes[prefix]}{name}"
         warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
@@ -432,10 +443,12 @@ def prepare_datadoc(datadoc: dict) -> dict:
         d.prefixes = prefixes.copy()
 
     for i, dataset in enumerate(get(d, "datasets", ())):
-        d.datasets[i] = prepare_dataset(dataset, prefixes=prefixes)
+        d.datasets[i] = prepare_dataset(dataset, prefixes=d.prefixes)
 
     for i, parser in enumerate(get(d, "parsers", ())):
-        d.parsers[i] = prepare_parser(parser, prefixes=prefixes)
+        d.parsers[i] = prepare_parser(parser, prefixes=d.prefixes)
+
+    # expand_prefixes(d, d.prefixes)
 
     return d
 
@@ -444,10 +457,12 @@ def prepare_dataset(dataset: dict, prefixes: dict) -> dict:
     """Return an updated copy of `dataset` with additional key-value pairs
     needed for serialisation to RDF.
     """
-    d = AttrDict({"@context": CONTEXT_URL, "@type": DCAT.Dataset})
+    # d = AttrDict({"@context": CONTEXT_URL, "@type": DCAT.Dataset})
+    d = AttrDict()
     d.update(dataset)
+    add(d, "@type", DCAT.Dataset)
 
-    _expand_prefixes(d, prefixes)
+    expand_prefixes(d, prefixes)
 
     return d
 
@@ -456,9 +471,11 @@ def prepare_parser(parser: dict, prefixes: dict) -> dict:
     """Return an updated copy of `parser` with additional key-value pairs
     needed for serialisation to RDF.
     """
-    d = AttrDict({"@context": CONTEXT_URL, "@type": OTEIO.Parser})
+    # d = AttrDict({"@context": CONTEXT_URL, "@type": OTEIO.Parser})
+    d = AttrDict()
     d.update(parser)
+    add(d, "@type", OTEIO.Parser)
 
-    _expand_prefixes(d, prefixes)
+    expand_prefixes(d, prefixes)
 
     return d

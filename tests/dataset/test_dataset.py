@@ -38,6 +38,7 @@ def test_get_shortnames():
     # Short names that are not equal to the last component of the IRI
     exceptions = (
         "datasets",
+        "parsers",
         "datamodel",
         "prefixes",
         "configuration",
@@ -56,10 +57,33 @@ def test_get_shortnames():
             assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
 
 
+def test_expand_prefixes():
+    """Test expand_prefixes()."""
+    from tripper import DCTERMS, EMMO, OTEIO
+    from tripper.dataset import expand_prefixes, get_prefixes
+
+    prefixes = get_prefixes()
+    d = {
+        "a": "oteio:Parser",
+        "b": [
+            "emmo:Atom",
+            {
+                "Z": "emmo:AtomicNumber",
+                "v": "dcterms:a/b",
+            },
+        ],
+    }
+    expand_prefixes(d, prefixes)
+    assert d["a"] == OTEIO.Parser
+    assert d["b"][0] == EMMO.Atom
+    assert d["b"][1]["Z"] == EMMO.AtomicNumber
+    assert d["b"][1]["v"] == DCTERMS["a/b"]
+
+
 # if True:
 def test_save_and_load_dataset():
     """Test save_dataset() and load_dataset()."""
-    # pylint: disable=too-many-locals,invalid-name
+    ## pylint: disable=too-many-locals,invalid-name
 
     from tripper import Triplestore
     from tripper.dataset import load_dataset, save_datadoc
@@ -76,8 +100,12 @@ def test_save_and_load_dataset():
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = load_dataset(ts, iri)
 
-    # Should the prefix be expanded?
     assert d["@id"] == iri
+    assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
+    assert d.distribution["downloadURL"] == (
+        "file://SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
+    )
+    assert d.distribution["mediaType"] == "image/tiff"
 
 
 def test_fuseki():
