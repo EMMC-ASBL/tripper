@@ -47,6 +47,26 @@ __all__ = (
 )
 
 
+class AttrDict(dict):
+    """Dict with attribute access.
+
+    Dict methods are also available prefixed with an underscore. For
+    example, the `d.get()` method may also be assessed as `d._get()`.
+    This might be useful in case "get" has been added as a key.
+    """
+
+    def __getattr__(self, name):
+        if name in self:
+            return self[name]
+        raise KeyError(name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+    def __repr__(self):
+        return f"AttrDict({dict.__repr__(self)})"
+
+
 def infer_iri(obj):
     """Return IRI of the individual that stands for Python object `obj`.
 

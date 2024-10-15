@@ -81,8 +81,8 @@
     "datamodel": "oteio:hasDatamodel",
     "hasDataSink": "oteio:hasDataSink",
     "storeURL": "oteio:storeURL",
-    "mappingURL": "oteio.mappingURL",
-    "mappingFormat": "oteio.mappingFormat",
+    "mappingURL": "oteio:mappingURL",
+    "mappingFormat": "oteio:mappingFormat",
 
     "subject": "rdf:subject",
     "predicate": "rdf:predicate",

@@ -160,6 +160,26 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
+        Attributes:
+            backend_name: Name of backend.
+            base_iri: Assigned to the `base_iri` argument.
+            closed: Whether the triplestore is closed.
+            kwargs: Dict with additional keyword arguments.
+            namespaces: Dict mapping namespace prefixes to IRIs.
+            package: Name of Python package if the backend is implemented as
+                a relative module. Assigned to the `package` argument.
+
+        Notes:
+            If the backend establish a connection that should be closed,
+            it is useful to instantiate the Triplestore as a context manager:
+
+                >>> import tripper
+                >>> with tripper.Triplestore("rdflib") as ts:
+                ...     print(ts.backend_name)
+                rdflib
+
+            This will ensure that the connection is closed when the scope of
+            the with-statement is left.
         """
         backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
@@ -178,6 +198,12 @@ class Triplestore:
 
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
 
     @classmethod
     def _load_backend(cls, backend: str, package: "Optional[str]" = None):

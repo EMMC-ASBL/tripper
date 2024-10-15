@@ -7,13 +7,13 @@ import json
 import re
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 import requests
 import yaml  # type: ignore
 
 from tripper import DCAT, OTEIO, RDF, Triplestore
-from tripper.utils import as_python
+from tripper.utils import AttrDict, as_python
 
 # from tripper.errors import NamespaceError
 # from tripper.utils import parse_literal
@@ -54,12 +54,12 @@ _MATCH_PREFIXED_IRI = re.compile(r"^([a-z0-9]*):([a-zA-Z_][a-zA-Z0-9_+-]*)$")
 
 DataSet = "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
 
+# datasink: "Optional[Union[dict, List[dict]]]" = None,
+
 
 def save_dataset(
     ts: Triplestore,
-    dataset: "Union[dict, str]",
-    distribution: "Optional[Union[dict, List[dict]]]" = None,
-    datasink: "Optional[Union[dict, List[dict]]]" = None,
+    dataset: dict,
     prefixes: "Optional[dict]" = None,
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
@@ -67,25 +67,13 @@ def save_dataset(
 
     Arguments:
         ts: Triplestore to save to.
-        dataset: A dict documenting a new dataset or an IRI referring to an
-            existing dataset.
-
-            If this is a dict, the keys may be either properties of
-            [dcat:Dataset](https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset)
-            (without the prefix) or one of the following keywords:
+        dataset: A dict documenting a new dataset.  The keys may be either
+            properties defined in the [JSON-LD context](https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json)
+            or one of the following special keywords:
               - "@id": Dataset IRI.  Must always be given.
               - "@type": IRI of a specific dataset subclass. Typically is used
                 to refer to a specific subclass of `emmo:DataSet`, providing a
                 semantic description of this dataset.
-        distribution: A dict or a list of dicts documenting specific
-            realisations of the dataset.  The keys may be either properties of
-            [dcat:Distribution](https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution)
-            (not prefixed with a namespace) or any of the following keys:
-               - "@id": Distribution IRI. Must always be given.
-               - "parser": Sub-dict documenting an OTEAPI parser.
-               - "mapping": Sub-dict documenting OTEAPI mappings.
-        datasink: A dict or a list of dicts documenting specific  sink for this
-            dataset.
         prefixes: Namespace prefixes that should be recognised as values.
 
     Returns:
@@ -94,53 +82,26 @@ def save_dataset(
     SeeAlso:
         __TODO__: add URL to further documentation and examples.
     """
-    if isinstance(dataset, str):
-        dataset = load_dataset(ts, dataset)
-    else:
-        dataset = dataset.copy()
-
     if "@id" not in dataset:
         raise ValueError("dataset must have an '@id' key")
 
-    add(dataset, "@context", CONTEXT_URL)
+    all_prefixes = get_prefixes()
+    if prefixes:
+        all_prefixes.update(prefixes)
 
-    # Add distribution and datasink
-    for k, v, type_ in [
-        ("distribution", distribution, DCAT.Distribution),
-        ("datasink", datasink, OTEIO.DataSink),
-    ]:
-        if v:
-            add(dataset, k, v)
-        if k in dataset:
-            if isinstance(dataset[k], list):
-                for d in dataset[k]:
-                    add(d, "@type", type_)
-            else:
-                add(dataset[k], "@type", type_)
-
-    # Expand prefixes
-    _expand_prefixes(dataset, prefixes if prefixes else {})
-
-    # Append dcat:Dataset to @type
-    add(dataset, "@type", DCAT.Dataset)
+    d = prepare_dataset(dataset, prefixes=all_prefixes)
 
     # Bind prefixes
-    default_prefixes = get_prefixes()
-    if prefixes:
-        default_prefixes.update(prefixes)
-    for prefix, ns in default_prefixes.items():
+    for prefix, ns in all_prefixes.items():
         ts.bind(prefix, ns)
 
-    # Write json-ld data to temporary rdflib triplestore
-    f = io.StringIO(json.dumps(dataset))
-    ts2 = Triplestore(backend="rdflib")
-    ts2.parse(f, format="json-ld")
+    # Write json-ld data to triplestore (using temporary rdflib triplestore)
+    f = io.StringIO(json.dumps(d))
+    with Triplestore(backend="rdflib") as ts2:
+        ts2.parse(f, format="json-ld")
+        ts.add_triples(ts2.triples())
 
-    # Add triples from temporary triplestore
-    ts.add_triples(ts2.triples())
-    ts2.close()  # explicit close ts2
-
-    return dataset
+    return d
 
 
 def load_dataset(ts: Triplestore, iri: str) -> dict:
@@ -156,7 +117,7 @@ def load_dataset(ts: Triplestore, iri: str) -> dict:
     context = get_context()
     shortnames = get_shortnames()
 
-    dataset: dict = {}
+    dataset = AttrDict()
     for p, o in ts.predicate_objects(ts.expand_iri(iri)):
         add(dataset, shortnames.get(p, p), as_python(o))
     _update_dataset(ts, iri, dataset, context, shortnames)
@@ -188,6 +149,58 @@ def load_dataset_sparql(ts: Triplestore, iri: str) -> dict:
     ts2.add_triples(triples)  # type: ignore
     dataset = load_dataset(ts2, iri)
     ts2.close()
+    return dataset
+
+
+def add_distribution(
+    ts: Triplestore,
+    dataset: "Union[str, dict]",
+    distribution: "Optional[Union[dict, Sequence[dict]]]" = None,
+    prefixes: "Optional[dict]" = None,
+) -> dict:
+    # pylint: disable=line-too-long
+    """Add distribution(s) to a dataset.
+
+    Arguments:
+        ts: Triplestore to save to.
+        dataset: Dataset IRI or a dict-representation of a dataset that the
+            distribution should be added to.
+        distribution: A dict or a sequence of dicts documenting specific
+            realisations of the dataset.  The keys may be either properties of
+            [dcat:Distribution](https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution)
+            (not prefixed with a namespace) or any of the following keys:
+               - "@id": Distribution IRI. Must always be given.
+               - "parser": Sub-dict documenting an OTEAPI parser.
+        prefixes: Namespace prefixes that should be recognised as values.
+
+    Returns
+        Updated copy of dict-representation of `dataset`.
+    """
+    # Get dataset
+    if isinstance(dataset, str):
+        dataset = load_dataset(ts, dataset)
+    else:
+        dataset = dataset.copy()
+
+    # Add distribution(s) to dataset
+    if isinstance(distribution, Sequence):
+        for distr in distribution:
+            _expand_prefixes(distr, prefixes if prefixes else {})
+            add(dataset, "distribution", distr)
+    elif isinstance(distribution, dict):
+        _expand_prefixes(distribution, prefixes if prefixes else {})
+        add(dataset, "distribution", distribution)
+    else:
+        raise TypeError(
+            "distribution must be a dict or sequence of dicts. "
+            f"Got {type(distribution)}"
+        )
+
+    # Bind prefixes
+    if prefixes:
+        for prefix, ns in prefixes.items():
+            ts.bind(prefix, ns)
+
     return dataset
 
 
@@ -239,7 +252,7 @@ def get_shortnames(timeout: float = 5) -> dict:
 
 
 def _expand_prefix(s: str, prefixes: dict) -> str:
-    """Replace prefix in s."""
+    """Expand prefixes in string `s`."""
     for prefix, ns in prefixes.items():
         s = re.sub(f"^{prefix}:", ns, s, count=1)
     return s
@@ -368,35 +381,84 @@ def expand_iri(iri: str, prefixes: dict) -> str:
     return iri
 
 
-def load_datadoc(filename: "Union[str,Path]"):
-    """Populate triplestore with data documentation in YAML."""
-    # pylint: disable=unused-argument
+def read_datadoc(filename: "Union[str, Path]") -> dict:
+    """Read YAML data documentation and return it as a dict."""
     with open(filename, "r", encoding="utf-8") as f:
         d = yaml.safe_load(f)
-
-    # context
-    # prefixes = d["prefixes"]
-    # for dataset in d["datasets"]
-
     return prepare_datadoc(d)
+
+
+def save_datadoc(
+    ts: Triplestore, file_or_dict: "Union[str, Path, dict]"
+) -> dict:
+    """Populate triplestore with data documentation.
+
+    Arguments:
+        ts: Triplestore to load dataset from.
+        file_or_dict: Data documentation dict or name of a YAML file to read
+            the data documentation from.
+
+    Returns:
+        Dict-representation of the loaded dataset.
+    """
+    if isinstance(file_or_dict, dict):
+        d = prepare_datadoc(file_or_dict)
+    else:
+        d = read_datadoc(file_or_dict)
+
+    # Bind prefixes
+    for prefix, ns in d.prefixes.items():  # type: ignore
+        ts.bind(prefix, ns)
+
+    # Write json-ld data to triplestore (using temporary rdflib triplestore)
+    f = io.StringIO(json.dumps(d))
+    with Triplestore(backend="rdflib") as ts2:
+        ts2.parse(f, format="json-ld")
+        ts.add_triples(ts2.triples())
+
+    return d
 
 
 def prepare_datadoc(datadoc: dict) -> dict:
     """Return an updated version of dict `datadoc` that is prepared for
     serialisation to RDF."""
-    d = {
-        "@context": (
-            "https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/"
-            "heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json"
-        ),
-    }
+    d = AttrDict({"@context": CONTEXT_URL})
     d.update(datadoc)
-    for dataset in get(datadoc, "datasets"):
-        update_dataset(dataset)
+
+    prefixes = get_prefixes()
+    if "prefixes" in d:
+        d.prefixes.update(prefixes)
+    else:
+        d.prefixes = prefixes.copy()
+
+    for i, dataset in enumerate(get(d, "datasets", ())):
+        d.datasets[i] = prepare_dataset(dataset, prefixes=prefixes)
+
+    for i, parser in enumerate(get(d, "parsers", ())):
+        d.parsers[i] = prepare_parser(parser, prefixes=prefixes)
+
     return d
 
 
-def update_dataset(dataset: dict) -> None:  # pylint: disable=unused-argument
-    """Update dict `dataset` with additional key-value pairs needed
-    for serialisation to RDF.
+def prepare_dataset(dataset: dict, prefixes: dict) -> dict:
+    """Return an updated copy of `dataset` with additional key-value pairs
+    needed for serialisation to RDF.
     """
+    d = AttrDict({"@context": CONTEXT_URL, "@type": DCAT.Dataset})
+    d.update(dataset)
+
+    _expand_prefixes(d, prefixes)
+
+    return d
+
+
+def prepare_parser(parser: dict, prefixes: dict) -> dict:
+    """Return an updated copy of `parser` with additional key-value pairs
+    needed for serialisation to RDF.
+    """
+    d = AttrDict({"@context": CONTEXT_URL, "@type": OTEIO.Parser})
+    d.update(parser)
+
+    _expand_prefixes(d, prefixes)
+
+    return d

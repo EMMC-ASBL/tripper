@@ -12,78 +12,72 @@ testdir = thisdir.parent
 inputdir = testdir / "input"
 
 
-if True:
-    # def test_save_and_load_dataset():
-    """Test save_dataset() and load_dataset()."""
-    # pylint: disable=too-many-locals,invalid-name
+def test_get_context():
+    """Test get_context()."""
+    from tripper.dataset import get_context
 
-    from tripper import DCAT, RDF, Triplestore
-    from tripper.dataset import load_datadoc, load_dataset, save_dataset
+    context = get_context()
+    assert isinstance(context, dict)
+    assert "@version" in context
+    assert len(context) > 20
 
-    ts = Triplestore("rdflib")
 
-    # Load data documentation
-    # datadoc = load_datadoc(inputdir / "datasets.yaml")
-    datadoc = load_datadoc(inputdir / "semdata.yaml")
-    assert isinstance(datadoc, dict)
-    assert "@context" in datadoc
+def test_get_prefixes():
+    """Test get_prefixes()."""
+    from tripper.dataset import get_prefixes
 
-    prefixes = datadoc["prefixes"]
-    for dataset in datadoc["datasets"]:
-        ds = save_dataset(ts, dataset, prefixes=prefixes)
-        repr1 = set(ts.triples())
+    prefixes = get_prefixes()
+    assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
+    assert prefixes["emmo"] == "https://w3id.org/emmo#"
 
-    # Load back dict representation from the triplestore
-    SEMDATA = ts.namespaces["semdata"]
-    d = load_dataset(ts, iri=SEMDATA["sample3/pos1_01_grid_200x"])
 
-    # Should the prefix be expanded?
-    assert ds["@id"] == "semdata:sample3/pos1_01_grid_200x"
+def test_get_shortnames():
+    """Test get_shortnames()."""
+    from tripper.dataset import get_shortnames
 
-    assert (
-        "semdata:sample3/pos1_01_grid_200x",
-        RDF.type,
-        DCAT.Dataset,
-    ) in repr1
-    assert d["@id"] == (
-        "http://sintef.no/data/matchmaker/SEM/sample3/pos1_01_grid_200x"
+    # Short names that are not equal to the last component of the IRI
+    exceptions = (
+        "datasets",
+        "datamodel",
+        "prefixes",
+        "configuration",
+        "statements",
+        "@type",
     )
-    # # Store the new dict representation to another triplestore
-    # ts2 = Triplestore("rdflib")
-    # ds2 = save_dataset(ts2, d)
-    # repr2 = set(ts.triples())
-    #
-    # # Ensure that both dict and triplestore representations are equal
-    # assert ds2 == ds
-    # assert repr2 == repr1
-    #
-    # # Load dataset using SPARQL
-    # dd = load_dataset_sparql(ts, iri=EX.mydata)
-    # assert dd == d
+
+    shortnames = get_shortnames()
+    assert (
+        shortnames["https://w3id.org/emmo/domain/oteio#hasDataSet"]
+        == "datasets"
+    )
+
+    for k, v in shortnames.items():
+        if v not in exceptions:
+            assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
 
 
 # if True:
-def test_datadoc():
-    """Test storing data documentation to triplestore."""
-    # pylint: disable=unused-variable
-    import io
-    import json
+def test_save_and_load_dataset():
+    """Test save_dataset() and load_dataset()."""
+    # pylint: disable=too-many-locals,invalid-name
 
     from tripper import Triplestore
-    from tripper.dataset import load_datadoc
+    from tripper.dataset import load_dataset, save_datadoc
 
     ts = Triplestore("rdflib")
-    d = load_datadoc(inputdir / "datasets.yaml")
 
-    f = io.StringIO(json.dumps(d))
-    ts2 = Triplestore(backend="rdflib")
-    ts2.parse(f, format="json-ld")
+    # Load data documentation into triplestore
+    datadoc = save_datadoc(ts, inputdir / "semdata.yaml")
+    assert isinstance(datadoc, dict)
+    assert "@context" in datadoc
 
-    # Add triples from temporary triplestore
-    ts.add_triples(ts2.triples())
-    # ts2.close()  # explicit close ts2
+    # Load back dict representation from the triplestore
+    SEMDATA = ts.namespaces["semdata"]
+    iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
+    d = load_dataset(ts, iri)
 
-    print(ts.serialize())
+    # Should the prefix be expanded?
+    assert d["@id"] == iri
 
 
 def test_fuseki():
