@@ -12,8 +12,8 @@ testdir = thisdir.parent
 inputdir = testdir / "input"
 
 
-# if True:
-def test_save_and_load_dataset():
+if True:
+    # def test_save_and_load_dataset():
     """Test save_dataset() and load_dataset()."""
     # pylint: disable=too-many-locals,invalid-name
 
@@ -23,7 +23,8 @@ def test_save_and_load_dataset():
     ts = Triplestore("rdflib")
 
     # Load data documentation
-    datadoc = load_datadoc(inputdir / "datasets.yaml")
+    # datadoc = load_datadoc(inputdir / "datasets.yaml")
+    datadoc = load_datadoc(inputdir / "semdata.yaml")
     assert isinstance(datadoc, dict)
     assert "@context" in datadoc
 
