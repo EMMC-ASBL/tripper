@@ -103,7 +103,7 @@
     },
 
     "statements": {
-      "@id": "oteio:statements",
+      "@id": "oteio:statement",
       "@type": "@json"
     }
   }
