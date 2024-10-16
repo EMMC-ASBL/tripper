@@ -48,12 +48,7 @@ __all__ = (
 
 
 class AttrDict(dict):
-    """Dict with attribute access.
-
-    Dict methods are also available prefixed with an underscore. For
-    example, the `d.get()` method may also be assessed as `d._get()`.
-    This might be useful in case "get" has been added as a key.
-    """
+    """Dict with attribute access."""
 
     def __getattr__(self, name):
         if name in self:

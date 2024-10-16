@@ -47,16 +47,13 @@ CONTEXT_URL = (
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
     "dataset/tripper/context/0.2/context.json"
 )
-# CONTEXT_URL = "file:tripper/context/0.2/context.json"
 
 
 _MATCH_PREFIXED_IRI = re.compile(
     r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
 )
 
-DataSet = "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
-
-# datasink: "Optional[Union[dict, List[dict]]]" = None,
+# DataSet = "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
 
 
 def save_dataset(

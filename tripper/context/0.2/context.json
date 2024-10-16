@@ -77,8 +77,6 @@
     "functionType": "oteio:functionType",
     "filterType": "oteio:filterType",
 
-    "datasets": "oteio:hasDataSet",
-    "parsers": "oteio:hasParser",
     "datamodel": "oteio:hasDatamodel",
     "hasDataSink": "oteio:hasDataSink",
     "storeURL": "oteio:storeURL",
