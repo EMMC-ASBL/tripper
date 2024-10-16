@@ -33,12 +33,11 @@ def test_get_prefixes():
 
 def test_get_shortnames():
     """Test get_shortnames()."""
+    from tripper import DCTERMS
     from tripper.dataset import get_shortnames
 
     # Short names that are not equal to the last component of the IRI
     exceptions = (
-        "datasets",
-        "parsers",
         "datamodel",
         "prefixes",
         "configuration",
@@ -47,10 +46,7 @@ def test_get_shortnames():
     )
 
     shortnames = get_shortnames()
-    assert (
-        shortnames["https://w3id.org/emmo/domain/oteio#hasDataSet"]
-        == "datasets"
-    )
+    assert shortnames[DCTERMS.title] == "title"
 
     for k, v in shortnames.items():
         if v not in exceptions:
