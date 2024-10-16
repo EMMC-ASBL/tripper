@@ -140,49 +140,113 @@ def load(
         ts: Triplestore to load data from.
         iri: IRI of the data to load.
         use_sparql: Whether to access the triplestore with SPARQL.
-            Defaults to `ts.perfer_sparql`.
+            Defaults to `ts.prefer_sparql`.
 
     Returns:
         Dict-representation of the loaded data.
     """
     if use_sparql is None:
-        use_sparql = ts.perfer_sparql
-    return load_sparql(ts, iri) if use_sparql else load_triples(ts, iri)
+        use_sparql = ts.prefer_sparql
+    dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
+
+    # Infer type of data related to iri
+    if "@type" in dct:
+        for type, spec in dicttypes.items():
+            if spec["@type"] in dct["@type"]:
+                break
+        else:
+            raise ValueError(
+                f"IRI '{iri}' has unexpected @type: {dct['@type']}"
+            )
+    else:
+        raise ValueError(f"IRI '{iri}' has no @type")
+
+    # return _load(ts, iri=iri, type=type, dct=dct, use_sparql=use_sparql)
+    return _load(ts, iri=iri, type=type, use_sparql=use_sparql)
 
 
-def load_triples(ts: Triplestore, iri: str) -> dict:
-    """Loads data from triplestore by calling `ts.triples()`.
-
-    See `load()` for details.
+# def _load(ts: Triplestore, iri: str, type: str, dct: dict, use_sparql: bool) -> dict:
+def _load(ts: Triplestore, iri: str, type: str, use_sparql: bool) -> dict:
+    """Recursive help-function for load() that takes `type` and `dct` as
+    additional arguments.
     """
-    context = get_context()
+    nested = ("distribution", "parser", "generator", "mapping")
+    d = AttrDict()
     shortnames = get_shortnames()
-
-    d = AttrDict({"@id": iri})
-    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-        add(d, shortnames.get(p, p), as_python(o))
-    _update_dataset(ts, iri, d, context, shortnames)
+    dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
+    for k, v in dct.items():
+        if k in nested:
+            # dct2 = _load_sparql(ts, v) if use_sparql else _load_triples(ts, v)
+            # d[k] = _load(ts, iri=v, type=k, dct=dct2, use_sparql=use_sparql)
+            d[k] = _load(ts, iri=v, type=k, use_sparql=use_sparql)
+        else:
+            d[k] = v
 
     return d
 
 
-def load_sparql(ts: Triplestore, iri: str) -> dict:
-    """Loads data from triplestore by calling `ts.query()`.
+# def _update_dict(
+#    ts: Triplestore, iri: str, dct: dict, context: dict, shortnames: dict
+# ) -> None:
+#    """Recursively update dict-representation of dataset."""
+#    nested = ("distribution", "datasink", "parser", "generator", "mapping")
+#
+#    for name in nested:
+#        if name in dct:
+#            v = dct[name] if isinstance(dct[name], list) else [dct[name]]
+#            for i, node in enumerate(v):
+#                d: dict = {}
+#                for p, o in ts.predicate_objects(ts.expand_iri(node)):
+#                    add(d, shortnames.get(p, p), as_python(o))
+#                if isinstance(dct[name], list):
+#                    dct[name][i] = d
+#                else:
+#                    dct[name] = d
+#                _update_dataset(ts, node, d, context, shortnames)
+#
+#    # Special handling of statements
+#    if "statements" in dct:
+#        (iri,) = ts.objects(predicate=OTEIO.statement)
+#        dct["statements"] = load_statements(ts, iri)
+#
+#
+# def _load_triples(ts: Triplestore, iri: str) -> dict:
+#    """Load `iri` from triplestore by calling `ts.triples()`."""
+#    context = get_context()
+#    shortnames = get_shortnames()
+#
+#    d = AttrDict({"@id": iri})
+#    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
+#        add(d, shortnames.get(p, p), as_python(o))
+#    _update_dataset(ts, iri, d, context, shortnames)
+#
+#    return d
 
-    See `load()` for details.
-    """
+
+def _load_triples(ts: Triplestore, iri: str) -> dict:
+    """Load `iri` from triplestore by calling `ts.triples()`."""
+    shortnames = get_shortnames()
+    d = {} if iri.startswith("_:") else {"@id": iri}
+    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
+        add(d, shortnames.get(p, p), as_python(o))
+    return d
+
+
+def _load_sparql(ts: Triplestore, iri: str) -> dict:
+    """Load `iri` from triplestore by calling `ts.query()`."""
+    subj = iri if iri.startswith("_:") else f"<{iri}>"
     query = f"""
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
-      <{iri}> (:|!:)* ?o .
+      {subj} (:|!:)* ?o .
       ?s ?p ?o .
     }}
     """
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
         ts2.add_triples(triples)  # type: ignore
-        return load_triples(ts2, iri)
+        return _load_triples(ts2, iri)
 
 
 # def save_dataset(
@@ -437,22 +501,22 @@ def load_list(ts: Triplestore, iri: str):
     return lst
 
 
-def load_statements(ts: Triplestore, iri: str):
-    """Load and return list of spo statements from triplestore, with `iri`
-    being the first node in the list of statements.
-    """
-    statements = []
-    for node in load_list(ts, iri):
-        d = {}
-        for p, o in ts.predicate_objects(node):
-            if p == RDF.subject:
-                d["subject"] = as_python(o)
-            elif p == RDF.predicate:
-                d["predicate"] = as_python(o)
-            elif p == RDF.object:
-                d["object"] = as_python(o)
-        statements.append(d)
-    return sorted(statements, key=lambda d: sorted(d.items()))
+# def load_statements(ts: Triplestore, iri: str):
+#    """Load and return list of spo statements from triplestore, with `iri`
+#    being the first node in the list of statements.
+#    """
+#    statements = []
+#    for node in load_list(ts, iri):
+#        d = {}
+#        for p, o in ts.predicate_objects(node):
+#            if p == RDF.subject:
+#                d["subject"] = as_python(o)
+#            elif p == RDF.predicate:
+#                d["predicate"] = as_python(o)
+#            elif p == RDF.object:
+#                d["object"] = as_python(o)
+#        statements.append(d)
+#    return sorted(statements, key=lambda d: sorted(d.items()))
 
 
 def add(d: dict, key: str, value: "Any") -> None:

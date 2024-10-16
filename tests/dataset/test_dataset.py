@@ -76,8 +76,8 @@ def test_expand_prefixes():
     assert d["b"][1]["v"] == DCTERMS["a/b"]
 
 
-# if True:
-def test_save_and_load():
+if True:
+    # def test_save_and_load():
     """Test save_datadoc() and load()."""
 
     from tripper import DCAT, OTEIO, Triplestore
@@ -103,6 +103,10 @@ def test_save_and_load():
         "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
     )
     assert d.distribution["mediaType"] == "image/tiff"
+
+    print("=============================================")
+    d2 = load(ts, iri, use_sparql=True)
+    assert d2 == d
 
     PARSER = ts.namespaces["parser"]
     parser = load(ts, PARSER.sem_hitachi)
