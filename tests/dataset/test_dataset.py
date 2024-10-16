@@ -1,5 +1,7 @@
 """Test RDF serialisation."""
 
+# pylint: disable=invalid-name
+
 from pathlib import Path
 
 import pytest
@@ -76,8 +78,8 @@ def test_expand_prefixes():
     assert d["b"][1]["v"] == DCTERMS["a/b"]
 
 
-if True:
-    # def test_save_and_load():
+# if True:
+def test_save_and_load():
     """Test save_datadoc() and load()."""
 
     from tripper import DCAT, OTEIO, Triplestore

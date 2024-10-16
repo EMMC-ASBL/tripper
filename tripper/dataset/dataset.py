@@ -1,22 +1,19 @@
 """Module for documenting datasets with Tripper."""
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,redefined-builtin
 import functools
 import io
 import json
 import re
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 import requests
 import yaml  # type: ignore
 
 from tripper import DCAT, OTEIO, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
-
-# from tripper.errors import NamespaceError
-# from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Union
@@ -149,78 +146,15 @@ def load(
         use_sparql = ts.prefer_sparql
     dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
 
-    # Infer type of data related to iri
-    if "@type" in dct:
-        for type, spec in dicttypes.items():
-            if spec["@type"] in dct["@type"]:
-                break
-        else:
-            raise ValueError(
-                f"IRI '{iri}' has unexpected @type: {dct['@type']}"
-            )
-    else:
-        raise ValueError(f"IRI '{iri}' has no @type")
-
-    # return _load(ts, iri=iri, type=type, dct=dct, use_sparql=use_sparql)
-    return _load(ts, iri=iri, type=type, use_sparql=use_sparql)
-
-
-# def _load(ts: Triplestore, iri: str, type: str, dct: dict, use_sparql: bool) -> dict:
-def _load(ts: Triplestore, iri: str, type: str, use_sparql: bool) -> dict:
-    """Recursive help-function for load() that takes `type` and `dct` as
-    additional arguments.
-    """
     nested = ("distribution", "parser", "generator", "mapping")
     d = AttrDict()
-    shortnames = get_shortnames()
     dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
     for k, v in dct.items():
         if k in nested:
-            # dct2 = _load_sparql(ts, v) if use_sparql else _load_triples(ts, v)
-            # d[k] = _load(ts, iri=v, type=k, dct=dct2, use_sparql=use_sparql)
-            d[k] = _load(ts, iri=v, type=k, use_sparql=use_sparql)
+            d[k] = load(ts, iri=v, use_sparql=use_sparql)
         else:
             d[k] = v
-
     return d
-
-
-# def _update_dict(
-#    ts: Triplestore, iri: str, dct: dict, context: dict, shortnames: dict
-# ) -> None:
-#    """Recursively update dict-representation of dataset."""
-#    nested = ("distribution", "datasink", "parser", "generator", "mapping")
-#
-#    for name in nested:
-#        if name in dct:
-#            v = dct[name] if isinstance(dct[name], list) else [dct[name]]
-#            for i, node in enumerate(v):
-#                d: dict = {}
-#                for p, o in ts.predicate_objects(ts.expand_iri(node)):
-#                    add(d, shortnames.get(p, p), as_python(o))
-#                if isinstance(dct[name], list):
-#                    dct[name][i] = d
-#                else:
-#                    dct[name] = d
-#                _update_dataset(ts, node, d, context, shortnames)
-#
-#    # Special handling of statements
-#    if "statements" in dct:
-#        (iri,) = ts.objects(predicate=OTEIO.statement)
-#        dct["statements"] = load_statements(ts, iri)
-#
-#
-# def _load_triples(ts: Triplestore, iri: str) -> dict:
-#    """Load `iri` from triplestore by calling `ts.triples()`."""
-#    context = get_context()
-#    shortnames = get_shortnames()
-#
-#    d = AttrDict({"@id": iri})
-#    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-#        add(d, shortnames.get(p, p), as_python(o))
-#    _update_dataset(ts, iri, d, context, shortnames)
-#
-#    return d
 
 
 def _load_triples(ts: Triplestore, iri: str) -> dict:
@@ -247,175 +181,6 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     with Triplestore(backend="rdflib") as ts2:
         ts2.add_triples(triples)  # type: ignore
         return _load_triples(ts2, iri)
-
-
-# def save_dataset(
-#    ts: Triplestore,
-#    dataset: dict,
-#    prefixes: "Optional[dict]" = None,
-# ) -> dict:
-#    # pylint: disable=line-too-long,too-many-branches
-#    """Save a dict representation of dataset documentation to a triplestore.
-#
-#    Arguments:
-#        ts: Triplestore to save to.
-#        dataset: A dict documenting a new dataset.  The keys may be either
-#            properties defined in the [JSON-LD context](https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json)
-#            or one of the following special keywords:
-#              - "@id": Dataset IRI.  Must always be given.
-#              - "@type": IRI of a specific dataset subclass. Typically is used
-#                to refer to a specific subclass of `emmo:DataSet`, providing a
-#                semantic description of this dataset.
-#        prefixes: Namespace prefixes that should be recognised as values.
-#
-#    Returns:
-#        Updated copy of `dataset`.
-#
-#    SeeAlso:
-#        __TODO__: add URL to further documentation and examples.
-#    """
-#    if "@id" not in dataset:
-#        raise ValueError("dataset must have an '@id' key")
-#
-#    all_prefixes = get_prefixes()
-#    if prefixes:
-#        all_prefixes.update(prefixes)
-#
-#    d = prepare_dataset(dataset, prefixes=all_prefixes)
-#
-#    # Bind prefixes
-#    for prefix, ns in all_prefixes.items():
-#        ts.bind(prefix, ns)
-#
-#    # Write json-ld data to triplestore (using temporary rdflib triplestore)
-#    f = io.StringIO(json.dumps(d))
-#    with Triplestore(backend="rdflib") as ts2:
-#        ts2.parse(f, format="json-ld")
-#        ts.add_triples(ts2.triples())
-#
-#    return d
-#
-#
-# def load_dataset(ts: Triplestore, iri: str) -> dict:
-#    """Load dataset from triplestore.
-#
-#    Arguments:
-#        ts: Triplestore to load dataset from.
-#        iri: IRI of the dataset to load.
-#
-#    Returns:
-#        Dict-representation of the loaded dataset.
-#    """
-#    context = get_context()
-#    shortnames = get_shortnames()
-#
-#    # dataset = AttrDict()
-#    dataset = AttrDict({"@id": iri})
-#    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-#        add(dataset, shortnames.get(p, p), as_python(o))
-#    _update_dataset(ts, iri, dataset, context, shortnames)
-#    # add(dataset, "@id", iri)
-#
-#    return dataset
-#
-#
-# def load_dataset_sparql(ts: Triplestore, iri: str) -> dict:
-#    """Like load_dataset(), but queries the triplestore with SPARQL.
-#
-#    Arguments:
-#        ts: Triplestore to load dataset from.
-#        iri: IRI of the dataset to load.
-#
-#    Returns:
-#        Dict-representation of the loaded dataset.
-#    """
-#    query = f"""
-#    PREFIX : <http://example.com#>
-#    CONSTRUCT {{ ?s ?p ?o }}
-#    WHERE {{
-#      <{iri}> (:|!:)* ?o .
-#      ?s ?p ?o .
-#    }}
-#    """
-#    triples = ts.query(query)
-#    ts2 = Triplestore(backend="rdflib")
-#    ts2.add_triples(triples)  # type: ignore
-#    dataset = load_dataset(ts2, iri)
-#    ts2.close()
-#    return dataset
-#
-#
-# def load_parser(ts: Triplestore, iri: str) -> dict:
-#    """Load parser from triplestore.
-#
-#    Arguments:
-#        ts: Triplestore to load parser from.
-#        iri: IRI of the parser to load.
-#
-#    Returns:
-#        Dict-representation of the loaded parser.
-#    """
-#    context = get_context()
-#    shortnames = get_shortnames()
-#
-#    parser = AttrDict({"@id": iri})
-#    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-#        add(parser, shortnames.get(p, p), as_python(o))
-#    _update_dataset(ts, iri, parser, context, shortnames)
-#
-#    return parser
-#
-#
-# def add_distribution(
-#    ts: Triplestore,
-#    dataset: "Union[str, dict]",
-#    distribution: "Optional[Union[dict, Sequence[dict]]]" = None,
-#    prefixes: "Optional[dict]" = None,
-# ) -> dict:
-#    # pylint: disable=line-too-long
-#    """Add distribution(s) to a dataset.
-#
-#    Arguments:
-#        ts: Triplestore to save to.
-#        dataset: Dataset IRI or a dict-representation of a dataset that the
-#            distribution should be added to.
-#        distribution: A dict or a sequence of dicts documenting specific
-#            realisations of the dataset.  The keys may be either properties of
-#            [dcat:Distribution](https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution)
-#            (not prefixed with a namespace) or any of the following keys:
-#               - "@id": Distribution IRI. Must always be given.
-#               - "parser": Sub-dict documenting an OTEAPI parser.
-#        prefixes: Namespace prefixes that should be recognised as values.
-#
-#    Returns
-#        Updated copy of dict-representation of `dataset`.
-#    """
-#    # Get dataset
-#    if isinstance(dataset, str):
-#        dataset = load_dataset(ts, dataset)
-#    else:
-#        dataset = dataset.copy()
-#
-#    # Add distribution(s) to dataset
-#    if isinstance(distribution, Sequence):
-#        for distr in distribution:
-#            expand_prefixes(distr, prefixes if prefixes else {})
-#            add(dataset, "distribution", distr)
-#    elif isinstance(distribution, dict):
-#        expand_prefixes(distribution, prefixes if prefixes else {})
-#        add(dataset, "distribution", distribution)
-#    else:
-#        raise TypeError(
-#            "distribution must be a dict or sequence of dicts. "
-#            f"Got {type(distribution)}"
-#        )
-#
-#    # Bind prefixes
-#    if prefixes:
-#        for prefix, ns in prefixes.items():
-#            ts.bind(prefix, ns)
-#
-#    return dataset
 
 
 @cache  # type: ignore
@@ -465,31 +230,6 @@ def get_shortnames(timeout: float = 5) -> dict:
     return shortnames
 
 
-def _update_dataset(
-    ts: Triplestore, iri: str, dct: dict, context: dict, shortnames: dict
-) -> None:
-    """Recursively update dict-representation of dataset."""
-    nested = ("distribution", "datasink", "parser", "generator", "mapping")
-
-    for name in nested:
-        if name in dct:
-            v = dct[name] if isinstance(dct[name], list) else [dct[name]]
-            for i, node in enumerate(v):
-                d: dict = {}
-                for p, o in ts.predicate_objects(ts.expand_iri(node)):
-                    add(d, shortnames.get(p, p), as_python(o))
-                if isinstance(dct[name], list):
-                    dct[name][i] = d
-                else:
-                    dct[name] = d
-                _update_dataset(ts, node, d, context, shortnames)
-
-    # Special handling of statements
-    if "statements" in dct:
-        (iri,) = ts.objects(predicate=OTEIO.statement)
-        dct["statements"] = load_statements(ts, iri)
-
-
 def load_list(ts: Triplestore, iri: str):
     """Load and return RDF list whos first node is `iri`."""
     lst = []
@@ -499,24 +239,6 @@ def load_list(ts: Triplestore, iri: str):
         elif p == RDF.rest:
             lst.extend(load_list(ts, o))
     return lst
-
-
-# def load_statements(ts: Triplestore, iri: str):
-#    """Load and return list of spo statements from triplestore, with `iri`
-#    being the first node in the list of statements.
-#    """
-#    statements = []
-#    for node in load_list(ts, iri):
-#        d = {}
-#        for p, o in ts.predicate_objects(node):
-#            if p == RDF.subject:
-#                d["subject"] = as_python(o)
-#            elif p == RDF.predicate:
-#                d["predicate"] = as_python(o)
-#            elif p == RDF.object:
-#                d["object"] = as_python(o)
-#        statements.append(d)
-#    return sorted(statements, key=lambda d: sorted(d.items()))
 
 
 def add(d: dict, key: str, value: "Any") -> None:
@@ -612,7 +334,7 @@ def save_datadoc(
         ts.bind(prefix, ns)
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    for type, spec in dicttypes.items():
+    for spec in dicttypes.values():
         label = spec["datadoc_label"]
         for dct in get(d, label):
             f = io.StringIO(json.dumps(dct))
