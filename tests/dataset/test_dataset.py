@@ -34,7 +34,7 @@ def test_get_prefixes():
 def test_get_shortnames():
     """Test get_shortnames()."""
     from tripper import DCTERMS
-    from tripper.dataset import get_shortnames
+    from tripper.dataset.dataset import get_shortnames
 
     # Short names that are not equal to the last component of the IRI
     exceptions = (
@@ -56,7 +56,7 @@ def test_get_shortnames():
 def test_expand_prefixes():
     """Test expand_prefixes()."""
     from tripper import DCTERMS, EMMO, OTEIO
-    from tripper.dataset import expand_prefixes, get_prefixes
+    from tripper.dataset.dataset import expand_prefixes, get_prefixes
 
     prefixes = get_prefixes()
     d = {
@@ -77,12 +77,11 @@ def test_expand_prefixes():
 
 
 # if True:
-def test_save_and_load_dataset():
-    """Test save_dataset() and load_dataset()."""
-    ## pylint: disable=too-many-locals,invalid-name
+def test_save_and_load():
+    """Test save_datadoc() and load()."""
 
     from tripper import DCAT, OTEIO, Triplestore
-    from tripper.dataset import load_dataset, load_parser, save_datadoc
+    from tripper.dataset import load, save_datadoc
 
     ts = Triplestore("rdflib")
 
@@ -95,7 +94,7 @@ def test_save_and_load_dataset():
     SEM = ts.namespaces["sem"]
     SEMDATA = ts.namespaces["semdata"]
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
-    d = load_dataset(ts, iri)
+    d = load(ts, iri)
     assert d["@id"] == iri
     assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
@@ -106,7 +105,7 @@ def test_save_and_load_dataset():
     assert d.distribution["mediaType"] == "image/tiff"
 
     PARSER = ts.namespaces["parser"]
-    parser = load_parser(ts, PARSER.sem_hitachi)
+    parser = load(ts, PARSER.sem_hitachi)
     assert parser["@id"] == PARSER.sem_hitachi
     assert parser["@type"] == OTEIO.Parser
     assert parser.configuration == {"driver": "hitachi"}
