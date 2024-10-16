@@ -125,7 +125,32 @@ def save(
         ts2.parse(f, format="json-ld")
         ts.add_triples(ts2.triples())
 
+    # Add statements
+    statements = _get_statements(d)
+    ts.add_triples(statements)
+
     return d
+
+
+def _get_statements(dct: "Union[dict, list]") -> list:
+    """Recursive help function that returns an array with statements
+    and mappings found in `dct`."""
+    statements = []
+    if isinstance(dct, dict):
+        statements.extend(dct.get("statements", []))
+        statements.extend(dct.get("mappings", []))
+        if "mappingURL" in dct:
+            with Triplestore("rdflib") as ts:
+                ts.parse(dct["mappingURL"], format=dct.get("mappingFormat"))
+                statements.extend(ts.triples())
+        for v in dct.values():
+            if isinstance(v, (dict, list)):
+                statements.extend(_get_statements(v))
+    elif isinstance(dct, list):
+        for ele in dct:
+            if isinstance(ele, (dict, list)):
+                statements.extend(_get_statements(ele))
+    return statements
 
 
 def load(
@@ -341,6 +366,10 @@ def save_datadoc(
             with Triplestore(backend="rdflib") as ts2:
                 ts2.parse(f, format="json-ld")
                 ts.add_triples(ts2.triples())
+
+    # Add statements
+    statements = _get_statements(d)
+    ts.add_triples(statements)
 
     return d
 
