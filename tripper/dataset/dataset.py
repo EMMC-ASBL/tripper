@@ -14,6 +14,9 @@ For accessing and storing actual data, the following functions can be used:
   - `load()`: Load documented dataset from its source.
   - `save()`: Save documented dataset to a data resource.
 
+For searching the triplestore:
+  - `list_dataset_iris()`: Get IRIs of matching datasets.
+
 """
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
@@ -132,7 +135,12 @@ def load(
         url = dist.get("downloadURL", dist.get("accessURL"))  # type: ignore
         if url:
             p = urlparse(url)
-            scheme = p.scheme if p.scheme else "file"
+            # Mapping of supported schemes - should be moved into the protocol
+            # module.
+            schemes = {
+                "https": "http",
+            }
+            scheme = schemes.get(p.scheme, p.scheme) if p.scheme else "file"
             location = (
                 f"{scheme}://{p.netloc}{p.path}"
                 if p.netloc
@@ -608,3 +616,39 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     expand_prefixes(d, all_prefixes)
 
     return d
+
+
+def list_dataset_iris(ts: Triplestore, **kwargs):
+    """Return a list of IRIs for all datasets matching a set of criterias
+    specified by `kwargs`.
+
+    Arguments:
+        ts: Triplestore to search.
+        kwargs: Match criterias.
+    """
+    crit = []
+    expanded = {v: k for k, v in get_shortnames().items()}
+    for k, v in kwargs.items():
+        key = f"@{k[1:]}" if k.startswith("_") else k
+        predicate = expanded[key]
+        if v in expanded:
+            value = f"<{expanded[v]}>"
+        elif isinstance(v, str):
+            value = (
+                f"<{v}>" if re.match("^[a-z][a-z0-9.+-]*://", v) else f'"{v}"'
+            )
+        else:
+            value = v
+        crit.append(f"  ?dataset <{predicate}> {value} .")
+    criterias = "\n".join(crit)
+    query = f"""
+    PREFIX rdf: <{RDF}>
+    PREFIX dcat: <{DCAT}>
+    SELECT ?dataset
+    WHERE {{
+      ?dataset rdf:type dcat:Dataset .
+    {criterias}
+    }}
+    """
+    print("*** query:\n", query)
+    return [r[0] for r in ts.query(query)]  # type: ignore

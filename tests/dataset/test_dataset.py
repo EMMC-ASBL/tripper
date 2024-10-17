@@ -1,6 +1,6 @@
 """Test RDF serialisation."""
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,too-many-locals
 
 from pathlib import Path
 
@@ -83,8 +83,14 @@ def test_expand_prefixes():
 def test_save_and_load():
     """Test save_datadoc() and load()."""
 
-    from tripper import DCAT, OTEIO, Triplestore
-    from tripper.dataset import load_dict, save_datadoc, save_dict
+    from tripper import CHAMEO, DCAT, OTEIO, Triplestore
+    from tripper.dataset import (
+        list_dataset_iris,
+        load,
+        load_dict,
+        save_datadoc,
+        save_dict,
+    )
 
     ts = Triplestore("rdflib")
 
@@ -101,11 +107,7 @@ def test_save_and_load():
     assert d["@id"] == iri
     assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
-    assert d.distribution["downloadURL"] == (
-        "sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/"
-        "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif"
-    )
-    assert d.distribution["mediaType"] == "image/tiff"
+    assert d.distribution.mediaType == "image/tiff"
 
     # Test load using SPARQL - this should give the same result as above
     d2 = load_dict(ts, iri, use_sparql=True)
@@ -133,6 +135,27 @@ def test_save_and_load():
     assert dist.generator["@id"] == GEN.sem_hitachi
     assert dist.generator["@type"] == OTEIO.Generator
     assert dist.generator.generatorType == "application/vnd.dlite-generate"
+
+    # Test load dataset (this downloads an actual image from github)
+    data = load(ts, iri)
+    assert len(data) == 53502
+
+    # Test searching the triplestore
+    SAMPLE = ts.namespaces["sample"]
+    assert set(list_dataset_iris(ts)) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2"],
+        SAMPLE["SEM_cement_batch2/77600-23-001"],
+    }
+    assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2"],
+    }
+    assert set(list_dataset_iris(ts, _type=CHAMEO.Sample)) == {
+        SAMPLE["SEM_cement_batch2/77600-23-001"],
+    }
 
 
 def test_fuseki():

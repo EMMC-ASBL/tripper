@@ -6,6 +6,7 @@ See the README.md file for a description for how to use this package.
 
 from .literal import Literal
 from .namespace import (
+    CHAMEO,
     DC,
     DCAT,
     DCTERMS,
@@ -32,6 +33,7 @@ __version__ = "0.3.3"
 __all__ = (
     "Literal",
     #
+    "CHAMEO",
     "DCAT",
     "DC",
     "DCTERMS",
