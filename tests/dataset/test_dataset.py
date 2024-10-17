@@ -83,7 +83,7 @@ def test_save_and_load():
     """Test save_datadoc() and load()."""
 
     from tripper import DCAT, OTEIO, Triplestore
-    from tripper.dataset import load, save_datadoc
+    from tripper.dataset import load, save, save_datadoc
 
     ts = Triplestore("rdflib")
 
@@ -92,11 +92,11 @@ def test_save_and_load():
     assert isinstance(datadoc, dict)
     assert "@context" in datadoc
 
-    # Load back dict representation from the triplestore
+    # Test load dict-representation of a dataset from the triplestore
     SEM = ts.namespaces["sem"]
     SEMDATA = ts.namespaces["semdata"]
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
-    d = load(ts, iri)
+    d = load(ts, iri, use_sparql=False)
     assert d["@id"] == iri
     assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
@@ -106,16 +106,32 @@ def test_save_and_load():
     )
     assert d.distribution["mediaType"] == "image/tiff"
 
-    print("=============================================")
+    # Test load using SPARQL - this should give the same result as above
     d2 = load(ts, iri, use_sparql=True)
     assert d2 == d
 
+    # Test loading a parser
     PARSER = ts.namespaces["parser"]
     parser = load(ts, PARSER.sem_hitachi)
     assert parser["@id"] == PARSER.sem_hitachi
     assert parser["@type"] == OTEIO.Parser
     assert parser.configuration == {"driver": "hitachi"}
     assert parser.parserType == "application/vnd.dlite-parse"
+    assert parser == d.distribution.parser
+
+    # Test save a generator and add it to the distribution
+    GEN = ts.bind("gen", "http://sintef.no/dlite/generator#")
+    generator = {
+        "@id": GEN.sem_hitachi,
+        "generatorType": "application/vnd.dlite-generate",
+        "configuration": {"driver": "hitachi"},
+    }
+    save(ts, "generator", generator)
+    ts.add((d.distribution["@id"], OTEIO.generator, generator["@id"]))
+    dist = load(ts, d.distribution["@id"])
+    assert dist.generator["@id"] == GEN.sem_hitachi
+    assert dist.generator["@type"] == OTEIO.Generator
+    assert dist.generator.generatorType == "application/vnd.dlite-generate"
 
 
 def test_fuseki():

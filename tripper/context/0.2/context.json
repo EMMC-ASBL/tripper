@@ -78,6 +78,7 @@
     "filterType": "oteio:filterType",
 
     "datamodel": "oteio:hasDatamodel",
+    "datamodelStorage": "oteio:hasDatamodelStorage",
     "hasDataSink": "oteio:hasDataSink",
     "storeURL": "oteio:storeURL",
     "mappingURL": "oteio:mappingURL",

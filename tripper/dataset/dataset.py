@@ -125,32 +125,58 @@ def save(
         ts2.parse(f, format="json-ld")
         ts.add_triples(ts2.triples())
 
-    # Add statements
-    statements = _get_statements(d)
-    ts.add_triples(statements)
+    # Add statements and data models to triplestore
+    save_extra_content(ts, d)
 
     return d
 
 
-def _get_statements(dct: "Union[dict, list]") -> list:
-    """Recursive help function that returns an array with statements
-    and mappings found in `dct`."""
-    statements = []
-    if isinstance(dct, dict):
-        statements.extend(dct.get("statements", []))
-        statements.extend(dct.get("mappings", []))
-        if "mappingURL" in dct:
-            with Triplestore("rdflib") as ts:
-                ts.parse(dct["mappingURL"], format=dct.get("mappingFormat"))
-                statements.extend(ts.triples())
-        for v in dct.values():
-            if isinstance(v, (dict, list)):
-                statements.extend(_get_statements(v))
-    elif isinstance(dct, list):
-        for ele in dct:
-            if isinstance(ele, (dict, list)):
-                statements.extend(_get_statements(ele))
-    return statements
+def save_extra_content(ts: Triplestore, dct: dict) -> None:
+    """Save extra content in `dct` to the triplestore.
+
+    Currently, this include:
+    - statements and mappings
+    - data models (require that DLite is installed)
+
+    """
+
+    # Save statements and mappings
+    statements = get_values(dct, "statements")
+    statements.extend(get_values(dct, "mappings"))
+    ts.add_triples(statements)
+
+    # Save data models
+    datamodels = get_values(dct, "datamodel")
+    try:
+        # pylint: disable=import-outside-toplevel
+        import dlite
+        from dlite.dataset import add_dataset
+    except ModuleNotFoundError:
+        if datamodels:
+            warnings.warn(
+                "dlite is not installed - data models will not be added to "
+                "the triplestore"
+            )
+    else:
+        for url in get_values(dct, "datamodelStorage"):
+            dlite.storage_path.append(url)
+
+        for uri in datamodels:
+            r = requests.get(uri, timeout=3)
+            if r.ok:
+                dm = dlite.Instance.from_json(r.content)
+                add_dataset(ts, dm)
+            else:
+                try:
+                    dm = dlite.get_instance(uri)
+                except (
+                    dlite.DLiteMissingInstanceError  # pylint: disable=no-member
+                ):
+                    # __FIXME__: check session whether want to warn or re-reise
+                    # in this case
+                    warnings.warn(f"cannot load datamodel: {uri}")
+                else:
+                    add_dataset(ts, dm)
 
 
 def load(
@@ -169,7 +195,10 @@ def load(
     """
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
-    dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
+    # dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
+    if use_sparql:
+        return _load_sparql(ts, iri)
+    dct = _load_triples(ts, iri)
 
     nested = ("distribution", "parser", "generator", "mapping")
     d = AttrDict()
@@ -185,7 +214,9 @@ def load(
 def _load_triples(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.triples()`."""
     shortnames = get_shortnames()
-    d = {} if iri.startswith("_:") else {"@id": iri}
+    # Always add @id, even for blank nodes
+    # d = {} if iri.startswith("_:") else {"@id": iri}
+    d = {"@id": iri}
     for p, o in ts.predicate_objects(ts.expand_iri(iri)):
         add(d, shortnames.get(p, p), as_python(o))
     return d
@@ -193,6 +224,16 @@ def _load_triples(ts: Triplestore, iri: str) -> dict:
 
 def _load_sparql(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.query()`."""
+    # The match-all pattern `(:|!:)*` in the query string below
+    # ensures that the returned triples includes nested structures,
+    # like distributions in a dataset. However, it does not include
+    # references to named resources, like parsers and generators.
+    # This is good, because it limits the number of returned triples.
+    # The `recur()` function will load such named resources recursively.
+    #
+    # Note that this implementation completely avoid querying for
+    # blank nodes, which avoids problems with backends that renames
+    # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{iri}>"
     query = f"""
     PREFIX : <http://example.com#>
@@ -202,10 +243,53 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
+    nested = ("distribution", "parser", "generator", "mapping")
+
+    def recur(d):
+        """Recursively load and insert referred resources into dict `d`."""
+        if isinstance(d, dict):
+            for k, v in d.items():
+                if k in nested:
+                    val = v.get("@id")
+                    if isinstance(val, str):
+                        d[k] = load(ts, val, use_sparql=True)
+                    elif isinstance(v, (dict, list)):
+                        recur(v)
+        elif isinstance(d, list):
+            for e in d:
+                recur(e)
+
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
         ts2.add_triples(triples)  # type: ignore
-        return _load_triples(ts2, iri)
+        dct = load(ts2, iri, use_sparql=False)
+    recur(dct)
+    return dct
+
+
+def get_values(data: "Union[dict, list]", key: str, extend=True) -> list:
+    """Parse `data` recursively and return a list with the values
+    corresponding to the given key.
+
+    If `extend` is true, the returned list will be extended with
+    values that themselves are list, instead of appending them in a
+    nested manner.
+    """
+    values = []
+    if isinstance(data, dict):
+        val = data.get(key)
+        if extend and isinstance(val, list):
+            values.extend(val)
+        elif val:
+            values.append(val)
+        for v in data.values():
+            if isinstance(v, (dict, list)):
+                values.extend(get_values(v, key))
+    elif isinstance(data, list):
+        for ele in data:
+            if isinstance(ele, (dict, list)):
+                values.extend(get_values(ele, key))
+    return values
 
 
 @cache  # type: ignore
@@ -367,10 +451,8 @@ def save_datadoc(
                 ts2.parse(f, format="json-ld")
                 ts.add_triples(ts2.triples())
 
-    # Add statements
-    statements = _get_statements(d)
-    ts.add_triples(statements)
-
+    # Add statements and datamodels to triplestore
+    save_extra_content(ts, d)
     return d
 
 
