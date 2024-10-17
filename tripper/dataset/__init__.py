@@ -3,8 +3,8 @@
 from .dataset import (
     get_context,
     get_prefixes,
-    load,
+    load_dict,
     read_datadoc,
-    save,
     save_datadoc,
+    save_dict,
 )

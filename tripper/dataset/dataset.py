@@ -70,7 +70,7 @@ dicttypes = {
 }
 
 
-def save(
+def save_dict(
     ts: Triplestore,
     type: str,
     dct: dict,
@@ -179,10 +179,10 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                     add_dataset(ts, dm)
 
 
-def load(
+def load_dict(
     ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
 ) -> dict:
-    """Load data from triplestore.
+    """Load dict representation of data with given IRI from the triplestore.
 
     Arguments:
         ts: Triplestore to load data from.
@@ -205,7 +205,7 @@ def load(
     dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
     for k, v in dct.items():
         if k in nested:
-            d[k] = load(ts, iri=v, use_sparql=use_sparql)
+            d[k] = load_dict(ts, iri=v, use_sparql=use_sparql)
         else:
             d[k] = v
     return d
@@ -252,7 +252,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
                 if k in nested:
                     val = v.get("@id")
                     if isinstance(val, str):
-                        d[k] = load(ts, val, use_sparql=True)
+                        d[k] = load_dict(ts, val, use_sparql=True)
                     elif isinstance(v, (dict, list)):
                         recur(v)
         elif isinstance(d, list):
@@ -262,7 +262,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
         ts2.add_triples(triples)  # type: ignore
-        dct = load(ts2, iri, use_sparql=False)
+        dct = load_dict(ts2, iri, use_sparql=False)
     recur(dct)
     return dct
 
