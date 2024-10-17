@@ -54,7 +54,7 @@ testing = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.23,<0.5.24",
+    "DLite-Python>=0.5.23,<0.5.24; python_version>=3.8",
     "graphviz>=0.20.1,<0.20.2",
 ]
 docs = [
