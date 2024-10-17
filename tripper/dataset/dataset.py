@@ -117,6 +117,7 @@ def load(
     Note:
         For now this requires DLite.
     """
+    # pylint: disable=import-error,no-name-in-module
     # Use the Protocol plugin system from DLite.  Should we move it to tripper?
     import dlite
     from dlite.protocol import Protocol
