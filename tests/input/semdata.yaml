@@ -28,6 +28,7 @@ datasets:
       - ["@id", "emmo:isDescriptionOf", "mat:concrete1"]
 
     distribution:
+      #downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif
       downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif
       mediaType: image/tiff
       parser: parser:sem_hitachi

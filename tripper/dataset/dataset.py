@@ -1,6 +1,22 @@
-"""Module for documenting datasets with Tripper."""
+"""Module for documenting datasets with Tripper.
 
-# pylint: disable=invalid-name,redefined-builtin
+The dataset documentation follows the DCAT structure and is exposed as
+Python dicts with attribute access in this module.  This dict
+structure is used by the functions:
+  - `read_datadoc()`: Read documentation from YAML file and return it as dict.
+  - `save_dict()`: Save dict documentation to the triplestore.
+  - `load_dict()`: Load dict documentation from the triplestore.
+
+YAML documentation can also be stored directly to the triplestore with
+  - `save_datadoc()`: Save documentation from YAML file to the triplestore.
+
+For accessing and storing actual data, the following functions can be used:
+  - `load()`: Load documented dataset from its source.
+  - `save()`: Save documented dataset to a data resource.
+
+"""
+
+# pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 import functools
 import io
 import json
@@ -8,6 +24,7 @@ import re
 import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
 import requests
 import yaml  # type: ignore
@@ -16,7 +33,7 @@ from tripper import DCAT, OTEIO, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterable, List, Mapping, Optional, Union
+    from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
     from tripper.utils import Triple
 
@@ -59,6 +76,10 @@ dicttypes = {
         "datadoc_label": "distributions",
         "@type": DCAT.Distribution,
     },
+    "accessService": {
+        "datadoc_label": "dataServices",
+        "@type": DCAT.DataService,
+    },
     "parser": {
         "datadoc_label": "parsers",
         "@type": OTEIO.Parser,
@@ -68,6 +89,68 @@ dicttypes = {
         "@type": OTEIO.Generator,
     },
 }
+
+
+def load(
+    ts: Triplestore,
+    iri: str,
+    distributions: "Optional[Union[str, Sequence[str]]]" = None,
+    use_sparql: "Optional[bool]" = None,
+) -> bytes:
+    """Load dataset with given IRI from its source.
+
+    Arguments:
+        ts: Triplestore to load data from.
+        iri: IRI of the data to load.
+        distributions: Name or sequence of names of distribution(s) to
+            try in case the dataset has multiple distributions.  The
+            default is to try all documented distributions.
+        use_sparql: Whether to access the triplestore with SPARQL.
+            Defaults to `ts.prefer_sparql`.
+
+    Returns:
+        Bytes object with the underlying data.
+
+    Note:
+        For now this requires DLite.
+    """
+    # Use the Protocol plugin system from DLite.  Should we move it to tripper?
+    import dlite
+    from dlite.protocol import Protocol
+
+    dct = load_dict(ts, iri=iri, use_sparql=use_sparql)
+    if DCAT.Dataset not in get(dct, "@type"):
+        raise TypeError(
+            f"expected IRI '{iri}' to be a dataset, but got: "
+            f"{', '.join(get(dct, '@type'))}"
+        )
+
+    if distributions is None:
+        distributions = get(dct, "distribution")
+
+    for dist in distributions:
+        url = dist.get("downloadURL", dist.get("accessURL"))  # type: ignore
+        if url:
+            p = urlparse(url)
+            scheme = p.scheme if p.scheme else "file"
+            location = (
+                f"{scheme}://{p.netloc}{p.path}"
+                if p.netloc
+                else f"{scheme}:{p.path}"
+            )
+            id = (
+                dist.accessService.get("identifier")  # type: ignore
+                if "accessService" in dist
+                else None
+            )
+            try:
+                with Protocol(scheme, location, options=p.query) as pr:
+                    return pr.load(id)
+                # pylint: disable=no-member
+            except (dlite.DLiteProtocolError, dlite.DLiteIOError):
+                pass
+
+    raise IOError(f"Cannot access dataset: {iri}")
 
 
 def save_dict(
@@ -200,7 +283,13 @@ def load_dict(
         return _load_sparql(ts, iri)
     dct = _load_triples(ts, iri)
 
-    nested = ("distribution", "parser", "generator", "mapping")
+    nested = (
+        "distribution",
+        "accessService",
+        "parser",
+        "generator",
+        "mapping",
+    )
     d = AttrDict()
     dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
     for k, v in dct.items():
@@ -243,7 +332,13 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
-    nested = ("distribution", "parser", "generator", "mapping")
+    nested = (
+        "distribution",
+        "accessService",
+        "parser",
+        "generator",
+        "mapping",
+    )
 
     def recur(d):
         """Recursively load and insert referred resources into dict `d`."""
