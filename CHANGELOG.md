@@ -1,8 +1,25 @@
 # Changelog
 
-## [Unreleased](https://github.com/EMMC-ASBL/tripper/tree/HEAD)
+## [v0.3.4](https://github.com/EMMC-ASBL/tripper/tree/v0.3.4) (2024-10-15)
 
-[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.3...HEAD)
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.3...v0.3.4)
+
+**Merged pull requests:**
+
+- Allowing backends to indicate whether they prefer the sparql interface [\#255](https://github.com/EMMC-ASBL/tripper/pull/255) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#254](https://github.com/EMMC-ASBL/tripper/pull/254) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Update n3 format for string with quotes. [\#253](https://github.com/EMMC-ASBL/tripper/pull/253) ([pintr](https://github.com/pintr))
+- Added option to Triplestore.value\(\) to return a generator over all matching values [\#252](https://github.com/EMMC-ASBL/tripper/pull/252) ([jesper-friis](https://github.com/jesper-friis))
+- Ignore safety vulnerabeility 72715 [\#251](https://github.com/EMMC-ASBL/tripper/pull/251) ([jesper-friis](https://github.com/jesper-friis))
+- Fix empty prefix [\#250](https://github.com/EMMC-ASBL/tripper/pull/250) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#249](https://github.com/EMMC-ASBL/tripper/pull/249) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Backend info to triplestore instance [\#248](https://github.com/EMMC-ASBL/tripper/pull/248) ([jesper-friis](https://github.com/jesper-friis))
+- Added argument `ignore_unrecognised` to tripper.convert\(\) [\#247](https://github.com/EMMC-ASBL/tripper/pull/247) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#244](https://github.com/EMMC-ASBL/tripper/pull/244) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+
+## [v0.3.3](https://github.com/EMMC-ASBL/tripper/tree/v0.3.3) (2024-08-26)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.2...v0.3.3)
 
 **Implemented enhancements:**
 
@@ -11,13 +28,6 @@
 **Closed issues:**
 
 - Add instructions of how to release a new version [\#47](https://github.com/EMMC-ASBL/tripper/issues/47)
-
-## [v0.3.3](https://github.com/EMMC-ASBL/tripper/tree/v0.3.3) (2024-08-26)
-
-[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.2...v0.3.3)
-
-**Closed issues:**
-
 - Update Python API references in README [\#22](https://github.com/EMMC-ASBL/tripper/issues/22)
 
 **Merged pull requests:**
