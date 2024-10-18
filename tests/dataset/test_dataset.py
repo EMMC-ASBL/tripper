@@ -92,6 +92,8 @@ def test_save_and_load():
         save_dict,
     )
 
+    pytest.importskip("dlite")
+
     ts = Triplestore("rdflib")
 
     # Load data documentation into triplestore
