@@ -92,7 +92,7 @@ def test_save_and_load():
         save_dict,
     )
 
-    pytest.importskip("dlite")
+    pytest.importorskip("dlite")
 
     ts = Triplestore("rdflib")
 
