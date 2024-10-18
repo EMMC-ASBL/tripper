@@ -17,6 +17,9 @@ For accessing and storing actual data, the following functions can be used:
 For searching the triplestore:
   - `list_dataset_iris()`: Get IRIs of matching datasets.
 
+For interaction with OTEAPI:
+  - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
+
 """
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
@@ -92,6 +95,33 @@ dicttypes = {
         "@type": OTEIO.Generator,
     },
 }
+
+
+def save(
+    ts: Triplestore,
+    buf: bytes,
+    type: "Optional[str]" = None,
+    dataset: "Optional[Union[str, dict]]" = None,
+    distribution: "Optional[Union[str, dict]]" = None,
+    generator: "Optional[Union[str, dict]]" = None,
+) -> None:
+    """Saves a documented dataset to a data resource.
+
+    Arguments:
+        ts: Triplestore to load data from.
+        buf: Bytes representation of the dataset to save.
+        type: IRI of the dataset @type.  Should refer to its `emmo:DataSet`
+            subclass, not `dcat:Dataset`.
+        dataset: IRI of an existing dataset that we will create a new
+            distribution for.  Or a dict documenting the new dataset
+            that will be stored.
+        distribution: IRI of existing distribution that will be creates.
+            Or a dict documenting a new distribution that will be created.
+        generator: IRI of existing generator.  Or a dict documenting a
+            new generator that will be creates.
+
+    """
+    raise NotImplementedError
 
 
 def load(
@@ -619,6 +649,32 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     return d
 
 
+def get_partial_pipeline(
+    ts: Triplestore,
+    iri: str,
+    distribution: "Optional[str]" = None,
+    parser: "Optional[str]" = None,
+    use_sparql: "Optional[bool]" = None,
+) -> bytes:
+    """Returns a OTELib partial pipeline.
+
+    Arguments:
+        ts: Triplestore to load data from.
+        iri: IRI of the data to load.
+        distribution: IRI of distribution to use in case the dataset
+            dataset has multiple distributions.  By default any of
+            the distributions will be picked.
+        parser: IRI of parser to use in case the distribution has
+            multiple parsers.  By default any parser will be selected.
+        use_sparql: Whether to access the triplestore with SPARQL.
+            Defaults to `ts.prefer_sparql`.
+
+    Returns:
+        OTELib partial pipeline.
+    """
+    raise NotImplementedError
+
+
 def list_dataset_iris(ts: Triplestore, **kwargs):
     """Return a list of IRIs for all datasets matching a set of criterias
     specified by `kwargs`.
@@ -651,5 +707,4 @@ def list_dataset_iris(ts: Triplestore, **kwargs):
     {criterias}
     }}
     """
-    print("*** query:\n", query)
     return [r[0] for r in ts.query(query)]  # type: ignore
