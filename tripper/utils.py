@@ -61,6 +61,9 @@ class AttrDict(dict):
     def __repr__(self):
         return f"AttrDict({dict.__repr__(self)})"
 
+    def __dir__(self):
+        return dict.__dir__(self) + list(self.keys())
+
 
 def infer_iri(obj):
     """Return IRI of the individual that stands for Python object `obj`.

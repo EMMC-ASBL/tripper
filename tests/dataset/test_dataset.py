@@ -57,27 +57,69 @@ def test_get_shortnames():
             assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
 
 
-def test_expand_prefixes():
-    """Test expand_prefixes()."""
-    from tripper import DCTERMS, EMMO, OTEIO
-    from tripper.dataset.dataset import expand_prefixes, get_prefixes
+# def test_expand_prefixes():
+#     """Test expand_prefixes()."""
+#     from tripper import DCTERMS, EMMO, OTEIO
+#     from tripper.dataset.dataset import expand_prefixes, get_prefixes
+#
+#     prefixes = get_prefixes()
+#     d = {
+#         "a": "oteio:Parser",
+#         "b": [
+#             "emmo:Atom",
+#             {
+#                 "Z": "emmo:AtomicNumber",
+#                 "v": "dcterms:a/b",
+#             },
+#         ],
+#     }
+#     expand_prefixes(d, prefixes)
+#     assert d["a"] == OTEIO.Parser
+#     assert d["b"][0] == EMMO.Atom
+#     assert d["b"][1]["Z"] == EMMO.AtomicNumber
+#     assert d["b"][1]["v"] == DCTERMS["a/b"]
+
+
+def test_add():
+    """Test help-function add()."""
+    from tripper.dataset.dataset import add
+
+    d = {}
+    add(d, "a", 1)
+    add(d, "b", 1)
+    add(d, "b", 1)
+    add(d, "a", 2)
+    add(d, "a", 1)
+    assert d == {"a": [1, 2], "b": 1}
+
+
+def test_get():
+    """Test help-function get()."""
+    from tripper.dataset.dataset import get
+
+    d = {"a": [1, 2], "b": 1}
+    assert get(d, "a") == [1, 2]
+    assert get(d, "b") == [1]
+    assert get(d, "b", aslist=False) == 1
+    assert get(d, "c") == []
+    assert get(d, "c", default="x") == ["x"]
+    assert get(d, "c", aslist=False) is None
+    assert get(d, "c", default="x", aslist=False) == "x"
+
+
+def test_expand_iri():
+    """Test help-function expand_iri()."""
+    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper.dataset.dataset import expand_iri, get_prefixes
 
     prefixes = get_prefixes()
-    d = {
-        "a": "oteio:Parser",
-        "b": [
-            "emmo:Atom",
-            {
-                "Z": "emmo:AtomicNumber",
-                "v": "dcterms:a/b",
-            },
-        ],
-    }
-    expand_prefixes(d, prefixes)
-    assert d["a"] == OTEIO.Parser
-    assert d["b"][0] == EMMO.Atom
-    assert d["b"][1]["Z"] == EMMO.AtomicNumber
-    assert d["b"][1]["v"] == DCTERMS["a/b"]
+    assert expand_iri("chameo:Sample", prefixes) == CHAMEO.Sample
+    assert expand_iri("dcterms:title", prefixes) == DCTERMS.title
+    assert expand_iri("oteio:Parser", prefixes) == OTEIO.Parser
+    assert expand_iri("rdf:type", prefixes) == RDF.type
+    assert expand_iri("xxx", prefixes) == "xxx"
+    with pytest.warns(UserWarning):
+        assert expand_iri("xxx:type", prefixes) == "xxx:type"
 
 
 # if True:
@@ -144,6 +186,11 @@ def test_save_and_load():
     data = load(ts, iri)
     assert len(data) == 53502
 
+    # Test load updated distribution
+    dd = load_dict(ts, iri)
+    assert dd != d  # we have added a generator
+    assert dd.distribution.generator == load_dict(ts, generator["@id"])
+
     # Test save dataset
     newfile = outputdir / "newimage.tiff"
     newfile.unlink(missing_ok=True)
@@ -156,6 +203,9 @@ def test_save_and_load():
     save(ts, buf, distribution=distribution)
     assert newfile.exists()
     assert newfile.stat().st_size == len(buf)
+
+    # Test load new distribution
+    # dnew = load_dict(ts, SEMDATA.newimage)
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]

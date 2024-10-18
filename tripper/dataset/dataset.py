@@ -443,6 +443,7 @@ def load_dict(
     for k, v in dct.items():
         if k in nested:
             d[k] = load_dict(ts, iri=v, use_sparql=use_sparql)
+            add(d[k], "@type", dicttypes[k]["@type"])
         else:
             d[k] = v
     return d
@@ -628,20 +629,20 @@ def get(
     return value
 
 
-def expand_prefixes(obj: "Union[dict, list]", prefixes: dict) -> None:
-    """Recursively expand IRI prefixes in the values of dict `d`."""
-    if isinstance(obj, dict):
-        for k, v in obj.items():
-            if isinstance(v, str):
-                obj[k] = expand_iri(v, prefixes)
-            elif isinstance(v, (dict, list)):
-                expand_prefixes(v, prefixes)
-    elif isinstance(obj, list):
-        for i, e in enumerate(obj):
-            if isinstance(e, str):
-                obj[i] = expand_iri(e, prefixes)
-            elif isinstance(e, (dict, list)):
-                expand_prefixes(e, prefixes)
+# def expand_prefixes(obj: "Union[dict, list]", prefixes: dict) -> None:
+#     """Recursively expand IRI prefixes in the values of dict `d`."""
+#     if isinstance(obj, dict):
+#         for k, v in obj.items():
+#             if isinstance(v, str):
+#                 obj[k] = expand_iri(v, prefixes)
+#             elif isinstance(v, (dict, list)):
+#                 expand_prefixes(v, prefixes)
+#     elif isinstance(obj, list):
+#         for i, e in enumerate(obj):
+#             if isinstance(e, str):
+#                 obj[i] = expand_iri(e, prefixes)
+#             elif isinstance(e, (dict, list)):
+#                 expand_prefixes(e, prefixes)
 
 
 def expand_iri(iri: str, prefixes: dict) -> str:
@@ -685,10 +686,16 @@ def save_datadoc(
     for prefix, ns in d.prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
 
+    # Maps datadoc_labels to type
+    types = {v["datadoc_label"]: k for k, v in dicttypes.items()}
+
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
     for spec in dicttypes.values():
         label = spec["datadoc_label"]
         for dct in get(d, label):
+            dct = prepare(
+                types[label], dct, prefixes=d.prefixes  # type:ignore
+            )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
                 ts2.parse(f, format="json-ld")
@@ -739,13 +746,16 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     """
     if type not in dicttypes:
         raise ValueError(
-            f"`type` must be one of: {', '.join(dicttypes.keys())}"
+            f"`type` must be one of: {', '.join(dicttypes.keys())}. "
+            f"Got: '{type}'"
         )
     spec = dicttypes[type]
 
     d = AttrDict({"@context": CONTEXT_URL})
+    add(d, "@type", spec["@type"])  # get type at top
     d.update(dct)
-    add(d, "@type", spec["@type"])
+    add(d, "@type", spec["@type"])  # readd type if overwritten
+
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if re.match("^_([^_]|([^_].*[^_]))$", k) else k
         add(d, key, v)
@@ -753,7 +763,21 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     all_prefixes = get_prefixes()
     if prefixes:
         all_prefixes.update(prefixes)
-    expand_prefixes(d, all_prefixes)
+
+    # Recursively expand IRIs and prepare sub-directories
+    # Nested lists are not supported
+    nested = set(dicttypes.keys())
+    for k, v in d.items():
+        if isinstance(v, str):
+            d[k] = expand_iri(v, all_prefixes)
+        elif isinstance(v, list):
+            for i, e in enumerate(v):
+                if isinstance(e, str):
+                    v[i] = expand_iri(e, all_prefixes)
+                elif isinstance(e, dict) and k in nested:
+                    v[i] = prepare(k, e, prefixes=prefixes)
+        elif isinstance(v, dict) and k in nested:
+            d[k] = prepare(k, v, prefixes=prefixes)
 
     return d
 
