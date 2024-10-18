@@ -27,6 +27,7 @@ import functools
 import io
 import json
 import re
+import secrets  # From Python 3.9 we could use random.randbytes(16).hex()
 import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -99,29 +100,138 @@ dicttypes = {
 
 def save(
     ts: Triplestore,
-    buf: bytes,
-    type: "Optional[str]" = None,
+    data: bytes,
+    class_iri: "Optional[str]" = None,
     dataset: "Optional[Union[str, dict]]" = None,
     distribution: "Optional[Union[str, dict]]" = None,
     generator: "Optional[Union[str, dict]]" = None,
+    prefixes: "Optional[dict]" = None,
+    use_sparql: "Optional[bool]" = None,
 ) -> None:
     """Saves a documented dataset to a data resource.
 
     Arguments:
         ts: Triplestore to load data from.
-        buf: Bytes representation of the dataset to save.
-        type: IRI of the dataset @type.  Should refer to its `emmo:DataSet`
-            subclass, not `dcat:Dataset`.
-        dataset: IRI of an existing dataset that we will create a new
-            distribution for.  Or a dict documenting the new dataset
-            that will be stored.
-        distribution: IRI of existing distribution that will be creates.
-            Or a dict documenting a new distribution that will be created.
+        data: Bytes representation of the dataset to save.
+        class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`
+            subclass) that describes the dataset that is saved.
+            Is used to select the `distribution` and `generator` if they
+            are not given. If `distribution` is also given, a
+            `dcat:distribution value <distribution>` restriction will be
+            added to `class_iri`
+        dataset: IRI of an existing dataset that a new distribution is
+            created for.  Or a dict documenting the new dataset that will
+            be stored.
+        distribution: IRI of existing distribution for the dataset that will
+            be saved.  Or a dict documenting a new distribution that will be
+            created.
         generator: IRI of existing generator.  Or a dict documenting a
             new generator that will be creates.
+        prefixes: Dict with prefixes in addition to those included in the
+            context.  Should map namespace prefixes to IRIs.
+        use_sparql: Whether to access the triplestore with SPARQL.
+            Defaults to `ts.prefer_sparql`.
 
     """
-    raise NotImplementedError
+    # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+    # Use the Protocol plugin system from DLite.  Should we move it to tripper?
+    from dlite.protocol import Protocol
+
+    triples = []
+    save_dataset = save_distribution = save_generator = False
+
+    if dataset is None:
+        # __TODO__: Infer dataset from value restriction on `class_iri`
+        # This require that we make a SPARQL-version of ts.restriction().
+
+        # if class_iri is None:
+        #    raise ValueError("`class_iri` and `dataset` cannot both be None")
+        newiri = f"_:N{secrets.token_hex(16)}"
+        typeiri = [DCAT.Dataset, class_iri] if class_iri else DCAT.Dataset
+        dataset = AttrDict({"@id": newiri, "@type": typeiri})
+        save_dataset = True
+    elif isinstance(dataset, str):
+        dataset = load_dict(ts, iri=dataset, use_sparql=use_sparql)
+    elif isinstance(dataset, dict):
+        save_dataset = True
+    else:
+        raise TypeError(
+            "if given, `dataset` should be either a string or dict"
+        )
+    dataset: dict  # Tell mypy that this now is a dict
+
+    if distribution is None:
+        if "distribution" in dataset:
+            distribution = get(dataset, "distribution")[0]
+        else:
+            newiri = f"_:N{secrets.token_hex(16)}"
+            distribution = AttrDict(
+                {"@id": newiri, "@type": DCAT.Distribution}
+            )
+            dataset["distribution"] = distribution
+            triples.append((dataset["@id"], DCAT.distribution, newiri))
+            save_distribution = True
+    elif isinstance(distribution, str):
+        distribution = load_dict(ts, iri=distribution, use_sparql=use_sparql)
+    elif isinstance(distribution, dict):
+        add(dataset, DCAT.distribution, distribution)
+        triples.append(
+            (dataset["@id"], DCAT.distribution, distribution["@id"])
+        )
+        save_distribution = True
+    else:
+        raise TypeError(
+            "if given, `distribution` should be either a string or dict"
+        )
+    distribution: dict  # Tell mypy that this now is a dict
+
+    if generator is None:
+        if "generator" in distribution:
+            generator = get(distribution, "generator")[0]
+    elif isinstance(generator, str):
+        generator = load_dict(ts, iri=generator, use_sparql=use_sparql)
+    elif isinstance(generator, dict):
+        add(distribution, OTEIO.generator, generator)
+        triples.append(
+            (distribution["@id"], OTEIO.generator, generator["@id"])
+        )
+        save_generator = True
+    else:
+        raise TypeError(
+            "if given, `generator` should be either a string or dict"
+        )
+
+    # __TODO__: Check if `class_iri` already has the value restriction.
+    # If not, add it to triples
+
+    # Save data
+    url = distribution.get("downloadURL", distribution.get("accessURL"))
+    p = urlparse(url)
+    # Mapping of supported schemes - should be moved into the protocol
+    # module.
+    schemes = {
+        "https": "http",
+    }
+    scheme = schemes.get(p.scheme, p.scheme) if p.scheme else "file"
+    location = (
+        f"{scheme}://{p.netloc}{p.path}" if p.netloc else f"{scheme}:{p.path}"
+    )
+    id = (
+        distribution["accessService"].get("identifier")
+        if "accessService" in distribution
+        else None
+    )
+    with Protocol(scheme, location, options=p.query) as pr:
+        return pr.save(data, id)
+
+    # Update triplestore
+    ts.add_triples(triples)
+    if save_dataset:
+        save_dict(ts, "dataset", dataset, prefixes=prefixes)
+    elif save_distribution:
+        save_dict(ts, "distribution", distribution, prefixes=prefixes)
+    if save_generator:
+        save_dict(ts, "generator", generator, prefixes=prefixes)
 
 
 def load(
@@ -147,7 +257,6 @@ def load(
     Note:
         For now this requires DLite.
     """
-    # pylint: disable=import-error,no-name-in-module
     # Use the Protocol plugin system from DLite.  Should we move it to tripper?
     import dlite
     from dlite.protocol import Protocol

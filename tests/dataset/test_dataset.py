@@ -12,6 +12,7 @@ pytest.importorskip("requests")
 thisdir = Path(__file__).resolve().parent
 testdir = thisdir.parent
 inputdir = testdir / "input"
+outputdir = testdir / "output"
 
 
 def test_get_context():
@@ -88,6 +89,7 @@ def test_save_and_load():
         list_dataset_iris,
         load,
         load_dict,
+        save,
         save_datadoc,
         save_dict,
     )
@@ -124,7 +126,7 @@ def test_save_and_load():
     assert parser.parserType == "application/vnd.dlite-parse"
     assert parser == d.distribution.parser
 
-    # Test save a generator and add it to the distribution
+    # Test saving a generator and add it to the distribution
     GEN = ts.bind("gen", "http://sintef.no/dlite/generator#")
     generator = {
         "@id": GEN.sem_hitachi,
@@ -141,6 +143,19 @@ def test_save_and_load():
     # Test load dataset (this downloads an actual image from github)
     data = load(ts, iri)
     assert len(data) == 53502
+
+    # Test save dataset
+    newfile = outputdir / "newimage.tiff"
+    newfile.unlink(missing_ok=True)
+    distribution = {
+        "@id": SEMDATA.newimage,
+        "@type": SEM.SimImage,
+        "downloadURL": f"file:{newfile}",
+    }
+    buf = b"some bytes..."
+    save(ts, buf, distribution=distribution)
+    assert newfile.exists()
+    assert newfile.stat().st_size == len(buf)
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
