@@ -103,8 +103,9 @@ def test_expand_iri():
 # if True:
 def test_save_and_load():
     """Test save_datadoc() and load()."""
+    # pylint: disable=too-many-statements
 
-    from tripper import CHAMEO, DCAT, OTEIO, Triplestore
+    from tripper import CHAMEO, DCAT, DCTERMS, OTEIO, Triplestore
     from tripper.dataset import (
         list_dataset_iris,
         load,
@@ -132,6 +133,9 @@ def test_save_and_load():
     assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == "image/tiff"
+
+    assert not load_dict(ts, "non-existing")
+    assert not load_dict(ts, "non-existing", use_sparql=True)
 
     # Test load using SPARQL - this should give the same result as above
     d2 = load_dict(ts, iri, use_sparql=True)
@@ -169,7 +173,7 @@ def test_save_and_load():
     assert dd != d  # we have added a generator
     assert dd.distribution.generator == load_dict(ts, generator["@id"])
 
-    # Test save dataset
+    # Test save dataset with anonymous distribution
     newfile = outputdir / "newimage.tiff"
     newfile.unlink(missing_ok=True)
     buf = b"some bytes..."
@@ -179,17 +183,39 @@ def test_save_and_load():
         dataset={
             "@id": SEMDATA.newimage,
             "@type": SEM.SEMImage,
+            DCTERMS.title: "New SEM image",
         },
-        distribution={
-            # "@id": SEMDATA.newdistr,
-            "downloadURL": f"file:{newfile}",
-        },
+        distribution={"downloadURL": f"file:{newfile}"},
     )
     assert newfile.exists()
     assert newfile.stat().st_size == len(buf)
+    newimage = load_dict(ts, SEMDATA.newimage)
+    assert newimage["@id"] == SEMDATA.newimage
+    assert DCAT.Dataset in newimage["@type"]
+    assert SEM.SEMImage in newimage["@type"]
+    assert newimage.distribution["@id"].startswith("_:")
+    assert newimage.distribution["@type"] == DCAT.Distribution
+    assert newimage.distribution.downloadURL == f"file:{newfile}"
 
-    # Test load new distribution
-    # dnew = load_dict(ts, SEMDATA.newimage)
+    newfile2 = outputdir / "newimage2.tiff"
+    newfile2.unlink(missing_ok=True)
+    save(
+        ts,
+        buf,
+        dataset=SEMDATA.newimage2,
+        distribution={
+            "@id": SEMDATA.newdistr2,
+            "downloadURL": f"file:{newfile2}",
+        },
+    )
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+    newimage2 = load_dict(ts, SEMDATA.newimage2)
+    assert newimage2["@id"] == SEMDATA.newimage2
+    assert newimage2["@type"] == DCAT.Dataset
+    assert newimage2.distribution["@id"] == SEMDATA.newdistr2
+    assert newimage2.distribution["@type"] == DCAT.Distribution
+    assert newimage2.distribution.downloadURL == f"file:{newfile2}"
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
@@ -199,6 +225,7 @@ def test_save_and_load():
         SEMDATA["SEM_cement_batch2"],
         SAMPLE["SEM_cement_batch2/77600-23-001"],
         SEMDATA.newimage,
+        SEMDATA.newimage2,
     }
     assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],

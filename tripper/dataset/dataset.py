@@ -146,7 +146,13 @@ def save(
         dataset = AttrDict({"@id": newiri, "@type": typeiri})
         save_dataset = True
     elif isinstance(dataset, str):
-        dataset = load_dict(ts, iri=dataset, use_sparql=use_sparql)
+        dset = load_dict(ts, iri=dataset, use_sparql=use_sparql)
+        if dset:
+            dataset = dset
+        else:
+            typeiri = [DCAT.Dataset, class_iri] if class_iri else DCAT.Dataset
+            dataset = AttrDict({"@id": dataset, "@type": typeiri})
+            save_dataset = True
     elif isinstance(dataset, dict):
         save_dataset = True
     else:
@@ -171,9 +177,8 @@ def save(
         if distr:
             distribution = distr
         else:
-            newiri = f"_:N{secrets.token_hex(16)}"
             distribution = AttrDict(
-                {"@id": newiri, "@type": DCAT.Distribution}
+                {"@id": distribution, "@type": DCAT.Distribution}
             )
             add(dataset, "distribution", distribution)
             triples.append((dataset["@id"], DCAT.distribution, newiri))
@@ -778,6 +783,7 @@ def get_partial_pipeline(
     iri: str,
     distribution: "Optional[str]" = None,
     parser: "Optional[str]" = None,
+    generator: "Optional[str]" = None,
     use_sparql: "Optional[bool]" = None,
 ) -> bytes:
     """Returns a OTELib partial pipeline.
@@ -790,6 +796,8 @@ def get_partial_pipeline(
             the distributions will be picked.
         parser: IRI of parser to use in case the distribution has
             multiple parsers.  By default any parser will be selected.
+        generator: IRI of generator to use in case the distribution has
+            multiple generators.  By default any generator will be selected.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
 

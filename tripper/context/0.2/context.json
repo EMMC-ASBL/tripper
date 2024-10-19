@@ -67,8 +67,11 @@
     "downloadURL": "dcat:downloadURL",
     "mediaType": "dcat:mediaType",
     "packageFormat": "dcat:packageFormat",
+    "spatial": "dcterms:spatial",
     "spatialResolutionInMeters": "dcat:spatialResolutionInMeters",
+    "temporal": "dcterms:temporal",
     "temporalResolution": "dcat:temporalResolution",
+    "wasGeneratedBy": "prov:wasGeneratedBy",
     "format": "dcterms:format",
     "checksum": "spdx:checksum",
 
