@@ -150,19 +150,21 @@ def test_save_and_load():
     assert parser.parserType == "application/vnd.dlite-parse"
     assert parser == d.distribution.parser
 
+    # Add generator to distribution (in KB)
+    GEN = ts.namespaces["gen"]
+    ts.add((d.distribution["@id"], OTEIO.generator, GEN.sem_hitachi))
+
     # Test saving a generator and add it to the distribution
-    GEN = ts.bind("gen", "http://sintef.no/dlite/generator#")
-    generator = {
-        "@id": GEN.sem_hitachi,
-        "generatorType": "application/vnd.dlite-generate",
-        "configuration": {"driver": "hitachi"},
-    }
-    save_dict(ts, "generator", generator)
-    ts.add((d.distribution["@id"], OTEIO.generator, generator["@id"]))
     dist = load_dict(ts, d.distribution["@id"])
     assert dist.generator["@id"] == GEN.sem_hitachi
     assert dist.generator["@type"] == OTEIO.Generator
     assert dist.generator.generatorType == "application/vnd.dlite-generate"
+
+    # Test save dict
+    save_dict(ts, "distribution", {"@id": SEMDATA.newdistr, "format": "txt"})
+    newdistr = load_dict(ts, SEMDATA.newdistr)
+    assert newdistr["@type"] == DCAT.Distribution
+    assert newdistr.format == "txt"
 
     # Test load dataset (this downloads an actual image from github)
     data = load(ts, iri)
@@ -170,8 +172,8 @@ def test_save_and_load():
 
     # Test load updated distribution
     dd = load_dict(ts, iri)
-    assert dd != d  # we have added a generator
-    assert dd.distribution.generator == load_dict(ts, generator["@id"])
+    assert dd == d
+    assert dd.distribution.generator == load_dict(ts, GEN.sem_hitachi)
 
     # Test save dataset with anonymous distribution
     newfile = outputdir / "newimage.tiff"
@@ -197,7 +199,8 @@ def test_save_and_load():
     assert newimage.distribution["@type"] == DCAT.Distribution
     assert newimage.distribution.downloadURL == f"file:{newfile}"
 
-    newfile2 = outputdir / "newimage2.tiff"
+    # Test save dataset with named distribution
+    newfile2 = outputdir / "newimage.png"
     newfile2.unlink(missing_ok=True)
     save(
         ts,
@@ -206,6 +209,9 @@ def test_save_and_load():
         distribution={
             "@id": SEMDATA.newdistr2,
             "downloadURL": f"file:{newfile2}",
+            "mediaType": "image/png",
+            "generator": GEN.sem_hitachi,
+            "parser": PARSER.sem_hitachi,
         },
     )
     assert newfile2.exists()
@@ -235,6 +241,34 @@ def test_save_and_load():
     assert set(list_dataset_iris(ts, _type=CHAMEO.Sample)) == {
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
+
+
+# if True:
+def test_pipeline():
+    """Test creating OTEAPI pipeline."""
+    from tripper import Triplestore
+    from tripper.dataset import get_partial_pipeline, save_datadoc
+
+    otelib = pytest.importorskip("otelib")
+
+    # Prepare triplestore
+    ts = Triplestore("rdflib")
+    save_datadoc(ts, inputdir / "semdata.yaml")
+
+    SEMDATA = ts.namespaces["semdata"]
+    GEN = ts.namespaces["gen"]
+
+    client = otelib.OTEClient("python")
+    iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
+    parse = get_partial_pipeline(ts, client, iri, parser=True)
+    generate = get_partial_pipeline(ts, client, iri, generator=GEN.sem_hitachi)
+
+    # Entity-service doesn't work, so we skip the generate part for now...
+    # pipeline = parse >> generate
+    assert generate
+    pipeline = parse
+
+    pipeline.get()
 
 
 def test_fuseki():

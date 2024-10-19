@@ -352,7 +352,7 @@ class Triplestore:
         """Parse source and add the resulting triples to triplestore.
 
         Parameters:
-            source: File-like object or file name.
+            source: File-like object, file name or URL.
             format: Needed if format can not be inferred from source.
             fallback_backend: If the current backend doesn't implement
                 parse, use the `fallback_backend` instead.

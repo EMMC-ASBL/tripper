@@ -104,7 +104,6 @@ def save(
     class_iri: "Optional[str]" = None,
     dataset: "Optional[Union[str, dict]]" = None,
     distribution: "Optional[Union[str, dict]]" = None,
-    generator: "Optional[Union[str, dict]]" = None,
     prefixes: "Optional[dict]" = None,
     use_sparql: "Optional[bool]" = None,
 ) -> None:
@@ -115,16 +114,15 @@ def save(
         data: Bytes representation of the dataset to save.
         class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`
             subclass) that describes the dataset that is saved.
-            Is used to select the `distribution` and `generator` if they
-            are not given. If `distribution` is also given, a
+            Is used to select the `distribution` if that is not given.
+            If `distribution` is also given, a
             `dcat:distribution value <distribution>` restriction will be
             added to `class_iri`
         dataset: IRI of dataset for the data to be saved.
             Or a dict with additional documentation of the dataset.
         distribution: IRI of distribution for the data to be saved.
-            Or a dict additional documentation of the distribution.
-        generator: IRI of existing generator.  Or a dict documenting a
-            new generator that will be creates.
+            Or a dict additional documentation of the distribution,
+            like media type, parsers, generators etc...
         prefixes: Dict with prefixes in addition to those included in the
             context.  Should map namespace prefixes to IRIs.
         use_sparql: Whether to access the triplestore with SPARQL.
@@ -136,7 +134,7 @@ def save(
     from dlite.protocol import Protocol
 
     triples = []
-    save_dataset = save_distribution = save_generator = False
+    save_dataset = save_distribution = False
 
     if dataset is None:
         # __TODO__: Infer dataset from value restriction on `class_iri`
@@ -196,33 +194,18 @@ def save(
         )
     distribution: dict  # Tell mypy that this now is a dict
 
-    if generator is None:
-        if "generator" in distribution:
-            generator = get(distribution, "generator")[0]
-    elif isinstance(generator, str):
-        generator = load_dict(ts, iri=generator, use_sparql=use_sparql)
-    elif isinstance(generator, dict):
-        add(distribution, OTEIO.generator, generator)
-        triples.append(
-            (distribution["@id"], OTEIO.generator, generator["@id"])
-        )
-        save_generator = True
-    else:
-        raise TypeError(
-            "if given, `generator` should be either a string or dict"
-        )
-
     # __TODO__: Check if `class_iri` already has the value restriction.
     # If not, add it to triples
 
-    # Save data
-    url = distribution.get("downloadURL", distribution.get("accessURL"))
-    p = urlparse(url)
-    # Mapping of supported schemes - should be moved into the protocol
+    # __TODO__: Move this mapping of supported schemes into the protocol
     # module.
     schemes = {
         "https": "http",
     }
+
+    # Save data
+    url = distribution.get("downloadURL", distribution.get("accessURL"))
+    p = urlparse(url)
     scheme = schemes.get(p.scheme, p.scheme) if p.scheme else "file"
     location = (
         f"{scheme}://{p.netloc}{p.path}" if p.netloc else f"{scheme}:{p.path}"
@@ -241,9 +224,6 @@ def save(
         save_dict(ts, "dataset", dataset, prefixes=prefixes)
     elif save_distribution:
         save_dict(ts, "distribution", distribution, prefixes=prefixes)
-    elif save_generator and generator:
-        assert isinstance(generator, dict)  # nosec
-        save_dict(ts, "generator", generator, prefixes=prefixes)
 
 
 def load(
@@ -730,6 +710,7 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     Returns:
         An updated copy of `dct`.
     """
+    # pylint: disable=too-many-branches
     if type not in dicttypes:
         raise ValueError(
             f"`type` must be one of: {', '.join(dicttypes.keys())}. "
@@ -754,6 +735,14 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     # Nested lists are not supported
     nested = dicttypes.keys()
     for k, v in d.items():
+        if k == "mappingURL":
+            for url in get(d, k):
+                with Triplestore("rdflib") as ts2:
+                    ts2.parse(url, format=d.get("mappingFormat"))
+                    if "statements" in d:
+                        d.statements.extend(ts2.triples())
+                    else:
+                        d["statements"] = list(ts2.triples())
         if k in ("statements", "mappings"):
             for i, spo in enumerate(d[k]):
                 d[k][i] = [
@@ -780,31 +769,122 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
 
 def get_partial_pipeline(
     ts: Triplestore,
+    client,
     iri: str,
+    parser: "Optional[Union[bool, str]]" = None,
+    generator: "Optional[Union[bool, str]]" = None,
     distribution: "Optional[str]" = None,
-    parser: "Optional[str]" = None,
-    generator: "Optional[str]" = None,
     use_sparql: "Optional[bool]" = None,
 ) -> bytes:
     """Returns a OTELib partial pipeline.
 
     Arguments:
         ts: Triplestore to load data from.
-        iri: IRI of the data to load.
+        client: OTELib client to create pipeline with.
+        iri: IRI of the dataset to load.
+        parser: Whether to return a datasource partial pipeline.
+            Should be True or an IRI of parser to use in case the
+            distribution has multiple parsers.  By default the first
+            parser will be selected.
+        generator: Whether to return a datasink partial pipeline.
+            Should be True or an IRI of generator to use in case the
+            distribution has multiple generators.  By default the first
+            generator will be selected.
         distribution: IRI of distribution to use in case the dataset
             dataset has multiple distributions.  By default any of
             the distributions will be picked.
-        parser: IRI of parser to use in case the distribution has
-            multiple parsers.  By default any parser will be selected.
-        generator: IRI of generator to use in case the distribution has
-            multiple generators.  By default any generator will be selected.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
 
     Returns:
         OTELib partial pipeline.
     """
-    raise NotImplementedError
+    # pylint: disable=too-many-branches
+    dct = load_dict(ts, iri, use_sparql=use_sparql)
+
+    if isinstance(distribution, str):
+        for distr in get(dct, "distribution"):
+            if distr["@id"] == distribution:
+                break
+        else:
+            raise ValueError(
+                f"dataset '{iri}' has no such distribution: {distribution}"
+            )
+    else:
+        distr = get(dct, "distribution")[0]
+
+    accessService = (
+        distr.accessService.get("endpointURL")
+        if "accessService" in distr
+        else None
+    )
+
+    # OTEAPI still puts the parse configurations into the dataresource
+    # instead of a in a separate parse strategy...
+    if parser:
+        if parser is True:
+            par = get(distr, "parser")[0]
+        elif isinstance(parser, str):
+            for par in get(distr, "parser"):
+                if par.get("@id") == parser:
+                    break
+            else:
+                raise ValueError(
+                    f"dataset '{iri}' has no such parser: {parser}"
+                )
+        configuration = par.get("configuration")
+    else:
+        configuration = None
+
+    dataresource = client.create_dataresource(
+        downloadUrl=distr.get("downloadURL"),
+        mediaType=distr.get("mediaType"),
+        accessUrl=distr.get("accessURL"),
+        accessService=accessService,
+        configuration=dict(configuration) if configuration else {},
+    )
+
+    statements = dct.get("statements", [])
+    statements.extend(dct.get("mappings", []))
+    if statements:
+        mapping = client.create_mapping(
+            mappingType="triples",
+            # The OTEAPI datamodels stupidly strict, requireing us
+            # to cast the data ts.namespaces and statements
+            prefixes={k: str(v) for k, v in ts.namespaces.items()},
+            triples=[tuple(t) for t in statements],
+        )
+
+    if parser:
+        pipeline = dataresource
+        if statements:
+            pipeline = pipeline >> mapping
+    elif generator:
+        if generator is True:
+            gen = get(distr, "generator")[0]
+        elif isinstance(generator, str):
+            for gen in get(distr, "generator"):
+                if gen.get("@id") == generator:
+                    break
+            else:
+                raise ValueError(
+                    f"dataset '{iri}' has no such generator: {generator}"
+                )
+
+        conf = gen.get("configuration")
+        if gen.generatorType == "application/vnd.dlite-generate":
+            conf.setdefault("datamodel", dct.get("datamodel"))
+
+        function = client.create_function(
+            functionType=gen.generatorType,
+            configuration=conf,
+        )
+        if statements:
+            pipeline = mapping >> function >> dataresource
+        else:
+            pipeline = function >> dataresource
+
+    return pipeline
 
 
 def list_dataset_iris(ts: Triplestore, **kwargs):

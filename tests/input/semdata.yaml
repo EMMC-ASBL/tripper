@@ -7,6 +7,7 @@ prefixes:
   mat: https://he-matchmaker.eu/material/
   dm: http://onto-ns.com/meta/characterisation/0.1/SEMImage#
   parser: http://sintef.no/dlite/parser#
+  gen: http://sintef.no/dlite/generator#
 
 
 # List of documented datasets
@@ -32,6 +33,7 @@ datasets:
       downloadURL: https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/tests/input/77600-23-001_5kV_400x_m001.tif
       mediaType: image/tiff
       parser: parser:sem_hitachi
+      generator: gen:sem_hitachi
 
   - "@id": semdata:SEM_cement_batch2/77600-23-001
     "@type": sem:SEMImageSeries
@@ -65,5 +67,13 @@ parsers:
   - "@id": parser:sem_hitachi
     "@type": oteio:Parser
     parserType: application/vnd.dlite-parse
+    configuration:
+      driver: hitachi
+
+
+generators:
+  - "@id": gen:sem_hitachi
+    "@type": oteio:Generator
+    generatorType: application/vnd.dlite-generate
     configuration:
       driver: hitachi
