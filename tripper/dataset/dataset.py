@@ -74,19 +74,6 @@ MATCH_PREFIXED_IRI = re.compile(
 )
 
 dicttypes = {
-    "dataset": {
-        "datadoc_label": "datasets",
-        "@type": DCAT.Dataset,
-        # "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-    },
-    "distribution": {
-        "datadoc_label": "distributions",
-        "@type": DCAT.Distribution,
-    },
-    "accessService": {
-        "datadoc_label": "dataServices",
-        "@type": DCAT.DataService,
-    },
     "parser": {
         "datadoc_label": "parsers",
         "@type": OTEIO.Parser,
@@ -94,6 +81,19 @@ dicttypes = {
     "generator": {
         "datadoc_label": "generators",
         "@type": OTEIO.Generator,
+    },
+    "accessService": {
+        "datadoc_label": "dataServices",
+        "@type": DCAT.DataService,
+    },
+    "distribution": {
+        "datadoc_label": "distributions",
+        "@type": DCAT.Distribution,
+    },
+    "dataset": {
+        "datadoc_label": "datasets",
+        "@type": DCAT.Dataset,
+        # "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     },
 }
 
@@ -119,12 +119,10 @@ def save(
             are not given. If `distribution` is also given, a
             `dcat:distribution value <distribution>` restriction will be
             added to `class_iri`
-        dataset: IRI of an existing dataset that a new distribution is
-            created for.  Or a dict documenting the new dataset that will
-            be stored.
-        distribution: IRI of existing distribution for the dataset that will
-            be saved.  Or a dict documenting a new distribution that will be
-            created.
+        dataset: IRI of dataset for the data to be saved.
+            Or a dict with additional documentation of the dataset.
+        distribution: IRI of distribution for the data to be saved.
+            Or a dict additional documentation of the distribution.
         generator: IRI of existing generator.  Or a dict documenting a
             new generator that will be creates.
         prefixes: Dict with prefixes in addition to those included in the
@@ -143,9 +141,6 @@ def save(
     if dataset is None:
         # __TODO__: Infer dataset from value restriction on `class_iri`
         # This require that we make a SPARQL-version of ts.restriction().
-
-        # if class_iri is None:
-        #    raise ValueError("`class_iri` and `dataset` cannot both be None")
         newiri = f"_:N{secrets.token_hex(16)}"
         typeiri = [DCAT.Dataset, class_iri] if class_iri else DCAT.Dataset
         dataset = AttrDict({"@id": newiri, "@type": typeiri})
@@ -168,16 +163,27 @@ def save(
             distribution = AttrDict(
                 {"@id": newiri, "@type": DCAT.Distribution}
             )
-            dataset["distribution"] = distribution
+            add(dataset, "distribution", distribution)
             triples.append((dataset["@id"], DCAT.distribution, newiri))
             save_distribution = True
     elif isinstance(distribution, str):
-        distribution = load_dict(ts, iri=distribution, use_sparql=use_sparql)
+        distr = load_dict(ts, iri=distribution, use_sparql=use_sparql)
+        if distr:
+            distribution = distr
+        else:
+            newiri = f"_:N{secrets.token_hex(16)}"
+            distribution = AttrDict(
+                {"@id": newiri, "@type": DCAT.Distribution}
+            )
+            add(dataset, "distribution", distribution)
+            triples.append((dataset["@id"], DCAT.distribution, newiri))
+            save_distribution = True
     elif isinstance(distribution, dict):
         add(dataset, DCAT.distribution, distribution)
-        triples.append(
-            (dataset["@id"], DCAT.distribution, distribution["@id"])
-        )
+        if "@id" in distribution:
+            triples.append(
+                (dataset["@id"], DCAT.distribution, distribution["@id"])
+            )
         save_distribution = True
     else:
         raise TypeError(
@@ -222,7 +228,7 @@ def save(
         else None
     )
     with Protocol(scheme, location, options=p.query) as pr:
-        return pr.save(data, id)
+        pr.save(data, id)
 
     # Update triplestore
     ts.add_triples(triples)
@@ -230,7 +236,8 @@ def save(
         save_dict(ts, "dataset", dataset, prefixes=prefixes)
     elif save_distribution:
         save_dict(ts, "distribution", distribution, prefixes=prefixes)
-    if save_generator:
+    elif save_generator and generator:
+        assert isinstance(generator, dict)  # nosec
         save_dict(ts, "generator", generator, prefixes=prefixes)
 
 
@@ -370,7 +377,6 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     - data models (require that DLite is installed)
 
     """
-
     # Save statements and mappings
     statements = get_values(dct, "statements")
     statements.extend(get_values(dct, "mappings"))
@@ -426,20 +432,12 @@ def load_dict(
     """
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
-    # dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
     if use_sparql:
         return _load_sparql(ts, iri)
-    dct = _load_triples(ts, iri)
 
-    nested = (
-        "distribution",
-        "accessService",
-        "parser",
-        "generator",
-        "mapping",
-    )
+    nested = dicttypes.keys()
     d = AttrDict()
-    dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
+    dct = _load_triples(ts, iri)
     for k, v in dct.items():
         if k in nested:
             d[k] = load_dict(ts, iri=v, use_sparql=use_sparql)
@@ -452,12 +450,14 @@ def load_dict(
 def _load_triples(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.triples()`."""
     shortnames = get_shortnames()
-    # Always add @id, even for blank nodes
-    # d = {} if iri.startswith("_:") else {"@id": iri}
-    d = {"@id": iri}
+    dct: dict = {}
     for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-        add(d, shortnames.get(p, p), as_python(o))
-    return d
+        add(dct, shortnames.get(p, p), as_python(o))
+    if dct:
+        d = {"@id": iri}
+        d.update(dct)
+        return d
+    return dct
 
 
 def _load_sparql(ts: Triplestore, iri: str) -> dict:
@@ -481,13 +481,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
-    nested = (
-        "distribution",
-        "accessService",
-        "parser",
-        "generator",
-        "mapping",
-    )
+    nested = dicttypes.keys()
 
     def recur(d):
         """Recursively load and insert referred resources into dict `d`."""
@@ -511,13 +505,16 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     return dct
 
 
-def get_values(data: "Union[dict, list]", key: str, extend=True) -> list:
+def get_values(
+    data: "Union[dict, list]", key: str, extend: bool = True
+) -> list:
     """Parse `data` recursively and return a list with the values
     corresponding to the given key.
 
     If `extend` is true, the returned list will be extended with
     values that themselves are list, instead of appending them in a
     nested manner.
+
     """
     values = []
     if isinstance(data, dict):
@@ -572,14 +569,14 @@ def get_shortnames(timeout: float = 5) -> dict:
     context = get_context(timeout=timeout)
     prefixes = get_prefixes()
     shortnames = {
-        expand_iri(v, prefixes): k
+        expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
         for k, v in context.items()
-        if isinstance(v, str) and not v.endswith(("#", "/"))
+        if (
+            (isinstance(v, str) and not v.endswith(("#", "/")))
+            or isinstance(v, dict)
+        )
     }
     shortnames.setdefault(RDF.type, "@type")
-    shortnames.setdefault(OTEIO.prefix, "prefixes")
-    shortnames.setdefault(OTEIO.hasConfiguration, "configuration")
-    shortnames.setdefault(OTEIO.statement, "statements")
     return shortnames
 
 
@@ -629,22 +626,6 @@ def get(
     return value
 
 
-# def expand_prefixes(obj: "Union[dict, list]", prefixes: dict) -> None:
-#     """Recursively expand IRI prefixes in the values of dict `d`."""
-#     if isinstance(obj, dict):
-#         for k, v in obj.items():
-#             if isinstance(v, str):
-#                 obj[k] = expand_iri(v, prefixes)
-#             elif isinstance(v, (dict, list)):
-#                 expand_prefixes(v, prefixes)
-#     elif isinstance(obj, list):
-#         for i, e in enumerate(obj):
-#             if isinstance(e, str):
-#                 obj[i] = expand_iri(e, prefixes)
-#             elif isinstance(e, (dict, list)):
-#                 expand_prefixes(e, prefixes)
-
-
 def expand_iri(iri: str, prefixes: dict) -> str:
     """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
     returned."""
@@ -683,7 +664,9 @@ def save_datadoc(
         d = read_datadoc(file_or_dict)
 
     # Bind prefixes
-    for prefix, ns in d.prefixes.items():  # type: ignore
+    prefixes = get_prefixes()
+    prefixes.update(d.get("prefixes", {}))
+    for prefix, ns in prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
 
     # Maps datadoc_labels to type
@@ -693,9 +676,7 @@ def save_datadoc(
     for spec in dicttypes.values():
         label = spec["datadoc_label"]
         for dct in get(d, label):
-            dct = prepare(
-                types[label], dct, prefixes=d.prefixes  # type:ignore
-            )
+            dct = prepare(types[label], dct, prefixes=prefixes)
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
                 ts2.parse(f, format="json-ld")
@@ -766,9 +747,19 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
 
     # Recursively expand IRIs and prepare sub-directories
     # Nested lists are not supported
-    nested = set(dicttypes.keys())
+    nested = dicttypes.keys()
     for k, v in d.items():
-        if isinstance(v, str):
+        if k in ("statements", "mappings"):
+            for i, spo in enumerate(d[k]):
+                d[k][i] = [
+                    (
+                        get(d, e, e)[0]
+                        if e.startswith("@")
+                        else expand_iri(e, prefixes=all_prefixes)
+                    )
+                    for e in spo
+                ]
+        elif isinstance(v, str):
             d[k] = expand_iri(v, all_prefixes)
         elif isinstance(v, list):
             for i, e in enumerate(v):

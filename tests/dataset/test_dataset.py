@@ -46,6 +46,7 @@ def test_get_shortnames():
         "prefixes",
         "configuration",
         "statements",
+        "mappings",
         "@type",
     )
 
@@ -55,29 +56,6 @@ def test_get_shortnames():
     for k, v in shortnames.items():
         if v not in exceptions:
             assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
-
-
-# def test_expand_prefixes():
-#     """Test expand_prefixes()."""
-#     from tripper import DCTERMS, EMMO, OTEIO
-#     from tripper.dataset.dataset import expand_prefixes, get_prefixes
-#
-#     prefixes = get_prefixes()
-#     d = {
-#         "a": "oteio:Parser",
-#         "b": [
-#             "emmo:Atom",
-#             {
-#                 "Z": "emmo:AtomicNumber",
-#                 "v": "dcterms:a/b",
-#             },
-#         ],
-#     }
-#     expand_prefixes(d, prefixes)
-#     assert d["a"] == OTEIO.Parser
-#     assert d["b"][0] == EMMO.Atom
-#     assert d["b"][1]["Z"] == EMMO.AtomicNumber
-#     assert d["b"][1]["v"] == DCTERMS["a/b"]
 
 
 def test_add():
@@ -194,13 +172,19 @@ def test_save_and_load():
     # Test save dataset
     newfile = outputdir / "newimage.tiff"
     newfile.unlink(missing_ok=True)
-    distribution = {
-        "@id": SEMDATA.newimage,
-        "@type": SEM.SimImage,
-        "downloadURL": f"file:{newfile}",
-    }
     buf = b"some bytes..."
-    save(ts, buf, distribution=distribution)
+    save(
+        ts,
+        buf,
+        dataset={
+            "@id": SEMDATA.newimage,
+            "@type": SEM.SEMImage,
+        },
+        distribution={
+            # "@id": SEMDATA.newdistr,
+            "downloadURL": f"file:{newfile}",
+        },
+    )
     assert newfile.exists()
     assert newfile.stat().st_size == len(buf)
 
@@ -214,6 +198,7 @@ def test_save_and_load():
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
         SAMPLE["SEM_cement_batch2/77600-23-001"],
+        SEMDATA.newimage,
     }
     assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],

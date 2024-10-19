@@ -24,7 +24,10 @@
 
     "status": "adms:status",
     "versionNotes": "adms:versionNotes",
-    "distribution": "dcat:distribution",
+    "distribution": {
+      "@id": "dcat:distribution",
+      "@type": "@id"
+    },
     "contactPoint": "dcat:contactPoint",
     "hasCurrentVersion": "dcat:hasCurrentVersion",
     "hasVersion": "dcat:hasVersion",
@@ -54,7 +57,10 @@
     "hasPolicy": "odrl:hasPolicy",
     "qualifiedAttribution": "prov:qualifiedAttribution",
 
-    "accessService": "dcat:accessService",
+    "accessService": {
+      "@id": "dcat:accessService",
+      "@type": "@id"
+    },
     "accessURL": "dcat:accessURL",
     "byteSize": "dcat:byteSize",
     "compressFormat": "dcat:compressFormat",
@@ -66,12 +72,14 @@
     "format": "dcterms:format",
     "checksum": "spdx:checksum",
 
-    "dataResource": "oteio:dataResource",
-    "parser": "oteio:parser",
-    "generator": "oteio:generator",
-    "function": "oteio:function",
-    "filter": "oteio:filter",
-
+    "parser": {
+      "@id": "oteio:parser",
+      "@type": "@id"
+    },
+    "generator": {
+      "@id": "oteio:generator",
+      "@type": "@id"
+    },
     "parserType": "oteio:parserType",
     "generatorType": "oteio:generatorType",
     "functionType": "oteio:functionType",
