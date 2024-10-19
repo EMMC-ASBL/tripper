@@ -233,6 +233,26 @@ def test_save_and_load():
     assert newfile2.exists()
     assert newfile2.stat().st_size == len(buf)
 
+    # Test save existing dataset with anonymous distribution
+    newfile2.unlink(missing_ok=True)
+    save(ts, buf, dataset=SEMDATA.newimage2)
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+
+    # Test save new dataset with reference to existing distribution
+    newfile2.unlink(missing_ok=True)
+    save(
+        ts,
+        buf,
+        dataset={
+            "@id": SEMDATA.newimage3,
+            "title": "A dataset with no default distribution",
+            "distribution": SEMDATA.newdistr2,
+        },
+    )
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
     datasets = list_dataset_iris(ts)

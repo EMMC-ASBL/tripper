@@ -77,4 +77,3 @@ generators:
     generatorType: application/vnd.dlite-generate
     configuration:
       driver: hitachi
-      options: mode=w

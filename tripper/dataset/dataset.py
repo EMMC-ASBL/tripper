@@ -173,7 +173,7 @@ def save(
             add(dataset, "distribution", distribution)
             triples.append((dataset["@id"], DCAT.distribution, newiri))
             save_distribution = True
-    elif isinstance(distribution, str):
+    if isinstance(distribution, str):
         distr = load_dict(ts, iri=distribution, use_sparql=use_sparql)
         if distr:
             distribution = distr
