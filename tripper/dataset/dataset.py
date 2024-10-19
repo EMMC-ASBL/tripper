@@ -104,6 +104,7 @@ def save(
     class_iri: "Optional[str]" = None,
     dataset: "Optional[Union[str, dict]]" = None,
     distribution: "Optional[Union[str, dict]]" = None,
+    generator: "Optional[str]" = None,
     prefixes: "Optional[dict]" = None,
     use_sparql: "Optional[bool]" = None,
 ) -> None:
@@ -123,6 +124,8 @@ def save(
         distribution: IRI of distribution for the data to be saved.
             Or a dict additional documentation of the distribution,
             like media type, parsers, generators etc...
+        generator: Name of generator to use in case the distribution has
+            several generators.
         prefixes: Dict with prefixes in addition to those included in the
             context.  Should map namespace prefixes to IRIs.
         use_sparql: Whether to access the triplestore with SPARQL.
@@ -194,6 +197,19 @@ def save(
         )
     distribution: dict  # Tell mypy that this now is a dict
 
+    if isinstance(generator, str):
+        for gen in get(distribution, "generator"):
+            if gen.get("@id") == generator:
+                break
+        else:
+            raise ValueError(
+                f"dataset '{dataset}' has no such generator: {generator}"
+            )
+    elif "generator" in distribution:
+        gen = get(distribution, "generator")[0]
+    else:
+        gen = None
+
     # __TODO__: Check if `class_iri` already has the value restriction.
     # If not, add it to triples
 
@@ -210,12 +226,16 @@ def save(
     location = (
         f"{scheme}://{p.netloc}{p.path}" if p.netloc else f"{scheme}:{p.path}"
     )
+    options = [p.query] if p.query else []
+    if gen and "configuration" in gen and "options" in gen.configuration:
+        # __TODO__: allow options to also be a dict
+        options.append(gen.configuration["options"])
     id = (
         distribution["accessService"].get("identifier")
         if "accessService" in distribution
         else None
     )
-    with Protocol(scheme, location, options=p.query) as pr:
+    with Protocol(scheme, location, options=";".join(options)) as pr:
         pr.save(data, id)
 
     # Update triplestore

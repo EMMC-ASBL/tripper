@@ -75,6 +75,15 @@
     "format": "dcterms:format",
     "checksum": "spdx:checksum",
 
+    "abstract": "dcterms:abstract",
+    "bibliographicCitation": "dcterms:bibliographicCitation",
+    "source": "dcterms:source",
+    "deprecated": "owl:deprecated",
+    "comment": "rdfs:comment",
+    "isDefinedBy": "rdfs:isDefinedBy",
+    "label": "rdfs:label",
+    "seeAlso": "rdfs:seeAlso",
+
     "parser": {
       "@id": "oteio:parser",
       "@type": "@id"

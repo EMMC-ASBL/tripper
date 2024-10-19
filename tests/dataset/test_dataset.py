@@ -24,6 +24,10 @@ def test_get_context():
     assert "@version" in context
     assert len(context) > 20
 
+    # Check for consistency between context online and on disk
+    online_context = get_context(fromfile=False)
+    assert online_context == context
+
 
 def test_get_prefixes():
     """Test get_prefixes()."""
@@ -223,9 +227,16 @@ def test_save_and_load():
     assert newimage2.distribution["@type"] == DCAT.Distribution
     assert newimage2.distribution.downloadURL == f"file:{newfile2}"
 
+    # Test save anonymous dataset with existing distribution
+    newfile2.unlink(missing_ok=True)
+    save(ts, buf, distribution=SEMDATA.newdistr2)
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    assert set(list_dataset_iris(ts)) == {
+    datasets = list_dataset_iris(ts)
+    named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
@@ -233,6 +244,7 @@ def test_save_and_load():
         SEMDATA.newimage,
         SEMDATA.newimage2,
     }
+    assert not named_datasets.difference(datasets)
     assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
