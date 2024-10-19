@@ -8,17 +8,11 @@ from typing import TYPE_CHECKING
 from tripper.literal import Literal
 from tripper.utils import parse_object
 
-try:
-    import dlite
-except ImportError as exc:
-    raise ImportError(
-        "DLite is not installed.\nInstall it with:\n\n"
-        "    pip install DLite-Python"
-    ) from exc
-
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
     from typing import Generator, List, Optional, Union
+
+    import dlite
 
     from tripper.triplestore import Triple
 
@@ -41,7 +35,9 @@ class CollectionStrategy:
         database: "Optional[str]" = None,
         collection: "Optional[Union[dlite.Collection, str]]" = None,
     ):
-        # pylint: disable=unused-argument
+        # pylint: disable=unused-argument,import-outside-toplevel
+        import dlite
+
         if collection is None:
             self.collection = dlite.Collection()
         elif isinstance(collection, str):
