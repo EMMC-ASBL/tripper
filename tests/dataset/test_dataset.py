@@ -165,7 +165,12 @@ def test_save_and_load():
     assert dist.generator.generatorType == "application/vnd.dlite-generate"
 
     # Test save dict
-    save_dict(ts, "distribution", {"@id": SEMDATA.newdistr, "format": "txt"})
+    save_dict(
+        ts,
+        "distribution",
+        {"@id": SEMDATA.newdistr, "format": "txt"},
+        prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
+    )
     newdistr = load_dict(ts, SEMDATA.newdistr)
     assert newdistr["@type"] == DCAT.Distribution
     assert newdistr.format == "txt"
@@ -249,6 +254,7 @@ def test_save_and_load():
             "title": "A dataset with no default distribution",
             "distribution": SEMDATA.newdistr2,
         },
+        generator=GEN.sem_hitachi,
     )
     assert newfile2.exists()
     assert newfile2.stat().st_size == len(buf)
