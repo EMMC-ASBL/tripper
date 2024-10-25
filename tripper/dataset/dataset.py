@@ -1,24 +1,33 @@
 """Module for documenting datasets with Tripper.
 
-The dataset documentation follows the DCAT structure and is exposed as
-Python dicts with attribute access in this module.  This dict
-structure is used by the functions:
+The dataset documentation follows the [DCAT] structure and is exposed
+as Python dicts with attribute access in this module.  The semantic
+meaning of the keywords in this dict are defined by a [JSON-LD context].
+
+High-level functions for accessing and storing actual data:
+  - `load()`: Load documented dataset from its source.
+  - `save()`: Save documented dataset to a data resource.
+
+High-level function for populating the triplestore from YAML documentation:
+  - `save_datadoc()`: Save documentation from YAML file to the triplestore.
+
+Functions for searching the triplestore:
+  - `list_dataset_iris()`: Get IRIs of matching datasets.
+
+Functions for working with the dict-representation:
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
 
-YAML documentation can also be stored directly to the triplestore with
-  - `save_datadoc()`: Save documentation from YAML file to the triplestore.
-
-For accessing and storing actual data, the following functions can be used:
-  - `load()`: Load documented dataset from its source.
-  - `save()`: Save documented dataset to a data resource.
-
-For searching the triplestore:
-  - `list_dataset_iris()`: Get IRIs of matching datasets.
-
-For interaction with OTEAPI:
+Functions for interaction with OTEAPI:
   - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
+
+---
+
+__TODO__: Update the URL to the JSON-LD context when merged to master
+
+[DCAT]: https://www.w3.org/TR/vocab-dcat-3/
+[JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset/tripper/context/0.2/context.json
 
 """
 
@@ -107,20 +116,23 @@ def save(
     generator: "Optional[str]" = None,
     prefixes: "Optional[dict]" = None,
     use_sparql: "Optional[bool]" = None,
-) -> None:
-    """Saves a documented dataset to a data resource.
+) -> str:
+    """Saves data to a dataresource and document it in the triplestore.
 
     Arguments:
         ts: Triplestore to load data from.
-        data: Bytes representation of the dataset to save.
+        data: Bytes representation of the data to save.
         class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`
             subclass) that describes the dataset that is saved.
             Is used to select the `distribution` if that is not given.
             If `distribution` is also given, a
             `dcat:distribution value <distribution>` restriction will be
             added to `class_iri`
-        dataset: IRI of dataset for the data to be saved.
-            Or a dict with additional documentation of the dataset.
+        dataset: Either the IRI of the dataset individual standing for
+            the data to be saved or or a dict with additional
+            documentation of the dataset.
+            If the dataset already exists, a new distribution will be added
+            to it. Otherwise a new random blank node IRI will be created.
         distribution: IRI of distribution for the data to be saved.
             Or a dict additional documentation of the distribution,
             like media type, parsers, generators etc...
@@ -130,6 +142,9 @@ def save(
             context.  Should map namespace prefixes to IRIs.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
+
+    Returns:
+        IRI of the dataset.
 
     """
     # pylint: disable=too-many-locals,too-many-branches,too-many-statements
@@ -244,6 +259,8 @@ def save(
         save_dict(ts, "dataset", dataset, prefixes=prefixes)
     elif save_distribution:
         save_dict(ts, "distribution", distribution, prefixes=prefixes)
+
+    return dataset["@id"]
 
 
 def load(
