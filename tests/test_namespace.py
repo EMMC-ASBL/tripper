@@ -93,8 +93,9 @@ def test_triplestore_arg() -> None:
     with pytest.raises(NoSuchIRIError):
         FAM.NonExisting  # pylint: disable=pointless-statement
 
+    # Unresolvable namespace IRI fails lazily at attribute access time
     EX = Namespace("http://example.com", check=True, triplestore=Ellipsis)
-    with pytest.raises(NamespaceError):  # lazy loading of namespace
+    with pytest.raises(NamespaceError):
         EX.Class  # pylint: disable=pointless-statement
 
 
