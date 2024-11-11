@@ -56,7 +56,7 @@ class Namespace:
     def __init__(
         self,
         iri: str,
-        label_annotations: "Sequence" = (),
+        label_annotations: "Union[Sequence, bool]" = (),
         check: bool = False,
         reload: "Optional[bool]" = None,
         triplestore: "Optional[Union[Triplestore, str]]" = None,
@@ -288,7 +288,8 @@ DCAT = Namespace("http://www.w3.org/ns/dcat#")
 TIME = Namespace("http://www.w3.org/2006/time#")
 FNO = Namespace("https://w3id.org/function/ontology#")
 
-EMMO = Namespace("https://w3id.org/emmo#")
+# Define EMMO namespace in __init__() to avoid circular dependencies
+# EMMO = Namespace("https://w3id.org/emmo#")
 MAP = Namespace("https://w3id.org/emmo/domain/mappings#")
 DM = Namespace("https://w3id.org/emmo/domain/datamodel#")
 OTEIO = Namespace("https://w3id.org/emmo/domain/oteio#")

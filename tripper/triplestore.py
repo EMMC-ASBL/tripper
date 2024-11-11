@@ -36,7 +36,6 @@ from tripper.literal import Literal
 from tripper.namespace import (
     DCTERMS,
     DM,
-    EMMO,
     FNO,
     MAP,
     OTEIO,
@@ -89,6 +88,9 @@ except ImportError:
 backend_packages = ["tripper.backends"]
 
 
+# EMMO namespace with no checking and label lookup
+EMMO = Namespace("https://w3id.org/emmo#")
+
 # FIXME - add the following classes and properties to ontologies
 # These would be good to have in EMMO
 DataSource = EMMO.DataSource
@@ -119,8 +121,6 @@ class Triplestore:
         # "dcterms": DCTERMS,
         # "foaf": FOAF,
         # "doap": DOAP,
-        # "fno": FNO,
-        # "emmo": EMMO,
         # "map": MAP,
         # "dm": DM,
     }
