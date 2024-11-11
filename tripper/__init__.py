@@ -26,14 +26,14 @@ from .namespace import (
 from .triplestore import Triplestore, backend_packages
 from .tripper import Tripper
 
+__version__ = "0.3.4"
+
 # Pre-defined namespaces with checking and label lookup
 EMMO = Namespace(
     iri="https://w3id.org/emmo#",
     label_annotations=True,
     check=True,
 )
-
-__version__ = "0.3.4"
 
 __all__ = (
     "Literal",

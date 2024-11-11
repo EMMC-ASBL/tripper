@@ -201,6 +201,13 @@ class Namespace:
         if self._iris and name in self._iris:
             return self._iris[name]
         if self._check:
+
+            # Hack to work around a pytest bug.  During its collection
+            # phase pytest tries to mock namespace objects with an
+            # attribute `__wrapped__`.
+            if name == "__wrapped__":
+                return super().__getattr__(self, name)
+
             msg = ""
             try:
                 cachefile = self._get_cachefile()
