@@ -93,8 +93,9 @@ def test_triplestore_arg() -> None:
     with pytest.raises(NoSuchIRIError):
         FAM.NonExisting  # pylint: disable=pointless-statement
 
-    with pytest.raises(NamespaceError):
-        Namespace("http://example.com", check=True, triplestore=Ellipsis)
+    EX = Namespace("http://example.com", check=True, triplestore=Ellipsis)
+    with pytest.raises(NamespaceError):  # lazy loading of namespace
+        EX.Class  # pylint: disable=pointless-statement
 
 
 # if True:

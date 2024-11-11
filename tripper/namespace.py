@@ -51,6 +51,9 @@ class Namespace:
         "_label_annotations",  # Recognised annotations for labels
         "_check",  # Whether to check that IRIs exists
         "_iris",  # Dict mapping labels to IRIs
+        "_reload",  # reload option
+        "_triplestore",  # triplestore option
+        "_format",  # format option
     )
 
     def __init__(
@@ -100,9 +103,12 @@ class Namespace:
         )
         self._check = bool(check)
         self._iris: "Optional[dict]" = {} if need_triplestore else None
+        self._reload = reload
+        self._triplestore = triplestore
+        self._format = format
 
-        if need_triplestore:
-            self._update_iris(triplestore, reload=reload, format=format)
+        # if need_triplestore:
+        #     self._update_iris(triplestore, reload=reload, format=format)
 
     def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
@@ -200,6 +206,14 @@ class Namespace:
     def __getattr__(self, name):
         if self._iris and name in self._iris:
             return self._iris[name]
+        if self._iris == {}:
+            self._update_iris(
+                triplestore=self._triplestore,
+                reload=self._reload,
+                format=self._format,
+            )
+            if name in self._iris:
+                return self._iris[name]
         if self._check:
 
             # Hack to work around a pytest bug.  During its collection
