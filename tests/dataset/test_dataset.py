@@ -181,8 +181,9 @@ def test_save_and_load():
 
     # Test load updated distribution
     dd = load_dict(ts, iri)
-    assert dd == d
     assert dd.distribution.generator == load_dict(ts, GEN.sem_hitachi)
+    del dd.distribution["generator"]
+    assert dd == d
 
     # Test save dataset with anonymous distribution
     newfile = outputdir / "newimage.tiff"

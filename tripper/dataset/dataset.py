@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 """Module for documenting datasets with Tripper.
 
 The dataset documentation follows the [DCAT] structure and is exposed
@@ -31,6 +32,7 @@ __TODO__: Update the URL to the JSON-LD context when merged to master
 
 """
 
+# pylint: enable=line-too-long
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 import functools
 import io
