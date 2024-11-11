@@ -1,29 +1,30 @@
-"""A module encapsulating different triplestores using the strategy design
-pattern.
-
-See
+"""A module encapsulating different triplestores using the strategy
+design pattern.
+ 
+See 
 https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction and for a table over available backends.
-
-This module has no dependencies outside the standard library, but the
-triplestore backends may have.
-
-For developers: The usage of `s`, `p`, and `o` represent the different parts of
-an RDF Triple: subject, predicate, and object.
+for an introduction and a table over available backends. 
+ 
+This module has no dependencies outside the standard library, but the 
+triplestore backends may have. 
+ 
+For developers: The usage of `s`, `p`, and `o` represent the different
+parts of an RDF Triple: subject, predicate, and object.
+ 
 """
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
-from __future__ import annotations  # Support Python 3.7 (PEP 585)
-
+from __future__ import annotations  # Support Python 3.7 (PEP 585) 
+ 
 import importlib
-import inspect
-import re
+import inspect 
+import re 
 import subprocess  # nosec
 import sys
-import warnings
-from collections.abc import Sequence
-from typing import TYPE_CHECKING
-
+import warnings 
+from collections.abc import Sequence 
+from typing import TYPE_CHECKING 
+ 
 from tripper.errors import (
     ArgumentTypeError,
     ArgumentValueError,
@@ -48,9 +49,9 @@ from tripper.namespace import (
 )
 from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
 
-if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping
-    from typing import (
+if TYPE_CHECKING:  # pragma: no cover 
+    from collections.abc import Mapping 
+    from typing import ( 
         Any,
         Callable,
         Dict,
@@ -76,7 +77,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
-
+ 
 try:
     from importlib.metadata import entry_points
 except ImportError:
@@ -87,7 +88,7 @@ except ImportError:
 # Default packages in which to look for tripper backends
 backend_packages = ["tripper.backends"]
 
-
+ 
 # EMMO namespace with no checking and label lookup
 EMMO = Namespace("https://w3id.org/emmo#")
 
@@ -100,43 +101,43 @@ hasUnit = DM.hasUnit
 hasCost = DM.hasCost
 
 
-# Regular expression matching a prefixed IRI
+# Regular expression matching a prefixed IRI 
 _MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
-
-
-class Triplestore:
-    """Provides a common frontend to a range of triplestore backends."""
-
+ 
+ 
+class Triplestore: 
+    """Provides a common frontend to a range of triplestore backends.""" 
+ 
     # pylint: disable=too-many-instance-attributes
 
-    default_namespaces = {
-        "xml": XML,
-        "rdf": RDF,
-        "rdfs": RDFS,
-        "xsd": XSD,
-        "owl": OWL,
-        # "skos": SKOS,
+    default_namespaces = { 
+        "xml": XML, 
+        "rdf": RDF, 
+        "rdfs": RDFS, 
+        "xsd": XSD, 
+        "owl": OWL, 
+        # "skos": SKOS, 
         # "dcat": DCAT,
-        # "dc": DC,
-        # "dcterms": DCTERMS,
-        # "foaf": FOAF,
-        # "doap": DOAP,
-        # "map": MAP,
-        # "dm": DM,
-    }
-
-    def __init__(
+        # "dc": DC, 
+        # "dcterms": DCTERMS, 
+        # "foaf": FOAF, 
+        # "doap": DOAP, 
+        # "map": MAP, 
+        # "dm": DM, 
+    } 
+ 
+    def __init__( 
         self,
         backend: str,
         base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
         package: "Optional[str]" = None,
         **kwargs,
-    ) -> None:
-        """Initialise triplestore using the backend with the given name.
-
-        Parameters:
-            backend: Name of the backend module.
+    ) -> None: 
+        """Initialise triplestore using the backend with the given name. 
+ 
+        Arguments: 
+            backend: Name of the backend module. 
 
                 For built-in backends or backends provided via a
                 backend package (using entrypoints), this should just
@@ -150,21 +151,21 @@ class Triplestore:
                 For a list over available backends, see
                 https://github.com/EMMC-ASBL/tripper#available-backends
 
-            base_iri: Base IRI used by the add_function() method when adding
+            base_iri: Base IRI used by the add_function() method when adding 
                 new triples. May also be used by the backend.
             database: Name of database to connect to (for backends that
                 supports it).
             package: Required when `backend` is a relative module.  In that
                 case, it is relative to `package`.
-            kwargs: Keyword arguments passed to the backend's __init__()
-                method.
+            kwargs: Keyword arguments passed to the backend's __init__() 
+                method. 
 
-        """
+        """ 
         backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
         cls = getattr(module, f"{backend_name.title()}Strategy")
-        self.base_iri = base_iri
-        self.namespaces: "Dict[str, Namespace]" = {}
+        self.base_iri = base_iri 
+        self.namespaces: "Dict[str, Namespace]" = {} 
         self.closed = False
         self.backend_name = backend_name
         self.database = database
@@ -175,9 +176,9 @@ class Triplestore:
         # Cache functions in the triplestore for fast access
         self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
 
-        for prefix, namespace in self.default_namespaces.items():
-            self.bind(prefix, namespace)
-
+        for prefix, namespace in self.default_namespaces.items(): 
+            self.bind(prefix, namespace) 
+ 
     @classmethod
     def _load_backend(cls, backend: str, package: "Optional[str]" = None):
         """Load and return backend module.  The arguments has the same meaning
@@ -222,8 +223,8 @@ class Triplestore:
             name=backend,
         )
 
-    # Methods implemented by backend
-    # ------------------------------
+    # Methods implemented by backend 
+    # ------------------------------ 
     def triples(  # pylint: disable=redefined-builtin
         self,
         subject: "Optional[Union[str, Triple]]" = None,
@@ -258,7 +259,7 @@ class Triplestore:
             subject, predicate, object = triple
 
         return self.backend.triples((subject, predicate, object))
-
+ 
     def add_triples(
         self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
     ):
@@ -268,8 +269,8 @@ class Triplestore:
             triples: A sequence of `(s, p, o)` tuples to add to the
                 triplestore.
         """
-        self.backend.add_triples(triples)
-
+        self.backend.add_triples(triples) 
+ 
     def remove(  # pylint: disable=redefined-builtin
         self,
         subject: "Optional[Union[str, Triple]]" = None,
@@ -301,9 +302,9 @@ class Triplestore:
             subject, predicate, object = triple
 
         return self.backend.remove((subject, predicate, object))
-
-    # Methods optionally implemented by backend
-    # -----------------------------------------
+ 
+    # Methods optionally implemented by backend 
+    # ----------------------------------------- 
     def close(self):
         """Calls the backend close() method if it is implemented.
         Otherwise, this method has no effect.
@@ -314,7 +315,7 @@ class Triplestore:
             self.backend.close()
         self.closed = True
 
-    def parse(
+    def parse( 
         self,
         source=None,
         format=None,
@@ -322,20 +323,20 @@ class Triplestore:
         fallback_backend_kwargs=None,
         **kwargs,  # pylint: disable=redefined-builtin
     ) -> None:
-        """Parse source and add the resulting triples to triplestore.
-
-        Parameters:
-            source: File-like object or file name.
-            format: Needed if format can not be inferred from source.
+        """Parse source and add the resulting triples to triplestore. 
+ 
+        Arguments:
+            source: File-like object or file name. 
+            format: Needed if format can not be inferred from source. 
             fallback_backend: If the current backend doesn't implement
                 parse, use the `fallback_backend` instead.
             fallback_backend_kwargs: Dict with additional keyword arguments
                 for initialising `fallback_backend`.
-            kwargs: Keyword arguments passed to the backend.
-                The rdflib backend supports e.g. `location` (absolute
-                or relative URL) and `data` (string containing the
-                data to be parsed) arguments.
-        """
+            kwargs: Keyword arguments passed to the backend. 
+                The rdflib backend supports e.g. `location` (absolute 
+                or relative URL) and `data` (string containing the 
+                data to be parsed) arguments. 
+        """ 
         if hasattr(self.backend, "parse"):
             self._check_method("parse")
             self.backend.parse(source=source, format=format, **kwargs)
@@ -347,36 +348,36 @@ class Triplestore:
             )
             ts.parse(source=source, format=format, **kwargs)
             self.add_triples(ts.triples())
-
-        if hasattr(self.backend, "namespaces"):
-            for prefix, namespace in self.backend.namespaces().items():
-                if prefix and prefix not in self.namespaces:
-                    self.namespaces[prefix] = Namespace(namespace)
-
-    def serialize(
-        self,
-        destination=None,
-        format="turtle",  # pylint: disable=redefined-builtin
+ 
+        if hasattr(self.backend, "namespaces"): 
+            for prefix, namespace in self.backend.namespaces().items(): 
+                if prefix and prefix not in self.namespaces: 
+                    self.namespaces[prefix] = Namespace(namespace) 
+ 
+    def serialize( 
+        self, 
+        destination=None, 
+        format="turtle",  # pylint: disable=redefined-builtin 
         fallback_backend="rdflib",
         fallback_backend_kwargs=None,
-        **kwargs,
-    ) -> "Union[None, str]":
-        """Serialise triplestore.
-
-        Parameters:
-            destination: File name or object to write to.  If None, the
-                serialisation is returned.
-            format: Format to serialise as.  Supported formats, depends on
-                the backend.
+        **kwargs, 
+    ) -> "Union[None, str]": 
+        """Serialise triplestore. 
+ 
+        Arguments:
+            destination: File name or object to write to.  If None, the 
+                serialisation is returned. 
+            format: Format to serialise as.  Supported formats, depends on 
+                the backend. 
             fallback_backend: If the current backend doesn't implement
                 serialisation, use the `fallback_backend` instead.
             fallback_backend_kwargs: Dict with additional keyword arguments
                 for initialising `fallback_backend`.
-            kwargs: Passed to the backend serialize() method.
-
-        Returns:
-            Serialized string if `destination` is None.
-        """
+            kwargs: Passed to the backend serialize() method. 
+ 
+        Returns: 
+            Serialized string if `destination` is None. 
+        """ 
         if hasattr(self.backend, "parse"):
             self._check_method("serialize")
             return self.backend.serialize(
@@ -390,13 +391,13 @@ class Triplestore:
         for prefix, iri in self.namespaces.items():
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
-
+ 
     def query(
         self, query_object, **kwargs
     ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
-        Parameters:
+        Arguments:
             query_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend query() method.
 
@@ -414,13 +415,13 @@ class Triplestore:
             Not all backends may support all types of queries.
 
         """
-        self._check_method("query")
-        return self.backend.query(query_object=query_object, **kwargs)
-
+        self._check_method("query") 
+        return self.backend.query(query_object=query_object, **kwargs) 
+ 
     def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
 
-        Parameters:
+        Arguments:
             update_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend update() method.
 
@@ -429,28 +430,28 @@ class Triplestore:
             the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.
 
         """
-        self._check_method("update")
-        return self.backend.update(update_object=update_object, **kwargs)
-
+        self._check_method("update") 
+        return self.backend.update(update_object=update_object, **kwargs) 
+ 
     def bind(  # pylint: disable=inconsistent-return-statements
         self,
         prefix: str,
         namespace: "Union[str, Namespace, Triplestore, None]" = "",
         **kwargs,
     ) -> Namespace:
-        """Bind prefix to namespace and return the new Namespace object.
-
-        Parameters:
+        """Bind prefix to namespace and return the new Namespace object. 
+ 
+        Arguments:
             prefix: Prefix to bind the the namespace.
             namespace: Namespace to bind to.  The default is to bind to the
                 `base_iri` of the current triplestore.
                 If `namespace` is None, the corresponding prefix is removed.
             kwargs: Keyword arguments are passed to the Namespace()
                 constructor.
-
+ 
         Returns:
             New Namespace object or None if namespace is removed.
-        """
+        """ 
         if namespace == "":
             namespace = self
 
@@ -466,11 +467,11 @@ class Triplestore:
             # pylint: disable=protected-access
             ns = Namespace(namespace._iri, **kwargs)
         elif namespace is None:
-            del self.namespaces[prefix]
+            del self.namespaces[prefix] 
             return  # type: ignore
         else:
             raise TypeError(f"invalid `namespace` type: {type(namespace)}")
-
+ 
         if hasattr(self.backend, "bind"):
             self.backend.bind(
                 prefix, ns._iri  # pylint: disable=protected-access
@@ -478,12 +479,12 @@ class Triplestore:
 
         self.namespaces[prefix] = ns
         return ns
-
+ 
     @classmethod
     def create_database(cls, backend: str, database: str, **kwargs):
         """Create a new database in backend.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             database: Name of the new database.
             kwargs: Keyword arguments passed to the backend
@@ -501,7 +502,7 @@ class Triplestore:
     def remove_database(cls, backend: str, database: str, **kwargs):
         """Remove a database in backend.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             database: Name of the database to be removed.
             kwargs: Keyword arguments passed to the backend
@@ -520,7 +521,7 @@ class Triplestore:
         """For backends that supports multiple databases, list of all
         databases.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             kwargs: Keyword arguments passed to the backend
                 list_databases() method.
@@ -533,11 +534,11 @@ class Triplestore:
         backend_class = cls._get_backend(backend)
         return backend_class.list_databases(**kwargs)
 
-    # Convenient methods
-    # ------------------
-    # These methods are modelled after rdflib and provide some convinient
-    # interfaces to the triples(), add_triples() and remove() methods
-    # implemented by all backends.
+    # Convenient methods 
+    # ------------------ 
+    # These methods are modelled after rdflib and provide some convinient 
+    # interfaces to the triples(), add_triples() and remove() methods 
+    # implemented by all backends. 
 
     prefer_sparql = property(
         fget=lambda self: getattr(self.backend, "prefer_sparql", None),
@@ -570,20 +571,20 @@ class Triplestore:
         """
         backend_class = cls._get_backend(backend)
         if not hasattr(backend_class, name):
-            raise NotImplementedError(
+            raise NotImplementedError( 
                 f"Triplestore backend {backend!r} do not implement a "
                 f'"{name}()" method.'
             )
-
+ 
     def _check_method(self, name):
         """Check that backend implements the given method."""
         self._check_backend_method(self.backend_name, name)
 
-    def add(self, triple: "Triple"):
-        """Add `triple` to triplestore."""
-        self.add_triples([triple])
-
-    def value(  # pylint: disable=redefined-builtin
+    def add(self, triple: "Triple"): 
+        """Add `triple` to triplestore.""" 
+        self.add_triples([triple]) 
+ 
+    def value(  # pylint: disable=redefined-builtin 
         self,
         subject=None,
         predicate=None,
@@ -592,16 +593,16 @@ class Triplestore:
         any=False,
         lang=None,
     ) -> "Union[str, Literal]":
-        """Return the value for a pair of two criteria.
-
-        Useful if one knows that there may only be one value.
+        """Return the value for a pair of two criteria. 
+ 
+        Useful if one knows that there may only be one value. 
         Two of `subject`, `predicate` or `object` must be provided.
-
-        Parameters:
+ 
+        Arguments:
             subject: Possible criteria to match.
             predicate: Possible criteria to match.
             object: Possible criteria to match.
-            default: Value to return if no matches are found.
+            default: Value to return if no matches are found. 
             any: Used to define how many values to return. Can be set to:
                 `False` (default): return the value or raise UniquenessError
                 if there is more than one matching value.
@@ -613,7 +614,7 @@ class Triplestore:
         Returns:
             The value of the `subject`, `predicate` or `object` that is
             None.
-        """
+        """ 
         spo = (subject, predicate, object)
         if sum(iri is None for iri in spo) != 1:
             raise ValueError(
@@ -623,7 +624,7 @@ class Triplestore:
 
         # Index of subject-predicate-object argument that is None
         (idx,) = [i for i, v in enumerate(spo) if v is None]
-
+ 
         triples = self.triples(subject, predicate, object)
 
         if lang:
@@ -642,82 +643,82 @@ class Triplestore:
         except StopIteration:
             return default
 
-        try:
+        try: 
             next(triples)
-        except StopIteration:
+        except StopIteration: 
             return value
 
         if any is True:
             return value
         raise UniquenessError("More than one match")
-
-    def subjects(
-        self, predicate=None, object=None  # pylint: disable=redefined-builtin
-    ):
-        """Returns a generator of subjects for given predicate and object."""
+ 
+    def subjects( 
+        self, predicate=None, object=None  # pylint: disable=redefined-builtin 
+    ): 
+        """Returns a generator of subjects for given predicate and object.""" 
         for s, _, _ in self.triples(predicate=predicate, object=object):
-            yield s
-
-    def predicates(
-        self, subject=None, object=None  # pylint: disable=redefined-builtin
-    ):
-        """Returns a generator of predicates for given subject and object."""
+            yield s 
+ 
+    def predicates( 
+        self, subject=None, object=None  # pylint: disable=redefined-builtin 
+    ): 
+        """Returns a generator of predicates for given subject and object.""" 
         for _, p, _ in self.triples(subject=subject, object=object):
-            yield p
-
-    def objects(self, subject=None, predicate=None):
-        """Returns a generator of objects for given subject and predicate."""
-        for _, _, o in self.triples(subject=subject, predicate=predicate):
-            yield o
-
+            yield p 
+ 
+    def objects(self, subject=None, predicate=None): 
+        """Returns a generator of objects for given subject and predicate.""" 
+        for _, _, o in self.triples(subject=subject, predicate=predicate): 
+            yield o 
+ 
     def subject_predicates(
         self, object=None
     ):  # pylint: disable=redefined-builtin
-        """Returns a generator of (subject, predicate) tuples for given
-        object."""
+        """Returns a generator of (subject, predicate) tuples for given 
+        object.""" 
         for s, p, _ in self.triples(object=object):
-            yield s, p
-
-    def subject_objects(self, predicate=None):
-        """Returns a generator of (subject, object) tuples for given
-        predicate."""
+            yield s, p 
+ 
+    def subject_objects(self, predicate=None): 
+        """Returns a generator of (subject, object) tuples for given 
+        predicate.""" 
         for s, _, o in self.triples(predicate=predicate):
-            yield s, o
-
-    def predicate_objects(self, subject=None):
-        """Returns a generator of (predicate, object) tuples for given
-        subject."""
+            yield s, o 
+ 
+    def predicate_objects(self, subject=None): 
+        """Returns a generator of (predicate, object) tuples for given 
+        subject.""" 
         for _, p, o in self.triples(subject=subject):
-            yield p, o
-
-    def set(self, triple):
-        """Convenience method to update the value of object.
-
-        Removes any existing triples for subject and predicate before adding
-        the given `triple`.
-        """
-        s, p, _ = triple
+            yield p, o 
+ 
+    def set(self, triple): 
+        """Convenience method to update the value of object. 
+ 
+        Removes any existing triples for subject and predicate before adding 
+        the given `triple`. 
+        """ 
+        s, p, _ = triple 
         self.remove(s, p)
-        self.add(triple)
-
-    def has(
-        self, subject=None, predicate=None, object=None
-    ):  # pylint: disable=redefined-builtin
-        """Returns true if the triplestore has any triple matching
-        the give subject, predicate and/or object."""
+        self.add(triple) 
+ 
+    def has( 
+        self, subject=None, predicate=None, object=None 
+    ):  # pylint: disable=redefined-builtin 
+        """Returns true if the triplestore has any triple matching 
+        the give subject, predicate and/or object.""" 
         triple = self.triples(
             subject=subject, predicate=predicate, object=object
         )
-        try:
-            next(triple)
-        except StopIteration:
-            return False
-        return True
-
-    # Methods providing additional functionality
-    # ------------------------------------------
-    def expand_iri(self, iri: str):
-        """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
+        try: 
+            next(triple) 
+        except StopIteration: 
+            return False 
+        return True 
+ 
+    # Methods providing additional functionality 
+    # ------------------------------------------ 
+    def expand_iri(self, iri: str): 
+        """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is 
         returned.
 
         Examples:
@@ -739,24 +740,24 @@ class Triplestore:
         'http://example.com#Concept'
 
         """
-        match = re.match(_MATCH_PREFIXED_IRI, iri)
-        if match:
-            prefix, name = match.groups()
+        match = re.match(_MATCH_PREFIXED_IRI, iri) 
+        if match: 
+            prefix, name = match.groups() 
             if prefix is None:
                 prefix = ""
-            if prefix not in self.namespaces:
-                raise NamespaceError(f"unknown namespace: '{prefix}'")
-            return f"{self.namespaces[prefix]}{name}"
-        return iri
-
-    def prefix_iri(self, iri: str, require_prefixed: bool = False):
+            if prefix not in self.namespaces: 
+                raise NamespaceError(f"unknown namespace: '{prefix}'") 
+            return f"{self.namespaces[prefix]}{name}" 
+        return iri 
+ 
+    def prefix_iri(self, iri: str, require_prefixed: bool = False): 
         # pylint: disable=line-too-long
-        """Return prefixed IRI.
-
-        This is the reverse of expand_iri().
-
-        If `require_prefixed` is true, a NamespaceError exception is raised
-        if no prefix can be found.
+        """Return prefixed IRI. 
+ 
+        This is the reverse of expand_iri(). 
+ 
+        If `require_prefixed` is true, a NamespaceError exception is raised 
+        if no prefix can be found. 
 
         Examples:
         >>> from tripper import Triplestore
@@ -775,15 +776,15 @@ class Triplestore:
         >>> ts.prefix_iri("http://example.com#Concept")
         'ex:Concept'
 
-        """
-        if not re.match(_MATCH_PREFIXED_IRI, iri):
-            for prefix, namespace in self.namespaces.items():
-                if iri.startswith(str(namespace)):
-                    return f"{prefix}:{iri[len(str(namespace)):]}"
-            if require_prefixed:
-                raise NamespaceError(f"No prefix defined for IRI: {iri}")
-        return iri
-
+        """ 
+        if not re.match(_MATCH_PREFIXED_IRI, iri): 
+            for prefix, namespace in self.namespaces.items(): 
+                if iri.startswith(str(namespace)): 
+                    return f"{prefix}:{iri[len(str(namespace)):]}" 
+            if require_prefixed: 
+                raise NamespaceError(f"No prefix defined for IRI: {iri}") 
+        return iri 
+ 
     # Types of restrictions defined in OWL
     _restriction_types = {
         "some": (OWL.someValueFrom, None),
@@ -805,7 +806,7 @@ class Triplestore:
     ) -> str:
         """Add a restriction to a class in the triplestore.
 
-        Parameters:
+        Arguments:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
             value: The IRI or literal value of the restriction target.
@@ -869,7 +870,7 @@ class Triplestore:
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
 
-        Parameters:
+        Arguments:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
             value: The IRI or literal value of the restriction target.
@@ -978,7 +979,7 @@ class Triplestore:
     ):
         """Add 'mapsTo' relation to the triplestore.
 
-        Parameters:
+        Arguments:
             source: Source IRI.
             target: IRI of target ontological concept.
             cost: User-defined cost of following this mapping relation
@@ -1001,49 +1002,49 @@ class Triplestore:
     def add_mapsTo(
         self,
         target: str,
-        source: str,
-        property_name: "Optional[str]" = None,
-        cost: "Optional[Union[float, Callable]]" = None,
-        target_cost: bool = True,
-    ):
-        """Add 'mapsTo' relation to triplestore.
-
-        Parameters:
-            target: IRI of target ontological concept.
-            source: Source IRI (or entity object).
-            property_name: Name of property if `source` is an entity or
-                an entity IRI.
-            cost: User-defined cost of following this mapping relation
-                represented as a float.  It may be given either as a
+        source: str, 
+        property_name: "Optional[str]" = None, 
+        cost: "Optional[Union[float, Callable]]" = None, 
+        target_cost: bool = True, 
+    ): 
+        """Add 'mapsTo' relation to triplestore. 
+ 
+        Arguments: 
+            target: IRI of target ontological concept. 
+            source: Source IRI (or entity object). 
+            property_name: Name of property if `source` is an entity or 
+                an entity IRI. 
+            cost: User-defined cost of following this mapping relation 
+                represented as a float.  It may be given either as a 
                 float or as a callable taking three arguments
 
                     cost(triplestore, input_iris, output_iri)
 
                 and returning the cost as a float.
-            target_cost: Whether the cost is assigned to mapping steps
-                that have `target` as output.
+            target_cost: Whether the cost is assigned to mapping steps 
+                that have `target` as output. 
 
         Note:
             This is equivalent to the `map()` method, but reverts the
             two first arguments and adds the `property_name` argument.
-        """
-        self.bind("map", MAP)
-
-        if not property_name and not isinstance(source, str):
+        """ 
+        self.bind("map", MAP) 
+ 
+        if not property_name and not isinstance(source, str): 
             raise TripperError(
                 "`property_name` is required when `target` is not a string."
             )
-
-        target = self.expand_iri(target)
-        source = self.expand_iri(infer_iri(source))
-        if property_name:
+ 
+        target = self.expand_iri(target) 
+        source = self.expand_iri(infer_iri(source)) 
+        if property_name: 
             self.add((f"{source}#{property_name}", MAP.mapsTo, target))
         else:
-            self.add((source, MAP.mapsTo, target))
-        if cost is not None:
-            dest = target if target_cost else source
-            self._add_cost(cost, dest)
-
+            self.add((source, MAP.mapsTo, target)) 
+        if cost is not None: 
+            dest = target if target_cost else source 
+            self._add_cost(cost, dest) 
+ 
     def _get_function(self, func_iri):
         """Returns Python function object corresponding to `func_iri`.
 
@@ -1120,7 +1121,7 @@ class Triplestore:
     def eval_function(self, func_iri, args=(), kwargs=None) -> "Any":
         """Evaluate mapping function and return the result.
 
-        Parameters:
+        Arguments:
             func_iri: IRI of the function to be evaluated.
             args: Sequence of positional arguments passed to the function.
             kwargs: Mapping of keyword arguments passed to the function.
@@ -1142,38 +1143,38 @@ class Triplestore:
 
         return result
 
-    def add_function(
+    def add_function( 
         self,
         func: "Union[Callable, str]",
         expects: "Union[str, Sequence, Mapping]" = (),
         returns: "Union[str, Sequence]" = (),
-        base_iri: "Optional[str]" = None,
+        base_iri: "Optional[str]" = None, 
         standard: str = "emmo",
-        cost: "Optional[Union[float, Callable]]" = None,
+        cost: "Optional[Union[float, Callable]]" = None, 
         func_name: "Optional[str]" = None,
         module_name: "Optional[str]" = None,
         package_name: "Optional[str]" = None,
         pypi_package_name: "Optional[str]" = None,
-    ):
+    ): 
         # pylint: disable=too-many-branches,too-many-arguments
-        """Inspect function and add triples describing it to the triplestore.
-
-        Parameters:
+        """Inspect function and add triples describing it to the triplestore. 
+ 
+        Arguments:
             func: Function to describe.  Should either be a callable or a
                 string with a unique function IRI.
-            expects: Sequence of IRIs to ontological concepts corresponding
-                to positional arguments of `func`.  May also be given as a
-                dict mapping argument names to corresponding ontological IRIs.
-            returns: IRI of return value.  May also be given as a sequence
-                of IRIs, if multiple values are returned.
-            base_iri: Base of the IRI representing the function in the
-                knowledge base.  Defaults to the base IRI of the triplestore.
-            standard: Name of ontology to use when describing the function.
+            expects: Sequence of IRIs to ontological concepts corresponding 
+                to positional arguments of `func`.  May also be given as a 
+                dict mapping argument names to corresponding ontological IRIs. 
+            returns: IRI of return value.  May also be given as a sequence 
+                of IRIs, if multiple values are returned. 
+            base_iri: Base of the IRI representing the function in the 
+                knowledge base.  Defaults to the base IRI of the triplestore. 
+            standard: Name of ontology to use when describing the function. 
                 Valid values are:
                 - "emmo": Elementary Multiperspective Material Ontology (EMMO)
                 - "fno": Function Ontology (FnO)
-            cost: User-defined cost of following this mapping relation
-                represented as a float.  It may be given either as a
+            cost: User-defined cost of following this mapping relation 
+                represented as a float.  It may be given either as a 
                 float or as a callable taking three arguments
 
                     cost(triplestore, input_iris, output_iri)
@@ -1189,21 +1190,21 @@ class Triplestore:
             pypi_package_name: Name and version of PyPI package implementing
                 this mapping function (specified as in requirements.txt).
                 Defaults to `package_name`.
-
-        Returns:
-            func_iri: IRI of the added function.
-        """
-        if isinstance(expects, str):
-            expects = [expects]
-        if isinstance(returns, str):
-            returns = [returns]
-
-        method = getattr(self, f"_add_function_{standard}")
-        func_iri = method(func, expects, returns, base_iri)
-        self.function_repo[func_iri] = func if callable(func) else None
-        if cost is not None:
+ 
+        Returns: 
+            func_iri: IRI of the added function. 
+        """ 
+        if isinstance(expects, str): 
+            expects = [expects] 
+        if isinstance(returns, str): 
+            returns = [returns] 
+ 
+        method = getattr(self, f"_add_function_{standard}") 
+        func_iri = method(func, expects, returns, base_iri) 
+        self.function_repo[func_iri] = func if callable(func) else None 
+        if cost is not None: 
             self._add_cost(cost, func_iri)
-
+ 
         # Add standard-independent documentation of how to access the
         # mapping function
         self._add_function_doc(
@@ -1215,8 +1216,8 @@ class Triplestore:
             pypi_package_name=pypi_package_name,
         )
 
-        return func_iri
-
+        return func_iri 
+ 
     def _add_function_doc(
         self,
         func_iri: "str",
@@ -1229,7 +1230,7 @@ class Triplestore:
         """Add standard-independent documentation of how to access the
         function.
 
-        Parameters:
+        Arguments:
             func_iri: IRI of individual in the triplestore that stands for
                 the function.
             func: Optional reference to the function itself.
@@ -1306,28 +1307,28 @@ class Triplestore:
         base_iri=None,
         pypi_package_name=None,
     ):
-        """Help function that adds `cost` to destination IRI `dest_iri`.
-
-        Parameters:
+        """Help function that adds `cost` to destination IRI `dest_iri`. 
+ 
+        Arguments:
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
                 float or as a callable taking three arguments
 
                     cost(triplestore, input_iris, output_iri)
-
+ 
                 and returning the cost as a float.
             dest_iri: destination iri that the cost should be associated with.
             base_iri: Base of the IRI representing the function in the
                 knowledge base.  Defaults to the base IRI of the triplestore.
             pypi_package_name: Name and version of PyPI package implementing
                 this cost function (specified as in requirements.txt).
-        """
+        """ 
         if base_iri is None:
             base_iri = self.base_iri if self.base_iri else ":"
 
-        if self.has(dest_iri, DM.hasCost):
-            warnings.warn(f"A cost is already assigned to IRI: {dest_iri}")
-        elif callable(cost):
+        if self.has(dest_iri, DM.hasCost): 
+            warnings.warn(f"A cost is already assigned to IRI: {dest_iri}") 
+        elif callable(cost): 
             cost_iri = f"{base_iri}cost_function{function_id(cost)}"
             self.add(
                 (dest_iri, DM.hasCost, Literal(cost_iri, datatype=XSD.anyURI))
@@ -1338,9 +1339,9 @@ class Triplestore:
                 func_iri=cost_iri,
                 pypi_package_name=pypi_package_name,
             )
-        else:
-            self.add((dest_iri, DM.hasCost, Literal(cost)))
-
+        else: 
+            self.add((dest_iri, DM.hasCost, Literal(cost))) 
+ 
     def _get_cost(self, dest_iri, input_iris=(), output_iri=None):
         """Return evaluated cost for given destination iri."""
         v = self.value(dest_iri, DM.hasCost)
@@ -1350,15 +1351,15 @@ class Triplestore:
         cost = self._get_function(v.value)
         return cost(self, input_iris, output_iri)
 
-    def _add_function_fno(self, func, expects, returns, base_iri):
-        """Implementing add_function() for FnO."""
-        # pylint: disable=too-many-locals,too-many-statements
-        self.bind("fno", FNO)
-        self.bind("dcterms", DCTERMS)
-        self.bind("map", MAP)
-
-        if base_iri is None:
-            base_iri = self.base_iri if self.base_iri else ":"
+    def _add_function_fno(self, func, expects, returns, base_iri): 
+        """Implementing add_function() for FnO.""" 
+        # pylint: disable=too-many-locals,too-many-statements 
+        self.bind("fno", FNO) 
+        self.bind("dcterms", DCTERMS) 
+        self.bind("map", MAP) 
+ 
+        if base_iri is None: 
+            base_iri = self.base_iri if self.base_iri else ":" 
 
         if callable(func):
             fid = function_id(func)  # Function id
@@ -1388,35 +1389,35 @@ class Triplestore:
         else:
             raise TypeError("`func` should be either a callable or an IRI")
 
-        self.add((func_iri, RDF.type, FNO.Function))
-        self.add((func_iri, RDFS.label, en(name)))
-        self.add((func_iri, FNO.expects, parlist))
-        self.add((func_iri, FNO.returns, outlist))
-        if doc_string:
-            self.add((func_iri, DCTERMS.description, en(doc_string)))
-
-        lst = parlist
+        self.add((func_iri, RDF.type, FNO.Function)) 
+        self.add((func_iri, RDFS.label, en(name))) 
+        self.add((func_iri, FNO.expects, parlist)) 
+        self.add((func_iri, FNO.returns, outlist)) 
+        if doc_string: 
+            self.add((func_iri, DCTERMS.description, en(doc_string))) 
+ 
+        lst = parlist 
         for i, (iri, parname) in enumerate(pars):
             lst_next = f"{parlist}{i+2}" if i < len(pars) - 1 else RDF.nil
-            par = f"{func_iri}_parameter{i+1}_{parname}"
-            self.add((par, RDF.type, FNO.Parameter))
-            self.add((par, RDFS.label, en(parname)))
-            self.add((par, MAP.mapsTo, iri))
-            self.add((lst, RDF.first, par))
-            self.add((lst, RDF.rest, lst_next))
-            lst = lst_next
-
-        lst = outlist
-        for i, iri in enumerate(returns):
-            lst_next = f"{outlist}{i+2}" if i < len(returns) - 1 else RDF.nil
-            val = f"{func_iri}_output{i+1}"
-            self.add((val, RDF.type, FNO.Output))
-            self.add((val, MAP.mapsTo, iri))
-            self.add((lst, RDF.first, val))
-            self.add((lst, RDF.rest, lst_next))
-            lst = lst_next
-
-        return func_iri
+            par = f"{func_iri}_parameter{i+1}_{parname}" 
+            self.add((par, RDF.type, FNO.Parameter)) 
+            self.add((par, RDFS.label, en(parname))) 
+            self.add((par, MAP.mapsTo, iri)) 
+            self.add((lst, RDF.first, par)) 
+            self.add((lst, RDF.rest, lst_next)) 
+            lst = lst_next 
+ 
+        lst = outlist 
+        for i, iri in enumerate(returns): 
+            lst_next = f"{outlist}{i+2}" if i < len(returns) - 1 else RDF.nil 
+            val = f"{func_iri}_output{i+1}" 
+            self.add((val, RDF.type, FNO.Output)) 
+            self.add((val, MAP.mapsTo, iri)) 
+            self.add((lst, RDF.first, val)) 
+            self.add((lst, RDF.rest, lst_next)) 
+            lst = lst_next 
+ 
+        return func_iri 
 
     def _add_function_emmo(self, func, expects, returns, base_iri):
         """Implementing add_function() method for the "emmo" standard."""
