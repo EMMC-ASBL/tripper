@@ -51,9 +51,9 @@ class Namespace:
         "_label_annotations",  # Recognised annotations for labels
         "_check",  # Whether to check that IRIs exists
         "_iris",  # Dict mapping labels to IRIs
-        "_reload",  # reload option
-        "_triplestore",  # triplestore option
-        "_format",  # format option
+        "_reload",  # Whether to reload
+        "_triplestore",  # Triplestore for label lookup and checking
+        "_format",  # Format to use when loading from a triplestore
     )
 
     def __init__(
@@ -106,9 +106,6 @@ class Namespace:
         self._reload = reload
         self._triplestore = triplestore
         self._format = format
-
-        # if need_triplestore:
-        #     self._update_iris(triplestore, reload=reload, format=format)
 
     def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
@@ -293,7 +290,7 @@ def get_cachedir(create=True) -> Path:
     return cachedir
 
 
-# Pre-defined namespaces
+# Pre-defined namespaces (without label lookup or checking)
 XML = Namespace("http://www.w3.org/XML/1998/namespace")
 RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#")
@@ -309,8 +306,6 @@ DCAT = Namespace("http://www.w3.org/ns/dcat#")
 TIME = Namespace("http://www.w3.org/2006/time#")
 FNO = Namespace("https://w3id.org/function/ontology#")
 
-# Define EMMO namespace in __init__() to avoid circular dependencies
-# EMMO = Namespace("https://w3id.org/emmo#")
 MAP = Namespace("https://w3id.org/emmo/domain/mappings#")
 DM = Namespace("https://w3id.org/emmo/domain/datamodel#")
 OTEIO = Namespace("https://w3id.org/emmo/domain/oteio#")
