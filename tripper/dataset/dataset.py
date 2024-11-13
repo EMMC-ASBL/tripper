@@ -562,7 +562,11 @@ def get_values(
 
 @cache  # type: ignore
 def get_context(timeout: float = 5, fromfile: bool = True) -> dict:
-    """Return context as a dict.
+    """Returns the JSON-LD context as a dict.
+
+    The JSON-LD context maps all the keywords that can be used as keys
+    in the dict-representation of a dataset to properties defined in
+    common vocabularies and ontologies.
 
     Arguments:
         timeout: Number of seconds before timing out.
