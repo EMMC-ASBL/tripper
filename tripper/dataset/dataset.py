@@ -568,7 +568,7 @@ def get_context(timeout: float = 5, fromfile: bool = True) -> dict:
         timeout: Number of seconds before timing out.
         fromfile: Whether to load the context from local file.
 
-    Whether to read the context from file."""
+    """
     if fromfile:
         with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
             context = json.load(f)["@context"]
