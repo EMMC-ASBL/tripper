@@ -277,7 +277,7 @@ def load(
     """Load dataset with given IRI from its source.
 
     Arguments:
-        ts: Triplestore to load data from.
+        ts: Triplestore documenting the data to load.
         iri: IRI of the data to load.
         distributions: Name or sequence of names of distribution(s) to
             try in case the dataset has multiple distributions.  The
