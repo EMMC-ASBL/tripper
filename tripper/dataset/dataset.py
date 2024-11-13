@@ -131,13 +131,16 @@ def save(
             `dcat:distribution value <distribution>` restriction will be
             added to `class_iri`
         dataset: Either the IRI of the dataset individual standing for
-            the data to be saved or or a dict with additional
-            documentation of the dataset.
-            If the dataset already exists, a new distribution will be added
-            to it. Otherwise a new random blank node IRI will be created.
-        distribution: IRI of distribution for the data to be saved.
-            Or a dict additional documentation of the distribution,
+            the data to be saved or or a dict that in addition to the IRI
+            ('@id' keyword) can provide with additional documentation of
+            the dataset.
+            If `dataset` is None, a new blank node IRI will be created.
+        distribution: Either the IRI of distribution for the data to be saved
+            or a dict additional documentation of the distribution,
             like media type, parsers, generators etc...
+            If `distribution` is None and dataset is not a dict with a
+            'distribution' keyword, a new distribution will be added
+            to the dataset.
         generator: Name of generator to use in case the distribution has
             several generators.
         prefixes: Dict with prefixes in addition to those included in the
