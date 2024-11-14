@@ -122,7 +122,7 @@ def save(
     """Saves data to a dataresource and document it in the triplestore.
 
     Arguments:
-        ts: Triplestore to load data from.
+        ts: Triplestore that documents the data to save.
         data: Bytes representation of the data to save.
         class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`
             subclass) that describes the dataset that is saved.
