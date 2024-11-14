@@ -38,6 +38,7 @@ class Literal(str):
 
     Examples:
 
+        ```python
         >>> from tripper import XSD, Literal
 
         # Inferring the data type
@@ -76,6 +77,8 @@ class Literal(str):
         # Literal of custom datatype (`value` must be a string)
         >>> Literal("my value...", datatype="http://example.com/onto#MyType")
         Literal('my value...', datatype='http://example.com/onto#MyType')
+
+        ```
 
     """
 
