@@ -419,7 +419,11 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
         for uri in datamodels:
             r = requests.get(uri, timeout=3)
             if r.ok:
-                content = r.content.decode() if isinstance(r.content, bytes) else str(r.content)
+                content = (
+                    r.content.decode()
+                    if isinstance(r.content, bytes)
+                    else str(r.content)
+                )
                 dm = dlite.Instance.from_json(content)
                 add_dataset(ts, dm)
             else:
