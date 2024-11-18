@@ -19,7 +19,8 @@ datasets:
     contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
     inSeries: semdata:SEM_cement_batch2/77600-23-001
 
-    datamodel: http://onto-ns.com/meta/characterisation/0.1/SEMImage
+    datamodel: http://onto-ns.com/meta/matchmaker/0.1/SEMImage
+    #datamodel: http://onto-ns.com/meta/characterisation/0.1/SEMImage
     #mappingURL: https://raw.githubusercontent.com/HEU-MatCHMaker/DataDocumentation/refs/heads/master/SEM/datamodels/SEMImage.ttl
 
     # Contextual documentation of the dataset

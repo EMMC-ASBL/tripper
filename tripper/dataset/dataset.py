@@ -51,20 +51,11 @@ cache = (
     else functools.lru_cache(maxsize=1)
 )
 
-
-# Pytest can't cope with this
-# EMMO = Namespace(
-#     iri="https://w3id.org/emmo#",
-#     label_annotations=True,
-#     check=True,
-# )
-
+# Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
     Path(__file__).parent.parent / "context" / "0.2" / "context.json"
 ).as_uri()
-
-# __TODO__: Update URI when merged to master
-CONTEXT_URL = (
+CONTEXT_URL = (  # __TODO__: Update URL when merged to master
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
     "dataset/tripper/context/0.2/context.json"
 )
