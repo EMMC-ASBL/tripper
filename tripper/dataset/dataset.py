@@ -1,27 +1,38 @@
+# pylint: disable=line-too-long
 """Module for documenting datasets with Tripper.
 
-The dataset documentation follows the DCAT structure and is exposed as
-Python dicts with attribute access in this module.  This dict
-structure is used by the functions:
+The dataset documentation follows the [DCAT] structure and is exposed
+as Python dicts with attribute access in this module.  The semantic
+meaning of the keywords in this dict are defined by a [JSON-LD context].
+
+High-level functions for accessing and storing actual data:
+  - `load()`: Load documented dataset from its source.
+  - `save()`: Save documented dataset to a data resource.
+
+High-level function for populating the triplestore from YAML documentation:
+  - `save_datadoc()`: Save documentation from YAML file to the triplestore.
+
+Functions for searching the triplestore:
+  - `list_dataset_iris()`: Get IRIs of matching datasets.
+
+Functions for working with the dict-representation:
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
 
-YAML documentation can also be stored directly to the triplestore with
-  - `save_datadoc()`: Save documentation from YAML file to the triplestore.
-
-For accessing and storing actual data, the following functions can be used:
-  - `load()`: Load documented dataset from its source.
-  - `save()`: Save documented dataset to a data resource.
-
-For searching the triplestore:
-  - `list_dataset_iris()`: Get IRIs of matching datasets.
-
-For interaction with OTEAPI:
+Functions for interaction with OTEAPI:
   - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
+
+---
+
+__TODO__: Update the URL to the JSON-LD context when merged to master
+
+[DCAT]: https://www.w3.org/TR/vocab-dcat-3/
+[JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset/tripper/context/0.2/context.json
 
 """
 
+# pylint: enable=line-too-long
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 import functools
 import io
@@ -65,19 +76,6 @@ MATCH_PREFIXED_IRI = re.compile(
 )
 
 dicttypes = {
-    "dataset": {
-        "datadoc_label": "datasets",
-        "@type": DCAT.Dataset,
-        # "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-    },
-    "distribution": {
-        "datadoc_label": "distributions",
-        "@type": DCAT.Distribution,
-    },
-    "accessService": {
-        "datadoc_label": "dataServices",
-        "@type": DCAT.DataService,
-    },
     "parser": {
         "datadoc_label": "parsers",
         "@type": OTEIO.Parser,
@@ -85,6 +83,19 @@ dicttypes = {
     "generator": {
         "datadoc_label": "generators",
         "@type": OTEIO.Generator,
+    },
+    "accessService": {
+        "datadoc_label": "dataServices",
+        "@type": DCAT.DataService,
+    },
+    "distribution": {
+        "datadoc_label": "distributions",
+        "@type": DCAT.Distribution,
+    },
+    "dataset": {
+        "datadoc_label": "datasets",
+        "@type": DCAT.Dataset,
+        # "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     },
 }
 
@@ -95,33 +106,41 @@ def save(
     class_iri: "Optional[str]" = None,
     dataset: "Optional[Union[str, dict]]" = None,
     distribution: "Optional[Union[str, dict]]" = None,
-    generator: "Optional[Union[str, dict]]" = None,
+    generator: "Optional[str]" = None,
     prefixes: "Optional[dict]" = None,
     use_sparql: "Optional[bool]" = None,
-) -> None:
-    """Saves a documented dataset to a data resource.
+) -> str:
+    """Saves data to a dataresource and document it in the triplestore.
 
     Arguments:
-        ts: Triplestore to load data from.
-        data: Bytes representation of the dataset to save.
+        ts: Triplestore that documents the data to save.
+        data: Bytes representation of the data to save.
         class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`
             subclass) that describes the dataset that is saved.
-            Is used to select the `distribution` and `generator` if they
-            are not given. If `distribution` is also given, a
+            Is used to select the `distribution` if that is not given.
+            If `distribution` is also given, a
             `dcat:distribution value <distribution>` restriction will be
             added to `class_iri`
-        dataset: IRI of an existing dataset that a new distribution is
-            created for.  Or a dict documenting the new dataset that will
-            be stored.
-        distribution: IRI of existing distribution for the dataset that will
-            be saved.  Or a dict documenting a new distribution that will be
-            created.
-        generator: IRI of existing generator.  Or a dict documenting a
-            new generator that will be creates.
+        dataset: Either the IRI of the dataset individual standing for
+            the data to be saved or or a dict that in addition to the IRI
+            ('@id' keyword) can provide with additional documentation of
+            the dataset.
+            If `dataset` is None, a new blank node IRI will be created.
+        distribution: Either the IRI of distribution for the data to be saved
+            or a dict additional documentation of the distribution,
+            like media type, parsers, generators etc...
+            If `distribution` is None and dataset is not a dict with a
+            'distribution' keyword, a new distribution will be added
+            to the dataset.
+        generator: Name of generator to use in case the distribution has
+            several generators.
         prefixes: Dict with prefixes in addition to those included in the
             context.  Should map namespace prefixes to IRIs.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
+
+    Returns:
+        IRI of the dataset.
 
     """
     # pylint: disable=too-many-locals,too-many-branches,too-many-statements
@@ -129,20 +148,23 @@ def save(
     from dlite.protocol import Protocol
 
     triples = []
-    save_dataset = save_distribution = save_generator = False
+    save_dataset = save_distribution = False
 
     if dataset is None:
         # __TODO__: Infer dataset from value restriction on `class_iri`
         # This require that we make a SPARQL-version of ts.restriction().
-
-        # if class_iri is None:
-        #    raise ValueError("`class_iri` and `dataset` cannot both be None")
         newiri = f"_:N{secrets.token_hex(16)}"
         typeiri = [DCAT.Dataset, class_iri] if class_iri else DCAT.Dataset
         dataset = AttrDict({"@id": newiri, "@type": typeiri})
         save_dataset = True
     elif isinstance(dataset, str):
-        dataset = load_dict(ts, iri=dataset, use_sparql=use_sparql)
+        dset = load_dict(ts, iri=dataset, use_sparql=use_sparql)
+        if dset:
+            dataset = dset
+        else:
+            typeiri = [DCAT.Dataset, class_iri] if class_iri else DCAT.Dataset
+            dataset = AttrDict({"@id": dataset, "@type": typeiri})
+            save_dataset = True
     elif isinstance(dataset, dict):
         save_dataset = True
     else:
@@ -159,16 +181,26 @@ def save(
             distribution = AttrDict(
                 {"@id": newiri, "@type": DCAT.Distribution}
             )
-            dataset["distribution"] = distribution
+            add(dataset, "distribution", distribution)
             triples.append((dataset["@id"], DCAT.distribution, newiri))
             save_distribution = True
-    elif isinstance(distribution, str):
-        distribution = load_dict(ts, iri=distribution, use_sparql=use_sparql)
+    if isinstance(distribution, str):
+        distr = load_dict(ts, iri=distribution, use_sparql=use_sparql)
+        if distr:
+            distribution = distr
+        else:
+            distribution = AttrDict(
+                {"@id": distribution, "@type": DCAT.Distribution}
+            )
+            add(dataset, "distribution", distribution)
+            triples.append((dataset["@id"], DCAT.distribution, newiri))
+            save_distribution = True
     elif isinstance(distribution, dict):
         add(dataset, DCAT.distribution, distribution)
-        triples.append(
-            (dataset["@id"], DCAT.distribution, distribution["@id"])
-        )
+        if "@id" in distribution:
+            triples.append(
+                (dataset["@id"], DCAT.distribution, distribution["@id"])
+            )
         save_distribution = True
     else:
         raise TypeError(
@@ -176,44 +208,46 @@ def save(
         )
     distribution: dict  # Tell mypy that this now is a dict
 
-    if generator is None:
-        if "generator" in distribution:
-            generator = get(distribution, "generator")[0]
-    elif isinstance(generator, str):
-        generator = load_dict(ts, iri=generator, use_sparql=use_sparql)
-    elif isinstance(generator, dict):
-        add(distribution, OTEIO.generator, generator)
-        triples.append(
-            (distribution["@id"], OTEIO.generator, generator["@id"])
-        )
-        save_generator = True
+    if isinstance(generator, str):
+        for gen in get(distribution, "generator"):
+            if gen.get("@id") == generator:
+                break
+        else:
+            raise ValueError(
+                f"dataset '{dataset}' has no such generator: {generator}"
+            )
+    elif "generator" in distribution:
+        gen = get(distribution, "generator")[0]
     else:
-        raise TypeError(
-            "if given, `generator` should be either a string or dict"
-        )
+        gen = None
 
     # __TODO__: Check if `class_iri` already has the value restriction.
     # If not, add it to triples
 
-    # Save data
-    url = distribution.get("downloadURL", distribution.get("accessURL"))
-    p = urlparse(url)
-    # Mapping of supported schemes - should be moved into the protocol
+    # __TODO__: Move this mapping of supported schemes into the protocol
     # module.
     schemes = {
         "https": "http",
     }
+
+    # Save data
+    url = distribution.get("downloadURL", distribution.get("accessURL"))
+    p = urlparse(url)
     scheme = schemes.get(p.scheme, p.scheme) if p.scheme else "file"
     location = (
         f"{scheme}://{p.netloc}{p.path}" if p.netloc else f"{scheme}:{p.path}"
     )
+    options = [p.query] if p.query else []
+    if gen and "configuration" in gen and "options" in gen.configuration:
+        # __TODO__: allow options to also be a dict
+        options.append(gen.configuration["options"])
     id = (
         distribution["accessService"].get("identifier")
         if "accessService" in distribution
         else None
     )
-    with Protocol(scheme, location, options=p.query) as pr:
-        return pr.save(data, id)
+    with Protocol(scheme, location, options=";".join(options)) as pr:
+        pr.save(data, id)
 
     # Update triplestore
     ts.add_triples(triples)
@@ -221,8 +255,8 @@ def save(
         save_dict(ts, "dataset", dataset, prefixes=prefixes)
     elif save_distribution:
         save_dict(ts, "distribution", distribution, prefixes=prefixes)
-    if save_generator:
-        save_dict(ts, "generator", generator, prefixes=prefixes)
+
+    return dataset["@id"]
 
 
 def load(
@@ -234,7 +268,7 @@ def load(
     """Load dataset with given IRI from its source.
 
     Arguments:
-        ts: Triplestore to load data from.
+        ts: Triplestore documenting the data to load.
         iri: IRI of the data to load.
         distributions: Name or sequence of names of distribution(s) to
             try in case the dataset has multiple distributions.  The
@@ -361,7 +395,6 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     - data models (require that DLite is installed)
 
     """
-
     # Save statements and mappings
     statements = get_values(dct, "statements")
     statements.extend(get_values(dct, "mappings"))
@@ -417,20 +450,12 @@ def load_dict(
     """
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
-    # dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
     if use_sparql:
         return _load_sparql(ts, iri)
-    dct = _load_triples(ts, iri)
 
-    nested = (
-        "distribution",
-        "accessService",
-        "parser",
-        "generator",
-        "mapping",
-    )
+    nested = dicttypes.keys()
     d = AttrDict()
-    dct = _load_sparql(ts, iri) if use_sparql else _load_triples(ts, iri)
+    dct = _load_triples(ts, iri)
     for k, v in dct.items():
         if k in nested:
             d[k] = load_dict(ts, iri=v, use_sparql=use_sparql)
@@ -443,12 +468,14 @@ def load_dict(
 def _load_triples(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.triples()`."""
     shortnames = get_shortnames()
-    # Always add @id, even for blank nodes
-    # d = {} if iri.startswith("_:") else {"@id": iri}
-    d = {"@id": iri}
+    dct: dict = {}
     for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-        add(d, shortnames.get(p, p), as_python(o))
-    return d
+        add(dct, shortnames.get(p, p), as_python(o))
+    if dct:
+        d = {"@id": iri}
+        d.update(dct)
+        return d
+    return dct
 
 
 def _load_sparql(ts: Triplestore, iri: str) -> dict:
@@ -472,13 +499,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
-    nested = (
-        "distribution",
-        "accessService",
-        "parser",
-        "generator",
-        "mapping",
-    )
+    nested = dicttypes.keys()
 
     def recur(d):
         """Recursively load and insert referred resources into dict `d`."""
@@ -502,13 +523,16 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     return dct
 
 
-def get_values(data: "Union[dict, list]", key: str, extend=True) -> list:
+def get_values(
+    data: "Union[dict, list]", key: str, extend: bool = True
+) -> list:
     """Parse `data` recursively and return a list with the values
     corresponding to the given key.
 
     If `extend` is true, the returned list will be extended with
     values that themselves are list, instead of appending them in a
     nested manner.
+
     """
     values = []
     if isinstance(data, dict):
@@ -529,13 +553,17 @@ def get_values(data: "Union[dict, list]", key: str, extend=True) -> list:
 
 @cache  # type: ignore
 def get_context(timeout: float = 5, fromfile: bool = True) -> dict:
-    """Return context as a dict.
+    """Returns the JSON-LD context as a dict.
+
+    The JSON-LD context maps all the keywords that can be used as keys
+    in the dict-representation of a dataset to properties defined in
+    common vocabularies and ontologies.
 
     Arguments:
         timeout: Number of seconds before timing out.
         fromfile: Whether to load the context from local file.
 
-    Whether to read the context from file."""
+    """
     if fromfile:
         with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
             context = json.load(f)["@context"]
@@ -563,14 +591,14 @@ def get_shortnames(timeout: float = 5) -> dict:
     context = get_context(timeout=timeout)
     prefixes = get_prefixes()
     shortnames = {
-        expand_iri(v, prefixes): k
+        expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
         for k, v in context.items()
-        if isinstance(v, str) and not v.endswith(("#", "/"))
+        if (
+            (isinstance(v, str) and not v.endswith(("#", "/")))
+            or isinstance(v, dict)
+        )
     }
     shortnames.setdefault(RDF.type, "@type")
-    shortnames.setdefault(OTEIO.prefix, "prefixes")
-    shortnames.setdefault(OTEIO.hasConfiguration, "configuration")
-    shortnames.setdefault(OTEIO.statement, "statements")
     return shortnames
 
 
@@ -620,22 +648,6 @@ def get(
     return value
 
 
-# def expand_prefixes(obj: "Union[dict, list]", prefixes: dict) -> None:
-#     """Recursively expand IRI prefixes in the values of dict `d`."""
-#     if isinstance(obj, dict):
-#         for k, v in obj.items():
-#             if isinstance(v, str):
-#                 obj[k] = expand_iri(v, prefixes)
-#             elif isinstance(v, (dict, list)):
-#                 expand_prefixes(v, prefixes)
-#     elif isinstance(obj, list):
-#         for i, e in enumerate(obj):
-#             if isinstance(e, str):
-#                 obj[i] = expand_iri(e, prefixes)
-#             elif isinstance(e, (dict, list)):
-#                 expand_prefixes(e, prefixes)
-
-
 def expand_iri(iri: str, prefixes: dict) -> str:
     """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
     returned."""
@@ -674,7 +686,9 @@ def save_datadoc(
         d = read_datadoc(file_or_dict)
 
     # Bind prefixes
-    for prefix, ns in d.prefixes.items():  # type: ignore
+    prefixes = get_prefixes()
+    prefixes.update(d.get("prefixes", {}))
+    for prefix, ns in prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
 
     # Maps datadoc_labels to type
@@ -684,9 +698,7 @@ def save_datadoc(
     for spec in dicttypes.values():
         label = spec["datadoc_label"]
         for dct in get(d, label):
-            dct = prepare(
-                types[label], dct, prefixes=d.prefixes  # type:ignore
-            )
+            dct = prepare(types[label], dct, prefixes=prefixes)
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
                 ts2.parse(f, format="json-ld")
@@ -735,6 +747,7 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
     Returns:
         An updated copy of `dct`.
     """
+    # pylint: disable=too-many-branches
     if type not in dicttypes:
         raise ValueError(
             f"`type` must be one of: {', '.join(dicttypes.keys())}. "
@@ -757,9 +770,27 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
 
     # Recursively expand IRIs and prepare sub-directories
     # Nested lists are not supported
-    nested = set(dicttypes.keys())
+    nested = dicttypes.keys()
     for k, v in d.items():
-        if isinstance(v, str):
+        if k == "mappingURL":
+            for url in get(d, k):
+                with Triplestore("rdflib") as ts2:
+                    ts2.parse(url, format=d.get("mappingFormat"))
+                    if "statements" in d:
+                        d.statements.extend(ts2.triples())
+                    else:
+                        d["statements"] = list(ts2.triples())
+        if k in ("statements", "mappings"):
+            for i, spo in enumerate(d[k]):
+                d[k][i] = [
+                    (
+                        get(d, e, e)[0]
+                        if e.startswith("@")
+                        else expand_iri(e, prefixes=all_prefixes)
+                    )
+                    for e in spo
+                ]
+        elif isinstance(v, str):
             d[k] = expand_iri(v, all_prefixes)
         elif isinstance(v, list):
             for i, e in enumerate(v):
@@ -775,28 +806,122 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
 
 def get_partial_pipeline(
     ts: Triplestore,
+    client,
     iri: str,
+    parser: "Optional[Union[bool, str]]" = None,
+    generator: "Optional[Union[bool, str]]" = None,
     distribution: "Optional[str]" = None,
-    parser: "Optional[str]" = None,
     use_sparql: "Optional[bool]" = None,
 ) -> bytes:
     """Returns a OTELib partial pipeline.
 
     Arguments:
         ts: Triplestore to load data from.
-        iri: IRI of the data to load.
+        client: OTELib client to create pipeline with.
+        iri: IRI of the dataset to load.
+        parser: Whether to return a datasource partial pipeline.
+            Should be True or an IRI of parser to use in case the
+            distribution has multiple parsers.  By default the first
+            parser will be selected.
+        generator: Whether to return a datasink partial pipeline.
+            Should be True or an IRI of generator to use in case the
+            distribution has multiple generators.  By default the first
+            generator will be selected.
         distribution: IRI of distribution to use in case the dataset
             dataset has multiple distributions.  By default any of
             the distributions will be picked.
-        parser: IRI of parser to use in case the distribution has
-            multiple parsers.  By default any parser will be selected.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
 
     Returns:
         OTELib partial pipeline.
     """
-    raise NotImplementedError
+    # pylint: disable=too-many-branches
+    dct = load_dict(ts, iri, use_sparql=use_sparql)
+
+    if isinstance(distribution, str):
+        for distr in get(dct, "distribution"):
+            if distr["@id"] == distribution:
+                break
+        else:
+            raise ValueError(
+                f"dataset '{iri}' has no such distribution: {distribution}"
+            )
+    else:
+        distr = get(dct, "distribution")[0]
+
+    accessService = (
+        distr.accessService.get("endpointURL")
+        if "accessService" in distr
+        else None
+    )
+
+    # OTEAPI still puts the parse configurations into the dataresource
+    # instead of a in a separate parse strategy...
+    if parser:
+        if parser is True:
+            par = get(distr, "parser")[0]
+        elif isinstance(parser, str):
+            for par in get(distr, "parser"):
+                if par.get("@id") == parser:
+                    break
+            else:
+                raise ValueError(
+                    f"dataset '{iri}' has no such parser: {parser}"
+                )
+        configuration = par.get("configuration")
+    else:
+        configuration = None
+
+    dataresource = client.create_dataresource(
+        downloadUrl=distr.get("downloadURL"),
+        mediaType=distr.get("mediaType"),
+        accessUrl=distr.get("accessURL"),
+        accessService=accessService,
+        configuration=dict(configuration) if configuration else {},
+    )
+
+    statements = dct.get("statements", [])
+    statements.extend(dct.get("mappings", []))
+    if statements:
+        mapping = client.create_mapping(
+            mappingType="triples",
+            # The OTEAPI datamodels stupidly strict, requireing us
+            # to cast the data ts.namespaces and statements
+            prefixes={k: str(v) for k, v in ts.namespaces.items()},
+            triples=[tuple(t) for t in statements],
+        )
+
+    if parser:
+        pipeline = dataresource
+        if statements:
+            pipeline = pipeline >> mapping
+    elif generator:
+        if generator is True:
+            gen = get(distr, "generator")[0]
+        elif isinstance(generator, str):
+            for gen in get(distr, "generator"):
+                if gen.get("@id") == generator:
+                    break
+            else:
+                raise ValueError(
+                    f"dataset '{iri}' has no such generator: {generator}"
+                )
+
+        conf = gen.get("configuration")
+        if gen.generatorType == "application/vnd.dlite-generate":
+            conf.setdefault("datamodel", dct.get("datamodel"))
+
+        function = client.create_function(
+            functionType=gen.generatorType,
+            configuration=conf,
+        )
+        if statements:
+            pipeline = mapping >> function >> dataresource
+        else:
+            pipeline = function >> dataresource
+
+    return pipeline
 
 
 def list_dataset_iris(ts: Triplestore, **kwargs):

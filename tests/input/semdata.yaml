@@ -7,6 +7,7 @@ prefixes:
   mat: https://he-matchmaker.eu/material/
   dm: http://onto-ns.com/meta/characterisation/0.1/SEMImage#
   parser: http://sintef.no/dlite/parser#
+  gen: http://sintef.no/dlite/generator#
 
 
 # List of documented datasets
@@ -21,6 +22,7 @@ datasets:
 
     datamodel: http://onto-ns.com/meta/matchmaker/0.1/SEMImage
     #datamodel: http://onto-ns.com/meta/characterisation/0.1/SEMImage
+    datamodelStorage: https://github.com/HEU-MatCHMaker/DataDocumentation/blob/master/SEM/datamodels/SEMImage.yaml
     #mappingURL: https://raw.githubusercontent.com/HEU-MatCHMaker/DataDocumentation/refs/heads/master/SEM/datamodels/SEMImage.ttl
 
     # Contextual documentation of the dataset
@@ -66,5 +68,13 @@ parsers:
   - "@id": parser:sem_hitachi
     "@type": oteio:Parser
     parserType: application/vnd.dlite-parse
+    configuration:
+      driver: hitachi
+
+
+generators:
+  - "@id": gen:sem_hitachi
+    "@type": oteio:Generator
+    generatorType: application/vnd.dlite-generate
     configuration:
       driver: hitachi

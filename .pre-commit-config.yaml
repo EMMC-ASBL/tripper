@@ -54,7 +54,7 @@ repos:
       files: ^tripper/.*$
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+    rev: v1.13.0
     hooks:
     - id: mypy
       exclude: ^tests/.*$
@@ -63,7 +63,7 @@ repos:
         - "pydantic"
 
   - repo: https://github.com/SINTEF/ci-cd
-    rev: v2.8.2
+    rev: v2.8.3
     hooks:
     - id: docs-api-reference
       args:

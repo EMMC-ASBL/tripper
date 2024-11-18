@@ -24,6 +24,10 @@ def test_get_context():
     assert "@version" in context
     assert len(context) > 20
 
+    # Check for consistency between context online and on disk
+    online_context = get_context(fromfile=False)
+    assert online_context == context
+
 
 def test_get_prefixes():
     """Test get_prefixes()."""
@@ -46,6 +50,7 @@ def test_get_shortnames():
         "prefixes",
         "configuration",
         "statements",
+        "mappings",
         "@type",
     )
 
@@ -55,29 +60,6 @@ def test_get_shortnames():
     for k, v in shortnames.items():
         if v not in exceptions:
             assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
-
-
-# def test_expand_prefixes():
-#     """Test expand_prefixes()."""
-#     from tripper import DCTERMS, EMMO, OTEIO
-#     from tripper.dataset.dataset import expand_prefixes, get_prefixes
-#
-#     prefixes = get_prefixes()
-#     d = {
-#         "a": "oteio:Parser",
-#         "b": [
-#             "emmo:Atom",
-#             {
-#                 "Z": "emmo:AtomicNumber",
-#                 "v": "dcterms:a/b",
-#             },
-#         ],
-#     }
-#     expand_prefixes(d, prefixes)
-#     assert d["a"] == OTEIO.Parser
-#     assert d["b"][0] == EMMO.Atom
-#     assert d["b"][1]["Z"] == EMMO.AtomicNumber
-#     assert d["b"][1]["v"] == DCTERMS["a/b"]
 
 
 def test_add():
@@ -125,8 +107,9 @@ def test_expand_iri():
 # if True:
 def test_save_and_load():
     """Test save_datadoc() and load()."""
+    # pylint: disable=too-many-statements
 
-    from tripper import CHAMEO, DCAT, OTEIO, Triplestore
+    from tripper import CHAMEO, DCAT, DCTERMS, OTEIO, Triplestore
     from tripper.dataset import (
         list_dataset_iris,
         load,
@@ -155,6 +138,9 @@ def test_save_and_load():
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == "image/tiff"
 
+    assert not load_dict(ts, "non-existing")
+    assert not load_dict(ts, "non-existing", use_sparql=True)
+
     # Test load using SPARQL - this should give the same result as above
     d2 = load_dict(ts, iri, use_sparql=True)
     assert d2 == d
@@ -168,19 +154,26 @@ def test_save_and_load():
     assert parser.parserType == "application/vnd.dlite-parse"
     assert parser == d.distribution.parser
 
+    # Add generator to distribution (in KB)
+    GEN = ts.namespaces["gen"]
+    ts.add((d.distribution["@id"], OTEIO.generator, GEN.sem_hitachi))
+
     # Test saving a generator and add it to the distribution
-    GEN = ts.bind("gen", "http://sintef.no/dlite/generator#")
-    generator = {
-        "@id": GEN.sem_hitachi,
-        "generatorType": "application/vnd.dlite-generate",
-        "configuration": {"driver": "hitachi"},
-    }
-    save_dict(ts, "generator", generator)
-    ts.add((d.distribution["@id"], OTEIO.generator, generator["@id"]))
     dist = load_dict(ts, d.distribution["@id"])
     assert dist.generator["@id"] == GEN.sem_hitachi
     assert dist.generator["@type"] == OTEIO.Generator
     assert dist.generator.generatorType == "application/vnd.dlite-generate"
+
+    # Test save dict
+    save_dict(
+        ts,
+        "distribution",
+        {"@id": SEMDATA.newdistr, "format": "txt"},
+        prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
+    )
+    newdistr = load_dict(ts, SEMDATA.newdistr)
+    assert newdistr["@type"] == DCAT.Distribution
+    assert newdistr.format == "txt"
 
     # Test load dataset (this downloads an actual image from github)
     data = load(ts, iri)
@@ -188,33 +181,97 @@ def test_save_and_load():
 
     # Test load updated distribution
     dd = load_dict(ts, iri)
-    assert dd != d  # we have added a generator
-    assert dd.distribution.generator == load_dict(ts, generator["@id"])
+    assert dd.distribution.generator == load_dict(ts, GEN.sem_hitachi)
+    del dd.distribution["generator"]
+    assert dd == d
 
-    # Test save dataset
+    # Test save dataset with anonymous distribution
     newfile = outputdir / "newimage.tiff"
     newfile.unlink(missing_ok=True)
-    distribution = {
-        "@id": SEMDATA.newimage,
-        "@type": SEM.SimImage,
-        "downloadURL": f"file:{newfile}",
-    }
     buf = b"some bytes..."
-    save(ts, buf, distribution=distribution)
+    save(
+        ts,
+        buf,
+        dataset={
+            "@id": SEMDATA.newimage,
+            "@type": SEM.SEMImage,
+            DCTERMS.title: "New SEM image",
+        },
+        distribution={"downloadURL": f"file:{newfile}"},
+    )
     assert newfile.exists()
     assert newfile.stat().st_size == len(buf)
+    newimage = load_dict(ts, SEMDATA.newimage)
+    assert newimage["@id"] == SEMDATA.newimage
+    assert DCAT.Dataset in newimage["@type"]
+    assert SEM.SEMImage in newimage["@type"]
+    assert newimage.distribution["@id"].startswith("_:")
+    assert newimage.distribution["@type"] == DCAT.Distribution
+    assert newimage.distribution.downloadURL == f"file:{newfile}"
 
-    # Test load new distribution
-    # dnew = load_dict(ts, SEMDATA.newimage)
+    # Test save dataset with named distribution
+    newfile2 = outputdir / "newimage.png"
+    newfile2.unlink(missing_ok=True)
+    save(
+        ts,
+        buf,
+        dataset=SEMDATA.newimage2,
+        distribution={
+            "@id": SEMDATA.newdistr2,
+            "downloadURL": f"file:{newfile2}",
+            "mediaType": "image/png",
+            "generator": GEN.sem_hitachi,
+            "parser": PARSER.sem_hitachi,
+        },
+    )
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+    newimage2 = load_dict(ts, SEMDATA.newimage2)
+    assert newimage2["@id"] == SEMDATA.newimage2
+    assert newimage2["@type"] == DCAT.Dataset
+    assert newimage2.distribution["@id"] == SEMDATA.newdistr2
+    assert newimage2.distribution["@type"] == DCAT.Distribution
+    assert newimage2.distribution.downloadURL == f"file:{newfile2}"
+
+    # Test save anonymous dataset with existing distribution
+    newfile2.unlink(missing_ok=True)
+    save(ts, buf, distribution=SEMDATA.newdistr2)
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+
+    # Test save existing dataset with anonymous distribution
+    newfile2.unlink(missing_ok=True)
+    save(ts, buf, dataset=SEMDATA.newimage2)
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
+
+    # Test save new dataset with reference to existing distribution
+    newfile2.unlink(missing_ok=True)
+    save(
+        ts,
+        buf,
+        dataset={
+            "@id": SEMDATA.newimage3,
+            "title": "A dataset with no default distribution",
+            "distribution": SEMDATA.newdistr2,
+        },
+        generator=GEN.sem_hitachi,
+    )
+    assert newfile2.exists()
+    assert newfile2.stat().st_size == len(buf)
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    assert set(list_dataset_iris(ts)) == {
+    datasets = list_dataset_iris(ts)
+    named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
         SAMPLE["SEM_cement_batch2/77600-23-001"],
+        SEMDATA.newimage,
+        SEMDATA.newimage2,
     }
+    assert not named_datasets.difference(datasets)
     assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
@@ -223,6 +280,34 @@ def test_save_and_load():
     assert set(list_dataset_iris(ts, _type=CHAMEO.Sample)) == {
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
+
+
+# if True:
+def test_pipeline():
+    """Test creating OTEAPI pipeline."""
+    from tripper import Triplestore
+    from tripper.dataset import get_partial_pipeline, save_datadoc
+
+    otelib = pytest.importorskip("otelib")
+
+    # Prepare triplestore
+    ts = Triplestore("rdflib")
+    save_datadoc(ts, inputdir / "semdata.yaml")
+
+    SEMDATA = ts.namespaces["semdata"]
+    GEN = ts.namespaces["gen"]
+
+    client = otelib.OTEClient("python")
+    iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
+    parse = get_partial_pipeline(ts, client, iri, parser=True)
+    generate = get_partial_pipeline(ts, client, iri, generator=GEN.sem_hitachi)
+
+    # Entity-service doesn't work, so we skip the generate part for now...
+    # pipeline = parse >> generate
+    assert generate
+    pipeline = parse
+
+    pipeline.get()
 
 
 def test_fuseki():
