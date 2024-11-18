@@ -286,9 +286,9 @@ def test_save_and_load():
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
     from tripper import Triplestore
-    from tripper.dataset import get_partial_pipeline, save_datadoc
 
     otelib = pytest.importorskip("otelib")
+    from tripper.dataset import get_partial_pipeline, save_datadoc
 
     # Prepare triplestore
     ts = Triplestore("rdflib")
