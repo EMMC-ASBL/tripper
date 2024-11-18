@@ -15,17 +15,17 @@ inputdir = testdir / "input"
 outputdir = testdir / "output"
 
 
-def test_get_context():
-    """Test get_context()."""
-    from tripper.dataset import get_context
+def test_get_jsonld_context():
+    """Test get_jsonld_context()."""
+    from tripper.dataset import get_jsonld_context
 
-    context = get_context()
+    context = get_jsonld_context()
     assert isinstance(context, dict)
     assert "@version" in context
     assert len(context) > 20
 
     # Check for consistency between context online and on disk
-    online_context = get_context(fromfile=False)
+    online_context = get_jsonld_context(fromfile=False)
     assert online_context == context
 
 
