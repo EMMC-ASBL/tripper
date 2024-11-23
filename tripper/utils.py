@@ -47,6 +47,24 @@ __all__ = (
 )
 
 
+class AttrDict(dict):
+    """Dict with attribute access."""
+
+    def __getattr__(self, name):
+        if name in self:
+            return self[name]
+        raise KeyError(name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+    def __repr__(self):
+        return f"AttrDict({dict.__repr__(self)})"
+
+    def __dir__(self):
+        return dict.__dir__(self) + list(self.keys())
+
+
 def infer_iri(obj):
     """Return IRI of the individual that stands for Python object `obj`.
 

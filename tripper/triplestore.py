@@ -56,6 +56,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Dict,
         Generator,
+        Iterable,
         List,
         Optional,
         Tuple,
@@ -159,6 +160,26 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
+        Attributes:
+            backend_name: Name of backend.
+            base_iri: Assigned to the `base_iri` argument.
+            closed: Whether the triplestore is closed.
+            kwargs: Dict with additional keyword arguments.
+            namespaces: Dict mapping namespace prefixes to IRIs.
+            package: Name of Python package if the backend is implemented as
+                a relative module. Assigned to the `package` argument.
+
+        Notes:
+            If the backend establish a connection that should be closed,
+            it is useful to instantiate the Triplestore as a context manager:
+
+                >>> import tripper
+                >>> with tripper.Triplestore("rdflib") as ts:
+                ...     print(ts.backend_name)
+                rdflib
+
+            This will ensure that the connection is closed when the scope of
+            the with-statement is left.
         """
         backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
@@ -177,6 +198,12 @@ class Triplestore:
 
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
 
     @classmethod
     def _load_backend(cls, backend: str, package: "Optional[str]" = None):
@@ -259,9 +286,7 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(
-        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
-    ):
+    def add_triples(self, triples: "Iterable[Triple]") -> None:
         """Add a sequence of triples.
 
         Arguments:
@@ -281,6 +306,8 @@ class Triplestore:
 
         Arguments:
             subject: If given, match triples with this subject.
+                For backward compatibility `subject` may also be an
+                `(s, p, o)` triple.
             predicate: If given, match triples with this predicate.
             object: If given, match triples with this object.
             triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`
@@ -304,7 +331,7 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
-    def close(self):
+    def close(self) -> None:
         """Calls the backend close() method if it is implemented.
         Otherwise, this method has no effect.
         """
@@ -325,7 +352,7 @@ class Triplestore:
         """Parse source and add the resulting triples to triplestore.
 
         Parameters:
-            source: File-like object or file name.
+            source: File-like object, file name or URL.
             format: Needed if format can not be inferred from source.
             fallback_backend: If the current backend doesn't implement
                 parse, use the `fallback_backend` instead.
