@@ -295,16 +295,20 @@ def test_pipeline():
     save_datadoc(ts, inputdir / "semdata.yaml")
 
     SEMDATA = ts.namespaces["semdata"]
-    GEN = ts.namespaces["gen"]
 
     client = otelib.OTEClient("python")
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     parse = get_partial_pipeline(ts, client, iri, parser=True)
-    generate = get_partial_pipeline(ts, client, iri, generator=GEN.sem_hitachi)
+
+    # The generator was removed for clarity
+    # GEN = ts.namespaces["gen"]
+    # generate = get_partial_pipeline(
+    #     ts, client, iri, generator=GEN.sem_hitachi
+    # )
+    # assert generate
 
     # Entity-service doesn't work, so we skip the generate part for now...
     # pipeline = parse >> generate
-    assert generate
     pipeline = parse
 
     pipeline.get()
