@@ -138,7 +138,7 @@ good-names = [
 [tool.pytest.ini_options]
 minversion = "7.0"
 #addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
-addopts = "-rs --doctest-modules --ignore=examples"
+addopts = "-rs --doctest-modules --ignore=examples --ignore=tripper"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
