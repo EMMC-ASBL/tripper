@@ -53,7 +53,7 @@ testing = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
 ]
 docs = [
@@ -61,7 +61,7 @@ docs = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
     # docs
     "mike==2.1.2",
     "mkdocs==1.5.3",
@@ -82,7 +82,7 @@ dev = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
     # Consistent with: docs
     "mike==2.1.2",
