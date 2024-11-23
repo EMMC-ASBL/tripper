@@ -34,10 +34,10 @@ dependencies = [
 
 [project.optional-dependencies]
 mappings = [
-    "pint>=0.16.1,<0.24",
+    "pint>=0.16.1,<0.25",
 ]
 dataset = [
-    "pint>=0.16.1,<0.24",  # not used yet...
+    "pint>=0.16.1,<0.25",  # not used yet...
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
 ]
