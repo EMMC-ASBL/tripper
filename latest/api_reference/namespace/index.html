@@ -1007,7 +1007,6 @@
 
 
 
-
   <div class="doc doc-object doc-class">
 
 
@@ -1043,7 +1042,7 @@ Namespace        </code>
       </tr>
       <tr>
         <td><code>label_annotations</code></td>
-        <td><code>Sequence</code></td>
+        <td><code>Union[Sequence, bool]</code></td>
         <td><p>Sequence of label annotations. If given, check
 the underlying ontology during attribute access if the name
 correspond to a label. The label annotations should be ordered
@@ -1130,12 +1129,15 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="s2">&quot;_label_annotations&quot;</span><span class="p">,</span>  <span class="c1"># Recognised annotations for labels</span>
         <span class="s2">&quot;_check&quot;</span><span class="p">,</span>  <span class="c1"># Whether to check that IRIs exists</span>
         <span class="s2">&quot;_iris&quot;</span><span class="p">,</span>  <span class="c1"># Dict mapping labels to IRIs</span>
+        <span class="s2">&quot;_reload&quot;</span><span class="p">,</span>  <span class="c1"># Whether to reload</span>
+        <span class="s2">&quot;_triplestore&quot;</span><span class="p">,</span>  <span class="c1"># Triplestore for label lookup and checking</span>
+        <span class="s2">&quot;_format&quot;</span><span class="p">,</span>  <span class="c1"># Format to use when loading from a triplestore</span>
     <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">label_annotations</span><span class="p">:</span> <span class="s2">&quot;Sequence&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">label_annotations</span><span class="p">:</span> <span class="s2">&quot;Union[Sequence, bool]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">reload</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Triplestore, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1179,9 +1181,9 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="kc">None</span>
-
-        <span class="k">if</span> <span class="n">need_triplestore</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="n">reload</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="n">reload</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span> <span class="o">=</span> <span class="n">triplestore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="nb">format</span>
 
     <span class="k">def</span> <span class="nf">_update_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triplestore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the internal cache from `triplestore`.</span>
@@ -1279,7 +1281,22 @@ corresponding to <code>reload=True</code>).</p></td>
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span>
+                <span class="n">triplestore</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span><span class="p">,</span>
+                <span class="n">reload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reload</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">:</span>
+
+            <span class="c1"># Hack to work around a pytest bug.  During its collection</span>
+            <span class="c1"># phase pytest tries to mock namespace objects with an</span>
+            <span class="c1"># attribute `__wrapped__`.</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;__wrapped__&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
