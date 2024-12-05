@@ -135,7 +135,7 @@ def save(
         generator: Name of generator to use in case the distribution has
             several generators.
         prefixes: Dict with prefixes in addition to those included in the
-            context.  Should map namespace prefixes to IRIs.
+            JSON-LD context.  Should map namespace prefixes to IRIs.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
 
@@ -342,7 +342,7 @@ def save_dict(
             "distribution", "parser" or "generator".
         dct: Dict with data to save.
         prefixes: Dict with prefixes in addition to those included in the
-            context.  Should map namespace prefixes to IRIs.
+            JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
             A leading underscore in a key will be translated to a
             leading "@"-sign.  For example, "@id=..." may be provided
@@ -419,7 +419,12 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
         for uri in datamodels:
             r = requests.get(uri, timeout=3)
             if r.ok:
-                dm = dlite.Instance.from_json(r.content)
+                content = (
+                    r.content.decode()
+                    if isinstance(r.content, bytes)
+                    else str(r.content)
+                )
+                dm = dlite.Instance.from_json(content)
                 add_dataset(ts, dm)
             else:
                 try:
@@ -552,7 +557,7 @@ def get_values(
 
 
 @cache  # type: ignore
-def get_context(timeout: float = 5, fromfile: bool = True) -> dict:
+def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
     """Returns the JSON-LD context as a dict.
 
     The JSON-LD context maps all the keywords that can be used as keys
@@ -574,9 +579,9 @@ def get_context(timeout: float = 5, fromfile: bool = True) -> dict:
 
 
 def get_prefixes(timeout: float = 5) -> dict:
-    """Loads the context and returns a dict mapping prefixes to
+    """Loads the JSON-LD context and returns a dict mapping prefixes to
     their namespace URL."""
-    context = get_context(timeout=timeout)
+    context = get_jsonld_context(timeout=timeout)
     prefixes = {
         k: v
         for k, v in context.items()
@@ -586,9 +591,9 @@ def get_prefixes(timeout: float = 5) -> dict:
 
 
 def get_shortnames(timeout: float = 5) -> dict:
-    """Loads the context and returns a dict mapping IRIs to their
+    """Loads the JSON-LD context and returns a dict mapping IRIs to their
     short names defined in the context."""
-    context = get_context(timeout=timeout)
+    context = get_jsonld_context(timeout=timeout)
     prefixes = get_prefixes()
     shortnames = {
         expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
@@ -738,7 +743,7 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
             "distribution", "parser" or "generator".
         dct: Dict to return an updated copy of.
         prefixes: Dict with prefixes in addition to those included in the
-            context.  Should map namespace prefixes to IRIs.
+            JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
             A leading underscore in a key will be translated to a
             leading "@"-sign.  For example, "@id=..." may be provided

@@ -1,7 +1,7 @@
 """Tripper subpackage for documenting datasets."""
 
 from .dataset import (
-    get_context,
+    get_jsonld_context,
     get_partial_pipeline,
     get_prefixes,
     list_dataset_iris,

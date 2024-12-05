@@ -20,8 +20,8 @@ datasets:
     contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
     inSeries: semdata:SEM_cement_batch2/77600-23-001
 
-    datamodel: http://onto-ns.com/meta/matchmaker/0.1/SEMImage
-    #datamodel: http://onto-ns.com/meta/characterisation/0.1/SEMImage
+    datamodel: http://onto-ns.com/meta/matchmaker/0.2/SEMImage
+    #datamodel: http://onto-ns.com/meta/characterisation/0.2/SEMImage
     datamodelStorage: https://github.com/HEU-MatCHMaker/DataDocumentation/blob/master/SEM/datamodels/SEMImage.yaml
     #mappingURL: https://raw.githubusercontent.com/HEU-MatCHMaker/DataDocumentation/refs/heads/master/SEM/datamodels/SEMImage.ttl
 
@@ -35,6 +35,9 @@ datasets:
       downloadURL: https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/tests/input/77600-23-001_5kV_400x_m001.tif
       mediaType: image/tiff
       parser: parser:sem_hitachi
+      # Note: generator is only used for data sinks. It is commented out here
+      # because we are documenting a data source
+      #generator: parser:sem_hitachi
 
   - "@id": semdata:SEM_cement_batch2/77600-23-001
     "@type": sem:SEMImageSeries

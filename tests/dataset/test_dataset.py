@@ -15,17 +15,17 @@ inputdir = testdir / "input"
 outputdir = testdir / "output"
 
 
-def test_get_context():
-    """Test get_context()."""
-    from tripper.dataset import get_context
+def test_get_jsonld_context():
+    """Test get_jsonld_context()."""
+    from tripper.dataset import get_jsonld_context
 
-    context = get_context()
+    context = get_jsonld_context()
     assert isinstance(context, dict)
     assert "@version" in context
     assert len(context) > 20
 
     # Check for consistency between context online and on disk
-    online_context = get_context(fromfile=False)
+    online_context = get_jsonld_context(fromfile=False)
     assert online_context == context
 
 
@@ -286,25 +286,29 @@ def test_save_and_load():
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
     from tripper import Triplestore
-    from tripper.dataset import get_partial_pipeline, save_datadoc
 
     otelib = pytest.importorskip("otelib")
+    from tripper.dataset import get_partial_pipeline, save_datadoc
 
     # Prepare triplestore
     ts = Triplestore("rdflib")
     save_datadoc(ts, inputdir / "semdata.yaml")
 
     SEMDATA = ts.namespaces["semdata"]
-    GEN = ts.namespaces["gen"]
 
     client = otelib.OTEClient("python")
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     parse = get_partial_pipeline(ts, client, iri, parser=True)
-    generate = get_partial_pipeline(ts, client, iri, generator=GEN.sem_hitachi)
+
+    # The generator was removed for clarity
+    # GEN = ts.namespaces["gen"]
+    # generate = get_partial_pipeline(
+    #     ts, client, iri, generator=GEN.sem_hitachi
+    # )
+    # assert generate
 
     # Entity-service doesn't work, so we skip the generate part for now...
     # pipeline = parse >> generate
-    assert generate
     pipeline = parse
 
     pipeline.get()
