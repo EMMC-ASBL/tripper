@@ -11,7 +11,6 @@ from .namespace import (
     DCTERMS,
     DM,
     DOAP,
-    EMMO,
     FNO,
     FOAF,
     MAP,
@@ -28,6 +27,13 @@ from .triplestore import Triplestore, backend_packages
 from .tripper import Tripper
 
 __version__ = "0.3.4"
+
+# Pre-defined namespaces
+EMMO = Namespace(
+    iri="https://w3id.org/emmo#",
+    label_annotations=True,
+    check=True,
+)
 
 __all__ = (
     "Literal",

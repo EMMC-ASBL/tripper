@@ -172,7 +172,7 @@ def from_container(
                             Literal(key, lang=lang),
                         ),
                         (value_indv, RDF.type, OTEIO.DictionaryValue),
-                        (value_indv, EMMO.hasValue, value_iri),
+                        (value_indv, EMMO.hasDataValue, value_iri),
                         (pair, RDF.type, OTEIO.KeyValuePair),
                         (pair, OTEIO.hasDictionaryKey, key_indv),
                         (pair, OTEIO.hasDictionaryValue, value_indv),
@@ -282,7 +282,7 @@ def load_container(
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
                 key = ts.value(key_iri, EMMO.hasStringValue)
                 value_iri = ts.value(obj, OTEIO.hasDictionaryValue)
-                value = ts.value(value_iri, EMMO.hasValue)
+                value = ts.value(value_iri, EMMO.hasDataValue)
                 container[str(key)] = get_obj(value)
             elif pred in recognised_iris:
                 container[recognised_iris[pred]] = get_obj(obj)
