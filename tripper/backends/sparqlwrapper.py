@@ -16,8 +16,7 @@ except ImportError as exc:
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import List, Tuple, Union
-    from typing import Dict, Generator
+    from typing import Dict, Generator, List, Tuple, Union
 
     from SPARQLWrapper import QueryResult
     from triplestore import Triple
@@ -40,9 +39,9 @@ class SparqlwrapperStrategy:
         )  # database is not used in the SPARQLWrapper backend
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
 
-
-    def query(self, query_object, **kwargs
-        ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+    def query(
+        self, query_object, **kwargs
+    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
@@ -61,12 +60,9 @@ class SparqlwrapperStrategy:
         ret = self.sparql.queryAndConvert()
         bindings = ret["results"]["bindings"]
         return [
-            tuple(
-                str(convert_json_entrydict(v)) for v in row.values()
-            )
+            tuple(str(convert_json_entrydict(v)) for v in row.values())
             for row in bindings
         ]
-
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
