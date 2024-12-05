@@ -16,6 +16,7 @@ except ImportError as exc:
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
+    from typing import List, Tuple, Union
     from typing import Dict, Generator
 
     from SPARQLWrapper import QueryResult
@@ -38,6 +39,34 @@ class SparqlwrapperStrategy:
             "database", None
         )  # database is not used in the SPARQLWrapper backend
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
+
+
+    def query(self, query_object, **kwargs
+        ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+        """SPARQL query.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to rdflib.Graph.query().
+
+        Returns:
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: TODO
+              - CONSTRUCT, DESCRIBE: TODO
+        """
+        self.sparql.setReturnFormat(JSON)
+        self.sparql.setMethod(POST)
+        self.sparql.setQuery(query_object)
+        ret = self.sparql.queryAndConvert()
+        bindings = ret["results"]["bindings"]
+        return [
+            tuple(
+                str(convert_json_entrydict(v)) for v in row.values()
+            )
+            for row in bindings
+        ]
+
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
