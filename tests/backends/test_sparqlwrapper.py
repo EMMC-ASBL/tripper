@@ -4,10 +4,6 @@
 
 def test_sparqlwrapper_backend():
     """Test SPARQLwrapper backend."""
-    import pytest
-
-    pytest.importorskip("rdflib")
-
     from tripper import Triplestore
 
     # Requires internet connection to connect to wikidata
