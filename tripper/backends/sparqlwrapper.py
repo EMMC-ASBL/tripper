@@ -40,7 +40,7 @@ class SparqlwrapperStrategy:
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
 
     def query(
-        self, query_object, **kwargs
+        self, query_object, **kwargs  # pylint: disable=unused-argument
     ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
