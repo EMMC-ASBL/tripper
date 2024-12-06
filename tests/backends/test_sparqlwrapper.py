@@ -15,7 +15,7 @@ WHERE
 {
   ?country wdt:P31 wd:Q3624078 . # isA country
   ?country wdt:P36 wd:Q585 . # captial Oslo
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en" }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
 }
 """
 
