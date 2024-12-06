@@ -2,6 +2,7 @@
 
 # pylint: disable=invalid-name
 
+
 def test_sparqlwrapper_backend():
     """Test SPARQLwrapper backend."""
     from tripper import Triplestore
@@ -21,4 +22,4 @@ WHERE
     endpoint_url = "https://query.wikidata.org/sparql"
     ts = Triplestore(backend="sparqlwrapper", base_iri=endpoint_url)
     res = ts.query(sparql_query)
-    assert( res == [("http://www.wikidata.org/entity/Q20", "Norway")] )
+    assert res == [("http://www.wikidata.org/entity/Q20", "Norway")]
