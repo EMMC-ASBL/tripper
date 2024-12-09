@@ -674,6 +674,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.query" class="md-nav__link">
+    <span class="md-ellipsis">
+      query()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.remove" class="md-nav__link">
     <span class="md-ellipsis">
       remove()
@@ -992,6 +1001,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.query" class="md-nav__link">
+    <span class="md-ellipsis">
+      query()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.remove" class="md-nav__link">
     <span class="md-ellipsis">
       remove()
@@ -1117,6 +1135,31 @@ SparqlwrapperStrategy        </code>
             <span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>  <span class="c1"># database is not used in the SPARQLWrapper backend</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            query_object: String with the SPARQL query.</span>
+<span class="sd">            kwargs: Keyword arguments passed to rdflib.Graph.query().</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The return type depends on type of query:</span>
+<span class="sd">              - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">              - ASK: TODO</span>
+<span class="sd">              - CONSTRUCT, DESCRIBE: TODO</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
+        <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
@@ -1251,6 +1294,98 @@ SparqlwrapperStrategy        </code>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.backends.sparqlwrapper.SparqlwrapperStrategy.query" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.query" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>SPARQL query.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>query_object</code></td>
+        <td></td>
+        <td><p>String with the SPARQL query.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Keyword arguments passed to rdflib.Graph.query().</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>The return type depends on type of query</code></td>
+      <td><ul>
+<li>SELECT: list of tuples of IRIs for each matching row</li>
+<li>ASK: TODO</li>
+<li>CONSTRUCT, DESCRIBE: TODO</li>
+</ul></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">query</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        query_object: String with the SPARQL query.</span>
+<span class="sd">        kwargs: Keyword arguments passed to rdflib.Graph.query().</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The return type depends on type of query:</span>
+<span class="sd">          - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">          - ASK: TODO</span>
+<span class="sd">          - CONSTRUCT, DESCRIBE: TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+    <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
+    <span class="p">]</span>
 </code></pre></div>
         </details>
     </div>
