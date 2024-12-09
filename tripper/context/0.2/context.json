@@ -84,6 +84,19 @@
     "label": "rdfs:label",
     "seeAlso": "rdfs:seeAlso",
 
+    "hasDatum": {
+      "@id": "emmo:EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e",
+      "@type": "@id"
+    },
+    "isInputOf": {
+      "@id": "emmo:EMMO_1494c1a9_00e1_40c2_a9cc_9bbf302a1cac",
+      "@type": "@id"
+    },
+    "isOutputOf": {
+      "@id": "emmo:EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461",
+      "@type": "@id"
+    },
+
     "parser": {
       "@id": "oteio:parser",
       "@type": "@id"
