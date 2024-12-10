@@ -179,7 +179,7 @@ class Triplestore:
                 ...     print(ts.backend_name)
                 rdflib
 
-            This ensures that the connection is automatically closed when the 
+            This ensures that the connection is automatically closed when the
             context manager exits.
         """
         backend_name = backend.rsplit(".", 1)[-1]
