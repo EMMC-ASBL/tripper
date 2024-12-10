@@ -50,7 +50,7 @@ testing = [
     "pytest==7.4.4",
     "pytest-cov==4.1.0",
     # testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
+    "EMMOntoPy>=0.5.0,<0.7.1; python_version<'3.13'",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
     "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",

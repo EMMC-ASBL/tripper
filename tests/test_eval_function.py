@@ -1,5 +1,7 @@
 """Test Triplestore.eval_function()"""
 
+# pylint: disable=import-outside-toplevel
+
 import pytest
 
 

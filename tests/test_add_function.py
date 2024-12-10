@@ -1,6 +1,6 @@
 """Test Triplestore.add_function()"""
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name,import-outside-toplevel
 
 
 def test_add_function():

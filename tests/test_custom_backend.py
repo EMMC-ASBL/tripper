@@ -1,5 +1,7 @@
 """Test custom backend."""
 
+# pylint: disable=import-outside-toplevel
+
 
 def test_custom_backend():
     """Test custom backend."""

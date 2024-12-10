@@ -1,8 +1,10 @@
 """Test utils"""
 
-# pylint: disable=invalid-name,too-few-public-methods
+# pylint: disable=invalid-name,too-few-public-methods,import-outside-toplevel
 
 import pytest
+
+
 
 
 def infer_IRIs():
@@ -297,9 +299,10 @@ def test_random_string():
 def test_extend_namespace():
     """Test extend namespace()"""
     pytest.importorskip("rdflib")
+    from paths import ontodir
+
     from tripper import Namespace
     from tripper.errors import NoSuchIRIError
-    from tripper.testutils import ontodir
     from tripper.utils import extend_namespace
 
     FOOD = Namespace(

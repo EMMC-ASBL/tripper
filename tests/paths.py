@@ -1,8 +1,4 @@
-"""Motule primarly intended to be imported by tests.
-
-It defines some directories and some utility functions that can be used
-with or without conftest.
-"""
+"""Test paths"""
 
 from pathlib import Path
 
