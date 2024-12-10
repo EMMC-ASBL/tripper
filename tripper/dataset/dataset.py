@@ -380,7 +380,7 @@ def get_shortnames(timeout: float = 5) -> dict:
 
 
 def load_list(ts: Triplestore, iri: str):
-    """Load and return RDF list whos first node is `iri`."""
+    """Load and return RDF list whose first node is `iri`."""
     lst = []
     for p, o in ts.predicate_objects(iri):
         if p == RDF.first:
@@ -450,7 +450,7 @@ def save_datadoc(
     """Populate triplestore with data documentation.
 
     Arguments:
-        ts: Triplestore to load dataset from.
+        ts: Triplestore to save dataset documentation to.
         file_or_dict: Data documentation dict or name of a YAML file to read
             the data documentation from.
 
