@@ -171,7 +171,7 @@ class Triplestore:
                 a relative module. Assigned to the `package` argument.
 
         Notes:
-            If the backend establish a connection that should be closed,
+            If the backend establishes a connection that should be closed
             it is useful to instantiate the Triplestore as a context manager:
 
                 >>> import tripper
