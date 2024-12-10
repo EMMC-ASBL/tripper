@@ -390,7 +390,7 @@ def save_dict(
 def save_extra_content(ts: Triplestore, dct: dict) -> None:
     """Save extra content in `dct` to the triplestore.
 
-    Currently, this include:
+    Currently, this includes:
     - statements and mappings
     - data models (require that DLite is installed)
 
