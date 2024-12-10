@@ -487,8 +487,11 @@ def save_datadoc(
 
 
 def prepare_datadoc(datadoc: dict) -> dict:
-    """Return an updated version of dict `datadoc` that is prepared for
-    serialisation to RDF."""
+    """Return an updated version of dict `datadoc` that is prepared with
+    additional key-value pairs needed for creating valid JSON-LD that
+    can be serialised to RDF.
+
+    """
     d = AttrDict({"@context": CONTEXT_URL})
     d.update(datadoc)
 
@@ -708,6 +711,22 @@ def list_dataset_iris(ts: Triplestore, **kwargs):
     Arguments:
         ts: Triplestore to search.
         kwargs: Match criterias.
+
+    Examples:
+        List all dataset IRIs:
+
+            list_dataset_iris(ts)
+
+        List IRIs of all datasets with John Doe as `contactPoint`:
+
+            list_dataset_iris(ts, contactPoint="John Doe")
+
+        List IRIs of all datasets with John Doe as `contactPoint` AND that are
+        measured on a given sample:
+
+            list_dataset_iris(
+                ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
+            )
     """
     crit = []
     expanded = {v: k for k, v in get_shortnames().items()}
