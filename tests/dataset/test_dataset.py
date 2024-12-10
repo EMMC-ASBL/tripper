@@ -1,4 +1,4 @@
-"""Test RDF serialisation."""
+"""Test the dataset module."""
 
 # pylint: disable=invalid-name,too-many-locals
 
@@ -126,6 +126,7 @@ def test_save_and_load():
     )
 
     pytest.importorskip("dlite")
+    pytest.importorskip("rdflib")
 
     ts = Triplestore("rdflib")
 
