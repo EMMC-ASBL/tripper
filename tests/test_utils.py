@@ -5,8 +5,6 @@
 import pytest
 
 
-
-
 def infer_IRIs():
     """Test infer_IRIs"""
     from tripper import RDFS
