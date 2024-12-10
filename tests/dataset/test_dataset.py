@@ -58,7 +58,13 @@ def test_get_shortnames():
     assert shortnames[DCTERMS.title] == "title"
 
     for k, v in shortnames.items():
-        if v not in exceptions:
+        if v not in exceptions and not k.startswith(
+            (
+                "https://w3id.org/emmo#EMMO_",
+                "https://w3id.org/emmo/domain/"
+                "characterisation-methodology/chameo#EMMO_",
+            )
+        ):
             assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
 
 

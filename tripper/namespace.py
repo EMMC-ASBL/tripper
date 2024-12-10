@@ -309,6 +309,3 @@ FNO = Namespace("https://w3id.org/function/ontology#")
 MAP = Namespace("https://w3id.org/emmo/domain/mappings#")
 DM = Namespace("https://w3id.org/emmo/domain/datamodel#")
 OTEIO = Namespace("https://w3id.org/emmo/domain/oteio#")
-CHAMEO = Namespace(
-    "https://w3id.org/emmo/domain/characterisation-methodology/chameo#"
-)

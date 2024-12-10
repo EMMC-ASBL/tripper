@@ -6,7 +6,6 @@ See the README.md file for a description for how to use this package.
 
 from .literal import Literal
 from .namespace import (
-    CHAMEO,
     DC,
     DCAT,
     DCTERMS,
@@ -32,6 +31,11 @@ __version__ = "0.3.4"
 # Pre-defined namespaces
 EMMO = Namespace(
     iri="https://w3id.org/emmo#",
+    label_annotations=True,
+    check=True,
+)
+CHAMEO = Namespace(
+    iri="https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
     label_annotations=True,
     check=True,
 )
