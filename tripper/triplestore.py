@@ -1,15 +1,16 @@
-"""A module encapsulating different triplestores using the strategy design
-pattern.
+"""A module encapsulating different triplestores using the strategy
+design pattern.
 
 See
 https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction and for a table over available backends.
+for an introduction and a table over available backends.
 
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of
-an RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different
+parts of an RDF Triple: subject, predicate, and object.
+
 """
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
@@ -36,7 +37,6 @@ from tripper.literal import Literal
 from tripper.namespace import (
     DCTERMS,
     DM,
-    EMMO,
     FNO,
     MAP,
     OTEIO,
@@ -90,6 +90,9 @@ except ImportError:
 backend_packages = ["tripper.backends"]
 
 
+# EMMO namespace with no checking and label lookup
+EMMO = Namespace("https://w3id.org/emmo#")
+
 # FIXME - add the following classes and properties to ontologies
 # These would be good to have in EMMO
 DataSource = EMMO.DataSource
@@ -120,8 +123,6 @@ class Triplestore:
         # "dcterms": DCTERMS,
         # "foaf": FOAF,
         # "doap": DOAP,
-        # "fno": FNO,
-        # "emmo": EMMO,
         # "map": MAP,
         # "dm": DM,
     }
@@ -136,7 +137,7 @@ class Triplestore:
     ) -> None:
         """Initialise triplestore using the backend with the given name.
 
-        Parameters:
+        Arguments:
             backend: Name of the backend module.
 
                 For built-in backends or backends provided via a
@@ -170,7 +171,7 @@ class Triplestore:
                 a relative module. Assigned to the `package` argument.
 
         Notes:
-            If the backend establish a connection that should be closed,
+            If the backend establishes a connection that should be closed
             it is useful to instantiate the Triplestore as a context manager:
 
                 >>> import tripper
@@ -178,8 +179,8 @@ class Triplestore:
                 ...     print(ts.backend_name)
                 rdflib
 
-            This will ensure that the connection is closed when the scope of
-            the with-statement is left.
+            This ensures that the connection is automatically closed when the
+            context manager exits.
         """
         backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
@@ -351,8 +352,8 @@ class Triplestore:
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
 
-        Parameters:
-            source: File-like object, file name or URL.
+        Arguments:
+            source: File-like object. File name or URL.
             format: Needed if format can not be inferred from source.
             fallback_backend: If the current backend doesn't implement
                 parse, use the `fallback_backend` instead.
@@ -390,7 +391,7 @@ class Triplestore:
     ) -> "Union[None, str]":
         """Serialise triplestore.
 
-        Parameters:
+        Arguments:
             destination: File name or object to write to.  If None, the
                 serialisation is returned.
             format: Format to serialise as.  Supported formats, depends on
@@ -423,7 +424,7 @@ class Triplestore:
     ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
-        Parameters:
+        Arguments:
             query_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend query() method.
 
@@ -447,7 +448,7 @@ class Triplestore:
     def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
 
-        Parameters:
+        Arguments:
             update_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend update() method.
 
@@ -467,7 +468,7 @@ class Triplestore:
     ) -> Namespace:
         """Bind prefix to namespace and return the new Namespace object.
 
-        Parameters:
+        Arguments:
             prefix: Prefix to bind the the namespace.
             namespace: Namespace to bind to.  The default is to bind to the
                 `base_iri` of the current triplestore.
@@ -510,7 +511,7 @@ class Triplestore:
     def create_database(cls, backend: str, database: str, **kwargs):
         """Create a new database in backend.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             database: Name of the new database.
             kwargs: Keyword arguments passed to the backend
@@ -528,7 +529,7 @@ class Triplestore:
     def remove_database(cls, backend: str, database: str, **kwargs):
         """Remove a database in backend.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             database: Name of the database to be removed.
             kwargs: Keyword arguments passed to the backend
@@ -547,7 +548,7 @@ class Triplestore:
         """For backends that supports multiple databases, list of all
         databases.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             kwargs: Keyword arguments passed to the backend
                 list_databases() method.
@@ -624,7 +625,7 @@ class Triplestore:
         Useful if one knows that there may only be one value.
         Two of `subject`, `predicate` or `object` must be provided.
 
-        Parameters:
+        Arguments:
             subject: Possible criteria to match.
             predicate: Possible criteria to match.
             object: Possible criteria to match.
@@ -832,7 +833,7 @@ class Triplestore:
     ) -> str:
         """Add a restriction to a class in the triplestore.
 
-        Parameters:
+        Arguments:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
             value: The IRI or literal value of the restriction target.
@@ -896,7 +897,7 @@ class Triplestore:
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
 
-        Parameters:
+        Arguments:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
             value: The IRI or literal value of the restriction target.
@@ -1005,7 +1006,7 @@ class Triplestore:
     ):
         """Add 'mapsTo' relation to the triplestore.
 
-        Parameters:
+        Arguments:
             source: Source IRI.
             target: IRI of target ontological concept.
             cost: User-defined cost of following this mapping relation
@@ -1035,7 +1036,7 @@ class Triplestore:
     ):
         """Add 'mapsTo' relation to triplestore.
 
-        Parameters:
+        Arguments:
             target: IRI of target ontological concept.
             source: Source IRI (or entity object).
             property_name: Name of property if `source` is an entity or
@@ -1147,7 +1148,7 @@ class Triplestore:
     def eval_function(self, func_iri, args=(), kwargs=None) -> "Any":
         """Evaluate mapping function and return the result.
 
-        Parameters:
+        Arguments:
             func_iri: IRI of the function to be evaluated.
             args: Sequence of positional arguments passed to the function.
             kwargs: Mapping of keyword arguments passed to the function.
@@ -1185,7 +1186,7 @@ class Triplestore:
         # pylint: disable=too-many-branches,too-many-arguments
         """Inspect function and add triples describing it to the triplestore.
 
-        Parameters:
+        Arguments:
             func: Function to describe.  Should either be a callable or a
                 string with a unique function IRI.
             expects: Sequence of IRIs to ontological concepts corresponding
@@ -1256,7 +1257,7 @@ class Triplestore:
         """Add standard-independent documentation of how to access the
         function.
 
-        Parameters:
+        Arguments:
             func_iri: IRI of individual in the triplestore that stands for
                 the function.
             func: Optional reference to the function itself.
@@ -1335,7 +1336,7 @@ class Triplestore:
     ):
         """Help function that adds `cost` to destination IRI `dest_iri`.
 
-        Parameters:
+        Arguments:
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
                 float or as a callable taking three arguments
