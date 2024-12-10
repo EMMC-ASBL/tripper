@@ -6,6 +6,7 @@ See the README.md file for a description for how to use this package.
 
 from .literal import Literal
 from .namespace import (
+    CHAMEO,
     DC,
     DCAT,
     DCTERMS,
@@ -38,6 +39,7 @@ EMMO = Namespace(
 __all__ = (
     "Literal",
     #
+    "CHAMEO",
     "DCAT",
     "DC",
     "DCTERMS",
