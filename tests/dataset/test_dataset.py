@@ -1,6 +1,6 @@
 """Test the dataset module."""
 
-# pylint: disable=invalid-name,too-many-locals
+# pylint: disable=invalid-name,too-many-locals,duplicate-code
 
 from pathlib import Path
 
@@ -111,16 +111,14 @@ def test_expand_iri():
 
 
 # if True:
-def test_save_and_load():
-    """Test save_datadoc() and load()."""
+def test_datadoc():
+    """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
 
-    from tripper import CHAMEO, DCAT, DCTERMS, OTEIO, Triplestore
+    from tripper import CHAMEO, DCAT, OTEIO, Triplestore
     from tripper.dataset import (
         list_dataset_iris,
-        load,
         load_dict,
-        save,
         save_datadoc,
         save_dict,
     )
@@ -182,90 +180,11 @@ def test_save_and_load():
     assert newdistr["@type"] == DCAT.Distribution
     assert newdistr.format == "txt"
 
-    # Test load dataset (this downloads an actual image from github)
-    data = load(ts, iri)
-    assert len(data) == 53502
-
     # Test load updated distribution
     dd = load_dict(ts, iri)
     assert dd.distribution.generator == load_dict(ts, GEN.sem_hitachi)
     del dd.distribution["generator"]
     assert dd == d
-
-    # Test save dataset with anonymous distribution
-    newfile = outputdir / "newimage.tiff"
-    newfile.unlink(missing_ok=True)
-    buf = b"some bytes..."
-    save(
-        ts,
-        buf,
-        dataset={
-            "@id": SEMDATA.newimage,
-            "@type": SEM.SEMImage,
-            DCTERMS.title: "New SEM image",
-        },
-        distribution={"downloadURL": f"file:{newfile}"},
-    )
-    assert newfile.exists()
-    assert newfile.stat().st_size == len(buf)
-    newimage = load_dict(ts, SEMDATA.newimage)
-    assert newimage["@id"] == SEMDATA.newimage
-    assert DCAT.Dataset in newimage["@type"]
-    assert SEM.SEMImage in newimage["@type"]
-    assert newimage.distribution["@id"].startswith("_:")
-    assert newimage.distribution["@type"] == DCAT.Distribution
-    assert newimage.distribution.downloadURL == f"file:{newfile}"
-
-    # Test save dataset with named distribution
-    newfile2 = outputdir / "newimage.png"
-    newfile2.unlink(missing_ok=True)
-    save(
-        ts,
-        buf,
-        dataset=SEMDATA.newimage2,
-        distribution={
-            "@id": SEMDATA.newdistr2,
-            "downloadURL": f"file:{newfile2}",
-            "mediaType": "image/png",
-            "generator": GEN.sem_hitachi,
-            "parser": PARSER.sem_hitachi,
-        },
-    )
-    assert newfile2.exists()
-    assert newfile2.stat().st_size == len(buf)
-    newimage2 = load_dict(ts, SEMDATA.newimage2)
-    assert newimage2["@id"] == SEMDATA.newimage2
-    assert newimage2["@type"] == DCAT.Dataset
-    assert newimage2.distribution["@id"] == SEMDATA.newdistr2
-    assert newimage2.distribution["@type"] == DCAT.Distribution
-    assert newimage2.distribution.downloadURL == f"file:{newfile2}"
-
-    # Test save anonymous dataset with existing distribution
-    newfile2.unlink(missing_ok=True)
-    save(ts, buf, distribution=SEMDATA.newdistr2)
-    assert newfile2.exists()
-    assert newfile2.stat().st_size == len(buf)
-
-    # Test save existing dataset with anonymous distribution
-    newfile2.unlink(missing_ok=True)
-    save(ts, buf, dataset=SEMDATA.newimage2)
-    assert newfile2.exists()
-    assert newfile2.stat().st_size == len(buf)
-
-    # Test save new dataset with reference to existing distribution
-    newfile2.unlink(missing_ok=True)
-    save(
-        ts,
-        buf,
-        dataset={
-            "@id": SEMDATA.newimage3,
-            "title": "A dataset with no default distribution",
-            "distribution": SEMDATA.newdistr2,
-        },
-        generator=GEN.sem_hitachi,
-    )
-    assert newfile2.exists()
-    assert newfile2.stat().st_size == len(buf)
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
