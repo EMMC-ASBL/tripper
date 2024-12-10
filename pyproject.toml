@@ -123,6 +123,7 @@ max-public-methods = 25
 max-locals = 20
 disable = [
     "fixme",
+    "too-many-positional-arguments",
 ]
 good-names = [
     # Default
