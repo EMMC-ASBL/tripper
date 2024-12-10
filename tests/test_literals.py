@@ -1,6 +1,6 @@
 """Test RDF literals."""
 
-# pylint: disable=invalid-name,too-many-statements
+# pylint: disable=invalid-name,too-many-statements,import-outside-toplevel
 
 
 def test_untyped() -> None:

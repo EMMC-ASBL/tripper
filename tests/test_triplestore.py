@@ -5,6 +5,7 @@ installed backends are tested one by one.
 """
 
 # pylint: disable=duplicate-code,comparison-with-callable,invalid-name
+# pylint: disable=import-outside-toplevel
 from typing import TYPE_CHECKING
 
 import pytest
@@ -463,8 +464,9 @@ def test_find_literal_triples() -> None:
     """Test finding literals."""
     pytest.importorskip("rdflib")
 
+    from paths import ontodir
+
     from tripper import RDF, XSD, Literal, Triplestore
-    from tripper.testutils import ontodir
 
     ts = Triplestore("rdflib")
     FAM = ts.bind("ex", "http://onto-ns.com/ontologies/examples/family#")

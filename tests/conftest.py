@@ -80,6 +80,8 @@ def expected_function_triplestore(
         A Turtle-serialized output that would be expected from the Triplestore.
 
     """
+    # pylint: disable=line-too-long
+
     from tripper.utils import function_id
 
     fid = function_id(example_function)

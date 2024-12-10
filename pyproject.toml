@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -49,10 +50,10 @@ testing = [
     "pytest==7.4.4",
     "pytest-cov==4.1.0",
     # testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
+    "EMMOntoPy>=0.5.0,<0.7.1; python_version<'3.13'",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
 ]
 docs = [
@@ -60,7 +61,7 @@ docs = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
     # docs
     "mike==2.1.2",
     "mkdocs==1.5.3",
@@ -81,7 +82,7 @@ dev = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
     # Consistent with: docs
     "mike==2.1.2",
@@ -122,6 +123,7 @@ max-public-methods = 25
 max-locals = 20
 disable = [
     "fixme",
+    "too-many-positional-arguments",
 ]
 good-names = [
     # Default
@@ -136,7 +138,7 @@ good-names = [
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
+addopts = "-rs --cov=tripper --cov-report=term --doctest-modules --ignore=examples --ignore=tripper"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
