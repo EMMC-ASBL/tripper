@@ -261,7 +261,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # ensures that the returned triples includes nested structures,
     # like distributions in a dataset. However, it does not include
     # references to named resources, like parsers and generators.
-    # This is good, because it limits the number of returned triples.
+    # This choice was made because it limits the number of returned triples.
     # The `recur()` function will load such named resources recursively.
     #
     # Note that this implementation completely avoid querying for
