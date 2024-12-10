@@ -264,7 +264,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # This choice was made because it limits the number of returned triples.
     # The `recur()` function will load such named resources recursively.
     #
-    # Note that this implementation completely avoid querying for
+    # Note that this implementation completely avoids querying for
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{iri}>"
