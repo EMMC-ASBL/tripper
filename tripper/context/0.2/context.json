@@ -31,7 +31,10 @@
     "contactPoint": "dcat:contactPoint",
     "hasCurrentVersion": "dcat:hasCurrentVersion",
     "hasVersion": "dcat:hasVersion",
-    "inSeries": "dcat:inSeries",
+    "inSeries": {
+      "@id" : "dcat:inSeries",
+      "@type" : "@id"
+    },
     "keyword": "dcat:keyword",
     "landingPage": "dcat:landingPage",
     "qualifiedRelation": "dcat:qualifiedRelation",
