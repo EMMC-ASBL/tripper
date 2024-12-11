@@ -14,9 +14,10 @@ if TYPE_CHECKING:
 def test_namespaces() -> None:
     """Test namespaces."""
     pytest.importorskip("rdflib")
+    from paths import ontodir
+
     from tripper import RDF, Namespace
     from tripper.errors import NoSuchIRIError
-    from tripper.testutils import ontodir
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -72,9 +73,10 @@ def test_namespaces() -> None:
 def test_triplestore_arg() -> None:
     """Test triplestore argument of Namespace.__init__()."""
     pytest.importorskip("rdflib")
+    from paths import ontodir
+
     from tripper import RDF, Namespace, Triplestore
     from tripper.errors import NamespaceError, NoSuchIRIError
-    from tripper.testutils import ontodir
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"

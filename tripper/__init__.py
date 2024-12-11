@@ -34,10 +34,16 @@ EMMO = Namespace(
     label_annotations=True,
     check=True,
 )
+CHAMEO = Namespace(
+    iri="https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
+    label_annotations=True,
+    check=True,
+)
 
 __all__ = (
     "Literal",
     #
+    "CHAMEO",
     "DCAT",
     "DC",
     "DCTERMS",
