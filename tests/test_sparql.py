@@ -29,7 +29,7 @@ def test_sparql_select():
       ?unit rdfs:subClassOf <{EMMO.LengthUnit}> .
       ?unit rdfs:subClassOf ?r .
       ?r rdf:type owl:Restriction .
-      ?r owl:onProperty <{EMMO.hasSymbolValue}> .
+      ?r owl:onProperty <{EMMO.unitSymbolValue}> .
       ?r owl:hasValue ?symbol .
     }}
     """
