@@ -5,6 +5,7 @@ installed backends are tested one by one.
 """
 
 # pylint: disable=duplicate-code,comparison-with-callable,invalid-name
+# pylint: disable=import-outside-toplevel
 from typing import TYPE_CHECKING
 
 import pytest

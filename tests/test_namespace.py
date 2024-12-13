@@ -1,6 +1,7 @@
 """Test namespaces."""
 
-# pylint: disable=invalid-name,duplicate-code
+# pylint: disable=invalid-name,duplicate-code,import-outside-toplevel
+
 from typing import TYPE_CHECKING
 
 import pytest

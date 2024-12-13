@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -35,9 +36,10 @@ dependencies = [
 [project.optional-dependencies]
 mappings = [
     "pint>=0.16.1,<0.25",
+    "rdflib>=6.3.0,<7.0.0",
 ]
 dataset = [
-    "pint>=0.16.1,<0.25",  # not used yet...
+    "tripper[mappings]",
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
 ]
@@ -100,6 +102,7 @@ max-public-methods = 25
 max-locals = 20
 disable = [
     "fixme",
+    "too-many-positional-arguments",
 ]
 good-names = [
     # Default
@@ -116,7 +119,7 @@ good-names = [
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
+addopts = "-rs --cov=tripper --cov-report=term --doctest-modules --ignore=examples --ignore=tripper"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest

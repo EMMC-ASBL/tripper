@@ -194,8 +194,6 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
         SAMPLE["SEM_cement_batch2/77600-23-001"],
-        SEMDATA.newimage,
-        SEMDATA.newimage2,
     }
     assert not named_datasets.difference(datasets)
     assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
