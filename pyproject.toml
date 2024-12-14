@@ -82,7 +82,8 @@ dev = [
     "EMMOntoPy>=0.5.0,<0.7.1",
     "rdflib>=6.3.0,<7.0.0",
     "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17; python_version<'3.13'",
+    "DLite-Python>=0.5.1,<0.5.26; python_version<'3.13'",
+    "DLite-Python>=0.5.25,<0.5.26; python_version>='3.13'",
     "graphviz>=0.20.1,<0.20.2",
     # Consistent with: docs
     "mike==2.1.2",
