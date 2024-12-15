@@ -38,9 +38,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import requests
-import yaml  # type: ignore
-
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
 
@@ -171,6 +168,8 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     - data models (require that DLite is installed)
 
     """
+    import requests
+
     # Save statements and mappings
     statements = get_values(dct, "statements")
     statements.extend(get_values(dct, "mappings"))
@@ -351,6 +350,8 @@ def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
         fromfile: Whether to load the context from local file.
 
     """
+    import requests
+
     if fromfile:
         with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
             context = json.load(f)["@context"]
@@ -436,16 +437,18 @@ def add(d: dict, key: str, value: "Any") -> None:
         )
 
 
-def addnested(d: "Union[dict, list]", key: str, value: "Any"):
+def addnested(
+    d: "Union[dict, list]", key: str, value: "Any"
+) -> "Union[dict, list]":
     """Like add(), but allows `key` to be a dot-separated list of sub-keys.
+    Returns the updated `d`.
 
     Each sub-key will be added to `d` as a corresponding sub-dict.
 
     Example:
 
         >>> d = {}
-        >>> addnested(d, "a.b.c", "val")
-        >>> d == {'a': {'b': {'c': 'val'}}}
+        >>> addnested(d, "a.b.c", "val") == {'a': {'b': {'c': 'val'}}}
         True
 
     """
@@ -508,6 +511,8 @@ def expand_iri(iri: str, prefixes: dict) -> str:
 
 def read_datadoc(filename: "Union[str, Path]") -> dict:
     """Read YAML data documentation and return it as a dict."""
+    import yaml  # type: ignore
+
     with open(filename, "r", encoding="utf-8") as f:
         d = yaml.safe_load(f)
     return prepare_datadoc(d)
