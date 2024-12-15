@@ -20,7 +20,7 @@ def test_save_and_load():
     """Test save() and load()."""
     # pylint: disable=too-many-statements
 
-    from tripper import DCAT, DCTERMS, Triplestore
+    from tripper import DCAT, DCTERMS, EMMO, Triplestore
     from tripper.dataset import load, load_dict, save, save_dict
 
     pytest.importorskip("dlite")
@@ -44,14 +44,14 @@ def test_save_and_load():
             "distribution": {
                 "downloadURL": (
                     "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/"
-                    "dataset/tests/input/77600-23-001_5kV_400x_m001.tif"
+                    "master/tests/input/77600-23-001_5kV_400x_m001.tif"
                 ),
                 "format": "tiff",
             },
         },
     )
     newdistr = load_dict(ts, SEMDATA.img1)
-    assert newdistr["@type"] == DCAT.Dataset
+    assert newdistr["@type"] == [DCAT.Dataset, EMMO.DataSet]
     assert newdistr.distribution["@type"] == DCAT.Distribution
     assert newdistr.distribution.format == "tiff"
 
@@ -112,7 +112,7 @@ def test_save_and_load():
     assert newfile2.stat().st_size == len(buf)
     newimage2 = load_dict(ts, SEMDATA.newimage2)
     assert newimage2["@id"] == SEMDATA.newimage2
-    assert newimage2["@type"] == DCAT.Dataset
+    assert newimage2["@type"] == [DCAT.Dataset, EMMO.DataSet]
     assert newimage2.distribution["@id"] == SEMDATA.newdistr2
     assert newimage2.distribution["@type"] == DCAT.Distribution
     assert newimage2.distribution.downloadURL == f"file:{newfile2}"

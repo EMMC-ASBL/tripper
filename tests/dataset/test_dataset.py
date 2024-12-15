@@ -115,7 +115,7 @@ def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
 
-    from tripper import CHAMEO, DCAT, OTEIO, Triplestore
+    from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
     from tripper.dataset import (
         list_dataset_iris,
         load_dict,
@@ -139,7 +139,7 @@ def test_datadoc():
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = load_dict(ts, iri, use_sparql=False)
     assert d["@id"] == iri
-    assert set(d["@type"]) == {DCAT.Dataset, SEM.SEMImage}
+    assert set(d["@type"]) == {DCAT.Dataset, EMMO.DataSet, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == "image/tiff"
 
