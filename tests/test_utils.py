@@ -328,3 +328,27 @@ def test_extend_namespace():
     EX = Namespace("http://example.com#")
     with pytest.raises(TypeError):
         extend_namespace(EX, {"Item": EX + "Item"})
+
+
+def test_AttrDict():
+    """Test AttrDict."""
+    from tripper.utils import AttrDict
+
+    d = AttrDict(a=1, b=2)
+    assert d.a == 1
+
+    with pytest.raises(KeyError):
+        d.c  # pylint: disable=pointless-statement
+
+    d.c = 3
+    assert d.c == 3
+
+    d.get = 4
+    assert d["get"] == 4
+    assert d.get("get") == 4  # pylint: disable=not-callable
+
+    d2 = AttrDict({"a": "A"})
+    assert d2.a == "A"
+    assert d2 == {"a": "A"}
+    assert repr(d2) == "AttrDict({'a': 'A'})"
+    assert "a" in dir(d2)
