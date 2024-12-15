@@ -32,7 +32,7 @@ datasets:
 
     distribution:
       #downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif
-      downloadURL: https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/tests/input/77600-23-001_5kV_400x_m001.tif
+      downloadURL: https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif
       mediaType: image/tiff
       parser: parser:sem_hitachi
       # Note: generator is only used for data sinks. It is commented out here

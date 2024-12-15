@@ -41,7 +41,7 @@ from typing import TYPE_CHECKING
 import requests
 import yaml  # type: ignore
 
-from tripper import DCAT, OTEIO, RDF, Triplestore
+from tripper import DCAT, EMMO, OTEIO, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -62,7 +62,7 @@ CONTEXT_PATH = (
 ).as_uri()
 CONTEXT_URL = (  # __TODO__: Update URL when merged to master
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
-    "dataset/tripper/context/0.2/context.json"
+    "master/tripper/context/0.2/context.json"
 )
 
 MATCH_PREFIXED_IRI = re.compile(
@@ -88,8 +88,7 @@ dicttypes = {
     },
     "dataset": {
         "datadoc_label": "datasets",
-        "@type": DCAT.Dataset,
-        # "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "@type": [DCAT.Dataset, EMMO.DataSet],
     },
 }
 
@@ -137,7 +136,7 @@ def save_dict(
     if prefixes:
         all_prefixes.update(prefixes)
 
-    d = prepare(type=type, dct=dct, prefixes=all_prefixes, kwargs=kwargs)
+    d = prepare(type=type, dct=dct, prefixes=all_prefixes, **kwargs)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -393,8 +392,10 @@ def load_list(ts: Triplestore, iri: str):
 def add(d: dict, key: str, value: "Any") -> None:
     """Append key-value pair to dict `d`.
 
-    If `key` already exists in `d`, its value is converted to a list and
-    `value` is appended to it.  Values are not duplicated.
+    If `key` already exists in `d`, its value is converted to a list
+    and `value` is appended to it.  `value` may also be a list. Values
+    are not duplicated.
+
     """
     if key not in d:
         d[key] = value
@@ -509,7 +510,9 @@ def prepare_datadoc(datadoc: dict) -> dict:
     return d
 
 
-def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
+def prepare(
+    type: str, dct: dict, prefixes: dict, _recur: bool = False, **kwargs
+) -> dict:
     """Return an updated copy of dict `dct` with additional key-value
     pairs needed for serialisation to RDF.
 
@@ -519,6 +522,8 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
         dct: Dict to return an updated copy of.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
+        _recur: Whether this function is called recursively. Intended for
+            internal use.
         kwargs: Additional keyword arguments to add to the returned dict.
             A leading underscore in a key will be translated to a
             leading "@"-sign.  For example, "@id=..." may be provided
@@ -535,7 +540,9 @@ def prepare(type: str, dct: dict, prefixes: dict, **kwargs) -> dict:
         )
     spec = dicttypes[type]
 
-    d = AttrDict({"@context": CONTEXT_URL})
+    d = AttrDict()
+    if not _recur:
+        d["@context"] = CONTEXT_URL
     add(d, "@type", spec["@type"])  # get type at top
     d.update(dct)
     add(d, "@type", spec["@type"])  # readd type if overwritten
