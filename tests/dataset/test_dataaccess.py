@@ -3,7 +3,6 @@
 # pylint: disable=invalid-name,too-many-locals,duplicate-code
 
 import pytest
-from dataset_paths import outdir
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
@@ -13,6 +12,8 @@ pytest.importorskip("requests")
 def test_save_and_load():
     """Test save() and load()."""
     # pylint: disable=too-many-statements
+
+    from dataset_paths import outdir
 
     from tripper import DCAT, DCTERMS, EMMO, Triplestore
     from tripper.dataset import load, load_dict, save, save_dict

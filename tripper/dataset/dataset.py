@@ -445,7 +445,8 @@ def addnested(d: "Union[dict, list]", key: str, value: "Any"):
 
         >>> d = {}
         >>> addnested(d, "a.b.c", "val")
-        {'a': {'b': {'c': 'val'}}}
+        >>> d == {'a': {'b': {'c': 'val'}}}
+        True
 
     """
     if "." in key:

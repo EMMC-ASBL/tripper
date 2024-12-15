@@ -3,7 +3,6 @@
 # pylint: disable=invalid-name,too-many-locals,duplicate-code
 
 import pytest
-from dataset_paths import indir
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
@@ -128,6 +127,8 @@ def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
 
+    from dataset_paths import indir
+
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
     from tripper.dataset import load_dict, save_datadoc, save_dict, search_iris
 
@@ -219,6 +220,8 @@ def test_pipeline():
     from tripper import Triplestore
 
     otelib = pytest.importorskip("otelib")
+    from dataset_paths import indir
+
     from tripper.dataset import get_partial_pipeline, save_datadoc
 
     # Prepare triplestore
