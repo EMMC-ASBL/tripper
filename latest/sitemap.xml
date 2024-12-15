@@ -101,6 +101,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/dataset/dataaccess/</loc>
+         <lastmod>2024-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/dataset/dataset/</loc>
+         <lastmod>2024-12-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/mappings/mappings/</loc>
          <lastmod>2024-12-15</lastmod>
          <changefreq>daily</changefreq>
