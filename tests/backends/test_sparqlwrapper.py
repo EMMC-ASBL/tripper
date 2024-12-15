@@ -8,6 +8,7 @@ def test_sparqlwrapper_backend():
     import pytest
 
     pytest.importorskip("SPARQLWrapper")
+    requests = pytest.importorskip("requests")
 
     from tripper import Triplestore
 
@@ -25,5 +26,12 @@ WHERE
 
     endpoint_url = "https://query.wikidata.org/sparql"
     ts = Triplestore(backend="sparqlwrapper", base_iri=endpoint_url)
-    res = ts.query(sparql_query)
+
+    # Ignore failures due to too many requests
+    try:
+        res = ts.query(sparql_query)
+    except requests.HTTPError as exc:
+        if "Too Many Requests" not in str(exc):
+            raise
+
     assert res == [("http://www.wikidata.org/entity/Q20", "Norway")]
