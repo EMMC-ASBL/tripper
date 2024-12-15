@@ -32,8 +32,8 @@
     "hasCurrentVersion": "dcat:hasCurrentVersion",
     "hasVersion": "dcat:hasVersion",
     "inSeries": {
-      "@id" : "dcat:inSeries",
-      "@type" : "@id"
+      "@id": "dcat:inSeries",
+      "@type": "@id"
     },
     "keyword": "dcat:keyword",
     "landingPage": "dcat:landingPage",

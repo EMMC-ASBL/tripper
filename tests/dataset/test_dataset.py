@@ -116,12 +116,7 @@ def test_datadoc():
     # pylint: disable=too-many-statements
 
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
-    from tripper.dataset import (
-        list_dataset_iris,
-        load_dict,
-        save_datadoc,
-        save_dict,
-    )
+    from tripper.dataset import load_dict, save_datadoc, save_dict, search_iris
 
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")
@@ -188,20 +183,19 @@ def test_datadoc():
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    datasets = list_dataset_iris(ts)
+    datasets = search_iris(ts)
     named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
-        SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
     assert not named_datasets.difference(datasets)
-    assert set(list_dataset_iris(ts, creator="Sigurd Wenner")) == {
+    assert set(search_iris(ts, creator="Sigurd Wenner")) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
     }
-    assert set(list_dataset_iris(ts, _type=CHAMEO.Sample)) == {
+    assert set(search_iris(ts, type=CHAMEO.Sample)) == {
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
 

@@ -1,4 +1,5 @@
 ---
+
 # This extends the list of prefixes that are already defined in the context
 prefixes:
   sem: https://w3id.com/emmo/domain/sem/0.1#
@@ -62,10 +63,6 @@ datasets:
       downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2
       mediaType: inode/directory
 
-  - "@id": sample:SEM_cement_batch2/77600-23-001
-    "@type": chameo:Sample
-    title: Series for SEM images for sample 77600-23-001.
-
 
 parsers:
   - "@id": parser:sem_hitachi
@@ -81,3 +78,10 @@ generators:
     generatorType: application/vnd.dlite-generate
     configuration:
       driver: hitachi
+
+
+# Other entities, like samples, instruments, persons, models etc...
+other_entries:
+  - "@id": sample:SEM_cement_batch2/77600-23-001
+    "@type": chameo:Sample
+    title: Series for SEM images for sample 77600-23-001.
