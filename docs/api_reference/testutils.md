@@ -1,3 +1,0 @@
-# testutils
-
-::: tripper.testutils

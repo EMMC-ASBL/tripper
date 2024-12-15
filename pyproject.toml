@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -29,11 +30,19 @@ requires-python = ">=3.7"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions>=4.7.0,<4.7.1; python_version<'3.8'",
-    "pint>=0.16.1,<0.25",
+    "typing-extensions>=4.7.0,<4.7.1; python_version<'3.9'",
 ]
 
 [project.optional-dependencies]
+mappings = [
+    "pint>=0.16.1,<0.25",
+    "rdflib>=6.3.0,<7.0.0",
+]
+dataset = [
+    "tripper[mappings]",
+    "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
+    "requests>=2.0.0,<3.4.1",  # todo: check lower version
+]
 pre-commit = [
     "pre-commit==4.0.1",
     "pylint==2.15.5",
@@ -43,25 +52,17 @@ testing-core = [
     "pytest-cov==4.1.0",
 ]
 testing = [
-    # Consistent with: dependencies (is this needed?)
-    "pint>=0.16.1,<0.24",
-    # Consistent with: testing-core
-    "pytest==7.4.4",
-    "pytest-cov==4.1.0",
-    # testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
-    "rdflib>=6.3.0,<7.0.0",
-    "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
+    "tripper[testing-core,mappings,dataset]",
+    "dlite-python>=0.5.23,<0.5.27; python_version>='3.8' and python_version<'3.13'",
+    "dlite-python>=0.5.25,<0.5.27; python_version>='3.13'",
+    "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
+    "numpy<2.1.0; python_version>='3.13'",
+    "rdflib>=6.3.0,<7.0.0",
+    "sparqlwrapper>=2.0.0,<2.0.1",
 ]
 docs = [
-    # Consistent with: testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
-    "rdflib>=6.3.0,<7.0.0",
-    "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
-    # docs
+    "tripper[testing]",
     "mike==2.1.2",
     "mkdocs==1.5.3",
     "mkdocs-autorefs==0.4.1",
@@ -71,26 +72,7 @@ docs = [
     "mkdocstrings-python-legacy==0.2.3",
 ]
 dev = [
-    # Consistent with: pre-commit
-    "pre-commit==2.21.0",
-    "pylint==2.15.5",
-    # Consistent with: testing-core
-    "pytest==7.4.4",
-    "pytest-cov==4.1.0",
-    # Consistent with testing
-    "EMMOntoPy>=0.5.0,<0.7.1",
-    "rdflib>=6.3.0,<7.0.0",
-    "SPARQLWrapper>=2.0.0,<2.0.1",
-    "DLite-Python>=0.5.1,<0.5.17",
-    "graphviz>=0.20.1,<0.20.2",
-    # Consistent with: docs
-    "mike==2.1.2",
-    "mkdocs==1.5.3",
-    "mkdocs-autorefs==0.4.1",
-    "mkdocs-awesome-pages-plugin==2.9.2",
-    "mkdocs-material==9.5.17",
-    "mkdocstrings==0.22.0",
-    "mkdocstrings-python-legacy==0.2.3",
+    "tripper[pre-commit,docs]",
 ]
 
 [project.urls]
@@ -122,6 +104,7 @@ max-public-methods = 25
 max-locals = 20
 disable = [
     "fixme",
+    "too-many-positional-arguments",
 ]
 good-names = [
     # Default
@@ -132,11 +115,13 @@ good-names = [
     "s", "p", "o",
     # Namespaces
     "EX",
+    # dict, value, file, ...
+    "d", "v", "f",
 ]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
+addopts = "-rs --cov=tripper --cov-report=term --doctest-modules --doctest-ignore-import-errors"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
