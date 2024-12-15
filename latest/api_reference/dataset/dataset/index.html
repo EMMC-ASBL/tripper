@@ -1360,16 +1360,19 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
     <div class="doc doc-contents ">
 
       <p>Append key-value pair to dict <code>d</code>.</p>
-<p>If <code>key</code> already exists in <code>d</code>, its value is converted to a list and
-<code>value</code> is appended to it.  Values are not duplicated.</p>
+<p>If <code>key</code> already exists in <code>d</code>, its value is converted to a list
+and <code>value</code> is appended to it.  <code>value</code> may also be a list. Values
+are not duplicated.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Append key-value pair to dict `d`.</span>
 
-<span class="sd">    If `key` already exists in `d`, its value is converted to a list and</span>
-<span class="sd">    `value` is appended to it.  Values are not duplicated.</span>
+<span class="sd">    If `key` already exists in `d`, its value is converted to a list</span>
+<span class="sd">    and `value` is appended to it.  `value` may also be a list. Values</span>
+<span class="sd">    are not duplicated.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
         <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -2143,7 +2146,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 <h2 id="tripper.dataset.dataset.prepare" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">_recur</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a href="#tripper.dataset.dataset.prepare" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2185,6 +2188,13 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
+        <td><code>_recur</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether this function is called recursively. Intended for
+internal use.</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
         <td><code>kwargs</code></td>
         <td></td>
         <td><p>Additional keyword arguments to add to the returned dict.
@@ -2212,7 +2222,9 @@ as "_id=...".</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">_recur</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an updated copy of dict `dct` with additional key-value</span>
 <span class="sd">    pairs needed for serialisation to RDF.</span>
 
@@ -2222,6 +2234,8 @@ as "_id=...".</p></td>
 <span class="sd">        dct: Dict to return an updated copy of.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
+<span class="sd">        _recur: Whether this function is called recursively. Intended for</span>
+<span class="sd">            internal use.</span>
 <span class="sd">        kwargs: Additional keyword arguments to add to the returned dict.</span>
 <span class="sd">            A leading underscore in a key will be translated to a</span>
 <span class="sd">            leading &quot;@&quot;-sign.  For example, &quot;@id=...&quot; may be provided</span>
@@ -2238,7 +2252,9 @@ as "_id=...".</p></td>
         <span class="p">)</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">dicttypes</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
 
-    <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">({</span><span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="n">CONTEXT_URL</span><span class="p">})</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_recur</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONTEXT_URL</span>
     <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span>  <span class="c1"># get type at top</span>
     <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
     <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span>  <span class="c1"># readd type if overwritten</span>
@@ -2607,7 +2623,7 @@ or one of the following special keywords:
     <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
         <span class="n">all_prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
 
-    <span class="n">d</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">all_prefixes</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">all_prefixes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># Bind prefixes</span>
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">all_prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
