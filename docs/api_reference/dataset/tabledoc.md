@@ -1,0 +1,3 @@
+# tabledoc
+
+::: tripper.dataset.tabledoc

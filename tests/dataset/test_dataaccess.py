@@ -2,17 +2,11 @@
 
 # pylint: disable=invalid-name,too-many-locals,duplicate-code
 
-from pathlib import Path
-
 import pytest
+from dataset_paths import outdir
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
-
-thisdir = Path(__file__).resolve().parent
-testdir = thisdir.parent
-inputdir = testdir / "input"
-outputdir = testdir / "output"
 
 
 # if True:
@@ -38,7 +32,6 @@ def test_save_and_load():
     # Test save dict
     save_dict(
         ts,
-        type="dataset",
         dct={
             "@id": SEMDATA.img1,
             "distribution": {
@@ -49,6 +42,7 @@ def test_save_and_load():
                 "format": "tiff",
             },
         },
+        type="dataset",
     )
     newdistr = load_dict(ts, SEMDATA.img1)
     assert newdistr["@type"] == [DCAT.Dataset, EMMO.DataSet]
@@ -57,12 +51,12 @@ def test_save_and_load():
 
     save_dict(
         ts,
-        type="generator",
         dct={
             "@id": GEN.sem_hitachi,
             "generatorType": "application/vnd.dlite-generate",
             "configuration": {"driver": "hitachi"},
         },
+        type="generator",
     )
 
     # Test load dataset (this downloads an actual image from github)
@@ -70,7 +64,7 @@ def test_save_and_load():
     assert len(data) == 53502
 
     # Test save dataset with anonymous distribution
-    newfile = outputdir / "newimage.tiff"
+    newfile = outdir / "newimage.tiff"
     newfile.unlink(missing_ok=True)
     buf = b"some bytes..."
     save(
@@ -94,7 +88,7 @@ def test_save_and_load():
     assert newimage.distribution.downloadURL == f"file:{newfile}"
 
     # Test save dataset with named distribution
-    newfile2 = outputdir / "newimage.png"
+    newfile2 = outdir / "newimage.png"
     newfile2.unlink(missing_ok=True)
     save(
         ts,
