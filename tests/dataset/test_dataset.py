@@ -127,7 +127,7 @@ def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
 
-    from dataset_paths import indir  # pytest: disable=import-error
+    from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
     from tripper.dataset import load_dict, save_datadoc, save_dict, search_iris
@@ -220,7 +220,7 @@ def test_pipeline():
     from tripper import Triplestore
 
     otelib = pytest.importorskip("otelib")
-    from dataset_paths import indir  # pytest: disable=import-error
+    from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper.dataset import get_partial_pipeline, save_datadoc
 
