@@ -6,18 +6,22 @@ as Python dicts with attribute access in this module.  The semantic
 meaning of the keywords in this dict are defined by a [JSON-LD context].
 
 High-level function for populating the triplestore from YAML documentation:
+
   - `save_datadoc()`: Save documentation from YAML file to the triplestore.
 
 Functions for searching the triplestore:
+
   - `search_iris()`: Get IRIs of matching entries in the triplestore.
 
 Functions for working with the dict-representation:
+
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
   - `as_jsonld()`: Return the dict as JSON-LD (represented as a Python dict)
 
 Functions for interaction with OTEAPI:
+
   - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
 
 ---
@@ -37,6 +41,9 @@ import re
 import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+import requests
+import yaml  # type: ignore
 
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
@@ -126,6 +133,7 @@ def save_dict(
     Notes:
         The keys in `dct` and `kwargs` may be either properties defined in the
         [JSON-LD context] or one of the following special keywords:
+
           - "@id": Dataset IRI.  Must always be given.
           - "@type": IRI of the ontology class for this type of data.
             For datasets, it is typically used to refer to a specific subclass
@@ -207,7 +215,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                 except (
                     dlite.DLiteMissingInstanceError  # pylint: disable=no-member
                 ):
-                    # __FIXME__: check session whether to warn or re-reise
+                    # __FIXME__: check session whether to warn or re-raise
                     warnings.warn(f"cannot load datamodel: {uri}")
                 else:
                     add_dataset(ts, dm)
@@ -595,7 +603,7 @@ def as_jsonld(
     """Return an updated copy of dict `dct` as valid JSON-LD.
 
     Arguments:
-        dct: Dict with data documentation represent as JSON-LD.
+        dct: Dict with data documentation to represent as JSON-LD.
         type: Type of data to document.  Should either be one of the
             pre-defined names: "dataset", "distribution", "accessService",
             "parser" and "generator" or an IRI to a class in an ontology.
