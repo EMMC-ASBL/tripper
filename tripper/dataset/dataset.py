@@ -6,17 +6,22 @@ as Python dicts with attribute access in this module.  The semantic
 meaning of the keywords in this dict are defined by a [JSON-LD context].
 
 High-level function for populating the triplestore from YAML documentation:
+
   - `save_datadoc()`: Save documentation from YAML file to the triplestore.
 
 Functions for searching the triplestore:
-  - `list_dataset_iris()`: Get IRIs of matching datasets.
+
+  - `search_iris()`: Get IRIs of matching entries in the triplestore.
 
 Functions for working with the dict-representation:
+
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
+  - `as_jsonld()`: Return the dict as JSON-LD (represented as a Python dict)
 
 Functions for interaction with OTEAPI:
+
   - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
 
 ---
@@ -28,7 +33,6 @@ __TODO__: Update the URL to the JSON-LD context when merged to master
 
 """
 
-# pylint: enable=line-too-long
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 import functools
 import io
@@ -41,7 +45,7 @@ from typing import TYPE_CHECKING
 import requests
 import yaml  # type: ignore
 
-from tripper import DCAT, EMMO, OTEIO, RDF, Triplestore
+from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -90,6 +94,12 @@ dicttypes = {
         "datadoc_label": "datasets",
         "@type": [DCAT.Dataset, EMMO.DataSet],
     },
+    "entry": {
+        # General datacatalog entry that is not one of the above
+        # Ex: samples, instruments, models, people, projects, ...
+        "datadoc_label": "other_entries",  # XXX better label?
+        "@type": OWL.NamedIndividual,
+    },
 }
 
 
@@ -120,14 +130,16 @@ def save_dict(
 
     Notes:
         The keys in `dct` and `kwargs` may be either properties defined in the
-        [JSON-LD context](https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json)
-        or one of the following special keywords:
+        [JSON-LD context] or one of the following special keywords:
+
           - "@id": Dataset IRI.  Must always be given.
           - "@type": IRI of the ontology class for this type of data.
             For datasets, it is typically used to refer to a specific subclass
             of `emmo:DataSet` that provides a semantic description of this
             dataset.
 
+    References:
+    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json
     """
     if "@id" not in dct:
         raise ValueError("`dct` must have an '@id' key")
@@ -136,7 +148,7 @@ def save_dict(
     if prefixes:
         all_prefixes.update(prefixes)
 
-    d = prepare(type=type, dct=dct, prefixes=all_prefixes, **kwargs)
+    d = as_jsonld(dct=dct, type=type, prefixes=all_prefixes, **kwargs)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -199,8 +211,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                 except (
                     dlite.DLiteMissingInstanceError  # pylint: disable=no-member
                 ):
-                    # __FIXME__: check session whether want to warn or re-reise
-                    # in this case
+                    # __FIXME__: check session whether to warn or re-raise
                     warnings.warn(f"cannot load datamodel: {uri}")
                 else:
                     add_dataset(ts, dm)
@@ -476,7 +487,7 @@ def save_datadoc(
     for spec in dicttypes.values():
         label = spec["datadoc_label"]
         for dct in get(d, label):
-            dct = prepare(types[label], dct, prefixes=prefixes)
+            dct = as_jsonld(dct=dct, type=types[label], prefixes=prefixes)
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
                 ts2.parse(f, format="json-ld")
@@ -505,51 +516,64 @@ def prepare_datadoc(datadoc: dict) -> dict:
     for type, spec in dicttypes.items():
         label = spec["datadoc_label"]
         for i, dct in enumerate(get(d, label)):
-            d[label][i] = prepare(type, dct, prefixes=d.prefixes)
+            d[label][i] = as_jsonld(dct=dct, type=type, prefixes=d.prefixes)
 
     return d
 
 
-def prepare(
-    type: str, dct: dict, prefixes: dict, _recur: bool = False, **kwargs
+def as_jsonld(
+    dct: dict,
+    type: "Optional[str]" = "dataset",
+    prefixes: "Optional[dict]" = None,
+    _entryid: "Optional[str]" = None,
+    **kwargs,
 ) -> dict:
-    """Return an updated copy of dict `dct` with additional key-value
-    pairs needed for serialisation to RDF.
+    """Return an updated copy of dict `dct` as valid JSON-LD.
 
     Arguments:
-        type: Type of dict to prepare.  Should be one of: "dataset",
-            "distribution", "parser" or "generator".
         dct: Dict to return an updated copy of.
+        type: Type of dict to prepare.  Should either be one of the
+            pre-defined names: "dataset", "distribution", "accessService",
+            "parser" and "generator" or an IRI to a class in an ontology.
+            Defaults to "dataset".
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
-        _recur: Whether this function is called recursively. Intended for
-            internal use.
+        _entryid: Id of base entry that is documented. Intended for
+            internal use only.
         kwargs: Additional keyword arguments to add to the returned dict.
             A leading underscore in a key will be translated to a
-            leading "@"-sign.  For example, "@id=..." may be provided
-            as "_id=...".
+            leading "@"-sign.  For example, "@id" or "@context" may be
+            provided as "_id" or "_context", respectively.
+
 
     Returns:
-        An updated copy of `dct`.
+        An updated copy of `dct` as valid JSON-LD.
     """
     # pylint: disable=too-many-branches
-    if type not in dicttypes:
-        raise ValueError(
-            f"`type` must be one of: {', '.join(dicttypes.keys())}. "
-            f"Got: '{type}'"
-        )
-    spec = dicttypes[type]
-
     d = AttrDict()
-    if not _recur:
+    if not _entryid:
         d["@context"] = CONTEXT_URL
-    add(d, "@type", spec["@type"])  # get type at top
-    d.update(dct)
-    add(d, "@type", spec["@type"])  # readd type if overwritten
+
+    if type:
+        t = dicttypes[type]["@type"] if type in dicttypes else type
+        add(d, "@type", t)  # get type at top
+        d.update(dct)
+        add(d, "@type", t)  # readd type if overwritten
+    else:
+        d.update(dct)
 
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if re.match("^_([^_]|([^_].*[^_]))$", k) else k
         add(d, key, v)
+
+    if "@id" not in d and not _entryid:
+        raise ValueError("Missing '@id' in dict to document")
+
+    if not _entryid:
+        _entryid = d["@id"]
+
+    if "@type" not in d:
+        warnings.warn(f"Missing '@type' in dict to document: {_entryid}")
 
     all_prefixes = get_prefixes()
     if prefixes:
@@ -584,9 +608,11 @@ def prepare(
                 if isinstance(e, str):
                     v[i] = expand_iri(e, all_prefixes)
                 elif isinstance(e, dict) and k in nested:
-                    v[i] = prepare(k, e, prefixes=prefixes)
+                    v[i] = as_jsonld(
+                        e, k, _entryid=_entryid, prefixes=prefixes
+                    )
         elif isinstance(v, dict) and k in nested:
-            d[k] = prepare(k, v, prefixes=prefixes)
+            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=prefixes)
 
     return d
 
@@ -711,31 +737,42 @@ def get_partial_pipeline(
     return pipeline
 
 
-def list_dataset_iris(ts: Triplestore, **kwargs):
-    """Return a list of IRIs for all datasets matching a set of criterias
-    specified by `kwargs`.
+def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
+    """Return a list of IRIs for all entries of the given type.
+    Additional matching criterias can be specified by `kwargs`.
+
 
     Arguments:
         ts: Triplestore to search.
+        type: Search for entries that are individuals of the class with
+            this IRI.  The default is `dcat:Dataset`.
         kwargs: Match criterias.
 
     Examples:
         List all dataset IRIs:
 
-            list_dataset_iris(ts)
+            search_iris(ts)
 
         List IRIs of all datasets with John Doe as `contactPoint`:
 
-            list_dataset_iris(ts, contactPoint="John Doe")
+            search_iris(ts, contactPoint="John Doe")
 
-        List IRIs of all datasets with John Doe as `contactPoint` AND that are
+        List IRIs of all samples:
+
+            search_iris(ts, type=CHAMEO.Sample)
+
+        List IRIs of all datasets with John Doe as `contactPoint` AND are
         measured on a given sample:
 
-            list_dataset_iris(
+            search_iris(
                 ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
             )
     """
     crit = []
+
+    if type:
+        crit.append(f"  ?iri rdf:type <{type}> .")
+
     expanded = {v: k for k, v in get_shortnames().items()}
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if k.startswith("_") else k
@@ -748,14 +785,12 @@ def list_dataset_iris(ts: Triplestore, **kwargs):
             )
         else:
             value = v
-        crit.append(f"  ?dataset <{predicate}> {value} .")
+        crit.append(f"  ?iri <{predicate}> {value} .")
     criterias = "\n".join(crit)
     query = f"""
     PREFIX rdf: <{RDF}>
-    PREFIX dcat: <{DCAT}>
-    SELECT ?dataset
+    SELECT ?iri
     WHERE {{
-      ?dataset rdf:type dcat:Dataset .
     {criterias}
     }}
     """
