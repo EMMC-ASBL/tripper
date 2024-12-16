@@ -206,7 +206,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                 except (
                     dlite.DLiteMissingInstanceError  # pylint: disable=no-member
                 ):
-                    # __FIXME__: check session whether to warn or re-reise
+                    # __FIXME__: check session whether to warn or re-raise
                     warnings.warn(f"cannot load datamodel: {uri}")
                 else:
                     add_dataset(ts, dm)
