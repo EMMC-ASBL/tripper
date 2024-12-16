@@ -6,18 +6,22 @@ as Python dicts with attribute access in this module.  The semantic
 meaning of the keywords in this dict are defined by a [JSON-LD context].
 
 High-level function for populating the triplestore from YAML documentation:
+
   - `save_datadoc()`: Save documentation from YAML file to the triplestore.
 
 Functions for searching the triplestore:
+
   - `search_iris()`: Get IRIs of matching entries in the triplestore.
 
 Functions for working with the dict-representation:
+
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
   - `as_jsonld()`: Return the dict as JSON-LD (represented as a Python dict)
 
 Functions for interaction with OTEAPI:
+
   - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
 
 ---
@@ -127,6 +131,7 @@ def save_dict(
     Notes:
         The keys in `dct` and `kwargs` may be either properties defined in the
         [JSON-LD context] or one of the following special keywords:
+
           - "@id": Dataset IRI.  Must always be given.
           - "@type": IRI of the ontology class for this type of data.
             For datasets, it is typically used to refer to a specific subclass
