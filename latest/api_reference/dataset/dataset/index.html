@@ -792,6 +792,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.dataset.dataset.as_jsonld" class="md-nav__link">
+    <span class="md-ellipsis">
+      as_jsonld()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.dataset.dataset.expand_iri" class="md-nav__link">
     <span class="md-ellipsis">
       expand_iri()
@@ -855,15 +864,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataset.list_dataset_iris" class="md-nav__link">
-    <span class="md-ellipsis">
-      list_dataset_iris()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#tripper.dataset.dataset.load_dict" class="md-nav__link">
     <span class="md-ellipsis">
       load_dict()
@@ -876,15 +876,6 @@
   <a href="#tripper.dataset.dataset.load_list" class="md-nav__link">
     <span class="md-ellipsis">
       load_list()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tripper.dataset.dataset.prepare" class="md-nav__link">
-    <span class="md-ellipsis">
-      prepare()
     </span>
   </a>
   
@@ -930,6 +921,15 @@
   <a href="#tripper.dataset.dataset.save_extra_content" class="md-nav__link">
     <span class="md-ellipsis">
       save_extra_content()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.dataset.dataset.search_iris" class="md-nav__link">
+    <span class="md-ellipsis">
+      search_iris()
     </span>
   </a>
   
@@ -1148,6 +1148,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.dataset.dataset.as_jsonld" class="md-nav__link">
+    <span class="md-ellipsis">
+      as_jsonld()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.dataset.dataset.expand_iri" class="md-nav__link">
     <span class="md-ellipsis">
       expand_iri()
@@ -1211,15 +1220,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataset.list_dataset_iris" class="md-nav__link">
-    <span class="md-ellipsis">
-      list_dataset_iris()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#tripper.dataset.dataset.load_dict" class="md-nav__link">
     <span class="md-ellipsis">
       load_dict()
@@ -1232,15 +1232,6 @@
   <a href="#tripper.dataset.dataset.load_list" class="md-nav__link">
     <span class="md-ellipsis">
       load_list()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tripper.dataset.dataset.prepare" class="md-nav__link">
-    <span class="md-ellipsis">
-      prepare()
     </span>
   </a>
   
@@ -1291,6 +1282,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.dataset.dataset.search_iris" class="md-nav__link">
+    <span class="md-ellipsis">
+      search_iris()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1318,16 +1318,25 @@
 <p>The dataset documentation follows the <a href="https://www.w3.org/TR/vocab-dcat-3/">DCAT</a> structure and is exposed
 as Python dicts with attribute access in this module.  The semantic
 meaning of the keywords in this dict are defined by a <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset/tripper/context/0.2/context.json">JSON-LD context</a>.</p>
-<p>High-level function for populating the triplestore from YAML documentation:
-  - <code>save_datadoc()</code>: Save documentation from YAML file to the triplestore.</p>
-<p>Functions for searching the triplestore:
-  - <code>list_dataset_iris()</code>: Get IRIs of matching datasets.</p>
-<p>Functions for working with the dict-representation:
-  - <code>read_datadoc()</code>: Read documentation from YAML file and return it as dict.
-  - <code>save_dict()</code>: Save dict documentation to the triplestore.
-  - <code>load_dict()</code>: Load dict documentation from the triplestore.</p>
-<p>Functions for interaction with OTEAPI:
-  - <code>get_partial_pipeline()</code>: Returns a OTELib partial pipeline.</p>
+<p>High-level function for populating the triplestore from YAML documentation:</p>
+<ul>
+<li><code>save_datadoc()</code>: Save documentation from YAML file to the triplestore.</li>
+</ul>
+<p>Functions for searching the triplestore:</p>
+<ul>
+<li><code>search_iris()</code>: Get IRIs of matching entries in the triplestore.</li>
+</ul>
+<p>Functions for working with the dict-representation:</p>
+<ul>
+<li><code>read_datadoc()</code>: Read documentation from YAML file and return it as dict.</li>
+<li><code>save_dict()</code>: Save dict documentation to the triplestore.</li>
+<li><code>load_dict()</code>: Load dict documentation from the triplestore.</li>
+<li><code>as_jsonld()</code>: Return the dict as JSON-LD (represented as a Python dict)</li>
+</ul>
+<p>Functions for interaction with OTEAPI:</p>
+<ul>
+<li><code>get_partial_pipeline()</code>: Returns a OTELib partial pipeline.</li>
+</ul>
 <hr />
 <p><strong>TODO</strong>: Update the URL to the JSON-LD context when merged to master</p>
 
@@ -1381,6 +1390,190 @@ are not duplicated.</p>
         <span class="n">vlst</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
         <span class="n">v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">klst</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">vlst</span><span class="p">))</span>
         <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.dataset.dataset.as_jsonld" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">as_jsonld</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_entryid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#tripper.dataset.dataset.as_jsonld" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return an updated copy of dict <code>dct</code> as valid JSON-LD.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>dct</code></td>
+        <td><code>dict</code></td>
+        <td><p>Dict to return an updated copy of.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Type of dict to prepare.  Should either be one of the
+pre-defined names: "dataset", "distribution", "accessService",
+"parser" and "generator" or an IRI to a class in an ontology.
+Defaults to "dataset".</p></td>
+        <td><code>&#39;dataset&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>Optional[dict]</code></td>
+        <td><p>Dict with prefixes in addition to those included in the
+JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>_entryid</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Id of base entry that is documented. Intended for
+internal use only.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Additional keyword arguments to add to the returned dict.
+A leading underscore in a key will be translated to a
+leading "@"-sign.  For example, "@id" or "@context" may be
+provided as "_id" or "_context", respectively.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>dict</code></td>
+      <td><p>An updated copy of <code>dct</code> as valid JSON-LD.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">as_jsonld</span><span class="p">(</span>
+    <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">_entryid</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an updated copy of dict `dct` as valid JSON-LD.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        dct: Dict to return an updated copy of.</span>
+<span class="sd">        type: Type of dict to prepare.  Should either be one of the</span>
+<span class="sd">            pre-defined names: &quot;dataset&quot;, &quot;distribution&quot;, &quot;accessService&quot;,</span>
+<span class="sd">            &quot;parser&quot; and &quot;generator&quot; or an IRI to a class in an ontology.</span>
+<span class="sd">            Defaults to &quot;dataset&quot;.</span>
+<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
+<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
+<span class="sd">        _entryid: Id of base entry that is documented. Intended for</span>
+<span class="sd">            internal use only.</span>
+<span class="sd">        kwargs: Additional keyword arguments to add to the returned dict.</span>
+<span class="sd">            A leading underscore in a key will be translated to a</span>
+<span class="sd">            leading &quot;@&quot;-sign.  For example, &quot;@id&quot; or &quot;@context&quot; may be</span>
+<span class="sd">            provided as &quot;_id&quot; or &quot;_context&quot;, respectively.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An updated copy of `dct` as valid JSON-LD.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_entryid</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONTEXT_URL</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">dicttypes</span><span class="p">[</span><span class="nb">type</span><span class="p">][</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">dicttypes</span> <span class="k">else</span> <span class="nb">type</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># get type at top</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># readd type if overwritten</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^_([^_]|([^_].*[^_]))$&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_entryid</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing &#39;@id&#39; in dict to document&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_entryid</span><span class="p">:</span>
+        <span class="n">_entryid</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing &#39;@type&#39; in dict to document: </span><span class="si">{</span><span class="n">_entryid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">all_prefixes</span> <span class="o">=</span> <span class="n">get_prefixes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
+        <span class="n">all_prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
+
+    <span class="c1"># Recursively expand IRIs and prepare sub-directories</span>
+    <span class="c1"># Nested lists are not supported</span>
+    <span class="n">nested</span> <span class="o">=</span> <span class="n">dicttypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;mappingURL&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                <span class="k">with</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts2</span><span class="p">:</span>
+                    <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mappingFormat&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="s2">&quot;statements&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">statements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;statements&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;statements&quot;</span><span class="p">,</span> <span class="s2">&quot;mappings&quot;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">(</span>
+                        <span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">all_prefixes</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">spo</span>
+                <span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">all_prefixes</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">all_prefixes</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
+                    <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span>
+                        <span class="n">e</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_entryid</span><span class="o">=</span><span class="n">_entryid</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+                    <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">_entryid</span><span class="o">=</span><span class="n">_entryid</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span>
 </code></pre></div>
         </details>
     </div>
@@ -1895,119 +2088,6 @@ nested manner.</p>
 
 
 
-<h2 id="tripper.dataset.dataset.list_dataset_iris" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">list_dataset_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
-
-
-<a href="#tripper.dataset.dataset.list_dataset_iris" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents ">
-
-      <p>Return a list of IRIs for all datasets matching a set of criterias
-specified by <code>kwargs</code>.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>ts</code></td>
-        <td><code>Triplestore</code></td>
-        <td><p>Triplestore to search.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>kwargs</code></td>
-        <td></td>
-        <td><p>Match criterias.</p></td>
-        <td><code>{}</code></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Examples:</strong></p>
-    <p>List all dataset IRIs:</p>
-<div class="highlight"><pre><span></span><code>list_dataset_iris(ts)
-</code></pre></div>
-<p>List IRIs of all datasets with John Doe as <code>contactPoint</code>:</p>
-<div class="highlight"><pre><span></span><code>list_dataset_iris(ts, contactPoint=&quot;John Doe&quot;)
-</code></pre></div>
-<p>List IRIs of all datasets with John Doe as <code>contactPoint</code> AND that are
-measured on a given sample:</p>
-<div class="highlight"><pre><span></span><code>list_dataset_iris(
-    ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3
-)
-</code></pre></div>
-
-        <details class="quote">
-          <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">list_dataset_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of IRIs for all datasets matching a set of criterias</span>
-<span class="sd">    specified by `kwargs`.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        ts: Triplestore to search.</span>
-<span class="sd">        kwargs: Match criterias.</span>
-
-<span class="sd">    Examples:</span>
-<span class="sd">        List all dataset IRIs:</span>
-
-<span class="sd">            list_dataset_iris(ts)</span>
-
-<span class="sd">        List IRIs of all datasets with John Doe as `contactPoint`:</span>
-
-<span class="sd">            list_dataset_iris(ts, contactPoint=&quot;John Doe&quot;)</span>
-
-<span class="sd">        List IRIs of all datasets with John Doe as `contactPoint` AND that are</span>
-<span class="sd">        measured on a given sample:</span>
-
-<span class="sd">            list_dataset_iris(</span>
-<span class="sd">                ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3</span>
-<span class="sd">            )</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
-        <span class="n">predicate</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">expanded</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&gt;&quot;</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[a-z][a-z0-9.+-]*://&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ?dataset &lt;</span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2">&gt; </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
-    <span class="n">criterias</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    PREFIX rdf: &lt;</span><span class="si">{</span><span class="n">RDF</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">    PREFIX dcat: &lt;</span><span class="si">{</span><span class="n">DCAT</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">    SELECT ?dataset</span>
-<span class="s2">    WHERE </span><span class="se">{{</span>
-<span class="s2">      ?dataset rdf:type dcat:Dataset .</span>
-<span class="s2">    </span><span class="si">{</span><span class="n">criterias</span><span class="si">}</span>
-<span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-function">
-
-
-
 <h2 id="tripper.dataset.dataset.load_dict" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
@@ -2145,174 +2225,6 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 
-<h2 id="tripper.dataset.dataset.prepare" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">_recur</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
-
-
-<a href="#tripper.dataset.dataset.prepare" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents ">
-
-      <p>Return an updated copy of dict <code>dct</code> with additional key-value
-pairs needed for serialisation to RDF.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>type</code></td>
-        <td><code>str</code></td>
-        <td><p>Type of dict to prepare.  Should be one of: "dataset",
-"distribution", "parser" or "generator".</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>dct</code></td>
-        <td><code>dict</code></td>
-        <td><p>Dict to return an updated copy of.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>prefixes</code></td>
-        <td><code>dict</code></td>
-        <td><p>Dict with prefixes in addition to those included in the
-JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>_recur</code></td>
-        <td><code>bool</code></td>
-        <td><p>Whether this function is called recursively. Intended for
-internal use.</p></td>
-        <td><code>False</code></td>
-      </tr>
-      <tr>
-        <td><code>kwargs</code></td>
-        <td></td>
-        <td><p>Additional keyword arguments to add to the returned dict.
-A leading underscore in a key will be translated to a
-leading "@"-sign.  For example, "@id=..." may be provided
-as "_id=...".</p></td>
-        <td><code>{}</code></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>dict</code></td>
-      <td><p>An updated copy of <code>dct</code>.</p></td>
-    </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">_recur</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an updated copy of dict `dct` with additional key-value</span>
-<span class="sd">    pairs needed for serialisation to RDF.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        type: Type of dict to prepare.  Should be one of: &quot;dataset&quot;,</span>
-<span class="sd">            &quot;distribution&quot;, &quot;parser&quot; or &quot;generator&quot;.</span>
-<span class="sd">        dct: Dict to return an updated copy of.</span>
-<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
-<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
-<span class="sd">        _recur: Whether this function is called recursively. Intended for</span>
-<span class="sd">            internal use.</span>
-<span class="sd">        kwargs: Additional keyword arguments to add to the returned dict.</span>
-<span class="sd">            A leading underscore in a key will be translated to a</span>
-<span class="sd">            leading &quot;@&quot;-sign.  For example, &quot;@id=...&quot; may be provided</span>
-<span class="sd">            as &quot;_id=...&quot;.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        An updated copy of `dct`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># pylint: disable=too-many-branches</span>
-    <span class="k">if</span> <span class="nb">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dicttypes</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`type` must be one of: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dicttypes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">. &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Got: &#39;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-        <span class="p">)</span>
-    <span class="n">spec</span> <span class="o">=</span> <span class="n">dicttypes</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
-
-    <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_recur</span><span class="p">:</span>
-        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CONTEXT_URL</span>
-    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span>  <span class="c1"># get type at top</span>
-    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
-    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span>  <span class="c1"># readd type if overwritten</span>
-
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^_([^_]|([^_].*[^_]))$&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
-        <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-
-    <span class="n">all_prefixes</span> <span class="o">=</span> <span class="n">get_prefixes</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
-        <span class="n">all_prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
-
-    <span class="c1"># Recursively expand IRIs and prepare sub-directories</span>
-    <span class="c1"># Nested lists are not supported</span>
-    <span class="n">nested</span> <span class="o">=</span> <span class="n">dicttypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;mappingURL&quot;</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-                <span class="k">with</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts2</span><span class="p">:</span>
-                    <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mappingFormat&quot;</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="s2">&quot;statements&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-                        <span class="n">d</span><span class="o">.</span><span class="n">statements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;statements&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;statements&quot;</span><span class="p">,</span> <span class="s2">&quot;mappings&quot;</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
-                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="p">(</span>
-                        <span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
-                        <span class="k">else</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">all_prefixes</span><span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">spo</span>
-                <span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">all_prefixes</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">all_prefixes</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
-                    <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">d</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-function">
-
-
-
 <h2 id="tripper.dataset.dataset.prepare_datadoc" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">prepare_datadoc</span><span class="p">(</span><span class="n">datadoc</span><span class="p">)</span></code>
 
@@ -2345,7 +2257,7 @@ can be serialised to RDF.</p>
     <span class="k">for</span> <span class="nb">type</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">dicttypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;datadoc_label&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dct</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">label</span><span class="p">)):</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">prefixes</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span><span class="n">dct</span><span class="o">=</span><span class="n">dct</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">prefixes</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">d</span>
 </code></pre></div>
@@ -2473,7 +2385,7 @@ the data documentation from.</p></td>
     <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">dicttypes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="s2">&quot;datadoc_label&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-            <span class="n">dct</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="n">types</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+            <span class="n">dct</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span><span class="n">dct</span><span class="o">=</span><span class="n">dct</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">types</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dct</span><span class="p">))</span>
             <span class="k">with</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts2</span><span class="p">:</span>
                 <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">)</span>
@@ -2569,14 +2481,16 @@ as "_id=...".</p></td>
 </table>      <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <p>The keys in <code>dct</code> and <code>kwargs</code> may be either properties defined in the
-<a href="https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json">JSON-LD context</a>
-or one of the following special keywords:
-  - "@id": Dataset IRI.  Must always be given.
-  - "@type": IRI of the ontology class for this type of data.
+<a href="https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json">JSON-LD context</a> or one of the following special keywords:</p>
+<ul>
+<li>"@id": Dataset IRI.  Must always be given.</li>
+<li>"@type": IRI of the ontology class for this type of data.
     For datasets, it is typically used to refer to a specific subclass
     of <code>emmo:DataSet</code> that provides a semantic description of this
-    dataset.</p>
+    dataset.</li>
+</ul>
 </div>
+<p>References:</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
@@ -2607,14 +2521,16 @@ or one of the following special keywords:
 
 <span class="sd">    Notes:</span>
 <span class="sd">        The keys in `dct` and `kwargs` may be either properties defined in the</span>
-<span class="sd">        [JSON-LD context](https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json)</span>
-<span class="sd">        or one of the following special keywords:</span>
+<span class="sd">        [JSON-LD context] or one of the following special keywords:</span>
+
 <span class="sd">          - &quot;@id&quot;: Dataset IRI.  Must always be given.</span>
 <span class="sd">          - &quot;@type&quot;: IRI of the ontology class for this type of data.</span>
 <span class="sd">            For datasets, it is typically used to refer to a specific subclass</span>
 <span class="sd">            of `emmo:DataSet` that provides a semantic description of this</span>
 <span class="sd">            dataset.</span>
 
+<span class="sd">    References:</span>
+<span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`dct` must have an &#39;@id&#39; key&quot;</span><span class="p">)</span>
@@ -2623,7 +2539,7 @@ or one of the following special keywords:
     <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
         <span class="n">all_prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
 
-    <span class="n">d</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">all_prefixes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span><span class="n">dct</span><span class="o">=</span><span class="n">dct</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">all_prefixes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># Bind prefixes</span>
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">all_prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2711,11 +2627,142 @@ or one of the following special keywords:
                 <span class="k">except</span> <span class="p">(</span>
                     <span class="n">dlite</span><span class="o">.</span><span class="n">DLiteMissingInstanceError</span>  <span class="c1"># pylint: disable=no-member</span>
                 <span class="p">):</span>
-                    <span class="c1"># __FIXME__: check session whether want to warn or re-reise</span>
-                    <span class="c1"># in this case</span>
+                    <span class="c1"># __FIXME__: check session whether to warn or re-raise</span>
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot load datamodel: </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">add_dataset</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.dataset.dataset.search_iris" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/ns/dcat#Dataset&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#tripper.dataset.dataset.search_iris" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a list of IRIs for all entries of the given type.
+Additional matching criterias can be specified by <code>kwargs</code>.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore to search.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td></td>
+        <td><p>Search for entries that are individuals of the class with
+this IRI.  The default is <code>dcat:Dataset</code>.</p></td>
+        <td><code>&#39;http://www.w3.org/ns/dcat#Dataset&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Match criterias.</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    <p>List all dataset IRIs:</p>
+<div class="highlight"><pre><span></span><code>search_iris(ts)
+</code></pre></div>
+<p>List IRIs of all datasets with John Doe as <code>contactPoint</code>:</p>
+<div class="highlight"><pre><span></span><code>search_iris(ts, contactPoint=&quot;John Doe&quot;)
+</code></pre></div>
+<p>List IRIs of all samples:</p>
+<div class="highlight"><pre><span></span><code>search_iris(ts, type=CHAMEO.Sample)
+</code></pre></div>
+<p>List IRIs of all datasets with John Doe as <code>contactPoint</code> AND are
+measured on a given sample:</p>
+<div class="highlight"><pre><span></span><code>search_iris(
+    ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3
+)
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of IRIs for all entries of the given type.</span>
+<span class="sd">    Additional matching criterias can be specified by `kwargs`.</span>
+
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore to search.</span>
+<span class="sd">        type: Search for entries that are individuals of the class with</span>
+<span class="sd">            this IRI.  The default is `dcat:Dataset`.</span>
+<span class="sd">        kwargs: Match criterias.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        List all dataset IRIs:</span>
+
+<span class="sd">            search_iris(ts)</span>
+
+<span class="sd">        List IRIs of all datasets with John Doe as `contactPoint`:</span>
+
+<span class="sd">            search_iris(ts, contactPoint=&quot;John Doe&quot;)</span>
+
+<span class="sd">        List IRIs of all samples:</span>
+
+<span class="sd">            search_iris(ts, type=CHAMEO.Sample)</span>
+
+<span class="sd">        List IRIs of all datasets with John Doe as `contactPoint` AND are</span>
+<span class="sd">        measured on a given sample:</span>
+
+<span class="sd">            search_iris(</span>
+<span class="sd">                ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3</span>
+<span class="sd">            )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ?iri rdf:type &lt;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>
+
+    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">expanded</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&gt;&quot;</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[a-z][a-z0-9.+-]*://&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ?iri &lt;</span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2">&gt; </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
+    <span class="n">criterias</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    PREFIX rdf: &lt;</span><span class="si">{</span><span class="n">RDF</span><span class="si">}</span><span class="s2">&gt;</span>
+<span class="s2">    SELECT ?iri</span>
+<span class="s2">    WHERE </span><span class="se">{{</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">criterias</span><span class="si">}</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 </code></pre></div>
         </details>
     </div>
