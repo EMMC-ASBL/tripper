@@ -13,7 +13,7 @@ def test_save_and_load():
     """Test save() and load()."""
     # pylint: disable=too-many-statements
 
-    from dataset_paths import outdir
+    from dataset_paths import outdir  # pytest: disable=import-error
 
     from tripper import DCAT, DCTERMS, EMMO, Triplestore
     from tripper.dataset import load, load_dict, save, save_dict
