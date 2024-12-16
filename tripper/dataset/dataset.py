@@ -42,9 +42,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import requests
-import yaml  # type: ignore
-
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
 
