@@ -1,5 +1,7 @@
 """Test the dataset module."""
 
+import pytest
+
 from tripper import Triplestore
 from tripper.dataset import TableDoc
 
@@ -9,6 +11,8 @@ def test_as_dicts():
     """Test the as_dicts() method."""
 
     from tripper import DCAT, EMMO, Namespace
+
+    pytest.importorskip("rdflib")
 
     ONTO = Namespace("http:/example.com/onto#")
     DS = Namespace("http:/example.com/datasets#")
