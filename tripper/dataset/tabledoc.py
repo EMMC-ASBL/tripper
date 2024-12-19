@@ -69,21 +69,42 @@ class TableDoc:
         for d in self.asdicts():
             save_dict(ts, d)
 
-    @classmethod
+    @staticmethod
     def parse_csv(
-        self,
         csvfile: "Union[Path, str]",
         type: "Optional[str]" = "dataset",
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[dict, list]]" = None,
-        dialect="excel",
+        dialect: "Union[csv.Dialect, str]" = "excel",
         **kwargs,
-    ) -> None:
-        """Parse a csv file."""
-        with open(csvfile, newline="") as f:
+    ) -> "TableDoc":
+        # pylint: disable=line-too-long
+        """Parse a csv file using the standard library csv module.
+
+        Arguments:
+            csvfile: CSV file to parse.
+            type: Type of data to save (applies to all rows).  Should
+                either be one of the pre-defined names: "dataset",
+                "distribution", "accessService", "parser" and "generator"
+                or an IRI to a class in an ontology.  Defaults to
+                "dataset".
+            prefixes: Dict with prefixes in addition to those included in the
+                JSON-LD context.  Should map namespace prefixes to IRIs.
+            context: Dict with user-defined JSON-LD context.
+            dialect: A subclass of csv.Dialect, or the name of the dialect,
+                specifying how the `csvfile` is formatted.  For more details,
+                see [Dialects and Formatting Parameters].
+            kwargs: Additional keyword arguments overriding individual
+                formatting parameters.  For more details, see
+                [Dialects and Formatting Parameters].
+
+        References:
+        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
+        """
+        with open(csvfile, encoding="utf-8") as f:
             reader = csv.reader(f, dialect=dialect, **kwargs)
             header = next(reader)[0].split(reader.dialect.delimiter)
-            data = [row for row in reader]
+            data = list(reader)
         return TableDoc(
             header=header,
             data=data,
