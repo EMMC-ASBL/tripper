@@ -19,9 +19,7 @@
         "inSeries" : {
           "@type" : "@id",
           "@id" : "dcat:inSeries"
-        },
-        "semdata":"https://www.example.org/semdata#",
-        "mat": "http://www.example.org/material#"
+        }
       }
   ],
     "@id": "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001",
