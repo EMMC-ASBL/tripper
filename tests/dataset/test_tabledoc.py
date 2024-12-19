@@ -81,7 +81,7 @@ def test_as_dicts():
     print(ts.serialize())
 
 
-#if True:
+# if True:
 def test_parse_csv():
     """Test parsing a csv file."""
     from dataset_paths import indir  # pylint: disable=import-error
