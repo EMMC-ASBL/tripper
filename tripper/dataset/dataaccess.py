@@ -175,9 +175,9 @@ def save(
     # Update triplestore
     ts.add_triples(triples)
     if save_dataset:
-        save_dict(ts, "dataset", dataset, prefixes=prefixes)
+        save_dict(ts, dataset, "dataset", prefixes=prefixes)
     elif save_distribution:
-        save_dict(ts, "distribution", distribution, prefixes=prefixes)
+        save_dict(ts, distribution, "distribution", prefixes=prefixes)
 
     return dataset["@id"]
 
