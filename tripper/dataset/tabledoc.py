@@ -75,6 +75,7 @@ class TableDoc:
         type: "Optional[str]" = "dataset",
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[dict, list]]" = None,
+        encoding: str = "utf-8",
         dialect: "Union[csv.Dialect, str]" = "excel",
         **kwargs,
     ) -> "TableDoc":
@@ -91,6 +92,8 @@ class TableDoc:
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
             context: Dict with user-defined JSON-LD context.
+            encoding: The encoding of the csv file.  Note that Excel may
+                encode as "ISO-8859" (commonly used in 1990th).
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
@@ -101,7 +104,7 @@ class TableDoc:
         References:
         [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
         """
-        with open(csvfile, encoding="utf-8") as f:
+        with open(csvfile, encoding=encoding) as f:
             reader = csv.reader(f, dialect=dialect, **kwargs)
             header = next(reader)[0].split(reader.dialect.delimiter)
             data = list(reader)
