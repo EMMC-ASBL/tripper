@@ -34,6 +34,6 @@
     "isDescriptionOf": "mat:concrete1",
     "distribution": {
       "downloadURL": "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/tests/input/77600-23-001_5kV_400x_m001.tif",
-      "mediaType": "image/tiff",
+      "mediaType": "image/tiff"
     }
 }
