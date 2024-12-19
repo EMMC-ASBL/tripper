@@ -1,5 +1,7 @@
 """Basic interface for tabular documentation of datasets."""
 
+import csv
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
@@ -66,3 +68,26 @@ class TableDoc:
         """Save tabular datadocumentation to triplestore."""
         for d in self.asdicts():
             save_dict(ts, d)
+
+    @classmethod
+    def parse_csv(
+        self,
+        csvfile: "Union[Path, str]",
+        type: "Optional[str]" = "dataset",
+        prefixes: "Optional[dict]" = None,
+        context: "Optional[Union[dict, list]]" = None,
+        dialect="excel",
+        **kwargs,
+    ) -> None:
+        """Parse a csv file."""
+        with open(csvfile, newline="") as f:
+            reader = csv.reader(f, dialect=dialect, **kwargs)
+            header = next(reader)[0].split(reader.dialect.delimiter)
+            data = [row for row in reader]
+        return TableDoc(
+            header=header,
+            data=data,
+            type=type,
+            prefixes=prefixes,
+            context=context,
+        )
