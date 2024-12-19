@@ -81,12 +81,15 @@ def test_as_dicts():
     print(ts.serialize())
 
 
-if True:
-    # def test_parse_csv():
+#if True:
+def test_parse_csv():
     """Test parsing a csv file."""
     from dataset_paths import indir  # pylint: disable=import-error
 
+    from tripper import Triplestore
     from tripper.dataset import TableDoc
+
+    pytest.importorskip("rdflib")
 
     td = TableDoc.parse_csv(
         indir / "semdata.csv",
@@ -107,3 +110,7 @@ if True:
         "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
         "77600-23-001/77600-23-001_5kV_400x_m001"
     )
+
+    ts = Triplestore(backend="rdflib")
+    td.save(ts)
+    print(ts.serialize())
