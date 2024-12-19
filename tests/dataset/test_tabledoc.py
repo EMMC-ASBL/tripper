@@ -79,3 +79,40 @@ def test_as_dicts():
     ts = Triplestore(backend="rdflib")
     td.save(ts)
     print(ts.serialize())
+
+
+# if True:
+def test_parse_csv():
+    """Test parsing a csv file."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    pytest.importorskip("rdflib")
+
+    from tripper import Triplestore
+    from tripper.dataset import TableDoc
+
+    td = TableDoc.parse_csv(
+        indir / "semdata.csv",
+        delimiter=";",
+        prefixes={
+            "sem": "https://w3id.com/emmo/domain/sem/0.1#",
+            "semdata": "https://he-matchmaker.eu/data/sem/",
+            "sample": "https://he-matchmaker.eu/sample/",
+            "mat": "https://he-matchmaker.eu/material/",
+            "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
+            "parser": "http://sintef.no/dlite/parser#",
+            "gen": "http://sintef.no/dlite/generator#",
+        },
+    )
+
+    # pylint: disable=unused-variable,unbalanced-tuple-unpacking
+    img, series, batch, sample = td.asdicts()
+
+    assert img["@id"] == (
+        "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
+        "77600-23-001/77600-23-001_5kV_400x_m001"
+    )
+
+    ts = Triplestore(backend="rdflib")
+    td.save(ts)
+    print(ts.serialize())
