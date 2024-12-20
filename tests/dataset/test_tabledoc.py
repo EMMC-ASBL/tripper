@@ -112,6 +112,10 @@ def test_parse_csv():
         "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
         "77600-23-001/77600-23-001_5kV_400x_m001"
     )
+    assert img.distribution.downloadURL == (
+        "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/"
+        "tests/input/77600-23-001_5kV_400x_m001.tif"
+    )
 
     ts = Triplestore(backend="rdflib")
     td.save(ts)
