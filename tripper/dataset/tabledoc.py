@@ -28,6 +28,7 @@ class TableDoc:
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         context: Dict with user-defined JSON-LD context.
+        strip: Whether to strip leading and trailing whitespaces from cells.
 
     """
 
@@ -40,12 +41,14 @@ class TableDoc:
         type: "Optional[str]" = "dataset",
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[dict, list]]" = None,
+        strip: bool = True,
     ):
         self.header = header
         self.data = data
         self.type = type
         self.prefixes = prefixes
         self.context = context
+        self.strip = strip
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
@@ -55,9 +58,11 @@ class TableDoc:
         for row in self.data:
             d = AttrDict()
             for i, colname in enumerate(self.header):
-                cell = row[i]
+                cell = row[i].strip() if self.strip else row[i]
                 if cell:
-                    addnested(d, colname, cell)
+                    addnested(
+                        d, colname.strip() if self.strip else colname, cell
+                    )
             jsonld = as_jsonld(
                 d, type=self.type, prefixes=self.prefixes, **kw  # type: ignore
             )
@@ -106,8 +111,9 @@ class TableDoc:
         """
         with open(csvfile, encoding=encoding) as f:
             reader = csv.reader(f, dialect=dialect, **kwargs)
-            header = next(reader)[0].split(reader.dialect.delimiter)
+            header = next(reader)
             data = list(reader)
+
         return TableDoc(
             header=header,
             data=data,
