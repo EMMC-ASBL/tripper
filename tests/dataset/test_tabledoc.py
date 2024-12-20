@@ -82,15 +82,16 @@ def test_as_dicts():
 
 
 # if True:
-def test_parse_csv():
+def test_csv():
     """Test parsing a csv file."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
 
     pytest.importorskip("rdflib")
 
     from tripper import Triplestore
     from tripper.dataset import TableDoc
 
+    # Read csv file
     td = TableDoc.parse_csv(
         indir / "semdata.csv",
         delimiter=";",
@@ -117,6 +118,10 @@ def test_parse_csv():
         "tests/input/77600-23-001_5kV_400x_m001.tif"
     )
 
+    # Write the table to a new csv file
+    td.write_csv(outdir / "semdata.csv")
+
+    # Print serialised KB
     ts = Triplestore(backend="rdflib")
     td.save(ts)
     print(ts.serialize())

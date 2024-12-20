@@ -109,7 +109,7 @@ class TableDoc:
         References:
         [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
         """
-        with open(csvfile, encoding=encoding) as f:
+        with open(csvfile, mode="rt", encoding=encoding) as f:
             reader = csv.reader(f, dialect=dialect, **kwargs)
             header = next(reader)
             data = list(reader)
@@ -121,3 +121,32 @@ class TableDoc:
             prefixes=prefixes,
             context=context,
         )
+
+    def write_csv(
+        self,
+        csvfile: "Union[Path, str]",
+        encoding: str = "utf-8",
+        dialect: "Union[csv.Dialect, str]" = "excel",
+        **kwargs,
+    ) -> None:
+        # pylint: disable=line-too-long
+        """Write the table to a csv file using the standard library csv module.
+
+        Arguments:
+            csvfile: CSV file to parse.
+            encoding: The encoding of the csv file.
+            dialect: A subclass of csv.Dialect, or the name of the dialect,
+                specifying how the `csvfile` is formatted.  For more details,
+                see [Dialects and Formatting Parameters].
+            kwargs: Additional keyword arguments overriding individual
+                formatting parameters.  For more details, see
+                [Dialects and Formatting Parameters].
+
+        References:
+        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
+        """
+        with open(csvfile, mode="wt", encoding=encoding) as f:
+            writer = csv.writer(f, dialect=dialect, **kwargs)
+            writer.writerow(self.header)
+            for row in self.data:
+                writer.writerow(row)
