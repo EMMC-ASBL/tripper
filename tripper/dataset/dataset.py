@@ -386,7 +386,7 @@ def get_prefixes(
     """Loads the JSON-LD context and returns a dict mapping prefixes to
     their namespace URL.
 
-    For arguments, see get_jsonld_context().
+    Arguments are passed to `get_jsonld_context()`.
     """
     ctx = get_jsonld_context(
         context=context, timeout=timeout, fromfile=fromfile
@@ -399,16 +399,23 @@ def get_prefixes(
     return prefixes
 
 
-# TODO: update this to take an initial argument `context`.
-# See get_jsonld_context()
-def get_shortnames(timeout: float = 5) -> dict:
+def get_shortnames(
+    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    timeout: float = 5,
+    fromfile: bool = True,
+) -> dict:
     """Loads the JSON-LD context and returns a dict mapping IRIs to their
-    short names defined in the context."""
-    context = get_jsonld_context(timeout=timeout)
-    prefixes = get_prefixes()
+    short names defined in the context.
+
+    Arguments are passed to `get_jsonld_context()`.
+    """
+    ctx = get_jsonld_context(
+        context=context, timeout=timeout, fromfile=fromfile
+    )
+    prefixes = get_prefixes(context=ctx)
     shortnames = {
         expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
-        for k, v in context.items()
+        for k, v in ctx.items()
         if (
             (isinstance(v, str) and not v.endswith(("#", "/")))
             or isinstance(v, dict)
