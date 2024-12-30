@@ -11,6 +11,7 @@ pytest.importorskip("requests")
 def test_get_jsonld_context():
     """Test get_jsonld_context()."""
     from tripper.dataset import get_jsonld_context
+    from tripper.dataset.dataset import CONTEXT_URL
 
     context = get_jsonld_context()
     assert isinstance(context, dict)
@@ -20,6 +21,14 @@ def test_get_jsonld_context():
     # Check for consistency between context online and on disk
     online_context = get_jsonld_context(fromfile=False)
     assert online_context == context
+
+    # Test context argument
+    context2 = get_jsonld_context(context=CONTEXT_URL)
+    assert context2 == context
+
+    assert "newkey" not in context
+    context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
+    assert context3["newkey"] == "onto:newkey"
 
 
 def test_get_prefixes():
