@@ -32,6 +32,8 @@ def test_as_dicts():
             "onto": "http:/example.com/onto#",
             "ds": "http:/example.com/datasets#",
         },
+        # Replace the "ds" prefix above with this, once the "context" keyword
+        # argument is fully implemented.
         # context={
         #    "ds": "http:/example.com/datasets#",
         # },
