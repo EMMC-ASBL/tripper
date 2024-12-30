@@ -105,7 +105,6 @@ max-locals = 20
 disable = [
     "fixme",
     "invalid-name",
-    #"too-many-positional-arguments",
 ]
 good-names = [
     # Default
