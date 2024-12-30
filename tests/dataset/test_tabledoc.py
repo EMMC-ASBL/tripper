@@ -124,4 +124,5 @@ def test_csv():
     # Print serialised KB
     ts = Triplestore(backend="rdflib")
     td.save(ts)
+    ts.serialize(outdir / "semdata.ttl")
     print(ts.serialize())
