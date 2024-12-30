@@ -58,7 +58,7 @@ class TableDoc:
         for row in self.data:
             d = AttrDict()
             for i, colname in enumerate(self.header):
-                cell = row[i].strip() if self.strip else row[i]
+                cell = row[i].strip() if row[i] and self.strip else row[i]
                 if cell:
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
