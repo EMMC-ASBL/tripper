@@ -1,4 +1,4 @@
-"""Test the dataset module."""
+"""Test the TableDoc class."""
 
 import pytest
 
