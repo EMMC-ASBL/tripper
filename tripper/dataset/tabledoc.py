@@ -47,7 +47,7 @@ class TableDoc:
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
-        kw = {"_context": self.context} if self.context else {}
+        kw = {"@context": self.context} if self.context else {}
 
         results = []
         for row in self.data:
