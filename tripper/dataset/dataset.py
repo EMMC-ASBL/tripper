@@ -378,15 +378,22 @@ def get_jsonld_context(
     return ctx
 
 
-# TODO: update this to take an initial argument `context`.
-# See get_jsonld_context()
-def get_prefixes(timeout: float = 5) -> dict:
+def get_prefixes(
+    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    timeout: float = 5,
+    fromfile: bool = True,
+) -> dict:
     """Loads the JSON-LD context and returns a dict mapping prefixes to
-    their namespace URL."""
-    context = get_jsonld_context(timeout=timeout)
+    their namespace URL.
+
+    For arguments, see get_jsonld_context().
+    """
+    ctx = get_jsonld_context(
+        context=context, timeout=timeout, fromfile=fromfile
+    )
     prefixes = {
         k: v
-        for k, v in context.items()
+        for k, v in ctx.items()
         if isinstance(v, str) and v.endswith(("#", "/"))
     }
     return prefixes

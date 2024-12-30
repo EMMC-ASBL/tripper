@@ -39,6 +39,10 @@ def test_get_prefixes():
     assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
     assert prefixes["emmo"] == "https://w3id.org/emmo#"
 
+    # Test context argument
+    prefixes2 = get_prefixes(context={"onto": "http://example.com/onto#"})
+    assert prefixes2["onto"] == "http://example.com/onto#"
+
 
 def test_get_shortnames():
     """Test get_shortnames()."""
