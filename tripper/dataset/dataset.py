@@ -40,7 +40,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
-from tripper.utils import AttrDict, as_python
+from tripper.utils import AttrDict, as_python, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
@@ -541,10 +541,13 @@ def expand_iri(iri: str, prefixes: dict) -> str:
 
 
 def read_datadoc(filename: "Union[str, Path]") -> dict:
-    """Read YAML data documentation and return it as a dict."""
+    """Read YAML data documentation and return it as a dict.
+
+    The filename may also be an URL to a file accessible with HTTP GET.
+    """
     import yaml  # type: ignore
 
-    with open(filename, "r", encoding="utf-8") as f:
+    with openfile(filename, mode="rt", encoding="utf-8") as f:
         d = yaml.safe_load(f)
     return prepare_datadoc(d)
 
@@ -557,7 +560,8 @@ def save_datadoc(
     Arguments:
         ts: Triplestore to save dataset documentation to.
         file_or_dict: Data documentation dict or name of a YAML file to read
-            the data documentation from.
+            the data documentation from.  It may also be an URL to a file
+            accessible with HTTP GET.
 
     Returns:
         Dict-representation of the loaded dataset.

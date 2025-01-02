@@ -76,7 +76,7 @@ class AttrDict(dict):
 def openfile(
     url: "Union[str, Path]", timeout: float = 3, **kwargs
 ) -> "Generator":
-    """Like open(), but allows opening remote files using http requests.
+    """Like open(), but allows opening remote files using HTTP GET requests.
 
     Should always be used in a with-statement.
 

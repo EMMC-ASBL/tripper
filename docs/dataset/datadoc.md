@@ -124,6 +124,9 @@ AttrDict(...)
 
 ```
 
+The returned `AttrDict` instance is an updated copy of `dataset` (casted to a dict subclass with attribute access).
+It correspond to a valid JSON-LD document and is the same as returned by [as_jsonld()].
+
 You can use `ts.serialize()` to list the content of the triplestore (defaults to turtle):
 
 ```python
@@ -169,8 +172,17 @@ See [semdata.yaml] for an example of a [YAML] representation of a multi-resource
 
 ### Documenting as a YAML file
 The [save_datadoc()] function allow to save a [YAML] file in [multi-resource](#multi-resource-dict) format to a triplestore.
+Saving [semdata.yaml] to a triplestore can e.g. be done with
 
-See [semdata.yaml] for an example.
+```python
+>>> from tripper.dataset import save_datadoc
+>>> save_datadoc(  # doctest: +ELLIPSIS
+...    ts,
+...    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml"
+... )
+AttrDict(...)
+
+```
 
 
 ### Documenting as table
@@ -235,6 +247,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
 [save_dict()]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
+[as_jsonld()]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
 [save_datadoc()]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.dataset.save_datadoc
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
 [semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tabledoc-csv/tests/input/semdata.csv
