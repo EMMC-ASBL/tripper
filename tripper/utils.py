@@ -68,7 +68,9 @@ class AttrDict(dict):
 
 
 @contextmanager
-def openfile(url: "Union[str, Path]", timeout: float = 3, **kwargs):
+def openfile(
+    url: "Union[str, Path]", timeout: float = 3, **kwargs
+) -> "Generator":
     """Like open(), but allows opening remote files using http requests.
 
     Should always be used in a with-statement.

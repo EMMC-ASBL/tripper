@@ -24,6 +24,7 @@ ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :da
 {'a': 1, 'b': 2}
 
 ```
+
 """
 
 # pylint: disable=invalid-name,redefined-builtin
