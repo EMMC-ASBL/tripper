@@ -81,7 +81,7 @@ generators:
 
 
 # Other entities, like samples, instruments, persons, models etc...
-other_entries:
+resources:
   - "@id": sample:SEM_cement_batch2/77600-23-001
     "@type": chameo:Sample
     title: Series for SEM images for sample 77600-23-001.

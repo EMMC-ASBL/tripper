@@ -82,10 +82,10 @@ dicttypes = {
         "datadoc_label": "datasets",
         "@type": [DCAT.Dataset, EMMO.DataSet],
     },
-    "entry": {
-        # General datacatalog entry that is not one of the above
+    "resource": {
+        # General data resource
         # Ex: samples, instruments, models, people, projects, ...
-        "datadoc_label": "other_entries",  # XXX better label?
+        "datadoc_label": "resources",
         "@type": OWL.NamedIndividual,
     },
 }
@@ -620,7 +620,6 @@ def as_jsonld(
     dct: dict,
     type: "Optional[str]" = "dataset",
     prefixes: "Optional[dict]" = None,
-    _entryid: "Optional[str]" = None,
     **kwargs,
 ) -> dict:
     """Return an updated copy of dict `dct` as valid JSON-LD.
@@ -633,18 +632,19 @@ def as_jsonld(
             Defaults to "dataset".
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
-        _entryid: Id of base entry that is documented. Intended for
-            internal use only.
         kwargs: Additional keyword arguments to add to the returned dict.
             A leading underscore in a key will be translated to a
             leading "@"-sign.  For example, "@id" or "@context" may be
             provided as "_id" or "_context", respectively.
 
-
     Returns:
         An updated copy of `dct` as valid JSON-LD.
     """
     # pylint: disable=too-many-branches
+
+    # Id of base entry that is documented
+    _entryid = kwargs.pop("_entryid", None)
+
     d = AttrDict()
     if not _entryid:
         d["@context"] = CONTEXT_URL

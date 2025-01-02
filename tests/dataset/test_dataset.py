@@ -15,20 +15,29 @@ def test_get_jsonld_context():
 
     context = get_jsonld_context()
     assert isinstance(context, dict)
-    assert "@version" in context
-    assert len(context) > 20
+    assert len(context) > 80
+    assert context["@version"] == 1.1
+    assert context["status"] == "adms:status"
 
-    # Check for consistency between context online and on disk
+    # Test online context. It should equal context on disk.
+    # However, since they are updated asynchronously, we do not test for
+    # equality.
     online_context = get_jsonld_context(fromfile=False)
-    assert online_context == context
+    assert isinstance(online_context, dict)
+    assert len(online_context) > 80
+    assert online_context["@version"] == 1.1
+    assert online_context["status"] == "adms:status"
 
     # Test context argument
     context2 = get_jsonld_context(context=CONTEXT_URL)
-    assert context2 == context
+    assert context2 == online_context
 
     assert "newkey" not in context
     context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
     assert context3["newkey"] == "onto:newkey"
+
+    with pytest.raises(TypeError):
+        get_jsonld_context(context=[None])
 
 
 def test_get_prefixes():

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from tripper import Triplestore
 from tripper.dataset.dataset import addnested, as_jsonld, save_dict
-from tripper.utils import AttrDict
+from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import List, Optional, Sequence, Union
@@ -109,7 +109,7 @@ class TableDoc:
         References:
         [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
         """
-        with open(csvfile, mode="rt", encoding=encoding) as f:
+        with openfile(csvfile, mode="rt", encoding=encoding) as f:
             reader = csv.reader(f, dialect=dialect, **kwargs)
             header = next(reader)
             data = list(reader)

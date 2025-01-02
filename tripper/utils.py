@@ -7,13 +7,15 @@ import inspect
 import random
 import re
 import string
+import tempfile
+from contextlib import contextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
 from tripper.namespace import XSD, Namespace
 
 if TYPE_CHECKING:  # pragma: no cover
-    from pathlib import Path
     from typing import (
         Any,
         Callable,
@@ -63,6 +65,51 @@ class AttrDict(dict):
 
     def __dir__(self):
         return dict.__dir__(self) + list(self.keys())
+
+
+@contextmanager
+def openfile(url: "Union[str, Path]", timeout: float = 3, **kwargs):
+    """Like open(), but allows opening remote files using http requests.
+
+    Should always be used in a with-statement.
+
+    Arguments:
+        url: File path or URL to open.
+        timeout: Timeout for accessing the file in seconds.
+        kwargs: Additional passed to open().
+
+    Returns:
+        A stream object returned by open().
+
+    """
+    url = str(url)
+    u = url.lower()
+    tmpfile = False
+
+    if u.startswith("file:"):
+        fname = url[7:] if u.startswith("file://") else url[5:]
+
+    elif u.startswith("http://") or u.startswith("https://"):
+        import requests  # pylint: disable=import-outside-toplevel
+
+        tmpfile = True
+        r = requests.get(url, timeout=timeout)
+        r.raise_for_status()
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            fname = f.name
+            f.write(r.content)
+
+    elif re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*://", url):
+        raise IOError(f"unknown scheme: {url.split(':', 1)[0]}")
+
+    else:
+        fname = url
+
+    try:
+        yield open(fname, **kwargs)  # pylint: disable=unspecified-encoding
+    finally:
+        if tmpfile:
+            Path(fname).unlink()
 
 
 def infer_iri(obj):

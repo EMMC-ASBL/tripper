@@ -24,10 +24,7 @@
 
     "status": "adms:status",
     "versionNotes": "adms:versionNotes",
-    "distribution": {
-      "@id": "dcat:distribution",
-      "@type": "@id"
-    },
+
     "contactPoint": "dcat:contactPoint",
     "hasCurrentVersion": "dcat:hasCurrentVersion",
     "hasVersion": "dcat:hasVersion",
@@ -37,14 +34,20 @@
     },
     "keyword": "dcat:keyword",
     "landingPage": "dcat:landingPage",
-    "qualifiedRelation": "dcat:qualifiedRelation",
+    "qualifiedRelation": {
+      "@id": "dcat:qualifiedRelation",
+      "@type": "@id"
+    },
     "theme": "dcat:theme",
     "version": "dcat:version",
     "accessRights": "dcterms:accessRights",
     "conformsTo": "dcterms:conformsTo",
     "creator": "dcterms:creator",
     "description": "dcterms:description",
-    "hasPart": "dcterms:hasPart",
+    "hasPart": {
+      "@id": "dcterms:hasPart",
+      "@type": "@id"
+    },
     "identifier": "dcterms:identifier",
     "isReferencedBy": "dcterms:isReferencedBy",
     "issued": "dcterms:issued",
@@ -52,13 +55,29 @@
     "license": "dcterms:license",
     "modified": "dcterms:modified",
     "publisher": "dcterms:publisher",
-    "relation": "dcterms:relation",
-    "replaces": "dcterms:replaces",
+    "relation": {
+      "@id": "dcterms:relation",
+      "@type": "@id"
+    },
+
+    "replaces": {
+      "@id": "dcterms:replaces",
+      "@type": "@id"
+    },
+
     "rights": "dcterms:rights",
     "title": "dcterms:title",
     "type": "dcterms:type",
     "hasPolicy": "odrl:hasPolicy",
-    "qualifiedAttribution": "prov:qualifiedAttribution",
+    "qualifiedAttribution": {
+      "@id": "prov:qualifiedAttribution",
+      "@type": "@id"
+    },
+
+    "distribution": {
+      "@id": "dcat:distribution",
+      "@type": "@id"
+    },
 
     "accessService": {
       "@id": "dcat:accessService",
@@ -76,16 +95,19 @@
     "temporalResolution": "dcat:temporalResolution",
     "wasGeneratedBy": "prov:wasGeneratedBy",
     "format": "dcterms:format",
-    "checksum": "spdx:checksum",
+    "checksum": {
+      "@id": "spdx:checksum",
+      "@type": "@id"
+    },
 
     "abstract": "dcterms:abstract",
     "bibliographicCitation": "dcterms:bibliographicCitation",
-    "source": "dcterms:source",
     "deprecated": "owl:deprecated",
     "comment": "rdfs:comment",
     "isDefinedBy": "rdfs:isDefinedBy",
     "label": "rdfs:label",
     "seeAlso": "rdfs:seeAlso",
+    "source": "dcterms:source",
 
     "hasDatum": {
       "@id": "emmo:EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e",

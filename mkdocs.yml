@@ -81,6 +81,10 @@ nav:
   - Home: index.md
   - Tutorial: tutorial.md
   - Backend discovery: backend_discovery.md
+  - Data documentation:
+    - Introduction: dataset/datadoc.md
+    - Predefined prefixes: dataset/datadoc-prefixes.md
+    - Predefined keywords: dataset/datadoc-keywords.md
   - ... | api_reference/**
   - Known issues: known-issues.md
   - For developers: developers.md
