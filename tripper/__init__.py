@@ -24,7 +24,7 @@ from .namespace import (
     Namespace,
 )
 from .triplestore import Triplestore, backend_packages
-from .tripper import Tripper
+from .triplestore_extend import Tripper
 
 __version__ = "0.3.4"
 

@@ -55,6 +55,11 @@ class AttrDict(dict):
     def __getattr__(self, name):
         if name in self:
             return self[name]
+        if name == "__wrapped__":
+            # Hack to work around a pytest bug.  During its collection
+            # phase pytest tries to mock namespace objects with an
+            # attribute `__wrapped__`.
+            return None
         raise KeyError(name)
 
     def __setattr__(self, name, value):
