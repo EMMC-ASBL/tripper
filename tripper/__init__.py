@@ -26,6 +26,10 @@ from .namespace import (
 from .triplestore import Triplestore, backend_packages
 from .triplestore_extend import Tripper
 
+# Import backends here to avoid defining new globals later
+# Needed for pytest+doctest to pass
+import tripper.backends # pylint: disable=unused-import
+
 __version__ = "0.3.4"
 
 # Pre-defined namespaces
