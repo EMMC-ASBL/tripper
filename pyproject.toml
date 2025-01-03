@@ -83,6 +83,9 @@ Source = "https://github.com/EMMC-ASBL/tripper"
 Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
 
+[project.scripts]
+datadoc = "tripper.dataset.datadoc:main"
+
 [tool.isort]
 line_length = 79  # PEP8
 
