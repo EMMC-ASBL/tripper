@@ -205,9 +205,10 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [emmo:DataSet]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
-[save_dict()]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
-[as_jsonld()]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
-[save_datadoc()]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.dataset.save_datadoc
+[save_dict()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
+[as_jsonld()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
+[save_datadoc()]:
+../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_datadoc
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
 [semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tabledoc-csv/tests/input/semdata.csv
 [TableDoc]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.tabledoc.TableDoc

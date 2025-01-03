@@ -1,6 +1,7 @@
 Predefined prefixes
 ===================
-All prefixes listed on this page are defined in the [default JSON-LD context].
+All namespace prefixes listed on this page are defined in the [default JSON-LD context].
+See [User-defined prefixes] for how to extend this list with additional namespace prefixes.
 
 * adms: http://www.w3.org/ns/adms#
 * dcat: http://www.w3.org/ns/dcat#
@@ -24,3 +25,4 @@ All prefixes listed on this page are defined in the [default JSON-LD context].
 
 
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
+[User-defined prefixes]: ../customisation/#user-defined-prefixes

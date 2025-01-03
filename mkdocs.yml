@@ -84,6 +84,7 @@ nav:
   - Data documentation:
     - Introduction: dataset/introduction.md
     - Documenting a resource: dataset/documenting-a-resource.md
+    - Customisation: dataset/customisation.md
     - Predefined prefixes: dataset/prefixes.md
     - Predefined keywords: dataset/keywords.md
   - ... | api_reference/**

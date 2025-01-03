@@ -1,6 +1,7 @@
 Predefined keywords
 ===================
 All keywords listed on this page (except for the special "@"-prefixed keywords) are defined in the [default JSON-LD context].
+See [User-defined keywords] for how to extend this list with additional namespace prefixes.
 
 
 Special keywords for JSON-LD
@@ -61,7 +62,7 @@ Other general properties on resources
 - **[label]** (*Literal*): Provides a human-readable version of a resource's name.
 - **[seeAlso]** (*Literal*): Indicates a resource that might provide additional information about the subject resource.
 - **[source]** (*Literal*): A related resource from which the described resource is derived.
-- **[statements]** (*Literal*): A list of subject-predicate-object triples with additional RDF statements documenting the resource.
+- **[statements]** (*Literal JSON*): A list of subject-predicate-object triples with additional RDF statements documenting the resource.
 
 
 Properties specific for datasets
@@ -74,7 +75,7 @@ Properties specific for datasets
 - **[inSeries]** (*IRI*): A dataset series of which the dataset is part.
 - **[isInputOf]** (*IRI*): A process that this dataset is the input to.
 - **[isOutputOf]** (*IRI*): A process that this dataset is the output of.
-- **[mappings]** (*Literal*): A list of subject-predicate-object triples mapping the datamodel to ontological concepts.
+- **[mappings]** (*Literal JSON*): A list of subject-predicate-object triples mapping the datamodel to ontological concepts.
 - **[mappingURL]** (*Literal*): URL to a document defining the mappings of the datamodel.
       The file format is given by `mappingFormat`.
       Defaults to turtle.
@@ -105,7 +106,7 @@ Properties specific for distributions
 
 Properties for parsers and generators
 -------------------------------------
-- **[configuration]** (*Literal*): A JSON string with configurations specific to the parser or generator.
+- **[configuration]** (*Literal JSON*): A JSON string with configurations specific to the parser or generator.
 - **[generatorType]** (*Literal*): Generator type. Ex: `application/vnd.dlite-generate`.
 - **[parserType]** (*Literal*): Parser type. Ex: `application/vnd.dlite-parse`.
 
@@ -222,3 +223,5 @@ Properties for parsers and generators
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [vCard]: https://www.w3.org/TR/vcard-rdf/
 [IANA]: https://www.iana.org/assignments/media-types/media-types.xhtml
+
+[User-defined keywords]: ../customisation/#user-defined-keywords
