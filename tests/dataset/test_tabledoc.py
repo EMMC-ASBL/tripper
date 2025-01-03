@@ -85,6 +85,9 @@ def test_asdicts():
 
 def test_fromdicts():
     """Test the fromdicts() method."""
+
+    pytest.importorskip("rdflib")
+
     from tripper import Namespace
     from tripper.dataset import TableDoc
 
