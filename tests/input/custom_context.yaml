@@ -1,0 +1,40 @@
+# Custom context
+"@context":
+  myonto: http://example.com/myonto#
+
+  batchNumber:
+    "@id": myonto:batchNumber
+    "@type": xsd:integer
+
+  fromBatch:
+    "@id": myonto:fromBatch
+    "@type": "@id"
+
+
+# Additional prefixes
+prefixes:
+  kb: http://example.com/kb#
+
+
+resources:
+  # Samples
+  - "@id": kb:sampleA
+    "@type": chameo:Sample
+    fromBatch: kb:batch1
+
+  - "@id": kb:sampleB
+    "@type": chameo:Sample
+    fromBatch: kb:batch1
+
+  - "@id": kb:sampleC
+    "@type": chameo:Sample
+    fromBatch: kb:batch2
+
+  # Batches
+  - "@id": kb:batch1
+    "@type": myonto:Batch
+    batchNumber: 1
+
+  - "@id": kb:batch2
+    "@type": myonto:Batch
+    batchNumber: 2

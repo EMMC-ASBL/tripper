@@ -72,8 +72,12 @@ In your ontology you may define `fromBatch` as a object property with IRI: http:
 
 Here the special value "@id" for the "@type" means that the value of `fromBatch` must be an IRI.
 
-### Providing a custom context
-TODO
+
+Providing a custom context
+--------------------------
+Custom context can be provided for all the interfaces described in the section [Documenting a resource].
+
+In the YAML documentation, Custom context can be provided with the "@context"
 
 
 User-defined resource types
@@ -87,9 +91,10 @@ Instead, the list of available resource types should be stored and retrieved fro
 
 
 
+[Documenting a resource]: ../documenting-a-resource
 [With custom context]: #with-custom-context
 [User-defined keywords]: #user-defined-keywords
-[resource types]: introduction.md#resource-types
+[resource types]: ../introduction#resource-types
 [predefined prefixes]: ../prefixes
 [predefined keywords]: ../keywords
 [save_dict()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
