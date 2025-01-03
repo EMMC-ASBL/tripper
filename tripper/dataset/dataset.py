@@ -851,7 +851,7 @@ def get_partial_pipeline(
     return pipeline
 
 
-def search_iris(ts: Triplestore, type=None, **kwargs):
+def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
 
