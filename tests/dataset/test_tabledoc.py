@@ -155,8 +155,8 @@ def test_csv():
     # Re-read the csv file from the string
     with io.StringIO(s) as f:
         td2 = TableDoc.parse_csv(
-            indir / "semdata.csv",
-            delimiter=";",
+            f,
+            delimiter=",",
             prefixes={
                 "sem": "https://w3id.com/emmo/domain/sem/0.1#",
                 "semdata": "https://he-matchmaker.eu/data/sem/",
