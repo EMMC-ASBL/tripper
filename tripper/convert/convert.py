@@ -3,6 +3,7 @@
 
 Example use:
 
+```python
 >>> from tripper import DCTERMS, Literal, Triplestore
 >>> from tripper.convert import load_container, save_container
 
@@ -21,6 +22,8 @@ ValueError: Unrecognised predicate 'http://purl.org/dc/terms/title' in dict: :da
 
 >>> load_container(ts, ":data_indv", ignore_unrecognised=True)
 {'a': 1, 'b': 2}
+
+```
 
 """
 

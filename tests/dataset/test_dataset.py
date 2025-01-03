@@ -11,15 +11,33 @@ pytest.importorskip("requests")
 def test_get_jsonld_context():
     """Test get_jsonld_context()."""
     from tripper.dataset import get_jsonld_context
+    from tripper.dataset.dataset import CONTEXT_URL
 
     context = get_jsonld_context()
     assert isinstance(context, dict)
-    assert "@version" in context
-    assert len(context) > 20
+    assert len(context) > 80
+    assert context["@version"] == 1.1
+    assert context["status"] == "adms:status"
 
-    # Check for consistency between context online and on disk
+    # Test online context. It should equal context on disk.
+    # However, since they are updated asynchronously, we do not test for
+    # equality.
     online_context = get_jsonld_context(fromfile=False)
-    assert online_context == context
+    assert isinstance(online_context, dict)
+    assert len(online_context) > 80
+    assert online_context["@version"] == 1.1
+    assert online_context["status"] == "adms:status"
+
+    # Test context argument
+    context2 = get_jsonld_context(context=CONTEXT_URL)
+    assert context2 == online_context
+
+    assert "newkey" not in context
+    context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
+    assert context3["newkey"] == "onto:newkey"
+
+    with pytest.raises(TypeError):
+        get_jsonld_context(context=[None])
 
 
 def test_get_prefixes():
@@ -29,6 +47,10 @@ def test_get_prefixes():
     prefixes = get_prefixes()
     assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
     assert prefixes["emmo"] == "https://w3id.org/emmo#"
+
+    # Test context argument
+    prefixes2 = get_prefixes(context={"onto": "http://example.com/onto#"})
+    assert prefixes2["onto"] == "http://example.com/onto#"
 
 
 def test_get_shortnames():
@@ -122,6 +144,50 @@ def test_expand_iri():
         assert expand_iri("xxx:type", prefixes) == "xxx:type"
 
 
+def test_as_jsonld():
+    """Test as_jsonld()."""
+    from tripper import DCAT, EMMO, OWL, Namespace
+    from tripper.dataset import as_jsonld
+    from tripper.dataset.dataset import CONTEXT_URL
+
+    with pytest.raises(ValueError):
+        as_jsonld({})
+
+    EX = Namespace("http://example.com/ex#")
+    SER = Namespace("http://example.com/series#")
+    dct = {"@id": "ex:indv", "a": "val"}
+    context = {"ex": EX, "a": "ex:a"}
+
+    d = as_jsonld(dct, _context=context)
+    assert len(d["@context"]) == 2
+    assert d["@context"][0] == CONTEXT_URL
+    assert d["@context"][1] == context
+    assert d["@id"] == EX.indv
+    assert len(d["@type"]) == 2
+    assert set(d["@type"]) == {DCAT.Dataset, EMMO.DataSet}
+    assert d.a == "val"
+
+    d2 = as_jsonld(dct, type="resource", _context=context)
+    assert d2["@context"] == d["@context"]
+    assert d2["@id"] == d["@id"]
+    assert d2["@type"] == OWL.NamedIndividual
+    assert d2.a == "val"
+
+    d3 = as_jsonld(
+        {"inSeries": "ser:main"},
+        prefixes={"ser": SER},
+        a="value",
+        _id="ex:indv2",
+        _type="ex:Item",
+        _context=context,
+    )
+    assert d3["@context"] == d["@context"]
+    assert d3["@id"] == EX.indv2
+    assert set(d3["@type"]) == {DCAT.Dataset, EMMO.DataSet, EX.Item}
+    assert d3.a == "value"
+    assert d3.inSeries == SER.main
+
+
 # if True:
 def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
@@ -212,6 +278,33 @@ def test_datadoc():
     assert set(search_iris(ts, type=CHAMEO.Sample)) == {
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
+
+
+def test_custom_context():
+    """Test saving YAML file with custom context to triplestore."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    from tripper import Triplestore
+    from tripper.dataset import save_datadoc
+
+    ts = Triplestore("rdflib")
+    d = save_datadoc(ts, indir / "custom_context.yaml")
+
+    KB = ts.namespaces["kb"]
+    assert d.resources[0]["@id"] == KB.sampleA
+    assert d.resources[0].fromBatch == KB.batch1
+
+    assert d.resources[1]["@id"] == KB.sampleB
+    assert d.resources[1].fromBatch == KB.batch1
+
+    assert d.resources[2]["@id"] == KB.sampleC
+    assert d.resources[2].fromBatch == KB.batch2
+
+    assert d.resources[3]["@id"] == KB.batch1
+    assert d.resources[3].batchNumber == 1
+
+    assert d.resources[4]["@id"] == KB.batch2
+    assert d.resources[4].batchNumber == 2
 
 
 # if True:
