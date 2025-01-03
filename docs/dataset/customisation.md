@@ -15,7 +15,7 @@ Additional prefixed can be provided in two ways.
 ### With the `prefixes` argument
 Several functions in the API (like [save_dict()], [as_jsonld()] and [TableDoc.parse_csv()]) takes a `prefixes` argument with which additional namespace prefixes can provided.
 
-This may be handy when from the Python API.
+This may be handy when used from the Python API.
 
 
 ### With custom context
@@ -27,6 +27,7 @@ See [User-defined keywords] for how this is done.
 User-defined keywords
 ---------------------
 Tripper already include a long list of [predefined keywords], that are defined in the [default JSON-LD context].
+A description of how to define new concepts in the JSON-LD context is given by [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/) document, and can be tested in the [JSON-LD Playground](https://json-ld.org/playground/).
 
 A new custom keyword can be added by providing mapping in a custom JSON-LD context from the keyword to the IRI of the corresponding concept in an ontology.
 
