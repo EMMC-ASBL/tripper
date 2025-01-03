@@ -15,7 +15,7 @@ Additional prefixed can be provided in two ways.
 ### With the `prefixes` argument
 Several functions in the API (like [save_dict()], [as_jsonld()] and [TableDoc.parse_csv()]) takes a `prefixes` argument with which additional namespace prefixes can provided.
 
-This may be handy when from the Python API.
+This may be handy when used from the Python API.
 
 
 ### With custom context
