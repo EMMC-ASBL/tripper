@@ -1,58 +1,15 @@
-Data documentation
-==================
-<!-- markdownlint-disable MD007 -->
-
-
-Introduction
-------------
-The data documentation is based on small [JSON-LD documents], each documenting a single resource.
-Examples of resources can be a dataset, an instrument, a sample, etc.
-All resources are uniquely identified by their IRI.
-
-The primary focus of the [tripper.dataset] module is to document datasets such that they are consistent with the [DCAT vocabulary], but at the same time easily extended additional semantic meaning provided by other ontologies.
-It is also easy to add and relate the datasets to other types of documents, like people, instruments and samples.
-
-The [tripper.dataset] module provides a Python API for documenting resources at all four levels of data documentation, including:
-
-- **Cataloguing**: Storing and accessing *documents* based on their IRI and data properties.
-  (Addressed FAIR aspects: *findability* and *accessibility*).
-- **Structural documentation**: The structure of a dataset. Provided via [DLite] data models.
-  (Addressed FAIR aspects: *interoperability*).
-- **Contextual documentation**: Relations between resources, i.e. *linked data*. Enables contextual search.
-  (Addressed FAIR aspects: *findability* and *reusability*).
-- **Semantic documentation**: Describe what the resource *is* using ontologies. In combination with structural documentation, maps the properties of a data model to ontological concepts.
-  (Addressed FAIR aspects: *findability*, *interoperability* and *reusability*).
-
-The figure below shows illustrates how a dataset is documented in a triplestore.
-
-![Documentation of a dataset](https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/docs/figs/dataset-Dataset.png)
-
-
-Resource types
---------------
-The [tripper.dataset] module include the following set of predefined resource types:
-
-- **dataset**: Individual of [dcat:Dataset] and [emmo:DataSet].
-- **distribution**: Individual of [dcat:Distribution].
-- **accessService**: Individual of [dcat:AccessService].
-- **generator**: Individual of [oteio:Generator].
-- **parser**: Individual of [oteio:Parser].
-- **resource**: Any other documented resource, with no implicit type.
-
-Future releases will support adding custom resource types.
-
-
 Documenting a resource
-----------------------
+======================
 In the Python API are the JSON-LD documents describing the resources internally represented as Python dicts.
 However, the [tripper.dataset] module tries to hide away the complexities of  [JSON-LD] behind a simple interface.
 
 
-### Documenting as a Python dict
+Documenting as a Python dict
+----------------------------
 The API supports two Python dict representations, one for documenting a single resource and one for documenting multiple resources.
 
 
-#### Single-resource dict
+### Single-resource dict
 Below is a simple example of how to document a SEM image dataset as a Python dict:
 
 ```python
@@ -154,7 +111,7 @@ Note that the image implicitly has been declared to be an individual of the clas
 This is because the `type` argument of [save_dict()] defaults to "dataset".
 
 
-#### Multi-resource dict
+### Multi-resource dict
 It is also possible to document multiple resources as a Python dict.
 
 !!! note
@@ -170,7 +127,8 @@ This dict representation accepts the following keywords:
 See [semdata.yaml] for an example of a [YAML] representation of a multi-resource dict documentation.
 
 
-### Documenting as a YAML file
+Documenting as a YAML file
+--------------------------
 The [save_datadoc()] function allow to save a [YAML] file in [multi-resource](#multi-resource-dict) format to a triplestore.
 Saving [semdata.yaml] to a triplestore can e.g. be done with
 
@@ -185,7 +143,8 @@ AttrDict(...)
 ```
 
 
-### Documenting as table
+Documenting as table
+--------------------
 The [TableDoc] class can be used to document multiple resources as rows in a table.
 
 The table must have a header row with defined keywords (either [predefined][predefined keywords] or provided with a custom context).
@@ -238,8 +197,8 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [JSON-LD documents]: https://json-ld.org/
 [JSON-LD]: https://www.w3.org/TR/json-ld/
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[predefined prefixes]: datadoc-prefixes.md
-[predefined keywords]: datadoc-keywords.md
+[predefined prefixes]: prefixes.md
+[predefined keywords]: keywords.md
 [dcat:Dataset]: https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [dcat:AccessService]: https://www.w3.org/TR/vocab-dcat-3/#Class:AccessService

@@ -106,7 +106,7 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 [Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
-[tripper.dataset]: https://emmc-asbl.github.io/tripper/latest/dataset/datadoc/
+[tripper.dataset]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/
 [tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
 [tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
 [Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
