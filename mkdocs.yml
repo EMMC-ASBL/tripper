@@ -49,6 +49,10 @@ markdown_extensions:
   - toc:
       permalink: true
 
+exclude_docs: |
+  ../dataset/datadoc.py
+
+
 plugins:
   - search:
       lang: en

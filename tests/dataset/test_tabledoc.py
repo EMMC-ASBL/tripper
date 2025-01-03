@@ -4,8 +4,8 @@ import pytest
 
 
 # if True:
-def test_as_dicts():
-    """Test the as_dicts() method."""
+def test_asdicts():
+    """Test the asdicts() method."""
 
     pytest.importorskip("rdflib")
 
@@ -83,9 +83,33 @@ def test_as_dicts():
     print(ts.serialize())
 
 
+def test_fromdicts():
+    """Test the fromdicts() method."""
+    from tripper import Namespace
+    from tripper.dataset import TableDoc
+
+    EX = Namespace("http://example.com/ex#")
+    dicts = [
+        {"@id": EX.data1, "label": "data1"},
+        {
+            "@id": EX.data2,
+            "distribution": {"downloadURL": "http://example.com/data2"},
+        },
+    ]
+    td = TableDoc.fromdicts(dicts)
+
+    assert td.header == ["@id", "label", "distribution.downloadURL"]
+    assert td.data == [
+        [EX.data1, "data1", None],
+        [EX.data2, None, "http://example.com/data2"],
+    ]
+
+
 # if True:
 def test_csv():
     """Test parsing a csv file."""
+    import io
+
     from dataset_paths import indir, outdir  # pylint: disable=import-error
 
     pytest.importorskip("rdflib")
@@ -122,6 +146,29 @@ def test_csv():
 
     # Write the table to a new csv file
     td.write_csv(outdir / "semdata.csv")
+
+    # Write table to string
+    with io.StringIO() as f:
+        td.write_csv(f)
+        s = f.getvalue()
+
+    # Re-read the csv file from the string
+    with io.StringIO(s) as f:
+        td2 = TableDoc.parse_csv(
+            indir / "semdata.csv",
+            delimiter=";",
+            prefixes={
+                "sem": "https://w3id.com/emmo/domain/sem/0.1#",
+                "semdata": "https://he-matchmaker.eu/data/sem/",
+                "sample": "https://he-matchmaker.eu/sample/",
+                "mat": "https://he-matchmaker.eu/material/",
+                "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
+                "parser": "http://sintef.no/dlite/parser#",
+                "gen": "http://sintef.no/dlite/generator#",
+            },
+        )
+    assert td2.header == td.header
+    assert td2.data == td.data
 
     # Print serialised KB
     ts = Triplestore(backend="rdflib")

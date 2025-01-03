@@ -263,7 +263,7 @@ def test_datadoc():
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    datasets = search_iris(ts)
+    datasets = search_iris(ts, type="dcat:Dataset")
     named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],

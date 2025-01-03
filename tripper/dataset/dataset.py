@@ -61,6 +61,7 @@ MATCH_PREFIXED_IRI = re.compile(
     r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
 )
 
+# Resource types
 dicttypes = {
     "parser": {
         "datadoc_label": "parsers",
@@ -89,6 +90,10 @@ dicttypes = {
         "@type": OWL.NamedIndividual,
     },
 }
+
+
+class InvalidKeywordError(KeyError):
+    """Keyword is not defined."""
 
 
 def save_dict(
@@ -846,16 +851,18 @@ def get_partial_pipeline(
     return pipeline
 
 
-def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
-    """Return a list of IRIs for all entries of the given type.
+def search_iris(ts: Triplestore, type=None, **kwargs):
+    """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
-
 
     Arguments:
         ts: Triplestore to search.
         type: Search for entries that are individuals of the class with
-            this IRI.  The default is `dcat:Dataset`.
+            this IRI.
         kwargs: Match criterias.
+
+    Returns:
+        List of IRIs for matching resources.
 
     Examples:
         List all dataset IRIs:
@@ -880,11 +887,29 @@ def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
     crit = []
 
     if type:
-        crit.append(f"  ?iri rdf:type <{type}> .")
+        if ":" in type:
+            expanded = ts.expand_iri(type)
+            crit.append(f"  ?iri rdf:type <{expanded}> .")
+        elif type in dicttypes:
+            types = dicttypes[type]["@type"]
+            if isinstance(types, str):
+                types = [types]
+            for t in types:
+                crit.append(f"  ?iri rdf:type <{t}> .")
+        else:
+            raise ValueError(
+                "`type` must either be an IRI or the name of one the "
+                f"resource types. Got: {type}"
+            )
+
+    else:
+        crit.append("  ?iri rdf:type ?o .")
 
     expanded = {v: k for k, v in get_shortnames().items()}
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if k.startswith("_") else k
+        if key not in expanded:
+            raise InvalidKeywordError(key)
         predicate = expanded[key]
         if v in expanded:
             value = f"<{expanded[v]}>"
@@ -894,7 +919,7 @@ def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
             )
         else:
             value = v
-        crit.append(f"  ?iri <{predicate}> {value} .")
+        crit.append(f"      ?iri <{predicate}> {value} .")
     criterias = "\n".join(crit)
     query = f"""
     PREFIX rdf: <{RDF}>

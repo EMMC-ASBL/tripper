@@ -205,8 +205,8 @@ Instead, the list of available resource types should be stored and retrieved fro
 [With custom context]: #with-custom-context
 [User-defined keywords]: #user-defined-keywords
 [resource types]: ../introduction#resource-types
-[predefined prefixes]: ../prefixes
-[predefined keywords]: ../keywords
+[predefined prefixes]: ../prefixes/
+[predefined keywords]: ../keywords/
 [save_dict()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
 [as_jsonld()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
 [save_datadoc()]:
