@@ -26,15 +26,12 @@ Functions for interaction with OTEAPI:
 
 ---
 
-__TODO__: Update the URL to the JSON-LD context when merged to master
-
 [DCAT]: https://www.w3.org/TR/vocab-dcat-3/
 [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset/tripper/context/0.2/context.json
 
 """
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
-import functools
 import io
 import json
 import re
@@ -50,18 +47,12 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from tripper.utils import Triple
 
-# Cache decorator
-cache = (
-    functools.cache  # new in Python 3.9, smaller and faster than lru_cache()
-    if hasattr(functools, "cache")
-    else functools.lru_cache(maxsize=1)
-)
 
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
     Path(__file__).parent.parent / "context" / "0.2" / "context.json"
 ).as_uri()
-CONTEXT_URL = (  # __TODO__: Update URL when merged to master
+CONTEXT_URL = (
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
     "master/tripper/context/0.2/context.json"
 )
@@ -339,11 +330,11 @@ def get_values(
     return values
 
 
-# TODO: update this function to take an initial argument `context`,
-# which can be an URL (string), dict with raw context or a list of
-# strings or dicts.
-@cache  # type: ignore
-def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
+def get_jsonld_context(
+    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    timeout: float = 5,
+    fromfile: bool = True,
+) -> dict:
     """Returns the JSON-LD context as a dict.
 
     The JSON-LD context maps all the keywords that can be used as keys
@@ -351,6 +342,10 @@ def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
     common vocabularies and ontologies.
 
     Arguments:
+        context: Additional user-defined context that should be returned
+            on top of the default context.  It may be a string with an URL
+            to the user-defined context, a dict with the user-defined context
+            or a sequence of strings and dicts.
         timeout: Number of seconds before timing out.
         fromfile: Whether to load the context from local file.
 
@@ -359,37 +354,68 @@ def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
 
     if fromfile:
         with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
-            context = json.load(f)["@context"]
+            ctx = json.load(f)["@context"]
     else:
         r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
-        context = json.loads(r.content)["@context"]
-    return context
+        ctx = json.loads(r.content)["@context"]
+
+    if isinstance(context, (str, dict)):
+        context = [context]
+
+    if context:
+        for token in context:
+            if isinstance(token, str):
+                r = requests.get(token, allow_redirects=True, timeout=timeout)
+                ctx.update(json.loads(r.content)["@context"])
+            elif isinstance(token, dict):
+                ctx.update(token)
+            else:
+                raise TypeError(
+                    "`context` must be a string (URL), dict or a sequence of "
+                    f"strings and dicts.  Not '{type(token)}'"
+                )
+
+    return ctx
 
 
-# TODO: update this to take an initial argument `context`.
-# See get_jsonld_context()
-def get_prefixes(timeout: float = 5) -> dict:
+def get_prefixes(
+    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    timeout: float = 5,
+    fromfile: bool = True,
+) -> dict:
     """Loads the JSON-LD context and returns a dict mapping prefixes to
-    their namespace URL."""
-    context = get_jsonld_context(timeout=timeout)
+    their namespace URL.
+
+    Arguments are passed to `get_jsonld_context()`.
+    """
+    ctx = get_jsonld_context(
+        context=context, timeout=timeout, fromfile=fromfile
+    )
     prefixes = {
         k: v
-        for k, v in context.items()
+        for k, v in ctx.items()
         if isinstance(v, str) and v.endswith(("#", "/"))
     }
     return prefixes
 
 
-# TODO: update this to take an initial argument `context`.
-# See get_jsonld_context()
-def get_shortnames(timeout: float = 5) -> dict:
+def get_shortnames(
+    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+    timeout: float = 5,
+    fromfile: bool = True,
+) -> dict:
     """Loads the JSON-LD context and returns a dict mapping IRIs to their
-    short names defined in the context."""
-    context = get_jsonld_context(timeout=timeout)
-    prefixes = get_prefixes()
+    short names defined in the context.
+
+    Arguments are passed to `get_jsonld_context()`.
+    """
+    ctx = get_jsonld_context(
+        context=context, timeout=timeout, fromfile=fromfile
+    )
+    prefixes = get_prefixes(context=ctx)
     shortnames = {
         expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
-        for k, v in context.items()
+        for k, v in ctx.items()
         if (
             (isinstance(v, str) and not v.endswith(("#", "/")))
             or isinstance(v, dict)

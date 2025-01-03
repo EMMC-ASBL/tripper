@@ -11,6 +11,7 @@ pytest.importorskip("requests")
 def test_get_jsonld_context():
     """Test get_jsonld_context()."""
     from tripper.dataset import get_jsonld_context
+    from tripper.dataset.dataset import CONTEXT_URL
 
     context = get_jsonld_context()
     assert isinstance(context, dict)
@@ -21,6 +22,14 @@ def test_get_jsonld_context():
     online_context = get_jsonld_context(fromfile=False)
     assert online_context == context
 
+    # Test context argument
+    context2 = get_jsonld_context(context=CONTEXT_URL)
+    assert context2 == context
+
+    assert "newkey" not in context
+    context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
+    assert context3["newkey"] == "onto:newkey"
+
 
 def test_get_prefixes():
     """Test get_prefixes()."""
@@ -29,6 +38,10 @@ def test_get_prefixes():
     prefixes = get_prefixes()
     assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
     assert prefixes["emmo"] == "https://w3id.org/emmo#"
+
+    # Test context argument
+    prefixes2 = get_prefixes(context={"onto": "http://example.com/onto#"})
+    assert prefixes2["onto"] == "http://example.com/onto#"
 
 
 def test_get_shortnames():
