@@ -150,3 +150,4 @@ class TableDoc:
             writer.writerow(self.header)
             for row in self.data:
                 writer.writerow(row)
+
