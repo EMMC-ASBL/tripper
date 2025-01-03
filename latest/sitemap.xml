@@ -66,7 +66,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/tripper/</loc>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/triplestore_extend/</loc>
          <lastmod>2025-01-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -117,6 +117,31 @@
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/mappings/mappings/</loc>
+         <lastmod>2025-01-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/dataset/customisation/</loc>
+         <lastmod>2025-01-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/dataset/documenting-a-resource/</loc>
+         <lastmod>2025-01-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/dataset/introduction/</loc>
+         <lastmod>2025-01-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/dataset/keywords/</loc>
+         <lastmod>2025-01-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://EMMC-ASBL.github.io/tripper/latest/dataset/prefixes/</loc>
          <lastmod>2025-01-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
