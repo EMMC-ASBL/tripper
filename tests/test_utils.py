@@ -57,7 +57,7 @@ def test_openfile_http():
 
     with openfile(
         "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
-        "dataset-docs/tests/input/openfile.txt"
+        "master/tests/input/openfile.txt"
     ) as f:
         assert f.read().strip() == "Example file."
 
