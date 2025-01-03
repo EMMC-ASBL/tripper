@@ -16,7 +16,7 @@
         <link rel="prev" href="../dataaccess/">
       
       
-        <link rel="next" href="../../mappings/mappings/">
+        <link rel="next" href="../tabledoc/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -792,6 +792,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.dataset.dataset.addnested" class="md-nav__link">
+    <span class="md-ellipsis">
+      addnested()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.dataset.dataset.as_jsonld" class="md-nav__link">
     <span class="md-ellipsis">
       as_jsonld()
@@ -939,6 +948,27 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tabledoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tabledoc
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1142,6 +1172,15 @@
   <a href="#tripper.dataset.dataset.add" class="md-nav__link">
     <span class="md-ellipsis">
       add()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.dataset.dataset.addnested" class="md-nav__link">
+    <span class="md-ellipsis">
+      addnested()
     </span>
   </a>
   
@@ -1387,9 +1426,94 @@ are not duplicated.</p>
         <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">klst</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
-        <span class="n">vlst</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">klst</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">vlst</span><span class="p">))</span>
-        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">klst</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">klst</span> <span class="k">else</span> <span class="n">klst</span> <span class="o">+</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vlst</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">klst</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">vlst</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># klst contains unhashable dicts</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">klst</span> <span class="o">+</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vlst</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">klst</span><span class="p">]</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">else</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="c1"># Sort dicts at end, by representing them with a huge</span>
+                <span class="c1"># unicode character</span>
+                <span class="n">v</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uffff</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.dataset.dataset.addnested" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+
+
+<a href="#tripper.dataset.dataset.addnested" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Like add(), but allows <code>key</code> to be a dot-separated list of sub-keys.
+Returns the updated <code>d</code>.</p>
+<p>Each sub-key will be added to <code>d</code> as a corresponding sub-dict.</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;a.b.c&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">}}}</span>
+<span class="kc">True</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">addnested</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like add(), but allows `key` to be a dot-separated list of sub-keys.</span>
+<span class="sd">    Returns the updated `d`.</span>
+
+<span class="sd">    Each sub-key will be added to `d` as a corresponding sub-dict.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; d = {}</span>
+<span class="sd">        &gt;&gt;&gt; addnested(d, &quot;a.b.c&quot;, &quot;val&quot;) == {&#39;a&#39;: {&#39;b&#39;: {&#39;c&#39;: &#39;val&#39;}}}</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">first</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">addnested</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addnested</span><span class="p">({},</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">addnested</span><span class="p">(</span><span class="n">AttrDict</span><span class="p">(),</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">add</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
 </code></pre></div>
         </details>
     </div>
@@ -1426,13 +1550,13 @@ are not duplicated.</p>
       <tr>
         <td><code>dct</code></td>
         <td><code>dict</code></td>
-        <td><p>Dict to return an updated copy of.</p></td>
+        <td><p>Dict with data documentation to represent as JSON-LD.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>type</code></td>
         <td><code>Optional[str]</code></td>
-        <td><p>Type of dict to prepare.  Should either be one of the
+        <td><p>Type of data to document.  Should either be one of the
 pre-defined names: "dataset", "distribution", "accessService",
 "parser" and "generator" or an IRI to a class in an ontology.
 Defaults to "dataset".</p></td>
@@ -1490,8 +1614,8 @@ provided as "_id" or "_context", respectively.</p></td>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an updated copy of dict `dct` as valid JSON-LD.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        dct: Dict to return an updated copy of.</span>
-<span class="sd">        type: Type of dict to prepare.  Should either be one of the</span>
+<span class="sd">        dct: Dict with data documentation to represent as JSON-LD.</span>
+<span class="sd">        type: Type of data to document.  Should either be one of the</span>
 <span class="sd">            pre-defined names: &quot;dataset&quot;, &quot;distribution&quot;, &quot;accessService&quot;,</span>
 <span class="sd">            &quot;parser&quot; and &quot;generator&quot; or an IRI to a class in an ontology.</span>
 <span class="sd">            Defaults to &quot;dataset&quot;.</span>
@@ -1719,6 +1843,8 @@ common vocabularies and ontologies.</p>
 <span class="sd">        fromfile: Whether to load the context from local file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">requests</span>
+
     <span class="k">if</span> <span class="n">fromfile</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONTEXT_PATH</span><span class="p">[</span><span class="mi">7</span><span class="p">:],</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span>
@@ -2286,6 +2412,8 @@ can be serialised to RDF.</p>
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_datadoc</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read YAML data documentation and return it as a dict.&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">yaml</span>  <span class="c1"># type: ignore</span>
+
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prepare_datadoc</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -2407,7 +2535,7 @@ the data documentation from.</p></td>
 
 
 <h2 id="tripper.dataset.dataset.save_dict" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a href="#tripper.dataset.dataset.save_dict" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2434,17 +2562,19 @@ the data documentation from.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
-        <td><code>type</code></td>
-        <td><code>str</code></td>
-        <td><p>Type of dict to save.  Should be one of: "dataset",
-"distribution", "parser" or "generator".</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
         <td><code>dct</code></td>
         <td><code>dict</code></td>
         <td><p>Dict with data to save.</p></td>
         <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>str</code></td>
+        <td><p>Type of data to save.  Should either be one of the
+pre-defined names: "dataset", "distribution", "accessService",
+"parser" and "generator" or an IRI to a class in an ontology.
+Defaults to "dataset".</p></td>
+        <td><code>&#39;dataset&#39;</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
@@ -2496,8 +2626,8 @@ as "_id=...".</p></td>
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">save_dict</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -2506,9 +2636,11 @@ as "_id=...".</p></td>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to save to.</span>
-<span class="sd">        type: Type of dict to save.  Should be one of: &quot;dataset&quot;,</span>
-<span class="sd">            &quot;distribution&quot;, &quot;parser&quot; or &quot;generator&quot;.</span>
 <span class="sd">        dct: Dict with data to save.</span>
+<span class="sd">        type: Type of data to save.  Should either be one of the</span>
+<span class="sd">            pre-defined names: &quot;dataset&quot;, &quot;distribution&quot;, &quot;accessService&quot;,</span>
+<span class="sd">            &quot;parser&quot; and &quot;generator&quot; or an IRI to a class in an ontology.</span>
+<span class="sd">            Defaults to &quot;dataset&quot;.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        kwargs: Additional keyword arguments to add to the returned dict.</span>
@@ -2590,6 +2722,8 @@ as "_id=...".</p></td>
 <span class="sd">    - data models (require that DLite is installed)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">requests</span>
+
     <span class="c1"># Save statements and mappings</span>
     <span class="n">statements</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;statements&quot;</span><span class="p">)</span>
     <span class="n">statements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_values</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;mappings&quot;</span><span class="p">))</span>

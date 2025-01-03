@@ -809,6 +809,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tabledoc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tabledoc
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1474,9 +1495,9 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="c1"># Update triplestore</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">save_dataset</span><span class="p">:</span>
-        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_distribution</span><span class="p">:</span>
-        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
 </code></pre></div>
