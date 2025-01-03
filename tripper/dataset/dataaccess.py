@@ -3,11 +3,13 @@
 from the datasets module.
 
 High-level functions for accessing and storing actual data:
+
   - `load()`: Load documented dataset from its source.
   - `save()`: Save documented dataset to a data resource.
 
-Note: This module may eventually be moved out of tripper into a
-separate package.
+Note:
+    This module may eventually be moved out of tripper into a separate
+    package.
 
 """
 import secrets  # From Python 3.9 we could use random.randbytes(16).hex()

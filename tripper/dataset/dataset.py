@@ -39,8 +39,8 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
-from tripper.utils import AttrDict, as_python
+from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Namespace, Triplestore
+from tripper.utils import AttrDict, as_python, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
@@ -82,10 +82,10 @@ dicttypes = {
         "datadoc_label": "datasets",
         "@type": [DCAT.Dataset, EMMO.DataSet],
     },
-    "entry": {
-        # General datacatalog entry that is not one of the above
+    "resource": {
+        # General data resource
         # Ex: samples, instruments, models, people, projects, ...
-        "datadoc_label": "other_entries",  # XXX better label?
+        "datadoc_label": "resources",
         "@type": OWL.NamedIndividual,
     },
 }
@@ -392,9 +392,9 @@ def get_prefixes(
         context=context, timeout=timeout, fromfile=fromfile
     )
     prefixes = {
-        k: v
+        k: str(v)
         for k, v in ctx.items()
-        if isinstance(v, str) and v.endswith(("#", "/"))
+        if isinstance(v, (str, Namespace)) and str(v).endswith(("#", "/"))
     }
     return prefixes
 
@@ -541,10 +541,13 @@ def expand_iri(iri: str, prefixes: dict) -> str:
 
 
 def read_datadoc(filename: "Union[str, Path]") -> dict:
-    """Read YAML data documentation and return it as a dict."""
+    """Read YAML data documentation and return it as a dict.
+
+    The filename may also be an URL to a file accessible with HTTP GET.
+    """
     import yaml  # type: ignore
 
-    with open(filename, "r", encoding="utf-8") as f:
+    with openfile(filename, mode="rt", encoding="utf-8") as f:
         d = yaml.safe_load(f)
     return prepare_datadoc(d)
 
@@ -557,7 +560,8 @@ def save_datadoc(
     Arguments:
         ts: Triplestore to save dataset documentation to.
         file_or_dict: Data documentation dict or name of a YAML file to read
-            the data documentation from.
+            the data documentation from.  It may also be an URL to a file
+            accessible with HTTP GET.
 
     Returns:
         Dict-representation of the loaded dataset.
@@ -568,7 +572,8 @@ def save_datadoc(
         d = read_datadoc(file_or_dict)
 
     # Bind prefixes
-    prefixes = get_prefixes()
+    context = d.get("@context")
+    prefixes = get_prefixes(context=context)
     prefixes.update(d.get("prefixes", {}))
     for prefix, ns in prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
@@ -580,7 +585,9 @@ def save_datadoc(
     for spec in dicttypes.values():
         label = spec["datadoc_label"]
         for dct in get(d, label):
-            dct = as_jsonld(dct=dct, type=types[label], prefixes=prefixes)
+            dct = as_jsonld(
+                dct=dct, type=types[label], prefixes=prefixes, _context=context
+            )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
                 ts2.parse(f, format="json-ld")
@@ -600,7 +607,8 @@ def prepare_datadoc(datadoc: dict) -> dict:
     d = AttrDict({"@context": CONTEXT_URL})
     d.update(datadoc)
 
-    prefixes = get_prefixes()
+    context = datadoc.get("@context")
+    prefixes = get_prefixes(context=context)
     if "prefixes" in d:
         d.prefixes.update(prefixes)
     else:
@@ -609,45 +617,51 @@ def prepare_datadoc(datadoc: dict) -> dict:
     for type, spec in dicttypes.items():
         label = spec["datadoc_label"]
         for i, dct in enumerate(get(d, label)):
-            d[label][i] = as_jsonld(dct=dct, type=type, prefixes=d.prefixes)
+            d[label][i] = as_jsonld(
+                dct=dct, type=type, prefixes=d.prefixes, _context=context
+            )
 
     return d
 
 
-# TODO: update this function to correctly handle multiple contexts
-# provided with the `_context` keyword argument.
 def as_jsonld(
     dct: dict,
     type: "Optional[str]" = "dataset",
     prefixes: "Optional[dict]" = None,
-    _entryid: "Optional[str]" = None,
     **kwargs,
 ) -> dict:
     """Return an updated copy of dict `dct` as valid JSON-LD.
 
     Arguments:
-        dct: Dict with data documentation to represent as JSON-LD.
+        dct: Dict documenting a resource to be represented as JSON-LD.
         type: Type of data to document.  Should either be one of the
             pre-defined names: "dataset", "distribution", "accessService",
             "parser" and "generator" or an IRI to a class in an ontology.
             Defaults to "dataset".
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
-        _entryid: Id of base entry that is documented. Intended for
-            internal use only.
-        kwargs: Additional keyword arguments to add to the returned dict.
-            A leading underscore in a key will be translated to a
-            leading "@"-sign.  For example, "@id" or "@context" may be
-            provided as "_id" or "_context", respectively.
-
+        kwargs: Additional keyword arguments to add to the returned
+            dict.  A leading underscore in a key will be translated to
+            a leading "@"-sign.  For example, "@id", "@type" or
+            "@context" may be provided as "_id" "_type" or "_context",
+            respectively.
 
     Returns:
         An updated copy of `dct` as valid JSON-LD.
+
     """
     # pylint: disable=too-many-branches
+
+    # Id of base entry that is documented
+    _entryid = kwargs.pop("_entryid", None)
+
+    context = kwargs.pop("_context", None)
+
     d = AttrDict()
     if not _entryid:
         d["@context"] = CONTEXT_URL
+        if context:
+            add(d, "@context", context)
 
     if type:
         t = dicttypes[type]["@type"] if type in dicttypes else type
@@ -670,7 +684,7 @@ def as_jsonld(
     if "@type" not in d:
         warnings.warn(f"Missing '@type' in dict to document: {_entryid}")
 
-    all_prefixes = get_prefixes()
+    all_prefixes = get_prefixes(context=context)
     if prefixes:
         all_prefixes.update(prefixes)
 
