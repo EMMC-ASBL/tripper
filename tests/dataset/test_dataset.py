@@ -2,17 +2,10 @@
 
 # pylint: disable=invalid-name,too-many-locals,duplicate-code
 
-from pathlib import Path
-
 import pytest
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
-
-thisdir = Path(__file__).resolve().parent
-testdir = thisdir.parent
-inputdir = testdir / "input"
-outputdir = testdir / "output"
 
 
 def test_get_jsonld_context():
@@ -73,12 +66,31 @@ def test_add():
     from tripper.dataset.dataset import add
 
     d = {}
-    add(d, "a", 1)
-    add(d, "b", 1)
-    add(d, "b", 1)
-    add(d, "a", 2)
-    add(d, "a", 1)
-    assert d == {"a": [1, 2], "b": 1}
+    add(d, "a", "1")
+    add(d, "b", "1")
+    add(d, "b", "1")
+    add(d, "a", "2")
+    add(d, "a", "1")
+    add(d, "a", {"c": "3"})
+    assert d == {"a": ["1", "2", {"c": "3"}], "b": "1"}
+
+
+def test_addnested():
+    """Test help-function addnested()."""
+    from tripper.dataset.dataset import addnested
+    from tripper.utils import AttrDict
+
+    d = AttrDict()
+    addnested(d, "a.b", "1")
+    assert d == {"a": {"b": "1"}}
+
+    addnested(d, "a", "2")
+    assert d == {"a": ["2", {"b": "1"}]}
+
+    addnested(d, "a.b.c", {"d": "3"})
+    assert d.a[0] == "2"
+    assert d.a[1].b[1].c == {"d": "3"}
+    assert d == {"a": ["2", {"b": ["1", {"c": {"d": "3"}}]}]}
 
 
 def test_get():
@@ -115,6 +127,8 @@ def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
 
+    from dataset_paths import indir  # pylint: disable=import-error
+
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
     from tripper.dataset import load_dict, save_datadoc, save_dict, search_iris
 
@@ -124,7 +138,7 @@ def test_datadoc():
     ts = Triplestore("rdflib")
 
     # Load data documentation into triplestore
-    datadoc = save_datadoc(ts, inputdir / "semdata.yaml")
+    datadoc = save_datadoc(ts, indir / "semdata.yaml")
     assert isinstance(datadoc, dict)
     assert "@context" in datadoc
 
@@ -167,8 +181,8 @@ def test_datadoc():
     # Test save dict
     save_dict(
         ts,
-        "distribution",
-        {"@id": SEMDATA.newdistr, "format": "txt"},
+        dct={"@id": SEMDATA.newdistr, "format": "txt"},
+        type="distribution",
         prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
     )
     newdistr = load_dict(ts, SEMDATA.newdistr)
@@ -206,11 +220,13 @@ def test_pipeline():
     from tripper import Triplestore
 
     otelib = pytest.importorskip("otelib")
+    from dataset_paths import indir  # pylint: disable=import-error
+
     from tripper.dataset import get_partial_pipeline, save_datadoc
 
     # Prepare triplestore
     ts = Triplestore("rdflib")
-    save_datadoc(ts, inputdir / "semdata.yaml")
+    save_datadoc(ts, indir / "semdata.yaml")
 
     SEMDATA = ts.namespaces["semdata"]
 

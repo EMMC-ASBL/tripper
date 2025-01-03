@@ -104,7 +104,7 @@ max-public-methods = 25
 max-locals = 20
 disable = [
     "fixme",
-    "too-many-positional-arguments",
+    "invalid-name",
 ]
 good-names = [
     # Default
@@ -115,8 +115,8 @@ good-names = [
     "s", "p", "o",
     # Namespaces
     "EX",
-    # dict, value, file, ...
-    "d", "v", "f",
+    # dict, value, file, keyword...
+    "d", "v", "f", "kw",
 ]
 
 [tool.pytest.ini_options]

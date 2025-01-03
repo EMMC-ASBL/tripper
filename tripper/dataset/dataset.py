@@ -42,9 +42,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import requests
-import yaml  # type: ignore
-
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Triplestore
 from tripper.utils import AttrDict, as_python
 
@@ -105,8 +102,8 @@ dicttypes = {
 
 def save_dict(
     ts: Triplestore,
-    type: str,
     dct: dict,
+    type: str = "dataset",
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -115,9 +112,11 @@ def save_dict(
 
     Arguments:
         ts: Triplestore to save to.
-        type: Type of dict to save.  Should be one of: "dataset",
-            "distribution", "parser" or "generator".
         dct: Dict with data to save.
+        type: Type of data to save.  Should either be one of the
+            pre-defined names: "dataset", "distribution", "accessService",
+            "parser" and "generator" or an IRI to a class in an ontology.
+            Defaults to "dataset".
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
@@ -174,6 +173,8 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     - data models (require that DLite is installed)
 
     """
+    import requests
+
     # Save statements and mappings
     statements = get_values(dct, "statements")
     statements.extend(get_values(dct, "mappings"))
@@ -338,6 +339,9 @@ def get_values(
     return values
 
 
+# TODO: update this function to take an initial argument `context`,
+# which can be an URL (string), dict with raw context or a list of
+# strings or dicts.
 @cache  # type: ignore
 def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
     """Returns the JSON-LD context as a dict.
@@ -351,6 +355,8 @@ def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
         fromfile: Whether to load the context from local file.
 
     """
+    import requests
+
     if fromfile:
         with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
             context = json.load(f)["@context"]
@@ -360,6 +366,8 @@ def get_jsonld_context(timeout: float = 5, fromfile: bool = True) -> dict:
     return context
 
 
+# TODO: update this to take an initial argument `context`.
+# See get_jsonld_context()
 def get_prefixes(timeout: float = 5) -> dict:
     """Loads the JSON-LD context and returns a dict mapping prefixes to
     their namespace URL."""
@@ -372,6 +380,8 @@ def get_prefixes(timeout: float = 5) -> dict:
     return prefixes
 
 
+# TODO: update this to take an initial argument `context`.
+# See get_jsonld_context()
 def get_shortnames(timeout: float = 5) -> dict:
     """Loads the JSON-LD context and returns a dict mapping IRIs to their
     short names defined in the context."""
@@ -412,9 +422,64 @@ def add(d: dict, key: str, value: "Any") -> None:
         d[key] = value
     else:
         klst = d[key] if isinstance(d[key], list) else [d[key]]
-        vlst = value if isinstance(value, list) else [value]
-        v = list(set(klst).union(vlst))
-        d[key] = v[0] if len(v) == 1 else sorted(v)
+        if isinstance(value, dict):
+            v = klst if value in klst else klst + [value]
+        else:
+            vlst = value if isinstance(value, list) else [value]
+            try:
+                v = list(set(klst).union(vlst))
+            except TypeError:  # klst contains unhashable dicts
+                v = klst + [x for x in vlst if x not in klst]
+        d[key] = (
+            v[0]
+            if len(v) == 1
+            else sorted(
+                # Sort dicts at end, by representing them with a huge
+                # unicode character
+                v,
+                key=lambda x: "\uffff" if isinstance(x, dict) else x,
+            )
+        )
+
+
+def addnested(
+    d: "Union[dict, list]", key: str, value: "Any"
+) -> "Union[dict, list]":
+    """Like add(), but allows `key` to be a dot-separated list of sub-keys.
+    Returns the updated `d`.
+
+    Each sub-key will be added to `d` as a corresponding sub-dict.
+
+    Example:
+
+        >>> d = {}
+        >>> addnested(d, "a.b.c", "val") == {'a': {'b': {'c': 'val'}}}
+        True
+
+    """
+    if "." in key:
+        first, rest = key.split(".", 1)
+        if isinstance(d, list):
+            for ele in d:
+                if isinstance(ele, dict):
+                    addnested(ele, key, value)
+                    break
+            else:
+                d.append(addnested({}, key, value))
+        elif first in d and isinstance(d[first], (dict, list)):
+            addnested(d[first], rest, value)
+        else:
+            addnested(d, first, addnested(AttrDict(), rest, value))
+    elif isinstance(d, list):
+        for ele in d:
+            if isinstance(ele, dict):
+                add(ele, key, value)
+                break
+        else:
+            d.append({key: value})
+    else:
+        add(d, key, value)
+    return d
 
 
 def get(
@@ -451,6 +516,8 @@ def expand_iri(iri: str, prefixes: dict) -> str:
 
 def read_datadoc(filename: "Union[str, Path]") -> dict:
     """Read YAML data documentation and return it as a dict."""
+    import yaml  # type: ignore
+
     with open(filename, "r", encoding="utf-8") as f:
         d = yaml.safe_load(f)
     return prepare_datadoc(d)
@@ -521,6 +588,8 @@ def prepare_datadoc(datadoc: dict) -> dict:
     return d
 
 
+# TODO: update this function to correctly handle multiple contexts
+# provided with the `_context` keyword argument.
 def as_jsonld(
     dct: dict,
     type: "Optional[str]" = "dataset",
@@ -531,8 +600,8 @@ def as_jsonld(
     """Return an updated copy of dict `dct` as valid JSON-LD.
 
     Arguments:
-        dct: Dict to return an updated copy of.
-        type: Type of dict to prepare.  Should either be one of the
+        dct: Dict with data documentation to represent as JSON-LD.
+        type: Type of data to document.  Should either be one of the
             pre-defined names: "dataset", "distribution", "accessService",
             "parser" and "generator" or an IRI to a class in an ontology.
             Defaults to "dataset".

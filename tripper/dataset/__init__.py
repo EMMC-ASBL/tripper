@@ -12,3 +12,4 @@ from .dataset import (
     save_dict,
     search_iris,
 )
+from .tabledoc import TableDoc
