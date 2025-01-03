@@ -823,9 +823,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.dataset.tabledoc.TableDoc.parse_csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_csv()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.dataset.tabledoc.TableDoc.save" class="md-nav__link">
     <span class="md-ellipsis">
       save()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.dataset.tabledoc.TableDoc.write_csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      write_csv()
     </span>
   </a>
   
@@ -1059,9 +1077,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.dataset.tabledoc.TableDoc.parse_csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_csv()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.dataset.tabledoc.TableDoc.save" class="md-nav__link">
     <span class="md-ellipsis">
       save()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.dataset.tabledoc.TableDoc.write_csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      write_csv()
     </span>
   </a>
   
@@ -1171,6 +1207,12 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><p>Dict with user-defined JSON-LD context.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>strip</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to strip leading and trailing whitespaces from cells.</p></td>
+        <td><code>True</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -1191,6 +1233,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        context: Dict with user-defined JSON-LD context.</span>
+<span class="sd">        strip: Whether to strip leading and trailing whitespaces from cells.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1203,12 +1246,14 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span> <span class="o">=</span> <span class="n">prefixes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span>
 
     <span class="k">def</span> <span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[dict]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the table as a list of dicts.&quot;&quot;&quot;</span>
@@ -1218,9 +1263,11 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">colname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
-                <span class="n">cell</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">cell</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">cell</span><span class="p">:</span>
-                    <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
+                    <span class="n">addnested</span><span class="p">(</span>
+                        <span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span>
+                    <span class="p">)</span>
             <span class="n">jsonld</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span>
                 <span class="n">d</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>  <span class="c1"># type: ignore</span>
             <span class="p">)</span>
@@ -1231,6 +1278,83 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">():</span>
             <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_csv</span><span class="p">(</span>
+        <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+        <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Union[csv.Dialect, str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=line-too-long</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a csv file using the standard library csv module.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            csvfile: CSV file to parse.</span>
+<span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
+<span class="sd">                either be one of the pre-defined names: &quot;dataset&quot;,</span>
+<span class="sd">                &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
+<span class="sd">                or an IRI to a class in an ontology.  Defaults to</span>
+<span class="sd">                &quot;dataset&quot;.</span>
+<span class="sd">            prefixes: Dict with prefixes in addition to those included in the</span>
+<span class="sd">                JSON-LD context.  Should map namespace prefixes to IRIs.</span>
+<span class="sd">            context: Dict with user-defined JSON-LD context.</span>
+<span class="sd">            encoding: The encoding of the csv file.  Note that Excel may</span>
+<span class="sd">                encode as &quot;ISO-8859&quot; (commonly used in 1990th).</span>
+<span class="sd">            dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
+<span class="sd">                specifying how the `csvfile` is formatted.  For more details,</span>
+<span class="sd">                see [Dialects and Formatting Parameters].</span>
+<span class="sd">            kwargs: Additional keyword arguments overriding individual</span>
+<span class="sd">                formatting parameters.  For more details, see</span>
+<span class="sd">                [Dialects and Formatting Parameters].</span>
+
+<span class="sd">        References:</span>
+<span class="sd">        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">TableDoc</span><span class="p">(</span>
+            <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+            <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_csv</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+        <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Union[csv.Dialect, str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=line-too-long</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the table to a csv file using the standard library csv module.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            csvfile: CSV file to parse.</span>
+<span class="sd">            encoding: The encoding of the csv file.</span>
+<span class="sd">            dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
+<span class="sd">                specifying how the `csvfile` is formatted.  For more details,</span>
+<span class="sd">                see [Dialects and Formatting Parameters].</span>
+<span class="sd">            kwargs: Additional keyword arguments overriding individual</span>
+<span class="sd">                formatting parameters.  For more details, see</span>
+<span class="sd">                [Dialects and Formatting Parameters].</span>
+
+<span class="sd">        References:</span>
+<span class="sd">        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -1271,14 +1395,156 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">colname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">cell</span><span class="p">:</span>
-                <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
+                <span class="n">addnested</span><span class="p">(</span>
+                    <span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span>
+                <span class="p">)</span>
         <span class="n">jsonld</span> <span class="o">=</span> <span class="n">as_jsonld</span><span class="p">(</span>
             <span class="n">d</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
         <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jsonld</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">results</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.dataset.tabledoc.TableDoc.parse_csv" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#tripper.dataset.tabledoc.TableDoc.parse_csv" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse a csv file using the standard library csv module.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>csvfile</code></td>
+        <td><code>Union[Path, str]</code></td>
+        <td><p>CSV file to parse.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Type of data to save (applies to all rows).  Should
+either be one of the pre-defined names: "dataset",
+"distribution", "accessService", "parser" and "generator"
+or an IRI to a class in an ontology.  Defaults to
+"dataset".</p></td>
+        <td><code>&#39;dataset&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>Optional[dict]</code></td>
+        <td><p>Dict with prefixes in addition to those included in the
+JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>context</code></td>
+        <td><code>Optional[Union[dict, list]]</code></td>
+        <td><p>Dict with user-defined JSON-LD context.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>encoding</code></td>
+        <td><code>str</code></td>
+        <td><p>The encoding of the csv file.  Note that Excel may
+encode as "ISO-8859" (commonly used in 1990th).</p></td>
+        <td><code>&#39;utf-8&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>dialect</code></td>
+        <td><code>Union[csv.Dialect, str]</code></td>
+        <td><p>A subclass of csv.Dialect, or the name of the dialect,
+specifying how the <code>csvfile</code> is formatted.  For more details,
+see [Dialects and Formatting Parameters].</p></td>
+        <td><code>&#39;excel&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Additional keyword arguments overriding individual
+formatting parameters.  For more details, see
+[Dialects and Formatting Parameters].</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>      <p>References:</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/dataset/tabledoc.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_csv</span><span class="p">(</span>
+    <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+    <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Union[csv.Dialect, str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=line-too-long</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a csv file using the standard library csv module.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        csvfile: CSV file to parse.</span>
+<span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
+<span class="sd">            either be one of the pre-defined names: &quot;dataset&quot;,</span>
+<span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
+<span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
+<span class="sd">            &quot;dataset&quot;.</span>
+<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
+<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
+<span class="sd">        context: Dict with user-defined JSON-LD context.</span>
+<span class="sd">        encoding: The encoding of the csv file.  Note that Excel may</span>
+<span class="sd">            encode as &quot;ISO-8859&quot; (commonly used in 1990th).</span>
+<span class="sd">        dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
+<span class="sd">            specifying how the `csvfile` is formatted.  For more details,</span>
+<span class="sd">            see [Dialects and Formatting Parameters].</span>
+<span class="sd">        kwargs: Additional keyword arguments overriding individual</span>
+<span class="sd">            formatting parameters.  For more details, see</span>
+<span class="sd">            [Dialects and Formatting Parameters].</span>
+
+<span class="sd">    References:</span>
+<span class="sd">    [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">TableDoc</span><span class="p">(</span>
+        <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1307,6 +1573,100 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">():</span>
         <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.dataset.tabledoc.TableDoc.write_csv" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">write_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csvfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#tripper.dataset.tabledoc.TableDoc.write_csv" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Write the table to a csv file using the standard library csv module.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>csvfile</code></td>
+        <td><code>Union[Path, str]</code></td>
+        <td><p>CSV file to parse.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>encoding</code></td>
+        <td><code>str</code></td>
+        <td><p>The encoding of the csv file.</p></td>
+        <td><code>&#39;utf-8&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>dialect</code></td>
+        <td><code>Union[csv.Dialect, str]</code></td>
+        <td><p>A subclass of csv.Dialect, or the name of the dialect,
+specifying how the <code>csvfile</code> is formatted.  For more details,
+see [Dialects and Formatting Parameters].</p></td>
+        <td><code>&#39;excel&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Additional keyword arguments overriding individual
+formatting parameters.  For more details, see
+[Dialects and Formatting Parameters].</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>      <p>References:</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/dataset/tabledoc.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">write_csv</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+    <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Union[csv.Dialect, str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=line-too-long</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the table to a csv file using the standard library csv module.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        csvfile: CSV file to parse.</span>
+<span class="sd">        encoding: The encoding of the csv file.</span>
+<span class="sd">        dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
+<span class="sd">            specifying how the `csvfile` is formatted.  For more details,</span>
+<span class="sd">            see [Dialects and Formatting Parameters].</span>
+<span class="sd">        kwargs: Additional keyword arguments overriding individual</span>
+<span class="sd">            formatting parameters.  For more details, see</span>
+<span class="sd">            [Dialects and Formatting Parameters].</span>
+
+<span class="sd">    References:</span>
+<span class="sd">    [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
