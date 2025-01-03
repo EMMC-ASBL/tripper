@@ -39,6 +39,14 @@ def test_get_jsonld_context():
     with pytest.raises(TypeError):
         get_jsonld_context(context=[None])
 
+    # Test context argument
+    context2 = get_jsonld_context(context=CONTEXT_URL)
+    assert context2 == context
+
+    assert "newkey" not in context
+    context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
+    assert context3["newkey"] == "onto:newkey"
+
 
 def test_get_prefixes():
     """Test get_prefixes()."""
