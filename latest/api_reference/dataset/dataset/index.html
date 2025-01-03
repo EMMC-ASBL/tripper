@@ -1377,12 +1377,10 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 <li><code>get_partial_pipeline()</code>: Returns a OTELib partial pipeline.</li>
 </ul>
 <hr />
-<p><strong>TODO</strong>: Update the URL to the JSON-LD context when merged to master</p>
 
 
 
   <div class="doc doc-children">
-
 
 
 
@@ -1791,7 +1789,7 @@ returned.</p>
 
 
 <h2 id="tripper.dataset.dataset.get_jsonld_context" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_jsonld_context</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_jsonld_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.dataset.dataset.get_jsonld_context" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1815,6 +1813,15 @@ common vocabularies and ontologies.</p>
   </thead>
   <tbody>
       <tr>
+        <td><code>context</code></td>
+        <td><code>Optional[Union[str, dict, Sequence[Union[str, dict]]]]</code></td>
+        <td><p>Additional user-defined context that should be returned
+on top of the default context.  It may be a string with an URL
+to the user-defined context, a dict with the user-defined context
+or a sequence of strings and dicts.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>timeout</code></td>
         <td><code>float</code></td>
         <td><p>Number of seconds before timing out.</p></td>
@@ -1830,8 +1837,11 @@ common vocabularies and ontologies.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="nd">@cache</span>  <span class="c1"># type: ignore</span>
-<span class="k">def</span> <span class="nf">get_jsonld_context</span><span class="p">(</span><span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_jsonld_context</span><span class="p">(</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, Sequence[Union[str, dict]]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the JSON-LD context as a dict.</span>
 
 <span class="sd">    The JSON-LD context maps all the keywords that can be used as keys</span>
@@ -1839,6 +1849,10 @@ common vocabularies and ontologies.</p>
 <span class="sd">    common vocabularies and ontologies.</span>
 
 <span class="sd">    Arguments:</span>
+<span class="sd">        context: Additional user-defined context that should be returned</span>
+<span class="sd">            on top of the default context.  It may be a string with an URL</span>
+<span class="sd">            to the user-defined context, a dict with the user-defined context</span>
+<span class="sd">            or a sequence of strings and dicts.</span>
 <span class="sd">        timeout: Number of seconds before timing out.</span>
 <span class="sd">        fromfile: Whether to load the context from local file.</span>
 
@@ -1847,11 +1861,28 @@ common vocabularies and ontologies.</p>
 
     <span class="k">if</span> <span class="n">fromfile</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONTEXT_PATH</span><span class="p">[</span><span class="mi">7</span><span class="p">:],</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CONTEXT_URL</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">context</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">context</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;`context` must be a string (URL), dict or a sequence of &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;strings and dicts.  Not &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">token</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ctx</span>
 </code></pre></div>
         </details>
     </div>
@@ -2086,7 +2117,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 <h2 id="tripper.dataset.dataset.get_prefixes" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_prefixes</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_prefixes</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.dataset.dataset.get_prefixes" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2095,16 +2126,26 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
       <p>Loads the JSON-LD context and returns a dict mapping prefixes to
 their namespace URL.</p>
+<p>Arguments are passed to <code>get_jsonld_context()</code>.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_prefixes</span><span class="p">(</span><span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_prefixes</span><span class="p">(</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, Sequence[Union[str, dict]]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the JSON-LD context and returns a dict mapping prefixes to</span>
-<span class="sd">    their namespace URL.&quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_jsonld_context</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="sd">    their namespace URL.</span>
+
+<span class="sd">    Arguments are passed to `get_jsonld_context()`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">get_jsonld_context</span><span class="p">(</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="n">fromfile</span>
+    <span class="p">)</span>
     <span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">))</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">prefixes</span>
@@ -2121,7 +2162,7 @@ their namespace URL.</p>
 
 
 <h2 id="tripper.dataset.dataset.get_shortnames" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_shortnames</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_shortnames</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.dataset.dataset.get_shortnames" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2130,17 +2171,27 @@ their namespace URL.</p>
 
       <p>Loads the JSON-LD context and returns a dict mapping IRIs to their
 short names defined in the context.</p>
+<p>Arguments are passed to <code>get_jsonld_context()</code>.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_shortnames</span><span class="p">(</span><span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_shortnames</span><span class="p">(</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, Sequence[Union[str, dict]]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">fromfile</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the JSON-LD context and returns a dict mapping IRIs to their</span>
-<span class="sd">    short names defined in the context.&quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_jsonld_context</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-    <span class="n">prefixes</span> <span class="o">=</span> <span class="n">get_prefixes</span><span class="p">()</span>
+<span class="sd">    short names defined in the context.</span>
+
+<span class="sd">    Arguments are passed to `get_jsonld_context()`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">get_jsonld_context</span><span class="p">(</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="n">fromfile</span>
+    <span class="p">)</span>
+    <span class="n">prefixes</span> <span class="o">=</span> <span class="n">get_prefixes</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span>
     <span class="n">shortnames</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">expand_iri</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span> <span class="n">k</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)))</span>
             <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
