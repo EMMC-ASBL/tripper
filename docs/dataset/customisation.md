@@ -78,7 +78,116 @@ Providing a custom context
 --------------------------
 Custom context can be provided for all the interfaces described in the section [Documenting a resource].
 
-In the YAML documentation, Custom context can be provided with the "@context"
+### Python dict
+Both for the single-resource and multi-resource dicts, you can add a `"@context"` key to the dict who's value is
+- a string containing a resolvable URL to the custom context,
+- a dict with the custom context or
+- a list of the aforementioned strings and dicts.
+
+### YAML file
+Since the YAML representation is just a YAML serialisation of a multi-resource dict, custom context can be provided by adding a `"@context"` keyword.
+
+For example, the following YAML file defines a custom context defining the `myonto` prefix as well as the `batchNumber` and `fromBatch` keywords.
+An additional "kb" prefix (used for documented resources) is defined with the `prefixes` keyword.
+
+```yaml
+---
+
+# Custom context
+"@context":
+  myonto: http://example.com/myonto#
+
+  batchNumber:
+    "@id": myonto:batchNumber
+    "@type": xsd:integer
+
+  fromBatch:
+    "@id": myonto:fromBatch
+    "@type": "@id"
+
+
+# Additional prefixes
+prefixes:
+  kb: http://example.com/kb#
+
+
+resources:
+  # Samples
+  - "@id": kb:sampleA
+    "@type": chameo:Sample
+    fromBatch: kb:batch1
+
+  - "@id": kb:sampleB
+    "@type": chameo:Sample
+    fromBatch: kb:batch1
+
+  - "@id": kb:sampleC
+    "@type": chameo:Sample
+    fromBatch: kb:batch2
+
+  # Batches
+  - "@id": kb:batch1
+    "@type": myonto:Batch
+    batchNumber: 1
+
+  - "@id": kb:batch2
+    "@type": myonto:Batch
+    batchNumber: 2
+```
+
+You can save this context to a triplestore with
+
+```python
+>>> from tripper import Triplestore
+>>> from tripper.dataset import save_datadoc
+>>>
+>>> ts = Triplestore("rdflib")
+>>> save_datadoc(  # doctest: +ELLIPSIS
+...     ts,
+...      "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml",
+... )
+AttrDict(...)
+
+```
+
+The content of the triplestore should now be
+
+```python
+>>> print(ts.serialize())
+@prefix chameo: <https://w3id.org/emmo/domain/characterisation-methodology/chameo#> .
+@prefix kb: <http://example.com/kb#> .
+@prefix myonto: <http://example.com/myonto#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+<BLANKLINE>
+kb:sampleA a owl:NamedIndividual,
+        chameo:Sample ;
+    myonto:fromBatch kb:batch1 .
+<BLANKLINE>
+kb:sampleB a owl:NamedIndividual,
+        chameo:Sample ;
+    myonto:fromBatch kb:batch1 .
+<BLANKLINE>
+kb:sampleC a owl:NamedIndividual,
+        chameo:Sample ;
+    myonto:fromBatch kb:batch2 .
+<BLANKLINE>
+kb:batch2 a myonto:Batch,
+        owl:NamedIndividual ;
+    myonto:batchNumber 2 .
+<BLANKLINE>
+kb:batch1 a myonto:Batch,
+        owl:NamedIndividual ;
+    myonto:batchNumber 1 .
+<BLANKLINE>
+<BLANKLINE>
+
+```
+
+
+### Table
+TODO
+
 
 
 User-defined resource types

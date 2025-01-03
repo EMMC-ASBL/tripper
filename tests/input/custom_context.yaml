@@ -1,3 +1,5 @@
+---
+
 # Custom context
 "@context":
   myonto: http://example.com/myonto#
