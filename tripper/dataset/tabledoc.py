@@ -179,7 +179,7 @@ class TableDoc:
                 JSON-LD context.  Should map namespace prefixes to IRIs.
             context: Dict with user-defined JSON-LD context.
             encoding: The encoding of the csv file.  Note that Excel may
-                encode as "ISO-8859" (which was commonly used in 1990th).
+                encode as "ISO-8859" (which was commonly used in the 1990th).
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].

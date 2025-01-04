@@ -73,6 +73,7 @@ Properties specific for datasets
 - **[distribution]** (*IRI*): An available distribution of the dataset.
 - **[hasDatum]** (*IRI*): Relates a dataset to its datum parts. `hasDatum` relations are normally specified manually, since they are generated from the DLite data model.
 - **[inSeries]** (*IRI*): A dataset series of which the dataset is part.
+- **[isDescriptionFor]** (*IRI*): An object (e.g. a material) that this dataset describes.
 - **[isInputOf]** (*IRI*): A process that this dataset is the input to.
 - **[isOutputOf]** (*IRI*): A process that this dataset is the output of.
 - **[mappings]** (*Literal JSON*): A list of subject-predicate-object triples mapping the datamodel to ontological concepts.
@@ -173,6 +174,7 @@ Properties for parsers and generators
 [distribution]: https://www.w3.org/TR/vocab-dcat-3/#Property:dataset_distribution
 [hasDatum]: https://w3id.org/emmo#EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e
 [inSeries]: https://www.w3.org/TR/vocab-dcat-3/#Property:dataset_in_series
+[isDescriptionFor]: https://w3id.org/emmo#EMMO_f702bad4_fc77_41f0_a26d_79f6444fd4f3
 [isInputOf]: https://w3id.org/emmo#EMMO_1494c1a9_00e1_40c2_a9cc_9bbf302a1cac
 [isOutputOf]: https://w3id.org/emmo#EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461
 [mappings]: https://w3id.org/emmo/domain/oteio#mapping
