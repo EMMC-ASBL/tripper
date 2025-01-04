@@ -92,7 +92,7 @@ This is useful if you are working with an in-memory triplestore.
 
 !!! example
 
-    The `tests/input/` folder in the source code contain the `semdata.csv` CSV file documenting four datasets, a SEM image, two nested dataset series and the sample the image was acquired from.
+    The `tests/input/` folder in the source code contain the `semdata.csv` CSV file documenting four datasets, a SEM image, two nested dataset series and the sample the image was acquired from as shown in the figure below (click on it to see it in full size).
 
     [![semdata.csv](/figs/semdata.png)](/figs/semdata.png)
 
