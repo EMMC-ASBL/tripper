@@ -34,7 +34,11 @@ class TableDoc:
             "dataset".
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
-        context: Dict with user-defined JSON-LD context.
+        context: Additional user-defined context that should be
+            returned on top of the default context.  It may be a
+            string with an URL to the user-defined context, a dict
+            with the user-defined context or a sequence of strings and
+            dicts.
         strip: Whether to strip leading and trailing whitespaces from cells.
 
     """
@@ -47,7 +51,7 @@ class TableDoc:
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "dataset",
         prefixes: "Optional[dict]" = None,
-        context: "Optional[Union[dict, list]]" = None,
+        context: "Optional[Union[str, dict, list]]" = None,
         strip: bool = True,
     ):
         self.header = list(header)
@@ -64,7 +68,7 @@ class TableDoc:
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
-        kw = {"@context": self.context} if self.context else {}
+        kw = {"_context": self.context} if self.context else {}
 
         results = []
         for row in self.data:
@@ -86,7 +90,7 @@ class TableDoc:
         dicts: "Sequence[dict]",
         type: "Optional[str]" = "dataset",
         prefixes: "Optional[dict]" = None,
-        context: "Optional[Union[dict, list]]" = None,
+        context: "Optional[Union[str, dict, list]]" = None,
         strip: bool = True,
     ) -> "TableDoc":
         """Create new TableDoc instance from a sequence of dicts.
@@ -95,14 +99,19 @@ class TableDoc:
             dicts: Sequence of single-resource dicts.
             type: Type of data to save (applies to all rows).  Should
                 either be one of the pre-defined names: "dataset",
-                "distribution", "accessService", "parser" and "generator"
-                or an IRI to a class in an ontology.  Defaults to
-                "dataset".
-            prefixes: Dict with prefixes in addition to those included in
-                the JSON-LD context.  Should map namespace prefixes to IRIs.
-            context: Dict with user-defined JSON-LD context.
-            strip: Whether to strip leading and trailing whitespaces from
-                cells.
+                "distribution", "accessService", "parser" and
+                "generator" or an IRI to a class in an ontology.
+                Defaults to "dataset".
+            prefixes: Dict with prefixes in addition to those included
+                in the JSON-LD context.  Should map namespace prefixes
+                to IRIs.
+            context: Additional user-defined context that should be
+                returned on top of the default context.  It may be a
+                string with an URL to the user-defined context, a dict
+                with the user-defined context or a sequence of strings
+                and dicts.
+            strip: Whether to strip leading and trailing whitespaces
+                from cells.
 
         Returns:
             New TableDoc instance.
@@ -153,7 +162,7 @@ class TableDoc:
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[dict, list]]" = None,
         encoding: str = "utf-8",
-        dialect: "Union[csv.Dialect, str]" = "excel",
+        dialect: "Optional[Union[csv.Dialect, str]]" = None,
         **kwargs,
     ) -> "TableDoc":
         # pylint: disable=line-too-long
@@ -170,7 +179,7 @@ class TableDoc:
                 JSON-LD context.  Should map namespace prefixes to IRIs.
             context: Dict with user-defined JSON-LD context.
             encoding: The encoding of the csv file.  Note that Excel may
-                encode as "ISO-8859" (commonly used in 1990th).
+                encode as "ISO-8859" (which was commonly used in 1990th).
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
@@ -184,14 +193,22 @@ class TableDoc:
         References:
         [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
         """
+
+        def read(f, dialect):
+            """Return csv reader from file-like object `f`."""
+            if dialect is None and not kwargs:
+                dialect = csv.Sniffer().sniff(f.read(1024), delimiters=",;\t ")
+                f.seek(0)
+            reader = csv.reader(f, dialect=dialect, **kwargs)
+            header = next(reader)
+            data = list(reader)
+            return header, data
+
         if isinstance(csvfile, (str, Path)):
             with openfile(csvfile, mode="rt", encoding=encoding) as f:
-                reader = csv.reader(f, dialect=dialect, **kwargs)
+                header, data = read(f, dialect)
         else:
-            reader = csv.reader(csvfile, dialect=dialect, **kwargs)
-
-        header = next(reader)
-        data = list(reader)
+            header, data = read(csvfile, dialect)
 
         return TableDoc(
             header=header,

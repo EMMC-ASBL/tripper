@@ -1,0 +1,18 @@
+{
+  "@context": {
+    "sem": "https://w3id.com/emmo/domain/sem/0.1#",
+    "semdata": "https://he-matchmaker.eu/data/sem/",
+    "sample": "https://he-matchmaker.eu/sample/",
+    "mat": "https://he-matchmaker.eu/material/",
+    "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
+    "parser": "http://sintef.no/dlite/parser#",
+    "gen": "http://sintef.no/dlite/generator#",
+    "micro": "https://w3id.com/emmo/domain/microstructure/0.3#"
+  },
+
+  "fromSample": {
+    "@id": "micro:fromSample",
+    "@type": "@id"
+  }
+
+}

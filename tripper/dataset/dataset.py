@@ -174,7 +174,8 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     # Save statements and mappings
     statements = get_values(dct, "statements")
     statements.extend(get_values(dct, "mappings"))
-    ts.add_triples(statements)
+    if statements:
+        ts.add_triples(statements)
 
     # Save data models
     datamodels = get_values(dct, "datamodel")
@@ -325,8 +326,8 @@ def get_values(
             values.extend(val)
         elif val:
             values.append(val)
-        for v in data.values():
-            if isinstance(v, (dict, list)):
+        for k, v in data.items():
+            if k != "@context" and isinstance(v, (dict, list)):
                 values.extend(get_values(v, key))
     elif isinstance(data, list):
         for ele in data:
@@ -370,8 +371,9 @@ def get_jsonld_context(
     if context:
         for token in context:
             if isinstance(token, str):
-                r = requests.get(token, allow_redirects=True, timeout=timeout)
-                ctx.update(json.loads(r.content)["@context"])
+                with openfile(token, timeout=timeout, mode="rt") as f:
+                    content = f.read()
+                ctx.update(json.loads(content)["@context"])
             elif isinstance(token, dict):
                 ctx.update(token)
             else:
@@ -723,10 +725,10 @@ def as_jsonld(
                     v[i] = expand_iri(e, all_prefixes)
                 elif isinstance(e, dict) and k in nested:
                     v[i] = as_jsonld(
-                        e, k, _entryid=_entryid, prefixes=prefixes
+                        e, k, _entryid=_entryid, prefixes=all_prefixes
                     )
         elif isinstance(v, dict) and k in nested:
-            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=prefixes)
+            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=all_prefixes)
 
     return d
 
@@ -857,8 +859,8 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
 
     Arguments:
         ts: Triplestore to search.
-        type: Search for entries that are individuals of the class with
-            this IRI.
+        type: Either a [resource type] (ex: "dataset", "distribution", ...)
+            or the IRI of a class to limit the search to.
         kwargs: Match criterias.
 
     Returns:
@@ -883,6 +885,9 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
             search_iris(
                 ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
             )
+
+    SeeAlso:
+    [resource type]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/#resource-types
     """
     crit = []
 
@@ -923,7 +928,7 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     criterias = "\n".join(crit)
     query = f"""
     PREFIX rdf: <{RDF}>
-    SELECT ?iri
+    SELECT DISTINCT ?iri
     WHERE {{
     {criterias}
     }}

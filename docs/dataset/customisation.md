@@ -35,7 +35,9 @@ Lets assume that you already have a domain ontology with base IRI http://example
 
 First, you can add the prefix for the base IRI of your domain ontology to a custom JSON-LD context
 
-    "myonto": "http://example.com/myonto#",
+```json
+"myonto": "http://example.com/myonto#",
+```
 
 How the keywords should be specified in the context depends on whether they correspond to a data property or an object property in the ontology and whether a given datatype is expected.
 
@@ -46,15 +48,19 @@ Assume you want to add the keyword `batchNumber` to relate documented samples to
 It corresponds to the data property http://example.com/myonto#batchNumber in your domain ontology.
 By adding the following mapping to your custom JSON-LD context, `batchNumber` becomes available as a keyword for your data documentation:
 
-    "batchNumber": "myonto:batchNumber",
+```json
+"batchNumber": "myonto:batchNumber",
+```
 
 ### Literal with specific datatype
 If `batchNumber` must always be an integer, you can specify this by replacing the above mapping with the following:
 
-    "batchNumber": {
-        "@id": "myonto:batchNumber",
-        "@type": "xsd:integer"
-    },
+```json
+"batchNumber": {
+    "@id": "myonto:batchNumber",
+    "@type": "xsd:integer"
+},
+```
 
 Here "@id" refer to the IRI `batchNumber` is mapped to and "@type" its datatype. In this case we use `xsd:integer`, which is defined in the W3C `xsd` vocabulary.
 
@@ -65,11 +71,12 @@ If you want to say more about the batches, you may want to store them as individ
 In that case, you may want to add a keyword `fromBatch` which relate your sample to the batch it was taken from.
 In your ontology you may define `fromBatch` as a object property with IRI: http://example.com/myonto/fromBatch.
 
-
-    "fromBatch": {
-        "@id": "myonto:fromBatch",
-        "@type": "@id"
-    },
+```json
+"fromBatch": {
+    "@id": "myonto:fromBatch",
+    "@type": "@id"
+},
+```
 
 Here the special value "@id" for the "@type" means that the value of `fromBatch` must be an IRI.
 
@@ -80,9 +87,35 @@ Custom context can be provided for all the interfaces described in the section [
 
 ### Python dict
 Both for the single-resource and multi-resource dicts, you can add a `"@context"` key to the dict who's value is
+
 - a string containing a resolvable URL to the custom context,
 - a dict with the custom context or
 - a list of the aforementioned strings and dicts.
+
+For example
+
+```json
+{
+    "@context": [
+        # URL to a JSON file, typically a domain-specific context
+        "https://json-ld.org/contexts/person.jsonld",
+
+        # Local context
+        {
+            "fromBatch": {
+                "@id": "myonto:fromBatch",
+                "@type": "@id"
+            }
+        }
+    ],
+
+    # Documenting of the resource using keywords defined in the context
+    ...
+}
+```
+
+Note that the [default context] is always included and doesn't need to be specified explicitly.
+
 
 ### YAML file
 Since the YAML representation is just a YAML serialisation of a multi-resource dict, custom context can be provided by adding a `"@context"` keyword.
@@ -144,7 +177,7 @@ You can save this context to a triplestore with
 >>> ts = Triplestore("rdflib")
 >>> save_datadoc(  # doctest: +ELLIPSIS
 ...     ts,
-...      "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset-docs/tests/input/custom_context.yaml",
+...      "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml",
 ... )
 AttrDict(...)
 
@@ -186,8 +219,8 @@ kb:batch1 a myonto:Batch,
 
 
 ### Table
-TODO
-
+The `__init__()` method of the [TableDoc] class takes a `context` argument with witch user-defined context can be provided.
+The value of the `context` argument is the same as for the `@context` key of a [Python dict].
 
 
 User-defined resource types
@@ -201,15 +234,18 @@ Instead, the list of available resource types should be stored and retrieved fro
 
 
 
-[Documenting a resource]: ../documenting-a-resource
 [With custom context]: #with-custom-context
 [User-defined keywords]: #user-defined-keywords
+[Python dict]: #python-dict
 [resource types]: ../introduction#resource-types
+[Documenting a resource]: ../documenting-a-resource
 [predefined prefixes]: ../prefixes/
 [predefined keywords]: ../keywords/
+[default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
 [save_dict()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
 [as_jsonld()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
 [save_datadoc()]:
 ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_datadoc
+[TableDoc]: ../../api_reference/dataset/tabledoc/#tripper.dataset.tabledoc.TableDoc
 [TableDoc.parse_csv()]: ../../api_reference/dataset/tabledoc/#tripper.dataset.tabledoc.TableDoc.parse_csv
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json

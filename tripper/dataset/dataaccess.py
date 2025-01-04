@@ -248,5 +248,10 @@ def load(
                 # pylint: disable=no-member
             except (dlite.DLiteProtocolError, dlite.DLiteIOError):
                 pass
+            except Exception as exc:
+                raise IOError(
+                    f"cannot access dataset '{iri}' using scheme={scheme}, "
+                    f"location={location} and optins={p.query}"
+                ) from exc
 
     raise IOError(f"Cannot access dataset: {iri}")
