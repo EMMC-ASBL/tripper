@@ -102,3 +102,15 @@ nav:
 
 watch:
   - tripper
+
+#validation:
+#  omitted_files: warn
+#  absolute_links: warn  # Or 'relative_to_docs' - new in MkDocs 1.6
+#  unrecognized_links: warn
+#  anchors: warn  # New in MkDocs 1.6
+
+validation:
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn

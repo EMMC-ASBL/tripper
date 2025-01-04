@@ -237,15 +237,14 @@ Instead, the list of available resource types should be stored and retrieved fro
 [With custom context]: #with-custom-context
 [User-defined keywords]: #user-defined-keywords
 [Python dict]: #python-dict
-[resource types]: ../introduction#resource-types
-[Documenting a resource]: ../documenting-a-resource
-[predefined prefixes]: ../prefixes/
-[predefined keywords]: ../keywords/
+[resource types]: introduction.md#resource-types
+[Documenting a resource]: documenting-a-resource.md
+[predefined prefixes]: prefixes.md
+[predefined keywords]: keywords.md
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[save_dict()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
-[as_jsonld()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
-[save_datadoc()]:
-../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_datadoc
-[TableDoc]: ../../api_reference/dataset/tabledoc/#tripper.dataset.tabledoc.TableDoc
-[TableDoc.parse_csv()]: ../../api_reference/dataset/tabledoc/#tripper.dataset.tabledoc.TableDoc.parse_csv
+[save_dict()]: ../api_reference/dataset/dataset.md#tripper.dataset.dataset.save_dict
+[as_jsonld()]: ../api_reference/dataset/dataset.md#tripper.dataset.dataset.as_jsonld
+[save_datadoc()]: ../api_reference/dataset/dataset.md#tripper.dataset.dataset.save_datadoc
+[TableDoc]: ../api_reference/dataset/tabledoc.md/#tripper.dataset.tabledoc.TableDoc
+[TableDoc.parse_csv()]: ../api_reference/dataset/tabledoc.md/#tripper.dataset.tabledoc.TableDoc.parse_csv
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json

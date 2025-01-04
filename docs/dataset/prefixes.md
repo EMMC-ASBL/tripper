@@ -25,4 +25,4 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 
 
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[User-defined prefixes]: ../customisation/#user-defined-prefixes
+[User-defined prefixes]: customisation.md/#user-defined-prefixes

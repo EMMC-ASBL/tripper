@@ -94,7 +94,7 @@ This is useful if you are working with an in-memory triplestore.
 
     The `tests/input/` folder in the source code contain the `semdata.csv` CSV file documenting four datasets, a SEM image, two nested dataset series and the sample the image was acquired from.
 
-    [![semdata.csv](../../figs/semdata.png)](../../figs/semdata.png)
+    [![semdata.csv](/figs/semdata.png)](/figs/semdata.png)
 
     Running the following command from the root folder of the source code will populate an in-memory rdflib store with the data documented in the `semdata.csv` file.
 
@@ -375,4 +375,4 @@ The following formats are currently available:
 
 
 
-[resource types]: ../../dataset/introduction/#resource-types
+[resource types]: ../dataset/introduction.md/#resource-types

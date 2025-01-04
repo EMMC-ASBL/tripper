@@ -125,9 +125,6 @@ Properties for parsers and generators
 - **[prefixes]**:
 -->
 
-[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[JSON-LD documentation]: https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords
-
 [accessRights]: https://www.w3.org/TR/vocab-dcat-3/#Property:resource_access_rights
 [conformsTo]: https://www.w3.org/TR/vocab-dcat-3/#Property:resource_conforms_to
 [contactPoint]: https://www.w3.org/TR/vocab-dcat-3/#Property:resource_contact_point
@@ -219,11 +216,12 @@ Properties for parsers and generators
 [prefixes]:
 -->
 
-
 [DCAT]: https://www.w3.org/TR/vocab-dcat-3/
 [dcat:Dataset]: https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [vCard]: https://www.w3.org/TR/vcard-rdf/
 [IANA]: https://www.iana.org/assignments/media-types/media-types.xhtml
+[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
+[JSON-LD documentation]: https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords
 
-[User-defined keywords]: ../customisation/#user-defined-keywords
+[User-defined keywords]: customisation.md/#user-defined-keywords
