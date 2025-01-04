@@ -29,7 +29,7 @@ def test_get_jsonld_context():
     assert online_context["status"] == "adms:status"
 
     # Test context argument
-    context2 = get_jsonld_context(context=CONTEXT_URL)
+    context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)
     assert context2 == online_context
 
     assert "newkey" not in context
