@@ -87,6 +87,11 @@ def subcommand_find(ts, args):
         print(s)
 
 
+def subcommand_load(ts, args):
+    """Subcommand for loading data from a documented storage."""
+    print(ts, args)
+
+
 def main(argv=None):
     """Main function."""
     parser = argparse.ArgumentParser(
@@ -236,7 +241,7 @@ def main(argv=None):
         action="extend",
         nargs="+",
         metavar="PREFIX=URL",
-        help="Namespace prefixes to add to bind to the triplestore.",
+        help="Namespace prefixes to bind to the triplestore.",
     )
 
     args = parser.parse_args(argv)
