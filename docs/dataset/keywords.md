@@ -11,8 +11,8 @@ Here we only list those that are commonly used for data documentation with Tripp
 
 - **@context** (*IRI*): URL to or dict with user-defined JSON-LD context.
       Used to extend the keywords listed on this page with domain- or application-specific keywords.
-- **@id** (*IRI*): IRI of the documented resource.
-- **@type** (*IRI*): IRI of ontological class that the resource is an individual of.
+- **@id** (*IRI*): IRI identifying the documented resource.
+- **@type** (*IRI*): IRI of ontological class that defines what the resource *is*.
 
 
 General properties on resources used by DCAT
@@ -56,10 +56,11 @@ Other general properties on resources
 
 - **[abstract]** (*Literal*): A summary of the resource.
 - **[bibliographicCitation]** (*Literal*): A bibliographic reference for the resource. Recommended practice is to include sufficient bibliographic detail to identify the resource as unambiguously as possible.
-- **[comment]** (*Literal*): A description of the subject resource.
+- **[comment]** (*Literal*): A description of the subject resource. Use `description` instead.
 - **[deprecated]** (*Literal*): The annotation property that indicates that a given entity has been deprecated.  It should equal to `"true"^^xsd:boolean`.
 - **[isDefinedBy]** (*Literal*): Indicate a resource defining the subject resource. This property may be used to indicate an RDF vocabulary in which a resource is described.
 - **[label]** (*Literal*): Provides a human-readable version of a resource's name.
+- **[scopeNote]** (*Literal*): A note that helps to clarify the meaning and/or the use of a concept.
 - **[seeAlso]** (*Literal*): Indicates a resource that might provide additional information about the subject resource.
 - **[source]** (*Literal*): A related resource from which the described resource is derived.
 - **[statements]** (*Literal JSON*): A list of subject-predicate-object triples with additional RDF statements documenting the resource.

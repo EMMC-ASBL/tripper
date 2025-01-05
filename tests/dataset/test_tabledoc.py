@@ -123,7 +123,6 @@ def test_csv():
     # Read csv file
     td = TableDoc.parse_csv(
         indir / "semdata.csv",
-        delimiter=";",
         prefixes={
             "sem": "https://w3id.com/emmo/domain/sem/0.1#",
             "semdata": "https://he-matchmaker.eu/data/sem/",
@@ -143,7 +142,7 @@ def test_csv():
         "77600-23-001/77600-23-001_5kV_400x_m001"
     )
     assert img.distribution.downloadURL == (
-        "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/"
+        "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/"
         "tests/input/77600-23-001_5kV_400x_m001.tif"
     )
 

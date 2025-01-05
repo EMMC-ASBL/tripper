@@ -12,6 +12,7 @@ from tripper import Triplestore
 from tripper.dataset import (
     TableDoc,
     get_jsonld_context,
+    load,
     load_dict,
     save_datadoc,
     save_dict,
@@ -88,8 +89,14 @@ def subcommand_find(ts, args):
 
 
 def subcommand_load(ts, args):
-    """Subcommand for loading data from a documented storage."""
-    print(ts, args)
+    """Subcommand for loading a documented dataset from a storage."""
+    data = load(ts, args.iri)
+
+    if args.output:
+        with open(args.output, "wb") as f:
+            f.write(data)
+    else:
+        print(data)
 
 
 def main(argv=None):
@@ -196,6 +203,25 @@ def main(argv=None):
             "Output format to list the matched resources. The default is "
             "to infer from the file extension if --output is given. "
             'Otherwise it defaults to "iris".'
+        ),
+    )
+
+    # Subcommand: load
+    parser_load = subparsers.add_parser(
+        "load", help="Load documented dataset from a storage."
+    )
+    parser_load.set_defaults(func=subcommand_load)
+    parser_load.add_argument(
+        "iri",
+        help="IRI of dataset to load.",
+    )
+    parser_load.add_argument(
+        "--output",
+        "-o",
+        metavar="FILENAME",
+        help=(
+            "Write the dataset to the given file. The default is to write "
+            "to standard output."
         ),
     )
 

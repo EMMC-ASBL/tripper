@@ -889,8 +889,10 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     SeeAlso:
     [resource type]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/#resource-types
     """
-    crit = []
+    # Special handling of @id
+    id = kwargs.pop("@id") if "@id" in kwargs else kwargs.pop("_id", None)
 
+    crit = []
     if type:
         if ":" in type:
             expanded = ts.expand_iri(type)
@@ -933,4 +935,4 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     {criterias}
     }}
     """
-    return [r[0] for r in ts.query(query)]  # type: ignore
+    return [r[0] for r in ts.query(query) if not id or r[0] == id]  # type: ignore

@@ -10,15 +10,16 @@ usage: datadoc [-h] [--backend BACKEND] [--base-iri BASE_IRI]
                [--database DATABASE] [--package PACKAGE] [--parse LOCATION]
                [--parse-format PARSE_FORMAT]
                [--prefixes PREFIX=URL [PREFIX=URL ...]]
-               {add,find} ...
+               {add,find,load} ...
 
 Tool for data documentation. It allows populating and searching a triplestore
 for existing documentation.
 
 positional arguments:
-  {add,find}            Subcommands:
+  {add,find,load}       Subcommands:
     add                 Populate the triplestore with data documentation.
     find                Find documented resources in the triplestore.
+    load                Load documented dataset from a storage.
 
 options:
   -h, --help            show this help message and exit
@@ -41,7 +42,7 @@ options:
                         Namespace prefixes to add to bind to the triplestore.
 ```
 
-Currently, `datadoc` has two sub-commands, `add` and `find` for populating and searching the triplestore, respectively.
+Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` for populating  the triplestore, searching  the triplestore and accessing a dataset documented the triplestore, respectively.
 
 ### General options
 
@@ -51,7 +52,7 @@ Currently, `datadoc` has two sub-commands, `add` and `find` for populating and s
 They are typically used with the default "rdflib" in-memory backend.
 
 
-Subcomands
+Subcommands
 ----------
 
 ### add
@@ -99,14 +100,12 @@ This is useful if you are working with an in-memory triplestore.
     Running the following command from the root folder of the source code will populate an in-memory rdflib store with the data documented in the `semdata.csv` file.
 
     ```shell
-    datadoc add tests/input/semdata.csv --csv-options delimiter=';' --context tests/input/semdata-context.json --dump kb.ttl
+    datadoc add tests/input/semdata.csv --context tests/input/semdata-context.json --dump kb.ttl
     ```
-
-    The `--csv-options` tells that the csv file is delimited by semi-colon, which is the default delimiter used by excel in Scandinavia.
 
     The `--context` option provides a user-defined context defining prefixes and keywords used by the input.
 
-    Finally the `--dump` option dumps the in-memory triplestore to the file `kb.ttl`.
+    The `--dump` option dumps the in-memory triplestore to the file `kb.ttl`.
     If you open the file, you will notice that it in addition to the four datasets listed in the input, also include the `SEMImage` class and its properties, providing structural documentation of the `SEMImage` individuals.
 
     ??? abstract "Generated turtle file"
@@ -157,7 +156,7 @@ This is useful if you are working with an in-memory triplestore.
             dcat:contactPoint "Sigurd Wenner <Sigurd.Wenner@sintef.no>" ;
             dcat:distribution [ a dcat:Distribution ;
                     <http://sintef.no/dlite/parser#> "http://sintef.no/dlite/parser#sem_hitachi" ;
-                    dcat:downloadURL "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/tests/input/77600-23-001_5kV_400x_m001.tif" ;
+                    dcat:downloadURL "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif" ;
                     dcat:mediaType "image/tiff" ] ;
             dcat:inSeries <https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001> ;
             emmo:EMMO_f702bad4_fc77_41f0_a26d_79f6444fd4f3 <https://he-matchmaker.eu/material/concrete1> ;
@@ -297,7 +296,7 @@ options:
 ```
 
 The `--type` and `--criteria` options provide search criteria.
-The `--type` argument an be any of the recognised [resource types] to limit the search to.
+The `--type` option an be any of the recognised [resource types] to limit the search to.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.
 
@@ -371,6 +370,52 @@ The following formats are currently available:
       }
     ]
     ```
+
+    **Ex 5**: Show the documentation of a resource with a given IRI as JSON:
+
+    ```shell
+    $ datadoc --parse=kb.ttl find --criteria @id=https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001 --format=json
+    ```
+
+    This will show the same output as in Ex 4.
+
+
+### load
+Loads documented dataset from a storage.
+Running `datadoc load --help` will show the following help message:
+
+```
+usage: datadoc load [-h] [--output FILENAME] iri
+
+positional arguments:
+  iri                   IRI of dataset to load.
+
+options:
+  -h, --help            show this help message and exit
+  --output FILENAME, -o FILENAME
+                        Write the dataset to the given file. The default is to
+                        write to standard output.
+```
+
+!!! note
+    The `load` subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.
+
+The positional `iri` argument is the IRI of the documented dataset to load.
+
+The `--output` option allows to write the dataset to a local file.
+
+
+!!! example
+
+    Save the dataset `https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001` documented in `kb.ttl` to file:
+
+    ```shell
+    $ datadoc -p kb.ttl load https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001 -o cement.tif
+    ```
+
+    This should create the file `cement.tif` containing the image data.
+
+
 
 
 

@@ -175,8 +175,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 >>> from tripper.dataset import TableDoc
 
 >>> td = TableDoc.parse_csv(
-...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tabledoc-csv/tests/input/semdata.csv",
-...     delimiter=";",
+...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv",
 ...     prefixes={
 ...         "sem": "https://w3id.com/emmo/domain/sem/0.1#",
 ...         "semdata": "https://he-matchmaker.eu/data/sem/",
@@ -212,5 +211,5 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [save_datadoc()]:
 ../api_reference/dataset/dataset.md/#tripper.dataset.dataset.save_datadoc
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
-[semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tabledoc-csv/tests/input/semdata.csv
+[semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv
 [TableDoc]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.tabledoc.TableDoc
