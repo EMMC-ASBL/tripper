@@ -94,7 +94,7 @@ Both for the single-resource and multi-resource dicts, you can add a `"@context"
 
 For example
 
-```python
+```json
 {
     "@context": [
         # URL to a JSON file, typically a domain-specific context
