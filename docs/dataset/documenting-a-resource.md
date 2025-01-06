@@ -124,7 +124,7 @@ This dict representation accepts the following keywords:
 
 - **@context**: Optional user-defined context to be appended to the documentation of all resources.
 - **prefixes**: A dict mapping namespace prefixes to their corresponding URLs.
-- **datasets**/**distributions**/**accessServices**/**generators**/**parsers**/**resources**: A list of valid [single-resource](#single-resource-dict) dict of the given [resource type](#resource-types).
+- **datasets**/**distributions**/**accessServices**/**generators**/**parsers**/**resources**: A list of valid [single-resource](#single-resource-dict) dict of the given [resource type](introduction.md#resource-types).
 
 See [semdata.yaml] for an example of a [YAML] representation of a multi-resource dict documentation.
 
@@ -175,8 +175,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 >>> from tripper.dataset import TableDoc
 
 >>> td = TableDoc.parse_csv(
-...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tabledoc-csv/tests/input/semdata.csv",
-...     delimiter=";",
+...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv",
 ...     prefixes={
 ...         "sem": "https://w3id.com/emmo/domain/sem/0.1#",
 ...         "semdata": "https://he-matchmaker.eu/data/sem/",
@@ -207,10 +206,10 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [emmo:DataSet]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
-[save_dict()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_dict
-[as_jsonld()]: ../../api_reference/dataset/dataset/#tripper.dataset.dataset.as_jsonld
+[save_dict()]: ../api_reference/dataset/dataset.md/#tripper.dataset.dataset.save_dict
+[as_jsonld()]: ../api_reference/dataset/dataset.md/#tripper.dataset.dataset.as_jsonld
 [save_datadoc()]:
-../../api_reference/dataset/dataset/#tripper.dataset.dataset.save_datadoc
+../api_reference/dataset/dataset.md/#tripper.dataset.dataset.save_datadoc
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
-[semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tabledoc-csv/tests/input/semdata.csv
+[semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv
 [TableDoc]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.tabledoc.TableDoc

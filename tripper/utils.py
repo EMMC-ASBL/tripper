@@ -113,8 +113,10 @@ def openfile(
         fname = url
 
     try:
-        yield open(fname, **kwargs)  # pylint: disable=unspecified-encoding
+        f = open(fname, **kwargs)  # pylint: disable=unspecified-encoding
+        yield f
     finally:
+        f.close()
         if tmpfile:
             Path(fname).unlink()
 

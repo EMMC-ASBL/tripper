@@ -11,8 +11,8 @@ Here we only list those that are commonly used for data documentation with Tripp
 
 - **@context** (*IRI*): URL to or dict with user-defined JSON-LD context.
       Used to extend the keywords listed on this page with domain- or application-specific keywords.
-- **@id** (*IRI*): IRI of the documented resource.
-- **@type** (*IRI*): IRI of ontological class that the resource is an individual of.
+- **@id** (*IRI*): IRI identifying the documented resource.
+- **@type** (*IRI*): IRI of ontological class that defines what the resource *is*.
 
 
 General properties on resources used by DCAT
@@ -56,10 +56,11 @@ Other general properties on resources
 
 - **[abstract]** (*Literal*): A summary of the resource.
 - **[bibliographicCitation]** (*Literal*): A bibliographic reference for the resource. Recommended practice is to include sufficient bibliographic detail to identify the resource as unambiguously as possible.
-- **[comment]** (*Literal*): A description of the subject resource.
+- **[comment]** (*Literal*): A description of the subject resource. Use `description` instead.
 - **[deprecated]** (*Literal*): The annotation property that indicates that a given entity has been deprecated.  It should equal to `"true"^^xsd:boolean`.
 - **[isDefinedBy]** (*Literal*): Indicate a resource defining the subject resource. This property may be used to indicate an RDF vocabulary in which a resource is described.
 - **[label]** (*Literal*): Provides a human-readable version of a resource's name.
+- **[scopeNote]** (*Literal*): A note that helps to clarify the meaning and/or the use of a concept.
 - **[seeAlso]** (*Literal*): Indicates a resource that might provide additional information about the subject resource.
 - **[source]** (*Literal*): A related resource from which the described resource is derived.
 - **[statements]** (*Literal JSON*): A list of subject-predicate-object triples with additional RDF statements documenting the resource.
@@ -73,6 +74,7 @@ Properties specific for datasets
 - **[distribution]** (*IRI*): An available distribution of the dataset.
 - **[hasDatum]** (*IRI*): Relates a dataset to its datum parts. `hasDatum` relations are normally specified manually, since they are generated from the DLite data model.
 - **[inSeries]** (*IRI*): A dataset series of which the dataset is part.
+- **[isDescriptionFor]** (*IRI*): An object (e.g. a material) that this dataset describes.
 - **[isInputOf]** (*IRI*): A process that this dataset is the input to.
 - **[isOutputOf]** (*IRI*): A process that this dataset is the output of.
 - **[mappings]** (*Literal JSON*): A list of subject-predicate-object triples mapping the datamodel to ontological concepts.
@@ -124,9 +126,6 @@ Properties for parsers and generators
 - **[prefixes]**:
 -->
 
-[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[JSON-LD documentation]: https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords
-
 [accessRights]: https://www.w3.org/TR/vocab-dcat-3/#Property:resource_access_rights
 [conformsTo]: https://www.w3.org/TR/vocab-dcat-3/#Property:resource_conforms_to
 [contactPoint]: https://www.w3.org/TR/vocab-dcat-3/#Property:resource_contact_point
@@ -173,6 +172,7 @@ Properties for parsers and generators
 [distribution]: https://www.w3.org/TR/vocab-dcat-3/#Property:dataset_distribution
 [hasDatum]: https://w3id.org/emmo#EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e
 [inSeries]: https://www.w3.org/TR/vocab-dcat-3/#Property:dataset_in_series
+[isDescriptionFor]: https://w3id.org/emmo#EMMO_f702bad4_fc77_41f0_a26d_79f6444fd4f3
 [isInputOf]: https://w3id.org/emmo#EMMO_1494c1a9_00e1_40c2_a9cc_9bbf302a1cac
 [isOutputOf]: https://w3id.org/emmo#EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461
 [mappings]: https://w3id.org/emmo/domain/oteio#mapping
@@ -217,11 +217,12 @@ Properties for parsers and generators
 [prefixes]:
 -->
 
-
 [DCAT]: https://www.w3.org/TR/vocab-dcat-3/
 [dcat:Dataset]: https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [vCard]: https://www.w3.org/TR/vcard-rdf/
 [IANA]: https://www.iana.org/assignments/media-types/media-types.xhtml
+[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
+[JSON-LD documentation]: https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords
 
-[User-defined keywords]: ../customisation/#user-defined-keywords
+[User-defined keywords]: customisation.md/#user-defined-keywords

@@ -1,7 +1,7 @@
 site_name: "Tripper"
 site_description: Documentation for the Tripper package
 site_url: https://EMMC-ASBL.github.io/tripper
-copyright: Copyright &copy; 2022 SINTEF
+copyright: Copyright &copy; 2022-2025 SINTEF
 
 theme:
   name: material
@@ -39,6 +39,7 @@ markdown_extensions:
   - admonition
   - attr_list
   - pymdownx.highlight
+  - pymdownx.details
   - pymdownx.superfences
   - pymdownx.inlinehilite
   - pymdownx.tabbed:
@@ -48,6 +49,10 @@ markdown_extensions:
   - pymdownx.keys
   - toc:
       permalink: true
+
+exclude_docs: |
+  ../dataset/datadoc.py
+
 
 plugins:
   - search:
@@ -81,6 +86,8 @@ nav:
   - Home: index.md
   - Tutorial: tutorial.md
   - Backend discovery: backend_discovery.md
+  - Tools:
+    - datadoc: tools/datadoc.md
   - Data documentation:
     - Introduction: dataset/introduction.md
     - Documenting a resource: dataset/documenting-a-resource.md
@@ -95,3 +102,15 @@ nav:
 
 watch:
   - tripper
+
+#validation:
+#  omitted_files: warn
+#  absolute_links: warn  # Or 'relative_to_docs' - new in MkDocs 1.6
+#  unrecognized_links: warn
+#  anchors: warn  # New in MkDocs 1.6
+
+validation:
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn

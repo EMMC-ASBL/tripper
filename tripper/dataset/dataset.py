@@ -61,6 +61,7 @@ MATCH_PREFIXED_IRI = re.compile(
     r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
 )
 
+# Resource types
 dicttypes = {
     "parser": {
         "datadoc_label": "parsers",
@@ -89,6 +90,10 @@ dicttypes = {
         "@type": OWL.NamedIndividual,
     },
 }
+
+
+class InvalidKeywordError(KeyError):
+    """Keyword is not defined."""
 
 
 def save_dict(
@@ -169,7 +174,8 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     # Save statements and mappings
     statements = get_values(dct, "statements")
     statements.extend(get_values(dct, "mappings"))
-    ts.add_triples(statements)
+    if statements:
+        ts.add_triples(statements)
 
     # Save data models
     datamodels = get_values(dct, "datamodel")
@@ -320,8 +326,8 @@ def get_values(
             values.extend(val)
         elif val:
             values.append(val)
-        for v in data.values():
-            if isinstance(v, (dict, list)):
+        for k, v in data.items():
+            if k != "@context" and isinstance(v, (dict, list)):
                 values.extend(get_values(v, key))
     elif isinstance(data, list):
         for ele in data:
@@ -365,8 +371,9 @@ def get_jsonld_context(
     if context:
         for token in context:
             if isinstance(token, str):
-                r = requests.get(token, allow_redirects=True, timeout=timeout)
-                ctx.update(json.loads(r.content)["@context"])
+                with openfile(token, timeout=timeout, mode="rt") as f:
+                    content = f.read()
+                ctx.update(json.loads(content)["@context"])
             elif isinstance(token, dict):
                 ctx.update(token)
             else:
@@ -718,10 +725,10 @@ def as_jsonld(
                     v[i] = expand_iri(e, all_prefixes)
                 elif isinstance(e, dict) and k in nested:
                     v[i] = as_jsonld(
-                        e, k, _entryid=_entryid, prefixes=prefixes
+                        e, k, _entryid=_entryid, prefixes=all_prefixes
                     )
         elif isinstance(v, dict) and k in nested:
-            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=prefixes)
+            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=all_prefixes)
 
     return d
 
@@ -846,16 +853,18 @@ def get_partial_pipeline(
     return pipeline
 
 
-def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
-    """Return a list of IRIs for all entries of the given type.
+def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
+    """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
-
 
     Arguments:
         ts: Triplestore to search.
-        type: Search for entries that are individuals of the class with
-            this IRI.  The default is `dcat:Dataset`.
+        type: Either a [resource type] (ex: "dataset", "distribution", ...)
+            or the IRI of a class to limit the search to.
         kwargs: Match criterias.
+
+    Returns:
+        List of IRIs for matching resources.
 
     Examples:
         List all dataset IRIs:
@@ -876,15 +885,38 @@ def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
             search_iris(
                 ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
             )
-    """
-    crit = []
 
+    SeeAlso:
+    [resource type]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/#resource-types
+    """
+    # Special handling of @id
+    id = kwargs.pop("@id") if "@id" in kwargs else kwargs.pop("_id", None)
+
+    crit = []
     if type:
-        crit.append(f"  ?iri rdf:type <{type}> .")
+        if ":" in type:
+            expanded = ts.expand_iri(type)
+            crit.append(f"  ?iri rdf:type <{expanded}> .")
+        elif type in dicttypes:
+            types = dicttypes[type]["@type"]
+            if isinstance(types, str):
+                types = [types]
+            for t in types:
+                crit.append(f"  ?iri rdf:type <{t}> .")
+        else:
+            raise ValueError(
+                "`type` must either be an IRI or the name of one the "
+                f"resource types. Got: {type}"
+            )
+
+    else:
+        crit.append("  ?iri rdf:type ?o .")
 
     expanded = {v: k for k, v in get_shortnames().items()}
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if k.startswith("_") else k
+        if key not in expanded:
+            raise InvalidKeywordError(key)
         predicate = expanded[key]
         if v in expanded:
             value = f"<{expanded[v]}>"
@@ -894,13 +926,13 @@ def search_iris(ts: Triplestore, type=DCAT.Dataset, **kwargs):
             )
         else:
             value = v
-        crit.append(f"  ?iri <{predicate}> {value} .")
+        crit.append(f"      ?iri <{predicate}> {value} .")
     criterias = "\n".join(crit)
     query = f"""
     PREFIX rdf: <{RDF}>
-    SELECT ?iri
+    SELECT DISTINCT ?iri
     WHERE {{
     {criterias}
     }}
     """
-    return [r[0] for r in ts.query(query)]  # type: ignore
+    return [r[0] for r in ts.query(query) if not id or r[0] == id]  # type: ignore

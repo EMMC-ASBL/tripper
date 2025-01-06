@@ -29,7 +29,7 @@ def test_get_jsonld_context():
     assert online_context["status"] == "adms:status"
 
     # Test context argument
-    context2 = get_jsonld_context(context=CONTEXT_URL)
+    context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)
     assert context2 == online_context
 
     assert "newkey" not in context
@@ -263,7 +263,8 @@ def test_datadoc():
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    datasets = search_iris(ts)
+    datasets = search_iris(ts, type="dataset")
+    assert search_iris(ts, type="dcat:Dataset") == datasets
     named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
@@ -278,6 +279,9 @@ def test_datadoc():
     assert set(search_iris(ts, type=CHAMEO.Sample)) == {
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
+
+    with pytest.raises(ValueError):
+        search_iris(ts, type="invalid-type")
 
 
 def test_custom_context():
