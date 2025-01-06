@@ -861,7 +861,8 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "dataset", "distribution", ...)
             or the IRI of a class to limit the search to.
-        kwargs: Match criterias.
+        kwargs: Match criterias. A dict of `IRI: value` pairs. The IRIs may
+            use any prefix defined in `ts`, like `tcterms:title`.
 
     Returns:
         List of IRIs for matching resources.
@@ -915,9 +916,8 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     expanded = {v: k for k, v in get_shortnames().items()}
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if k.startswith("_") else k
-        if key not in expanded:
-            raise InvalidKeywordError(key)
-        predicate = expanded[key]
+        predicate = ts.expand_iri(key)
+
         if v in expanded:
             value = f"<{expanded[v]}>"
         elif isinstance(v, str):
@@ -927,12 +927,12 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
         else:
             value = v
         crit.append(f"      ?iri <{predicate}> {value} .")
-    criterias = "\n".join(crit)
+    where_statements = "\n".join(crit)
     query = f"""
     PREFIX rdf: <{RDF}>
     SELECT DISTINCT ?iri
     WHERE {{
-    {criterias}
+    {where_statements}
     }}
     """
     return [r[0] for r in ts.query(query) if not id or r[0] == id]  # type: ignore

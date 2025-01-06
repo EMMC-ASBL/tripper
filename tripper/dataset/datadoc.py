@@ -176,13 +176,13 @@ def main(argv=None):
     parser_find.add_argument(
         "--criteria",
         "-c",
-        action="extend",
-        nargs="+",
+        action="append",
         metavar="KEYWORD=VALUE",
         help=(
             "One of more additional matching criteria for resources to find. "
             "Only resources with the given KEYWORD and VALUE will be matched. "
-            "The match is exact."
+            "Currently only exact matching is supported. "
+            "This option can be given multiple times."
         ),
     )
     parser_find.add_argument(
@@ -264,10 +264,12 @@ def main(argv=None):
     parser.add_argument(
         "--prefixes",
         "-P",
-        action="extend",
-        nargs="+",
+        action="append",
         metavar="PREFIX=URL",
-        help="Namespace prefixes to bind to the triplestore.",
+        help=(
+            "Namespace prefixes to bind to the triplestore. "
+            "This option can be given multiple times."
+        ),
     )
 
     args = parser.parse_args(argv)
