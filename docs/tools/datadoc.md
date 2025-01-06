@@ -282,10 +282,12 @@ options:
   -h, --help            show this help message and exit
   --type TYPE, -t TYPE  Either a resource type (ex: "dataset", "distribution",
                         ...) or the IRI of a class to limit the search to.
-  --criteria KEYWORD=VALUE [KEYWORD=VALUE ...], -c KEYWORD=VALUE [KEYWORD=VALUE ...]
-                        One of more additional matching criteria for resources
-                        to find. Only resources with the given KEYWORD and
-                        VALUE will be matched. The match is exact.
+  --criteria IRI=VALUE, -c IRI=VALUE
+                        Matching criteria for resources to find. The IRI may
+                        be written using a namespace prefix, like
+                        `tcterms:title="My title"`. Currently only exact
+                        matching is supported. This option can be given
+                        multiple times.
   --output FILENAME, -o FILENAME
                         Write matching output to the given file. The default
                         is to write to standard output.
@@ -337,7 +339,7 @@ The following formats are currently available:
     **Ex 3**: List IRIs of all resources with a given title:
 
     ```shell
-    $ datadoc --parse=kb.ttl find --criteria title="Series of SEM image of cement sample 77600"
+    $ datadoc --parse=kb.ttl find --criteria dcterms:title="Series of SEM image of cement sample 77600"
     https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001
     ```
 

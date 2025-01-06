@@ -177,10 +177,10 @@ def main(argv=None):
         "--criteria",
         "-c",
         action="append",
-        metavar="KEYWORD=VALUE",
+        metavar="IRI=VALUE",
         help=(
-            "One of more additional matching criteria for resources to find. "
-            "Only resources with the given KEYWORD and VALUE will be matched. "
+            "Matching criteria for resources to find. The IRI may be written "
+            'using a namespace prefix, like `tcterms:title="My title"`. '
             "Currently only exact matching is supported. "
             "This option can be given multiple times."
         ),
