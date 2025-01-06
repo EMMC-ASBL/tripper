@@ -48,10 +48,10 @@ def subcommand_add(ts, args):
 def subcommand_find(ts, args):
     """Subcommand for finding IRIs in the triplestore."""
     if args.criteria:
-        kwargs = dict(crit.split("=", 1) for crit in args.criteria)
+        criterias = dict(crit.split("=", 1) for crit in args.criteria)
     else:
-        kwargs = {}
-    iris = search_iris(ts, type=args.type, **kwargs)
+        criterias = {}
+    iris = search_iris(ts, type=args.type, criterias=criterias)
 
     # Infer format
     if args.format:
