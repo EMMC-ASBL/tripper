@@ -1,0 +1,146 @@
+---
+
+standards:
+
+  default:
+    # The base DCAT3 standard specify no mandatory or recommended properties
+
+  DCAT-AP:
+    # See https://semiceu.github.io/DCAT-AP/releases/3.0.0/#notes-on-alignment-with-dcat-3
+    basedOn: default
+
+    "dcat:Dataset":
+      mandatory:
+        - description
+        - title
+      recommended:
+        - contactPoint
+        - keyword
+        - theme
+
+    "dcat:DatasetSeries":
+      mandatory:
+        - description
+        - title
+      recommended:
+        - contactPoint
+
+    "dcat:DataService":
+      mandatory:
+        - endpointURL
+        - title
+      recommended:
+        - conformsTo
+        - contactPoint
+        - endpointDescription
+        - keyword
+        - theme
+
+    "dcat:Distribution":
+      mandatory:
+        - accessURL
+      recommended:
+        - availability
+        - description
+        - format
+
+    "dcterms:PeriodOfTime":
+      mandatory:
+      recommended:
+        - endDate
+        - startDate
+
+
+    "eli:LegalResource":
+      mandatory:
+      recommended:
+        - description
+        - identifier
+        - language
+        - seeAlso
+        - title
+        - type
+
+    "foaf:Agent":
+      mandatory:
+        - name
+      recommended:
+        - type
+
+
+  DCAT-AP-NO:
+    # See https://data.norge.no/specification/dcat-ap-no#Noen-krav
+    basedOn: DCAT-AP
+
+    "dcat:Dataset":
+      mandatory:
+        - contactPoint
+        - publisher
+        - theme
+        - title
+      recommended:
+        - accessRights
+        - applicableLegislation
+        - distribution
+        - spatial
+        - subject
+        - temporal
+        - wasGeneratedBy
+
+    "dcat:DatasetSeries":
+      mandatory:
+        - contactPoint
+        - publisher
+        - theme
+      recommended:
+        - applicableLegislation
+        - last
+        - spatial
+        - temporal
+
+    "dcat:DataService":
+      mandatory:
+        - contactPoint
+        - publisher
+      recommended:
+        - applicableLegislation
+        - availability
+        - format
+        - servesDataset
+
+    "dcat:Distribution":
+      mandatory:
+      recommended:
+        - license
+        - status
+
+    "dcterms:PeriodOfTime":
+      mandatory:
+      recommended:
+
+    "eli:LegalResource":
+      mandatory:
+      recommended:
+        - description
+        - identifier
+        - language
+        - seeAlso
+        - title
+        - type
+
+    "foaf:Agent":
+      mandatory:
+      recommended:
+        - identifier
+
+    "spdx:Checksum":
+      mandatory:
+        - algorithm
+        - checksumValue
+
+    "vcard:Kind":
+      mandatory:
+        - name
+      recommended:
+        - hasEmail
+        - hasURL
