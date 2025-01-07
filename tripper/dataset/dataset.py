@@ -865,7 +865,8 @@ def search_iris(
             or the IRI of a class to limit the search to.
         criterias: Match criterias. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. The IRIs
-            may use any prefix defined in `ts`, like `tcterms:title`.
+            may use any prefix defined in `ts`. E.g. the prefix `dcterms` in ts is expanded
+            and the match criteria `dcterms:title` is correctly parsed.
 
     Returns:
         List of IRIs for matching resources.
