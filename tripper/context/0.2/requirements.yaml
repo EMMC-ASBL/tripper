@@ -7,6 +7,7 @@ standards:
 
   DCAT-AP:
     # See https://semiceu.github.io/DCAT-AP/releases/3.0.0/#notes-on-alignment-with-dcat-3
+
     basedOn: default
 
     "dcat:Dataset":
@@ -70,6 +71,9 @@ standards:
 
   DCAT-AP-NO:
     # See https://data.norge.no/specification/dcat-ap-no#Noen-krav
+
+    # DCAT-AP-NO is based on DCAT-AP. Only changes compared to the base
+    # requirements has to be specified here
     basedOn: DCAT-AP
 
     "dcat:Dataset":

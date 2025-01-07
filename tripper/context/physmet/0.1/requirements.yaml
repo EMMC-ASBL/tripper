@@ -1,5 +1,8 @@
 ---
 
+# Make DCAT-AP-NO the default standard to use within the physmet domain
+default_standard: DCAT-AP-NO
+
 standards:
 
   default:
