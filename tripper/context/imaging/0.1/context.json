@@ -5,8 +5,8 @@
     {
       "img": "http://w3id.org/emmo/domain/imaging#",
 
-      "pixelWidth": "imaging:pixelWidth",
-      "pixelHeight": "imaging:pixelHeight"
+      "pixelWidth": "img:pixelWidth",
+      "pixelHeight": "img:pixelHeight"
     }
   ]
 }
