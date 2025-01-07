@@ -48,7 +48,7 @@ Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` 
 
 * The `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
 
-* The `--parse`, `--parse-format` and `--prefixes` options are for pre-loading the triplestore with with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
+* The `--parse`, `--parse-format` and `--prefixes` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.
 
 
@@ -298,11 +298,11 @@ options:
 ```
 
 The `--type` and `--criteria` options provide search criteria.
-The `--type` option an be any of the recognised [resource types] to limit the search to.
+The `--type` option can be any of the recognised [resource types] to limit the search to.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.
 
-The `--output` options allows to write the matching output to file instead of standard output.
+The `--output` option allows to write the matching output to file instead of standard output.
 
 The `--format` option controls how the search result should be presented.
 The following formats are currently available:
