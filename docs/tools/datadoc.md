@@ -8,8 +8,7 @@ Running `datadoc --help` from the shell will show the following help message:
 ```
 usage: datadoc [-h] [--backend BACKEND] [--base-iri BASE_IRI]
                [--database DATABASE] [--package PACKAGE] [--parse LOCATION]
-               [--parse-format PARSE_FORMAT]
-               [--prefixes PREFIX=URL [PREFIX=URL ...]]
+               [--parse-format PARSE_FORMAT] [--prefix PREFIX=URL]
                {add,find,load} ...
 
 Tool for data documentation. It allows populating and searching a triplestore
@@ -24,7 +23,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --backend BACKEND, -b BACKEND
-                        Triplestore backend to use. Defaults to 'rdflib' - an
+                        Triplestore backend to use. Defaults to "rdflib" - an
                         in-memory rdflib triplestore, that can be pre-loaded
                         with --parse.
   --base-iri BASE_IRI, -B BASE_IRI
@@ -38,8 +37,9 @@ options:
   --parse-format PARSE_FORMAT, -F PARSE_FORMAT
                         Used with `--parse`. Format to use when parsing
                         triplestore.
-  --prefixes PREFIX=URL [PREFIX=URL ...], -P PREFIX=URL [PREFIX=URL ...]
-                        Namespace prefixes to add to bind to the triplestore.
+  --prefix PREFIX=URL, -P PREFIX=URL
+                        Namespace prefix to bind to the triplestore. This
+                        option can be given multiple times.
 ```
 
 Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` for populating  the triplestore, searching  the triplestore and accessing a dataset documented the triplestore, respectively.
@@ -48,7 +48,7 @@ Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` 
 
 * The `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
 
-* The `--parse`, `--parse-format` and `--prefixes` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
+* The `--parse`, `--parse-format` and `--prefix` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.
 
 

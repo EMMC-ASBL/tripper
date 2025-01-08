@@ -854,7 +854,10 @@ def get_partial_pipeline(
 
 
 def search_iris(
-    ts: Triplestore, type=None, criterias: "Optional[dict]" = None
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    contains: "Optional[dict]" = None,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
@@ -863,11 +866,13 @@ def search_iris(
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "dataset", "distribution", ...)
             or the IRI of a class to limit the search to.
-        criterias: Match criterias. A dict of IRI, value pairs, where the
+        criterias: Exact match criterias. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. The IRIs
             may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
+        contains: Like `criterias` but match any literal or object IRI that
+            contain the value.
 
     Returns:
         List of IRIs for matching resources.
@@ -906,6 +911,7 @@ def search_iris(
     )
 
     crit = []
+    filters = []
     if type:
         if ":" in type:
             expanded = ts.expand_iri(type)
@@ -925,11 +931,13 @@ def search_iris(
     else:
         crit.append("  ?iri rdf:type ?o .")
 
+    n = 0  # variable no
     expanded = {v: k for k, v in get_shortnames().items()}
-    for k, v in criterias.items():
+
+    def get_predicate_value(k, v):
+        """Get value to match."""
         key = f"@{k[1:]}" if k.startswith("_") else k
         predicate = ts.expand_iri(key)
-
         if v in expanded:
             value = f"<{expanded[v]}>"
         elif isinstance(v, str):
@@ -938,8 +946,21 @@ def search_iris(
             )
         else:
             value = v
+        return predicate, value
+
+    for k, v in criterias.items():
+        predicate, value = get_predicate_value(k, v)
         crit.append(f"      ?iri <{predicate}> {value} .")
-    where_statements = "\n".join(crit)
+
+    if contains:
+        for k, v in contains.items():
+            n += 1
+            var = f"v{n}"
+            predicate, value = get_predicate_value(k, v)
+            crit.append(f"      ?iri <{predicate}> ?{var} .")
+            filters.append(f"      FILTER CONTAINS(?{var}, {value})")
+
+    where_statements = "\n".join(crit + filters)
     query = f"""
     PREFIX rdf: <{RDF}>
     SELECT DISTINCT ?iri

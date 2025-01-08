@@ -47,11 +47,20 @@ def subcommand_add(ts, args):
 
 def subcommand_find(ts, args):
     """Subcommand for finding IRIs in the triplestore."""
+    criterias = {}
+    contains = {}
     if args.criteria:
-        criterias = dict(crit.split("=", 1) for crit in args.criteria)
-    else:
-        criterias = {}
-    iris = search_iris(ts, type=args.type, criterias=criterias)
+        for crit in args.criteria:
+            if "~=" in crit:
+                key, value = crit.split("~=", 1)
+                contains[key] = value
+            else:
+                key, value = crit.split("=", 1)
+                criterias[key] = value
+
+    iris = search_iris(
+        ts, type=args.type, criterias=criterias, contains=contains
+    )
 
     # Infer format
     if args.format:
@@ -76,7 +85,7 @@ def subcommand_find(ts, args):
         dicts = [load_dict(ts, iri) for iri in iris]
         td = TableDoc.fromdicts(dicts)
         with io.StringIO() as f:
-            td.write_csv(f)
+            td.write_csv(f, prefixes=ts.namespaces)
             s = f.getvalue()
     else:
         raise ValueError(f"Unknown format: {fmt}")
@@ -262,12 +271,12 @@ def main(argv=None):
         help="Used with `--parse`. Format to use when parsing triplestore.",
     )
     parser.add_argument(
-        "--prefixes",
+        "--prefix",
         "-P",
         action="append",
         metavar="PREFIX=URL",
         help=(
-            "Namespace prefixes to bind to the triplestore. "
+            "Namespace prefix to bind to the triplestore. "
             "This option can be given multiple times."
         ),
     )
@@ -283,8 +292,8 @@ def main(argv=None):
     if args.parse:
         ts.parse(args.parse, format=args.parse_format)
 
-    if args.prefixes:
-        for token in args.prefixes:
+    if args.prefix:
+        for token in args.prefix:
             prefix, ns = token.split("=", 1)
             ts.bind(prefix, ns)
 
