@@ -853,7 +853,9 @@ def get_partial_pipeline(
     return pipeline
 
 
-def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
+def search_iris(
+    ts: Triplestore, type=None, criterias: "Optional[dict]" = None
+) -> "List[str]":
     """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
 
@@ -861,7 +863,11 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "dataset", "distribution", ...)
             or the IRI of a class to limit the search to.
-        kwargs: Match criterias.
+        criterias: Match criterias. A dict of IRI, value pairs, where the
+            IRIs refer to data properties on the resource match. The IRIs
+            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
+            is in `ts`, it is expanded and the match criteria `dcterms:title`
+            is correctly parsed.
 
     Returns:
         List of IRIs for matching resources.
@@ -889,8 +895,15 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     SeeAlso:
     [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
+    if criterias is None:
+        criterias = {}
+
     # Special handling of @id
-    id = kwargs.pop("@id") if "@id" in kwargs else kwargs.pop("_id", None)
+    id = (
+        criterias.pop("@id")
+        if "@id" in criterias
+        else criterias.pop("_id", None)
+    )
 
     crit = []
     if type:
@@ -913,11 +926,10 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
         crit.append("  ?iri rdf:type ?o .")
 
     expanded = {v: k for k, v in get_shortnames().items()}
-    for k, v in kwargs.items():
+    for k, v in criterias.items():
         key = f"@{k[1:]}" if k.startswith("_") else k
-        if key not in expanded:
-            raise InvalidKeywordError(key)
-        predicate = expanded[key]
+        predicate = ts.expand_iri(key)
+
         if v in expanded:
             value = f"<{expanded[v]}>"
         elif isinstance(v, str):
@@ -927,12 +939,12 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
         else:
             value = v
         crit.append(f"      ?iri <{predicate}> {value} .")
-    criterias = "\n".join(crit)
+    where_statements = "\n".join(crit)
     query = f"""
     PREFIX rdf: <{RDF}>
     SELECT DISTINCT ?iri
     WHERE {{
-    {criterias}
+    {where_statements}
     }}
     """
     return [r[0] for r in ts.query(query) if not id or r[0] == id]  # type: ignore

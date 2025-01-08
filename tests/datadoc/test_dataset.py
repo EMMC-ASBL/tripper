@@ -271,7 +271,9 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2"],
     }
     assert not named_datasets.difference(datasets)
-    assert set(search_iris(ts, creator="Sigurd Wenner")) == {
+    assert set(
+        search_iris(ts, criterias={"dcterms:creator": "Sigurd Wenner"})
+    ) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
