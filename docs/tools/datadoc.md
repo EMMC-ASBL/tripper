@@ -48,7 +48,7 @@ Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` 
 
 * The `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
 
-* The `--parse`, `--parse-format` and `--prefixes` options are for pre-loading the triplestore with with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
+* The `--parse`, `--parse-format` and `--prefixes` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.
 
 
@@ -282,10 +282,12 @@ options:
   -h, --help            show this help message and exit
   --type TYPE, -t TYPE  Either a resource type (ex: "dataset", "distribution",
                         ...) or the IRI of a class to limit the search to.
-  --criteria KEYWORD=VALUE [KEYWORD=VALUE ...], -c KEYWORD=VALUE [KEYWORD=VALUE ...]
-                        One of more additional matching criteria for resources
-                        to find. Only resources with the given KEYWORD and
-                        VALUE will be matched. The match is exact.
+  --criteria IRI=VALUE, -c IRI=VALUE
+                        Matching criteria for resources to find. The IRI may
+                        be written using a namespace prefix, like
+                        `tcterms:title="My title"`. Currently only exact
+                        matching is supported. This option can be given
+                        multiple times.
   --output FILENAME, -o FILENAME
                         Write matching output to the given file. The default
                         is to write to standard output.
@@ -296,11 +298,11 @@ options:
 ```
 
 The `--type` and `--criteria` options provide search criteria.
-The `--type` option an be any of the recognised [resource types] to limit the search to.
+The `--type` option can be any of the recognised [resource types] to limit the search to.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.
 
-The `--output` options allows to write the matching output to file instead of standard output.
+The `--output` option allows to write the matching output to file instead of standard output.
 
 The `--format` option controls how the search result should be presented.
 The following formats are currently available:
@@ -337,7 +339,7 @@ The following formats are currently available:
     **Ex 3**: List IRIs of all resources with a given title:
 
     ```shell
-    $ datadoc --parse=kb.ttl find --criteria title="Series of SEM image of cement sample 77600"
+    $ datadoc --parse=kb.ttl find --criteria dcterms:title="Series of SEM image of cement sample 77600"
     https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001
     ```
 
@@ -420,4 +422,4 @@ The `--output` option allows to write the dataset to a local file.
 
 
 
-[resource types]: ../dataset/introduction.md/#resource-types
+[resource types]: ../datadoc/introduction.md/#resource-types

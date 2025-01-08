@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from tripper import Triplestore
-from tripper.dataset import (
+from tripper.datadoc import (
     TableDoc,
     get_jsonld_context,
     load,
@@ -48,10 +48,10 @@ def subcommand_add(ts, args):
 def subcommand_find(ts, args):
     """Subcommand for finding IRIs in the triplestore."""
     if args.criteria:
-        kwargs = dict(crit.split("=", 1) for crit in args.criteria)
+        criterias = dict(crit.split("=", 1) for crit in args.criteria)
     else:
-        kwargs = {}
-    iris = search_iris(ts, type=args.type, **kwargs)
+        criterias = {}
+    iris = search_iris(ts, type=args.type, criterias=criterias)
 
     # Infer format
     if args.format:
@@ -176,13 +176,13 @@ def main(argv=None):
     parser_find.add_argument(
         "--criteria",
         "-c",
-        action="extend",
-        nargs="+",
-        metavar="KEYWORD=VALUE",
+        action="append",
+        metavar="IRI=VALUE",
         help=(
-            "One of more additional matching criteria for resources to find. "
-            "Only resources with the given KEYWORD and VALUE will be matched. "
-            "The match is exact."
+            "Matching criteria for resources to find. The IRI may be written "
+            'using a namespace prefix, like `tcterms:title="My title"`. '
+            "Currently only exact matching is supported. "
+            "This option can be given multiple times."
         ),
     )
     parser_find.add_argument(
@@ -264,10 +264,12 @@ def main(argv=None):
     parser.add_argument(
         "--prefixes",
         "-P",
-        action="extend",
-        nargs="+",
+        action="append",
         metavar="PREFIX=URL",
-        help="Namespace prefixes to bind to the triplestore.",
+        help=(
+            "Namespace prefixes to bind to the triplestore. "
+            "This option can be given multiple times."
+        ),
     )
 
     args = parser.parse_args(argv)

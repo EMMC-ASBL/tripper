@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
-from tripper.dataset.dataset import addnested, as_jsonld, save_dict
+from tripper.datadoc.dataset import addnested, as_jsonld, save_dict
 from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
