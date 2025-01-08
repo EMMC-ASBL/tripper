@@ -1380,7 +1380,7 @@ options:
 <p>The <code>--backend</code>, <code>--base-iri</code>, <code>--database</code> and <code>--package</code> options are all for connecting to a triplestore.</p>
 </li>
 <li>
-<p>The <code>--parse</code>, <code>--parse-format</code> and <code>--prefixes</code> options are for pre-loading the triplestore with with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
+<p>The <code>--parse</code>, <code>--parse-format</code> and <code>--prefixes</code> options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.</p>
 </li>
 </ul>
@@ -1596,10 +1596,12 @@ options:
   -h, --help            show this help message and exit
   --type TYPE, -t TYPE  Either a resource type (ex: &quot;dataset&quot;, &quot;distribution&quot;,
                         ...) or the IRI of a class to limit the search to.
-  --criteria KEYWORD=VALUE [KEYWORD=VALUE ...], -c KEYWORD=VALUE [KEYWORD=VALUE ...]
-                        One of more additional matching criteria for resources
-                        to find. Only resources with the given KEYWORD and
-                        VALUE will be matched. The match is exact.
+  --criteria IRI=VALUE, -c IRI=VALUE
+                        Matching criteria for resources to find. The IRI may
+                        be written using a namespace prefix, like
+                        `tcterms:title=&quot;My title&quot;`. Currently only exact
+                        matching is supported. This option can be given
+                        multiple times.
   --output FILENAME, -o FILENAME
                         Write matching output to the given file. The default
                         is to write to standard output.
@@ -1609,10 +1611,10 @@ options:
                         --output is given. Otherwise it defaults to &quot;iris&quot;.
 </code></pre></div>
 <p>The <code>--type</code> and <code>--criteria</code> options provide search criteria.
-The <code>--type</code> option an be any of the recognised <a href="../../dataset/introduction/#resource-types">resource types</a> to limit the search to.
+The <code>--type</code> option can be any of the recognised <a href="../../dataset/introduction/#resource-types">resource types</a> to limit the search to.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.</p>
-<p>The <code>--output</code> options allows to write the matching output to file instead of standard output.</p>
+<p>The <code>--output</code> option allows to write the matching output to file instead of standard output.</p>
 <p>The <code>--format</code> option controls how the search result should be presented.
 The following formats are currently available:</p>
 <ul>
@@ -1641,7 +1643,7 @@ https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001
 https://he-matchmaker.eu/sample/SEM_cement_batch2/77600-23-001
 </code></pre></div>
 <p><strong>Ex 3</strong>: List IRIs of all resources with a given title:</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>datadoc<span class="w"> </span>--parse<span class="o">=</span>kb.ttl<span class="w"> </span>find<span class="w"> </span>--criteria<span class="w"> </span><span class="nv">title</span><span class="o">=</span><span class="s2">&quot;Series of SEM image of cement sample 77600&quot;</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>datadoc<span class="w"> </span>--parse<span class="o">=</span>kb.ttl<span class="w"> </span>find<span class="w"> </span>--criteria<span class="w"> </span>dcterms:title<span class="o">=</span><span class="s2">&quot;Series of SEM image of cement sample 77600&quot;</span>
 https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001
 </code></pre></div>
 <p><strong>Ex 4</strong>: List all sample individuals as JSON:</p>

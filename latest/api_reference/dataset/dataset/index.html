@@ -3123,7 +3123,7 @@ as "_id=...".</p></td>
 
 
 <h2 id="tripper.dataset.dataset.search_iris" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.dataset.dataset.search_iris" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3158,10 +3158,14 @@ or the IRI of a class to limit the search to.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>kwargs</code></td>
-        <td></td>
-        <td><p>Match criterias.</p></td>
-        <td><code>{}</code></td>
+        <td><code>criterias</code></td>
+        <td><code>Optional[dict]</code></td>
+        <td><p>Match criterias. A dict of IRI, value pairs, where the
+IRIs refer to data properties on the resource match. The IRIs
+may use any prefix defined in <code>ts</code>. E.g. if the prefix <code>dcterms</code>
+is in <code>ts</code>, it is expanded and the match criteria <code>dcterms:title</code>
+is correctly parsed.</p></td>
+        <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
@@ -3200,7 +3204,9 @@ measured on a given sample:</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/dataset/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[str]&quot;</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_iris</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[str]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of IRIs for all matching resources.</span>
 <span class="sd">    Additional matching criterias can be specified by `kwargs`.</span>
 
@@ -3208,7 +3214,11 @@ measured on a given sample:</p>
 <span class="sd">        ts: Triplestore to search.</span>
 <span class="sd">        type: Either a [resource type] (ex: &quot;dataset&quot;, &quot;distribution&quot;, ...)</span>
 <span class="sd">            or the IRI of a class to limit the search to.</span>
-<span class="sd">        kwargs: Match criterias.</span>
+<span class="sd">        criterias: Match criterias. A dict of IRI, value pairs, where the</span>
+<span class="sd">            IRIs refer to data properties on the resource match. The IRIs</span>
+<span class="sd">            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`</span>
+<span class="sd">            is in `ts`, it is expanded and the match criteria `dcterms:title`</span>
+<span class="sd">            is correctly parsed.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List of IRIs for matching resources.</span>
@@ -3236,8 +3246,15 @@ measured on a given sample:</p>
 <span class="sd">    SeeAlso:</span>
 <span class="sd">    [resource type]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/#resource-types</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">criterias</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="c1"># Special handling of @id</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">criterias</span>
+        <span class="k">else</span> <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
@@ -3260,11 +3277,10 @@ measured on a given sample:</p>
         <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  ?iri rdf:type ?o .&quot;</span><span class="p">)</span>
 
     <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">criterias</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">predicate</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">expanded</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -3274,12 +3290,12 @@ measured on a given sample:</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
         <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;      ?iri &lt;</span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2">&gt; </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
-    <span class="n">criterias</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
+    <span class="n">where_statements</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crit</span><span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    PREFIX rdf: &lt;</span><span class="si">{</span><span class="n">RDF</span><span class="si">}</span><span class="s2">&gt;</span>
 <span class="s2">    SELECT DISTINCT ?iri</span>
 <span class="s2">    WHERE </span><span class="se">{{</span>
-<span class="s2">    </span><span class="si">{</span><span class="n">criterias</span><span class="si">}</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">where_statements</span><span class="si">}</span>
 <span class="s2">    </span><span class="se">}}</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">id</span> <span class="ow">or</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
