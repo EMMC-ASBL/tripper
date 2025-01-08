@@ -38,7 +38,7 @@ mappings = [
     "pint>=0.16.1,<0.25",
     "rdflib>=6.3.0,<7.0.0",
 ]
-dataset = [
+datadoc = [
     "tripper[mappings]",
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
@@ -52,7 +52,7 @@ testing-core = [
     "pytest-cov==4.1.0",
 ]
 testing = [
-    "tripper[testing-core,mappings,dataset]",
+    "tripper[testing-core,mappings,datadoc]",
     "dlite-python>=0.5.23,<0.5.27; python_version>='3.8' and python_version<'3.13'",
     "dlite-python>=0.5.25,<0.5.27; python_version>='3.13'",
     "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
@@ -84,7 +84,7 @@ Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
 
 [project.scripts]
-datadoc = "tripper.dataset.datadoc:main"
+datadoc = "tripper.datadoc.clitool:main"
 
 [tool.isort]
 line_length = 79  # PEP8

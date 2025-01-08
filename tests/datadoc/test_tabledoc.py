@@ -10,7 +10,7 @@ def test_asdicts():
     pytest.importorskip("rdflib")
 
     from tripper import DCAT, EMMO, Namespace, Triplestore
-    from tripper.dataset import TableDoc
+    from tripper.datadoc import TableDoc
 
     ONTO = Namespace("http:/example.com/onto#")
     DS = Namespace("http:/example.com/datasets#")
@@ -89,7 +89,7 @@ def test_fromdicts():
     pytest.importorskip("rdflib")
 
     from tripper import Namespace
-    from tripper.dataset import TableDoc
+    from tripper.datadoc import TableDoc
 
     EX = Namespace("http://example.com/ex#")
     dicts = [
@@ -118,7 +118,7 @@ def test_csv():
     pytest.importorskip("rdflib")
 
     from tripper import Triplestore
-    from tripper.dataset import TableDoc
+    from tripper.datadoc import TableDoc
 
     # Read csv file
     td = TableDoc.parse_csv(

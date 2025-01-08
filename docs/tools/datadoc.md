@@ -420,4 +420,4 @@ The `--output` option allows to write the dataset to a local file.
 
 
 
-[resource types]: ../dataset/introduction.md/#resource-types
+[resource types]: ../datadoc/introduction.md/#resource-types
