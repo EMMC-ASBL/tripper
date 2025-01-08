@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from tripper import Triplestore
-from tripper.dataset import (
+from tripper.datadoc import (
     TableDoc,
     get_jsonld_context,
     load,

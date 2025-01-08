@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from tripper import DCAT, Triplestore
-from tripper.dataset.dataset import add, get, load_dict, save_dict
+from tripper.datadoc.dataset import add, get, load_dict, save_dict
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover

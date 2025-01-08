@@ -42,7 +42,7 @@ Sub-packages
 ------------
 Additional functionality beyond interfacing triplestore backends is provided by specialised sub-package:
 
-* [tripper.dataset]: An API for data documentation.
+* [tripper.datadoc]: An API for data documentation.
 * [tripper.mappings]: Traverse mappings stored in the triplestore and find possible mapping routes.
 * [tripper.convert]: Convert between RDF and other data representations.
 
@@ -106,7 +106,7 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 [Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
-[tripper.dataset]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/
+[tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/
 [tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
 [tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
 [Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/

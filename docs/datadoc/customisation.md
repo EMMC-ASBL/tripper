@@ -172,7 +172,7 @@ You can save this context to a triplestore with
 
 ```python
 >>> from tripper import Triplestore
->>> from tripper.dataset import save_datadoc
+>>> from tripper.datadoc import save_datadoc
 >>>
 >>> ts = Triplestore("rdflib")
 >>> save_datadoc(  # doctest: +ELLIPSIS
@@ -242,9 +242,9 @@ Instead, the list of available resource types should be stored and retrieved fro
 [predefined prefixes]: prefixes.md
 [predefined keywords]: keywords.md
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[save_dict()]: ../api_reference/dataset/dataset.md#tripper.dataset.dataset.save_dict
-[as_jsonld()]: ../api_reference/dataset/dataset.md#tripper.dataset.dataset.as_jsonld
-[save_datadoc()]: ../api_reference/dataset/dataset.md#tripper.dataset.dataset.save_datadoc
-[TableDoc]: ../api_reference/dataset/tabledoc.md/#tripper.dataset.tabledoc.TableDoc
-[TableDoc.parse_csv()]: ../api_reference/dataset/tabledoc.md/#tripper.dataset.tabledoc.TableDoc.parse_csv
+[save_dict()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.save_dict
+[as_jsonld()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.as_jsonld
+[save_datadoc()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.save_datadoc
+[TableDoc]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc
+[TableDoc.parse_csv()]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc.parse_csv
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json

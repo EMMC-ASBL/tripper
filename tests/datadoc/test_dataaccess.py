@@ -16,7 +16,7 @@ def test_save_and_load():
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper import DCAT, DCTERMS, EMMO, Triplestore
-    from tripper.dataset import load, load_dict, save, save_dict
+    from tripper.datadoc import load, load_dict, save, save_dict
 
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")

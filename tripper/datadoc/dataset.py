@@ -27,7 +27,7 @@ Functions for interaction with OTEAPI:
 ---
 
 [DCAT]: https://www.w3.org/TR/vocab-dcat-3/
-[JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset/tripper/context/0.2/context.json
+[JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
 
 """
 
@@ -893,7 +893,7 @@ def search_iris(
             )
 
     SeeAlso:
-    [resource type]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/#resource-types
+    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
     if criterias is None:
         criterias = {}
