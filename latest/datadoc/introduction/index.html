@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/dataset/introduction/">
+        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/datadoc/introduction/">
       
       
         <link rel="prev" href="../../tools/datadoc/">
@@ -952,7 +952,7 @@
             
   
   <span class="md-ellipsis">
-    dataset
+    datadoc
   </span>
   
 
@@ -962,7 +962,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_10_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_10">
             <span class="md-nav__icon md-icon"></span>
-            dataset
+            datadoc
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -973,7 +973,28 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/dataset/dataaccess/" class="md-nav__link">
+      <a href="../../api_reference/datadoc/clitool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    clitool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/datadoc/dataaccess/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -994,28 +1015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/dataset/datadoc/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    datadoc
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api_reference/dataset/dataset/" class="md-nav__link">
+      <a href="../../api_reference/datadoc/dataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1036,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/dataset/tabledoc/" class="md-nav__link">
+      <a href="../../api_reference/datadoc/tabledoc/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1275,9 +1275,9 @@
 <p>The data documentation is based on small <a href="https://json-ld.org/">JSON-LD documents</a>, each documenting a single resource.
 Examples of resources can be a dataset, an instrument, a sample, etc.
 All resources are uniquely identified by their IRI.</p>
-<p>The primary focus of the <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset">tripper.dataset</a> module is to document datasets such that they are consistent with the <a href="https://www.w3.org/TR/vocab-dcat-3/">DCAT vocabulary</a>, but at the same time easily extended additional semantic meaning provided by other ontologies.
+<p>The primary focus of the <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/introduction">tripper.datadoc</a> module is to document datasets such that they are consistent with the <a href="https://www.w3.org/TR/vocab-dcat-3/">DCAT vocabulary</a>, but at the same time easily extended additional semantic meaning provided by other ontologies.
 It is also easy to add and relate the datasets to other types of documents, like people, instruments and samples.</p>
-<p>The <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset">tripper.dataset</a> module provides a Python API for documenting resources at all four levels of data documentation, including:</p>
+<p>The <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/introduction">tripper.datadoc</a> module provides a Python API for documenting resources at all four levels of data documentation, including:</p>
 <ul>
 <li><strong>Cataloguing</strong>: Storing and accessing <em>documents</em> based on their IRI and data properties.
   (Addressed FAIR aspects: <em>findability</em> and <em>accessibility</em>).</li>
@@ -1291,7 +1291,7 @@ It is also easy to add and relate the datasets to other types of documents, like
 <p>The figure below shows illustrates how a dataset is documented in a triplestore.</p>
 <p><img alt="Documentation of a dataset" src="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/docs/figs/dataset-Dataset.png" /></p>
 <h2 id="resource-types">Resource types<a class="headerlink" href="#resource-types" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset">tripper.dataset</a> module include the following set of predefined resource types:</p>
+<p>The <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/introduction">tripper.datadoc</a> module include the following set of predefined resource types:</p>
 <ul>
 <li><strong>dataset</strong>: Individual of <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset">dcat:Dataset</a> and <a href="https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a">emmo:DataSet</a>.</li>
 <li><strong>distribution</strong>: Individual of <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution">dcat:Distribution</a>.</li>

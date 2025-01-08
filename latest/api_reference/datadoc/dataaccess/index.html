@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/dataset/dataaccess/">
+        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/dataaccess/">
       
       
-        <link rel="prev" href="../../convert/convert/">
+        <link rel="prev" href="../clitool/">
       
       
-        <link rel="next" href="../datadoc/">
+        <link rel="next" href="../dataset/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -393,7 +393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataset/introduction/" class="md-nav__link">
+      <a href="../../../datadoc/introduction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -414,7 +414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataset/documenting-a-resource/" class="md-nav__link">
+      <a href="../../../datadoc/documenting-a-resource/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -435,7 +435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataset/customisation/" class="md-nav__link">
+      <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -456,7 +456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataset/prefixes/" class="md-nav__link">
+      <a href="../../../datadoc/prefixes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -477,7 +477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataset/keywords/" class="md-nav__link">
+      <a href="../../../datadoc/keywords/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -896,7 +896,7 @@
             
   
   <span class="md-ellipsis">
-    dataset
+    datadoc
   </span>
   
 
@@ -906,9 +906,30 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_10_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6_10">
             <span class="md-nav__icon md-icon"></span>
-            dataset
+            datadoc
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clitool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    clitool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -963,16 +984,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataaccess" class="md-nav__link">
+  <a href="#tripper.datadoc.dataaccess" class="md-nav__link">
     <span class="md-ellipsis">
-      tripper.dataset.dataaccess
+      tripper.datadoc.dataaccess
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataaccess.load" class="md-nav__link">
+  <a href="#tripper.datadoc.dataaccess.load" class="md-nav__link">
     <span class="md-ellipsis">
       load()
     </span>
@@ -981,7 +1002,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataaccess.save" class="md-nav__link">
+  <a href="#tripper.datadoc.dataaccess.save" class="md-nav__link">
     <span class="md-ellipsis">
       save()
     </span>
@@ -993,27 +1014,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../datadoc/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    datadoc
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -1247,16 +1247,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataaccess" class="md-nav__link">
+  <a href="#tripper.datadoc.dataaccess" class="md-nav__link">
     <span class="md-ellipsis">
-      tripper.dataset.dataaccess
+      tripper.datadoc.dataaccess
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataaccess.load" class="md-nav__link">
+  <a href="#tripper.datadoc.dataaccess.load" class="md-nav__link">
     <span class="md-ellipsis">
       load()
     </span>
@@ -1265,7 +1265,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.dataset.dataaccess.save" class="md-nav__link">
+  <a href="#tripper.datadoc.dataaccess.save" class="md-nav__link">
     <span class="md-ellipsis">
       save()
     </span>
@@ -1293,7 +1293,7 @@
 
   <div class="doc doc-object doc-module">
 
-<a id="tripper.dataset.dataaccess"></a>
+<a id="tripper.datadoc.dataaccess"></a>
     <div class="doc doc-contents first">
 
       <p>A module for providing access to data based on data documentation
@@ -1324,11 +1324,11 @@ package.</p>
 
 
 
-<h2 id="tripper.dataset.dataaccess.load" class="doc doc-heading">
+<h2 id="tripper.datadoc.dataaccess.load" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">load</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">distributions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
-<a href="#tripper.dataset.dataaccess.load" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.datadoc.dataaccess.load" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
@@ -1394,7 +1394,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 </div>
 
         <details class="quote">
-          <summary>Source code in <code>tripper/dataset/dataaccess.py</code></summary>
+          <summary>Source code in <code>tripper/datadoc/dataaccess.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1478,11 +1478,11 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 
-<h2 id="tripper.dataset.dataaccess.save" class="doc doc-heading">
+<h2 id="tripper.datadoc.dataaccess.save" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">class_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
-<a href="#tripper.dataset.dataaccess.save" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.datadoc.dataaccess.save" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
@@ -1582,7 +1582,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
   </tbody>
 </table>
         <details class="quote">
-          <summary>Source code in <code>tripper/dataset/dataaccess.py</code></summary>
+          <summary>Source code in <code>tripper/datadoc/dataaccess.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
