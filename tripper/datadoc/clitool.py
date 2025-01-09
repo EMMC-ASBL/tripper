@@ -97,8 +97,8 @@ def subcommand_find(ts, args):
         print(s)
 
 
-def subcommand_load(ts, args):
-    """Subcommand for loading a documented dataset from a storage."""
+def subcommand_fetch(ts, args):
+    """Subcommand for fetching a documented dataset from a storage."""
     data = load(ts, args.iri)
 
     if args.output:
@@ -215,16 +215,16 @@ def main(argv=None):
         ),
     )
 
-    # Subcommand: load
-    parser_load = subparsers.add_parser(
-        "load", help="Load documented dataset from a storage."
+    # Subcommand: fetch
+    parser_fetch = subparsers.add_parser(
+        "fetch", help="Fetch documented dataset from a storage."
     )
-    parser_load.set_defaults(func=subcommand_load)
-    parser_load.add_argument(
+    parser_fetch.set_defaults(func=subcommand_fetch)
+    parser_fetch.add_argument(
         "iri",
-        help="IRI of dataset to load.",
+        help="IRI of dataset to fetch.",
     )
-    parser_load.add_argument(
+    parser_fetch.add_argument(
         "--output",
         "-o",
         metavar="FILENAME",

@@ -140,6 +140,7 @@ def save_dict(
         raise ValueError("`dct` must have an '@id' key")
 
     all_prefixes = get_prefixes()
+    all_prefixes.update(ts.namespaces)
     if prefixes:
         all_prefixes.update(prefixes)
 
@@ -958,7 +959,7 @@ def search_iris(
             var = f"v{n}"
             predicate, value = get_predicate_value(k, v)
             crit.append(f"      ?iri <{predicate}> ?{var} .")
-            filters.append(f"      FILTER CONTAINS(?{var}, {value})")
+            filters.append(f"      FILTER CONTAINS(str(?{var}), {value})")
 
     where_statements = "\n".join(crit + filters)
     query = f"""

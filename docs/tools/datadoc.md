@@ -9,7 +9,7 @@ Running `datadoc --help` from the shell will show the following help message:
 usage: datadoc [-h] [--backend BACKEND] [--base-iri BASE_IRI]
                [--database DATABASE] [--package PACKAGE] [--parse LOCATION]
                [--parse-format PARSE_FORMAT] [--prefix PREFIX=URL]
-               {add,find,load} ...
+               {add,find,fetch} ...
 
 Tool for data documentation. It allows populating and searching a triplestore
 for existing documentation.
@@ -18,7 +18,7 @@ positional arguments:
   {add,find,load}       Subcommands:
     add                 Populate the triplestore with data documentation.
     find                Find documented resources in the triplestore.
-    load                Load documented dataset from a storage.
+    fetch               Fetch documented dataset from a storage.
 
 options:
   -h, --help            show this help message and exit
@@ -382,15 +382,15 @@ The following formats are currently available:
     This will show the same output as in Ex 4.
 
 
-### load
-Loads documented dataset from a storage.
-Running `datadoc load --help` will show the following help message:
+### fetch
+Fetch documented dataset from a storage.
+Running `datadoc fetch --help` will show the following help message:
 
 ```
-usage: datadoc load [-h] [--output FILENAME] iri
+usage: datadoc fetch [-h] [--output FILENAME] iri
 
 positional arguments:
-  iri                   IRI of dataset to load.
+  iri                   IRI of dataset to fetch.
 
 options:
   -h, --help            show this help message and exit
@@ -400,9 +400,9 @@ options:
 ```
 
 !!! note
-    The `load` subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.
+    The `fetch` subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.
 
-The positional `iri` argument is the IRI of the documented dataset to load.
+The positional `iri` argument is the IRI of the documented dataset to fetch.
 
 The `--output` option allows to write the dataset to a local file.
 
@@ -412,7 +412,7 @@ The `--output` option allows to write the dataset to a local file.
     Save the dataset `https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001` documented in `kb.ttl` to file:
 
     ```shell
-    $ datadoc -p kb.ttl load https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001 -o cement.tif
+    $ datadoc -p kb.ttl fetch https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001 -o cement.tif
     ```
 
     This should create the file `cement.tif` containing the image data.

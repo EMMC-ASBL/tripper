@@ -59,12 +59,13 @@ class TableDoc:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.prefixes = prefixes
-        self.context = context
+        self.prefixes = prefixes if prefixes else {}
+        self.context = context if context else {}
         self.strip = strip
 
     def save(self, ts: Triplestore) -> None:
         """Save tabular datadocumentation to triplestore."""
+        self.prefixes.update(ts.namespaces)
         for d in self.asdicts():
             save_dict(ts, d)
 
