@@ -1,0 +1,202 @@
+{
+  "@context": [
+    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json",
+
+    {
+      "hasCharacterisationMeasurementInstrument": {
+        "@id": "chameo:hasCharacterisationMeasurementInstrument",
+        "@type": "@id"
+      },
+      "hasOperator": {
+        "@id": "chameo:hasOperator",
+        "@type": "@id"
+      },
+      "hasInteractionVolume": {
+        "@id": "chameo:hasInteractionVolume",
+        "@type": "@id"
+      },
+      "hasInteractionWithProbe": {
+        "@id": "chameo:hasInteractionWithProbe",
+        "@type": "@id"
+      },
+      "hasCharacterisationComponent": {
+        "@id": "chameo:hasCharacterisationComponent",
+        "@type": "@id"
+      },
+      "hasCharacterisationInput": {
+        "@id": "chameo:hasCharacterisationInput",
+        "@type": "@id"
+      },
+      "hasCharacterisationOutput": {
+        "@id": "chameo:hasCharacterisationOutput",
+        "@type": "@id"
+      },
+      "hasCharacterisationSoftware": {
+        "@id": "chameo:hasCharacterisationSoftware",
+        "@type": "@id"
+      },
+      "hasHolder": {
+        "@id": "chameo:hasHolder",
+        "@type": "@id"
+      },
+      "hasInstrumentForCalibration": {
+        "@id": "chameo:hasInstrumentForCalibration",
+        "@type": "@id"
+      },
+      "hasInteractionWithSample": {
+        "@id": "chameo:hasInteractionWithSample",
+        "@type": "@id"
+      },
+      "hasLab": {
+        "@id": "chameo:hasLab",
+        "@type": "@id"
+      },
+      "hasMeasurementDetector": {
+        "@id": "chameo:hasMeasurementDetector",
+        "@type": "@id"
+      },
+      "hasMeasurementPrope": {
+        "@id": "chameo:hasMeasurementPrope",
+        "@type": "@id"
+      },
+      "hasMeasurementSample": {
+        "@id": "chameo:hasMeasurementSample",
+        "@type": "@id"
+      },
+      "hasMeasurementParameter": {
+        "@id": "chameo:hasMeasurementParameter",
+        "@type": "@id"
+      },
+      "hasSampleInspectionParameter": {
+        "@id": "chameo:hasSampleInspectionParameter",
+        "@type": "@id"
+      },
+      "hasSamplePreparationParameter": {
+        "@id": "chameo:hasSamplePreparationParameter",
+        "@type": "@id"
+      },
+      "hasPostprocessingModel": {
+        "@id": "chameo:hasPostprocessingModel",
+        "@type": "@id"
+      },
+      "hasReferenceSample": {
+        "@id": "chameo:hasReferenceSample",
+        "@type": "@id"
+      },
+      "hasSampleBeforeSamplePreparation": {
+        "@id": "chameo:hasSampleBeforeSamplePreparation",
+        "@type": "@id"
+      },
+      "hasSampleForInspection": {
+        "@id": "chameo:hasSampleForInspection",
+        "@type": "@id"
+      },
+      "hasSampleInspectionInstrument": {
+        "@id": "chameo:hasSampleInspectionInstrument",
+        "@type": "@id"
+      },
+      "hasSamplePreparationInstrument": {
+        "@id": "chameo:hasSamplePreparationInstrument",
+        "@type": "@id"
+      },
+      "hasSampledSample": {
+        "@id": "chameo:hasSampledSample",
+        "@type": "@id"
+      },
+      "hasPeerReviewedArticle": {
+        "@id": "chameo:hasPeerReviewedArticle",
+        "@type": "@id"
+      },
+      "hasAccessConditions": {
+        "@id": "chameo:hasAccessConditions",
+        "@type": "@id"
+      },
+      "hasCharacterisationEnvironment": {
+        "@id": "chameo:hasCharacterisationEnvironment",
+        "@type": "@id"
+      },
+      "hasCharacterisationEnvironmentProperty": {
+        "@id": "chameo:hasCharacterisationEnvironmentProperty",
+        "@type": "@id"
+      },
+      "hasCharacterisationProcedureValidation": {
+        "@id": "chameo:hasCharacterisationProcedureValidation",
+        "@type": "@id"
+      },
+      "hasDataAcquisitionRate": {
+        "@id": "chameo:hasDataAcquisitionRate",
+        "@type": "@id"
+      },
+      "hasDataProcessingThroughCalibration": {
+        "@id": "chameo:hasDataProcessingThroughCalibration",
+        "@type": "@id"
+      },
+      "hasDataQuality": {
+        "@id": "chameo:hasDataQuality",
+        "@type": "@id"
+      },
+      "hasHardwareSpecification": {
+        "@id": "chameo:hasHardwareSpecification",
+        "@type": "@id"
+      },
+      "hasHazard": {
+        "@id": "chameo:hasHazard",
+        "@type": "@id"
+      },
+      "hasLevelOfAutomation": {
+        "@id": "chameo:hasLevelOfAutomation",
+        "@type": "@id"
+      },
+      "hasMeasurementTime": {
+        "@id": "chameo:hasMeasurementTime",
+        "@type": "@id"
+      },
+      "hasProcessingReproducibility": {
+        "@id": "chameo:hasProcessingReproducibility",
+        "@type": "@id"
+      },
+      "requiresLevelOfExpertise": {
+        "@id": "chameo:requiresLevelOfExpertise",
+        "@type": "@id"
+      },
+      "hasDataset": {
+        "@id": "chameo:hasDataset",
+        "@type": "@id"
+      },
+      "hasPhysicsOfInteraction": {
+        "@id": "chameo:hasPhysicsOfInteraction",
+        "@type": "@id"
+      },
+      "hasBeginCharacterisationTask": {
+        "@id": "chameo:hasBeginCharacterisationTask",
+        "@type": "@id"
+      },
+      "hasEndCharacterisationTask": {
+        "@id": "chameo:hasEndCharacterisationTask",
+        "@type": "@id"
+      },
+      "hasCharacterisationTask": {
+        "@id": "chameo:hasCharacterisationTask",
+        "@type": "@id"
+      },
+
+      "hasDateOfCalibration": {
+        "@id": "chameo:hasDateOfCalibration",
+        "@type": "xsd:dateTime"
+      },
+      "hasManufacturer": {
+        "@id": "chameo:hasManufacturer",
+        "@type": "xsd:string"
+      },
+      "hasModel": {
+        "@id": "chameo:hasModel",
+        "@type": "xsd:string"
+      },
+      "hasUniqueID": {
+        "@id": "chameo:hasUniqueID",
+        "@type": "xsd:string"
+      }
+
+    }
+  ]
+}
