@@ -51,7 +51,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
     Path(__file__).parent.parent / "context" / "0.2" / "context.json"
-).as_uri()
+)
 CONTEXT_URL = (
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
     "master/tripper/context/0.2/context.json"
@@ -359,7 +359,7 @@ def get_jsonld_context(
     import requests
 
     if fromfile:
-        with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
+        with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
             ctx = json.load(f)["@context"]
     else:
         r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
