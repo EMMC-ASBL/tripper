@@ -285,6 +285,17 @@ def test_datadoc():
     with pytest.raises(ValueError):
         search_iris(ts, type="invalid-type")
 
+    # Find all individuals that has "SEM images"in the title
+    assert set(search_iris(ts, contains={"dcterms:title": "SEM images"})) == {
+        SEMDATA.SEM_cement_batch2,
+        SAMPLE["SEM_cement_batch2/77600-23-001"],
+    }
+
+    # Get individual with given IRI
+    assert search_iris(ts, criterias={"@id": SEMDATA.SEM_cement_batch2}) == [
+        SEMDATA.SEM_cement_batch2,
+    ]
+
 
 def test_custom_context():
     """Test saving YAML file with custom context to triplestore."""

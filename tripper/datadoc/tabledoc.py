@@ -121,7 +121,7 @@ class TableDoc:
 
         """
         # Store the header as keys in a dict to keep ordering
-        headdict = {}
+        headdict = {"@id": True}
 
         def addheaddict(d, prefix=""):
             """Add keys in `d` to headdict.
@@ -129,8 +129,12 @@ class TableDoc:
             Nested dicts will result in dot-separated keys.
             """
             for k, v in d.items():
-                if isinstance(v, dict):
-                    addheaddict(v, k + ".")
+                if k == "@context":
+                    pass
+                elif isinstance(v, dict):
+                    d = v.copy()
+                    d.pop("@type", None)
+                    addheaddict(d, k + ".")
                 else:
                     headdict[prefix + k] = True
 

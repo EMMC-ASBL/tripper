@@ -177,3 +177,41 @@ def test_csv():
     td.save(ts)
     ts.serialize(outdir / "semdata.ttl")
     print(ts.serialize())
+
+
+def test_csv_duplicated_columns():
+    """Test CSV with duplicated columns."""
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
+
+    pytest.importorskip("rdflib")
+
+    from tripper.datadoc import TableDoc
+
+    prefixes = {"pm": "https://www.ntnu.edu/physmet/data#"}
+
+    td = TableDoc.parse_csv(
+        indir / "tem.csv",
+        prefixes=prefixes,
+    )
+
+    # pylint: disable=unused-variable,unbalanced-tuple-unpacking
+    img1, img2, img3 = td.asdicts()
+
+    assert set(img1["@type"]) == {
+        "http://www.w3.org/ns/dcat#Dataset",
+        "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "https://www.ntnu.edu/physmet/data#BrightFieldImage",
+        "https://www.ntnu.edu/physmet/data#TEMImage",
+    }
+
+    td2 = TableDoc.fromdicts([img2, img3], prefixes=prefixes)
+    assert td2.header == [
+        "@id",
+        "@type",
+        "@type",
+        "@type",
+        "@type",
+        "description",
+        "distribution.downloadURL",
+    ]
+    td2.write_csv(outdir / "tem.csv")
