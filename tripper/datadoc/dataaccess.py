@@ -251,7 +251,7 @@ def load(
             except Exception as exc:
                 raise IOError(
                     f"cannot access dataset '{iri}' using scheme={scheme}, "
-                    f"location={location} and optins={p.query}"
+                    f"location={location} and options={p.query}"
                 ) from exc
 
     raise IOError(f"Cannot access dataset: {iri}")
