@@ -969,4 +969,4 @@ def search_iris(
     {where_statements}
     }}
     """
-    return [r[0] for r in ts.query(query) if not id or r[0] == id]  # type: ignore
+    return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
