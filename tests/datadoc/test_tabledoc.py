@@ -214,4 +214,4 @@ def test_csv_duplicated_columns():
         "description",
         "distribution.downloadURL",
     ]
-    td2.write_csv(outdir / "tem.csv")
+    td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
