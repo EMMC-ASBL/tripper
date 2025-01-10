@@ -81,7 +81,7 @@ dicttypes = {
     },
     "dataset": {
         "datadoc_label": "datasets",
-        "@type": [DCAT.Dataset, EMMO.DataSet],
+        "@type": [DCAT.Dataset, EMMO.Dataset],
     },
     "resource": {
         # General data resource
@@ -130,7 +130,7 @@ def save_dict(
           - "@id": Dataset IRI.  Must always be given.
           - "@type": IRI of the ontology class for this type of data.
             For datasets, it is typically used to refer to a specific subclass
-            of `emmo:DataSet` that provides a semantic description of this
+            of `emmo:Dataset` that provides a semantic description of this
             dataset.
 
     References:

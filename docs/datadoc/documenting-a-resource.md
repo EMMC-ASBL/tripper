@@ -109,7 +109,7 @@ kb:image1 a dcat:Dataset,
 
 ```
 
-Note that the image implicitly has been declared to be an individual of the classes `dcat:Dataset` and `emmo:DataSet`.
+Note that the image implicitly has been declared to be an individual of the classes `dcat:Dataset` and `emmo:Dataset`.
 This is because the `type` argument of [save_dict()] defaults to "dataset".
 
 
@@ -203,7 +203,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [dcat:Dataset]: https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [dcat:AccessService]: https://www.w3.org/TR/vocab-dcat-3/#Class:AccessService
-[emmo:DataSet]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
+[emmo:Dataset]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
 [save_dict()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_dict
