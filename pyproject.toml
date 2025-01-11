@@ -53,8 +53,7 @@ testing-core = [
 ]
 testing = [
     "tripper[testing-core,mappings,datadoc]",
-    "dlite-python>=0.5.23,<0.5.27; python_version>='3.8' and python_version<'3.13'",
-    "dlite-python>=0.5.25,<0.5.27; python_version>='3.13'",
+    "dlite-python>=0.5.27",
     "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
     "numpy<2.1.0; python_version>='3.13'",
