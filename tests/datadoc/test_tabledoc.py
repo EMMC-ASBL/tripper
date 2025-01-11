@@ -44,7 +44,7 @@ def test_asdicts():
     assert s1["@id"] == DS.s1
     assert set(s1["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         ONTO.T1,
         ONTO.T2,
     }
@@ -57,7 +57,7 @@ def test_asdicts():
     assert d1["@id"] == DS.d1
     assert set(d1["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         ONTO.T1,
     }
     assert d1.inSeries == DS.s1
@@ -69,7 +69,7 @@ def test_asdicts():
     assert d2["@id"] == DS.d2
     assert set(d2["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         ONTO.T2,
     }
     assert d2.inSeries == DS.s1
