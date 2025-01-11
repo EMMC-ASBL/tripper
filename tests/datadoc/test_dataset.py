@@ -164,7 +164,7 @@ def test_as_jsonld():
     assert d["@context"][1] == context
     assert d["@id"] == EX.indv
     assert len(d["@type"]) == 2
-    assert set(d["@type"]) == {DCAT.Dataset, EMMO.DataSet}
+    assert set(d["@type"]) == {DCAT.Dataset, EMMO.Dataset}
     assert d.a == "val"
 
     d2 = as_jsonld(dct, type="resource", _context=context)
@@ -183,7 +183,7 @@ def test_as_jsonld():
     )
     assert d3["@context"] == d["@context"]
     assert d3["@id"] == EX.indv2
-    assert set(d3["@type"]) == {DCAT.Dataset, EMMO.DataSet, EX.Item}
+    assert set(d3["@type"]) == {DCAT.Dataset, EMMO.Dataset, EX.Item}
     assert d3.a == "value"
     assert d3.inSeries == SER.main
 
@@ -214,7 +214,7 @@ def test_datadoc():
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = load_dict(ts, iri, use_sparql=False)
     assert d["@id"] == iri
-    assert set(d["@type"]) == {DCAT.Dataset, EMMO.DataSet, SEM.SEMImage}
+    assert set(d["@type"]) == {DCAT.Dataset, EMMO.Dataset, SEM.SEMImage}
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == "image/tiff"
 
