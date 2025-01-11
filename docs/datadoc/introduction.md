@@ -32,7 +32,7 @@ Resource types
 --------------
 The [tripper.datadoc] module include the following set of predefined resource types:
 
-- **dataset**: Individual of [dcat:Dataset] and [emmo:DataSet].
+- **dataset**: Individual of [dcat:Dataset] and [emmo:Dataset].
 - **distribution**: Individual of [dcat:Distribution].
 - **accessService**: Individual of [dcat:AccessService].
 - **generator**: Individual of [oteio:Generator].
@@ -55,7 +55,7 @@ Future releases will support adding custom resource types.
 [dcat:Dataset]: https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [dcat:AccessService]: https://www.w3.org/TR/vocab-dcat-3/#Class:AccessService
-[emmo:DataSet]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
+[emmo:Dataset]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
 [save_dict()]: ../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.save_dict

@@ -1,5 +1,7 @@
 """Basic interface for tabular documentation of datasets."""
 
+# pylint: disable=too-many-locals
+
 import csv
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -57,12 +59,13 @@ class TableDoc:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.prefixes = prefixes
-        self.context = context
+        self.prefixes = prefixes if prefixes else {}
+        self.context = context if context else {}
         self.strip = strip
 
     def save(self, ts: Triplestore) -> None:
         """Save tabular datadocumentation to triplestore."""
+        self.prefixes.update(ts.namespaces)
         for d in self.asdicts():
             save_dict(ts, d)
 
@@ -118,37 +121,65 @@ class TableDoc:
 
         """
         # Store the header as keys in a dict to keep ordering
-        header = {}
+        headdict = {"@id": True}
 
-        def addheader(d, prefix=""):
-            """Add keys in `d` to header.
+        def addheaddict(d, prefix=""):
+            """Add keys in `d` to headdict.
 
             Nested dicts will result in dot-separated keys.
             """
             for k, v in d.items():
-                if isinstance(v, dict):
-                    addheader(v, k + ".")
+                if k == "@context":
+                    pass
+                elif isinstance(v, dict):
+                    d = v.copy()
+                    d.pop("@type", None)
+                    addheaddict(d, k + ".")
                 else:
-                    header[prefix + k] = True
+                    headdict[prefix + k] = True
 
-        # Assign the header
+        # Assign the headdict
         for d in dicts:
-            addheader(d)
+            addheaddict(d)
+
+        header = list(headdict)
+
+        # Column multiplicity
+        mult = [1] * len(header)
 
         # Assign table data. Nested dicts are accounted for
         data = []
         for dct in dicts:
             row = []
-            for head in header:
-                d = dct
-                for key in head.split("."):
-                    d = d.get(key, {})
-                row.append(d if d != {} else None)
+            for i, head in enumerate(header):
+                if head in dct:
+                    row.append(dct[head])
+                else:
+                    d = dct
+                    for key in head.split("."):
+                        d = d.get(key, {})
+                    row.append(d if d != {} else None)
+                if isinstance(row[-1], list):  # added value is a list
+                    mult[i] = len(row[-1])  # update column multiplicity
             data.append(row)
 
+        # Expand table with multiplicated columns
+        if max(mult) > 1:
+            exp_header = []
+            for h, m in zip(header, mult):
+                exp_header.extend([h] * m)
+
+            exp_data = []
+            for row in data:
+                r = []
+                for h, v in zip(header, row):
+                    r.extend(v if isinstance(v, list) else [v])
+                exp_data.append(r)
+            header, data = exp_header, exp_data
+
         return TableDoc(
-            header=header.keys(),  # type: ignore
-            data=data,  # type: ignore
+            header=header,
+            data=data,
             type=type,
             prefixes=prefixes,
             context=context,
@@ -223,6 +254,7 @@ class TableDoc:
         csvfile: "Union[Path, str, Writer]",
         encoding: str = "utf-8",
         dialect: "Union[csv.Dialect, str]" = "excel",
+        prefixes: "Optional[dict]" = None,
         **kwargs,
     ) -> None:
         # pylint: disable=line-too-long
@@ -234,6 +266,7 @@ class TableDoc:
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
+            prefixes: Prefixes used to compact the header.
             kwargs: Additional keyword arguments overriding individual
                 formatting parameters.  For more details, see
                 [Dialects and Formatting Parameters].
@@ -244,7 +277,20 @@ class TableDoc:
 
         def write(f):
             writer = csv.writer(f, dialect=dialect, **kwargs)
-            writer.writerow(self.header)
+
+            if prefixes:
+                header = []
+                for h in self.header:
+                    for prefix, ns in prefixes.items():
+                        if h.startswith(str(ns)):
+                            header.append(f"{prefix}:{h[len(str(ns)):]}")
+                            break
+                    else:
+                        header.append(h)
+                writer.writerow(header)
+            else:
+                writer.writerow(self.header)
+
             for row in self.data:
                 writer.writerow(row)
 

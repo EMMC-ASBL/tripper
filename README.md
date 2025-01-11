@@ -12,7 +12,7 @@ Tripper
 Getting started
 ---------------
 * [Tutorial]
-* [Discovery of custom backends]
+* [Documentation]
 * [Reference manual]
 
 
@@ -106,11 +106,12 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 [Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
+[Documentation]: https://emmc-asbl.github.io/tripper/latest/
+[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
+[Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
 [tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/
 [tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
 [tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
-[Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
-[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues/
 [MIT license]: https://emmc-asbl.github.io/tripper/latest/LICENSE/
 [tripper]: https://emmc-asbl.github.io/tripper
