@@ -415,9 +415,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#load" class="md-nav__link">
+  <a href="#fetch" class="md-nav__link">
     <span class="md-ellipsis">
-      load
+      fetch
     </span>
   </a>
   
@@ -1306,9 +1306,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#load" class="md-nav__link">
+  <a href="#fetch" class="md-nav__link">
     <span class="md-ellipsis">
-      load
+      fetch
     </span>
   </a>
   
@@ -1340,9 +1340,8 @@ It provides functionality for both populating a triplestore with data documentat
 <p>Running <code>datadoc --help</code> from the shell will show the following help message:</p>
 <div class="highlight"><pre><span></span><code>usage: datadoc [-h] [--backend BACKEND] [--base-iri BASE_IRI]
                [--database DATABASE] [--package PACKAGE] [--parse LOCATION]
-               [--parse-format PARSE_FORMAT]
-               [--prefixes PREFIX=URL [PREFIX=URL ...]]
-               {add,find,load} ...
+               [--parse-format PARSE_FORMAT] [--prefix PREFIX=URL]
+               {add,find,fetch} ...
 
 Tool for data documentation. It allows populating and searching a triplestore
 for existing documentation.
@@ -1351,12 +1350,12 @@ positional arguments:
   {add,find,load}       Subcommands:
     add                 Populate the triplestore with data documentation.
     find                Find documented resources in the triplestore.
-    load                Load documented dataset from a storage.
+    fetch               Fetch documented dataset from a storage.
 
 options:
   -h, --help            show this help message and exit
   --backend BACKEND, -b BACKEND
-                        Triplestore backend to use. Defaults to &#39;rdflib&#39; - an
+                        Triplestore backend to use. Defaults to &quot;rdflib&quot; - an
                         in-memory rdflib triplestore, that can be pre-loaded
                         with --parse.
   --base-iri BASE_IRI, -B BASE_IRI
@@ -1370,8 +1369,9 @@ options:
   --parse-format PARSE_FORMAT, -F PARSE_FORMAT
                         Used with `--parse`. Format to use when parsing
                         triplestore.
-  --prefixes PREFIX=URL [PREFIX=URL ...], -P PREFIX=URL [PREFIX=URL ...]
-                        Namespace prefixes to add to bind to the triplestore.
+  --prefix PREFIX=URL, -P PREFIX=URL
+                        Namespace prefix to bind to the triplestore. This
+                        option can be given multiple times.
 </code></pre></div>
 <p>Currently, <code>datadoc</code> has currently three sub-commands, <code>add</code>, <code>find</code> and <code>load</code> for populating  the triplestore, searching  the triplestore and accessing a dataset documented the triplestore, respectively.</p>
 <h3 id="general-options">General options<a class="headerlink" href="#general-options" title="Permanent link">&para;</a></h3>
@@ -1380,7 +1380,7 @@ options:
 <p>The <code>--backend</code>, <code>--base-iri</code>, <code>--database</code> and <code>--package</code> options are all for connecting to a triplestore.</p>
 </li>
 <li>
-<p>The <code>--parse</code>, <code>--parse-format</code> and <code>--prefixes</code> options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
+<p>The <code>--parse</code>, <code>--parse-format</code> and <code>--prefix</code> options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.</p>
 </li>
 </ul>
@@ -1676,13 +1676,13 @@ https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001
 </code></pre></div>
 <p>This will show the same output as in Ex 4.</p>
 </div>
-<h3 id="load">load<a class="headerlink" href="#load" title="Permanent link">&para;</a></h3>
-<p>Loads documented dataset from a storage.
-Running <code>datadoc load --help</code> will show the following help message:</p>
-<div class="highlight"><pre><span></span><code>usage: datadoc load [-h] [--output FILENAME] iri
+<h3 id="fetch">fetch<a class="headerlink" href="#fetch" title="Permanent link">&para;</a></h3>
+<p>Fetch documented dataset from a storage.
+Running <code>datadoc fetch --help</code> will show the following help message:</p>
+<div class="highlight"><pre><span></span><code>usage: datadoc fetch [-h] [--output FILENAME] iri
 
 positional arguments:
-  iri                   IRI of dataset to load.
+  iri                   IRI of dataset to fetch.
 
 options:
   -h, --help            show this help message and exit
@@ -1692,14 +1692,14 @@ options:
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>load</code> subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.</p>
+<p>The <code>fetch</code> subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.</p>
 </div>
-<p>The positional <code>iri</code> argument is the IRI of the documented dataset to load.</p>
+<p>The positional <code>iri</code> argument is the IRI of the documented dataset to fetch.</p>
 <p>The <code>--output</code> option allows to write the dataset to a local file.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <p>Save the dataset <code>https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001</code> documented in <code>kb.ttl</code> to file:</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>datadoc<span class="w"> </span>-p<span class="w"> </span>kb.ttl<span class="w"> </span>load<span class="w"> </span>https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001<span class="w"> </span>-o<span class="w"> </span>cement.tif
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>datadoc<span class="w"> </span>-p<span class="w"> </span>kb.ttl<span class="w"> </span>fetch<span class="w"> </span>https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001<span class="w"> </span>-o<span class="w"> </span>cement.tif
 </code></pre></div>
 <p>This should create the file <code>cement.tif</code> containing the image data.</p>
 </div>

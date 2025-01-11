@@ -1462,7 +1462,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;cannot access dataset &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; using scheme=</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> and optins=</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> and options=</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access dataset: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1514,7 +1514,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
       <tr>
         <td><code>class_iri</code></td>
         <td><code>Optional[str]</code></td>
-        <td><p>IRI of a class in the ontology (e.g. an <code>emmo:DataSet</code>
+        <td><p>IRI of a class in the ontology (e.g. an <code>emmo:Dataset</code>
 subclass) that describes the dataset that is saved.
 Is used to select the <code>distribution</code> if that is not given.
 If <code>distribution</code> is also given, a
@@ -1598,7 +1598,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore that documents the data to save.</span>
 <span class="sd">        data: Bytes representation of the data to save.</span>
-<span class="sd">        class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`</span>
+<span class="sd">        class_iri: IRI of a class in the ontology (e.g. an `emmo:Dataset`</span>
 <span class="sd">            subclass) that describes the dataset that is saved.</span>
 <span class="sd">            Is used to select the `distribution` if that is not given.</span>
 <span class="sd">            If `distribution` is also given, a</span>
