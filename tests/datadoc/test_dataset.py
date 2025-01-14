@@ -286,7 +286,11 @@ def test_datadoc():
         search_iris(ts, type="invalid-type")
 
     # Find all individuals that has "SEM images"in the title
-    assert set(search_iris(ts, contains={"dcterms:title": "SEM images"})) == {
+    assert set(search_iris(ts, regex={"dcterms:title": "SEM images"})) == {
+        SEMDATA.SEM_cement_batch2,
+        SAMPLE["SEM_cement_batch2/77600-23-001"],
+    }
+    assert set(search_iris(ts, regex={"dcterms:title": "SEM i[^ ]*s"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
