@@ -36,7 +36,11 @@ class SparqlwrapperStrategy:
     prefer_sparql = True
 
     def __init__(
-        self, base_iri: str, username: "Optional[str]", password: "Optional[str]", **kwargs
+        self,
+        base_iri: str,
+        username: "Optional[str]",
+        password: "Optional[str]",
+        **kwargs,
     ) -> None:
         kwargs.pop(
             "database", None
