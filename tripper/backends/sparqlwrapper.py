@@ -16,7 +16,7 @@ except ImportError as exc:
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Dict, Generator, List, Tuple, Union
+    from typing import Dict, Generator, List, Optional, Tuple, Union
 
     from SPARQLWrapper import QueryResult
     from triplestore import Triple
@@ -27,17 +27,23 @@ class SparqlwrapperStrategy:
 
     Arguments:
         base_iri: URI of SPARQL endpoint.
+        username: User name.
+        password: Password.
         kwargs: Additional arguments passed to the SPARQLWrapper constructor.
 
     """
 
     prefer_sparql = True
 
-    def __init__(self, base_iri: str, **kwargs) -> None:
+    def __init__(
+        self, base_iri: str, username: "Optional[str]", password: "Optional[str]", **kwargs
+    ) -> None:
         kwargs.pop(
             "database", None
         )  # database is not used in the SPARQLWrapper backend
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
+        if username and password:
+            self.sparql.setCredentials(username, password)
 
     def query(
         self, query_object, **kwargs  # pylint: disable=unused-argument
