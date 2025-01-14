@@ -40,7 +40,7 @@ class SparqlwrapperStrategy:
         base_iri: str,
         username: "Optional[str]" = None,
         password: "Optional[str]" = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         kwargs.pop(
             "database", None
