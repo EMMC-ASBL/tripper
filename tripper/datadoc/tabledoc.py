@@ -67,7 +67,7 @@ class TableDoc:
         """Save tabular datadocumentation to triplestore."""
         self.prefixes.update(ts.namespaces)
         for d in self.asdicts():
-            save_dict(ts, d)
+            save_dict(ts, d, type=self.type, prefixes=self.prefixes)
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
