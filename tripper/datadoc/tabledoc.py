@@ -7,7 +7,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
-from tripper.datadoc.dataset import addnested, as_jsonld, save_dict
+from tripper.datadoc.dataset import (
+    addnested,
+    as_jsonld,
+    get_prefixes,
+    save_dict,
+)
 from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -59,7 +64,9 @@ class TableDoc:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.prefixes = prefixes if prefixes else {}
+        self.prefixes = get_prefixes(context=context)
+        if prefixes:
+            self.prefixes.update(prefixes)
         self.context = context if context else {}
         self.strip = strip
 
