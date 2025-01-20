@@ -178,6 +178,10 @@ def test_csv():
     ts.serialize(outdir / "semdata.ttl")
     print(ts.serialize())
 
+    # Test that prefixes are included in the serialisation
+    content = (outdir / "semdata.ttl").read_text()
+    assert "sem:SEMImageSeries" in content
+
 
 def test_csv_duplicated_columns():
     """Test CSV with duplicated columns."""
