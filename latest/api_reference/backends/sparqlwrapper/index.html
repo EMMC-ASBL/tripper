@@ -1426,6 +1426,18 @@ SparqlwrapperStrategy        </code>
         <td><em>required</em></td>
       </tr>
       <tr>
+        <td><code>username</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>User name.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>password</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Password.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>kwargs</code></td>
         <td></td>
         <td><p>Additional arguments passed to the SPARQLWrapper constructor.</p></td>
@@ -1440,17 +1452,27 @@ SparqlwrapperStrategy        </code>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: URI of SPARQL endpoint.</span>
+<span class="sd">        username: User name.</span>
+<span class="sd">        password: Password.</span>
 <span class="sd">        kwargs: Additional arguments passed to the SPARQLWrapper constructor.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">prefer_sparql</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">username</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
             <span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>  <span class="c1"># database is not used in the SPARQLWrapper backend</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setCredentials</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=unused-argument</span>
