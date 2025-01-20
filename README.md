@@ -57,9 +57,9 @@ The following backends are currently available, either in Tripper or other packa
 | ontopy        | [tripper]    | EMMOntoPy               | Backend for [EMMOntoPy]. In-memory.
 | sparqlwrapper | [tripper]    | sparqlwrapper           | Generic backend for all triplestores supported by [sparqlwrapper].
 | collection    | [tripper]    | DLite-Python            | Backend to a [DLite] collection.
+| graphdb       | [tripper]    | sparqlwrapper           | Backend to [GraphDB].
 | fuseki        | [PyBackTrip] | sparqlwrapper           | Backend to [fuseki].
 | stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Backend to [StarDog].
-| graphdb       | [PyBackTrip] | sparqlwrapper           | Backend to [GraphDB].
 
 
 Installation
