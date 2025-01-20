@@ -34,7 +34,7 @@ dependencies = [
 
 [project.optional-dependencies]
 mappings = [
-    "pint>=0.16.1,<0.25",
+    "pint>=0.24,<1",
     "rdflib>=6.3.0,<7.0.0",
 ]
 datadoc = [

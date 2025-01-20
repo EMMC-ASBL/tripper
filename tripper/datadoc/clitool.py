@@ -188,9 +188,10 @@ def main(argv=None):
         help=(
             "Matching criteria for resources to find. The IRI may be written "
             'using a namespace prefix, like `tcterms:title="My title"`. '
-            'Writing the criteria with the "=" operator, corresponds to exact match. '
-            'If the operator is written "=~", regular expression matching will be used '
-            "instead. This option can be given multiple times."
+            'Writing the criteria with the "=" operator, corresponds to '
+            "exact match. "
+            'If the operator is written "=~", regular expression matching '
+            "will be used instead. This option can be given multiple times."
         ),
     )
     parser_find.add_argument(
