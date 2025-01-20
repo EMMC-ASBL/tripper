@@ -99,7 +99,7 @@ class InvalidKeywordError(KeyError):
 def save_dict(
     ts: Triplestore,
     dct: dict,
-    type: str = "dataset",
+    type: "Optional[str]" = "dataset",
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
