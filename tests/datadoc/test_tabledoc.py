@@ -44,7 +44,7 @@ def test_asdicts():
     assert s1["@id"] == DS.s1
     assert set(s1["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         ONTO.T1,
         ONTO.T2,
     }
@@ -57,7 +57,7 @@ def test_asdicts():
     assert d1["@id"] == DS.d1
     assert set(d1["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         ONTO.T1,
     }
     assert d1.inSeries == DS.s1
@@ -69,7 +69,7 @@ def test_asdicts():
     assert d2["@id"] == DS.d2
     assert set(d2["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         ONTO.T2,
     }
     assert d2.inSeries == DS.s1
@@ -177,3 +177,45 @@ def test_csv():
     td.save(ts)
     ts.serialize(outdir / "semdata.ttl")
     print(ts.serialize())
+
+    # Test that prefixes are included in the serialisation
+    content = (outdir / "semdata.ttl").read_text()
+    assert "sem:SEMImageSeries" in content
+
+
+def test_csv_duplicated_columns():
+    """Test CSV with duplicated columns."""
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
+
+    pytest.importorskip("rdflib")
+
+    from tripper.datadoc import TableDoc
+
+    prefixes = {"pm": "https://www.ntnu.edu/physmet/data#"}
+
+    td = TableDoc.parse_csv(
+        indir / "tem.csv",
+        prefixes=prefixes,
+    )
+
+    # pylint: disable=unused-variable,unbalanced-tuple-unpacking
+    img1, img2, img3 = td.asdicts()
+
+    assert set(img1["@type"]) == {
+        "http://www.w3.org/ns/dcat#Dataset",
+        "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "https://www.ntnu.edu/physmet/data#BrightFieldImage",
+        "https://www.ntnu.edu/physmet/data#TEMImage",
+    }
+
+    td2 = TableDoc.fromdicts([img2, img3], prefixes=prefixes)
+    assert td2.header == [
+        "@id",
+        "@type",
+        "@type",
+        "@type",
+        "@type",
+        "description",
+        "distribution.downloadURL",
+    ]
+    td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
