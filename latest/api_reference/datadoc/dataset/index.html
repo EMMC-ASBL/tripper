@@ -2913,7 +2913,7 @@ accessible with HTTP GET.</p></td>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>str</code></td>
+        <td><code>Optional[str]</code></td>
         <td><p>Type of data to save.  Should either be one of the
 pre-defined names: "dataset", "distribution", "accessService",
 "parser" and "generator" or an IRI to a class in an ontology.
@@ -2971,7 +2971,7 @@ as "_id=...".</p></td>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_dict</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
