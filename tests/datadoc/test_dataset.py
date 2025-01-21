@@ -216,7 +216,7 @@ def test_datadoc():
     assert d["@id"] == iri
     assert set(d["@type"]) == {
         DCAT.Dataset,
-        EMMO.DataSet,
+        EMMO.Dataset,
         SEM.SEMImage,
         "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
     }
