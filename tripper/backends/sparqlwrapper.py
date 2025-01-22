@@ -26,7 +26,9 @@ class SparqlwrapperStrategy:
     """Triplestore strategy for SPARQLWrapper.
 
     Arguments:
-        base_iri: URI of SPARQL endpoint.
+        base_iri: SPARQL endpoint.
+        update_iri: Update SPARQL endpoint. For some triplestores (e.g.
+                    GraphDB), update endpoint is different from base endpoint.
         username: User name.
         password: Password.
         kwargs: Additional arguments passed to the SPARQLWrapper constructor.
@@ -38,6 +40,7 @@ class SparqlwrapperStrategy:
     def __init__(
         self,
         base_iri: str,
+        update_iri: "Optional[str]" = None,
         username: "Optional[str]" = None,
         password: "Optional[str]" = None,
         **kwargs,
@@ -45,7 +48,7 @@ class SparqlwrapperStrategy:
         kwargs.pop(
             "database", None
         )  # database is not used in the SPARQLWrapper backend
-        self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
+        self.sparql = SPARQLWrapper(endpoint=base_iri, updateEndpoint=update_iri, **kwargs)
         if username and password:
             self.sparql.setCredentials(username, password)
 
