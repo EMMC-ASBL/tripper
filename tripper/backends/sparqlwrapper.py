@@ -48,7 +48,9 @@ class SparqlwrapperStrategy:
         kwargs.pop(
             "database", None
         )  # database is not used in the SPARQLWrapper backend
-        self.sparql = SPARQLWrapper(endpoint=base_iri, updateEndpoint=update_iri, **kwargs)
+        self.sparql = SPARQLWrapper(
+            endpoint=base_iri, updateEndpoint=update_iri, **kwargs
+        )
         if username and password:
             self.sparql.setCredentials(username, password)
 
