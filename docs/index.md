@@ -12,7 +12,7 @@ Tripper
 Getting started
 ---------------
 * [Tutorial]
-* [Discovery of custom backends]
+* [Documentation]
 * [Reference manual]
 
 
@@ -42,7 +42,7 @@ Sub-packages
 ------------
 Additional functionality beyond interfacing triplestore backends is provided by specialised sub-package:
 
-* [tripper.dataset]: An API for data documentation.
+* [tripper.datadoc]: An API for data documentation.
 * [tripper.mappings]: Traverse mappings stored in the triplestore and find possible mapping routes.
 * [tripper.convert]: Convert between RDF and other data representations.
 
@@ -57,9 +57,9 @@ The following backends are currently available, either in Tripper or other packa
 | ontopy        | [tripper]    | EMMOntoPy               | Backend for [EMMOntoPy]. In-memory.
 | sparqlwrapper | [tripper]    | sparqlwrapper           | Generic backend for all triplestores supported by [sparqlwrapper].
 | collection    | [tripper]    | DLite-Python            | Backend to a [DLite] collection.
+| graphdb       | [tripper]    | sparqlwrapper           | Backend to [GraphDB].
 | fuseki        | [PyBackTrip] | sparqlwrapper           | Backend to [fuseki].
 | stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Backend to [StarDog].
-| graphdb       | [PyBackTrip] | sparqlwrapper           | Backend to [GraphDB].
 
 
 Installation
@@ -106,11 +106,12 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 [Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
-[tripper.dataset]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/
+[Documentation]: https://emmc-asbl.github.io/tripper/latest/
+[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
+[Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
+[tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/
 [tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
 [tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
-[Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
-[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues/
 [MIT license]: https://emmc-asbl.github.io/tripper/latest/LICENSE/
 [tripper]: https://emmc-asbl.github.io/tripper

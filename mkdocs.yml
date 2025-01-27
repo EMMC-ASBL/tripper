@@ -51,7 +51,7 @@ markdown_extensions:
       permalink: true
 
 exclude_docs: |
-  ../dataset/datadoc.py
+  ../datadoc/datadoc.py
 
 
 plugins:
@@ -89,11 +89,11 @@ nav:
   - Tools:
     - datadoc: tools/datadoc.md
   - Data documentation:
-    - Introduction: dataset/introduction.md
-    - Documenting a resource: dataset/documenting-a-resource.md
-    - Customisation: dataset/customisation.md
-    - Predefined prefixes: dataset/prefixes.md
-    - Predefined keywords: dataset/keywords.md
+    - Introduction: datadoc/introduction.md
+    - Documenting a resource: datadoc/documenting-a-resource.md
+    - Customisation: datadoc/customisation.md
+    - Predefined prefixes: datadoc/prefixes.md
+    - Predefined keywords: datadoc/keywords.md
   - ... | api_reference/**
   - Known issues: known-issues.md
   - For developers: developers.md

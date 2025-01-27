@@ -27,7 +27,7 @@ Functions for interaction with OTEAPI:
 ---
 
 [DCAT]: https://www.w3.org/TR/vocab-dcat-3/
-[JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/dataset/tripper/context/0.2/context.json
+[JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
 
 """
 
@@ -51,7 +51,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
     Path(__file__).parent.parent / "context" / "0.2" / "context.json"
-).as_uri()
+)
 CONTEXT_URL = (
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
     "master/tripper/context/0.2/context.json"
@@ -81,7 +81,7 @@ dicttypes = {
     },
     "dataset": {
         "datadoc_label": "datasets",
-        "@type": [DCAT.Dataset, EMMO.DataSet],
+        "@type": [DCAT.Dataset, EMMO.Dataset],
     },
     "resource": {
         # General data resource
@@ -99,7 +99,7 @@ class InvalidKeywordError(KeyError):
 def save_dict(
     ts: Triplestore,
     dct: dict,
-    type: str = "dataset",
+    type: "Optional[str]" = "dataset",
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -130,7 +130,7 @@ def save_dict(
           - "@id": Dataset IRI.  Must always be given.
           - "@type": IRI of the ontology class for this type of data.
             For datasets, it is typically used to refer to a specific subclass
-            of `emmo:DataSet` that provides a semantic description of this
+            of `emmo:Dataset` that provides a semantic description of this
             dataset.
 
     References:
@@ -140,6 +140,7 @@ def save_dict(
         raise ValueError("`dct` must have an '@id' key")
 
     all_prefixes = get_prefixes()
+    all_prefixes.update(ts.namespaces)
     if prefixes:
         all_prefixes.update(prefixes)
 
@@ -359,7 +360,7 @@ def get_jsonld_context(
     import requests
 
     if fromfile:
-        with open(CONTEXT_PATH[7:], "r", encoding="utf-8") as f:
+        with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
             ctx = json.load(f)["@context"]
     else:
         r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
@@ -853,7 +854,12 @@ def get_partial_pipeline(
     return pipeline
 
 
-def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
+def search_iris(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    contains: "Optional[dict]" = None,
+) -> "List[str]":
     """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
 
@@ -861,7 +867,13 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "dataset", "distribution", ...)
             or the IRI of a class to limit the search to.
-        kwargs: Match criterias.
+        criterias: Exact match criterias. A dict of IRI, value pairs, where the
+            IRIs refer to data properties on the resource match. The IRIs
+            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
+            is in `ts`, it is expanded and the match criteria `dcterms:title`
+            is correctly parsed.
+        contains: Like `criterias` but match any literal or object IRI that
+            contain the value.
 
     Returns:
         List of IRIs for matching resources.
@@ -887,12 +899,20 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
             )
 
     SeeAlso:
-    [resource type]: https://emmc-asbl.github.io/tripper/latest/dataset/introduction/#resource-types
+    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
+    if criterias is None:
+        criterias = {}
+
     # Special handling of @id
-    id = kwargs.pop("@id") if "@id" in kwargs else kwargs.pop("_id", None)
+    id = (
+        criterias.pop("@id")
+        if "@id" in criterias
+        else criterias.pop("_id", None)
+    )
 
     crit = []
+    filters = []
     if type:
         if ":" in type:
             expanded = ts.expand_iri(type)
@@ -912,12 +932,13 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
     else:
         crit.append("  ?iri rdf:type ?o .")
 
+    n = 0  # variable no
     expanded = {v: k for k, v in get_shortnames().items()}
-    for k, v in kwargs.items():
+
+    def get_predicate_value(k, v):
+        """Get value to match."""
         key = f"@{k[1:]}" if k.startswith("_") else k
-        if key not in expanded:
-            raise InvalidKeywordError(key)
-        predicate = expanded[key]
+        predicate = ts.expand_iri(key)
         if v in expanded:
             value = f"<{expanded[v]}>"
         elif isinstance(v, str):
@@ -926,13 +947,26 @@ def search_iris(ts: Triplestore, type=None, **kwargs) -> "List[str]":
             )
         else:
             value = v
+        return predicate, value
+
+    for k, v in criterias.items():
+        predicate, value = get_predicate_value(k, v)
         crit.append(f"      ?iri <{predicate}> {value} .")
-    criterias = "\n".join(crit)
+
+    if contains:
+        for k, v in contains.items():
+            n += 1
+            var = f"v{n}"
+            predicate, value = get_predicate_value(k, v)
+            crit.append(f"      ?iri <{predicate}> ?{var} .")
+            filters.append(f"      FILTER CONTAINS(str(?{var}), {value})")
+
+    where_statements = "\n".join(crit + filters)
     query = f"""
     PREFIX rdf: <{RDF}>
     SELECT DISTINCT ?iri
     WHERE {{
-    {criterias}
+    {where_statements}
     }}
     """
-    return [r[0] for r in ts.query(query) if not id or r[0] == id]  # type: ignore
+    return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
