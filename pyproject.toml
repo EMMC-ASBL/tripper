@@ -36,6 +36,7 @@ dependencies = [
 mappings = [
     "pint>=0.16.1,<0.25",
     "rdflib>=6.3.0,<7.0.0",
+    "urllib3<2",
 ]
 datadoc = [
     "tripper[mappings]",
@@ -124,6 +125,7 @@ good-names = [
 minversion = "7.0"
 addopts = "-rs --cov=tripper --cov-report=term --doctest-modules --doctest-ignore-import-errors"
 filterwarnings = [
+    "error",
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
 ]
