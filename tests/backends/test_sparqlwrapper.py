@@ -31,7 +31,12 @@ WHERE
     try:
         res = ts.query(sparql_query)
     except requests.HTTPError as exc:
-        if "Too Many Requests" not in str(exc):
+        # Reraise the exception unless the exception message contains
+        # one of the following patterns
+        for pattern in ("Too Many Requests", "HTTP Error 403: Forbidden"):
+            if pattern in str(exc):
+                break
+        else:
             raise
 
     assert res == [("http://www.wikidata.org/entity/Q20", "Norway")]
