@@ -5,6 +5,8 @@
 
 def test_sparqlwrapper_backend():
     """Test SPARQLwrapper backend."""
+    import urllib
+
     import pytest
 
     pytest.importorskip("SPARQLWrapper")
@@ -27,15 +29,17 @@ WHERE
     endpoint_url = "https://query.wikidata.org/sparql"
     ts = Triplestore(backend="sparqlwrapper", base_iri=endpoint_url)
 
-    # Ignore failures due to too many requests
+    # Skip test on failures due to too many requests or 403 response
     try:
         res = ts.query(sparql_query)
     except requests.HTTPError as exc:
-        # Reraise the exception unless the exception message contains
-        # one of the following patterns
-        for pattern in ("Too Many Requests", "HTTP Error 403: Forbidden"):
-            if pattern in str(exc):
-                break
+        if "Too Many Requests" in str(exc):
+            pytest.skip(str(exc))
+        else:
+            raise
+    except urllib.error.HTTPError as exc:
+        if "HTTP Error 403: Forbidden" in str(exc):
+            pytest.skip(str(exc))
         else:
             raise
 
