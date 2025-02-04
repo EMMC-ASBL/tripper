@@ -1,6 +1,4 @@
-"""Backend for SPARQLWrapper
-
-"""
+"""Backend for SPARQLWrapper"""
 
 from typing import TYPE_CHECKING
 
