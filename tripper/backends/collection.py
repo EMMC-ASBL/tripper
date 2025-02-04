@@ -1,6 +1,4 @@
-"""Backend for DLite collections.
-
-"""
+"""Backend for DLite collections."""
 
 # pylint: disable=protected-access,invalid-name
 from typing import TYPE_CHECKING
