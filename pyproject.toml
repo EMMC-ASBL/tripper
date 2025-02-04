@@ -14,68 +14,64 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
 ]
 keywords = ["triplestore", "ontology", "RDF"]
-requires-python = "~=3.7"
+requires-python = ">=3.8"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions ~=4.7; python_version<'3.8'",
-    "pint>=0.16.1,<0.24",
+    "typing-extensions>=4.7.0,<4.7.1; python_version<'3.9'",
 ]
 
 [project.optional-dependencies]
-docs = [
-    "mike ~=2.0",
-    "mkdocs ~=1.5",
-    "mkdocs-awesome-pages-plugin ~=2.9",
-    "mkdocs-material >=9.2.8",
-    "mkdocstrings[python-legacy] ~=0.22.0",
-    "EMMOntoPy ~=0.7",
-    "rdflib ~=6.3",
-    "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.5.1,<1",
+mappings = [
+    "pint>=0.21.1,<1; python_version<'3.9'",
+    "pint>=0.24,<1; python_version>='3.9'",
+    "rdflib>=6.3.0,<7.0.0",
+]
+datadoc = [
+    "tripper[mappings]",
+    "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
+    "requests>=2.0.0,<3.4.1",  # todo: check lower version
 ]
 pre-commit = [
-    "pre-commit ~=2.21",
-    "pylint ~=2.13",
-]
-testing = [
-    "pytest ~=7.4",
-    "pytest-cov ~=4.1",
-    "EMMOntoPy ~=0.7",
-    "rdflib ~=6.3",
-    "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.5.1,<1",
-    "graphviz ~= 0.20",
-    "pint>=0.16.1,<0.23",
+    "pre-commit==4.0.1",
+    "pylint==2.15.5",
 ]
 testing-core = [
-    "pytest ~=7.4",
-    "pytest-cov ~=4.1",
+    "pytest==7.4.4",
+    "pytest-cov==4.1.0",
+]
+testing = [
+    "tripper[testing-core,mappings,datadoc]",
+    "dlite-python>=0.5.27; python_version>='3.8'",
+    "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
+    "graphviz>=0.20.1,<0.20.2",
+    "numpy<2.1.0; python_version>='3.13'",
+    "rdflib>=6.3.0,<7.0.0",
+    "sparqlwrapper>=2.0.0,<2.0.1",
+]
+docs = [
+    "tripper[testing]",
+    "mike==2.1.3",
+    "mkdocs==1.6.1",
+    "mkdocs-autorefs==1.2.0",
+    "mkdocs-awesome-pages-plugin==2.10.1",
+    "mkdocs-material==9.5.49",
+    "mkdocstrings==0.27.0",
+    "mkdocstrings-python-legacy==0.2.4",
 ]
 dev = [
-    "mike ~=2.0",
-    "mkdocs ~=1.5",
-    "mkdocs-awesome-pages-plugin ~=2.9",
-    "mkdocs-material >=9.2.8",
-    "mkdocstrings[python-legacy] ~=0.22.0",
-    "pre-commit ~=2.21",
-    "pylint ~=2.13",
-    "pytest ~=7.4",
-    "pytest-cov ~=4.1",
-    "EMMOntoPy ~=0.7",
-    "rdflib ~=6.3",
-    "SPARQLWrapper ~=2.0",
-    "DLite-Python >=0.5.1,<1",
+    "tripper[pre-commit,docs]",
 ]
 
 [project.urls]
@@ -86,6 +82,9 @@ Source = "https://github.com/EMMC-ASBL/tripper"
 Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
 Package = "https://pypi.org/project/tripper"
 
+[project.scripts]
+datadoc = "tripper.datadoc.clitool:main"
+
 [tool.isort]
 line_length = 79  # PEP8
 
@@ -93,7 +92,7 @@ line_length = 79  # PEP8
 line-length = 79
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.11"
 ignore_missing_imports = true
 scripts_are_modules = true
 warn_unused_configs = true
@@ -107,6 +106,7 @@ max-public-methods = 25
 max-locals = 20
 disable = [
     "fixme",
+    "invalid-name",
 ]
 good-names = [
     # Default
@@ -115,11 +115,16 @@ good-names = [
     "ts",
     # Triple components: subject, predicate, object
     "s", "p", "o",
+    # Namespaces
+    "EX",
+    # dict, value, file, keyword...
+    "d", "v", "f", "kw",
 ]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-rs --cov=tripper --cov-report=term --doctest-modules"
+addopts = "-rs --cov=tripper --cov-report=term --doctest-modules --doctest-ignore-import-errors"
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
+    "ignore:::tripper.literal:243",  # Ignore warning in doctest
 ]

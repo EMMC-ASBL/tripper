@@ -1,3 +1,0 @@
-# tripper
-
-::: tripper.tripper

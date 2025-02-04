@@ -1,0 +1,175 @@
+{
+  "@context": {
+    "@version": 1.1,
+
+    "adms": "http://www.w3.org/ns/adms#",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dctype": "http://purl.org/dc/dcmitype/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "http://schema.org/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "spdx": "http://spdx.org/rdf/terms#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "emmo": "https://w3id.org/emmo#",
+    "oteio": "https://w3id.org/emmo/domain/oteio#",
+    "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
+
+
+    "accessRights": "dcterms:accessRights",
+    "conformsTo": "dcterms:conformsTo",
+    "contactPoint": "dcat:contactPoint",
+    "creator": "dcterms:creator",
+    "description": "dcterms:description",
+    "hasCurrentVersion": "dcat:hasCurrentVersion",
+    "hasPart": {
+      "@id": "dcterms:hasPart",
+      "@type": "@id"
+    },
+    "hasPolicy": "odrl:hasPolicy",
+    "hasVersion": "dcat:hasVersion",
+    "identifier": "dcterms:identifier",
+    "isReferencedBy": "dcterms:isReferencedBy",
+    "issued": "dcterms:issued",
+    "keyword": "dcat:keyword",
+    "landingPage": "dcat:landingPage",
+    "language": "dcterms:language",
+    "license": "dcterms:license",
+    "modified": "dcterms:modified",
+    "publisher": "dcterms:publisher",
+    "qualifiedAttribution": {
+      "@id": "prov:qualifiedAttribution",
+      "@type": "@id"
+    },
+    "qualifiedRelation": {
+      "@id": "dcat:qualifiedRelation",
+      "@type": "@id"
+    },
+    "relation": {
+      "@id": "dcterms:relation",
+      "@type": "@id"
+    },
+    "replaces": {
+      "@id": "dcterms:replaces",
+      "@type": "@id"
+    },
+    "rights": "dcterms:rights",
+    "status": "adms:status",
+    "theme": "dcat:theme",
+    "title": "dcterms:title",
+    "type": "dcterms:type",
+    "version": "dcat:version",
+    "versionNotes": "adms:versionNotes",
+
+    "abstract": "dcterms:abstract",
+    "bibliographicCitation": "dcterms:bibliographicCitation",
+    "comment": "rdfs:comment",
+    "deprecated": "owl:deprecated",
+    "isDefinedBy": "rdfs:isDefinedBy",
+    "label": "rdfs:label",
+    "seeAlso": "rdfs:seeAlso",
+    "source": "dcterms:source",
+    "statements": {
+      "@id": "oteio:statement",
+      "@type": "@json"
+    },
+
+
+    "datamodel": "oteio:hasDatamodel",
+    "datamodelStorage": "oteio:hasDatamodelStorage",
+    "distribution": {
+      "@id": "dcat:distribution",
+      "@type": "@id"
+    },
+    "hasDatum": {
+      "@id": "emmo:EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e",
+      "@type": "@id"
+    },
+    "inSeries": {
+      "@id": "dcat:inSeries",
+      "@type": "@id"
+    },
+    "isDescriptionFor": {
+      "@id": "emmo:EMMO_f702bad4_fc77_41f0_a26d_79f6444fd4f3",
+      "@type": "@id"
+    },
+    "isInputOf": {
+      "@id": "emmo:EMMO_1494c1a9_00e1_40c2_a9cc_9bbf302a1cac",
+      "@type": "@id"
+    },
+    "isOutputOf": {
+      "@id": "emmo:EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461",
+      "@type": "@id"
+    },
+    "mappings": {
+      "@id": "oteio:mapping",
+      "@type": "@json"
+    },
+    "mappingURL": "oteio:mappingURL",
+    "mappingFormat": "oteio:mappingFormat",
+    "spatial": "dcterms:spatial",
+    "spatialResolutionInMeters": "dcat:spatialResolutionInMeters",
+    "temporal": "dcterms:temporal",
+    "temporalResolution": "dcat:temporalResolution",
+    "wasGeneratedBy": "prov:wasGeneratedBy",
+
+
+    "accessService": {
+      "@id": "dcat:accessService",
+      "@type": "@id"
+    },
+    "accessURL": "dcat:accessURL",
+    "byteSize": "dcat:byteSize",
+    "checksum": {
+      "@id": "spdx:checksum",
+      "@type": "@id"
+    },
+    "compressFormat": "dcat:compressFormat",
+    "downloadURL": "dcat:downloadURL",
+    "format": "dcterms:format",
+    "generator": {
+      "@id": "oteio:generator",
+      "@type": "@id"
+    },
+    "mediaType": "dcat:mediaType",
+    "packageFormat": "dcat:packageFormat",
+    "parser": {
+      "@id": "oteio:parser",
+      "@type": "@id"
+    },
+
+    "configuration": {
+      "@id": "oteio:hasConfiguration",
+      "@type": "@json"
+    },
+    "generatorType": "oteio:generatorType",
+    "parserType": "oteio:parserType",
+
+
+
+
+
+    "filterType": "oteio:filterType",
+    "functionType": "oteio:functionType",
+
+    "hasDataSink": "oteio:hasDataSink",
+    "storeURL": "oteio:storeURL",
+
+    "subject": "rdf:subject",
+    "predicate": "rdf:predicate",
+    "object": "rdf:object",
+
+    "prefixes": {
+      "@id": "oteio:prefix",
+      "@type": "@json"
+    }
+
+  }
+}

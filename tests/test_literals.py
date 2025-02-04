@@ -1,11 +1,14 @@
 """Test RDF literals."""
 
-# pylint: disable=invalid-name,too-many-statements
+# pylint: disable=invalid-name,too-many-statements,import-outside-toplevel
 
 
 def test_untyped() -> None:
     """Test creating a untyped literal."""
-    from tripper.literal import Literal
+    import pytest
+
+    from tripper.errors import UnknownDatatypeWarning
+    from tripper.literal import XSD, Literal
 
     literal = Literal("Hello world!")
     assert literal == "Hello world!"
@@ -16,6 +19,13 @@ def test_untyped() -> None:
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == '"Hello world!"'
+    assert literal == Literal("Hello world!", lang="en")
+
+    # Check two things here:
+    #   1) that a plain literal compares false to a non-string literal
+    #   2) that we get a warning about unknown XSD.ENTITY datatype
+    with pytest.warns(UnknownDatatypeWarning, match="^unknown datatype"):
+        assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
 
 
 def test_string() -> None:
@@ -24,6 +34,9 @@ def test_string() -> None:
 
     literal = Literal("Hello world!", datatype=XSD.string)
     assert literal == Literal("Hello world!", datatype=XSD.string)
+    assert literal == Literal("Hello world!")
+    assert literal != Literal("Hello world!", datatype=XSD.token)
+    assert literal != Literal(2, datatype=XSD.int)
     assert Literal(literal) == Literal("Hello world!", datatype=XSD.string)
     assert isinstance(literal, str)
     assert literal.lang is None
@@ -31,20 +44,28 @@ def test_string() -> None:
     assert literal.to_python() == "Hello world!"
     assert literal.value == "Hello world!"
     assert literal.n3() == f'"Hello world!"^^<{XSD.string}>'
-    assert literal != "Hello world!"
+    assert literal == "Hello world!"
+    assert literal == Literal("Hello world!")
 
 
 def test_string_lang() -> None:
     """Test creating a string literal with a set language."""
-    from tripper.literal import Literal
+    from tripper.literal import XSD, Literal
 
     literal = Literal("Hello world!", lang="en")
     assert literal == Literal("Hello world!", lang="en")
+    assert literal != Literal("Hello world!", lang="it")
     assert Literal(literal) == Literal("Hello world!", lang="en")
     assert literal.lang == "en"
     assert literal.datatype is None
     assert literal.value == "Hello world!"
     assert literal.n3() == '"Hello world!"@en'
+    assert literal == "Hello world!"
+
+    # Are these wanted behaviour?  What does the RDF 1.1 standard says?
+    assert literal == Literal("Hello world!")
+    assert literal == Literal("Hello world!", datatype=XSD.string)
+    assert literal == Literal("Hello world!", datatype=XSD.token)
 
 
 def test_cannot_combine_datatype_and_lang() -> None:
@@ -106,6 +127,43 @@ def test_hexbinary() -> None:
     assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
 
+def test_json() -> None:
+    """Test creating JSON literal."""
+    import json
+
+    import pytest
+
+    from tripper import RDF, Literal
+
+    literal = Literal(None)
+    assert literal.value is None
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal({"a": 1, "b": [2.2, None, True]})
+    assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal(["a", 1, True, {"a": 2.2, "b": None}])
+    assert literal.value == ["a", 1, True, {"a": 2.2, "b": None}]
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal('{"a": 1}', datatype=RDF.JSON)
+    assert literal.value == {"a": 1}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = Literal('"a"', datatype=RDF.JSON)
+    assert literal.value == "a"
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    with pytest.raises(json.JSONDecodeError):
+        literal = Literal("a", datatype=RDF.JSON)
+
+
 def test_float_through_datatype() -> None:
     """Test creating a float literal from an int through datatype."""
     from tripper import XSD, Literal
@@ -124,6 +182,28 @@ def test_repr() -> None:
     literal = Literal(42, datatype=float)
     assert repr(literal) == (
         "Literal('42', datatype='http://www.w3.org/2001/XMLSchema#double')"
+    )
+
+
+def test_n3() -> None:
+    """Test n3()."""
+    from tripper import RDF, Literal
+
+    s = Literal(42, datatype=float).n3()
+    assert s == '"42"^^<http://www.w3.org/2001/XMLSchema#double>'
+    s = Literal("a string").n3()
+    assert s == '"a string"'
+    s = Literal('a string with "embedded" quotes').n3()
+    assert s == r'"a string with \"embedded\" quotes"'
+    s = Literal(r"a string with \"escaped\" quotes").n3()
+    assert s == r'"a string with \\\"escaped\\\" quotes"'
+    s = Literal('"json string"', datatype=RDF.JSON).n3()
+    assert s == (
+        r'"\"json string\""^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON>'
+    )
+    s = Literal('{"a": 1}', datatype=RDF.JSON).n3()
+    assert (
+        s == r'"{\"a\": 1}"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON>'
     )
 
 
@@ -148,6 +228,7 @@ def test_parse_literal() -> None:
     import pytest
 
     from tripper import RDF, XSD, Literal
+    from tripper.errors import UnknownDatatypeWarning
     from tripper.utils import parse_literal
 
     literal = parse_literal(Literal("abc").n3())
@@ -196,10 +277,20 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == XSD.string
 
+    literal = parse_literal(3)
+    assert literal.value == 3
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
+
     literal = parse_literal("3")
     assert literal.value == 3
     assert literal.lang is None
     assert literal.datatype == XSD.integer
+
+    literal = parse_literal(3.14)
+    assert literal.value == 3.14
+    assert literal.lang is None
+    assert literal.datatype == XSD.double
 
     literal = parse_literal("3.14")
     assert literal.value == 3.14
@@ -216,16 +307,60 @@ def test_parse_literal() -> None:
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
-    literal = parse_literal(f'"text"^^<{RDF.HTML}>')
+    literal = parse_literal(f'"""text"""^^<{RDF.HTML}>')
     assert literal.value == "text"
     assert literal.lang is None
     assert literal.datatype == RDF.HTML
 
-    with pytest.warns(UserWarning, match="unknown datatype"):
+    literal = parse_literal(f'"""["a", 1, 2]"""^^<{RDF.JSON}>')
+    assert literal.value == ["a", 1, 2]
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
         literal = parse_literal('"value"^^http://example.com/vocab#mytype')
     assert literal.value == "value"
     assert literal.lang is None
     assert literal.datatype == "http://example.com/vocab#mytype"
+
+    literal = parse_literal({"a": 1, "b": [2.2, None, True]})
+    assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+    literal = parse_literal(
+        f'"""{{"a": 1, "b": [2.2, null, true]}}"""^^<{RDF.JSON}>'
+    )
+    assert literal.value == {"a": 1, "b": [2.2, None, True]}
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
+
+
+def test_rdflib_literal():
+    """Test parsing rdflib literals."""
+    import pytest
+
+    rdflib = pytest.importorskip("rdflib")
+    from tripper import RDF, XSD
+    from tripper.utils import parse_literal
+
+    rdflib_literal = rdflib.Literal(1, datatype=rdflib.XSD.integer)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == 1
+    assert literal.lang is None
+    assert literal.datatype == XSD.integer
+
+    rdflib_literal = rdflib.Literal("abc", datatype=rdflib.XSD.string)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == "abc"
+    assert literal.lang is None
+    assert literal.datatype == XSD.string
+
+    rdflib_literal = rdflib.Literal('["a", 1, 2]', datatype=rdflib.RDF.JSON)
+    literal = parse_literal(rdflib_literal)
+    assert literal.value == ["a", 1, 2]
+    assert literal.lang is None
+    assert literal.datatype == RDF.JSON
 
 
 def test_equality() -> None:
@@ -238,8 +373,8 @@ def test_equality() -> None:
     assert Literal("text", lang="en") != Literal("text", lang="dk")
     assert Literal("text") == "text"
     assert Literal("text") != "text2"
-    assert Literal("text", datatype=XSD.string) != "text"
-    assert Literal("text", datatype=RDF.HTML) != "text"
+    assert Literal("text", datatype=XSD.string) == "text"
+    assert Literal("text", datatype=RDF.HTML) == "text"
     assert Literal(1) == 1
     assert Literal(1) != 1.0
     assert Literal(1) != "1"

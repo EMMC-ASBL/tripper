@@ -1,10 +1,10 @@
 """Test collection."""
 
-import pytest
-
 
 def test_collection():
     """Test if we can use a DLite collection as backend."""
+    import pytest
+
     dlite = pytest.importorskip("dlite")  # pylint: disable=unused-variable
     from tripper import DM, EMMO, MAP, XSD, Literal, Triplestore
     from tripper.utils import en
@@ -51,3 +51,5 @@ def test_collection():
     label = ts3.value(STRUCTURE.name, DM.hasLabel)
     assert isinstance(label, Literal)
     assert label == Literal("Strontium titanate", lang="en")
+
+    assert ts.prefer_sparql is False

@@ -4,6 +4,9 @@ pattern.
 See the README.md file for a description for how to use this package.
 """
 
+# Import backends here to avoid defining new globals later
+# Needed for pytest+doctest to pass
+from . import backends  # pylint: disable=unused-import
 from .literal import Literal
 from .namespace import (
     DC,
@@ -11,7 +14,6 @@ from .namespace import (
     DCTERMS,
     DM,
     DOAP,
-    EMMO,
     FNO,
     FOAF,
     MAP,
@@ -25,13 +27,26 @@ from .namespace import (
     Namespace,
 )
 from .triplestore import Triplestore, backend_packages
-from .tripper import Tripper
+from .triplestore_extend import Tripper
 
-__version__ = "0.2.15"
+__version__ = "0.3.4"
+
+# Pre-defined namespaces
+EMMO = Namespace(
+    iri="https://w3id.org/emmo#",
+    label_annotations=True,
+    check=True,
+)
+CHAMEO = Namespace(
+    iri="https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
+    label_annotations=True,
+    check=True,
+)
 
 __all__ = (
     "Literal",
     #
+    "CHAMEO",
     "DCAT",
     "DC",
     "DCTERMS",

@@ -15,3 +15,7 @@ site/
 
 # Build
 dist/
+
+# Test output
+route.svg
+coverage.xml

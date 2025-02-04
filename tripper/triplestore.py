@@ -1,15 +1,16 @@
-"""A module encapsulating different triplestores using the strategy design
-pattern.
+"""A module encapsulating different triplestores using the strategy
+design pattern.
 
 See
 https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction and for a table over available backends.
+for an introduction and a table over available backends.
 
 This module has no dependencies outside the standard library, but the
 triplestore backends may have.
 
-For developers: The usage of `s`, `p`, and `o` represent the different parts of
-an RDF Triple: subject, predicate, and object.
+For developers: The usage of `s`, `p`, and `o` represent the different
+parts of an RDF Triple: subject, predicate, and object.
+
 """
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
@@ -29,14 +30,13 @@ from tripper.errors import (
     ArgumentValueError,
     CannotGetFunctionError,
     NamespaceError,
-    TriplestoreError,
+    TripperError,
     UniquenessError,
 )
 from tripper.literal import Literal
 from tripper.namespace import (
     DCTERMS,
     DM,
-    EMMO,
     FNO,
     MAP,
     OTEIO,
@@ -56,6 +56,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Dict,
         Generator,
+        Iterable,
         List,
         Optional,
         Tuple,
@@ -89,6 +90,9 @@ except ImportError:
 backend_packages = ["tripper.backends"]
 
 
+# EMMO namespace with no checking and label lookup
+EMMO = Namespace("https://w3id.org/emmo#")
+
 # FIXME - add the following classes and properties to ontologies
 # These would be good to have in EMMO
 DataSource = EMMO.DataSource
@@ -99,11 +103,13 @@ hasCost = DM.hasCost
 
 
 # Regular expression matching a prefixed IRI
-_MATCH_PREFIXED_IRI = re.compile(r"^([a-z]+):([^/]{1}.*)$")
+_MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
 
 
 class Triplestore:
     """Provides a common frontend to a range of triplestore backends."""
+
+    # pylint: disable=too-many-instance-attributes
 
     default_namespaces = {
         "xml": XML,
@@ -117,8 +123,6 @@ class Triplestore:
         # "dcterms": DCTERMS,
         # "foaf": FOAF,
         # "doap": DOAP,
-        # "fno": FNO,
-        # "emmo": EMMO,
         # "map": MAP,
         # "dm": DM,
     }
@@ -133,7 +137,7 @@ class Triplestore:
     ) -> None:
         """Initialise triplestore using the backend with the given name.
 
-        Parameters:
+        Arguments:
             backend: Name of the backend module.
 
                 For built-in backends or backends provided via a
@@ -157,6 +161,26 @@ class Triplestore:
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
+        Attributes:
+            backend_name: Name of backend.
+            base_iri: Assigned to the `base_iri` argument.
+            closed: Whether the triplestore is closed.
+            kwargs: Dict with additional keyword arguments.
+            namespaces: Dict mapping namespace prefixes to IRIs.
+            package: Name of Python package if the backend is implemented as
+                a relative module. Assigned to the `package` argument.
+
+        Notes:
+            If the backend establishes a connection that should be closed
+            it is useful to instantiate the Triplestore as a context manager:
+
+                >>> import tripper
+                >>> with tripper.Triplestore("rdflib") as ts:
+                ...     print(ts.backend_name)
+                rdflib
+
+            This ensures that the connection is automatically closed when the
+            context manager exits.
         """
         backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
@@ -165,6 +189,9 @@ class Triplestore:
         self.namespaces: "Dict[str, Namespace]" = {}
         self.closed = False
         self.backend_name = backend_name
+        self.database = database
+        self.package = package
+        self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
         # Cache functions in the triplestore for fast access
@@ -172,6 +199,12 @@ class Triplestore:
 
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
 
     @classmethod
     def _load_backend(cls, backend: str, package: "Optional[str]" = None):
@@ -254,9 +287,7 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(
-        self, triples: "Union[Sequence[Triple], Generator[Triple, None, None]]"
-    ):
+    def add_triples(self, triples: "Iterable[Triple]") -> None:
         """Add a sequence of triples.
 
         Arguments:
@@ -276,6 +307,8 @@ class Triplestore:
 
         Arguments:
             subject: If given, match triples with this subject.
+                For backward compatibility `subject` may also be an
+                `(s, p, o)` triple.
             predicate: If given, match triples with this predicate.
             object: If given, match triples with this object.
             triple: Deprecated. A `(s, p, o)` tuple where `s`, `p` and `o`
@@ -299,7 +332,7 @@ class Triplestore:
 
     # Methods optionally implemented by backend
     # -----------------------------------------
-    def close(self):
+    def close(self) -> None:
         """Calls the backend close() method if it is implemented.
         Otherwise, this method has no effect.
         """
@@ -319,8 +352,8 @@ class Triplestore:
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
 
-        Parameters:
-            source: File-like object or file name.
+        Arguments:
+            source: File-like object. File name or URL.
             format: Needed if format can not be inferred from source.
             fallback_backend: If the current backend doesn't implement
                 parse, use the `fallback_backend` instead.
@@ -358,7 +391,7 @@ class Triplestore:
     ) -> "Union[None, str]":
         """Serialise triplestore.
 
-        Parameters:
+        Arguments:
             destination: File name or object to write to.  If None, the
                 serialisation is returned.
             format: Format to serialise as.  Supported formats, depends on
@@ -386,19 +419,27 @@ class Triplestore:
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "List[Tuple[str, ...]]":
+    def query(
+        self, query_object, **kwargs
+    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
-        Parameters:
+        Arguments:
             query_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend query() method.
 
         Returns:
-            List of tuples of IRIs for each matching row.
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: bool
+              - CONSTRUCT, DESCRIBE: generator over triples
 
         Note:
-            This method is intended for SELECT queries. Use
-            the update() method for INSERT and DELETE queries.
+            This method is intended for SELECT, ASK, CONSTRUCT and
+            DESCRIBE queries.  Use the update() method for INSERT and
+            DELETE queries.
+
+            Not all backends may support all types of queries.
 
         """
         self._check_method("query")
@@ -407,13 +448,13 @@ class Triplestore:
     def update(self, update_object, **kwargs) -> None:
         """Update triplestore with SPARQL.
 
-        Parameters:
+        Arguments:
             update_object: String with the SPARQL query.
             kwargs: Keyword arguments passed to the backend update() method.
 
         Note:
             This method is intended for INSERT and DELETE queries. Use
-            the query() method for SELECT queries.
+            the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.
 
         """
         self._check_method("update")
@@ -427,7 +468,7 @@ class Triplestore:
     ) -> Namespace:
         """Bind prefix to namespace and return the new Namespace object.
 
-        Parameters:
+        Arguments:
             prefix: Prefix to bind the the namespace.
             namespace: Namespace to bind to.  The default is to bind to the
                 `base_iri` of the current triplestore.
@@ -470,7 +511,7 @@ class Triplestore:
     def create_database(cls, backend: str, database: str, **kwargs):
         """Create a new database in backend.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             database: Name of the new database.
             kwargs: Keyword arguments passed to the backend
@@ -488,7 +529,7 @@ class Triplestore:
     def remove_database(cls, backend: str, database: str, **kwargs):
         """Remove a database in backend.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             database: Name of the database to be removed.
             kwargs: Keyword arguments passed to the backend
@@ -507,7 +548,7 @@ class Triplestore:
         """For backends that supports multiple databases, list of all
         databases.
 
-        Parameters:
+        Arguments:
             backend: Name of backend.
             kwargs: Keyword arguments passed to the backend
                 list_databases() method.
@@ -525,6 +566,23 @@ class Triplestore:
     # These methods are modelled after rdflib and provide some convinient
     # interfaces to the triples(), add_triples() and remove() methods
     # implemented by all backends.
+
+    prefer_sparql = property(
+        fget=lambda self: getattr(self.backend, "prefer_sparql", None),
+        doc=(
+            "Whether the backend prefer SPARQL over the triples() interface. "
+            "Is None if not specified by the backend."
+            "\n\n"
+            "Even though Tripper requires that the Triplestore.triples() is "
+            "implemented, Triplestore.query() must be used for some "
+            "backends in specific cases (like fuseki when working on RDF "
+            "lists) because of how blank nodes are treated. "
+            "\n\n"
+            "The purpose of this property is to let tripper "
+            "automatically select the most appropriate interface depending "
+            "on the current backend settings."
+        ),
+    )
 
     @classmethod
     def _get_backend(cls, backend: str, package: "Optional[str]" = None):
@@ -565,13 +623,18 @@ class Triplestore:
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
+        Two of `subject`, `predicate` or `object` must be provided.
 
-        Parameters:
-            subject, predicate, object: Criteria to match. Two of these must
-                be provided.
+        Arguments:
+            subject: Possible criteria to match.
+            predicate: Possible criteria to match.
+            object: Possible criteria to match.
             default: Value to return if no matches are found.
-            any: If true, return any matching value, otherwise raise
-                UniquenessError.
+            any: Used to define how many values to return. Can be set to:
+                `False` (default): return the value or raise UniquenessError
+                if there is more than one matching value.
+                `True`: return any matching value if there is more than one.
+                `None`: return a generator over all matching values.
             lang: If provided, require that the value must be a localised
                 literal with the given language code.
 
@@ -590,33 +653,30 @@ class Triplestore:
         (idx,) = [i for i, v in enumerate(spo) if v is None]
 
         triples = self.triples(subject, predicate, object)
+
         if lang:
-            first = None
-            if idx != 2:
-                raise ValueError("`object` must be None if `lang` is given")
-            for triple in triples:
-                value = triple[idx]
-                if isinstance(value, Literal) and value.lang == lang:
-                    if any:
-                        return value
-                    if first:
-                        raise UniquenessError("More than one match")
-                    first = value
-            if first is None:
-                return default
-        else:
-            try:
-                triple = next(triples)
-            except StopIteration:
-                return default
+            triples = (
+                t
+                for t in triples
+                if isinstance(t[idx], Literal)
+                and t[idx].lang == lang  # type: ignore
+            )
+
+        if any is None:
+            return (t[idx] for t in triples)  # type: ignore
+
+        try:
+            value = next(triples)[idx]
+        except StopIteration:
+            return default
 
         try:
             next(triples)
         except StopIteration:
-            return triple[idx]
+            return value
 
-        if any:
-            return triple[idx]
+        if any is True:
+            return value
         raise UniquenessError("More than one match")
 
     def subjects(
@@ -686,22 +746,63 @@ class Triplestore:
     # ------------------------------------------
     def expand_iri(self, iri: str):
         """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-        returned."""
+        returned.
+
+        Examples:
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
+
+        # Unknown prefix raises an exception
+        >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: unknown namespace: 'ex'
+
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.expand_iri("ex:Concept")
+        'http://example.com#Concept'
+
+        # Returns `iri` if it has no prefix
+        >>> ts.expand_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        """
         match = re.match(_MATCH_PREFIXED_IRI, iri)
         if match:
             prefix, name = match.groups()
+            if prefix is None:
+                prefix = ""
             if prefix not in self.namespaces:
-                raise NamespaceError(f"unknown namespace: {prefix}")
+                raise NamespaceError(f"unknown namespace: '{prefix}'")
             return f"{self.namespaces[prefix]}{name}"
         return iri
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
+        # pylint: disable=line-too-long
         """Return prefixed IRI.
 
         This is the reverse of expand_iri().
 
         If `require_prefixed` is true, a NamespaceError exception is raised
         if no prefix can be found.
+
+        Examples:
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
+        >>> ts.prefix_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        >>> ts.prefix_iri(
+        ...     "http://example.com#Concept", require_prefixed=True
+        ... )  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: No prefix defined for IRI: http://example.com#Concept
+
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.prefix_iri("http://example.com#Concept")
+        'ex:Concept'
+
         """
         if not re.match(_MATCH_PREFIXED_IRI, iri):
             for prefix, namespace in self.namespaces.items():
@@ -721,30 +822,28 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    # xtype: "TypeLiteral['some', 'only', 'exactly', 'min', 'max', 'value']",
-
     def add_restriction(  # pylint: disable=redefined-builtin
         self,
         cls: str,
         property: str,
-        target: "Union[str, Literal]",
+        value: "Union[str, Literal]",
         type: "RestrictionType",
         cardinality: "Optional[int]" = None,
         hashlength: int = 16,
     ) -> str:
         """Add a restriction to a class in the triplestore.
 
-        Parameters:
+        Arguments:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
-            target: The IRI or literal value of the restriction target.
+            value: The IRI or literal value of the restriction target.
             type: The type of the restriction.  Should be one of:
-                - some: existential restriction (target is a class IRI)
-                - only: universal restriction (target is a class IRI)
-                - exactly: cardinality restriction (target is a class IRI)
-                - min: minimum cardinality restriction (target is a class IRI)
-                - max: maximum cardinality restriction (target is a class IRI)
-                - value: Value restriction (target is an IRI of an individual
+                - some: existential restriction (value is a class IRI)
+                - only: universal restriction (value is a class IRI)
+                - exactly: cardinality restriction (value is a class IRI)
+                - min: minimum cardinality restriction (value is a class IRI)
+                - max: maximum cardinality restriction (value is a class IRI)
+                - value: Value restriction (value is an IRI of an individual
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
@@ -755,7 +854,7 @@ class Triplestore:
         """
         iri = bnode_iri(
             prefix="restriction",
-            source=f"{cls} {property} {target} {type} {cardinality}",
+            source=f"{cls} {property} {value} {type} {cardinality}",
             length=hashlength,
         )
         triples = [
@@ -769,7 +868,7 @@ class Triplestore:
                 '"max" or "value"'
             )
         pred, card = self._restriction_types[type]
-        triples.append((iri, pred, target))
+        triples.append((iri, pred, value))
         if card:
             if not cardinality:
                 raise ArgumentTypeError(
@@ -786,36 +885,39 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
-        # xtype: (
-        #     "Optional[TypeLiteral['some', 'only', 'exactly', 'min', "
-        #     "'max', 'value']]"
-        # ) = None,
-
     def restrictions(  # pylint: disable=redefined-builtin
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
-        target: "Optional[Union[str, Literal]]" = None,
+        value: "Optional[Union[str, Literal]]" = None,
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
+        asdict: bool = True,
     ) -> "Generator[Triple, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
 
-        Parameters:
+        Arguments:
             cls: IRI of class to which the restriction applies.
             property: IRI of restriction property.
-            target: The IRI or literal value of the restriction target.
+            value: The IRI or literal value of the restriction target.
             type: The type of the restriction.  Should be one of:
-                - some: existential restriction (target is a class IRI)
-                - only: universal restriction (target is a class IRI)
-                - exactly: cardinality restriction (target is a class IRI)
-                - min: minimum cardinality restriction (target is a class IRI)
-                - max: maximum cardinality restriction (target is a class IRI)
-                - value: Value restriction (target is an IRI of an individual
+                - some: existential restriction (value is a class IRI)
+                - only: universal restriction (value is a class IRI)
+                - exactly: cardinality restriction (value is a class IRI)
+                - min: minimum cardinality restriction (value is a class IRI)
+                - max: maximum cardinality restriction (value is a class IRI)
+                - value: Value restriction (value is an IRI of an individual
                   or a literal)
 
             cardinality: the cardinality value for cardinality restrictions.
+            asdict: Whether to returned generator is over dicts (see
+                _get_restriction_dict()). Default is to return a generator
+                over blank node IRIs.
+
+        Returns:
+            A generator over matching restrictions.  See `asdict` argument
+            for types iterated over.
         """
         if type is None:
             types = set(self._restriction_types.keys())
@@ -827,16 +929,16 @@ class Triplestore:
         else:
             types = {type} if isinstance(type, str) else set(type)
 
-        if isinstance(target, Literal):
+        if isinstance(value, Literal):
             types.intersection_update({"value"})
-        elif isinstance(target, str):
+        elif isinstance(value, str):
             types.difference_update({"value"})
 
         if cardinality:
             types.intersection_update({"exactly", "min", "max"})
         if not types:
             raise ArgumentValueError(
-                f"Inconsistent type='{type}', target='{target}' and "
+                f"Inconsistent type='{type}', value='{value}' and "
                 f"cardinality='{cardinality}' arguments"
             )
         pred = {self._restriction_types[t][0] for t in types}
@@ -852,15 +954,48 @@ class Triplestore:
         for iri in self.subjects(predicate=OWL.onProperty, object=property):
             if (
                 self.has(iri, RDF.type, OWL.Restriction)
-                and self.has(cls, RDFS.subClassOf, iri)
-                and any(self.has(iri, p, target) for p in pred)
+                and (not cls or self.has(cls, RDFS.subClassOf, iri))
+                and any(self.has(iri, p, value) for p in pred)
                 and (
                     not card
                     or not cardinality
                     or any(self.has(iri, c, lcard) for c in card)
                 )
             ):
-                yield iri
+                yield self._get_restriction_dict(iri) if asdict else iri
+
+    def _get_restriction_dict(self, iri):
+        """Return a dict describing restriction with `iri`.
+
+        The returned dict has the following keys:
+        - iri: (str) IRI of the restriction itself (blank node).
+        - cls: (str) IRI of class to which the restriction applies.
+        - property: (str) IRI of restriction property
+        - type: (str) One of: "some", "only", "exactly", "min", "max", "value".
+        - cardinality: (int) Restriction cardinality (optional).
+        - value: (str|Literal) IRI or literal value of the restriction target.
+        """
+        dct = dict(self.predicate_objects(iri))
+        if OWL.onClass in dct:
+            ((t, p, c),) = [
+                (t, p, c)
+                for t, (p, c) in self._restriction_types.items()
+                if c in dct
+            ]
+        else:
+            ((t, p, c),) = [
+                (t, p, c)
+                for t, (p, c) in self._restriction_types.items()
+                if p in dct
+            ]
+        return {
+            "iri": iri,
+            "cls": self.value(predicate=RDFS.subClassOf, object=iri),
+            "property": dct[OWL.onProperty],
+            "type": t,
+            "cardinality": int(dct[c]) if c else None,
+            "value": dct[p],
+        }
 
     def map(
         self,
@@ -871,7 +1006,7 @@ class Triplestore:
     ):
         """Add 'mapsTo' relation to the triplestore.
 
-        Parameters:
+        Arguments:
             source: Source IRI.
             target: IRI of target ontological concept.
             cost: User-defined cost of following this mapping relation
@@ -901,7 +1036,7 @@ class Triplestore:
     ):
         """Add 'mapsTo' relation to triplestore.
 
-        Parameters:
+        Arguments:
             target: IRI of target ontological concept.
             source: Source IRI (or entity object).
             property_name: Name of property if `source` is an entity or
@@ -923,7 +1058,7 @@ class Triplestore:
         self.bind("map", MAP)
 
         if not property_name and not isinstance(source, str):
-            raise TriplestoreError(
+            raise TripperError(
                 "`property_name` is required when `target` is not a string."
             )
 
@@ -1013,7 +1148,7 @@ class Triplestore:
     def eval_function(self, func_iri, args=(), kwargs=None) -> "Any":
         """Evaluate mapping function and return the result.
 
-        Parameters:
+        Arguments:
             func_iri: IRI of the function to be evaluated.
             args: Sequence of positional arguments passed to the function.
             kwargs: Mapping of keyword arguments passed to the function.
@@ -1051,7 +1186,7 @@ class Triplestore:
         # pylint: disable=too-many-branches,too-many-arguments
         """Inspect function and add triples describing it to the triplestore.
 
-        Parameters:
+        Arguments:
             func: Function to describe.  Should either be a callable or a
                 string with a unique function IRI.
             expects: Sequence of IRIs to ontological concepts corresponding
@@ -1122,7 +1257,7 @@ class Triplestore:
         """Add standard-independent documentation of how to access the
         function.
 
-        Parameters:
+        Arguments:
             func_iri: IRI of individual in the triplestore that stands for
                 the function.
             func: Optional reference to the function itself.
@@ -1201,7 +1336,7 @@ class Triplestore:
     ):
         """Help function that adds `cost` to destination IRI `dest_iri`.
 
-        Parameters:
+        Arguments:
             cost: User-defined cost of following this mapping relation
                 represented as a float.  It may be given either as a
                 float or as a callable taking three arguments
@@ -1320,7 +1455,7 @@ class Triplestore:
 
         # Hardcode EMMO IRIs to avoid slow lookup
         Task = EMMO.EMMO_4299e344_a321_4ef2_a744_bacfcce80afc
-        DataSet = EMMO.EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
+        Datum = EMMO.EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a
         hasInput = EMMO.EMMO_36e69413_8c59_4799_946c_10b05d266e22
         hasOutput = EMMO.EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
         # Software = EMMO.EMMO_8681074a_e225_4e38_b586_e85b0f43ce38
@@ -1353,11 +1488,11 @@ class Triplestore:
         self.add((func_iri, RDF.type, Task))
         self.add((func_iri, RDFS.label, en(name)))
         for parname, iri in pars:
-            self.add((iri, RDF.type, DataSet))
+            self.add((iri, RDF.type, Datum))
             self.add((iri, RDFS.label, en(parname)))
             self.add((func_iri, hasInput, iri))
         for iri in returns:
-            self.add((iri, RDF.type, DataSet))
+            self.add((iri, RDF.type, Datum))
             self.add((func_iri, hasOutput, iri))
         if doc_string:
             self.add((func_iri, DCTERMS.description, en(doc_string)))

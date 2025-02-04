@@ -1,0 +1,3 @@
+# clitool
+
+::: tripper.datadoc.clitool

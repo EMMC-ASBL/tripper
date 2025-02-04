@@ -10,43 +10,54 @@ on:
 jobs:
   basic-tests:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v1
+    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.8.3
     with:
-      # General settings:
+      ## General settings:
       install_extras: "[dev]"
 
-      # pre-commit
-      run_pre-commit: true
-      python_version_pre-commit: "3.9"
-      skip_pre-commit_hooks: pylint,pylint-tests
+      ## pre-commit
+      run_pre-commit: false
 
-      # pylint & safety
+      ## pylint & safety
       python_version_pylint_safety: "3.9"
+
+      # pylint-specific settings
       run_pylint: true
       pylint_runs: |
         --rcfile=pyproject.toml tripper
         --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests
+
+      # safety-specific settings
       run_safety: true
       # 48547: RDFLib vulnerability: https://pyup.io/vulnerabilities/PVE-2022-48547/48547/
       # 44715-44717: NumPy vulnerabilities:
       #  https://pyup.io/vulnerabilities/CVE-2021-41495/44715/
       #  https://pyup.io/vulnerabilities/CVE-2021-41496/44716/
       #  https://pyup.io/vulnerabilities/CVE-2021-34141/44717/
+      # 70612: Jinja2 vulnerability. Only used as subdependency for mkdocs++ in tripper.
+      #  https://data.safetycli.com/v/70612/97c/
+      #  https://data.safetycli.com/v/72715/97c/   # update to mkdocs>=9.5.32
       safety_options: |
         --ignore=48547
         --ignore=44715
         --ignore=44716
         --ignore=44717
+        --ignore=70612
+        --ignore=72715
 
-      # Build package
+      ## Build package
       run_build_package: true
       python_version_package: "3.9"
       build_libs: flit
       build_cmd: flit build
 
-      # Build documentation
+      ## Build documentation
       run_build_docs: true
       python_version_docs: "3.9"
+      warnings_as_errors: true
+      use_mkdocs: true
+
+      # mkdocs-specific settings
       update_python_api_ref: true
       update_docs_landing_page: true
       package_dirs: tripper
@@ -57,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - name: Checkout tripper
@@ -75,12 +86,15 @@ jobs:
         pip install -U setuptools wheel flit
         pip install -e .[testing]
 
+    - name: List installed packages
+      run: pip freeze
+
     - name: Test with pytest
       run: pytest -vvv --cov-report=xml --doctest-modules
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.9' && github.repository == 'EMMC-ASBL/tripper'
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -93,7 +107,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - name: Checkout tripper

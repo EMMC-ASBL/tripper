@@ -1,8 +1,65 @@
 """Test utils"""
 
-# pylint: disable=invalid-name,too-few-public-methods
+# pylint: disable=invalid-name,too-few-public-methods,import-outside-toplevel
 
 import pytest
+
+
+def test_AttrDict():
+    """Test AttrDict."""
+    from tripper.utils import AttrDict
+
+    d = AttrDict(a=1, b=2)
+    assert d.a == 1
+
+    with pytest.raises(KeyError):
+        d.c  # pylint: disable=pointless-statement
+
+    d.c = 3
+    assert d.c == 3
+
+    d.get = 4
+    assert d["get"] == 4
+    assert d.get("get") == 4  # pylint: disable=not-callable
+
+    d2 = AttrDict({"a": "A"})
+    assert d2.a == "A"
+    assert d2 == {"a": "A"}
+    assert repr(d2) == "AttrDict({'a': 'A'})"
+    assert "a" in dir(d2)
+
+
+def test_openfile():
+    """Test openfile()."""
+    from paths import indir
+
+    from tripper.utils import openfile
+
+    with openfile(indir / "openfile.txt") as f:
+        assert f.read().strip() == "Example file."
+
+    with openfile(f"file:{indir}/openfile.txt") as f:
+        assert f.read().strip() == "Example file."
+
+    with openfile(f"file://{indir}/openfile.txt") as f:
+        assert f.read().strip() == "Example file."
+
+    with pytest.raises(IOError):
+        with openfile("xxx://unknown_scheme"):
+            pass
+
+
+def test_openfile_http():
+    """Test openfile()."""
+    from tripper.utils import openfile
+
+    pytest.importorskip("requests")
+
+    with openfile(
+        "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
+        "master/tests/input/openfile.txt"
+    ) as f:
+        assert f.read().strip() == "Example file."
 
 
 def infer_IRIs():
@@ -297,9 +354,10 @@ def test_random_string():
 def test_extend_namespace():
     """Test extend namespace()"""
     pytest.importorskip("rdflib")
+    from paths import ontodir
+
     from tripper import Namespace
     from tripper.errors import NoSuchIRIError
-    from tripper.testutils import ontodir
     from tripper.utils import extend_namespace
 
     FOOD = Namespace(

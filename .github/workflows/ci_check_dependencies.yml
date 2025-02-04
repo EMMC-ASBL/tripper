@@ -9,12 +9,12 @@ on:
 jobs:
   check-dependencies:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_check_pyproject_dependencies.yml@v1
+    uses: SINTEF/ci-cd/.github/workflows/ci_check_pyproject_dependencies.yml@v2.8.3
     if: github.repository_owner == 'EMMC-ASBL'
     with:
       git_username: "TEAM 4.0[bot]"
       git_email: "Team4.0@SINTEF.no"
-      permanent_dependencies_branch: "ci/dependency-updates"
+      target_branch: "ci/dependency-updates"
       python_version: "3.9"
       install_extras: "[dev]"
       pr_labels: "CI/CD,skip_changelog"

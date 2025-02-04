@@ -9,6 +9,12 @@ Tripper
 [![DOI](https://zenodo.org/badge/547162834.svg)](https://zenodo.org/badge/latestdoi/547162834)
 
 
+Getting started
+---------------
+* [Tutorial]
+* [Documentation]
+* [Reference manual]
+
 
 Basic concepts
 --------------
@@ -32,18 +38,13 @@ New namespaces can be defined with the [`tripper.Namespace`][Namespace] class.
 A triplestore wrapper is created with the [`tripper.Triplestore`][Triplestore] class.
 
 
-Advanced features
------------------
-The submodules `mappings` and `convert` provide additional functionality beyond interfacing triplestore backends:
-- **tripper.mappings**: traverse mappings stored in the triplestore and find possible mapping routes.
-- **tripper.convert**: convert between RDF and other data representations.
+Sub-packages
+------------
+Additional functionality beyond interfacing triplestore backends is provided by specialised sub-package:
 
-
-Documentation
--------------
-* Getting started: See the [tutorial](tutorial.md)
-* [Discovery of custom backends](backend_discovery.md)
-* [Reference manual]
+* [tripper.datadoc]: An API for data documentation.
+* [tripper.mappings]: Traverse mappings stored in the triplestore and find possible mapping routes.
+* [tripper.convert]: Convert between RDF and other data representations.
 
 
 Available backends
@@ -56,9 +57,9 @@ The following backends are currently available, either in Tripper or other packa
 | ontopy        | [tripper]    | EMMOntoPy               | Backend for [EMMOntoPy]. In-memory.
 | sparqlwrapper | [tripper]    | sparqlwrapper           | Generic backend for all triplestores supported by [sparqlwrapper].
 | collection    | [tripper]    | DLite-Python            | Backend to a [DLite] collection.
+| graphdb       | [tripper]    | sparqlwrapper           | Backend to [GraphDB].
 | fuseki        | [PyBackTrip] | sparqlwrapper           | Backend to [fuseki].
 | stardog       | [PyBackTrip] | sparqlwrapper,pystardog | Backend to [StarDog].
-| graphdb       | [PyBackTrip] | sparqlwrapper           | Backend to [GraphDB].
 
 
 Installation
@@ -85,7 +86,7 @@ pip install rdflib pint
 
 License and copyright
 ---------------------
-All files in this repository are licensed under the [MIT license](LICENSE.md).
+All files in this repository are licensed under the [MIT license].
 If not stated otherwise in the top of the files, they have copyright &copy; 2022
 SINTEF.
 
@@ -104,11 +105,19 @@ We gratefully acknowledge the following projects for supporting the development 
 
 
 
+[Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
+[Documentation]: https://emmc-asbl.github.io/tripper/latest/
+[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
+[Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
+[tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/
+[tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
+[tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
+[Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues/
+[MIT license]: https://emmc-asbl.github.io/tripper/latest/LICENSE/
 [tripper]: https://emmc-asbl.github.io/tripper
 [rdflib]: https://rdflib.readthedocs.io/en/stable/
 [PyPI]: https://pypi.org/project/tripper
 [PyBackTrip]: https://github.com/EMMC-ASBL/PyBackTrip/
-[Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/
 [Literal]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Literal
 [Namespace]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Namespace
 [Triplestore]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore

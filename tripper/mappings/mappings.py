@@ -290,11 +290,6 @@ class MappingStep:
         inputs, idx = self.get_inputs(routeno)
         values = get_values(inputs, idx, quantity=quantity)
 
-        # if len(inputs) == 1 and all(
-        #    isinstance(v, Value) for v in inputs.values()
-        # ):
-        #    (value,) = tuple(inputs.values())
-        # elif self.function:
         if self.function:
             value = self.function(**values)
         elif len(values) == 1:
@@ -658,6 +653,7 @@ def get_values(
         A mapping between input names and values of expected input unit.
     """
     values = {}
+
     for k, v in inputs.items():
         if isinstance(v, MappingStep):
             value = v.eval(routeno=routeno, quantity=quantity)

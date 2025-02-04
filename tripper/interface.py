@@ -24,6 +24,10 @@ class ITriplestore(Protocol):
 
     ```python
 
+    # Whether the backend perfers SPQRQL queries instead of using the
+    # triples() method.
+    prefer_sparql = True
+
     def parse(
             self,
             source: Union[str, Path, IO] = None,
@@ -73,7 +77,10 @@ class ITriplestore(Protocol):
             kwargs: Additional backend-specific keyword arguments.
 
         Returns:
-            List of tuples of IRIs for each matching row.
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: bool
+              - CONSTRUCT, DESCRIBE: generator over triples
         """
 
     def update(self, update_object: str, **kwargs):

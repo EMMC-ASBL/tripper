@@ -16,7 +16,7 @@ except ImportError as exc:
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Dict, Generator
+    from typing import Dict, Generator, List, Optional, Tuple, Union
 
     from SPARQLWrapper import QueryResult
     from triplestore import Triple
@@ -27,15 +27,52 @@ class SparqlwrapperStrategy:
 
     Arguments:
         base_iri: URI of SPARQL endpoint.
+        username: User name.
+        password: Password.
         kwargs: Additional arguments passed to the SPARQLWrapper constructor.
 
     """
 
-    def __init__(self, base_iri: str, **kwargs) -> None:
+    prefer_sparql = True
+
+    def __init__(
+        self,
+        base_iri: str,
+        username: "Optional[str]" = None,
+        password: "Optional[str]" = None,
+        **kwargs,
+    ) -> None:
         kwargs.pop(
             "database", None
         )  # database is not used in the SPARQLWrapper backend
         self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
+        if username and password:
+            self.sparql.setCredentials(username, password)
+
+    def query(
+        self, query_object, **kwargs  # pylint: disable=unused-argument
+    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+        """SPARQL query.
+
+        Parameters:
+            query_object: String with the SPARQL query.
+            kwargs: Keyword arguments passed to rdflib.Graph.query().
+
+        Returns:
+            The return type depends on type of query:
+              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: TODO
+              - CONSTRUCT, DESCRIBE: TODO
+        """
+        self.sparql.setReturnFormat(JSON)
+        self.sparql.setMethod(POST)
+        self.sparql.setQuery(query_object)
+        ret = self.sparql.queryAndConvert()
+        bindings = ret["results"]["bindings"]
+        return [
+            tuple(str(convert_json_entrydict(v)) for v in row.values())
+            for row in bindings
+        ]
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""

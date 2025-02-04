@@ -51,12 +51,15 @@ class Namespace:
         "_label_annotations",  # Recognised annotations for labels
         "_check",  # Whether to check that IRIs exists
         "_iris",  # Dict mapping labels to IRIs
+        "_reload",  # Whether to reload
+        "_triplestore",  # Triplestore for label lookup and checking
+        "_format",  # Format to use when loading from a triplestore
     )
 
     def __init__(
         self,
         iri: str,
-        label_annotations: "Sequence" = (),
+        label_annotations: "Union[Sequence, bool]" = (),
         check: bool = False,
         reload: "Optional[bool]" = None,
         triplestore: "Optional[Union[Triplestore, str]]" = None,
@@ -100,9 +103,9 @@ class Namespace:
         )
         self._check = bool(check)
         self._iris: "Optional[dict]" = {} if need_triplestore else None
-
-        if need_triplestore:
-            self._update_iris(triplestore, reload=reload, format=format)
+        self._reload = reload
+        self._triplestore = triplestore
+        self._format = format
 
     def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
@@ -152,8 +155,9 @@ class Namespace:
             if s.startswith(iri)
         )
 
-    def _get_cachefile(self) -> "Path":
+    def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
+        # pylint: disable=too-many-function-args
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
         hashno = hashlib.shake_128(self._iri.encode()).hexdigest(5)
         return get_cachedir() / f"{name}-{hashno}.cache"
@@ -161,10 +165,17 @@ class Namespace:
     def _save_cache(self):
         """Save current cache."""
         # pylint: disable=invalid-name
-        cachefile = self._get_cachefile()
-        if self._iris:
-            with open(cachefile, "wb") as f:
-                pickle.dump(self._iris, f)
+        try:
+            cachefile = self._get_cachefile()
+            if self._iris and not sys.is_finalizing():
+                with open(cachefile, "wb") as f:
+                    pickle.dump(self._iris, f)
+        except OSError as exc:
+            warnings.warn(
+                f"Cannot access cache file: {exc}\n\n"
+                "You can select cache directory with the XDG_CACHE_HOME "
+                "environment variable."
+            )
 
     def _load_cache(self) -> bool:
         """Update cache with cache file.
@@ -172,20 +183,57 @@ class Namespace:
         Returns true if there exists a cache file to load from.
         """
         # pylint: disable=invalid-name
-        cachefile = self._get_cachefile()
-        if self._iris is None:
-            self._iris = {}
-        if cachefile.exists():
-            with open(cachefile, "rb") as f:
-                self._iris.update(pickle.load(f))  # nosec
-            return True
-        return False
+        try:
+            cachefile = self._get_cachefile()
+            if self._iris is None:
+                self._iris = {}
+            if cachefile.exists():
+                with open(cachefile, "rb") as f:
+                    self._iris.update(pickle.load(f))  # nosec
+                return True
+            return False
+        except OSError as exc:
+            warnings.warn(
+                f"Cannot create cache directory: {exc}\n\n"
+                "You can select cache directory with the XDG_CACHE_HOME "
+                "environment variable."
+            )
+            return False
 
     def __getattr__(self, name):
         if self._iris and name in self._iris:
             return self._iris[name]
+        if self._iris == {}:
+            self._update_iris(
+                triplestore=self._triplestore,
+                reload=self._reload,
+                format=self._format,
+            )
+            if name in self._iris:
+                return self._iris[name]
         if self._check:
-            raise NoSuchIRIError(self._iri + name)
+
+            # Hack to work around a pytest bug.  During its collection
+            # phase pytest tries to mock namespace objects with an
+            # attribute `__wrapped__`.
+            if name == "__wrapped__":
+                return super().__getattr__(self, name)
+
+            msg = ""
+            try:
+                cachefile = self._get_cachefile()
+                if cachefile.exists():
+                    msg = (
+                        "\nMaybe you have to remove the cache file: "
+                        f"{cachefile}"
+                    )
+            except OSError as exc:
+                warnings.warn(
+                    f"Cannot access cache file: {exc}\n\n"
+                    "You can select cache directory with the XDG_CACHE_HOME "
+                    "environment variable."
+                )
+            raise NoSuchIRIError(self._iri + name + msg)
         return self._iri + name
 
     def __getitem__(self, key):
@@ -242,7 +290,7 @@ def get_cachedir(create=True) -> Path:
     return cachedir
 
 
-# Pre-defined namespaces
+# Pre-defined namespaces (without label lookup or checking)
 XML = Namespace("http://www.w3.org/XML/1998/namespace")
 RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#")
@@ -258,11 +306,6 @@ DCAT = Namespace("http://www.w3.org/ns/dcat#")
 TIME = Namespace("http://www.w3.org/2006/time#")
 FNO = Namespace("https://w3id.org/function/ontology#")
 
-EMMO = Namespace("https://w3id.org/emmo#")
 MAP = Namespace("https://w3id.org/emmo/domain/mappings#")
 DM = Namespace("https://w3id.org/emmo/domain/datamodel#")
 OTEIO = Namespace("https://w3id.org/emmo/domain/oteio#")
-# EMMO = Namespace("http://emmo.info/emmo#")
-# MAP = Namespace("http://emmo.info/domain-mappings#")
-# DM = Namespace("http://emmo.info/datamodel#")
-# OTEIO = Namespace("http://emmo.info/oteio#")

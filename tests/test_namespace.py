@@ -1,6 +1,7 @@
 """Test namespaces."""
 
-# pylint: disable=invalid-name,duplicate-code
+# pylint: disable=invalid-name,duplicate-code,import-outside-toplevel
+
 from typing import TYPE_CHECKING
 
 import pytest
@@ -14,9 +15,10 @@ if TYPE_CHECKING:
 def test_namespaces() -> None:
     """Test namespaces."""
     pytest.importorskip("rdflib")
+    from paths import ontodir
+
     from tripper import RDF, Namespace
     from tripper.errors import NoSuchIRIError
-    from tripper.testutils import ontodir
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -72,9 +74,10 @@ def test_namespaces() -> None:
 def test_triplestore_arg() -> None:
     """Test triplestore argument of Namespace.__init__()."""
     pytest.importorskip("rdflib")
+    from paths import ontodir
+
     from tripper import RDF, Namespace, Triplestore
     from tripper.errors import NamespaceError, NoSuchIRIError
-    from tripper.testutils import ontodir
 
     assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -93,8 +96,10 @@ def test_triplestore_arg() -> None:
     with pytest.raises(NoSuchIRIError):
         FAM.NonExisting  # pylint: disable=pointless-statement
 
+    # Unresolvable namespace IRI fails lazily at attribute access time
+    EX = Namespace("http://example.com", check=True, triplestore=Ellipsis)
     with pytest.raises(NamespaceError):
-        Namespace("http://example.com", check=True, triplestore=Ellipsis)
+        EX.Class  # pylint: disable=pointless-statement
 
 
 # if True:

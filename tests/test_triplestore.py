@@ -5,6 +5,7 @@ installed backends are tested one by one.
 """
 
 # pylint: disable=duplicate-code,comparison-with-callable,invalid-name
+# pylint: disable=import-outside-toplevel
 from typing import TYPE_CHECKING
 
 import pytest
@@ -35,14 +36,30 @@ def test_triplestore(  # pylint: disable=too-many-locals
     pytest.importorskip("rdflib")
     pytest.importorskip("dlite")
     pytest.importorskip("SPARQLWrapper")
+    from tripper.errors import NamespaceError
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
 
     ts = Triplestore(backend)
     assert ts.expand_iri("xsd:integer") == XSD.integer
     assert ts.prefix_iri(RDF.type) == "rdf:type"
+
+    with pytest.raises(NamespaceError):
+        ts.expand_iri(":MyConcept")
+
+    assert ts.prefix_iri("http://example.com#MyConcept") == (
+        "http://example.com#MyConcept"
+    )
+    with pytest.raises(NamespaceError):
+        ts.prefix_iri("http://example.com#MyConcept", require_prefixed=True)
+
     EX = ts.bind(
         "ex", "http://example.com/onto#"
     )  # pylint: disable=invalid-name
+    BASE = ts.bind("", "http://example.com#")  # pylint: disable=invalid-name
+
+    assert ts.expand_iri(":MyConcept") == BASE.MyConcept
+    assert ts.prefix_iri(BASE.MyConcept) == ":MyConcept"
+
     assert str(EX) == "http://example.com/onto#"
     ts.add_mapsTo(
         EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop"
@@ -93,9 +110,18 @@ def test_triplestore(  # pylint: disable=too-many-locals
     # ) == example_function.__doc__
     assert ts.value(func_iri, DCTERMS.description, lang="de") is None
 
+    # Test the `prefer_sparql` property
+    facit = {
+        "collection": False,
+        "ontopy": False,
+        "rdflib": False,
+        "sparqlwrapper": True,
+    }
+    assert ts.prefer_sparql == facit[backend]
+
 
 # if True:
-def test_restriction() -> None:
+def test_restriction() -> None:  # pylint: disable=too-many-statements
     """Test add_restriction() method."""
     pytest.importorskip("rdflib")
 
@@ -109,7 +135,7 @@ def test_restriction() -> None:
     iri = ts.add_restriction(
         cls=EX.Animal,
         property=EX.hasPart,
-        target=EX.Cell,
+        value=EX.Cell,
         type="some",
     )
     txt = ts.serialize(format="ntriples")
@@ -122,7 +148,7 @@ def test_restriction() -> None:
     iri2 = ts.add_restriction(
         cls=EX.Kerberos,
         property=EX.hasBodyPart,
-        target=EX.Head,
+        value=EX.Head,
         type="exactly",
         cardinality=3,
     )
@@ -140,7 +166,7 @@ def test_restriction() -> None:
     iri3 = ts.add_restriction(
         cls=EX.Kerberos,
         property=EX.position,
-        target=Literal("The port of Hades"),
+        value=Literal("The port of Hades"),
         type="value",
     )
     txt3 = ts.serialize(format="ntriples")
@@ -155,40 +181,97 @@ def test_restriction() -> None:
         ts.add_restriction(
             cls=EX.Kerberos,
             property=EX.hasBodyPart,
-            target=EX.Head,
+            value=EX.Head,
             type="wrong_type",
         )
     with pytest.raises(ArgumentTypeError):
         ts.add_restriction(
             cls=EX.Kerberos,
             property=EX.hasBodyPart,
-            target=EX.Head,
+            value=EX.Head,
             type="min",
         )
 
     # Test find restriction
-    assert set(ts.restrictions()) == {iri, iri2, iri3}
-    assert set(ts.restrictions(cls=EX.Kerberos)) == {iri2, iri3}
-    assert set(ts.restrictions(cls=EX.Animal)) == {iri}
-    assert not set(ts.restrictions(cls=EX.Dog))
-    assert set(ts.restrictions(cls=EX.Kerberos, cardinality=3)) == {iri2}
-    assert set(ts.restrictions(cardinality=3)) == {iri2}
-    assert not set(ts.restrictions(cls=EX.Kerberos, cardinality=2))
-    assert set(ts.restrictions(property=EX.hasBodyPart)) == {iri2}
-    assert set(ts.restrictions(property=EX.hasPart)) == {iri}
-    assert not set(ts.restrictions(property=EX.hasNoPart))
-    assert set(ts.restrictions(target=EX.Cell)) == {iri}
-    assert set(ts.restrictions(target=EX.Head)) == {iri2}
-    assert not set(ts.restrictions(target=EX.Leg))
-    assert set(ts.restrictions(target=EX.Cell, type="some")) == {iri}
-    assert set(ts.restrictions(target=EX.Head, type="exactly")) == {iri2}
-    assert set(ts.restrictions(target=Literal("The port of Hades"))) == {iri3}
+
+    assert set(ts.restrictions(asdict=False)) == {iri, iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Kerberos, asdict=False)) == {iri2, iri3}
+    assert set(ts.restrictions(cls=EX.Animal, asdict=False)) == {iri}
+    assert not set(ts.restrictions(cls=EX.Dog, asdict=False))
+    assert set(
+        ts.restrictions(cls=EX.Kerberos, cardinality=3, asdict=False)
+    ) == {iri2}
+    assert set(ts.restrictions(cardinality=3, asdict=False)) == {iri2}
+    assert not set(
+        ts.restrictions(cls=EX.Kerberos, cardinality=2, asdict=False)
+    )
+    assert set(ts.restrictions(property=EX.hasBodyPart, asdict=False)) == {
+        iri2
+    }
+    assert set(ts.restrictions(property=EX.hasPart, asdict=False)) == {iri}
+    assert not set(ts.restrictions(property=EX.hasNoPart, asdict=False))
+    assert set(ts.restrictions(value=EX.Cell, asdict=False)) == {iri}
+    assert set(ts.restrictions(value=EX.Head, asdict=False)) == {iri2}
+    assert not set(ts.restrictions(value=EX.Leg, asdict=False))
+    assert set(ts.restrictions(value=EX.Cell, type="some", asdict=False)) == {
+        iri
+    }
+    assert set(
+        ts.restrictions(value=EX.Head, type="exactly", asdict=False)
+    ) == {iri2}
+    assert set(
+        ts.restrictions(value=Literal("The port of Hades"), asdict=False)
+    ) == {iri3}
 
     with pytest.raises(ArgumentValueError):
-        set(ts.restrictions(target=EX.Cell, type="wrong_type"))
+        set(ts.restrictions(value=EX.Cell, type="wrong_type"))
 
     with pytest.raises(ArgumentValueError):
         set(ts.restrictions(type="value", cardinality=2))
+
+    # Test returning as dicts (asdict=True)
+    dicts = sorted(ts.restrictions(asdict=True), key=lambda d: d["value"])
+    for d in dicts:  # Remove iri keys, since they refer to blank nodes
+        d.pop("iri")
+    assert dicts == sorted(
+        [
+            {
+                "cls": "http://example.com/onto#Animal",
+                "property": "http://example.com/onto#hasPart",
+                "type": "some",
+                "value": "http://example.com/onto#Cell",
+                "cardinality": None,
+            },
+            {
+                "cls": "http://example.com/onto#Kerberos",
+                "property": "http://example.com/onto#hasBodyPart",
+                "type": "exactly",
+                "value": "http://example.com/onto#Head",
+                "cardinality": 3,
+            },
+            {
+                "cls": "http://example.com/onto#Kerberos",
+                "property": "http://example.com/onto#position",
+                "type": "value",
+                "value": Literal("The port of Hades", datatype=XSD.string),
+                "cardinality": None,
+            },
+        ],
+        key=lambda d: d["value"],
+    )
+
+    dicts = list(ts.restrictions(type="some", asdict=True))
+    for d in dicts:  # Remove iri keys, since they refer to blank nodes
+        d.pop("iri")
+    assert dicts == [
+        {
+            "cls": "http://example.com/onto#Animal",
+            "property": "http://example.com/onto#hasPart",
+            "type": "some",
+            "value": "http://example.com/onto#Cell",
+            "cardinality": None,
+        },
+    ]
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
@@ -335,6 +418,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
 def test_backend_sparqlwrapper() -> None:
     """Specifically test the SPARQLWrapper backend Triplestore."""
     from tripper import SKOS, Triplestore
+    from tripper.errors import UnknownDatatypeWarning
 
     pytest.importorskip("SPARQLWrapper")
     ts = Triplestore(
@@ -343,7 +427,7 @@ def test_backend_sparqlwrapper() -> None:
         "csiro_international-chronostratigraphic-chart_geologic-"
         "time-scale-2020",
     )
-    with pytest.warns(UserWarning, match="unknown datatype"):
+    with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
         for s, p, o in ts.triples(predicate=SKOS.notation):
             assert s
             assert p
@@ -380,8 +464,9 @@ def test_find_literal_triples() -> None:
     """Test finding literals."""
     pytest.importorskip("rdflib")
 
+    from paths import ontodir
+
     from tripper import RDF, XSD, Literal, Triplestore
-    from tripper.testutils import ontodir
 
     ts = Triplestore("rdflib")
     FAM = ts.bind("ex", "http://onto-ns.com/ontologies/examples/family#")
@@ -420,7 +505,6 @@ def test_find_literal_triples() -> None:
     )
 
 
-# if True:
 def test_bind_errors():
     """Test for errors in Triplestore.bind()."""
     pytest.importorskip("rdflib")
@@ -440,3 +524,69 @@ def test_bind_errors():
         ts2.bind("ex")
     with pytest.raises(TypeError):
         ts2.bind("ex", Ellipsis)
+
+
+def test_value():
+    """Test Triplestore.value()."""
+    pytest.importorskip("rdflib")
+
+    from tripper import DCTERMS, RDF, RDFS, Literal, Triplestore
+    from tripper.errors import UniquenessError
+
+    ts = Triplestore(backend="rdflib")
+    EX = ts.bind("ex", "http://example.com#")
+    l1 = Literal("First comment...")
+    l2en = Literal("Second comment...", lang="en")
+    l2da = Literal("Anden kommentar...", lang="da")
+    l3en = Literal("Third comment...", lang="en")
+    ts.add_triples(
+        [
+            (EX.mydata, RDF.type, EX.Dataset),
+            (EX.mydata, DCTERMS.title, Literal("My little data")),
+            (EX.mydata, RDFS.comment, l1),
+            (EX.mydata, RDFS.comment, l2en),
+            (EX.mydata, RDFS.comment, l2da),
+            (EX.mydata, RDFS.comment, l3en),
+        ]
+    )
+
+    assert ts.value(subject=EX.mydata, predicate=RDF.type) == EX.Dataset
+    assert ts.value(predicate=RDF.type, object=EX.Dataset) == EX.mydata
+    assert ts.value(subject=EX.mydata, predicate=DCTERMS.title) == Literal(
+        "My little data"
+    )
+
+    with pytest.raises(UniquenessError):
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="en")
+
+    assert (
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="da") == l2da
+    )
+
+    assert ts.value(
+        subject=EX.mydata,
+        predicate=RDFS.comment,
+        lang="en",
+        any=True,
+    ) in (l2en, l3en)
+
+    assert set(
+        ts.value(
+            subject=EX.mydata,
+            predicate=RDFS.comment,
+            lang="en",
+            any=None,
+        )
+    ) == {l2en, l3en}
+
+    assert (
+        ts.value(subject=EX.mydata, predicate=RDFS.comment, lang="no") is None
+    )
+
+    t = ts.value(
+        subject=EX.mydata,
+        predicate=RDFS.comment,
+        lang="no",
+        default="a",
+    )
+    assert t == "a"
