@@ -1443,8 +1443,10 @@
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Matching criteria for resources to find. The IRI may be written &quot;</span>
             <span class="s1">&#39;using a namespace prefix, like `tcterms:title=&quot;My title&quot;`. &#39;</span>
-            <span class="s2">&quot;Currently only exact matching is supported. &quot;</span>
-            <span class="s2">&quot;This option can be given multiple times.&quot;</span>
+            <span class="s1">&#39;Writing the criteria with the &quot;=&quot; operator, corresponds to &#39;</span>
+            <span class="s2">&quot;exact match. &quot;</span>
+            <span class="s1">&#39;If the operator is written &quot;=~&quot;, regular expression matching &#39;</span>
+            <span class="s2">&quot;will be used instead. This option can be given multiple times.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_find</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -1659,19 +1661,17 @@
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subcommand_find</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subcommand for finding IRIs in the triplestore.&quot;&quot;&quot;</span>
     <span class="n">criterias</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">contains</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">crit</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;~=&quot;</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;~=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">contains</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="s2">&quot;=~&quot;</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=~&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">regex</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">criterias</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="n">iris</span> <span class="o">=</span> <span class="n">search_iris</span><span class="p">(</span>
-        <span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="n">contains</span>
-    <span class="p">)</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
 
     <span class="c1"># Infer format</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">:</span>
