@@ -169,6 +169,10 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     - statements and mappings
     - data models (require that DLite is installed)
 
+    Arguments:
+        ts: Triplestore to load data from.
+        dct: Dict in multi-resource format.
+
     """
     import requests
 
@@ -179,7 +183,11 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
         ts.add_triples(statements)
 
     # Save data models
-    datamodels = get_values(dct, "datamodel")
+    datamodels = {
+        d["@id"]: d["datamodel"]
+        for d in dct.get("datasets", ())
+        if "datamodel" in d
+    }
     try:
         # pylint: disable=import-outside-toplevel
         import dlite
@@ -194,7 +202,8 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
         for url in get_values(dct, "datamodelStorage"):
             dlite.storage_path.append(url)
 
-        for uri in datamodels:
+        for iri, uri in datamodels.items():
+            ok = False
             r = requests.get(uri, timeout=3)
             if r.ok:
                 content = (
@@ -204,6 +213,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                 )
                 dm = dlite.Instance.from_json(content)
                 add_dataset(ts, dm)
+                ok = True
             else:
                 try:
                     dm = dlite.get_instance(uri)
@@ -214,6 +224,12 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                     warnings.warn(f"cannot load datamodel: {uri}")
                 else:
                     add_dataset(ts, dm)
+                    ok = True
+
+            if ok:
+                # Make our dataset an individual of the new dataset subclass
+                # that we have created by serialising the datamodel
+                ts.add((iri, RDF.type, uri))
 
 
 def load_dict(
