@@ -3057,6 +3057,31 @@ as "_id=...".</p></td>
 - statements and mappings
 - data models (require that DLite is installed)</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore to load data from.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>dct</code></td>
+        <td><code>dict</code></td>
+        <td><p>Dict in multi-resource format.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3065,6 +3090,10 @@ as "_id=...".</p></td>
 <span class="sd">    Currently, this includes:</span>
 <span class="sd">    - statements and mappings</span>
 <span class="sd">    - data models (require that DLite is installed)</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore to load data from.</span>
+<span class="sd">        dct: Dict in multi-resource format.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
@@ -3076,7 +3105,11 @@ as "_id=...".</p></td>
         <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">statements</span><span class="p">)</span>
 
     <span class="c1"># Save data models</span>
-    <span class="n">datamodels</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;datamodel&quot;</span><span class="p">)</span>
+    <span class="n">datamodels</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;datamodel&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datasets&quot;</span><span class="p">,</span> <span class="p">())</span>
+        <span class="k">if</span> <span class="s2">&quot;datamodel&quot;</span> <span class="ow">in</span> <span class="n">d</span>
+    <span class="p">}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
@@ -3091,7 +3124,8 @@ as "_id=...".</p></td>
         <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">get_values</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;datamodelStorage&quot;</span><span class="p">):</span>
             <span class="n">dlite</span><span class="o">.</span><span class="n">storage_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">datamodels</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">iri</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">datamodels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="p">(</span>
@@ -3101,6 +3135,7 @@ as "_id=...".</p></td>
                 <span class="p">)</span>
                 <span class="n">dm</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">Instance</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
                 <span class="n">add_dataset</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
+                <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">dm</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
@@ -3111,6 +3146,12 @@ as "_id=...".</p></td>
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot load datamodel: </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">add_dataset</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
+                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
+                <span class="c1"># Make our dataset an individual of the new dataset subclass</span>
+                <span class="c1"># that we have created by serialising the datamodel</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">uri</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
