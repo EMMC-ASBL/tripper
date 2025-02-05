@@ -1,9 +1,9 @@
 """Backend for SPARQLWrapper"""
 
+import warnings
 from typing import TYPE_CHECKING
 
 from tripper import Literal
-import warnings
 
 try:
     from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
