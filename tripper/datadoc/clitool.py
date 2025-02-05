@@ -48,19 +48,17 @@ def subcommand_add(ts, args):
 def subcommand_find(ts, args):
     """Subcommand for finding IRIs in the triplestore."""
     criterias = {}
-    contains = {}
+    regex = {}
     if args.criteria:
         for crit in args.criteria:
-            if "~=" in crit:
-                key, value = crit.split("~=", 1)
-                contains[key] = value
+            if "=~" in crit:
+                key, value = crit.split("=~", 1)
+                regex[key] = value
             else:
                 key, value = crit.split("=", 1)
                 criterias[key] = value
 
-    iris = search_iris(
-        ts, type=args.type, criterias=criterias, contains=contains
-    )
+    iris = search_iris(ts, type=args.type, criterias=criterias, regex=regex)
 
     # Infer format
     if args.format:
@@ -190,8 +188,10 @@ def main(argv=None):
         help=(
             "Matching criteria for resources to find. The IRI may be written "
             'using a namespace prefix, like `tcterms:title="My title"`. '
-            "Currently only exact matching is supported. "
-            "This option can be given multiple times."
+            'Writing the criteria with the "=" operator, corresponds to '
+            "exact match. "
+            'If the operator is written "=~", regular expression matching '
+            "will be used instead. This option can be given multiple times."
         ),
     )
     parser_find.add_argument(

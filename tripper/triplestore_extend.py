@@ -1,5 +1,4 @@
-"""A module that adds additional functionality to triplestore
-"""
+"""A module that adds additional functionality to triplestore"""
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)

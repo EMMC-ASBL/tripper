@@ -874,7 +874,7 @@ def search_iris(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,
-    contains: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
@@ -888,8 +888,8 @@ def search_iris(
             may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
-        contains: Like `criterias` but match any literal or object IRI that
-            contain the value.
+        regex: Like `criterias` but the values in the provided dict are regular
+            expressions used for the matching.
 
     Returns:
         List of IRIs for matching resources.
@@ -909,6 +909,12 @@ def search_iris(
 
         List IRIs of all datasets with John Doe as `contactPoint` AND are
         measured on a given sample:
+
+            search_iris(
+                ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
+            )
+
+        List IRIs of all datasets who's title matches a given regular expression:
 
             search_iris(
                 ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
@@ -969,13 +975,13 @@ def search_iris(
         predicate, value = get_predicate_value(k, v)
         crit.append(f"      ?iri <{predicate}> {value} .")
 
-    if contains:
-        for k, v in contains.items():
+    if regex:
+        for k, v in regex.items():
             n += 1
             var = f"v{n}"
             predicate, value = get_predicate_value(k, v)
             crit.append(f"      ?iri <{predicate}> ?{var} .")
-            filters.append(f"      FILTER CONTAINS(str(?{var}), {value})")
+            filters.append(f"      FILTER REGEX(str(?{var}), {value})")
 
     where_statements = "\n".join(crit + filters)
     query = f"""
