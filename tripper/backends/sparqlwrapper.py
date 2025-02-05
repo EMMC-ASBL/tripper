@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 from tripper import Literal
+import warnings
 
 try:
     from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
@@ -49,8 +50,6 @@ class SparqlwrapperStrategy:
         self.sparql = SPARQLWrapper(
             endpoint=base_iri, updateEndpoint=update_iri, **kwargs
         )
-        import warnings
-
         if (
             not self.sparql.isSparqlUpdateRequest()
             and self.sparql.updateEndpoint is None
