@@ -50,9 +50,15 @@ class SparqlwrapperStrategy:
             endpoint=base_iri, updateEndpoint=update_iri, **kwargs
         )
         import warnings
-        if not self.sparql.isSparqlUpdateRequest() and self.sparql.updateEndpoint is None:
-            warnings.warn("The 'base_iri' is not a valid update endpoint. "
-                    "For updates it is necessary to give the 'update_iri'.")
+
+        if (
+            not self.sparql.isSparqlUpdateRequest()
+            and self.sparql.updateEndpoint is None
+        ):
+            warnings.warn(
+                "The 'base_iri' is not a valid update endpoint. "
+                "For updates it is necessary to give the 'update_iri'."
+            )
         if username and password:
             self.sparql.setCredentials(username, password)
 
