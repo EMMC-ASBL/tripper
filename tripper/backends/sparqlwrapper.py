@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 from tripper import Literal
+from tripper.utils import TripperException
 
 try:
     from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
@@ -24,7 +25,9 @@ class SparqlwrapperStrategy:
     """Triplestore strategy for SPARQLWrapper.
 
     Arguments:
-        base_iri: URI of SPARQL endpoint.
+        base_iri: SPARQL endpoint.
+        update_iri: Update SPARQL endpoint. For some triplestores (e.g.
+                    GraphDB), update endpoint is different from base endpoint.
         username: User name.
         password: Password.
         kwargs: Additional arguments passed to the SPARQLWrapper constructor.
@@ -36,6 +39,7 @@ class SparqlwrapperStrategy:
     def __init__(
         self,
         base_iri: str,
+        update_iri: "Optional[str]" = None,
         username: "Optional[str]" = None,
         password: "Optional[str]" = None,
         **kwargs,
@@ -43,9 +47,26 @@ class SparqlwrapperStrategy:
         kwargs.pop(
             "database", None
         )  # database is not used in the SPARQLWrapper backend
-        self.sparql = SPARQLWrapper(endpoint=base_iri, **kwargs)
+        self.sparql = SPARQLWrapper(
+            endpoint=base_iri, updateEndpoint=update_iri, **kwargs
+        )
         if username and password:
             self.sparql.setCredentials(username, password)
+
+        self.update_iri = update_iri
+
+    @property
+    def update_iri(self) -> "Optional[str]":
+        """Getter for the update IRI."""
+        return self._update_iri
+
+    @update_iri.setter
+    def update_iri(self, new_update_iri: "Optional[str]") -> None:
+        """Setter for the update IRI that also updates the SPARQL endpoint."""
+        self._update_iri = new_update_iri
+        # Update the SPARQLWrapper's updateEndpoint only if it was initialized.
+        if hasattr(self, "sparql"):
+            self.sparql.updateEndpoint = new_update_iri
 
     def query(
         self, query_object, **kwargs  # pylint: disable=unused-argument
@@ -114,6 +135,9 @@ class SparqlwrapperStrategy:
 
     def add_triples(self, triples: "Sequence[Triple]") -> "QueryResult":
         """Add a sequence of triples."""
+
+        self._check_endpoint()
+
         spec = "\n".join(
             "  "
             + " ".join(
@@ -135,6 +159,7 @@ class SparqlwrapperStrategy:
 
     def remove(self, triple: "Triple") -> "QueryResult":
         """Remove all matching triples from the backend."""
+        self._check_endpoint()
         spec = " ".join(
             (
                 f"?{name}"
@@ -152,6 +177,17 @@ class SparqlwrapperStrategy:
         self.sparql.setMethod(POST)
         self.sparql.setQuery(query)
         return self.sparql.query()
+
+    def _check_endpoint(self):
+        """Check if the update endpoint is valid"""
+        if not self.sparql.isSparqlUpdateRequest() and self.update_iri is None:
+            raise TripperException(
+                f"The base_iri '{self.sparql.updateEndpoint}' "
+                "is not a valid update endpoint. "
+                "For updates it is necessary to give the "
+                "'update_iri' as argument to the triplestore directly,"
+                "or update it with ts.backend.update_iri = ..."
+            )
 
 
 def convert_json_entrydict(entrydict: "Dict[str, str]") -> str:
