@@ -854,6 +854,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.update_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_iri
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.add_triples" class="md-nav__link">
     <span class="md-ellipsis">
       add_triples()
@@ -1308,6 +1317,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.update_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_iri
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.add_triples" class="md-nav__link">
     <span class="md-ellipsis">
       add_triples()
@@ -1422,8 +1440,15 @@ SparqlwrapperStrategy        </code>
       <tr>
         <td><code>base_iri</code></td>
         <td><code>str</code></td>
-        <td><p>URI of SPARQL endpoint.</p></td>
+        <td><p>SPARQL endpoint.</p></td>
         <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>update_iri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Update SPARQL endpoint. For some triplestores (e.g.
+        GraphDB), update endpoint is different from base endpoint.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>username</code></td>
@@ -1451,7 +1476,9 @@ SparqlwrapperStrategy        </code>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for SPARQLWrapper.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        base_iri: URI of SPARQL endpoint.</span>
+<span class="sd">        base_iri: SPARQL endpoint.</span>
+<span class="sd">        update_iri: Update SPARQL endpoint. For some triplestores (e.g.</span>
+<span class="sd">                    GraphDB), update endpoint is different from base endpoint.</span>
 <span class="sd">        username: User name.</span>
 <span class="sd">        password: Password.</span>
 <span class="sd">        kwargs: Additional arguments passed to the SPARQLWrapper constructor.</span>
@@ -1463,6 +1490,7 @@ SparqlwrapperStrategy        </code>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">update_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">username</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -1470,9 +1498,26 @@ SparqlwrapperStrategy        </code>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
             <span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>  <span class="c1"># database is not used in the SPARQLWrapper backend</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">updateEndpoint</span><span class="o">=</span><span class="n">update_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setCredentials</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="o">=</span> <span class="n">update_iri</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Optional[str]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Getter for the update IRI.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_iri</span>
+
+    <span class="nd">@update_iri</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_update_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for the update IRI that also updates the SPARQL endpoint.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_iri</span> <span class="o">=</span> <span class="n">new_update_iri</span>
+        <span class="c1"># Update the SPARQLWrapper&#39;s updateEndpoint only if it was initialized.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;sparql&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">updateEndpoint</span> <span class="o">=</span> <span class="n">new_update_iri</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=unused-argument</span>
@@ -1541,6 +1586,9 @@ SparqlwrapperStrategy        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
+
         <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="s2">&quot;  &quot;</span>
             <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -1562,6 +1610,7 @@ SparqlwrapperStrategy        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
         <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1579,6 +1628,17 @@ SparqlwrapperStrategy        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the update endpoint is valid&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">isSparqlUpdateRequest</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TripperException</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The base_iri &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">updateEndpoint</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="s2">&quot;is not a valid update endpoint. &quot;</span>
+                <span class="s2">&quot;For updates it is necessary to give the &quot;</span>
+                <span class="s2">&quot;&#39;update_iri&#39; as argument to the triplestore directly,&quot;</span>
+                <span class="s2">&quot;or update it with ts.backend.update_iri = ...&quot;</span>
+            <span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -1589,6 +1649,29 @@ SparqlwrapperStrategy        </code>
 
 
 
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="tripper.backends.sparqlwrapper.SparqlwrapperStrategy.update_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_iri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-writable"><code>writable</code></small>
+  </span>
+
+<a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.update_iri" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Getter for the update IRI.</p>
+    </div>
+
+  </div>
 
 
 
@@ -1614,6 +1697,9 @@ SparqlwrapperStrategy        </code>
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
+
     <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="s2">&quot;  &quot;</span>
         <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -1750,6 +1836,7 @@ SparqlwrapperStrategy        </code>
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
