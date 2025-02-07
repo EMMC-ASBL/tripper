@@ -49,6 +49,14 @@ __all__ = (
 )
 
 
+class TripperException(Exception):
+    """A BaseException class for Tripper"""
+
+
+class TripperWarning(Warning):
+    """A BaseWarning class for Tripper"""
+
+
 class AttrDict(dict):
     """Dict with attribute access."""
 
