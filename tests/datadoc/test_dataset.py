@@ -214,7 +214,12 @@ def test_datadoc():
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = load_dict(ts, iri, use_sparql=False)
     assert d["@id"] == iri
-    assert set(d["@type"]) == {DCAT.Dataset, EMMO.Dataset, SEM.SEMImage}
+    assert set(d["@type"]) == {
+        DCAT.Dataset,
+        EMMO.Dataset,
+        SEM.SEMImage,
+        "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
+    }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == "image/tiff"
 
