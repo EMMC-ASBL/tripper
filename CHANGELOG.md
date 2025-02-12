@@ -1,6 +1,51 @@
 # Changelog
 
-## [v0.3.4](https://github.com/EMMC-ASBL/tripper/tree/v0.3.4) (2024-10-15)
+## [v0.4.0](https://github.com/EMMC-ASBL/tripper/tree/v0.4.0) (2025-02-10)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.4...v0.4.0)
+
+**Closed issues:**
+
+- Clean up documentation [\#302](https://github.com/EMMC-ASBL/tripper/issues/302)
+- Make datadoc windows compatible [\#301](https://github.com/EMMC-ASBL/tripper/issues/301)
+
+**Merged pull requests:**
+
+- \[pre-commit.ci\] pre-commit autoupdate [\#317](https://github.com/EMMC-ASBL/tripper/pull/317) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Add updateEndpoint to SPARQLwrapper [\#313](https://github.com/EMMC-ASBL/tripper/pull/313) ([torhaugl](https://github.com/torhaugl))
+- Updated the readme file [\#311](https://github.com/EMMC-ASBL/tripper/pull/311) ([jesper-friis](https://github.com/jesper-friis))
+- Drop support for Python 3.7 [\#310](https://github.com/EMMC-ASBL/tripper/pull/310) ([jesper-friis](https://github.com/jesper-friis))
+- Include prefixes from context when populating a triplestore from a csv file [\#309](https://github.com/EMMC-ASBL/tripper/pull/309) ([jesper-friis](https://github.com/jesper-friis))
+- Added support for username/password for sparqlwrapper [\#308](https://github.com/EMMC-ASBL/tripper/pull/308) ([jesper-friis](https://github.com/jesper-friis))
+- Implementing regex search [\#307](https://github.com/EMMC-ASBL/tripper/pull/307) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#306](https://github.com/EMMC-ASBL/tripper/pull/306) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Rename dataset [\#304](https://github.com/EMMC-ASBL/tripper/pull/304) ([jesper-friis](https://github.com/jesper-friis))
+- Change pathlib to be pathlib and not as uri. This fixes opening in wi… [\#303](https://github.com/EMMC-ASBL/tripper/pull/303) ([francescalb](https://github.com/francescalb))
+- Added fixes for the demonstration at the PINK demo [\#299](https://github.com/EMMC-ASBL/tripper/pull/299) ([jesper-friis](https://github.com/jesper-friis))
+- Renamed the dataset subpackage to datadoc [\#298](https://github.com/EMMC-ASBL/tripper/pull/298) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#287](https://github.com/EMMC-ASBL/tripper/pull/287) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Make datasets with a datamodel an individual of the datamodel [\#286](https://github.com/EMMC-ASBL/tripper/pull/286) ([jesper-friis](https://github.com/jesper-friis))
+- Re-applied fixes from testing datadoc on a use case for PINK. [\#285](https://github.com/EMMC-ASBL/tripper/pull/285) ([jesper-friis](https://github.com/jesper-friis))
+- Command-line datadoc script [\#281](https://github.com/EMMC-ASBL/tripper/pull/281) ([jesper-friis](https://github.com/jesper-friis))
+- Added documentation for datasets [\#280](https://github.com/EMMC-ASBL/tripper/pull/280) ([jesper-friis](https://github.com/jesper-friis))
+- Dataset TODOs [\#279](https://github.com/EMMC-ASBL/tripper/pull/279) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#277](https://github.com/EMMC-ASBL/tripper/pull/277) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added csv parser to Tabledoc  [\#275](https://github.com/EMMC-ASBL/tripper/pull/275) ([jesper-friis](https://github.com/jesper-friis))
+- Updated dataset figures [\#274](https://github.com/EMMC-ASBL/tripper/pull/274) ([jesper-friis](https://github.com/jesper-friis))
+- New TableDoc class providing a table interface for data documentation [\#273](https://github.com/EMMC-ASBL/tripper/pull/273) ([jesper-friis](https://github.com/jesper-friis))
+- Updated dataset module [\#272](https://github.com/EMMC-ASBL/tripper/pull/272) ([jesper-friis](https://github.com/jesper-friis))
+- Corrected dataset module [\#271](https://github.com/EMMC-ASBL/tripper/pull/271) ([jesper-friis](https://github.com/jesper-friis))
+- Add query to SPARQLwrapper strategy [\#269](https://github.com/EMMC-ASBL/tripper/pull/269) ([torhaugl](https://github.com/torhaugl))
+- \[pre-commit.ci\] pre-commit autoupdate [\#268](https://github.com/EMMC-ASBL/tripper/pull/268) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Add support for Python 3.13 [\#266](https://github.com/EMMC-ASBL/tripper/pull/266) ([jesper-friis](https://github.com/jesper-friis))
+- Updated requirements to allow Pint 0.24, which in turn opens for NumPy 2 [\#265](https://github.com/EMMC-ASBL/tripper/pull/265) ([jesper-friis](https://github.com/jesper-friis))
+- Updated documentation format for better rendering [\#262](https://github.com/EMMC-ASBL/tripper/pull/262) ([jesper-friis](https://github.com/jesper-friis))
+- Predefined EMMO namespace with checking and label lookup [\#261](https://github.com/EMMC-ASBL/tripper/pull/261) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#259](https://github.com/EMMC-ASBL/tripper/pull/259) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#258](https://github.com/EMMC-ASBL/tripper/pull/258) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+-  Dataset [\#256](https://github.com/EMMC-ASBL/tripper/pull/256) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.3.4](https://github.com/EMMC-ASBL/tripper/tree/v0.3.4) (2024-10-17)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.3...v0.3.4)
 

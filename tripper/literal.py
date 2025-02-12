@@ -75,8 +75,15 @@ class Literal(str):
         {'name': 'Jon Doe'}
 
         # Literal of custom datatype (`value` must be a string)
-        >>> Literal("my value...", datatype="http://example.com/onto#MyType")
-        Literal('my value...', datatype='http://example.com/onto#MyType')
+        # This will issue an `UnknownDatatypeWarning` which we ignore...
+        >>> import warnings
+        >>> from tripper.errors import UnknownDatatypeWarning
+        >>> with warnings.catch_warnings():
+        ...     warnings.filterwarnings(
+        ...         action="ignore", category=UnknownDatatypeWarning,
+        ...     )
+        ...     Literal("a value", datatype="http://example.com/onto#MyType")
+        Literal('a value', datatype='http://example.com/onto#MyType')
 
         ```
 
