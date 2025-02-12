@@ -608,6 +608,10 @@ class UnitRegistry(pint.UnitRegistry):
         unitsfile = self._tripper_cachedir / fname
         if "filename" not in kwargs:
             kwargs["filename"] = unitsfile
+            if not unitsfile.exists():
+                units = self._get_tripper_units()
+                self._tripper_cachedir.mkdir(parents=True, exist_ok=True)
+                units.write_pint_units(unitsfile)
 
         super().__init__(*args, **kwargs)
         self._tripper_unitsfile = unitsfile
@@ -616,21 +620,6 @@ class UnitRegistry(pint.UnitRegistry):
         """Returns a tripper.units.Units instance for the current ontology."""
         if not self._tripper_units:
             self._tripper_units = Units(*self._tripper_unitsargs)
-
-        cache = self._tripper_unitsargs[4]
-        cachedir = self._tripper_cachedir
-        try:
-            cachedir.mkdir(parents=True, exist_ok=True)
-        except PermissionError as exc:
-            warnings.warn(
-                f"{exc}: {cachedir}",
-                category=PermissionWarning,
-            )
-        else:
-            unitsfile = self._tripper_unitsfile
-            if cache is not False and not unitsfile.exists():
-                self._tripper_units.write_pint_units(unitsfile)
-
         return self._tripper_units
 
     def get_unit(
