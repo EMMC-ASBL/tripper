@@ -20,10 +20,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
     from typing import Any, Iterable, Mapping, Optional, Union
 
-    try:
-        from pint.compat import TypeAlias
-    except ImportError:
-        TypeAlias = Any
+    # from pint.compat import TypeAlias
+    TypeAlias = Any
 
 # Default EMMO version
 EMMO_VERSION = "1.0.0"
