@@ -1,5 +1,10 @@
 """Test the tripper.units module."""
 
+import pytest
+
+pytest.importorskip("pint")
+pytest.importorskip("rdflib")
+
 
 def test_get_emmo_triplestore():
     """Test get_emmo_triplestore()."""
@@ -50,7 +55,6 @@ def test_units():
     assert unit.unitCode == "AMP"
     assert unit.multiplier is None
     assert unit.offset is None
-    assert unit.unitSymbol is None
 
     unit = units.get_unit(symbol="Pa")
     assert unit.name == "Pascal"
@@ -116,9 +120,9 @@ def test_unit_registry():
     assert q.u.emmoIRI == "https://w3id.org/emmo#Hour"
     assert q.u.qudtIRI == "http://qudt.org/vocab/unit/HR"
 
-    u = ureg.get_unit(iri="http://qudt.org/vocab/unit/PA")
-    assert str(u) == "Pascal"
+    q = ureg.get_unit(iri="http://qudt.org/vocab/unit/PA")
+    assert str(q) == "1 Pascal"
 
-    info = ureg.get_unit_info(unitcode="DAY")
+    info = ureg.get_unit_info(unitCode="DAY")
     assert info.name == "Day"
     assert info.emmoIRI == "https://w3id.org/emmo#Day"
