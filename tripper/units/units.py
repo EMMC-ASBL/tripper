@@ -10,7 +10,11 @@ from collections import namedtuple
 from typing import TYPE_CHECKING
 
 import pint
-from pint.compat import TypeAlias
+
+try:
+    from pint.compat import TypeAlias
+except ImportError:
+    from typing import Any as TypeAlias
 
 from tripper import EMMO, RDFS, SKOS, Namespace, Triplestore
 from tripper.errors import TripperError
