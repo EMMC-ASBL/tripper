@@ -95,6 +95,7 @@ nav:
     - Predefined prefixes: datadoc/prefixes.md
     - Predefined keywords: datadoc/keywords.md
   - ... | api_reference/**
+  - Units and quantities: units/introduction.md
   - Known issues: known-issues.md
   - For developers: developers.md
   - Changelog: CHANGELOG.md

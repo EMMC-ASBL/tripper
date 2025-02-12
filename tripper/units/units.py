@@ -147,9 +147,6 @@ class Units:
             triplestore=self.ts,
         )
 
-        self.unit_ontology = unit_ontology
-        self.ontology_version = ontology_version
-
         pf = "-prefixed" if include_prefixed else ""
         cachefile = (
             get_cachedir()
@@ -164,6 +161,10 @@ class Units:
         if cache in (True, None):
             with open(cachefile, "wb") as f:
                 pickle.dump(self.units, f)
+
+        self.unit_ontology = unit_ontology
+        self.ontology_version = ontology_version
+        self.cachefile = cachefile
 
     def _emmo_unit_iris(self, include_prefixed: bool = False) -> list:
         """Return a list with the IRIs of all EMMO units.
@@ -469,6 +470,18 @@ class Units:
         with open(filename, "wt", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
 
+    def clear_cache(self):
+        """Clear caches used by this Units object."""
+        cachefile = self.cachefile
+        if cachefile.exists():
+            cachefile.unlink()
+
+        cachedir = cachefile.parent
+        fname = f"{self.unit_ontology}-{self.ontology_version}.ntriples"
+        ontofile = cachedir / fname
+        if ontofile.exists():
+            ontofile.unlink()
+
 
 # pylint: disable=too-many-ancestors
 class Unit(pint.Unit):
@@ -555,6 +568,7 @@ class UnitRegistry(pint.UnitRegistry):
             'http://qudt.org/vocab/unit/HR'
 
         """
+        self._tripper_cachedir = get_cachedir()
         self._tripper_units: "Optional[Units]" = None
         self._tripper_unitsargs = (
             ts,
@@ -567,12 +581,9 @@ class UnitRegistry(pint.UnitRegistry):
         # If no explicit `filename` is not provided, ensure that an unit
         # definition file has been created and assign `filename` to it.
         fname = f"units-{unit_ontology}-{ontology_version}.txt"
-        unitsfile = get_cachedir() / fname
+        unitsfile = self._tripper_cachedir / fname
         if "filename" not in kwargs:
             kwargs["filename"] = unitsfile
-            if not cache or not unitsfile.exists():
-                units = self._get_tripper_units()
-                units.write_pint_units(unitsfile)
 
         super().__init__(*args, **kwargs)
         self._tripper_unitsfile = unitsfile
@@ -581,7 +592,36 @@ class UnitRegistry(pint.UnitRegistry):
         """Returns a tripper.units.Units instance for the current ontology."""
         if not self._tripper_units:
             self._tripper_units = Units(*self._tripper_unitsargs)
+
+        cache = self._tripper_unitsargs[4]
+        unitsfile = self._tripper_unitsfile
+        if cache is not False and not unitsfile.exists():
+            self._tripper_units.write_pint_units(unitsfile)
+
         return self._tripper_units
+
+    def get_unit(
+        self,
+        name: "Optional[str]" = None,
+        symbol: "Optional[str]" = None,
+        iri: "Optional[str]" = None,
+        unitCode: "Optional[str]" = None,
+    ) -> Unit:
+        """Return unit matching any of the arguments.
+
+        Argument:
+            name: Search for unit by name. Ex: "Ampere"
+            symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
+            iri: Search for unit by IRI.
+            unitCode: Search for unit by UNECE common code. Ex: "MTS"
+
+        Returns:
+            Return matching unit.
+        """
+        info = self.get_unit_info(
+            name=name, symbol=symbol, iri=iri, unitCode=unitCode
+        )
+        return self[info.name]
 
     def get_unit_info(
         self,
@@ -621,9 +661,16 @@ class UnitRegistry(pint.UnitRegistry):
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
 
-    def _setunitclass(self, obj):
-        if isinstance(obj, pint.Unit):
-            # pylint: disable=protected-access
-            ureg = obj._REGISTRY
-            obj.__class__ = Unit
-            obj._REGISTRY = ureg
+    def clear_cache(self):
+        """Clear caches related to this unit registry."""
+        if self._tripper_unitsfile.exists():
+            self._tripper_unitsfile.unlink()
+
+        ontology, version = self._tripper_unitsargs[1:3]
+        cachedir = self._tripper_cachedir
+        ontofile = cachedir / f"{ontology}-{version}.ntriples"
+        unitsfile = cachedir / f"units-{ontology}-{version}.pickle"
+        if ontofile.exists():
+            ontofile.unlink()
+        if unitsfile.exists():
+            unitsfile.unlink()

@@ -115,3 +115,10 @@ def test_unit_registry():
     q = ureg.Quantity("3 h")
     assert q.u.emmoIRI == "https://w3id.org/emmo#Hour"
     assert q.u.qudtIRI == "http://qudt.org/vocab/unit/HR"
+
+    u = ureg.get_unit(iri="http://qudt.org/vocab/unit/PA")
+    assert str(u) == "Pascal"
+
+    info = ureg.get_unit_info(unitcode="DAY")
+    assert info.name == "Day"
+    assert info.emmoIRI == "https://w3id.org/emmo#Day"
