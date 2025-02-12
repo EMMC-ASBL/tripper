@@ -8,13 +8,13 @@ import re
 from collections import namedtuple
 from typing import TYPE_CHECKING
 
+import pint
+from pint.compat import TypeAlias
+
 from tripper import EMMO, RDFS, SKOS, Namespace, Triplestore
 from tripper.errors import TripperError
 from tripper.namespace import get_cachedir
 from tripper.utils import AttrDict
-
-# import pint
-
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
@@ -155,7 +155,7 @@ class Units:
             get_cachedir()
             / f"units-{unit_ontology}-{ontology_version}{pf}.pickle"
         )
-        if cache is True and cachefile.exists():
+        if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
                 self.units = pickle.load(f)  # nosec
         else:
@@ -236,24 +236,6 @@ class Units:
             return Dimension(*[int(d) for d in m.groups()])
         raise InvalidDimensionStringError(dimstr)
 
-    def _get_coherent_unit(self, name: str) -> AttrDict:
-        """Return a dict for the SI-corerent version of unit with given name."""
-        unit = self.units[name]
-        if unit.unitSymbol:
-            return self.get_unit(iri=unit.unitSymbol)
-        if (unit.multiplier and unit.multiplier != 1.0) or unit.offset:
-            for u in self.units:
-                if (
-                    u.dimension == unit.dimension
-                    and u.multiplier in (None, 1.0)
-                    and u.offset in (None, 0.0)
-                ):
-                    return u
-            raise MissingUnitError(
-                "cannot find coherent unit corresponding to: {name}"
-            )
-        return unit
-
     def _parse_units(self, include_prefixed=False) -> "dict[str, AttrDict]":
         """Parse EMMO units and return them as an iterator over named
         tuples.
@@ -274,14 +256,12 @@ class Units:
             offset = list(
                 self.ts.restrictions(iri, property=EMMO.hasSIConversionOffset)
             )
-            unitSymbol = list(
-                self.ts.restrictions(iri, property=EMMO.hasUnitSymbol)
-            )
             qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
             omIRI = self.ts.value(iri, EMMO.omReference, any=True)
 
             d[name] = AttrDict(
                 name=name,
+                description=self.ts.value(iri, EMMO.elucidation),
                 aliases=[
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
                 ],
@@ -296,7 +276,6 @@ class Units:
                 unitCode=str(self.ts.value(iri, EMMO.uneceCommonCode)),
                 multiplier=float(mult[0]["value"]) if mult else None,
                 offset=float(offset[0]["value"]) if offset else None,
-                unitSymbol=(unitSymbol[0]["value"]) if unitSymbol else None,
             )
         return d
 
@@ -320,17 +299,17 @@ class Units:
             the following keys:
 
               - name: Preferred label.
+              - description: Unit description.
               - aliases: List of alternative labels.
               - symbols: List with unit symbols.
               - dimension: Named tuple with quantity dimension.
-              - emmoIRI: IRI for the unit in the EMMO ontology.
-              - qudtIRI: IRI for the unit in the QUDT ontology.
-              - omIRI: IRI for the unit in the OM ontology.
+              - emmoIRI: IRI of the unit in the EMMO ontology.
+              - qudtIRI: IRI of the unit in the QUDT ontology.
+              - omIRI: IRI of the unit in the OM ontology.
               - ucumCodes: List of UCUM codes for the unit.
               - unitCode: UNECE common code for the unit.
               - multiplier: Unit multiplier.
               - offset: Unit offset.
-              - unitSymbol: The symbol part of a prefixed unit.
         """
         if name and name in self.units:
             return self.units[name]
@@ -382,7 +361,7 @@ class Units:
             "# Pint units definitions file",
             (
                 "# Created with tripper.units from "
-                f"{self.unit_ontology}-{self.ontology_version}",
+                f"{self.unit_ontology}-{self.ontology_version}"
             ),
             "",
             "# Decimal prefixes",
@@ -489,3 +468,162 @@ class Units:
 
         with open(filename, "wt", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
+
+
+# pylint: disable=too-many-ancestors
+class Unit(pint.Unit):
+    """A subclass of pint.Unit with additional methods and properties."""
+
+    def get_unit_info(self):
+        """Return a dict with attribute access describing the unit.
+
+        SeeAlso:
+            tripper.units.UnitRegistry.get_unit_info()
+        """
+        ureg = self._REGISTRY
+        return ureg.get_unit_info(str(self))
+
+    emmoIRI = property(
+        lambda self: self.get_unit_info().emmoIRI,
+        doc="IRI of the unit in the EMMO ontology.",
+    )
+    qudtIRI = property(
+        lambda self: self.get_unit_info().qudtIRI,
+        doc="IRI of the unit in the QUDT ontology.",
+    )
+    omIRI = property(
+        lambda self: self.get_unit_info().omIRI,
+        doc="IRI of the unit in the OM ontology.",
+    )
+
+
+class Quantity(pint.Quantity):
+    """A subclass of pint.Quantity with support for tripper.units."""
+
+
+class UnitRegistry(pint.UnitRegistry):
+    """A subclass of pint.UnitRegistry with support for loading units
+    from ontologies.
+    """
+
+    Unit: TypeAlias = Unit
+    Quantity: TypeAlias = Quantity
+
+    def __init__(
+        self,
+        *args: "Any",
+        ts: "Optional[Triplestore]" = None,
+        unit_ontology: str = "emmo",
+        ontology_version: str = EMMO_VERSION,
+        include_prefixed: bool = False,
+        cache: "Optional[bool]" = True,
+        **kwargs: "Any",
+    ) -> None:
+        """Initialise a Units class from triplestore `ts`
+
+        Arguments:
+            args: Positional arguments passed to pint.UnitRegistry().
+            ts: Triplestore object containing the ontology to load
+                units from.  The default is to determine the ontology to
+                load from `unit_ontology` and `ontology_version`.
+            unit_ontology: Name of unit ontology to parse. Currently only
+                "emmo" is supported.
+            ontology_version: Version of `unit_ontology` to load if `ts` is
+                None.
+            include_prefixed: Whether to also include prefixed units.
+            cache: Whether to cache the unit table. If `cache` is:
+                - True: Load cache if it exists, otherwise create new cache.
+                - False: Don't use cache.
+                - None: Don't load cache, but (over)write new cache.
+            kwargs: Keyword arguments passed to pint.UnitRegistry().
+
+        Examples:
+            >>> from tripper.units import UnitRegistry
+            >>> ureg = UnitRegistry()
+            >>> u = ureg.Metre
+            >>> u
+            <Unit('Metre')>
+
+            >>> u.emmoIRI
+            'https://w3id.org/emmo#Metre'
+
+            >>> q = ureg.Quantity("3 h")
+            >>> q
+            <Quantity(3, 'Hour')>
+
+            >>> q.u.qudtIRI
+            'http://qudt.org/vocab/unit/HR'
+
+        """
+        self._tripper_units: "Optional[Units]" = None
+        self._tripper_unitsargs = (
+            ts,
+            unit_ontology,
+            ontology_version,
+            include_prefixed,
+            cache,
+        )
+
+        # If no explicit `filename` is not provided, ensure that an unit
+        # definition file has been created and assign `filename` to it.
+        fname = f"units-{unit_ontology}-{ontology_version}.txt"
+        unitsfile = get_cachedir() / fname
+        if "filename" not in kwargs:
+            kwargs["filename"] = unitsfile
+            if not cache or not unitsfile.exists():
+                units = self._get_tripper_units()
+                units.write_pint_units(unitsfile)
+
+        super().__init__(*args, **kwargs)
+        self._tripper_unitsfile = unitsfile
+
+    def _get_tripper_units(self) -> Units:
+        """Returns a tripper.units.Units instance for the current ontology."""
+        if not self._tripper_units:
+            self._tripper_units = Units(*self._tripper_unitsargs)
+        return self._tripper_units
+
+    def get_unit_info(
+        self,
+        name: "Optional[str]" = None,
+        symbol: "Optional[str]" = None,
+        iri: "Optional[str]" = None,
+        unitCode: "Optional[str]" = None,
+    ) -> AttrDict:
+        """Return information about a unit.
+
+        Argument:
+            name: Search for unit by name. Ex: "Ampere"
+            symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
+            iri: Search for unit by IRI.
+            unitCode: Search for unit by UNECE common code. Ex: "MTS"
+
+        Returns:
+            A dict with attribute access describing the unit. The dict has
+            the following keys:
+
+              - name: Preferred label.
+              - description: Unit description.
+              - aliases: List of alternative labels.
+              - symbols: List with unit symbols.
+              - dimension: Named tuple with quantity dimension.
+              - emmoIRI: IRI of the unit in the EMMO ontology.
+              - qudtIRI: IRI of the unit in the QUDT ontology.
+              - omIRI: IRI of the unit in the OM ontology.
+              - ucumCodes: List of UCUM codes for the unit.
+              - unitCode: UNECE common code for the unit.
+              - multiplier: Unit multiplier.
+              - offset: Unit offset.
+
+        """
+        units = self._get_tripper_units()
+        return units.get_unit(
+            name=name, symbol=symbol, iri=iri, unitCode=unitCode
+        )
+
+    def _setunitclass(self, obj):
+        if isinstance(obj, pint.Unit):
+            # pylint: disable=protected-access
+            ureg = obj._REGISTRY
+            obj.__class__ = Unit
+            obj._REGISTRY = ureg

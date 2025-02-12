@@ -102,19 +102,16 @@ def test_units():
     assert unit.offset == 0.0
 
 
-# def test_get_unit_symbol():
-#    """Test get_unit_symbol()."""
-#    from tripper import EMMO, units
-#
-#    assert units.get_unit_symbol(EMMO.Ampere) == "A"
-#    assert units.get_unit_symbol(EMMO.Kilogram) == "kg"
-#    assert units.get_unit_symbol(EMMO.Day) == "d"
-#
-#
-# def test_get_unit_iri():
-#    """Test get_unit_iri()."""
-#    from tripper import EMMO, units
-#
-#    assert units.get_unit_iri("K") == EMMO.Kelvin
-#    assert units.get_unit_iri("cm") == EMMO.CentiMetre
-#    assert units.get_unit_iri("d") == EMMO.Day
+def test_unit_registry():
+    """Test tripper.units.UnitRegistry."""
+    from tripper.units import UnitRegistry
+
+    ureg = UnitRegistry()
+    u = ureg.Metre
+    assert str(u) == "Metre"
+    assert u.emmoIRI == "https://w3id.org/emmo#Metre"
+    assert u.qudtIRI == "http://qudt.org/vocab/unit/M"
+
+    q = ureg.Quantity("3 h")
+    assert q.u.emmoIRI == "https://w3id.org/emmo#Hour"
+    assert q.u.qudtIRI == "http://qudt.org/vocab/unit/HR"
