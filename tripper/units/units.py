@@ -5,6 +5,7 @@ Pint is used for programatic unit conversions.
 
 import pickle  # nosec
 import re
+import warnings
 from collections import namedtuple
 from typing import TYPE_CHECKING
 
@@ -57,6 +58,10 @@ class InvalidDimensionStringError(UnitError):
     """Invalid dimension string."""
 
 
+class PermissionWarning(UserWarning):
+    """Not enough permissions."""
+
+
 def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
     """Return, potentially cached, triplestore object containing the
     given version of EMMO."""
@@ -69,7 +74,15 @@ def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
             _emmo_ts.parse(cachefile, format="ntriples")
         else:
             _emmo_ts.parse(f"https://w3id.org/emmo/{emmo_version}")
-            _emmo_ts.serialize(cachefile, format="ntriples", encoding="utf-8")
+            try:
+                _emmo_ts.serialize(
+                    cachefile, format="ntriples", encoding="utf-8"
+                )
+            except PermissionError as exc:
+                warnings.warn(
+                    f"{exc}: {cachefile}",
+                    category=PermissionWarning,
+                )
     return _emmo_ts
 
 
@@ -148,10 +161,9 @@ class Units:
         )
 
         pf = "-prefixed" if include_prefixed else ""
-        cachefile = (
-            get_cachedir()
-            / f"units-{unit_ontology}-{ontology_version}{pf}.pickle"
-        )
+        fname = f"units-{unit_ontology}-{ontology_version}{pf}.pickle"
+        cachedir = get_cachedir()
+        cachefile = cachedir / fname
         if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
                 self.units = pickle.load(f)  # nosec
@@ -159,8 +171,16 @@ class Units:
             self.units = self._parse_units(include_prefixed=include_prefixed)
 
         if cache in (True, None):
-            with open(cachefile, "wb") as f:
-                pickle.dump(self.units, f)
+            try:
+                cachedir.mkdir(parents=True, exist_ok=True)
+            except PermissionError as exc:
+                warnings.warn(
+                    f"{exc}: {cachedir}",
+                    category=PermissionWarning,
+                )
+            else:
+                with open(cachefile, "wb") as f:
+                    pickle.dump(self.units, f)
 
         self.unit_ontology = unit_ontology
         self.ontology_version = ontology_version
@@ -594,9 +614,18 @@ class UnitRegistry(pint.UnitRegistry):
             self._tripper_units = Units(*self._tripper_unitsargs)
 
         cache = self._tripper_unitsargs[4]
-        unitsfile = self._tripper_unitsfile
-        if cache is not False and not unitsfile.exists():
-            self._tripper_units.write_pint_units(unitsfile)
+        cachedir = self._tripper_cachedir
+        try:
+            cachedir.mkdir(parents=True, exist_ok=True)
+        except PermissionError as exc:
+            warnings.warn(
+                f"{exc}: {cachedir}",
+                category=PermissionWarning,
+            )
+        else:
+            unitsfile = self._tripper_unitsfile
+            if cache is not False and not unitsfile.exists():
+                self._tripper_units.write_pint_units(unitsfile)
 
         return self._tripper_units
 
