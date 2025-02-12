@@ -20,7 +20,7 @@ jobs:
       # Build package
       python_package: true
       package_dirs: tripper
-      python_version_build: "3.9"
+      python_version_build: "3.11"
       build_libs: "flit"
       build_cmd: "flit build"
       build_dir: "dist"
@@ -29,7 +29,7 @@ jobs:
 
       # Build & publish documentation
       update_docs: true
-      python_version_docs: "3.9"
+      python_version_docs: "3.11"
       doc_extras: "[docs]"
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
       docs_framework: mkdocs

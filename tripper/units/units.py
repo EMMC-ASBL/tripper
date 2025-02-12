@@ -20,7 +20,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
     from typing import Any, Iterable, Mapping, Optional, Union
 
-    # from pint.compat import TypeAlias
+    from pint.compat import TypeAlias
 
 # Default EMMO version
 EMMO_VERSION = "1.0.0"
@@ -540,8 +540,8 @@ class UnitRegistry(pint.UnitRegistry):
     from ontologies.
     """
 
-    Unit: "Any" = Unit
-    Quantity: "Any" = Quantity
+    Unit: "TypeAlias" = Unit
+    Quantity: "TypeAlias" = Quantity
 
     def __init__(
         self,
