@@ -71,6 +71,12 @@ class AttrDict(dict):
     def __dir__(self):
         return dict.__dir__(self) + list(self.keys())
 
+    def __getstate__(self):
+        return dict(self)
+
+    def __setstate__(self, state):
+        pass
+
 
 @contextmanager
 def openfile(

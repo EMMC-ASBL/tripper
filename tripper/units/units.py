@@ -2,17 +2,23 @@
 
 Pint is used for programatic unit conversions.
 """
-#from collection import namedtuple
+
+import pickle  # nosec
+import re
+from collections import namedtuple
 from typing import TYPE_CHECKING
 
-import pint
-
-from tripper import EMMO, OWL, RDF, RDFS, SKOS, Namespace, Triplestore
+from tripper import EMMO, RDFS, SKOS, Namespace, Triplestore
+from tripper.errors import TripperError
 from tripper.namespace import get_cachedir
+from tripper.utils import AttrDict
+
+# import pint
+
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping
-    from typing import Iterable
+    from pathlib import Path
+    from typing import Any, Iterable, Mapping, Optional, Union
 
 # Default EMMO version
 EMMO_VERSION = "1.0.0"
@@ -20,24 +26,41 @@ EMMO_VERSION = "1.0.0"
 # Cached module variables
 _emmo_ts = None  # EMMO triplestore object
 _emmo_ns = None  # EMMO namespace object
-_unit_cache = {}  # Maps unit names to IRIs
+_unit_cache: dict = {}  # Maps unit names to IRIs
 
-# Named tuple used to represent a
-#Unit = namedtuple(
-#    "Unit",
-#    "symbol, aliases, multiplier, offset, dimension, ucum_code, "
-#    "emmo_iri, qudt_iri, om_iri"
-#)
+# Named tuple used to represent a dimension string
+# Note we use H instead of ϴ to represent the thermodynamic temperature
+Dimension = namedtuple("Dimension", "T,L,M,I,H,N,J")
+Dimension.__doc__ = "SI quantity dimension"
+Dimension.T.__doc__ = "time"
+Dimension.L.__doc__ = "length"
+Dimension.M.__doc__ = "mass"
+Dimension.I.__doc__ = "electric current"
+Dimension.H.__doc__ = "thermodynamic temperature"
+Dimension.N.__doc__ = "amount of substance"
+Dimension.J.__doc__ = "luminous intensity"
 
 
-class MissingUnitError(ValueError):
-    "Unit not found in ontology."
+class UnitError(TripperError):
+    """Base Error for units module."""
+
+
+class MissingUnitError(UnitError):
+    """Unit not found in ontology."""
+
+
+class MissingDimensionStringError(UnitError):
+    """Unit does not have a dimensional string."""
+
+
+class InvalidDimensionStringError(UnitError):
+    """Invalid dimension string."""
 
 
 def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
     """Return, potentially cached, triplestore object containing the
     given version of EMMO."""
-    global _emmo_ts
+    global _emmo_ts  # pylint: disable=global-statement
     if not _emmo_ts:
         _emmo_ts = Triplestore("rdflib")
 
@@ -52,7 +75,7 @@ def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
 
 def get_emmo_namespace(emmo_version: str = EMMO_VERSION) -> Namespace:
     """Return potentially cached EMMO namespace object."""
-    global _emmo_ns
+    global _emmo_ns  # pylint: disable=global-statement
     if not _emmo_ns:
         _emmo_ns = Namespace(
             iri="https://w3id.org/emmo#",
@@ -63,55 +86,23 @@ def get_emmo_namespace(emmo_version: str = EMMO_VERSION) -> Namespace:
     return _emmo_ns
 
 
-def get_unit_symbol(iri: str, emmo_version: str = EMMO_VERSION) -> str:
-    """Return the unit symbol for unit with the given IRI."""
-    ts = get_emmo_triplestore(emmo_version)
-    EMMO = get_emmo_namespace(emmo_version)
-    symbol = ts.value(iri, EMMO.unitSymbol)
-    if symbol:
-        return str(symbol)
-    for r in ts.restrictions(iri, EMMO.unitSymbolValue, type="value"):
-        symbol = r["value"]
-        if symbol:
-            return str(symbol)
-    raise KBError("No symbol value is defined for unit:", iri)
-
-
-def get_unit_iri(unit: str, emmo_version: str = EMMO_VERSION) -> str:
-    """Returns the IRI for the given unit."""
-    if not _unit_cache:
-        ts = get_emmo_triplestore(emmo_version)
-        EMMO = get_emmo_namespace(emmo_version)
-        for predicate in (
-            EMMO.unitSymbol,
-            EMMO.ucumCode,
-            EMMO.uneceCommonCode,
-        ):
-            for s, _, o in ts.triples(predicate=predicate):
-                if o.value in _unit_cache and predicate == EMMO.unitSymbol:
-                    warnings.warn(
-                        f"more than one unit with symbol '{o.value}': "
-                        f"{_unit_cache[o.value]}"
-                    )
-                else:
-                    _unit_cache[o.value] = s
-                for o in ts.objects(s, SKOS.prefLabel):
-                    _unit_cache[o.value] = s
-                for o in ts.objects(s, SKOS.altLabel):
-                    if o.value not in _unit_cache:
-                        _unit_cache[o.value] = s
-
-        for r, _, o in ts.triples(predicate=OWL.hasValue):
-            if ts.has(r, RDF.type, OWL.Restriction) and ts.has(
-                r, OWL.onProperty, EMMO.unitSymbolValue
-            ):
-                s = ts.value(predicate=RDFS.subClassOf, object=r)
-                _unit_cache[o.value] = s
-
-    if unit in _unit_cache:
-        return _unit_cache[unit]
-
-    raise MissingUnitError(unit)
+def base_unit_expression(dimension: Dimension) -> str:
+    """Return a base unit expression corresponding to `dimension`."""
+    base_units = (
+        "Second",
+        "Metre",
+        "Kilogram",
+        "Ampere",
+        "Kelvin",
+        "Mole",
+        "Candela",
+    )
+    expr = []
+    for b, e in zip(base_units, dimension):
+        if e:
+            power = "" if e == 1 else f"**{e}"
+            expr.append(f"{b}{power}")
+    return " * ".join(expr) if expr else "1"
 
 
 class Units:
@@ -119,9 +110,11 @@ class Units:
 
     def __init__(
         self,
-        ts: Triplestore = None,
+        ts: "Optional[Triplestore]" = None,
         unit_ontology: str = "emmo",
         ontology_version: str = EMMO_VERSION,
+        include_prefixed: bool = False,
+        cache: "Optional[bool]" = True,
     ) -> None:
         """Initialise a Units class from triplestore `ts`
 
@@ -133,6 +126,11 @@ class Units:
                 "emmo" is supported.
             ontology_version: Version of `unit_ontology` to load if `ts` is
                 None.
+            include_prefixed: Whether to also include prefixed units.
+            cache: Whether to cache the unit table. If `cache` is:
+                - True: Load cache if it exists, otherwise create new cache.
+                - False: Don't use cache.
+                - None: Don't load cache, but (over)write new cache.
 
         """
         if ts:
@@ -146,13 +144,40 @@ class Units:
             iri="https://w3id.org/emmo#",
             label_annotations=True,
             check=True,
-            triplestore=self.ts
+            triplestore=self.ts,
         )
 
-        self.units = self._emmo_unit_iris()
+        self.unit_ontology = unit_ontology
+        self.ontology_version = ontology_version
 
-    def _emmo_unit_iris(self) -> list:
-        """Return a list with the IRIs of all EMMO units."""
+        pf = "-prefixed" if include_prefixed else ""
+        cachefile = (
+            get_cachedir()
+            / f"units-{unit_ontology}-{ontology_version}{pf}.pickle"
+        )
+        if cache is True and cachefile.exists():
+            with open(cachefile, "rb") as f:
+                self.units = pickle.load(f)  # nosec
+        else:
+            self.units = self._parse_units(include_prefixed=include_prefixed)
+
+        if cache in (True, None):
+            with open(cachefile, "wb") as f:
+                pickle.dump(self.units, f)
+
+    def _emmo_unit_iris(self, include_prefixed: bool = False) -> list:
+        """Return a list with the IRIs of all EMMO units.
+
+        If `include_prefixed` is true, also return prefixed units.
+        """
+        prefixfilter = (
+            ""
+            if include_prefixed
+            else (
+                "FILTER NOT EXISTS "
+                f"{{ ?unit rdfs:subClassOf <{EMMO.PrefixedUnit}> . }}"
+            )
+        )
         query = f"""
         PREFIX rdfs: <{RDFS}>
         SELECT ?unit
@@ -160,30 +185,307 @@ class Units:
           ?unit rdfs:subClassOf+ ?dimunit .
           ?dimunit rdfs:subClassOf ?r .
           ?r owl:onProperty <{EMMO.hasDimensionString}> .
-          FILTER NOT EXISTS {{
-            ?unit rdfs:subClassOf <{EMMO.PrefixedUnit}> .
-          }}
+          {prefixfilter}
         }}
         """
-        return [iri for iri, in self.ts.query(query)]
+        # Bug in mupy... seems to be fixed in master
+        return [iri for iri, in self.ts.query(query)]  # type: ignore
 
-    def _get_unit_symbol(iri: str) -> str:
-    """Return the unit symbol for unit with the given IRI."""
-    symbol = self.ts.value(iri, self.ns.unitSymbol)
-    if symbol:
-        return str(symbol)
-    for r in self.ts.restrictions(iri, self.ns.unitSymbolValue, type="value"):
-        symbol = r["value"]
-        if symbol:
-            return str(symbol)
-    raise KBError("No symbol value is defined for unit:", iri)
+    def _get_unit_symbols(self, iri: str) -> list:
+        """Return a list with unit symbols for unit with the given IRI."""
+        symbols = []
+        for r in self.ts.restrictions(
+            iri, self.ns.unitSymbolValue, type="value"
+        ):
+            symbols.append(str(r["value"]))
 
+        for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None):
+            s = str(symbol)
+            symbols.append(f"1{s}" if s.startswith("/") else s)
 
-    def _parse_emmo_units(self) -> "Iterable[namedtuple]":
+        return symbols
+
+    def _get_dimension_string(self, iri: str) -> str:
+        """Return the dimension string for unit with the given IRI."""
+        query = f"""
+        PREFIX rdfs: <{RDFS}>
+        SELECT ?dimstr
+        WHERE {{
+          <{iri}> rdfs:subClassOf+ ?r .
+          ?r owl:onProperty <{EMMO.hasDimensionString}> .
+          ?r owl:hasValue ?dimstr .
+        }}
+        """
+        result = self.ts.query(query)
+        if result:
+            # Bug in mupy
+            return result[0][0]  # type: ignore
+        raise MissingDimensionStringError(iri)
+
+    def _parse_dimension_string(self, dimstr: str) -> "Any":
+        # TODO: replace return type with namedtuple when that is supported
+        # by mupy
+        """Parse dimension string and return it as a named tuple."""
+        m = re.match(
+            "^T([+-][1-9][0-9]*|0) L([+-][1-9][0-9]*|0) M([+-][1-9][0-9]*|0) "
+            "I([+-][1-9][0-9]*|0) [ΘϴH]([+-][1-9][0-9]*|0) "
+            "N([+-][1-9][0-9]*|0) J([+-][1-9][0-9]*|0)$",
+            dimstr,
+        )
+        if m:
+            return Dimension(*[int(d) for d in m.groups()])
+        raise InvalidDimensionStringError(dimstr)
+
+    def _get_coherent_unit(self, name: str) -> AttrDict:
+        """Return a dict for the SI-corerent version of unit with given name."""
+        unit = self.units[name]
+        if unit.unitSymbol:
+            return self.get_unit(iri=unit.unitSymbol)
+        if (unit.multiplier and unit.multiplier != 1.0) or unit.offset:
+            for u in self.units:
+                if (
+                    u.dimension == unit.dimension
+                    and u.multiplier in (None, 1.0)
+                    and u.offset in (None, 0.0)
+                ):
+                    return u
+            raise MissingUnitError(
+                "cannot find coherent unit corresponding to: {name}"
+            )
+        return unit
+
+    def _parse_units(self, include_prefixed=False) -> "dict[str, AttrDict]":
         """Parse EMMO units and return them as an iterator over named
-        tuples."""
-        for iri in self._emmo_unit_iris():
-            d = {
-                "symbol":
-                "emmo_iri": iri,
-            }
+        tuples.
+
+        Arguments:
+            include_prefixed: Whether to return prefixed units.
+        """
+        d = {}
+        for iri in self._emmo_unit_iris(include_prefixed=include_prefixed):
+            name = str(self.ts.value(iri, SKOS.prefLabel))
+            dimstr = str(self._get_dimension_string(iri))
+            dimension = self._parse_dimension_string(dimstr)
+            mult = list(
+                self.ts.restrictions(
+                    iri, property=EMMO.hasSIConversionMultiplier
+                )
+            )
+            offset = list(
+                self.ts.restrictions(iri, property=EMMO.hasSIConversionOffset)
+            )
+            unitSymbol = list(
+                self.ts.restrictions(iri, property=EMMO.hasUnitSymbol)
+            )
+            qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
+            omIRI = self.ts.value(iri, EMMO.omReference, any=True)
+
+            d[name] = AttrDict(
+                name=name,
+                aliases=[
+                    str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
+                ],
+                symbols=self._get_unit_symbols(iri),
+                dimension=dimension,
+                emmoIRI=iri,
+                qudtIRI=str(qudtIRI) if qudtIRI else None,
+                omIRI=str(omIRI) if omIRI else None,
+                ucumCodes=[
+                    str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
+                ],
+                unitCode=str(self.ts.value(iri, EMMO.uneceCommonCode)),
+                multiplier=float(mult[0]["value"]) if mult else None,
+                offset=float(offset[0]["value"]) if offset else None,
+                unitSymbol=(unitSymbol[0]["value"]) if unitSymbol else None,
+            )
+        return d
+
+    def get_unit(
+        self,
+        name: "Optional[str]" = None,
+        symbol: "Optional[str]" = None,
+        iri: "Optional[str]" = None,
+        unitCode: "Optional[str]" = None,
+    ) -> AttrDict:
+        """Find unit by one of the arguments and return a dict describing it.
+
+        Argument:
+            name: Search for unit by name. Ex: "Ampere"
+            symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
+            iri: Search for unit by IRI.
+            unitCode: Search for unit by UNECE common code. Ex: "MTS"
+
+        Returns:
+            A dict with attribute access describing the unit. The dict has
+            the following keys:
+
+              - name: Preferred label.
+              - aliases: List of alternative labels.
+              - symbols: List with unit symbols.
+              - dimension: Named tuple with quantity dimension.
+              - emmoIRI: IRI for the unit in the EMMO ontology.
+              - qudtIRI: IRI for the unit in the QUDT ontology.
+              - omIRI: IRI for the unit in the OM ontology.
+              - ucumCodes: List of UCUM codes for the unit.
+              - unitCode: UNECE common code for the unit.
+              - multiplier: Unit multiplier.
+              - offset: Unit offset.
+              - unitSymbol: The symbol part of a prefixed unit.
+        """
+        if name and name in self.units:
+            return self.units[name]
+
+        for unit in self.units.values():
+            if name and name in unit.aliases:
+                return unit
+            if symbol and (symbol in unit.symbols or symbol in unit.ucumCodes):
+                return unit
+            if iri and iri in (unit.emmoIRI, unit.qudtIRI, unit.omIRI):
+                return unit
+            if unitCode and unitCode == unit.unitCode:
+                return unit
+
+        # As a fallback, try case insensitive search for labels
+        if name:
+            lowername = name.lower()
+            for unit in self.units.values():
+                if lowername == unit.name.lower() or lowername in set(
+                    s.lower() for s in unit.aliases
+                ):
+                    return unit
+
+        msg = (
+            f"name={name}"
+            if name
+            else (
+                f"symbol={symbol}"
+                if symbol
+                else (
+                    f"iri={iri}"
+                    if iri
+                    else (
+                        f"unitCode={unitCode}"
+                        if unitCode
+                        else "missing search argument"
+                    )
+                )
+            )
+        )
+        raise MissingUnitError(msg)
+
+    def write_pint_units(self, filename: "Union[str, Path]") -> None:
+        """Write Pint units definition to `filename`."""
+        # pylint: disable=too-many-branches
+
+        # For now, include prefixes and base units...
+        content: list = [
+            "# Pint units definitions file",
+            (
+                "# Created with tripper.units from "
+                f"{self.unit_ontology}-{self.ontology_version}",
+            ),
+            "",
+            "# Decimal prefixes",
+            "quecto- = 1e-30 = q-",
+            "ronto- = 1e-27 = r-",
+            "yocto- = 1e-24 = y-",
+            "zepto- = 1e-21 = z-",
+            "atto- =  1e-18 = a-",
+            "femto- = 1e-15 = f-",
+            "pico- =  1e-12 = p-",
+            "nano- =  1e-9  = n-",
+            "micro- = 1e-6  = µ- = μ- = u-",
+            "milli- = 1e-3  = m-",
+            "centi- = 1e-2  = c-",
+            "deci- =  1e-1  = d-",
+            "deca- =  1e+1  = da- = deka-",
+            "hecto- = 1e2   = h-",
+            "kilo- =  1e3   = k-",
+            "mega- =  1e6   = M-",
+            "giga- =  1e9   = G-",
+            "tera- =  1e12  = T-",
+            "peta- =  1e15  = P-",
+            "exa- =   1e18  = E-",
+            "zetta- = 1e21  = Z-",
+            "yotta- = 1e24  = Y-",
+            "ronna- = 1e27  = R-",
+            "quetta- = 1e30 = Q-",
+            "",
+            "# Binary prefixes",
+            "kibi- = 2**10 = Ki-",
+            "mebi- = 2**20 = Mi-",
+            "gibi- = 2**30 = Gi-",
+            "tebi- = 2**40 = Ti-",
+            "pebi- = 2**50 = Pi-",
+            "exbi- = 2**60 = Ei-",
+            "zebi- = 2**70 = Zi-",
+            "yobi- = 2**80 = Yi-",
+            "",
+            "# Base units",
+            "Second = [time] = s = second",
+            "Metre = [length] = m = metre = meter",
+            # Note: gram is used instead of kilogram to get prefixes right...
+            "Gram = [mass] = g = gram",
+            "Ampere = [current] = A = ampere",
+            "Kelvin = [temperature]; offset: 0 = K = kelvin",
+            "Mole = [substance] = mole = mol",
+            "Candela = [luminosity] = cd = candela",
+            "",
+            "# Units",
+        ]
+
+        snake_pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
+        skipunits = {
+            "Second",
+            "Metre",
+            "Gram",
+            "Kilogram",
+            "Ampere",
+            "Kelvin",
+            "Mole",
+            "Candela",
+        }
+        for unit in self.units.values():
+            if unit.name in skipunits:
+                continue
+
+            baseexpr = base_unit_expression(unit.dimension)
+            mult = f"{unit.multiplier} * " if unit.multiplier != 1.0 else ""
+            if unit.multiplier or unit.offset:
+                if unit.multiplier and unit.offset:
+                    s = [
+                        f"{unit.name} = {mult}{baseexpr}; "
+                        f"offset: {unit.offset}"
+                    ]
+                elif unit.multiplier:
+                    s = [f"{unit.name} = {mult}{baseexpr}"]
+                elif unit.offset:
+                    s = [f"{unit.name} = {baseexpr}; offset: {unit.offset}"]
+                else:
+                    assert False, "should never happen"  # nosec
+            elif baseexpr == "1":
+                s = [f"{unit.name} = []"]
+            else:
+                s = [f"{unit.name} = {baseexpr}"]
+
+            # table = str.maketrans({x: None for x in " .⋅·/*{}"})
+            table = str.maketrans({x: None for x in " ./*{}"})
+            symbols = [s for s in unit.symbols if s.translate(table) == s]
+            if symbols:
+                s.extend(f" = {symbol}" for symbol in symbols)
+            else:
+                s.append(" = _")
+
+            snake = snake_pattern.sub("_", unit.name).lower()
+            if snake != unit.name:
+                s.append(f" = {snake}")
+
+            for alias in unit.aliases:
+                if " " not in alias:
+                    s.append(f" = {alias}")
+
+            content.append(" ".join(s))
+
+        with open(filename, "wt", encoding="utf-8") as f:
+            f.write("\n".join(content) + "\n")
