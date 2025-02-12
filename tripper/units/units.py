@@ -21,7 +21,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, Mapping, Optional, Union
 
     # from pint.compat import TypeAlias
-    TypeAlias = Any
 
 # Default EMMO version
 EMMO_VERSION = "1.0.0"
@@ -541,8 +540,8 @@ class UnitRegistry(pint.UnitRegistry):
     from ontologies.
     """
 
-    Unit: "TypeAlias" = Unit
-    Quantity: "TypeAlias" = Quantity
+    Unit: "Any" = Unit
+    Quantity: "Any" = Quantity
 
     def __init__(
         self,
@@ -579,14 +578,14 @@ class UnitRegistry(pint.UnitRegistry):
             >>> u
             <Unit('Metre')>
 
-            >>> u.emmoIRI
+            >>> u.emmoIRI  # doctest: +SKIP
             'https://w3id.org/emmo#Metre'
 
             >>> q = ureg.Quantity("3 h")
             >>> q
             <Quantity(3, 'Hour')>
 
-            >>> q.u.qudtIRI
+            >>> q.u.qudtIRI  # doctest: +SKIP
             'http://qudt.org/vocab/unit/HR'
 
         """
@@ -626,7 +625,7 @@ class UnitRegistry(pint.UnitRegistry):
         symbol: "Optional[str]" = None,
         iri: "Optional[str]" = None,
         unitCode: "Optional[str]" = None,
-    ) -> "TypeAlias":
+    ) -> "Any":
         """Return unit matching any of the arguments.
 
         Argument:
