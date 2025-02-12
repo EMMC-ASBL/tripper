@@ -1,5 +1,7 @@
 """Test the tripper.units module."""
 
+import sys
+
 import pytest
 
 pytest.importorskip("pint")
@@ -106,6 +108,7 @@ def test_units():
     assert unit.offset == 0.0
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="requires Python 3.9")
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
     from tripper.units import UnitRegistry

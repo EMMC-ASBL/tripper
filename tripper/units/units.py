@@ -11,11 +11,6 @@ from typing import TYPE_CHECKING
 
 import pint
 
-try:
-    from pint.compat import TypeAlias
-except ImportError:
-    from typing import Any as TypeAlias
-
 from tripper import EMMO, RDFS, SKOS, Namespace, Triplestore
 from tripper.errors import TripperError
 from tripper.namespace import get_cachedir
@@ -24,6 +19,11 @@ from tripper.utils import AttrDict
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
     from typing import Any, Iterable, Mapping, Optional, Union
+
+    try:
+        from pint.compat import TypeAlias
+    except ImportError:
+        TypeAlias = Any
 
 # Default EMMO version
 EMMO_VERSION = "1.0.0"
@@ -543,8 +543,8 @@ class UnitRegistry(pint.UnitRegistry):
     from ontologies.
     """
 
-    Unit: TypeAlias = Unit
-    Quantity: TypeAlias = Quantity
+    Unit: "TypeAlias" = Unit
+    Quantity: "TypeAlias" = Quantity
 
     def __init__(
         self,
@@ -628,7 +628,7 @@ class UnitRegistry(pint.UnitRegistry):
         symbol: "Optional[str]" = None,
         iri: "Optional[str]" = None,
         unitCode: "Optional[str]" = None,
-    ) -> Unit:
+    ) -> "TypeAlias":
         """Return unit matching any of the arguments.
 
         Argument:
