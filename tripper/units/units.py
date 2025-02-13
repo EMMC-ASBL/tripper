@@ -3,6 +3,8 @@
 Pint is used for programatic unit conversions.
 """
 
+# pylint: disable=too-few-public-methods
+
 import pickle  # nosec
 import re
 import warnings
@@ -553,6 +555,8 @@ class UnitRegistry(pint.UnitRegistry):
         cache: "Optional[bool]" = True,
         **kwargs: "Any",
     ) -> None:
+        # FIXME: Remove doctest SKIP comments when support for
+        # Python 3.8 is dropped
         """Initialise a Units class from triplestore `ts`
 
         Arguments:
