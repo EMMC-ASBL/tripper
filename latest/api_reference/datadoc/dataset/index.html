@@ -3234,11 +3234,11 @@ expressions used for the matching.</p></td>
   </tbody>
 </table>
 <p><strong>Examples:</strong></p>
-    <p>List all dataset IRIs:</p>
+    <p>List all data resources IRIs:</p>
 <div class="highlight"><pre><span></span><code>search_iris(ts)
 </code></pre></div>
-<p>List IRIs of all datasets with John Doe as <code>contactPoint</code>:</p>
-<div class="highlight"><pre><span></span><code>search_iris(ts, contactPoint=&quot;John Doe&quot;)
+<p>List IRIs of all resources with John Doe as <code>contactPoint</code>:</p>
+<div class="highlight"><pre><span></span><code>search_iris(ts, criteria={&quot;contactPoint&quot;: &quot;John Doe&quot;})
 </code></pre></div>
 <p>List IRIs of all samples:</p>
 <div class="highlight"><pre><span></span><code>search_iris(ts, type=CHAMEO.Sample)
@@ -3246,12 +3246,18 @@ expressions used for the matching.</p></td>
 <p>List IRIs of all datasets with John Doe as <code>contactPoint</code> AND are
 measured on a given sample:</p>
 <div class="highlight"><pre><span></span><code>search_iris(
-    ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3
+    ts,
+    type=DCAT.Dataset,
+    criteria={
+        &quot;contactPoint&quot;: &quot;John Doe&quot;,
+        &quot;fromSample&quot;: SAMPLE.batch2/sample3,
+    },
 )
 </code></pre></div>
-<p>List IRIs of all datasets who's title matches a given regular expression:</p>
+<p>List IRIs of all datasets who's title matches the regular expression
+"[Mm]agnesium":</p>
 <div class="highlight"><pre><span></span><code>search_iris(
-    ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3
+    ts, type=DCAT.Dataset, regex={&quot;title&quot;: &quot;[Mm]agnesium&quot;},
 )
 </code></pre></div>
       <p>SeeAlso:</p>
@@ -3283,13 +3289,13 @@ measured on a given sample:</p>
 <span class="sd">        List of IRIs for matching resources.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        List all dataset IRIs:</span>
+<span class="sd">        List all data resources IRIs:</span>
 
 <span class="sd">            search_iris(ts)</span>
 
-<span class="sd">        List IRIs of all datasets with John Doe as `contactPoint`:</span>
+<span class="sd">        List IRIs of all resources with John Doe as `contactPoint`:</span>
 
-<span class="sd">            search_iris(ts, contactPoint=&quot;John Doe&quot;)</span>
+<span class="sd">            search_iris(ts, criteria={&quot;contactPoint&quot;: &quot;John Doe&quot;})</span>
 
 <span class="sd">        List IRIs of all samples:</span>
 
@@ -3299,13 +3305,19 @@ measured on a given sample:</p>
 <span class="sd">        measured on a given sample:</span>
 
 <span class="sd">            search_iris(</span>
-<span class="sd">                ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3</span>
+<span class="sd">                ts,</span>
+<span class="sd">                type=DCAT.Dataset,</span>
+<span class="sd">                criteria={</span>
+<span class="sd">                    &quot;contactPoint&quot;: &quot;John Doe&quot;,</span>
+<span class="sd">                    &quot;fromSample&quot;: SAMPLE.batch2/sample3,</span>
+<span class="sd">                },</span>
 <span class="sd">            )</span>
 
-<span class="sd">        List IRIs of all datasets who&#39;s title matches a given regular expression:</span>
+<span class="sd">        List IRIs of all datasets who&#39;s title matches the regular expression</span>
+<span class="sd">        &quot;[Mm]agnesium&quot;:</span>
 
 <span class="sd">            search_iris(</span>
-<span class="sd">                ts, contactPoint=&quot;John Doe&quot;, fromSample=SAMPLE.batch2/sample3</span>
+<span class="sd">                ts, type=DCAT.Dataset, regex={&quot;title&quot;: &quot;[Mm]agnesium&quot;},</span>
 <span class="sd">            )</span>
 
 <span class="sd">    SeeAlso:</span>
