@@ -143,7 +143,7 @@ Lets do a small calculation:
 
 Tips & tricks
 -------------
-Tripper caches the ontology and [PINT] units definition file for performance reasons.
+Tripper caches the ontology and [Pint] units definition file for performance reasons.
 If the ontology has been updated, you may need to clear the cache.
 That can either be done manually or by calling the `ureg.clear_cache()` method.
 
