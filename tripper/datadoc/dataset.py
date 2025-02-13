@@ -895,13 +895,13 @@ def search_iris(
         List of IRIs for matching resources.
 
     Examples:
-        List all dataset IRIs:
+        List all data resources IRIs:
 
             search_iris(ts)
 
-        List IRIs of all datasets with John Doe as `contactPoint`:
+        List IRIs of all resources with John Doe as `contactPoint`:
 
-            search_iris(ts, contactPoint="John Doe")
+            search_iris(ts, criteria={"contactPoint": "John Doe"})
 
         List IRIs of all samples:
 
@@ -911,13 +911,19 @@ def search_iris(
         measured on a given sample:
 
             search_iris(
-                ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
+                ts,
+                type=DCAT.Dataset,
+                criteria={
+                    "contactPoint": "John Doe",
+                    "fromSample": SAMPLE.batch2/sample3,
+                },
             )
 
-        List IRIs of all datasets who's title matches a given regular expression:
+        List IRIs of all datasets who's title matches the regular expression
+        "[Mm]agnesium":
 
             search_iris(
-                ts, contactPoint="John Doe", fromSample=SAMPLE.batch2/sample3
+                ts, type=DCAT.Dataset, regex={"title": "[Mm]agnesium"},
             )
 
     SeeAlso:
