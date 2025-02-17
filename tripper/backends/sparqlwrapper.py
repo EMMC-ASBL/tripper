@@ -1,5 +1,6 @@
 """Backend for SPARQLWrapper"""
 
+import re
 from typing import TYPE_CHECKING
 
 from tripper import Literal
@@ -80,18 +81,50 @@ class SparqlwrapperStrategy:
         Returns:
             The return type depends on type of query:
               - SELECT: list of tuples of IRIs for each matching row
+              - CONSTRUCT: generator over triples
               - ASK: TODO
-              - CONSTRUCT, DESCRIBE: TODO
+              - DESCRIBE: TODO
         """
-        self.sparql.setReturnFormat(JSON)
-        self.sparql.setMethod(POST)
-        self.sparql.setQuery(query_object)
-        ret = self.sparql.queryAndConvert()
-        bindings = ret["results"]["bindings"]
-        return [
-            tuple(str(convert_json_entrydict(v)) for v in row.values())
-            for row in bindings
-        ]
+        query_type = self._get_sparql_query_type(query_object)
+        if query_type == "SELECT":
+            self.sparql.setReturnFormat(JSON)
+            self.sparql.setMethod(POST)
+            self.sparql.setQuery(query_object)
+            ret = self.sparql.queryAndConvert()
+            bindings = ret["results"]["bindings"]
+            return [
+                tuple(str(convert_json_entrydict(v)) for v in row.values())
+                for row in bindings
+            ]
+        if query_type == "CONSTRUCT":
+            self.sparql.setReturnFormat(RDFXML)
+            self.sparql.setMethod(POST)
+            self.sparql.setQuery(query_object)
+            graph = self.sparql.queryAndConvert()
+            return ((str(s), str(p), str(o)) for s, p, o in graph)
+
+        raise NotImplementedError(
+            f"Query type '{query_type}' not implemented."
+        )
+
+    def _get_sparql_query_type(self, query: str) -> str:
+        """
+        Returns the SPARQL query type (e.g., SELECT, ASK, CONSTRUCT, DESCRIBE)
+        by finding the first word of a sentence that matches one of these
+        keywords.
+        If none is found, it returns 'UNKNOWN'.
+        """
+        # A regex that looks for a sentence start:
+        # either the beginning of the string or following a newline
+        # or a period. It then matches one of the keywords.
+        pattern = re.compile(
+            r"(?:(?<=^)|(?<=[\.\n]))\s*(ASK|CONSTRUCT|SELECT|DESCRIBE)\b",
+            re.IGNORECASE,
+        )
+        match = pattern.search(query)
+        if match:
+            return match.group(1).upper()
+        return "UNKNOWN"
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
@@ -152,6 +185,7 @@ class SparqlwrapperStrategy:
             for triple in triples
         )
         query = f"INSERT DATA {{\n{spec}\n}}"
+
         self.sparql.setReturnFormat(RDFXML)
         self.sparql.setMethod(POST)
         self.sparql.setQuery(query)

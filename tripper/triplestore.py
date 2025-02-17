@@ -881,7 +881,6 @@ class Triplestore:
                     Literal(cardinality, datatype=XSD.nonNegativeInteger),
                 ),
             )
-
         self.add_triples(triples)
         return iri
 
