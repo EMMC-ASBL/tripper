@@ -42,5 +42,4 @@ WHERE
             pytest.skip(str(exc))
         else:
             raise
-    print("did not skip")
     assert res == [("http://www.wikidata.org/entity/Q20", "Norway")]
