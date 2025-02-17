@@ -25,17 +25,13 @@ def graphdb_available():
         try:
             response = requests.get(GRAPHDB_CHECK_URL, timeout=timeout)
             if response.status_code == 200:
-                break  # GraphDB is up!
+                return True
         except requests.exceptions.RequestException:
             pass
 
         if time.time() - start_time > timeout:
-            pytest.skip(
-                "GraphDB instance not available locally; skipping tests."
-            )
+            return False
         time.sleep(interval)
-    # If we get here, GraphDB is up.
-    yield
 
 
 def test_graphdb():
