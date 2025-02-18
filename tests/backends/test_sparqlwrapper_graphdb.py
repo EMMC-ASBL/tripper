@@ -68,7 +68,7 @@ def test_graphdb():
             (
                 "http://www.example.org/subject",
                 "http://www.example.org/predicate",
-                Literal("b"),
+                Literal(1.0),
             ),
         ]
     )
@@ -84,7 +84,7 @@ def test_graphdb():
     assert set(
         [
             ("http://www.example.org/predicate", "a"),
-            ("http://www.example.org/predicate", "b"),
+            ("http://www.example.org/predicate", "1.0"),
         ]
     ) == set(result)
 
