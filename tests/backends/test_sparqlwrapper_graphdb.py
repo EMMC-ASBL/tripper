@@ -36,8 +36,7 @@ def graphdb_available():
 
 def test_graphdb():
     """
-    Fixture that creates a Triplestore instance.
-    This will only be used if the GraphDB instance is available.
+    Test the sparqlwrapper backend using GraphDB. 
     """
     # Check if GraphDB is available and write a warning if it is not.
     if not graphdb_available():
