@@ -75,18 +75,16 @@ def test_graphdb():
 
     # Test SELECT query
     query_object = (
-        "SELECT ?s ?p ?o WHERE { <http://www.example.org/subject> ?p ?o }"
+        "SELECT ?p ?o WHERE { <http://www.example.org/subject> ?p ?o }"
     )
 
     # Run the query using your triplestore instance.
     result = ts.query(query_object)
 
-    assert set(
-        [
-            ("http://www.example.org/predicate", "a"),
-            ("http://www.example.org/predicate", "1.0"),
-        ]
-    ) == set(result)
+    assert set(result) == {
+        ("http://www.example.org/predicate", Literal("a")),
+        ("http://www.example.org/predicate", Literal(1.0)),
+    }
 
     # Test CONSTRUCT query
     # NB adding the PREFIX just to show that it works.
@@ -100,12 +98,17 @@ WHERE {
 """
 
     # Run the query.
-    result_generator = ts.query(query)
+    results = set(ts.query(query))
     assert (
         "http://www.example.org/subject",
         "http://www.example.org/predicate",
-        "a",
-    ) in result_generator
+        Literal("a"),
+    ) in results
+    assert (
+        "http://www.example.org/subject",
+        "http://www.example.org/predicate",
+        Literal(1.0),
+    ) in results
 
     # Test ASK query
     query = """

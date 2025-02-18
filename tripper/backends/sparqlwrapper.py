@@ -4,6 +4,7 @@ import re
 from typing import TYPE_CHECKING
 
 from tripper import Literal
+from tripper.backends.rdflib import _convert_triples_to_tripper
 from tripper.utils import TripperException
 
 try:
@@ -93,7 +94,7 @@ class SparqlwrapperStrategy:
             ret = self.sparql.queryAndConvert()
             bindings = ret["results"]["bindings"]
             return [
-                tuple(str(convert_json_entrydict(v)) for v in row.values())
+                tuple(convert_json_entrydict(v) for v in row.values())
                 for row in bindings
             ]
         if query_type == "CONSTRUCT":
@@ -101,7 +102,7 @@ class SparqlwrapperStrategy:
             self.sparql.setMethod(POST)
             self.sparql.setQuery(query_object)
             graph = self.sparql.queryAndConvert()
-            return ((str(s), str(p), str(o)) for s, p, o in graph)
+            return _convert_triples_to_tripper(graph)
 
         raise NotImplementedError(
             f"Query type '{query_type}' not implemented."
@@ -224,19 +225,17 @@ class SparqlwrapperStrategy:
             )
 
 
-def convert_json_entrydict(entrydict: "Dict[str, str]") -> str:
+def convert_json_entrydict(entrydict: dict) -> str:
     """Convert SPARQLWrapper json entry dict (representing a single IRI or
     literal) to a tripper type."""
     if entrydict["type"] == "uri":
         return entrydict["value"]
-
     if entrydict["type"] == "literal":
         return Literal(
             entrydict["value"],
             lang=entrydict.get("xml:lang"),
             datatype=entrydict.get("datatype"),
         )
-
     if entrydict["type"] == "bnode":
         return (
             entrydict["value"]
