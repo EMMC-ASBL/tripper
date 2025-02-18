@@ -24,8 +24,8 @@ curl -X POST \
      http://localhost:7200/rest/repositories
 ```
 
-Then go to `http://localhost:7200/` in your browser.
-You can add a new repository by pressing `create new reposotory`in the bottom right corner. Choose `GraphDB Reposotory` choos `test_repo` a id.
+Then go to  [http://localhost:7200/](http://localhost:7200/) in your browser.
+You can add a new repository by pressing `create new reposotory` in the bottom right corner. Choose `GraphDB Reposotory` choos `test_repo` a id.
 Tick off `Enable full-text search` and leave the rest as predefined.
 
 You can now run the test.
