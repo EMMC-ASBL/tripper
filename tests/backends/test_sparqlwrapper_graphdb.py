@@ -1,7 +1,7 @@
 """
 Test the sparqlwrapper backend with GraphDB.
 Note that this requires to have a running graphDB instance set up
-as described in the for_developers documentation.
+as described in the for_developers documentation on https://emmc-asbl.github.io/tripper/latest/developers/.
 """
 
 import time
