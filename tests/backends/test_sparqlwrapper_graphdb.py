@@ -43,9 +43,13 @@ def test_graphdb():
     if not graphdb_available():
         pytest.skip("GraphDB instance not available locally; skipping tests.")
 
-    from tripper import Literal, Triplestore
+    from pathlib import Path
 
-    # from tripper.datadoc import load_dict, save_datadoc, search_iris
+    from tripper import Literal, Triplestore
+    from tripper.datadoc import load_dict, save_datadoc, search_iris
+
+    thisdir = Path(__file__).resolve().parent
+    datasetinput = thisdir / "datadocumentation_sample.yaml"
 
     ts = Triplestore(
         backend="sparqlwrapper",
@@ -117,3 +121,18 @@ ASK {
     # Check that it raises NotImplementedError
     with pytest.raises(NotImplementedError):
         ts.query(query)
+
+    # save a dataset to the graphDB
+    save_datadoc(ts, datasetinput)
+
+    # search for datasets in the graphDB
+    datasets = search_iris(ts, type="dataset")
+
+    assert datasets == ["https://onto-ns.com/datasets/our_nice_dataset"]
+
+    retreived_info = load_dict(ts, datasets[0])
+    assert retreived_info.creator == "Tripper-team"
+    assert (
+        retreived_info.title
+        == "This is a title of a completely invented dataset"
+    )
