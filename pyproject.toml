@@ -131,3 +131,6 @@ filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
 ]
+
+[tool.setuptools.package-data]
+"tripper.context" = ["*.json", "*.yaml"]
