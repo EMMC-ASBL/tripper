@@ -36,7 +36,7 @@ def graphdb_available():
 
 def test_graphdb():
     """
-    Test the sparqlwrapper backend using GraphDB. 
+    Test the sparqlwrapper backend using GraphDB.
     """
     # Check if GraphDB is available and write a warning if it is not.
     if not graphdb_available():
