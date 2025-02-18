@@ -16,14 +16,6 @@ docker pull ontotext/graphdb:10.8.3 # latest tag 17.02.2025
 docker run -d -p 7200:7200 --name graphdb ontotext/graphdb:10.8.3
 ```
 
-To create a repository in the graphdb isntance:
-```bash
-curl -X POST \
-     -H "Content-Type: application/rdf+xml" \
-     --data-binary @tests/backends/graphdb_config.xml \
-     http://localhost:7200/rest/repositories
-```
-
 Then go to  [http://localhost:7200/](http://localhost:7200/) in your browser.
 You can add a new repository by pressing `create new reposotory` in the bottom right corner. Choose `GraphDB Reposotory` choos `test_repo` a id.
 Tick off `Enable full-text search` and leave the rest as predefined.
