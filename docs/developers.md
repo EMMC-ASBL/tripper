@@ -18,8 +18,12 @@ docker run -d -p 7200:7200 --name graphdb ontotext/graphdb:10.8.3
 
 Then go to [http://localhost:7200/](http://localhost:7200/) in your browser.
 You can add a new repository by pressing `create new reposotory` in the bottom right corner.
-Choose `GraphDB Reposotory` and write `test_repo` as repository ID.
+Choose `GraphDB Reposotory` and write "test_repo" as repository ID.
 Tick off `Enable full-text search` and leave the rest as predefined.
+Click `Create`.
+
+Go to `Setup` and select `Repositories`.
+Activating "test_repo" by clicking the pin icon (Set as default repository) and then the restart icon (Restart repository test_repo).
 
 You can now run the test.
 
