@@ -15,7 +15,7 @@ GRAPHDB_CHECK_URL = "http://localhost:7200/repositories"
 
 def graphdb_available():
     """
-    Fixture that checks if the GraphDB instance is available.
+    Help function that checks if the GraphDB instance is available.
     If it is not, the tests that depend on it will be skipped.
     """
     timeout = 10  # seconds
