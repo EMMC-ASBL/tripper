@@ -31,6 +31,8 @@ Functions for interaction with OTEAPI:
 
 """
 
+from __future__ import annotations
+
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 import io
 import json
@@ -46,7 +48,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
     from tripper.utils import Triple
-
 
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
@@ -283,21 +284,20 @@ def _load_triples(ts: Triplestore, iri: str) -> dict:
 def _load_sparql(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.query()`."""
     # The match-all pattern `(:|!:)*` in the query string below
-    # ensures that the returned triples includes nested structures,
+    # ensures that the returned triples include nested structures,
     # like distributions in a dataset. However, it does not include
     # references to named resources, like parsers and generators.
     # This choice was made because it limits the number of returned triples.
     # The `recur()` function will load such named resources recursively.
     #
     # Note that this implementation completely avoids querying for
-    # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{iri}>"
     query = f"""
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
-      {subj} (:|!:)* ?o .
+      {subj} (:|!:)* ?s .
       ?s ?p ?o .
     }}
     """
@@ -750,7 +750,7 @@ def as_jsonld(
     return d
 
 
-def get_partial_pipeline(
+def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
     ts: Triplestore,
     client,
     iri: str,
