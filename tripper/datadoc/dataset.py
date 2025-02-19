@@ -269,12 +269,13 @@ def load_dict(
 
 def _load_triples(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.triples()`."""
+    expanded_iri = ts.expand_iri(iri)
     shortnames = get_shortnames()
     dct: dict = {}
-    for p, o in ts.predicate_objects(ts.expand_iri(iri)):
+    for p, o in ts.predicate_objects(expanded_iri):
         add(dct, shortnames.get(p, p), as_python(o))
     if dct:
-        d = {"@id": iri}
+        d = {"@id": expanded_iri}
         d.update(dct)
         return d
     return dct
