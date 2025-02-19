@@ -1,4 +1,4 @@
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long, too-many-lines
 """Module for documenting datasets with Tripper.
 
 The dataset documentation follows the [DCAT] structure and is exposed
