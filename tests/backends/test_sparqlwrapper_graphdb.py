@@ -50,6 +50,7 @@ def test_graphdb():
 
     thisdir = Path(__file__).resolve().parent
     datasetinput = thisdir / "datadocumentation_sample.yaml"
+    datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
 
     ts = Triplestore(
         backend="sparqlwrapper",
@@ -127,13 +128,20 @@ ASK {
 
     # save a dataset to the graphDB
     save_datadoc(ts, datasetinput)
+    save_datadoc(ts, datasetinput2)
 
     # search for datasets in the graphDB
     datasets = search_iris(ts, type="dataset")
 
-    assert datasets == ["https://onto-ns.com/datasets/our_nice_dataset"]
+    assert set(datasets) == set(
+        [
+            "https://onto-ns.com/datasets/our_nice_dataset",
+            "https://onto-ns.com/datasets/our_nice_dataset2",
+        ]
+    )
 
     retreived_info = load_dict(ts, datasets[0])
+    print(retreived_info)
     assert retreived_info.creator == "Tripper-team"
     assert (
         retreived_info.title
