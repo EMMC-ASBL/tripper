@@ -1543,7 +1543,7 @@ SparqlwrapperStrategy        </code>
             <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
             <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
             <span class="k">return</span> <span class="p">[</span>
-                <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
             <span class="p">]</span>
         <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
@@ -1551,7 +1551,7 @@ SparqlwrapperStrategy        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
             <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-            <span class="k">return</span> <span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
@@ -1845,7 +1845,7 @@ SparqlwrapperStrategy        </code>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
         <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
         <span class="p">]</span>
     <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
@@ -1853,7 +1853,7 @@ SparqlwrapperStrategy        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
@@ -2001,19 +2001,17 @@ literal) to a tripper type.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_json_entrydict</span><span class="p">(</span><span class="n">entrydict</span><span class="p">:</span> <span class="s2">&quot;Dict[str, str]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_json_entrydict</span><span class="p">(</span><span class="n">entrydict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert SPARQLWrapper json entry dict (representing a single IRI or</span>
 <span class="sd">    literal) to a tripper type.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;uri&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-
     <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;literal&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span>
             <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span>
             <span class="n">lang</span><span class="o">=</span><span class="n">entrydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xml:lang&quot;</span><span class="p">),</span>
             <span class="n">datatype</span><span class="o">=</span><span class="n">entrydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datatype&quot;</span><span class="p">),</span>
         <span class="p">)</span>
-
     <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bnode&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
