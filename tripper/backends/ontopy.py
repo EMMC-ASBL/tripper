@@ -138,7 +138,7 @@ class OntopyStrategy:
                 self.onto._del_obj_triple_spo(s, p, o)
 
     # Optional methods
-    def parse(
+    def parse(  # pylint: disable=too-many-positional-arguments
         self,
         source=None,
         location=None,
