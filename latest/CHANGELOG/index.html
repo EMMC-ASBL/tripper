@@ -1703,11 +1703,13 @@
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.4.0...Unreleased changes">Full Changelog</a></p>
 <p><strong>Closed issues:</strong></p>
 <ul>
+<li>The CONSTRUCT sparql query in _load_sparql used in load_dict returns all datasets <a href="https://github.com/EMMC-ASBL/tripper/issues/336">#336</a></li>
 <li>datadoc.dataset._load_sparql uses a CONSTRUCT query, which is not implemented in the SPARQLWrapper <a href="https://github.com/EMMC-ASBL/tripper/issues/330">#330</a></li>
 <li>It is not possible to search for Literals in the graphdb backend <a href="https://github.com/EMMC-ASBL/tripper/issues/320">#320</a></li>
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>Fixed CONSTRUCT to return s and not o <a href="https://github.com/EMMC-ASBL/tripper/pull/338">#338</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
 <li>Corrected literals in SELECT and CONSTRUCT queries in the sparqlwrapper backend <a href="https://github.com/EMMC-ASBL/tripper/pull/335">#335</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/332">#332</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
 <li>Added CONSTRUCT query to sparqlwrapper,  <a href="https://github.com/EMMC-ASBL/tripper/pull/331">#331</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>

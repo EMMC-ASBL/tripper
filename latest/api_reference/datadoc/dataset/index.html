@@ -1833,7 +1833,7 @@ Returns the updated <code>d</code>.</p>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>Optional[str]</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Type of data to document.  Should either be one of the
 pre-defined names: "dataset", "distribution", "accessService",
 "parser" and "generator" or an IRI to a class in an ontology.
@@ -1842,7 +1842,7 @@ Defaults to "dataset".</p></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
-        <td><code>Optional[dict]</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
         <td><p>Dict with prefixes in addition to those included in the
 JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
@@ -2094,7 +2094,7 @@ common vocabularies and ontologies.</p>
   <tbody>
       <tr>
         <td><code>context</code></td>
-        <td><code>Optional[Union[str, dict, Sequence[Union[str, dict]]]]</code></td>
+        <td><code>&#39;Optional[Union[str, dict, Sequence[Union[str, dict]]]]&#39;</code></td>
         <td><p>Additional user-defined context that should be returned
 on top of the default context.  It may be a string with an URL
 to the user-defined context, a dict with the user-defined context
@@ -2217,7 +2217,7 @@ or a sequence of strings and dicts.</p></td>
       </tr>
       <tr>
         <td><code>parser</code></td>
-        <td><code>Optional[Union[bool, str]]</code></td>
+        <td><code>&#39;Optional[Union[bool, str]]&#39;</code></td>
         <td><p>Whether to return a datasource partial pipeline.
 Should be True or an IRI of parser to use in case the
 distribution has multiple parsers.  By default the first
@@ -2226,7 +2226,7 @@ parser will be selected.</p></td>
       </tr>
       <tr>
         <td><code>generator</code></td>
-        <td><code>Optional[Union[bool, str]]</code></td>
+        <td><code>&#39;Optional[Union[bool, str]]&#39;</code></td>
         <td><p>Whether to return a datasink partial pipeline.
 Should be True or an IRI of generator to use in case the
 distribution has multiple generators.  By default the first
@@ -2235,7 +2235,7 @@ generator will be selected.</p></td>
       </tr>
       <tr>
         <td><code>distribution</code></td>
-        <td><code>Optional[str]</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>IRI of distribution to use in case the dataset
 dataset has multiple distributions.  By default any of
 the distributions will be picked.</p></td>
@@ -2243,7 +2243,7 @@ the distributions will be picked.</p></td>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>Optional[bool]</code></td>
+        <td><code>&#39;Optional[bool]&#39;</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -2581,7 +2581,7 @@ nested manner.</p>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>Optional[bool]</code></td>
+        <td><code>&#39;Optional[bool]&#39;</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -2797,7 +2797,7 @@ can be serialised to RDF.</p>
       </tr>
       <tr>
         <td><code>file_or_dict</code></td>
-        <td><code>Union[str, Path, dict]</code></td>
+        <td><code>&#39;Union[str, Path, dict]&#39;</code></td>
         <td><p>Data documentation dict or name of a YAML file to read
 the data documentation from.  It may also be an URL to a file
 accessible with HTTP GET.</p></td>
@@ -2913,7 +2913,7 @@ accessible with HTTP GET.</p></td>
       </tr>
       <tr>
         <td><code>type</code></td>
-        <td><code>Optional[str]</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Type of data to save.  Should either be one of the
 pre-defined names: "dataset", "distribution", "accessService",
 "parser" and "generator" or an IRI to a class in an ontology.
@@ -2922,7 +2922,7 @@ Defaults to "dataset".</p></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
-        <td><code>Optional[dict]</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
         <td><p>Dict with prefixes in addition to those included in the
 JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
@@ -3201,7 +3201,7 @@ or the IRI of a class to limit the search to.</p></td>
       </tr>
       <tr>
         <td><code>criterias</code></td>
-        <td><code>Optional[dict]</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
         <td><p>Exact match criterias. A dict of IRI, value pairs, where the
 IRIs refer to data properties on the resource match. The IRIs
 may use any prefix defined in <code>ts</code>. E.g. if the prefix <code>dcterms</code>
@@ -3211,7 +3211,7 @@ is correctly parsed.</p></td>
       </tr>
       <tr>
         <td><code>regex</code></td>
-        <td><code>Optional[dict]</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
         <td><p>Like <code>criterias</code> but the values in the provided dict are regular
 expressions used for the matching.</p></td>
         <td><code>None</code></td>
@@ -3228,7 +3228,7 @@ expressions used for the matching.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>List[str]</code></td>
+      <td><code>&#39;List[str]&#39;</code></td>
       <td><p>List of IRIs for matching resources.</p></td>
     </tr>
   </tbody>
