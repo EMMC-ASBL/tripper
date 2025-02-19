@@ -1531,18 +1531,50 @@ SparqlwrapperStrategy        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            The return type depends on type of query:</span>
 <span class="sd">              - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">              - CONSTRUCT: generator over triples</span>
 <span class="sd">              - ASK: TODO</span>
-<span class="sd">              - CONSTRUCT, DESCRIBE: TODO</span>
+<span class="sd">              - DESCRIBE: TODO</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-        <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
-        <span class="p">]</span>
+        <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sparql_query_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the SPARQL query type (e.g., SELECT, ASK, CONSTRUCT, DESCRIBE)</span>
+<span class="sd">        by finding the first word of a sentence that matches one of these</span>
+<span class="sd">        keywords.</span>
+<span class="sd">        If none is found, it returns &#39;UNKNOWN&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># A regex that looks for a sentence start:</span>
+        <span class="c1"># either the beginning of the string or following a newline</span>
+        <span class="c1"># or a period. It then matches one of the keywords.</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;(?:(?&lt;=^)|(?&lt;=[\.\n]))\s*(ASK|CONSTRUCT|SELECT|DESCRIBE)\b&quot;</span><span class="p">,</span>
+            <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;UNKNOWN&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
@@ -1603,6 +1635,7 @@ SparqlwrapperStrategy        </code>
             <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span>
         <span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -1714,6 +1747,7 @@ SparqlwrapperStrategy        </code>
         <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span>
     <span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">&quot;</span>
+
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
@@ -1778,8 +1812,9 @@ SparqlwrapperStrategy        </code>
       <td><code>The return type depends on type of query</code></td>
       <td><ul>
 <li>SELECT: list of tuples of IRIs for each matching row</li>
+<li>CONSTRUCT: generator over triples</li>
 <li>ASK: TODO</li>
-<li>CONSTRUCT, DESCRIBE: TODO</li>
+<li>DESCRIBE: TODO</li>
 </ul></td>
     </tr>
   </tbody>
@@ -1798,18 +1833,31 @@ SparqlwrapperStrategy        </code>
 <span class="sd">    Returns:</span>
 <span class="sd">        The return type depends on type of query:</span>
 <span class="sd">          - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">          - CONSTRUCT: generator over triples</span>
 <span class="sd">          - ASK: TODO</span>
-<span class="sd">          - CONSTRUCT, DESCRIBE: TODO</span>
+<span class="sd">          - DESCRIBE: TODO</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-    <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
-    <span class="p">]</span>
+    <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
+        <span class="p">]</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
