@@ -40,7 +40,8 @@ WHERE
     except urllib.error.HTTPError as exc:
         if "HTTP Error 403: Forbidden" in str(exc):
             pytest.skip(str(exc))
+        elif "Too Many Requests" in str(exc):
+            pytest.skip(str(exc))
         else:
             raise
-
     assert res == [("http://www.wikidata.org/entity/Q20", "Norway")]
