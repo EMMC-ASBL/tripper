@@ -12,6 +12,8 @@ Note:
     package.
 
 """
+from __future__ import annotations
+
 import secrets  # From Python 3.9 we could use random.randbytes(16).hex()
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
@@ -24,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
 
-def save(
+def save(  # pylint: disable=too-many-positional-arguments
     ts: Triplestore,
     data: bytes,
     class_iri: "Optional[str]" = None,

@@ -71,7 +71,7 @@ class RdflibStrategy:
 
     prefer_sparql = False
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-positional-arguments
         self,
         base_iri: "Optional[str]" = None,  # pylint: disable=unused-argument
         database: "Optional[str]" = None,

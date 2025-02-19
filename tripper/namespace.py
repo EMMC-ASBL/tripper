@@ -56,7 +56,7 @@ class Namespace:
         "_format",  # Format to use when loading from a triplestore
     )
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-positional-arguments
         self,
         iri: str,
         label_annotations: "Union[Sequence, bool]" = (),
