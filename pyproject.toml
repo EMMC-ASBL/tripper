@@ -45,11 +45,11 @@ datadoc = [
 ]
 pre-commit = [
     "pre-commit==4.0.1",
-    "pylint==2.15.5",
+    "pylint==3.3.4",
 ]
 testing-core = [
-    "pytest==7.4.4",
-    "pytest-cov==4.1.0",
+    "pytest==8.3.4",
+    "pytest-cov==6.0.0",
 ]
 testing = [
     "tripper[testing-core,mappings,datadoc]",
