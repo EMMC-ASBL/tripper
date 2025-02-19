@@ -133,12 +133,10 @@ ASK {
     # search for datasets in the graphDB
     datasets = search_iris(ts, type="dataset")
 
-    assert set(datasets) == set(
-        [
-            "https://onto-ns.com/datasets#our_nice_dataset",
-            "https://onto-ns.com/datasets#our_nice_dataset2",
-        ]
-    )
+    assert set(datasets) == {
+        "https://onto-ns.com/datasets#our_nice_dataset",
+        "https://onto-ns.com/datasets#our_nice_dataset2",
+    }
 
     retreived_info = load_dict(ts, datasets[0])
     assert retreived_info.creator == "Tripper-team"
