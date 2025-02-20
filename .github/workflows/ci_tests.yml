@@ -19,7 +19,7 @@ jobs:
       run_pre-commit: false
 
       ## pylint & safety
-      python_version_pylint_safety: "3.9"
+      python_version_pylint_safety: "3.11"
 
       # pylint-specific settings
       run_pylint: true
@@ -47,13 +47,13 @@ jobs:
 
       ## Build package
       run_build_package: true
-      python_version_package: "3.9"
+      python_version_package: "3.11"
       build_libs: flit
       build_cmd: flit build
 
       ## Build documentation
       run_build_docs: true
-      python_version_docs: "3.9"
+      python_version_docs: "3.11"
       warnings_as_errors: true
       use_mkdocs: true
 
@@ -93,7 +93,7 @@ jobs:
       run: pytest -vvv --cov-report=xml --doctest-modules
 
     - name: Upload coverage to Codecov
-      if: matrix.python-version == '3.9' && github.repository == 'EMMC-ASBL/tripper'
+      if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

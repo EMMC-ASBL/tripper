@@ -676,7 +676,9 @@ class Triplestore:
 
         if any is True:
             return value
-        raise UniquenessError("More than one match")
+        raise UniquenessError(
+            f"More than one match: {(subject, predicate, object)}"
+        )
 
     def subjects(
         self, predicate=None, object=None  # pylint: disable=redefined-builtin
@@ -891,7 +893,7 @@ class Triplestore:
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
         asdict: bool = True,
-    ) -> "Generator[Triple, None, None]":
+    ) -> "Generator[dict, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
 

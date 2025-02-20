@@ -43,6 +43,7 @@ Sub-packages
 Additional functionality beyond interfacing triplestore backends is provided by specialised sub-package:
 
 * [tripper.datadoc]: An API for data documentation.
+* [tripper.units]: Working with units and quantities defined in ontologies.
 * [tripper.mappings]: Traverse mappings stored in the triplestore and find possible mapping routes.
 * [tripper.convert]: Convert between RDF and other data representations.
 
