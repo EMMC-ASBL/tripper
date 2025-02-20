@@ -1,9 +1,9 @@
 """A module encapsulating different triplestores using the strategy
 design pattern.
-
+##
 For a list over available backends, see
 https://emmc-asbl.github.io/tripper/latest/#available-backends
-
+##
 This module has no dependencies outside the standard library, but
 the triplestore backends may have.
 
@@ -23,7 +23,7 @@ import sys
 import warnings
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
-
+##
 from tripper.errors import (
     ArgumentTypeError,
     ArgumentValueError,
@@ -110,12 +110,12 @@ class Triplestore:
 
     # pylint: disable=too-many-instance-attributes
 
-    default_namespaces = {
-        "xml": XML,
-        "rdf": RDF,
-        "rdfs": RDFS,
-        "xsd": XSD,
-        "owl": OWL,
+    default_namespaces = {  ##
+        "xml": XML,   ##
+        "rdf": RDF,   ##
+        "rdfs": RDFS, ##
+        "xsd": XSD,   ##
+        "owl": OWL,   ##
         # "skos": SKOS,
         # "dcat": DCAT,
         # "dc": DC,
@@ -133,9 +133,9 @@ class Triplestore:
         database: "Optional[str]" = None,
         package: "Optional[str]" = None,
         **kwargs,
-    ) -> None:
+    ) -> None:  ##
         """Initialise triplestore using the backend with the given name.
-
+##
         Arguments:
             backend: Name of the backend module.
 
@@ -328,7 +328,7 @@ class Triplestore:
             subject, predicate, object = triple
 
         return self.backend.remove((subject, predicate, object))
-
+##
     # Methods optionally implemented by backend
     # -----------------------------------------
     def close(self) -> None:
@@ -350,10 +350,10 @@ class Triplestore:
         **kwargs,  # pylint: disable=redefined-builtin
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
-
+##
         Arguments:
             source: File-like object. File name or URL.
-            format: Needed if format can not be inferred from source.
+            format: Needed if format can not be inferred from source.  ##
             fallback_backend: If the current backend doesn't implement
                 parse, use the `fallback_backend` instead.
             fallback_backend_kwargs: Dict with additional keyword arguments
@@ -389,7 +389,7 @@ class Triplestore:
         **kwargs,
     ) -> "Union[None, str]":
         """Serialise triplestore.
-
+##
         Arguments:
             destination: File name or object to write to.  If None, the
                 serialisation is returned.
