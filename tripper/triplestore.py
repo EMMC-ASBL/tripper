@@ -1,12 +1,11 @@
 """A module encapsulating different triplestores using the strategy
 design pattern.
 
-See
-https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction and a table over available backends.
+For a list over available backends, see
+https://emmc-asbl.github.io/tripper/latest/#available-backends
 
-This module has no dependencies outside the standard library, but the
-triplestore backends may have.
+This module has no dependencies outside the standard library, but
+the triplestore backends may have.
 
 For developers: The usage of `s`, `p`, and `o` represent the different
 parts of an RDF Triple: subject, predicate, and object.
@@ -50,7 +49,6 @@ from tripper.namespace import (
 from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping
     from typing import (
         Any,
         Callable,
@@ -58,6 +56,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Generator,
         Iterable,
         List,
+        Mapping,
         Optional,
         Tuple,
         Union,
