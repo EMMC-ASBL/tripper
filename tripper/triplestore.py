@@ -116,14 +116,14 @@ class Triplestore:
         "rdfs": RDFS,
         "xsd": XSD,
         "owl": OWL,
-        #"skos": SKOS,
-        #"dcat": DCAT,
-        #"dc": DC,
-        #"dcterms": DCTERMS,
-        #"foaf": FOAF,
-        #"doap": DOAP,
-        #"map": MAP,
-        #"dm": DM,
+        # "skos": SKOS,
+        # "dcat": DCAT,
+        # "dc": DC,
+        # "dcterms": DCTERMS,
+        # "foaf": FOAF,
+        # "doap": DOAP,
+        # "map": MAP,
+        # "dm": DM,
     }
 
     def __init__(
@@ -134,8 +134,7 @@ class Triplestore:
         package: "Optional[str]" = None,
         **kwargs,
     ) -> None:
-        """
-        Initialise triplestore using the backend with the given name.
+        """Initialise triplestore using the backend with the given name.
 
         Arguments:
             backend: Name of the backend module.
@@ -561,11 +560,11 @@ class Triplestore:
         backend_class = cls._get_backend(backend)
         return backend_class.list_databases(**kwargs)
 
-   Convenient methods
-   ------------------
-   These methods are modelled after rdflib and provide some convinient
-   interfaces to the triples(), add_triples() and remove() methods
-   implemented by all backends.
+    # Convenient methods
+    # ------------------
+    # These methods are modelled after rdflib and provide some convinient
+    # interfaces to the triples(), add_triples() and remove() methods
+    # implemented by all backends.
 
     prefer_sparql = property(
         fget=lambda self: getattr(self.backend, "prefer_sparql", None),
