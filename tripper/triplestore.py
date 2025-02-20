@@ -1,21 +1,17 @@
 """A module encapsulating different triplestores using the strategy
 design pattern.
 
-See
-https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction and a table over available backends.
+For a list over available backends, see
+https://emmc-asbl.github.io/tripper/latest/#available-backends
 
-This module has no dependencies outside the standard library, but the
-triplestore backends may have.
-
+This module has no dependencies outside the standard library, but
+the triplestore backends may have.
 For developers: The usage of `s`, `p`, and `o` represent the different
 parts of an RDF Triple: subject, predicate, and object.
 
 """
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
-from __future__ import annotations  # Support Python 3.7 (PEP 585)
-
 import importlib
 import inspect
 import re
