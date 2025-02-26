@@ -3,12 +3,14 @@
 import re
 from typing import TYPE_CHECKING
 
+from rdflib import Graph
+
 from tripper import Literal
 from tripper.backends.rdflib import _convert_triples_to_tripper
 from tripper.utils import TripperException
 
 try:
-    from SPARQLWrapper import GET, JSON, POST, RDFXML, SPARQLWrapper
+    from SPARQLWrapper import GET, JSON, POST, TURTLE, SPARQLWrapper
 except ImportError as exc:
     raise ImportError(
         "SPARQLWrapper is not installed.\nInstall it with:\n\n"
@@ -86,6 +88,9 @@ class SparqlwrapperStrategy:
               - ASK: TODO
               - DESCRIBE: TODO
         """
+        print("----------")
+        print(query_object)
+        print("---------")
         query_type = self._get_sparql_query_type(query_object)
         if query_type == "SELECT":
             self.sparql.setReturnFormat(JSON)
@@ -98,10 +103,13 @@ class SparqlwrapperStrategy:
                 for row in bindings
             ]
         if query_type == "CONSTRUCT":
-            self.sparql.setReturnFormat(RDFXML)
+            self.sparql.setReturnFormat(TURTLE)
             self.sparql.setMethod(POST)
             self.sparql.setQuery(query_object)
-            graph = self.sparql.queryAndConvert()
+            results = self.sparql.queryAndConvert()
+            graph = Graph()
+            graph.parse(data=results.decode("utf-8"), format="turtle")
+            print("a", type(graph), graph, dir(graph))
             return _convert_triples_to_tripper(graph)
 
         raise NotImplementedError(
@@ -187,7 +195,7 @@ class SparqlwrapperStrategy:
         )
         query = f"INSERT DATA {{\n{spec}\n}}"
 
-        self.sparql.setReturnFormat(RDFXML)
+        self.sparql.setReturnFormat(TURTLE)
         self.sparql.setMethod(POST)
         self.sparql.setQuery(query)
         return self.sparql.query()
@@ -208,7 +216,7 @@ class SparqlwrapperStrategy:
             for name, value in zip("spo", triple)
         )
         query = f"DELETE {{ {spec} }}"
-        self.sparql.setReturnFormat(RDFXML)
+        self.sparql.setReturnFormat(TURTLE)
         self.sparql.setMethod(POST)
         self.sparql.setQuery(query)
         return self.sparql.query()
