@@ -1,12 +1,11 @@
 """A module encapsulating different triplestores using the strategy
 design pattern.
 
-See
-https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/README.md
-for an introduction and a table over available backends.
+For a list over available backends, see
+https://emmc-asbl.github.io/tripper/latest/#available-backends
 
-This module has no dependencies outside the standard library, but the
-triplestore backends may have.
+This module has no dependencies outside the standard library, but
+the triplestore backends may have.
 
 For developers: The usage of `s`, `p`, and `o` represent the different
 parts of an RDF Triple: subject, predicate, and object.
@@ -50,7 +49,6 @@ from tripper.namespace import (
 from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Mapping
     from typing import (
         Any,
         Callable,
@@ -58,6 +56,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Generator,
         Iterable,
         List,
+        Mapping,
         Optional,
         Tuple,
         Union,
@@ -228,7 +227,9 @@ class Triplestore:
         # Installed backend package
         if sys.version_info < (3, 10):
             # Fallback for Python < 3.10
-            eps = entry_points().get("tripper.backends", ())
+            eps = entry_points().get(  # pylint: disable=no-member
+                "tripper.backends", ()
+            )
         else:
             # New entry_point interface from Python 3.10+
             eps = entry_points(  # pylint: disable=unexpected-keyword-arg
@@ -611,7 +612,7 @@ class Triplestore:
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(  # pylint: disable=redefined-builtin
+    def value(  # pylint: disable=redefined-builtin,too-many-positional-arguments
         self,
         subject=None,
         predicate=None,
@@ -824,7 +825,7 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    def add_restriction(  # pylint: disable=redefined-builtin
+    def add_restriction(  # pylint: disable=redefined-builtin,too-many-positional-arguments
         self,
         cls: str,
         property: str,
@@ -883,11 +884,10 @@ class Triplestore:
                     Literal(cardinality, datatype=XSD.nonNegativeInteger),
                 ),
             )
-
         self.add_triples(triples)
         return iri
 
-    def restrictions(  # pylint: disable=redefined-builtin
+    def restrictions(  # pylint: disable=redefined-builtin,too-many-positional-arguments
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
@@ -1028,7 +1028,7 @@ class Triplestore:
             target_cost=target_cost,
         )
 
-    def add_mapsTo(
+    def add_mapsTo(  # pylint: disable=too-many-positional-arguments
         self,
         target: str,
         source: str,
@@ -1172,7 +1172,7 @@ class Triplestore:
 
         return result
 
-    def add_function(
+    def add_function(  # pylint: disable=too-many-positional-arguments
         self,
         func: "Union[Callable, str]",
         expects: "Union[str, Sequence, Mapping]" = (),
@@ -1247,7 +1247,7 @@ class Triplestore:
 
         return func_iri
 
-    def _add_function_doc(
+    def _add_function_doc(  # pylint: disable=too-many-positional-arguments
         self,
         func_iri: "str",
         func: "Optional[Callable]" = None,

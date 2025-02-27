@@ -188,7 +188,7 @@ def from_container(
     return rdf
 
 
-def save_container(
+def save_container(  # pylint: disable=too-many-positional-arguments
     ts: "Triplestore",
     container: "Union[Mapping[str, Any], Sequence[Any]]",
     iri: str,
@@ -330,7 +330,7 @@ def load_container(
 # === Deprecated functions ===
 
 
-def from_dict(
+def from_dict(  # pylint: disable=too-many-positional-arguments
     dct: dict,
     iri: str,
     bases: "Optional[Sequence]" = None,
@@ -367,7 +367,7 @@ def from_dict(
     )
 
 
-def save_dict(
+def save_dict(  # pylint: disable=too-many-positional-arguments
     ts: "Triplestore",
     dct: "Mapping[str, Any]",
     iri: str,

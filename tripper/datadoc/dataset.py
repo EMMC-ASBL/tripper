@@ -1,4 +1,4 @@
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long, too-many-lines
 """Module for documenting datasets with Tripper.
 
 The dataset documentation follows the [DCAT] structure and is exposed
@@ -31,6 +31,8 @@ Functions for interaction with OTEAPI:
 
 """
 
+from __future__ import annotations
+
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 import io
 import json
@@ -46,7 +48,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
     from tripper.utils import Triple
-
 
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
@@ -254,7 +255,6 @@ def load_dict(
     nested = dicttypes.keys()
     d = AttrDict()
     dct = _load_triples(ts, iri)
-
     for k, v in dct.items():
         if k in nested:
             if not isinstance(v, list):
@@ -283,7 +283,7 @@ def _load_triples(ts: Triplestore, iri: str) -> dict:
 def _load_sparql(ts: Triplestore, iri: str) -> dict:
     """Load `iri` from triplestore by calling `ts.query()`."""
     # The match-all pattern `(:|!:)*` in the query string below
-    # ensures that the returned triples includes nested structures,
+    # ensures that the returned triples include nested structures,
     # like distributions in a dataset. However, it does not include
     # references to named resources, like parsers and generators.
     # This choice was made because it limits the number of returned triples.
@@ -292,15 +292,16 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # Note that this implementation completely avoids querying for
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
-    subj = iri if iri.startswith("_:") else f"<{iri}>"
+    subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
-      {subj} (:|!:)* ?o .
+      {subj} (:|!:)* ?s .
       ?s ?p ?o .
     }}
     """
+
     nested = dicttypes.keys()
 
     def recur(d):
@@ -319,6 +320,8 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
 
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
+        for prefix, namespace in ts.namespaces.items():
+            ts2.bind(prefix, namespace)
         ts2.add_triples(triples)  # type: ignore
         dct = load_dict(ts2, iri, use_sparql=False)
     recur(dct)
@@ -750,7 +753,7 @@ def as_jsonld(
     return d
 
 
-def get_partial_pipeline(
+def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
     ts: Triplestore,
     client,
     iri: str,
