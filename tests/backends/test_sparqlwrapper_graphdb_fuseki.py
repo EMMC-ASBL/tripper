@@ -191,8 +191,8 @@ ASK {
     print(datasets)
     assert set(datasets) == set(
         [
-            "https://onto-ns.com/datasets/our_nice_dataset",
-            "https://onto-ns.com/datasets/our_nice_dataset2",
+            "https://onto-ns.com/datasets#our_nice_dataset",
+            "https://onto-ns.com/datasets#our_nice_dataset2",
         ]
     )
 
@@ -204,3 +204,8 @@ ASK {
         retreived_info.title
         == "This is a title of a completely invented dataset"
     )
+
+    ts.bind("dataset", "https://onto-ns.com/datasets#")
+    retreived_info_2 = load_dict(ts, f"dataset:{datasets[0].split('#')[-1]}")
+    print(retreived_info_2)
+    assert retreived_info == retreived_info_2

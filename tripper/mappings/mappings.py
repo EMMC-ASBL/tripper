@@ -90,7 +90,7 @@ class Value:
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-positional-arguments
         self,
         value: "Any" = None,
         unit: "Optional[str]" = None,
@@ -204,7 +204,7 @@ class MappingStep:
 
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-positional-arguments
         self,
         output_iri: str,
         steptype: "StepType" = StepType.UNSPECIFIED,
@@ -757,7 +757,7 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
     return d
 
 
-def mapping_routes(
+def mapping_routes(  # pylint: disable=too-many-positional-arguments
     target: str,
     sources: "Union[Dict[str, Union[Value, None]], Sequence[str]]",
     triplestore: "Triplestore",
