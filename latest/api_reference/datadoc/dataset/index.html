@@ -2267,7 +2267,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_partial_pipeline</span><span class="p">(</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_partial_pipeline</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">client</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2627,7 +2627,6 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="n">nested</span> <span class="o">=</span> <span class="n">dicttypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
     <span class="n">dct</span> <span class="o">=</span> <span class="n">_load_triples</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nested</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>

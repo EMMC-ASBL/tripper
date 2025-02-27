@@ -1604,7 +1604,7 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_del_obj_triple_spo</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
 
     <span class="c1"># Optional methods</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1860,7 +1860,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

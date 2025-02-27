@@ -1359,7 +1359,7 @@ package.</p>
       </tr>
       <tr>
         <td><code>distributions</code></td>
-        <td><code>Optional[Union[str, Sequence[str]]]</code></td>
+        <td><code>&#39;Optional[Union[str, Sequence[str]]]&#39;</code></td>
         <td><p>Name or sequence of names of distribution(s) to
 try in case the dataset has multiple distributions.  The
 default is to try all documented distributions.</p></td>
@@ -1367,7 +1367,7 @@ default is to try all documented distributions.</p></td>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>Optional[bool]</code></td>
+        <td><code>&#39;Optional[bool]&#39;</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -1513,7 +1513,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
       </tr>
       <tr>
         <td><code>class_iri</code></td>
-        <td><code>Optional[str]</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>IRI of a class in the ontology (e.g. an <code>emmo:Dataset</code>
 subclass) that describes the dataset that is saved.
 Is used to select the <code>distribution</code> if that is not given.
@@ -1524,7 +1524,7 @@ added to <code>class_iri</code></p></td>
       </tr>
       <tr>
         <td><code>dataset</code></td>
-        <td><code>Optional[Union[str, dict]]</code></td>
+        <td><code>&#39;Optional[Union[str, dict]]&#39;</code></td>
         <td><p>Either the IRI of the dataset individual standing for
 the data to be saved or or a dict that in addition to the IRI
 ('@id' keyword) can provide with additional documentation of
@@ -1534,7 +1534,7 @@ If <code>dataset</code> is None, a new blank node IRI will be created.</p></td>
       </tr>
       <tr>
         <td><code>distribution</code></td>
-        <td><code>Optional[Union[str, dict]]</code></td>
+        <td><code>&#39;Optional[Union[str, dict]]&#39;</code></td>
         <td><p>Either the IRI of distribution for the data to be saved
 or a dict additional documentation of the distribution,
 like media type, parsers, generators etc...
@@ -1545,21 +1545,21 @@ to the dataset.</p></td>
       </tr>
       <tr>
         <td><code>generator</code></td>
-        <td><code>Optional[str]</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
         <td><p>Name of generator to use in case the distribution has
 several generators.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
-        <td><code>Optional[dict]</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
         <td><p>Dict with prefixes in addition to those included in the
 JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>use_sparql</code></td>
-        <td><code>Optional[bool]</code></td>
+        <td><code>&#39;Optional[bool]&#39;</code></td>
         <td><p>Whether to access the triplestore with SPARQL.
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
@@ -1583,7 +1583,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataaccess.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="n">class_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

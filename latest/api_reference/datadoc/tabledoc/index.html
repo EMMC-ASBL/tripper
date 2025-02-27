@@ -1496,7 +1496,7 @@ dicts.</p></td>
 
     <span class="c1"># pylint: disable=redefined-builtin,too-few-public-methods</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">header</span><span class="p">:</span> <span class="s2">&quot;Sequence[str]&quot;</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;Sequence[Sequence[str]]&quot;</span><span class="p">,</span>
@@ -1644,7 +1644,7 @@ dicts.</p></td>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
         <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2108,7 +2108,7 @@ formatting parameters.  For more details, see
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
