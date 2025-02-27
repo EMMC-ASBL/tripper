@@ -255,7 +255,6 @@ def load_dict(
     nested = dicttypes.keys()
     d = AttrDict()
     dct = _load_triples(ts, iri)
-
     for k, v in dct.items():
         if k in nested:
             if not isinstance(v, list):
@@ -293,7 +292,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # Note that this implementation completely avoids querying for
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
-    subj = iri if iri.startswith("_:") else f"<{iri}>"
+    subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
@@ -302,6 +301,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
+
     nested = dicttypes.keys()
 
     def recur(d):
@@ -320,6 +320,8 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
 
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
+        for prefix, namespace in ts.namespaces.items():
+            ts2.bind(prefix, namespace)
         ts2.add_triples(triples)  # type: ignore
         dct = load_dict(ts2, iri, use_sparql=False)
     recur(dct)
@@ -751,7 +753,7 @@ def as_jsonld(
     return d
 
 
-def get_partial_pipeline(
+def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
     ts: Triplestore,
     client,
     iri: str,
