@@ -35,6 +35,13 @@ def graphdb_available():
         time.sleep(interval)
 
 
+def fuseki_avilable():
+    """
+    Help function that checks if the Fuseki instance is available
+    """
+    print("")
+
+
 def test_graphdb():
     """
     Test the sparqlwrapper backend using GraphDB.
@@ -43,14 +50,7 @@ def test_graphdb():
     if not graphdb_available():
         pytest.skip("GraphDB instance not available locally; skipping tests.")
 
-    from pathlib import Path
-
-    from tripper import Literal, Triplestore
-    from tripper.datadoc import load_dict, save_datadoc, search_iris
-
-    thisdir = Path(__file__).resolve().parent
-    datasetinput = thisdir / "datadocumentation_sample.yaml"
-    datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
+    from tripper import Triplestore
 
     ts = Triplestore(
         backend="sparqlwrapper",
@@ -58,7 +58,22 @@ def test_graphdb():
         update_iri="http://localhost:7200/repositories/test_repo/statements",
     )
 
+    populate_and_search(ts)
+
+
+def populate_and_search(ts):
+    """Do the test on the desried backend."""
     # Test adding triples
+
+    from pathlib import Path
+
+    from tripper import Literal
+    from tripper.datadoc import load_dict, save_datadoc, search_iris
+
+    thisdir = Path(__file__).resolve().parent
+    datasetinput = thisdir / "datadocumentation_sample.yaml"
+    datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
+
     ts.add_triples(
         [
             (
