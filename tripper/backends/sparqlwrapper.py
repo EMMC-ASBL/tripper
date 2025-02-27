@@ -88,9 +88,6 @@ class SparqlwrapperStrategy:
               - ASK: TODO
               - DESCRIBE: TODO
         """
-        print("----------")
-        print(query_object)
-        print("---------")
         query_type = self._get_sparql_query_type(query_object)
         if query_type == "SELECT":
             self.sparql.setReturnFormat(JSON)
@@ -109,7 +106,6 @@ class SparqlwrapperStrategy:
             results = self.sparql.queryAndConvert()
             graph = Graph()
             graph.parse(data=results.decode("utf-8"), format="turtle")
-            print("a", type(graph), graph, dir(graph))
             return _convert_triples_to_tripper(graph)
 
         raise NotImplementedError(
