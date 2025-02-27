@@ -65,6 +65,21 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
 
+
+    services:
+      fuseki:
+        image: stain/jena-fuseki
+        env:
+          ADMIN_PASSWORD: admin0
+          FUSEKI_DATASET_1: test_repo
+        ports:
+          - 3030:3030
+        options: >-
+          --health-cmd "curl -f http://localhost:3030 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     strategy:
       fail-fast: false
       matrix:
