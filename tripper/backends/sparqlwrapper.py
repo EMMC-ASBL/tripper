@@ -211,7 +211,12 @@ class SparqlwrapperStrategy:
             )
             for name, value in zip("spo", triple)
         )
-        query = f"DELETE {{ {spec} }}"
+        query = f"""
+        DELETE WHERE {{
+          {spec} .
+        }}
+        """
+
         self.sparql.setReturnFormat(TURTLE)
         self.sparql.setMethod(POST)
         self.sparql.setQuery(query)
