@@ -1,8 +1,8 @@
 datasets:
-- "@id": https://onto-ns.com/datasets/our_nice_dataset
+- "@id": https://onto-ns.com/datasets#our_nice_dataset
   "@type": http://domain-onto.org/FancyDataset
   title: This is a title of a completely invented dataset
-  description: "This is a dataset descriptio. I include:some strange character? to check that it does nåt crash anything."
+  description: "This is a dataset description. I include:some strange character? to check that it does nåt crash anything."
   creator: Tripper-team
   contactPoint: Tripper-team
   distribution.accessURL: https://onto-ns.com/datasets/our_nice_dataset
