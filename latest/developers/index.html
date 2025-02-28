@@ -1302,7 +1302,7 @@
 <h3 id="developing-the-sparqlwrapper">Developing the sparqlwrapper<a class="headerlink" href="#developing-the-sparqlwrapper" title="Permanent link">&para;</a></h3>
 <p>Tripper comes with an inbuilt backend to the SPARQLWrapper. In order
 to test this properly a real triplestore is needed. This is not done in the
-automatic workflows on github. However, a lcal graphDB can be setup as described below and tested with test_sparqlwrapper_graphdb.py.</p>
+automatic workflows on github. However, a local graphDB can be setup as described below and tested with test_sparqlwrapper_graphdb.py.</p>
 <p>To create the local instance of graphdb:
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ontotext/graphdb:10.8.3<span class="w"> </span><span class="c1"># latest tag 17.02.2025</span>
 docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">7200</span>:7200<span class="w"> </span>--name<span class="w"> </span>graphdb<span class="w"> </span>ontotext/graphdb:10.8.3
@@ -1314,7 +1314,14 @@ Tick off <code>Enable full-text search</code> and leave the rest as predefined.
 Click <code>Create</code>.</p>
 <p>Go to <code>Setup</code> and select <code>Repositories</code>.
 Activating "test_repo" by clicking the pin icon (Set as default repository) and then the restart icon (Restart repository test_repo).</p>
-<p>You can now run the test.</p>
+<p>You can now run the test test_sparqlwrapper_graphdb_fuseki.py with graphdb.</p>
+<p>Note that if the graphdb instance is not found the test will just be skipped.</p>
+<p>Similarly a jena-fuseki instance can be tested locally as follows:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>stain/jena-fuseki
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>fuseki<span class="w"> </span>-p<span class="w"> </span><span class="m">3030</span>:3030<span class="w"> </span>-e<span class="w"> </span><span class="nv">ADMIN_PASSWORD</span><span class="o">=</span>admin0<span class="w"> </span>-e<span class="o">=</span><span class="nv">FUSEKI_DATASET_1</span><span class="o">=</span>test_repo<span class="w"> </span>stain/jena-fuseki
+</code></pre></div>
+<p>You can now run the test test_sparqlwrapper_graphdb_fuseki.py with fuseki.</p>
+<p>Note that if the fuseki instance is not found the test will just be skipped.</p>
 <h2 id="creating-new-release">Creating new release<a class="headerlink" href="#creating-new-release" title="Permanent link">&para;</a></h2>
 <p>To create a new release, it is good to have a release summary.</p>
 <p>To add this, create a milestone that matches the new version and tag, e.g., <code>v1.0.8</code>.</p>

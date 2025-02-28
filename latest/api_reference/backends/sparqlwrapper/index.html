@@ -1547,10 +1547,12 @@ SparqlwrapperStrategy        </code>
                 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
             <span class="p">]</span>
         <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
-            <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -1636,7 +1638,7 @@ SparqlwrapperStrategy        </code>
         <span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
@@ -1657,7 +1659,7 @@ SparqlwrapperStrategy        </code>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
@@ -1748,7 +1750,7 @@ SparqlwrapperStrategy        </code>
     <span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">&quot;</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
@@ -1849,10 +1851,12 @@ SparqlwrapperStrategy        </code>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
         <span class="p">]</span>
     <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
-        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -1898,7 +1902,7 @@ SparqlwrapperStrategy        </code>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DELETE </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">RDFXML</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
