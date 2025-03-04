@@ -56,50 +56,6 @@ def fuseki_available():
         time.sleep(interval)
 
 
-def test_graphdb():
-    """
-    Test the sparqlwrapper backend using GraphDB.
-    """
-    # Check if GraphDB is available and write a warning if it is not.
-    if not graphdb_available():
-        pytest.skip("GraphDB instance not available locally; skipping tests.")
-
-    from tripper import Triplestore
-
-    print("Testing graphdb")
-
-    ts = Triplestore(
-        backend="sparqlwrapper",
-        base_iri="http://localhost:7200/repositories/test_repo",
-        update_iri="http://localhost:7200/repositories/test_repo/statements",
-    )
-
-    populate_and_search(ts)
-
-
-def test_fuseki():
-    """
-    Test the sparqlwrapper backend using Fuseki.
-    """
-    # Check if Fuseki is available and write a warning if it is not.
-    if not fuseki_available():
-        pytest.skip("Fuseki instance not available locally; skipping tests.")
-
-    from tripper import Triplestore
-
-    print("Testing fuseki")
-
-    ts = Triplestore(
-        backend="sparqlwrapper",
-        base_iri=f"{FUSEKI_CHECK_URL}/test_repo",
-        update_iri=f"{FUSEKI_CHECK_URL}/test_repo/update",
-        username="admin",
-        password="admin0",
-    )
-
-    populate_and_search(ts)
-
-
 def populate_and_search(ts):
     """Do the test on the desried backend."""
     # Test adding triples
@@ -215,3 +171,59 @@ ASK {
     )
 
     # assert retreived_info == retreived_info_2 # When PR342 is accepted
+
+    ts.remove(subject="https://onto-ns.com/datasets#our_nice_dataset2")
+
+    datasets3 = search_iris(ts, type="dataset")
+
+    print("Found datasets after deletion:")
+    print(datasets3)
+    assert set(datasets3) == set(
+        [
+            "https://onto-ns.com/datasets#our_nice_dataset",
+        ]
+    )
+
+
+def test_graphdb():
+    """
+    Test the sparqlwrapper backend using GraphDB.
+    """
+    # Check if GraphDB is available and write a warning if it is not.
+    if not graphdb_available():
+        pytest.skip("GraphDB instance not available locally; skipping tests.")
+
+    from tripper import Triplestore
+
+    print("Testing graphdb")
+
+    ts = Triplestore(
+        backend="sparqlwrapper",
+        base_iri="http://localhost:7200/repositories/test_repo",
+        update_iri="http://localhost:7200/repositories/test_repo/statements",
+    )
+
+    populate_and_search(ts)
+
+
+def test_fuseki():
+    """
+    Test the sparqlwrapper backend using Fuseki.
+    """
+    # Check if Fuseki is available and write a warning if it is not.
+    if not fuseki_available():
+        pytest.skip("Fuseki instance not available locally; skipping tests.")
+
+    from tripper import Triplestore
+
+    print("Testing fuseki")
+
+    ts = Triplestore(
+        backend="sparqlwrapper",
+        base_iri=f"{FUSEKI_CHECK_URL}/test_repo",
+        update_iri=f"{FUSEKI_CHECK_URL}/test_repo/update",
+        username="admin",
+        password="admin0",
+    )
+
+    populate_and_search(ts)
