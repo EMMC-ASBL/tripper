@@ -3,9 +3,13 @@
     "@version": 1.1,
 
     "adms": "http://www.w3.org/ns/adms#",
+    "cv": "http://data.europa.eu/m8g/",
     "dcat": "http://www.w3.org/ns/dcat#",
+    "dcatap": "http://data.europa.eu/r5r/",
+    "dcatno": "https://data.norge.no/vocabulary/dcatno#",
     "dcterms": "http://purl.org/dc/terms/",
     "dctype": "http://purl.org/dc/dcmitype/",
+    "eli": "http://data.europa.eu/eli/ontology#",
     "foaf": "http://xmlns.com/foaf/0.1/",
     "odrl": "http://www.w3.org/ns/odrl/2/",
     "owl": "http://www.w3.org/2002/07/owl#",
@@ -15,6 +19,7 @@
     "schema": "http://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "spdx": "http://spdx.org/rdf/terms#",
+    "time": "http://www.w3.org/2006/time#",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
 
@@ -23,11 +28,26 @@
     "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
 
 
-    "accessRights": "dcterms:accessRights",
-    "conformsTo": "dcterms:conformsTo",
-    "contactPoint": "dcat:contactPoint",
-    "creator": "dcterms:creator",
-    "description": "dcterms:description",
+    "accessRights": {
+      "@id": "dcterms:accessRights",
+      "@type": "@id"
+    },
+    "conformsTo": {
+      "@id": "dcterms:conformsTo",
+      "@type": "@id"
+    },
+    "contactPoint": {
+      "@id": "dcat:contactPoint",
+      "@type": "@id"
+    },
+    "creator": {
+      "@id": "dcterms:creator",
+      "@type": "@id"
+    },
+    "description": {
+      "@id": "dcterms:description",
+      "@type": "langString"
+    },
     "hasCurrentVersion": "dcat:hasCurrentVersion",
     "hasPart": {
       "@id": "dcterms:hasPart",
@@ -36,14 +56,38 @@
     "hasPolicy": "odrl:hasPolicy",
     "hasVersion": "dcat:hasVersion",
     "identifier": "dcterms:identifier",
-    "isReferencedBy": "dcterms:isReferencedBy",
-    "issued": "dcterms:issued",
-    "keyword": "dcat:keyword",
-    "landingPage": "dcat:landingPage",
-    "language": "dcterms:language",
-    "license": "dcterms:license",
-    "modified": "dcterms:modified",
-    "publisher": "dcterms:publisher",
+    "isReferencedBy": {
+      "@id": "dcterms:isReferencedBy",
+      "@type": "@id"
+    },
+    "issued": {
+      "@id": "dcterms:issued",
+      "@type": ["xsd:date", "xsd:dateTime"]
+    },
+    "keyword": {
+      "@id": "dcat:keyword",
+      "@type": "rdf:langString"
+    },
+    "landingPage": {
+      "@id": "dcat:landingPage",
+      "@type": "@id"
+    },
+    "language": {
+      "@id": "dcterms:language",
+      "@type": "@id"
+    },
+    "license": {
+      "@id": "dcterms:license",
+      "@type": "@id"
+    },
+    "modified": {
+      "@id": "dcterms:modified",
+      "@type": ["xsd:date", "xsd:dateTime"]
+    },
+    "publisher": {
+      "@id": "dcterms:publisher",
+      "@type": "@id"
+    },
     "qualifiedAttribution": {
       "@id": "prov:qualifiedAttribution",
       "@type": "@id"
@@ -74,14 +118,23 @@
     "deprecated": "owl:deprecated",
     "isDefinedBy": "rdfs:isDefinedBy",
     "label": "rdfs:label",
+    "name": "foaf:name",
     "seeAlso": "rdfs:seeAlso",
-    "source": "dcterms:source",
+    "source": {
+      "@id": "dcterms:source",
+      "@type": "@id"
+    },
     "statements": {
       "@id": "oteio:statement",
       "@type": "@json"
     },
+    "subject": "dcterms:subject",
 
 
+    "applicableLegislation": {
+      "@id": "dcatap:applicableLegislation",
+      "@type": "@id"
+    },
     "datamodel": "oteio:hasDatamodel",
     "datamodelStorage": "oteio:hasDatamodelStorage",
     "distribution": {
@@ -114,11 +167,30 @@
     },
     "mappingURL": "oteio:mappingURL",
     "mappingFormat": "oteio:mappingFormat",
-    "spatial": "dcterms:spatial",
-    "spatialResolutionInMeters": "dcat:spatialResolutionInMeters",
-    "temporal": "dcterms:temporal",
-    "temporalResolution": "dcat:temporalResolution",
-    "wasGeneratedBy": "prov:wasGeneratedBy",
+    "sample": {
+      "@id": "adms:sample",
+      "@type": "@id"
+    },
+    "spatial": {
+      "@id": "dcterms:spatial",
+      "@type": "@id"
+    },
+    "spatialResolutionInMeters": {
+      "@id": "dcat:spatialResolutionInMeters",
+      "@type": "xsd:decimal"
+    },
+    "temporal": {
+      "@id": "dcterms:temporal",
+      "@type": "@id"
+    },
+    "temporalResolution": {
+      "@id": "dcat:temporalResolution",
+      "@type": "xsd:duration"
+    },
+    "wasGeneratedBy": {
+      "@id": "prov:wasGeneratedBy",
+      "@type": "@id"
+    },
 
 
     "accessService": {
@@ -145,6 +217,10 @@
       "@type": "@id"
     },
 
+
+    "endpointURL": "dcat:endpointURL",
+
+
     "configuration": {
       "@id": "oteio:hasConfiguration",
       "@type": "@json"
@@ -159,12 +235,8 @@
     "filterType": "oteio:filterType",
     "functionType": "oteio:functionType",
 
-    "hasDataSink": "oteio:hasDataSink",
     "storeURL": "oteio:storeURL",
 
-    "subject": "rdf:subject",
-    "predicate": "rdf:predicate",
-    "object": "rdf:object",
 
     "prefixes": {
       "@id": "oteio:prefix",
