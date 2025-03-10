@@ -748,26 +748,30 @@ class Triplestore:
     # Methods providing additional functionality
     # ------------------------------------------
     def expand_iri(self, iri: str):
-        """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-        returned.
+        """
+        Return the full IRI if `iri` is prefixed.
+        Otherwise `iri` isreturned.
 
         Examples:
-        >>> from tripper import Triplestore
-        >>> ts = Triplestore(backend="rdflib")
+            ```python
+            >>> from tripper import Triplestore
+            >>> ts = Triplestore(backend="rdflib")
 
-        # Unknown prefix raises an exception
-        >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
-        Traceback (most recent call last):
-        ...
-        tripper.errors.NamespaceError: unknown namespace: 'ex'
+            # Unknown prefix raises an exception
+            >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
+            Traceback (most recent call last):
+            ...
+            tripper.errors.NamespaceError: unknown namespace: 'ex'
 
-        >>> EX = ts.bind("ex", "http://example.com#")
-        >>> ts.expand_iri("ex:Concept")
-        'http://example.com#Concept'
+            >>> EX = ts.bind("ex", "http://example.com#")
+            >>> ts.expand_iri("ex:Concept")
+            'http://example.com#Concept'
 
-        # Returns `iri` if it has no prefix
-        >>> ts.expand_iri("http://example.com#Concept")
-        'http://example.com#Concept'
+            # Returns iri if it has no prefix
+            >>> ts.expand_iri("http://example.com#Concept")
+            'http://example.com#Concept'
+
+            ```
 
         """
         match = re.match(_MATCH_PREFIXED_IRI, iri)
