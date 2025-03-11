@@ -154,7 +154,7 @@ class SparqlwrapperStrategy:
             )
         self.sparql.setMethod(POST)
         self.sparql.setQuery(update_object)
-        return self.sparql.query()
+        self.sparql.query()
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""

@@ -5,6 +5,6 @@ datasets:
   description: "This is a dataset description. I include:some strange characters to check that it does nåt crash anything."
   creator: Tripper-team
   contactPoint: Tripper-team
-  distribution.accessURL: https://onto-ns.com/datasets/our_nice_dataset22
+  distribution.accessURL: https://onto-ns.com/datasets/our_nice_dataset2
   distribution.mediaType: application/hdf5
   distribution.format: HDF5
