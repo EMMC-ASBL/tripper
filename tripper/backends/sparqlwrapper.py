@@ -142,7 +142,7 @@ class SparqlwrapperStrategy:
         """Update triplestore with SPARQL query.
 
         Arguments:
-            query_object: String with the SPARQL query.
+            update_object: String with the SPARQL query.
             kwargs: Additional backend-specific keyword arguments.
 
         Note:
