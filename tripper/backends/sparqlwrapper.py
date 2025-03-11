@@ -123,13 +123,38 @@ class SparqlwrapperStrategy:
         # either the beginning of the string or following a newline
         # or a period. It then matches one of the keywords.
         pattern = re.compile(
-            r"(?:(?<=^)|(?<=[\.\n]))\s*(ASK|CONSTRUCT|SELECT|DESCRIBE)\b",
+            r"(?:(?<=^)|(?<=[\.\n]))\s*(ASK|CONSTRUCT|SELECT|DESCRIBE|"
+            r"DELETE|INSERT)\b",
             re.IGNORECASE,
         )
         match = pattern.search(query)
         if match:
             return match.group(1).upper()
         return "UNKNOWN"
+
+    def update(
+        self,
+        update_object: str,
+        **kwargs,  # pylint: disable=unused-argument
+    ) -> None:
+        """Update triplestore with SPARQL quary.
+
+        Arguments:
+            query_object: String with the SPARQL query.
+            kwargs: Additional backend-specific keyword arguments.
+
+        Note:
+            This method is intended for INSERT and DELETE queries.  Use
+            the query() method for ASK/CONSTRUCT/SELECT/DESCRIBE queries.
+        """
+        query_type = self._get_sparql_query_type(update_object)
+        if query_type not in ("DELETE", "INSERT"):
+            raise NotImplementedError(
+                f"Update query type '{query_type}' not implemented."
+            )
+        self.sparql.setMethod(POST)
+        self.sparql.setQuery(update_object)
+        return self.sparql.query()
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
