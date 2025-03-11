@@ -73,7 +73,9 @@ class SparqlwrapperStrategy:
             self.sparql.updateEndpoint = new_update_iri
 
     def query(
-        self, query_object, **kwargs  # pylint: disable=unused-argument
+        self,
+        query_object: str,
+        **kwargs,  # pylint: disable=unused-argument
     ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
