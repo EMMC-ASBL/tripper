@@ -137,7 +137,7 @@ class SparqlwrapperStrategy:
         update_object: str,
         **kwargs,  # pylint: disable=unused-argument
     ) -> None:
-        """Update triplestore with SPARQL quary.
+        """Update triplestore with SPARQL query.
 
         Arguments:
             query_object: String with the SPARQL query.
