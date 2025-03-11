@@ -417,6 +417,8 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
 
 def test_backend_sparqlwrapper() -> None:
     """Specifically test the SPARQLWrapper backend Triplestore."""
+    import urllib
+
     from tripper import SKOS, Triplestore
     from tripper.errors import UnknownDatatypeWarning
 
@@ -428,10 +430,16 @@ def test_backend_sparqlwrapper() -> None:
         "time-scale-2020",
     )
     with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
-        for s, p, o in ts.triples(predicate=SKOS.notation):
-            assert s
-            assert p
-            assert o
+        try:
+            for s, p, o in ts.triples(predicate=SKOS.notation):
+                assert s
+                assert p
+                assert o
+        except urllib.error.URLError as exc:
+            if "[Errno 110] Connection timed out" in str(exc):
+                pytest.skip(str(exc))
+            else:
+                raise
 
 
 @pytest.mark.skip(

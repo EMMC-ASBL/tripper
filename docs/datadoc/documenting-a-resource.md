@@ -1,6 +1,6 @@
 Documenting a resource
 ======================
-In the [tripper.dataset] sub-package are the documents documenting the resources internally represented as [JSON-LD] documents stored as Python dicts.
+In the [tripper.datadoc] sub-package are the documents documenting the resources internally represented as [JSON-LD] documents stored as Python dicts.
 However, the API tries to hide away the complexities of JSON-LD behind simple interfaces.
 To support different use cases, the sub-package provide several interfaces for data documentation, including Python dicts, YAML files and tables.
 These are further described below.
@@ -49,7 +49,7 @@ We therefore have to define them explicitly
 
     ```python
     >>> import json
-    >>> from tripper.dataset import as_jsonld
+    >>> from tripper.datadoc import as_jsonld
     >>> d = as_jsonld(dataset, prefixes=prefixes)
     >>> print(json.dumps(d, indent=2))
     {
@@ -76,7 +76,7 @@ Since the prefixes "sem" and "kb" are not included in the [Predefined prefixes],
 
 ```python
 >>> from tripper import Triplestore
->>> from tripper.dataset import save_dict
+>>> from tripper.datadoc import save_dict
 >>> ts = Triplestore(backend="rdflib")
 >>> save_dict(ts, dataset, prefixes=prefixes)  # doctest: +ELLIPSIS
 AttrDict(...)
@@ -109,7 +109,7 @@ kb:image1 a dcat:Dataset,
 
 ```
 
-Note that the image implicitly has been declared to be an individual of the classes `dcat:Dataset` and `emmo:DataSet`.
+Note that the image implicitly has been declared to be an individual of the classes `dcat:Dataset` and `emmo:Dataset`.
 This is because the `type` argument of [save_dict()] defaults to "dataset".
 
 
@@ -135,7 +135,7 @@ The [save_datadoc()] function allow to save a [YAML] file in [multi-resource](#m
 Saving [semdata.yaml] to a triplestore can e.g. be done with
 
 ```python
->>> from tripper.dataset import save_datadoc
+>>> from tripper.datadoc import save_datadoc
 >>> save_datadoc(  # doctest: +ELLIPSIS
 ...    ts,
 ...    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml"
@@ -172,7 +172,7 @@ correspond to the following turtle representation:
 The below example shows how to save all datasets listed in the CSV file [semdata.csv] to a triplestore.
 
 ```python
->>> from tripper.dataset import TableDoc
+>>> from tripper.datadoc import TableDoc
 
 >>> td = TableDoc.parse_csv(
 ...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv",
@@ -191,7 +191,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 ```
 
 
-[tripper.dataset]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset
+[tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction
 [DCAT vocabulary]: https://www.w3.org/TR/vocab-dcat-3/
 [DLite]: https://github.com/SINTEF/dlite
 [YAML]: https://yaml.org/
@@ -203,13 +203,13 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [dcat:Dataset]: https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset
 [dcat:Distribution]: https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution
 [dcat:AccessService]: https://www.w3.org/TR/vocab-dcat-3/#Class:AccessService
-[emmo:DataSet]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
+[emmo:Dataset]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
-[save_dict()]: ../api_reference/dataset/dataset.md/#tripper.dataset.dataset.save_dict
-[as_jsonld()]: ../api_reference/dataset/dataset.md/#tripper.dataset.dataset.as_jsonld
+[save_dict()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_dict
+[as_jsonld()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.as_jsonld
 [save_datadoc()]:
-../api_reference/dataset/dataset.md/#tripper.dataset.dataset.save_datadoc
+../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_datadoc
+[TableDoc]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
 [semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv
-[TableDoc]: https://emmc-asbl.github.io/tripper/latest/api_reference/dataset/dataset/#tripper.dataset.tabledoc.TableDoc

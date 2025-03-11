@@ -8,9 +8,8 @@ Running `datadoc --help` from the shell will show the following help message:
 ```
 usage: datadoc [-h] [--backend BACKEND] [--base-iri BASE_IRI]
                [--database DATABASE] [--package PACKAGE] [--parse LOCATION]
-               [--parse-format PARSE_FORMAT]
-               [--prefixes PREFIX=URL [PREFIX=URL ...]]
-               {add,find,load} ...
+               [--parse-format PARSE_FORMAT] [--prefix PREFIX=URL]
+               {add,find,fetch} ...
 
 Tool for data documentation. It allows populating and searching a triplestore
 for existing documentation.
@@ -19,12 +18,12 @@ positional arguments:
   {add,find,load}       Subcommands:
     add                 Populate the triplestore with data documentation.
     find                Find documented resources in the triplestore.
-    load                Load documented dataset from a storage.
+    fetch               Fetch documented dataset from a storage.
 
 options:
   -h, --help            show this help message and exit
   --backend BACKEND, -b BACKEND
-                        Triplestore backend to use. Defaults to 'rdflib' - an
+                        Triplestore backend to use. Defaults to "rdflib" - an
                         in-memory rdflib triplestore, that can be pre-loaded
                         with --parse.
   --base-iri BASE_IRI, -B BASE_IRI
@@ -38,8 +37,9 @@ options:
   --parse-format PARSE_FORMAT, -F PARSE_FORMAT
                         Used with `--parse`. Format to use when parsing
                         triplestore.
-  --prefixes PREFIX=URL [PREFIX=URL ...], -P PREFIX=URL [PREFIX=URL ...]
-                        Namespace prefixes to add to bind to the triplestore.
+  --prefix PREFIX=URL, -P PREFIX=URL
+                        Namespace prefix to bind to the triplestore. This
+                        option can be given multiple times.
 ```
 
 Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` for populating  the triplestore, searching  the triplestore and accessing a dataset documented the triplestore, respectively.
@@ -48,7 +48,7 @@ Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` 
 
 * The `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
 
-* The `--parse`, `--parse-format` and `--prefixes` options are for pre-loading the triplestore with with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
+* The `--parse`, `--parse-format` and `--prefix` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.
 
 
@@ -282,10 +282,12 @@ options:
   -h, --help            show this help message and exit
   --type TYPE, -t TYPE  Either a resource type (ex: "dataset", "distribution",
                         ...) or the IRI of a class to limit the search to.
-  --criteria KEYWORD=VALUE [KEYWORD=VALUE ...], -c KEYWORD=VALUE [KEYWORD=VALUE ...]
-                        One of more additional matching criteria for resources
-                        to find. Only resources with the given KEYWORD and
-                        VALUE will be matched. The match is exact.
+  --criteria IRI=VALUE, -c IRI=VALUE
+                        Matching criteria for resources to find. The IRI may
+                        be written using a namespace prefix, like
+                        `tcterms:title="My title"`. Currently only exact
+                        matching is supported. This option can be given
+                        multiple times.
   --output FILENAME, -o FILENAME
                         Write matching output to the given file. The default
                         is to write to standard output.
@@ -296,11 +298,11 @@ options:
 ```
 
 The `--type` and `--criteria` options provide search criteria.
-The `--type` option an be any of the recognised [resource types] to limit the search to.
+The `--type` option can be any of the recognised [resource types] to limit the search to.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.
 
-The `--output` options allows to write the matching output to file instead of standard output.
+The `--output` option allows to write the matching output to file instead of standard output.
 
 The `--format` option controls how the search result should be presented.
 The following formats are currently available:
@@ -337,7 +339,7 @@ The following formats are currently available:
     **Ex 3**: List IRIs of all resources with a given title:
 
     ```shell
-    $ datadoc --parse=kb.ttl find --criteria title="Series of SEM image of cement sample 77600"
+    $ datadoc --parse=kb.ttl find --criteria dcterms:title="Series of SEM image of cement sample 77600"
     https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001
     ```
 
@@ -380,15 +382,15 @@ The following formats are currently available:
     This will show the same output as in Ex 4.
 
 
-### load
-Loads documented dataset from a storage.
-Running `datadoc load --help` will show the following help message:
+### fetch
+Fetch documented dataset from a storage.
+Running `datadoc fetch --help` will show the following help message:
 
 ```
-usage: datadoc load [-h] [--output FILENAME] iri
+usage: datadoc fetch [-h] [--output FILENAME] iri
 
 positional arguments:
-  iri                   IRI of dataset to load.
+  iri                   IRI of dataset to fetch.
 
 options:
   -h, --help            show this help message and exit
@@ -398,9 +400,9 @@ options:
 ```
 
 !!! note
-    The `load` subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.
+    The `fetch` subcommand is specific for datasets since it uses DCAT documentation of how to fetch the dataset.
 
-The positional `iri` argument is the IRI of the documented dataset to load.
+The positional `iri` argument is the IRI of the documented dataset to fetch.
 
 The `--output` option allows to write the dataset to a local file.
 
@@ -410,7 +412,7 @@ The `--output` option allows to write the dataset to a local file.
     Save the dataset `https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001` documented in `kb.ttl` to file:
 
     ```shell
-    $ datadoc -p kb.ttl load https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001 -o cement.tif
+    $ datadoc -p kb.ttl fetch https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001 -o cement.tif
     ```
 
     This should create the file `cement.tif` containing the image data.
@@ -420,4 +422,4 @@ The `--output` option allows to write the dataset to a local file.
 
 
 
-[resource types]: ../dataset/introduction.md/#resource-types
+[resource types]: ../datadoc/introduction.md/#resource-types

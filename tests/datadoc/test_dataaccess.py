@@ -16,7 +16,7 @@ def test_save_and_load():
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper import DCAT, DCTERMS, EMMO, Triplestore
-    from tripper.dataset import load, load_dict, save, save_dict
+    from tripper.datadoc import load, load_dict, save, save_dict
 
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")
@@ -46,7 +46,7 @@ def test_save_and_load():
         type="dataset",
     )
     newdistr = load_dict(ts, SEMDATA.img1)
-    assert newdistr["@type"] == [DCAT.Dataset, EMMO.DataSet]
+    assert newdistr["@type"] == [DCAT.Dataset, EMMO.Dataset]
     assert newdistr.distribution["@type"] == DCAT.Distribution
     assert newdistr.distribution.format == "tiff"
 
@@ -107,7 +107,7 @@ def test_save_and_load():
     assert newfile2.stat().st_size == len(buf)
     newimage2 = load_dict(ts, SEMDATA.newimage2)
     assert newimage2["@id"] == SEMDATA.newimage2
-    assert newimage2["@type"] == [DCAT.Dataset, EMMO.DataSet]
+    assert newimage2["@type"] == [DCAT.Dataset, EMMO.Dataset]
     assert newimage2.distribution["@id"] == SEMDATA.newdistr2
     assert newimage2.distribution["@type"] == DCAT.Distribution
     assert newimage2.distribution.downloadURL == f"file:{newfile2}"

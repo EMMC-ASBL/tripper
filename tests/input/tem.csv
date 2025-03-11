@@ -1,0 +1,4 @@
+@id,@type,@type,description,distribution.downloadURL
+pm:TEM_BF_lowmag,pm:TEMImage,pm:BrightFieldImage,"Low-magnification TEM bright-field image. Good for measuring the average precipitate length.",https://folk.ntnu.no/friisj/temdata/BF_100-at-m5-and-2_001.dm3
+pm:TEM_BF,pm:TEMImage,pm:BrightFieldImage,"TEM bright-field image, at a higher magnification. Good for measuring the average precipitate cross-section.",https://folk.ntnu.no/friisj/temdata/040.dm3
+pm:TEM_HAADF,pm:TEMImage,pm:HAADFImage,"High angle annular dark field TEM image.",https://folk.ntnu.no/friisj/temdata/6c8cm_008.dm3

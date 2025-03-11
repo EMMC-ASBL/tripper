@@ -12,19 +12,21 @@ Note:
     package.
 
 """
+from __future__ import annotations
+
 import secrets  # From Python 3.9 we could use random.randbytes(16).hex()
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from tripper import DCAT, Triplestore
-from tripper.dataset.dataset import add, get, load_dict, save_dict
+from tripper.datadoc.dataset import add, get, load_dict, save_dict
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
 
-def save(
+def save(  # pylint: disable=too-many-positional-arguments
     ts: Triplestore,
     data: bytes,
     class_iri: "Optional[str]" = None,
@@ -39,7 +41,7 @@ def save(
     Arguments:
         ts: Triplestore that documents the data to save.
         data: Bytes representation of the data to save.
-        class_iri: IRI of a class in the ontology (e.g. an `emmo:DataSet`
+        class_iri: IRI of a class in the ontology (e.g. an `emmo:Dataset`
             subclass) that describes the dataset that is saved.
             Is used to select the `distribution` if that is not given.
             If `distribution` is also given, a
@@ -251,7 +253,7 @@ def load(
             except Exception as exc:
                 raise IOError(
                     f"cannot access dataset '{iri}' using scheme={scheme}, "
-                    f"location={location} and optins={p.query}"
+                    f"location={location} and options={p.query}"
                 ) from exc
 
     raise IOError(f"Cannot access dataset: {iri}")

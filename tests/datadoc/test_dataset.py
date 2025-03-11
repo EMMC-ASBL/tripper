@@ -10,8 +10,8 @@ pytest.importorskip("requests")
 
 def test_get_jsonld_context():
     """Test get_jsonld_context()."""
-    from tripper.dataset import get_jsonld_context
-    from tripper.dataset.dataset import CONTEXT_URL
+    from tripper.datadoc import get_jsonld_context
+    from tripper.datadoc.dataset import CONTEXT_URL
 
     context = get_jsonld_context()
     assert isinstance(context, dict)
@@ -42,7 +42,7 @@ def test_get_jsonld_context():
 
 def test_get_prefixes():
     """Test get_prefixes()."""
-    from tripper.dataset import get_prefixes
+    from tripper.datadoc import get_prefixes
 
     prefixes = get_prefixes()
     assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
@@ -56,7 +56,7 @@ def test_get_prefixes():
 def test_get_shortnames():
     """Test get_shortnames()."""
     from tripper import DCTERMS
-    from tripper.dataset.dataset import get_shortnames
+    from tripper.datadoc.dataset import get_shortnames
 
     # Short names that are not equal to the last component of the IRI
     exceptions = (
@@ -85,7 +85,7 @@ def test_get_shortnames():
 
 def test_add():
     """Test help-function add()."""
-    from tripper.dataset.dataset import add
+    from tripper.datadoc.dataset import add
 
     d = {}
     add(d, "a", "1")
@@ -99,7 +99,7 @@ def test_add():
 
 def test_addnested():
     """Test help-function addnested()."""
-    from tripper.dataset.dataset import addnested
+    from tripper.datadoc.dataset import addnested
     from tripper.utils import AttrDict
 
     d = AttrDict()
@@ -117,7 +117,7 @@ def test_addnested():
 
 def test_get():
     """Test help-function get()."""
-    from tripper.dataset.dataset import get
+    from tripper.datadoc.dataset import get
 
     d = {"a": [1, 2], "b": 1}
     assert get(d, "a") == [1, 2]
@@ -132,7 +132,7 @@ def test_get():
 def test_expand_iri():
     """Test help-function expand_iri()."""
     from tripper import CHAMEO, DCTERMS, OTEIO, RDF
-    from tripper.dataset.dataset import expand_iri, get_prefixes
+    from tripper.datadoc.dataset import expand_iri, get_prefixes
 
     prefixes = get_prefixes()
     assert expand_iri("chameo:Sample", prefixes) == CHAMEO.Sample
@@ -147,8 +147,8 @@ def test_expand_iri():
 def test_as_jsonld():
     """Test as_jsonld()."""
     from tripper import DCAT, EMMO, OWL, Namespace
-    from tripper.dataset import as_jsonld
-    from tripper.dataset.dataset import CONTEXT_URL
+    from tripper.datadoc import as_jsonld
+    from tripper.datadoc.dataset import CONTEXT_URL
 
     with pytest.raises(ValueError):
         as_jsonld({})
@@ -164,7 +164,7 @@ def test_as_jsonld():
     assert d["@context"][1] == context
     assert d["@id"] == EX.indv
     assert len(d["@type"]) == 2
-    assert set(d["@type"]) == {DCAT.Dataset, EMMO.DataSet}
+    assert set(d["@type"]) == {DCAT.Dataset, EMMO.Dataset}
     assert d.a == "val"
 
     d2 = as_jsonld(dct, type="resource", _context=context)
@@ -183,7 +183,7 @@ def test_as_jsonld():
     )
     assert d3["@context"] == d["@context"]
     assert d3["@id"] == EX.indv2
-    assert set(d3["@type"]) == {DCAT.Dataset, EMMO.DataSet, EX.Item}
+    assert set(d3["@type"]) == {DCAT.Dataset, EMMO.Dataset, EX.Item}
     assert d3.a == "value"
     assert d3.inSeries == SER.main
 
@@ -196,7 +196,7 @@ def test_datadoc():
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
-    from tripper.dataset import load_dict, save_datadoc, save_dict, search_iris
+    from tripper.datadoc import load_dict, save_datadoc, save_dict, search_iris
 
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")
@@ -214,7 +214,12 @@ def test_datadoc():
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = load_dict(ts, iri, use_sparql=False)
     assert d["@id"] == iri
-    assert set(d["@type"]) == {DCAT.Dataset, EMMO.DataSet, SEM.SEMImage}
+    assert set(d["@type"]) == {
+        DCAT.Dataset,
+        EMMO.Dataset,
+        SEM.SEMImage,
+        "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
+    }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == "image/tiff"
 
@@ -271,7 +276,9 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2"],
     }
     assert not named_datasets.difference(datasets)
-    assert set(search_iris(ts, creator="Sigurd Wenner")) == {
+    assert set(
+        search_iris(ts, criterias={"dcterms:creator": "Sigurd Wenner"})
+    ) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
@@ -283,13 +290,28 @@ def test_datadoc():
     with pytest.raises(ValueError):
         search_iris(ts, type="invalid-type")
 
+    # Find all individuals that has "SEM images"in the title
+    assert set(search_iris(ts, regex={"dcterms:title": "SEM images"})) == {
+        SEMDATA.SEM_cement_batch2,
+        SAMPLE["SEM_cement_batch2/77600-23-001"],
+    }
+    assert set(search_iris(ts, regex={"dcterms:title": "SEM i[^ ]*s"})) == {
+        SEMDATA.SEM_cement_batch2,
+        SAMPLE["SEM_cement_batch2/77600-23-001"],
+    }
+
+    # Get individual with given IRI
+    assert search_iris(ts, criterias={"@id": SEMDATA.SEM_cement_batch2}) == [
+        SEMDATA.SEM_cement_batch2,
+    ]
+
 
 def test_custom_context():
     """Test saving YAML file with custom context to triplestore."""
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import Triplestore
-    from tripper.dataset import save_datadoc
+    from tripper.datadoc import save_datadoc
 
     ts = Triplestore("rdflib")
     d = save_datadoc(ts, indir / "custom_context.yaml")
@@ -319,7 +341,7 @@ def test_pipeline():
     otelib = pytest.importorskip("otelib")
     from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper.dataset import get_partial_pipeline, save_datadoc
+    from tripper.datadoc import get_partial_pipeline, save_datadoc
 
     # Prepare triplestore
     ts = Triplestore("rdflib")

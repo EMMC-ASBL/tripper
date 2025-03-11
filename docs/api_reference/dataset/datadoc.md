@@ -1,3 +1,0 @@
-# datadoc
-
-::: tripper.dataset.datadoc

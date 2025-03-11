@@ -4,6 +4,43 @@
 
 See [interface.py], which defines the interface of a backend and may serve as a template for creating new backends.
 
+### Developing the sparqlwrapper
+
+Tripper comes with an inbuilt backend to the SPARQLWrapper. In order
+to test this properly a real triplestore is needed. This is not done in the
+automatic workflows on github. However, a local graphDB can be setup as described below and tested with test_sparqlwrapper_graphdb.py.
+
+To create the local instance of graphdb:
+```bash
+docker pull ontotext/graphdb:10.8.3 # latest tag 17.02.2025
+docker run -d -p 7200:7200 --name graphdb ontotext/graphdb:10.8.3
+```
+
+Then go to [http://localhost:7200/](http://localhost:7200/) in your browser.
+You can add a new repository by pressing `create new reposotory` in the bottom right corner.
+Choose `GraphDB Reposotory` and write "test_repo" as repository ID.
+Tick off `Enable full-text search` and leave the rest as predefined.
+Click `Create`.
+
+Go to `Setup` and select `Repositories`.
+Activating "test_repo" by clicking the pin icon (Set as default repository) and then the restart icon (Restart repository test_repo).
+
+You can now run the test test_sparqlwrapper_graphdb_fuseki.py with graphdb.
+
+Note that if the graphdb instance is not found the test will just be skipped.
+
+
+Similarly a jena-fuseki instance can be tested locally as follows:
+
+```bash
+docker pull stain/jena-fuseki
+docker run -d --name fuseki -p 3030:3030 -e ADMIN_PASSWORD=admin0 -e=FUSEKI_DATASET_1=test_repo stain/jena-fuseki
+```
+
+You can now run the test test_sparqlwrapper_graphdb_fuseki.py with fuseki.
+
+Note that if the fuseki instance is not found the test will just be skipped.
+
 
 
 ## Creating new release
