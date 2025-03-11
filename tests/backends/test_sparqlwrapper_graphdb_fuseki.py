@@ -82,7 +82,7 @@ def get_triplestore(tsname: str) -> "Triplestore":
     return ts
 
 
-def populate_and_search(tsname):
+def populate_and_search(tsname):  # pylint: disable=too-many-statements
     """Do the test on the desried backend."""
     # Test adding triples
 
@@ -157,6 +157,8 @@ ASK {
     # Check that it raises NotImplementedError
     with pytest.raises(NotImplementedError):
         ts.query(query)
+    with pytest.raises(NotImplementedError):
+        ts.update(query)
 
     # Test DELETE query - clear the triplestore
     ts.update("DELETE WHERE { ?s ?p ?o . }")
@@ -166,6 +168,8 @@ ASK {
     # Check that it raises NotImplementedError
     with pytest.raises(NotImplementedError):
         ts.query(query)
+    with pytest.raises(NotImplementedError):
+        ts.update(query)
 
     # save a dataset to triplestore
     save_datadoc(ts, datasetinput)
