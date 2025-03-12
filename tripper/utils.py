@@ -521,9 +521,7 @@ def get_entry_points(group: str):
     """
     if sys.version_info < (3, 10):
         # Fallback for Python < 3.10
-        eps = entry_points().get(  # pylint: disable=no-member
-            group, ()
-        )
+        eps = entry_points().get(group, ())  # pylint: disable=no-member
     else:
         # New entry_point interface from Python 3.10+
         eps = entry_points(  # pylint: disable=unexpected-keyword-arg
