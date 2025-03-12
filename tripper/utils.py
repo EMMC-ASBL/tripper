@@ -7,6 +7,7 @@ import inspect
 import random
 import re
 import string
+import sys
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
@@ -14,6 +15,12 @@ from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
 from tripper.namespace import XSD, Namespace
+
+try:
+    from importlib.metadata import entry_points
+except ImportError:
+    # Use importlib_metadata backport for Python 3.6 and 3.7
+    from importlib_metadata import entry_points  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
@@ -505,3 +512,21 @@ def extend_namespace(
         namespace._update_iris(  # pylint: disable=protected-access
             triplestore, reload=True, format=format
         )
+
+
+def get_entry_points(group: str):
+    """Consistent interface to entry points for the given group.
+
+    Works for all supported versions of Python.
+    """
+    if sys.version_info < (3, 10):
+        # Fallback for Python < 3.10
+        eps = entry_points().get(  # pylint: disable=no-member
+            group, ()
+        )
+    else:
+        # New entry_point interface from Python 3.10+
+        eps = entry_points(  # pylint: disable=unexpected-keyword-arg
+            group=group
+        )
+    return eps

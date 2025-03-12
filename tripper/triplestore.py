@@ -46,7 +46,14 @@ from tripper.namespace import (
     XSD,
     Namespace,
 )
-from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
+from tripper.utils import (
+    bnode_iri,
+    en,
+    function_id,
+    get_entry_points,
+    infer_iri,
+    split_iri,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
@@ -77,12 +84,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
-
-try:
-    from importlib.metadata import entry_points
-except ImportError:
-    # Use importlib_metadata backport for Python 3.6 and 3.7
-    from importlib_metadata import entry_points  # type: ignore
 
 
 # Default packages in which to look for tripper backends
@@ -225,17 +226,7 @@ class Triplestore:
             return importlib.import_module(backend, package)
 
         # Installed backend package
-        if sys.version_info < (3, 10):
-            # Fallback for Python < 3.10
-            eps = entry_points().get(  # pylint: disable=no-member
-                "tripper.backends", ()
-            )
-        else:
-            # New entry_point interface from Python 3.10+
-            eps = entry_points(  # pylint: disable=unexpected-keyword-arg
-                group="tripper.backends"
-            )
-        for entry_point in eps:
+        for entry_point in get_entry_points("tripper.backends"):
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
 

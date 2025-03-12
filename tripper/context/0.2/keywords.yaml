@@ -35,7 +35,7 @@ Resource:
       iri: dcterms:accessRights
       range: dcterms:RightsStatement
       conformance: optional
-      description: RightsStatementInformation about who can access the resource or an indication of its security status.
+      description: Information about who can access the resource or an indication of its security status.
 
     applicableLegislation:
       iri: dcatap:applicableLegislation
@@ -124,7 +124,7 @@ Resource:
     modificationDate:
       iri: dcterms:modified
       range: rdfs:Literal
-      datatype: [xsd:date, xsd:dateTime]
+      datatype: ["xsd:date", "xsd:dateTime"]
       conformance: optional
       description: The most recent date on which the resource was changed or modified.
 
@@ -155,7 +155,7 @@ Resource:
     releaseDate:
       iri: dcterms:issued
       range: rdfs:Literal
-      datatype: [xsd:date, xsd:dateTime]
+      datatype: ["xsd:date", "xsd:dateTime"]
       conformance: optional
       description: The date of formal issuance (e.g., publication) of the resource.
 
@@ -388,7 +388,7 @@ Distribution:
     availability:
       iri: dcatap:availability
       range: rdfs:Literal
-      datatype: [xsd:date, xsd:dateTime]
+      datatype: ["xsd:date", "xsd:dateTime"]
       conformance: recommended
       description: An indication how long it is planned to keep the Distribution of the Dataset available.
 

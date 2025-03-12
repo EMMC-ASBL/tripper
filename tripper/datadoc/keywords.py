@@ -2,10 +2,33 @@
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import yaml
 
-from tripper.utils import AttrDict, openfile
+from tripper.utils import AttrDict, get_entry_points, openfile
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Optional, Union
+
+
+class Keywords:
+    """A class representing all keywords within a domain."""
+
+    def __init__(
+        self,
+        field: "Optional[str]" = None,
+        yamlfile: "Optional[Union[Path, str]]" = None,
+    ) -> None:
+        """ """
+        if field:
+            for ep in get_entry_points("tripper.keywords"):
+                pass
+
+        with openfile(infile, timeout=timeout, mode="rt") as f:
+            d = yaml.safe_load(f)
+
+        self.keywords = yaml.save_load()
 
 
 def generate_context(
