@@ -40,6 +40,7 @@ class Keywords:
             timeout: Timeout in case `yamlfile` is a URI.
         """
         self.keywords = AttrDict()
+        self.field = None
 
         if yamlfile:
             if isinstance(yamlfile, (str, Path)):
@@ -54,6 +55,8 @@ class Keywords:
             field = [field]
 
         for name in field:  # type: ignore
+            if self.field is None:
+                self.field = name
             for ep in get_entry_points("tripper.keywords"):
                 if ep.name == name:
                     dirname = re.sub(r"(?<!\d)\.", "/", ep.value)
@@ -85,8 +88,8 @@ class Keywords:
         for prefix, ns in prefixes.items():
             c[prefix] = ns
 
-        for name, resource in self.keywords.items():
-            if name in ("basedOn", "prefixes"):
+        for resource_name, resource in self.keywords.items():
+            if resource_name in ("basedOn", "prefixes"):
                 continue
             for k, v in resource.get("keywords", {}).items():
                 iri = v["iri"]
@@ -108,43 +111,22 @@ class Keywords:
         with open(outfile, "wt", encoding="utf-8") as f:
             json.dump(dct, f, indent=2)
 
+    def write_doc_keywords(self, outfile: "FileLoc") -> None:
+        """Write Markdown file with documentation of the keywords."""
+        field = f" for {self.field}" if self.field else ""
+        out = [f"# Keywords{field}", ""]
+        refs = []
 
-# def generate_context(
-#     infile: "Union[str, Path]", outfile: Path, timeout: float = 5
-# ):
-#     """Generate context.json file based on YAML input."""
-#
-#     with openfile(infile, timeout=timeout, mode="rt") as f:
-#         d = yaml.safe_load(f)
-#
-#     c = {}
-#     c["@version"] = 1.1
-#
-#     prefixes = d.pop("prefixes")
-#     for prefix, ns in prefixes.items():
-#         c[prefix] = ns
-#
-#     for name in d.keys():
-#         r = d[name]
-#         for k, v in r.get("keywords", {}).items():
-#             iri = v["iri"]
-#             if v["range"] == "rdfs:Literal":
-#                 if "datatype" in v:
-#                     c[k] = {  # type: ignore
-#                         "@id": iri,
-#                         "@type": v["datatype"],
-#                     }
-#                 else:
-#                     c[k] = iri
-#             else:
-#                 c[k] = {  # type: ignore
-#                     "@id": iri,
-#                     "@type": "@id",
-#                 }
-#
-#     dct = {"@context": c}
-#
-#     with open(outfile, "wt") as f:
-#         json.dump(dct, f, indent=2)
-#
-#     return dct
+        for resource_name, resource in self.keywords.items():
+            if resource_name in ("basedOn", "prefixes"):
+                continue
+
+            out.append(f"## Properties on {resource_name}")
+            if "description" in resource:
+                out.append(resource.description)
+            if "iri" in resource:
+                refs.append(f"[{resource_name}]: {resource.iri}")
+            header = ["IRI"]
+            table = []
+
+            for k, v in resource.get("keywords", {}).items():
