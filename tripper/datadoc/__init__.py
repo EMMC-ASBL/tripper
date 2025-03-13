@@ -12,4 +12,5 @@ from .dataset import (
     save_dict,
     search_iris,
 )
+from .keywords import Keywords
 from .tabledoc import TableDoc
