@@ -29,6 +29,24 @@ def test_AttrDict():
     assert "a" in dir(d2)
 
 
+def test_recursive_update():
+    """Test recursive_update()."""
+    from tripper.utils import AttrDict, recursive_update
+
+    other = {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": 6}
+    d = {"a": []}
+    recursive_update(d, other)
+    assert d == other
+
+    d = AttrDict()
+    recursive_update(d, other)
+    assert d == other
+
+    d = dict(d=1)
+    recursive_update(d, other)
+    assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": [1, 6]}
+
+
 def test_openfile():
     """Test openfile()."""
     from paths import indir

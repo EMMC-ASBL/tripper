@@ -87,6 +87,47 @@ class AttrDict(dict):
         return dict.__dir__(self) + list(self.keys())
 
 
+def recursive_update(d: dict, other: dict, cls=None):
+    """Recursively update dict `d` with dict `other`."""
+    if cls is None:
+        cls = d.__class__
+    if isinstance(other, dict):
+        if not isinstance(d, dict):
+            raise TypeError("`d` must be a dict when `other` is a dict")
+        for k, v in other.items():
+            if isinstance(v, dict):
+                if k not in d:
+                    d[k] = cls()
+                recursive_update(d[k], v, cls=cls)
+            elif isinstance(v, list):
+                if k not in d:
+                    d[k] = []
+                elif not isinstance(d[k], list):
+                    d[k] = [d.pop(k)]
+                recursive_update(d[k], v, cls=cls)
+            else:
+                if k in d:
+                    d[k] = [d.pop(k), v]
+                else:
+                    d[k] = v
+    elif isinstance(other, list):
+        if not isinstance(d, list):
+            raise TypeError("`d` must be a list when `other` is a list")
+        for x in other:
+            if isinstance(x, dict):
+                new = cls()
+                recursive_update(new, x, cls=cls)
+                d.append(new)
+            elif isinstance(x, list):
+                new = []
+                recursive_update(new, x, cls=cls)
+                d.append(new)
+            else:
+                d.append(x)
+    else:
+        raise TypeError("`other` should either be a dict or list")
+
+
 @contextmanager
 def openfile(
     url: "Union[str, Path]", timeout: float = 3, **kwargs

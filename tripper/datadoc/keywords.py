@@ -1,34 +1,73 @@
 """Parse and generate context."""
 
 import json
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import yaml
 
-from tripper.utils import AttrDict, get_entry_points, openfile
+from tripper.utils import (
+    AttrDict,
+    get_entry_points,
+    openfile,
+    recursive_update,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Union
+    from typing import Optional, Sequence, Union
+
+    FileLoc = Union[Path, str]
 
 
 class Keywords:
     """A class representing all keywords within a domain."""
 
+    rootdir = Path(__file__).absolute().parent.parent.parent.resolve()
+
     def __init__(
         self,
-        field: "Optional[str]" = None,
-        yamlfile: "Optional[Union[Path, str]]" = None,
+        field: "Optional[Union[str, Sequence[str]]]" = None,
+        yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+        timeout: float = 3,
     ) -> None:
-        """ """
-        if field:
-            for ep in get_entry_points("tripper.keywords"):
-                pass
+        """Initialises keywords object.
 
-        with openfile(infile, timeout=timeout, mode="rt") as f:
+        Arguments:
+            field: Name of field to load keywords for.
+            yamlfile: YAML file with keyword definitions to parse.  May also
+                be an URI in which case it will be accessed via HTTP GET.
+            timeout: Timeout in case `yamlfile` is a URI.
+        """
+        self.keywords = AttrDict()
+
+        if yamlfile:
+            if isinstance(yamlfile, (str, Path)):
+                self.parse(yamlfile)
+            else:
+                for path in yamlfile:
+                    self.parse(path)
+        elif not field:
+            field = "default"
+
+        if isinstance(field, str):
+            field = [field]
+
+        for fld in field:
+            for ep in get_entry_points("tripper.keywords"):
+                if ep.name == fld:
+                    dirname = re.sub(r"(?<!\d)\.", "/", ep.value)
+                    self.parse(self.rootdir / dirname / "keywords.yaml")
+                    break
+            else:
+                raise TypeError(f"fld")
+
+    def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3):
+        """Parse YAML file with keyword definitions."""
+        with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
 
-        self.keywords = yaml.save_load()
+        recursive_update(self.keywords, d)
 
 
 def generate_context(
