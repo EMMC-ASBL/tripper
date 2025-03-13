@@ -753,7 +753,7 @@ def as_jsonld(
     return d
 
 
-def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
+def get_partial_pipeline(
     ts: Triplestore,
     client,
     iri: str,

@@ -52,7 +52,7 @@ class TableDoc:
 
     # pylint: disable=redefined-builtin,too-few-public-methods
 
-    def __init__(  # pylint: disable=too-many-positional-arguments
+    def __init__(
         self,
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
@@ -200,7 +200,7 @@ class TableDoc:
         )
 
     @staticmethod
-    def parse_csv(  # pylint: disable=too-many-positional-arguments
+    def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
         type: "Optional[str]" = "dataset",
         prefixes: "Optional[dict]" = None,

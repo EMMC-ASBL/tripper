@@ -87,8 +87,9 @@ class AttrDict(dict):
         return dict.__dir__(self) + list(self.keys())
 
 
-def recursive_update(d: dict, other: dict, cls=None):
+def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
     """Recursively update dict `d` with dict `other`."""
+    # pylint: disable=too-many-branches
     if cls is None:
         cls = d.__class__
     if isinstance(other, dict):
@@ -104,7 +105,7 @@ def recursive_update(d: dict, other: dict, cls=None):
                     d[k] = []
                 elif not isinstance(d[k], list):
                     d[k] = [d.pop(k)]
-                recursive_update(d[k], v, cls=cls)
+                recursive_update(d[k], v, cls=cls)  # type: ignore
             else:
                 if k in d:
                     d[k] = [d.pop(k), v]
@@ -148,6 +149,7 @@ def openfile(
     url = str(url)
     u = url.lower()
     tmpfile = False
+    f = None
 
     if u.startswith("file:"):
         fname = url[7:] if u.startswith("file://") else url[5:]
@@ -172,7 +174,8 @@ def openfile(
         f = open(fname, **kwargs)  # pylint: disable=unspecified-encoding
         yield f
     finally:
-        f.close()
+        if f is not None:
+            f.close()
         if tmpfile:
             Path(fname).unlink()
 

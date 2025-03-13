@@ -136,7 +136,5 @@ filterwarnings = [
 
 # Note the quotes around dlite.python_storage_plugins to escape the embedded dot
 [project.entry-points."tripper.keywords"]
-#"tripper/context/0.2/keywords.yaml" = "tripper.datadoc:default"
-#"tripper/context/imaging/0.1/requirements.yaml" = "tripper.datadoc:imaging"
-default = "tripper.context.0.2"
+default = "tripper.context.0.3"
 imaging = "tripper.context.imaging.0.1"
