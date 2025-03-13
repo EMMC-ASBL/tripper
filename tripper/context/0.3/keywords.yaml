@@ -96,7 +96,7 @@ Resource:
 
     keyword:
       iri: dcat:keyword
-      range: Literal
+      range: rdfs:Literal
       datatype: rdf:LangString
       conformance: recommended
       description: A keyword or tag describing the resource.
@@ -422,14 +422,14 @@ Distribution:
 
     format:
       iri: dcterms:format
-      range: rcterms:MediaTypeOrExtent
+      range: dcterms:MediaTypeOrExtent
       conformance: optional
       description: The file format of the Distribution.
       usageNote: dcat:mediaType SHOULD be used if the type of the distribution is defined by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
 
     generator:
       iri: oteio:generator
-      range: oreio:Generator
+      range: oteio:Generator
       description: A generator that can create the distribution.
 
     mediaType:
@@ -447,7 +447,7 @@ Distribution:
 
     parser:
       iri: oteio:parser
-      range: oreio:Parser
+      range: oteio:Parser
       description: A parser that can parse the distribution.
 
     status:
@@ -498,7 +498,7 @@ Agent:
       description: A name of the agent.
     type:
       iri: dcterms:type
-      range:
+      range: skos:Concept
       conformance: optional
       description: The nature of the agent.
 

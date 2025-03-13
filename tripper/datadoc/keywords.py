@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import yaml
 
+from tripper import Triplestore
 from tripper.utils import (
     AttrDict,
     get_entry_points,
@@ -113,20 +114,90 @@ class Keywords:
 
     def write_doc_keywords(self, outfile: "FileLoc") -> None:
         """Write Markdown file with documentation of the keywords."""
+        # pylint: disable=too-many-locals,too-many-branches
+        ts = Triplestore("rdflib")
+        for prefix, ns in self.keywords.get("prefixes", {}).items():
+            ts.bind(prefix, ns)
+
         field = f" for {self.field}" if self.field else ""
-        out = [f"# Keywords{field}", ""]
+        out = [f"# Keywords{field}"]
         refs = []
 
         for resource_name, resource in self.keywords.items():
             if resource_name in ("basedOn", "prefixes"):
                 continue
 
+            out.append("")
             out.append(f"## Properties on {resource_name}")
             if "description" in resource:
                 out.append(resource.description)
             if "iri" in resource:
-                refs.append(f"[{resource_name}]: {resource.iri}")
-            header = ["IRI"]
+                refs.append(
+                    f"[{resource_name}]: {ts.expand_iri(resource.iri)}"
+                )
+            header = [
+                "Keyword",
+                "Range",
+                "Conformance",
+                "Definition",
+                "Usage note",
+            ]
             table = []
+            for keyword, d in resource.get("keywords", {}).items():
+                rangestr = f"[{d.range}]" if "range" in d else ""
+                if "datatype" in d:
+                    rangestr += f" {d.datatype}"
+                table.append(
+                    [
+                        f"[{keyword}]",
+                        rangestr,
+                        f"{d.conformance}" if "conformance" in d else "",
+                        f"{d.description}" if "description" in d else "",
+                        f"{d.usageNote}" if "usageNote" in d else "",
+                    ]
+                )
+                refs.append(f"[{keyword}]: {ts.expand_iri(d.iri)}")
+                if "range" in d:
+                    refs.append(f"[{d.range}]: {ts.expand_iri(d.range)}")
 
-            for k, v in resource.get("keywords", {}).items():
+            widths = [len(h) for h in header]
+            for row in table:
+                for i, col in enumerate(row):
+                    n = len(col)
+                    if n > widths[i]:
+                        widths[i] = n
+
+            empty = ""
+            if table:
+                out.append("")
+                out.append(
+                    "| "
+                    + " | ".join(
+                        f"{head:{widths[i]}}" for i, head in enumerate(header)
+                    )
+                    + " |"
+                )
+                out.append(
+                    "| "
+                    + " | ".join(
+                        f"{empty:-<{widths[i]}}" for i in range(len(header))
+                    )
+                    + " |"
+                )
+                for row in table:
+                    out.append(
+                        "| "
+                        + " | ".join(
+                            f"{col:{widths[i]}}" for i, col in enumerate(row)
+                        )
+                        + " |"
+                    )
+            out.append("")
+
+        # References
+        out.append("")
+        out.append("")
+        out.append("")
+        out.extend(refs)
+        with open(outfile, "wt", encoding="utf-8") as f:
+            f.write("\n".join(out) + "\n")

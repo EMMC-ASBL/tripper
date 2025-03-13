@@ -61,7 +61,7 @@
     },
     "keyword": {
       "@id": "dcat:keyword",
-      "@type": "@id"
+      "@type": "rdf:LangString"
     },
     "landingPage": {
       "@id": "dcat:landingPage",

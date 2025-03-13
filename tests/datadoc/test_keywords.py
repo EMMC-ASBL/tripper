@@ -22,3 +22,5 @@ def test_parse_default():
     with open(outdir / "context.json", "rt", encoding="utf-8") as f:
         d2 = json.load(f)
     assert d2 == d1
+
+    keywords.write_doc_keywords(outdir / "keywords.md")
