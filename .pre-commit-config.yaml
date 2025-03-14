@@ -79,6 +79,7 @@ repos:
       language: script
       types: [python]
       pass_filenames: false
+      stages: ["pre-commit"]
 
     - id: pylint
       name: pylint
