@@ -56,7 +56,33 @@ def fuseki_available():
         time.sleep(interval)
 
 
-def populate_and_search(ts):
+def get_triplestore(tsname: str) -> "Triplestore":
+    """Help function that returns a new triplestore object."""
+    from tripper import Triplestore
+
+    if tsname == "GraphDB":
+        ts = Triplestore(
+            backend="sparqlwrapper",
+            base_iri="http://localhost:7200/repositories/test_repo",
+            update_iri=(
+                "http://localhost:7200/repositories/test_repo/statements"
+            ),
+        )
+    elif tsname == "Fuseki":
+        ts = Triplestore(
+            backend="sparqlwrapper",
+            base_iri=f"{FUSEKI_CHECK_URL}/test_repo",
+            update_iri=f"{FUSEKI_CHECK_URL}/test_repo/update",
+            username="admin",
+            password="admin0",
+        )
+    else:
+        raise ValueError(f"Unsupported triplestore name: {tsname}")
+
+    return ts
+
+
+def populate_and_search(tsname):  # pylint: disable=too-many-statements
     """Do the test on the desried backend."""
     # Test adding triples
 
@@ -68,6 +94,8 @@ def populate_and_search(ts):
     thisdir = Path(__file__).resolve().parent
     datasetinput = thisdir / "datadocumentation_sample.yaml"
     datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
+
+    ts = get_triplestore(tsname)
 
     ts.add_triples(
         [
@@ -129,18 +157,25 @@ ASK {
     # Check that it raises NotImplementedError
     with pytest.raises(NotImplementedError):
         ts.query(query)
+    with pytest.raises(NotImplementedError):
+        ts.update(query)
+
+    # Test DELETE query - clear the triplestore
+    ts.update("DELETE WHERE { ?s ?p ?o . }")
 
     # Test DESCRIBE query
     query = "DESCRIBE <http://www.example.org/subject>"
     # Check that it raises NotImplementedError
     with pytest.raises(NotImplementedError):
         ts.query(query)
+    with pytest.raises(NotImplementedError):
+        ts.update(query)
 
-    # save a dataset to the graphDB
+    # save a dataset to triplestore
     save_datadoc(ts, datasetinput)
     save_datadoc(ts, datasetinput2)
 
-    # search for datasets in the graphDB
+    # search for datasets in triplestore
     datasets = search_iris(ts, type="dataset")
 
     print("Found datasets:")
@@ -184,6 +219,18 @@ ASK {
         ]
     )
 
+    # Test INSERT query
+    query = """
+PREFIX : <http://example.com#>
+INSERT DATA {
+    :sub :pred :obj .
+}
+"""
+    EX = ts.bind("ex", "http://example.com#")
+    ts.update(query)
+    triples = list(ts.triples(EX.sub))
+    assert triples == [(EX.sub, EX.pred, EX.obj)]
+
 
 def test_graphdb():
     """
@@ -193,17 +240,8 @@ def test_graphdb():
     if not graphdb_available():
         pytest.skip("GraphDB instance not available locally; skipping tests.")
 
-    from tripper import Triplestore
-
     print("Testing graphdb")
-
-    ts = Triplestore(
-        backend="sparqlwrapper",
-        base_iri="http://localhost:7200/repositories/test_repo",
-        update_iri="http://localhost:7200/repositories/test_repo/statements",
-    )
-
-    populate_and_search(ts)
+    populate_and_search("GraphDB")
 
 
 def test_fuseki():
@@ -214,16 +252,5 @@ def test_fuseki():
     if not fuseki_available():
         pytest.skip("Fuseki instance not available locally; skipping tests.")
 
-    from tripper import Triplestore
-
     print("Testing fuseki")
-
-    ts = Triplestore(
-        backend="sparqlwrapper",
-        base_iri=f"{FUSEKI_CHECK_URL}/test_repo",
-        update_iri=f"{FUSEKI_CHECK_URL}/test_repo/update",
-        username="admin",
-        password="admin0",
-    )
-
-    populate_and_search(ts)
+    populate_and_search("Fuseki")
