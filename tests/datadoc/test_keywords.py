@@ -10,7 +10,7 @@ def test_parse_default():
 
     pytest.importorskip("rdflib")
 
-    from dataset_paths import outdir, rootdir
+    from dataset_paths import outdir, rootdir  # pylint: disable=import-error
 
     from tripper.datadoc.keywords import Keywords
 
