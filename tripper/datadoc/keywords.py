@@ -160,38 +160,7 @@ class Keywords:
                 if "range" in d:
                     refs.append(f"[{d.range}]: {ts.expand_iri(d.range)}")
 
-            widths = [len(h) for h in header]
-            for row in table:
-                for i, col in enumerate(row):
-                    n = len(col)
-                    if n > widths[i]:
-                        widths[i] = n
-
-            empty = ""
-            if table:
-                out.append("")
-                out.append(
-                    "| "
-                    + " | ".join(
-                        f"{head:{widths[i]}}" for i, head in enumerate(header)
-                    )
-                    + " |"
-                )
-                out.append(
-                    "| "
-                    + " | ".join(
-                        f"{empty:-<{widths[i]}}" for i in range(len(header))
-                    )
-                    + " |"
-                )
-                for row in table:
-                    out.append(
-                        "| "
-                        + " | ".join(
-                            f"{col:{widths[i]}}" for i, col in enumerate(row)
-                        )
-                        + " |"
-                    )
+            out.extend(self._to_table(header, table))
             out.append("")
 
         # References
@@ -201,3 +170,73 @@ class Keywords:
         out.extend(refs)
         with open(outfile, "wt", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
+
+    def write_doc_prefixes(self, outfile: "FileLoc") -> None:
+        """Write Markdown file with documentation of the prefixes."""
+        out = [
+            "# Predefined prefixes",
+            (
+                "All namespace prefixes listed on this page are defined in "
+                "the [default JSON-LD context]."
+            ),
+            (
+                "See [User-defined prefixes] for how to extend this list "
+                "with additional namespace prefixes."
+            ),
+        ]
+        rows = [
+            [prefix, ns]
+            for prefix, ns in self.keywords.get("prefixes", {}).items()
+        ]
+        out.extend(self._to_table(["Prefix", "Namespace"], rows))
+        out.append("")
+        out.append("")
+        out.append(
+            "[default JSON-LD context]: https://raw.githubuser"
+            "content.com/EMMC-ASBL/tripper/refs/heads/master/"
+            "tripper/context/0.2/context.json"
+        )
+        out.append(
+            "[User-defined prefixes]: customisation.md/#user-defined-prefixes"
+        )
+        with open(outfile, "wt", encoding="utf-8") as f:
+            f.write("\n".join(out) + "\n")
+
+    def _to_table(self, header, rows):
+        """Return header and rows as a ."""
+
+        widths = [len(h) for h in header]
+        for row in rows:
+            for i, col in enumerate(row):
+                n = len(col)
+                if n > widths[i]:
+                    widths[i] = n
+
+        lines = []
+        empty = ""
+        if rows:
+            lines.append("")
+            lines.append(
+                "| "
+                + " | ".join(
+                    f"{head:{widths[i]}}" for i, head in enumerate(header)
+                )
+                + " |"
+            )
+            lines.append(
+                "| "
+                + " | ".join(
+                    f"{empty:-<{widths[i]}}" for i in range(len(header))
+                )
+                + " |"
+            )
+            for row in rows:
+                lines.append(
+                    "| "
+                    + " | ".join(
+                        f"{col:{widths[i]}}" for i, col in enumerate(row)
+                    )
+                    + " |"
+                )
+
+        return lines

@@ -24,3 +24,4 @@ def test_parse_default():
     assert d2 == d1
 
     keywords.write_doc_keywords(outdir / "keywords.md")
+    keywords.write_doc_prefixes(outdir / "prefixes.md")
