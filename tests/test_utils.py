@@ -42,7 +42,7 @@ def test_recursive_update():
     recursive_update(d, other)
     assert d == other
 
-    d = dict(d=1)
+    d = {"d": 1}
     recursive_update(d, other)
     assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": [1, 6]}
 

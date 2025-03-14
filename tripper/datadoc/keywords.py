@@ -121,6 +121,7 @@ class Keywords:
 
         field = f" for {self.field}" if self.field else ""
         out = [f"# Keywords{field}"]
+        order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 
         for resource_name, resource in self.keywords.items():
@@ -159,7 +160,7 @@ class Keywords:
                 refs.append(f"[{keyword}]: {ts.expand_iri(d.iri)}")
                 if "range" in d:
                     refs.append(f"[{d.range}]: {ts.expand_iri(d.range)}")
-
+            table.sort(key=lambda row: order.get(row[2], 10))
             out.extend(self._to_table(header, table))
             out.append("")
 
@@ -240,3 +241,63 @@ class Keywords:
                 )
 
         return lines
+
+
+def main():
+    """Main function providing CLI access to keywords."""
+    import argparse  # pylint: disable=import-outside-toplevel
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Tool for generation of JSON-LD context and documentation from "
+            "keyword definitions."
+        )
+    )
+    parser.add_argument(
+        "--yamlfile",
+        "-i",
+        metavar="YAMLFILE",
+        action="append",
+        help="Load keywords from this YAML file.",
+    )
+    parser.add_argument(
+        "--field",
+        "-f",
+        metavar="NAME",
+        action="append",
+        help="Load keywords from this field.",
+    )
+    parser.add_argument(
+        "--context",
+        "-c",
+        metavar="FILENAME",
+        help="Generate JSON-LD context file.",
+    )
+    parser.add_argument(
+        "--keywords",
+        "-k",
+        metavar="FILENAME",
+        help="Generate keywords Markdown documentation.",
+    )
+    parser.add_argument(
+        "--prefixes",
+        "-p",
+        metavar="FILENAME",
+        help="Generate prefixes Markdown documentation.",
+    )
+    args = parser.parse_args()
+
+    keywords = Keywords(field=args.field, yamlfile=args.yamlfile)
+
+    if args.context:
+        keywords.write_context(args.context)
+
+    if args.keywords:
+        keywords.write_doc_keywords(args.keywords)
+
+    if args.prefixes:
+        keywords.write_doc_prefixes(args.prefixes)
+
+
+if __name__ == "__main__":
+    main()
