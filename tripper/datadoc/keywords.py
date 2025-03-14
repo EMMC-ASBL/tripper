@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Parse and generate context."""
 
 import json
@@ -243,7 +244,7 @@ class Keywords:
         return lines
 
 
-def main():
+def main(argv=None):
     """Main function providing CLI access to keywords."""
     import argparse  # pylint: disable=import-outside-toplevel
 
@@ -285,7 +286,7 @@ def main():
         metavar="FILENAME",
         help="Generate prefixes Markdown documentation.",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     keywords = Keywords(field=args.field, yamlfile=args.yamlfile)
 

@@ -75,6 +75,13 @@ repos:
 
   - repo: local
     hooks:
+    - id: generate-context-and-doc
+      name: Generate JSON-LD context and documentation
+      entry: tripper/datadoc/keywords.py --context=tripper/context/0.3/context.json --keywords=docs/datadoc/keywords.md --prefixes=docs/datadoc/prefixes.md
+      language: script
+      types: [python]
+      pass_filenames: false
+
     - id: pylint
       name: pylint
       entry: pylint
@@ -85,6 +92,7 @@ repos:
       require_serial: true
       files: ^.*$
       exclude: ^tests/.*$
+
     - id: pylint-tests
       name: pylint - tests
       entry: pylint

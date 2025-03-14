@@ -85,6 +85,7 @@ Package = "https://pypi.org/project/tripper"
 
 [project.scripts]
 datadoc = "tripper.datadoc.clitool:main"
+keywords = "tripper.datadoc.keywords:main"
 
 [tool.isort]
 line_length = 79  # PEP8
