@@ -150,7 +150,11 @@ class Keywords:
             for keyword, d in resource.get("keywords", {}).items():
                 rangestr = f"[{d.range}]" if "range" in d else ""
                 if "datatype" in d:
-                    rangestr += f" {d.datatype}"
+                    rangestr += (
+                        ", " + ", ".join(d.datatype)
+                        if isinstance(d.datatype, list)
+                        else f", {d.datatype}"
+                    )
                 table.append(
                     [
                         f"[{keyword}]",
