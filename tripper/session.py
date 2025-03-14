@@ -66,6 +66,10 @@ class Session:
 
         return conf
 
+    def get_names(self) -> list:
+        """Return a list with all configured session names."""
+        return list(self.sessions.keys())
+
     def get_triplestore(
         self, name: str, password: "Optional[str]" = None
     ) -> "Triplestore":
