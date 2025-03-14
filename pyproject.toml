@@ -138,5 +138,5 @@ filterwarnings = [
 
 # Note the quotes around dlite.python_storage_plugins to escape the embedded dot
 [project.entry-points."tripper.keywords"]
-default = "tripper.context.0.3"
-imaging = "tripper.context.imaging.0.1"
+"tripper.context.0.3" = "default"
+"tripper.context.imaging.0.1" = "imaging"

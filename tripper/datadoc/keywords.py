@@ -57,16 +57,16 @@ class Keywords:
         if isinstance(field, str):
             field = [field]
 
-        for name in field:  # type: ignore
+        for fieldname in field:  # type: ignore
             if self.field is None:
-                self.field = name
+                self.field = fieldname
             for ep in get_entry_points("tripper.keywords"):
-                if ep.name == name:
-                    dirname = re.sub(r"(?<!\d)\.", "/", ep.value)
+                if ep.value == fieldname:
+                    dirname = re.sub(r"(?<!\d)\.", "/", ep.name)
                     self.parse(self.rootdir / dirname / "keywords.yaml")
                     break
             else:
-                raise TypeError(f"Unknown field: {name}")
+                raise TypeError(f"Unknown field: {fieldname}")
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
