@@ -3,7 +3,6 @@
 
 import json
 import os
-import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -62,8 +61,7 @@ class Keywords:
                 self.field = fieldname
             for ep in get_entry_points("tripper.keywords"):
                 if ep.value == fieldname:
-                    dirname = re.sub(r"(?<!\d)\.", "/", ep.name)
-                    self.parse(self.rootdir / dirname / "keywords.yaml")
+                    self.parse(self.rootdir / ep.name / "keywords.yaml")
                     break
             else:
                 raise TypeError(f"Unknown field: {fieldname}")
