@@ -2,6 +2,7 @@
 """Parse and generate context."""
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -112,6 +113,7 @@ class Keywords:
         dct = {"@context": c}
         with open(outfile, "wt", encoding="utf-8") as f:
             json.dump(dct, f, indent=2)
+            f.write(os.linesep)
 
     def write_doc_keywords(self, outfile: "FileLoc") -> None:
         """Write Markdown file with documentation of the keywords."""
