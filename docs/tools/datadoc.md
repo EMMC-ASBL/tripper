@@ -6,8 +6,9 @@ It provides functionality for both populating a triplestore with data documentat
 Running `datadoc --help` from the shell will show the following help message:
 
 ```
-usage: datadoc [-h] [--backend BACKEND] [--base-iri BASE_IRI]
-               [--database DATABASE] [--package PACKAGE] [--parse LOCATION]
+usage: datadoc [-h] [--config CONFIG] [--triplestore TRIPLESTORE]
+               [--backend BACKEND] [--base-iri BASE_IRI] [--database DATABASE]
+               [--package PACKAGE] [--parse LOCATION]
                [--parse-format PARSE_FORMAT] [--prefix PREFIX=URL]
                {add,find,fetch} ...
 
@@ -15,13 +16,18 @@ Tool for data documentation. It allows populating and searching a triplestore
 for existing documentation.
 
 positional arguments:
-  {add,find,load}       Subcommands:
+  {add,find,fetch}      Subcommands:
     add                 Populate the triplestore with data documentation.
     find                Find documented resources in the triplestore.
     fetch               Fetch documented dataset from a storage.
 
 options:
   -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        Session configuration file.
+  --triplestore TRIPLESTORE, -t TRIPLESTORE
+                        Name of triplestore to connect to. The name should be
+                        defined in the session configuration file.
   --backend BACKEND, -b BACKEND
                         Triplestore backend to use. Defaults to "rdflib" - an
                         in-memory rdflib triplestore, that can be pre-loaded
@@ -46,7 +52,8 @@ Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` 
 
 ### General options
 
-* The `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
+* The `--config`, `--triplestore`, `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
+  Most convenient is to configure a [session] and use the `--triplestore` argument select the triplestore to connect to.
 
 * The `--parse`, `--parse-format` and `--prefix` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.
@@ -420,6 +427,5 @@ The `--output` option allows to write the dataset to a local file.
 
 
 
-
-
 [resource types]: ../datadoc/introduction.md/#resource-types
+[session]: ../session.md
