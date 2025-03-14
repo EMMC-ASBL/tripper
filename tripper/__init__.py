@@ -26,6 +26,7 @@ from .namespace import (
     XSD,
     Namespace,
 )
+from .session import Session
 from .triplestore import Triplestore, backend_packages
 from .triplestore_extend import Tripper
 
@@ -64,6 +65,7 @@ __all__ = (
     "XML",
     "XSD",
     "Namespace",
+    "Session",
     #
     "Triplestore",
     "backend_packages",
