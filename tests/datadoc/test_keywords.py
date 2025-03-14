@@ -8,7 +8,7 @@ def test_parse_default():
 
     import pytest
 
-    pytest.importofskip("rdflib")
+    pytest.importorskip("rdflib")
 
     from dataset_paths import outdir, rootdir
 
