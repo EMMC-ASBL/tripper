@@ -126,7 +126,7 @@ class Triplestore:  ##
         # "dm": DM,  ##
     } ##
 ##
-    def __init__(
+    def __init__(  ##
         self,
         backend: str,
         base_iri: "Optional[str]" = None,
@@ -467,7 +467,7 @@ class Triplestore:  ##
         namespace: "Union[str, Namespace, Triplestore, None]" = "",
         **kwargs,
     ) -> Namespace:
-        """Bind prefix to namespace and return the new Namespace object.
+        """Bind prefix to namespace and return the new Namespace object.  ##
 ##
         Arguments:  ##
             prefix: Prefix to bind the the namespace.
@@ -603,7 +603,7 @@ class Triplestore:  ##
         """Returns the class implementing the given backend."""
         module = cls._load_backend(backend, package=package)
         return getattr(module, f"{backend.title()}Strategy")
-
+##
     def _check_method(self, name):
         """Check that backend implements the given method."""
         self._check_backend_method(self.backend_name, name)
@@ -652,7 +652,7 @@ class Triplestore:  ##
 
         # Index of subject-predicate-object argument that is None
         (idx,) = [i for i, v in enumerate(spo) if v is None]
-
+##
         triples = self.triples(subject, predicate, object)
 
         if lang:
@@ -691,48 +691,48 @@ class Triplestore:  ##
         """Returns a generator of predicates for given subject and object."""
         for _, p, _ in self.triples(subject=subject, object=object):
             yield p
-
-    def subjects(
-        self, predicate=None, object=None  # pylint: disable=redefined-builtin
-    ):
-        """Returns a generator of subjects for given predicate and object."""
+##
+    def subjects(  ##
+        self, predicate=None, object=None  # pylint: disable=redefined-builtin  ##
+    ):  ##
+        """Returns a generator of subjects for given predicate and object."""  ##
         for s, _, _ in self.triples(predicate=predicate, object=object):
-            yield s
-
+            yield s  ##
+##
     def predicate_objects(self, subject=None):
         """Returns a generator of (predicate, object) tuples for given
         subject."""
         for _, p, o in self.triples(subject=subject):
             yield p, o
-
+##
     def subject_objects(self, predicate=None):
         """Returns a generator of (subject, object) tuples for given
         predicate."""
         for s, _, o in self.triples(predicate=predicate):
             yield s, o
-
+##
     def subject_predicates(
         self, object=None
     ):  # pylint: disable=redefined-builtin
-        """Returns a generator of (subject, predicate) tuples for given
-        object."""
+        """Returns a generator of (subject, predicate) tuples for given  ##
+        object."""  ##
         for s, p, _ in self.triples(object=object):
-            yield s, p
-
-    def has(
-        self, subject=None, predicate=None, object=None
-    ):  # pylint: disable=redefined-builtin
-        """Returns true if the triplestore has any triple matching
-        the give subject, predicate and/or object."""
+            yield s, p  ##
+##
+    def has(  ##
+        self, subject=None, predicate=None, object=None  ##
+    ):  # pylint: disable=redefined-builtin  ##
+        """Returns true if the triplestore has any triple matching  ##
+        the give subject, predicate and/or object."""  ##
         triple = self.triples(
             subject=subject, predicate=predicate, object=object
         )
-        try:
-            next(triple)
-        except StopIteration:
-            return False
-        return True
-
+        try:  ##
+            next(triple)  ##
+        except StopIteration:  ##
+            return False  ##
+        return True  ##
+##
     def set(self, triple):
         """Convenience method to update the value of object.
 
