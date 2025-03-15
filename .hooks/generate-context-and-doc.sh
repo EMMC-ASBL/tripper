@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 # Enter repository root directory
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"/..

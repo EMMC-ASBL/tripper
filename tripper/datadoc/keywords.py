@@ -100,9 +100,8 @@ class Keywords:
         for prefix, ns in prefixes.items():
             c[prefix] = ns
 
-        for resource_name, resource in self.keywords.items():
-            if resource_name in ("basedOn", "prefixes"):
-                continue
+        resources = self.keywords.get("resources", {}).items()
+        for resource in resources.values():
             for k, v in resource.get("keywords", {}).items():
                 iri = v["iri"]
                 if v["range"] == "rdfs:Literal":
@@ -136,10 +135,8 @@ class Keywords:
         order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 
-        for resource_name, resource in self.keywords.items():
-            if resource_name in ("basedOn", "prefixes"):
-                continue
-
+        resources = self.keywords.get("resources", {}).items()
+        for resource_name, resource in resources:
             out.append("")
             out.append(f"## Properties on [{resource_name}]")
             if "description" in resource:

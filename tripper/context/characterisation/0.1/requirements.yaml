@@ -1,7 +1,0 @@
----
-
-standards:
-
-  default:
-
-    basedOn: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/requirements.yaml

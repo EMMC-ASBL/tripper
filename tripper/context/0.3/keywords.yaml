@@ -27,684 +27,685 @@ prefixes:
   chameo: "https://w3id.org/emmo/domain/characterisation-methodology/chameo#"
 
 
-Resource:
-  iri: dcat:Resource
-  description: Resource published or curated by an agent.
-  keywords:
-    accessRights:
-      iri: dcterms:accessRights
-      range: dcterms:RightsStatement
-      conformance: optional
-      description: Information about who can access the resource or an indication of its security status.
-
-    applicableLegislation:
-      iri: dcatap:applicableLegislation
-      range: eli:LegalReource
-      conformance: optional
-      description: The legislation that mandates the creation or management of the resource.
-
-    conformsTo:
-      iri: dcterms:conformsTo
-      range: dcterms:Standard
-      conformance: optional
-      description: An implementing rule or other specification.
-
-    contactPoint:
-      iri: dcat:contactPoint
-      range: vcard:Kind
-      conformance: recommended
-      description: Contact information that can be used for sending comments about the resource.
-
-    creator:
-      iri: dcterms:creator
-      range: foaf:Agent
-      conformance: optional
-      description: An entity responsible for producing the resource.
-
-    description:
-      iri: dcterms:description
-      range: rdfs:Literal
-      datatype: rdf:LangString
-      conformance: mandatory
-      description: A free-text account of the resource.
-      usageNote: This property can be repeated for parallel language versions of the description.
-
-    documentation:
-      iri: foaf:documentation
-      range: foaf:Document
-      conformance: optional
-      description: A page or document about this resource.
-
-    hasVersion:
-      iri: dcat:hasVersion
-      range: rdfs:Resource
-      conformance: optional
-      description: A related resource that is a version, edition, or adaptation of the described resource.
-      usageNote: This property is intended for relating a non-versioned or abstract resource to several versioned resources, e.g., snapshots.
-
-    identifier:
-      iri: dcterms:identifier
-      range: rdfs:Literal
-      conformance: optional
-      description: URI or other unique identifier of the resource being described or cataloged.
-
-    isReferencedBy:
-      iri: dcterms:isReferencedBy
-      range: rdfs:Resource
-      conformance: optional
-      description: A related resource, such as a publication, that references, cites, or otherwise points to the documented resource.
-
-    keyword:
-      iri: dcat:keyword
-      range: rdfs:Literal
-      datatype: rdf:LangString
-      conformance: recommended
-      description: A keyword or tag describing the resource.
-
-    landingPage:
-      iri: dcat:landingPage
-      range: foaf:Document
-      conformance: optional
-      description: A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
-      usageNote: It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.
-
-    language:
-      iri: dcterms:language
-      range: dcterms:LinguisticSystem
-      conformance: optional
-      description: A language of the resource.
-      usageNote: This property can be repeated if the resource is expressed with multiple languages.
-
-    license:
-      iri: dcterms:license
-      range: dcterms:LicenseDocument
-      conformance: optional
-      description: A licence under which the resource is made available.
-
-    modificationDate:
-      iri: dcterms:modified
-      range: rdfs:Literal
-      datatype: ["xsd:date", "xsd:dateTime"]
-      conformance: optional
-      description: The most recent date on which the resource was changed or modified.
-
-    publisher:
-      iri: dcterms:publisher
-      range: foaf:Agent
-      conformance: recommended
-      description: Agent responsible for making the resource available.
-
-    qualifiedAttribution:
-      iri: prov:qualifiedAttribution
-      range: prov:Attribution
-      conformance: optional
-      description: An Agent having some form of responsibility for the resource.
-
-    qualifiedRelation:
-      iri: dcat:qualifiedRelation
-      range: dcat:Relationship
-      conformance: optional
-      description: A description of a relationship with another resource.
-
-    relatedResource:
-      iri: dcterms:relation
-      range: rdfs:Resource
-      conformance: optional
-      description: A resource with an unspecified relationship to the cataloged resource.
-
-    releaseDate:
-      iri: dcterms:issued
-      range: rdfs:Literal
-      datatype: ["xsd:date", "xsd:dateTime"]
-      conformance: optional
-      description: The date of formal issuance (e.g., publication) of the resource.
-
-    theme:
-      iri: dcat:theme
-      range: skos:Concept
-      conformance: recommended
-      description: A category of the resource.  A resource may be associated with multiple themes.
-      usageNote: The set of themes used to categorize the resources are organized in a skos:ConceptScheme, skos:Collection, owl:Ontology or similar, describing all the categories and their relations in the catalog.
-
-    title:
-      iri: dcterms:title
-      range: rdfs:Literal
-      datatype: rdf:langString
-      conformance: mandatory
-      description: A name given to the resource.
-      usageNote: This property can be repeated for parallel language versions of the name.
-
-    type:
-      iri: dcterms:type
-      range: skos:Concept
-      conformance: optional
-      description: A type of the resource.
-      usageNote: A recommended controlled vocabulary data-type is foreseen.
-
-    version:
-      iri: dcat:version
-      range: rdfs:Literal
-      conformance: optional
-      description: Version indicator (name or identifier) of a resource.
-
-    versionNotes:
-      iri: adms:versionNotes
-      range: rdfs:Literal
-      conformance: optional
-      description: A description of the differences between this version and a previous version of the resource.
-      usageNote: This property can be repeated for parallel language versions of the version notes.
-
-    # Additional keywords
-    # -------------------
-    abstract:
-      iri: dcterms:abstract
-      range: rdfs:Literal
-      datatype: rdf:langString
-      description: A summary of the resource.
-
-    bibliographicCitation:
-      iri: dcterms:bibliographicCitation
-      range: rdfs:Literal
-      description: A bibliographic reference for the resource.
-      usageNote: Recommended practice is to include sufficient bibliographic detail to identify the resource as unambiguously as possible.
-
-    comment:
-      iri: rdfs:comment
-      range: rdfs:Literal
-      description: A description of the subject resource. Use `description` instead.
-
-    deprecated:
-      iri: owl:deprecated
-      range: rdfs:Literal
-      datatype: xsd:boolean
-      description: The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.
-
-    isDefinedBy:
-      iri: rdfs:isDefinedBy
-      range: skos:Concept
-      description: Indicate a resource defining the subject resource. This property may be used to indicate an RDF vocabulary in which a resource is described.
-
-    label:
-      iri: rdfs:label
-      range: rdfs:Literal
-      description: Provides a human-readable version of a resource's name.
-
-    seeAlso:
-      iri: rdfs:seeAlso
-      range: skos:Concept
-      description: Indicates a resource that might provide additional information about the subject resource.
-
-    statements:
-      iri: oteio:statement
-      range: rdfs:Literal
-      datatype: rdf:JSON
-      description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
-
-
-Dataset:
-  iri: dcat:Dataset
-  subClassOf: ["dcat:Resource", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
-  description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
-  keywords:
-    distribution:
-      iri: dcat:distribution
-      range: dcat:Distribution
-      conformance: recommended
-      description: An available distribution for the dataset.
-
-    frequency:
-      iri: dcterms:accrualPeriodicity
-      range: dcterms:Frequency
-      conformance: optional
-      description: The frequency at which the Dataset is updated.
-
-    geographicalCoverage:
-      iri: dcterms:spatial
-      range: dcterms:Location
-      conformance: recommended
-      description: A geographic region that is covered by the dataset.
-
-    inSeries:
-      iri: dcat:inSeries
-      range: dcat:DatasetSeries
-      conformance: optional
-      description: A dataset series of which the dataset is part.
-
-    otherIdentifier:
-      iri: adms:identifier
-      range: adms:Identifier
-      conformance: optional
-      description: A secondary identifier of the Dataset
-
-    sample:
-      iri: adms:sample
-      range: dcat:Distribution
-      conformance: optional
-      description: A sample distribution of the dataset.
-
-    source:
-      iri: dcterms:source
-      range: dcat:Dataset
-      conformance: optional
-      description: A related Dataset from which the described Dataset is derived.
-
-    spatialResolution:
-      iri: dcat:spatialResolutionInMeters
-      range: rdfs:Literal
-      datatype: xsd:decimal
-      conformance: optional
-      description: The minimum spatial separation resolvable in a dataset, measured in meters.
-
-    temporalCoverage:
-      iri: dcterms:temporal
-      range: dcterms:PeriodOfTime
-      conformance: recommended
-      description: A temporal period that the Dataset covers.
-
-    temporalResolution:
-      iri: dcat:temporalResolution
-      range: rdfs:Literal
-      datatype: xsd:duration
-      conformance: optional
-      description: The minimum time period resolvable in the dataset.
-
-    wasGeneratedBy:
-      iri: prov:wasGeneratedBy
-      range: prov:Activity
-      conformance: optional
-      description: An activity that generated, or provides the business context for, the creation of the dataset.
-
-    # Additional keywords
-    # -------------------
-    datamodel:
-      iri: oteio:hasDatamodel
-      range: oteio:Datamodel
-      description: URI of DLite datamodel for the dataset.
-
-    datamodelStorage:
-      iri: oteio:hasDatamodelStorage
-      range: rdfs:Literal
-      datatype: xsd:anyURI
-      description: URL to DLite storage plugin where the datamodel is stored.
-
-    hasDatum:
-      iri: emmo:EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e
-      range: emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a
-      description: Relates a dataset to its datum parts.
-      usageNote: "`hasDatum` relations are normally NOT specified manually, since they are generated from the DLite data model."
-
-    isDescriptionFor:
-      iri: emmo:EMMO_f702bad4_fc77_41f0_a26d_79f6444fd4f3
-      range: dcat:Resource
-      description: An object (e.g. a material) that this dataset describes.
-
-    isInputOf:
-      iri: emmo:EMMO_1494c1a9_00e1_40c2_a9cc_9bbf302a1cac
-      range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
-      description: A process that this dataset is the input to.
-
-    isOutputOf:
-      iri: emmo:EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461
-      range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
-      description: A process that this dataset is the output to.
-
-    mappings:
-      iri: oteio:mapping
-      range: rdfs:Literal
-      datatype: rdf:JSON
-      description: A list of subject-predicate-object triples mapping the datamodel to ontological concepts.
-
-    mappingURL:
-      iri: oteio:mappingURL
-      range: rdfs:Literal
-      datatype: xsd:anyURI
-      description: URL to a document defining the mappings of the datamodel. The file format is given by `mappingFormat`. Defaults to turtle.
-
-    mappingFormat:
-      iri: oteio:mappingFormat
-      range: rdfs:Literal
-      description: File format for `mappingURL`. Defaults to "turtle".
-
-
-Distribution:
-  iri: dcat:Distribution
-  subclassOf: dcat:Resource
-  description: A physical embodiment of the Dataset in a particular format.
-  usageNote: This represents a general availability of a dataset. It implies no information about the actual access method of the data, i.e., whether by direct download, API, or through a Web page. The use of dcat:downloadURL property indicates directly downloadable distributions.
-  keywords:
-    accessService:
-      iri: dcat:accessService
-      range: dcat:DataSetvice
-      conformance: optional
-      description: A data service that gives access to the distribution of the dataset.
-
-    accessURL:
-      iri: dcat:accessURL
-      range: rdfs:Resource
-      conformance: mandatory
-      description: A URL that gives access to a Distribution of the Dataset.
-      usageNote: The resource at the access URL may contain information about how to get the Dataset.
-
-    availability:
-      iri: dcatap:availability
-      range: rdfs:Literal
-      datatype: ["xsd:date", "xsd:dateTime"]
-      conformance: recommended
-      description: An indication how long it is planned to keep the Distribution of the Dataset available.
-
-    byteSize:
-      iri: dcat:byteSize
-      range: rdfs:Literal
-      datatype: xsd:nonNegativeInteger
-      conformance: optional
-      description: The size of a Distribution in bytes.
-
-    checksum:
-      iri: spdx:checksum
-      range: spdx:Checksum
-      conformance: optional
-      description: A mechanism that can be used to verify that the contents of a distribution have not changed.
-      usageNote: The checksum is related to the downloadURL.
-
-    compressFormat:
-      iri: dcat:compressFormat
-      range: dcterms:MediaType
-      conformance: optional
-      description: The format of the file in which the data is contained in a compressed form, e.g. to reduce the size of the downloadable file.
-      usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
-
-    downloadURL:
-      iri: dcat:downloadURL
-      range: rdfs:Literal
-      datatype: xsd:anyURI
-      conformance: optional
-      description: A URL that is a direct link to a downloadable file in a given format.
-
-    format:
-      iri: dcterms:format
-      range: dcterms:MediaTypeOrExtent
-      conformance: optional
-      description: The file format of the Distribution.
-      usageNote: dcat:mediaType SHOULD be used if the type of the distribution is defined by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
-
-    generator:
-      iri: oteio:generator
-      range: oteio:Generator
-      description: A generator that can create the distribution.
-
-    mediaType:
-      iri: dcat:mediaType
-      range: rdfs:Literal
-      conformance: recommended
-      description: The media type of the Distribution as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
-
-    packageFormat:
-      iri: dcat:packageFormat
-      range: dcterms:MediaType
-      conformance: optional
-      description: The format of the file in which one or more data files are grouped together, e.g. to enable a set of related files to be downloaded together.
-      usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
-
-    parser:
-      iri: oteio:parser
-      range: oteio:Parser
-      description: A parser that can parse the distribution.
-
-    status:
-      iri: adms:status
-      range: rdfs:Literal
-      conformance: optional
-      description: The status of the distribution in the context of maturity lifecycle.
-      usageNote: "It MUST take one of the values: 'Completed', 'Deprecated', 'Under Development', 'Withdrawn'."
-
-
-Parser:
-  iri: oteio:Parser
-  description: A parser that can parse a distribution into an instance of a datamodel.
-  keywords:
-    configuration:
-      iri: oteio:hasConfiguration
-      range: rdfs:Literal
-      datatype: rdf:JSON
-      description: A JSON string with configurations specific to the parser or generator.
-
-    parserType:
-      iri: oteio:parserType
-      range: rdfs:Literal
-      description: "Parser type. Ex: `application/vnd.dlite-parse`."
-
-Generator:
-  iri: oteio:Generator
-  subclassOf: oteio:Parser
-  description: A generator that can serialise an instance of a datamodel into a distribution.
-  keywords:
-    generatorType:
-      iri: oteio:generatorType
-      range: rdfs:Literal
-      description: "Generator type. Ex: `application/vnd.dlite-generate`."
-
-
-Agent:
-  iri: foaf:Agent
-  subClassOf: emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c
-  description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
-  keywords:
-    name:
-      iri: foaf:name
-      range: rdfs:Literal
-      conformance: mandatory
-      description: A name of the agent.
-    identifier:
-      iri: dcterms:identifier
-      range: rdfs:Literal
-      conformance: recommended
-      description: Identifier for the agent. E.g. organisation number.
-    type:
-      iri: dcterms:type
-      range: skos:Concept
-      conformance: optional
-      description: The nature of the agent.
-      usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
-
-
-Checksum:
-  iri: spdx:Checksum
-  description: A preferred label of the concept.
-  keywords:
-    algorithm:
-      iri: spdx:algorithm
-      range: spdx:ChecksumAlgorithm
-      description: The algorithm used to produce the subject Checksum.
-    checksumValue:
-      iri: spdx:checksumValue
-      range: rdfs:Literal
-      datatype: xsd:hexBinary
-      description: A lower case hexadecimal encoded digest value produced using a specific algorithm.
-
-ChecksumAlgorithm:
-  iri: spdx:ChecksumAlgorithm
-  description: Algorithm for Checksums.
-  usageNote: This specification does not impose any additional requirements to properties for this entity.
-
-
-Concept:
-  iri: skos:Concept
-  description: An idea or notion; a unit of thought.
-  usageNote: In DCAT-AP, a Concept is used to denote codes within a codelist. See [DCAT-AP](https://semiceu.github.io/DCAT-AP/releases/3.0.0/#controlled-vocs) for expectations and more detail.
-  keywords:
-    prefLabel:
-      iri: skos:prefLabel
-      range: rdfs:Literal
-      description: A preferred label of the concept.
-
-
-DataService:
-  iri: dcat:DataService
-  subclassOf: rdfs:Resource
-  description: A collection of operations that provides access to one or more datasets or data processing functions.
-  keywords:
-    endpointDescription:
-      iri: dcat:endpointDescription
-      range: rdfs:Resource
-      conformance: recommended
-      description: A description of the services available via the end-points, including their operations, parameters etc.
-
-    endpointURL:
-      iri: dcat:endpointURL
-      range: rdfs:Literal
-      datatype: xsd:anyURI
-      conformance: mandatory
-      description: The root location or primary endpoint of the service (an IRI).
-
-    servesDataset:
-      iri: dcat:servesDataset
-      range: dcat:Dataset
-      conformance: recommended
-      description: This property refers to a collection of data that this data service can distribute.
-
-
-DatasetSeries:
-  iri: dcat:DatasetSeries
-  subclassOf: dcat:Dataset
-  description: A collection of datasets that are published separately, but share some characteristics that group them.
-
-
-
-Geometry:
-  iri: locn:Geometry
-  description: The locn:Geometry class provides the means to identify a location as a point, line, polygon, etc. expressed using coordinates in some coordinate reference system.
-  usageNote: This specification does not impose any additional requirements to properties for this entity.
-
-
-Kind:
-  iri: vcard:Kind
-  description: A description following the vCard specification, e.g. to provide telephone number and e-mail address for a contact point.
-  usageNote: Note that the class Kind is the parent class for the four explicit types of vCard (Individual, Organization, Location, Group).
-  keywords:
-    hasAddress:
-      iri: vcard:hasAddress
-      range: rdfs:Literal
-    hasCountryName:
-      iri: vcard:hasCountryName
-      range: rdfs:Literal
-    hasEmail:
-      iri: vcard:hasEmail
-      range: rdfs:Literal
-    hasFamilyName:
-      iri: vcard:hasFamilyName
-      range: rdfs:Literal
-    hasGender:
-      iri: vcard:hasGender
-      range: rdfs:Literal
-    hasGeo:
-      iri: vcard:hasGeo
-      range: rdfs:Literal
-    hasGivenName:
-      iri: vcard:hasGivenName
-      range: rdfs:Literal
-    hasHonorificPrefix:
-      iri: vcard:hasHonorificPrefix
-      range: rdfs:Literal
-    hasHonorificSuffix:
-      iri: vcard:hasHonorificSuffix
-      range: rdfs:Literal
-    hasKey:
-      iri: vcard:hasKey
-      range: rdfs:Literal
-    hasLanguage:
-      iri: vcard:hasLanguage
-      range: rdfs:Literal
-    hasLogo:
-      iri: vcard:hasLogo
-      range: rdfs:Literal
-    hasMember:
-      iri: vcard:hasMember
-      range: rdfs:Literal
-    hasInstantMessage:
-      iri: vcard:hasInstantMessage
-      range: rdfs:Literal
-    hasName:
-      iri: vcard:hasName
-      range: rdfs:Literal
-    hasNickname:
-      iri: vcard:hasNickname
-      range: rdfs:Literal
-    hasNote:
-      iri: vcard:hasNote
-      range: rdfs:Literal
-    hasOrganizationName:
-      iri: vcard:hasOrganizationName
-      range: rdfs:Literal
-    hasOrganizationUnit:
-      iri: vcard:hasOrganizationUnit
-      range: rdfs:Literal
-    hasPhoto:
-      iri: vcard:hasPhoto
-      range: rdfs:Literal
-    hasPostalCode:
-      iri: vcard:hasPostalCode
-      range: rdfs:Literal
-    hasRegion:
-      iri: vcard:hasRegion
-      range: rdfs:Literal
-    hasStreetAddress:
-      iri: vcard:hasStreetAddress
-      range: rdfs:Literal
-    hasTelephone:
-      iri: vcard:hasTelephone
-      range: rdfs:Literal
-    hasUID:
-      iri: vcard:hasUID
-      range: rdfs:Literal
-    hasURL:
-      iri: vcard:hasURL
-      range: rdfs:Literal
-
-
-LicenseDocument:
-  iri: dcterms:LicenseDocument
-  description: A legal document giving official permission to do something with a resource.
-  keywords:
-    type:
-      iri: dcterms:type
-      range: skos:Concept
-      description: A type of licence, e.g. indicating 'public domain' or 'royalties required'.
-
-
-Location:
-  iri: dcterms:Location
-  description: A spatial region or named place.
-  usageNote: It can be represented using a controlled vocabulary or with geographic coordinates. In the latter case, the use of the Core Location Vocabulary is recommended, following the approach described in the GeoDCAT-AP specification.
-  keywords:
-    bbox:
-      iri: dcat:bbox
-      range: rdfs:Literal
-      conformance: recommended
-      description: The geographic bounding box of a resource.
-
-    centroid:
-      iri: dcat:centroid
-      range: rdfs:Literal
-      conformance: recommended
-      description: The geographic center (centroid) of a resource.
-
-    geometry:
-      iri: locn:geometry
-      range: locn:Geometry
-      conformance: optional
-      description: The geographic center (centroid) of a resource.
-
-
-Relationship:
-  iri: dcat:Relationship
-  description: An association class for attaching additional information to a relationship between DCAT Resources.
-  keywords:
-    hasRole:
-      iri: dcat:hasRole
-      range: dcat:Role
-      description: A function of an entity or agent with respect to another entity or resource.
-
-    relation:
-      iri: dcterms:relation
-      range: rdfs:Resource
-      description: A resource related to the source resource.
+resources:
+  Resource:
+    iri: dcat:Resource
+    description: Resource published or curated by an agent.
+    keywords:
+      accessRights:
+        iri: dcterms:accessRights
+        range: dcterms:RightsStatement
+        conformance: optional
+        description: Information about who can access the resource or an indication of its security status.
+
+      applicableLegislation:
+        iri: dcatap:applicableLegislation
+        range: eli:LegalReource
+        conformance: optional
+        description: The legislation that mandates the creation or management of the resource.
+
+      conformsTo:
+        iri: dcterms:conformsTo
+        range: dcterms:Standard
+        conformance: optional
+        description: An implementing rule or other specification.
+
+      contactPoint:
+        iri: dcat:contactPoint
+        range: vcard:Kind
+        conformance: recommended
+        description: Contact information that can be used for sending comments about the resource.
+
+      creator:
+        iri: dcterms:creator
+        range: foaf:Agent
+        conformance: optional
+        description: An entity responsible for producing the resource.
+
+      description:
+        iri: dcterms:description
+        range: rdfs:Literal
+        datatype: rdf:LangString
+        conformance: mandatory
+        description: A free-text account of the resource.
+        usageNote: This property can be repeated for parallel language versions of the description.
+
+      documentation:
+        iri: foaf:documentation
+        range: foaf:Document
+        conformance: optional
+        description: A page or document about this resource.
+
+      hasVersion:
+        iri: dcat:hasVersion
+        range: rdfs:Resource
+        conformance: optional
+        description: A related resource that is a version, edition, or adaptation of the described resource.
+        usageNote: This property is intended for relating a non-versioned or abstract resource to several versioned resources, e.g., snapshots.
+
+      identifier:
+        iri: dcterms:identifier
+        range: rdfs:Literal
+        conformance: optional
+        description: URI or other unique identifier of the resource being described or cataloged.
+
+      isReferencedBy:
+        iri: dcterms:isReferencedBy
+        range: rdfs:Resource
+        conformance: optional
+        description: A related resource, such as a publication, that references, cites, or otherwise points to the documented resource.
+
+      keyword:
+        iri: dcat:keyword
+        range: rdfs:Literal
+        datatype: rdf:LangString
+        conformance: recommended
+        description: A keyword or tag describing the resource.
+
+      landingPage:
+        iri: dcat:landingPage
+        range: foaf:Document
+        conformance: optional
+        description: A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
+        usageNote: It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.
+
+      language:
+        iri: dcterms:language
+        range: dcterms:LinguisticSystem
+        conformance: optional
+        description: A language of the resource.
+        usageNote: This property can be repeated if the resource is expressed with multiple languages.
+
+      license:
+        iri: dcterms:license
+        range: dcterms:LicenseDocument
+        conformance: optional
+        description: A licence under which the resource is made available.
+
+      modificationDate:
+        iri: dcterms:modified
+        range: rdfs:Literal
+        datatype: ["xsd:date", "xsd:dateTime"]
+        conformance: optional
+        description: The most recent date on which the resource was changed or modified.
+
+      publisher:
+        iri: dcterms:publisher
+        range: foaf:Agent
+        conformance: recommended
+        description: Agent responsible for making the resource available.
+
+      qualifiedAttribution:
+        iri: prov:qualifiedAttribution
+        range: prov:Attribution
+        conformance: optional
+        description: An Agent having some form of responsibility for the resource.
+
+      qualifiedRelation:
+        iri: dcat:qualifiedRelation
+        range: dcat:Relationship
+        conformance: optional
+        description: A description of a relationship with another resource.
+
+      relatedResource:
+        iri: dcterms:relation
+        range: rdfs:Resource
+        conformance: optional
+        description: A resource with an unspecified relationship to the cataloged resource.
+
+      releaseDate:
+        iri: dcterms:issued
+        range: rdfs:Literal
+        datatype: ["xsd:date", "xsd:dateTime"]
+        conformance: optional
+        description: The date of formal issuance (e.g., publication) of the resource.
+
+      theme:
+        iri: dcat:theme
+        range: skos:Concept
+        conformance: recommended
+        description: A category of the resource.  A resource may be associated with multiple themes.
+        usageNote: The set of themes used to categorize the resources are organized in a skos:ConceptScheme, skos:Collection, owl:Ontology or similar, describing all the categories and their relations in the catalog.
+
+      title:
+        iri: dcterms:title
+        range: rdfs:Literal
+        datatype: rdf:langString
+        conformance: mandatory
+        description: A name given to the resource.
+        usageNote: This property can be repeated for parallel language versions of the name.
+
+      type:
+        iri: dcterms:type
+        range: skos:Concept
+        conformance: optional
+        description: A type of the resource.
+        usageNote: A recommended controlled vocabulary data-type is foreseen.
+
+      version:
+        iri: dcat:version
+        range: rdfs:Literal
+        conformance: optional
+        description: Version indicator (name or identifier) of a resource.
+
+      versionNotes:
+        iri: adms:versionNotes
+        range: rdfs:Literal
+        conformance: optional
+        description: A description of the differences between this version and a previous version of the resource.
+        usageNote: This property can be repeated for parallel language versions of the version notes.
+
+      # Additional keywords
+      # -------------------
+      abstract:
+        iri: dcterms:abstract
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: A summary of the resource.
+
+      bibliographicCitation:
+        iri: dcterms:bibliographicCitation
+        range: rdfs:Literal
+        description: A bibliographic reference for the resource.
+        usageNote: Recommended practice is to include sufficient bibliographic detail to identify the resource as unambiguously as possible.
+
+      comment:
+        iri: rdfs:comment
+        range: rdfs:Literal
+        description: A description of the subject resource. Use `description` instead.
+
+      deprecated:
+        iri: owl:deprecated
+        range: rdfs:Literal
+        datatype: xsd:boolean
+        description: The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.
+
+      isDefinedBy:
+        iri: rdfs:isDefinedBy
+        range: skos:Concept
+        description: Indicate a resource defining the subject resource. This property may be used to indicate an RDF vocabulary in which a resource is described.
+
+      label:
+        iri: rdfs:label
+        range: rdfs:Literal
+        description: Provides a human-readable version of a resource's name.
+
+      seeAlso:
+        iri: rdfs:seeAlso
+        range: skos:Concept
+        description: Indicates a resource that might provide additional information about the subject resource.
+
+      statements:
+        iri: oteio:statement
+        range: rdfs:Literal
+        datatype: rdf:JSON
+        description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
+
+
+  Dataset:
+    iri: dcat:Dataset
+    subClassOf: ["dcat:Resource", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
+    description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
+    keywords:
+      distribution:
+        iri: dcat:distribution
+        range: dcat:Distribution
+        conformance: recommended
+        description: An available distribution for the dataset.
+
+      frequency:
+        iri: dcterms:accrualPeriodicity
+        range: dcterms:Frequency
+        conformance: optional
+        description: The frequency at which the Dataset is updated.
+
+      geographicalCoverage:
+        iri: dcterms:spatial
+        range: dcterms:Location
+        conformance: recommended
+        description: A geographic region that is covered by the dataset.
+
+      inSeries:
+        iri: dcat:inSeries
+        range: dcat:DatasetSeries
+        conformance: optional
+        description: A dataset series of which the dataset is part.
+
+      otherIdentifier:
+        iri: adms:identifier
+        range: adms:Identifier
+        conformance: optional
+        description: A secondary identifier of the Dataset
+
+      sample:
+        iri: adms:sample
+        range: dcat:Distribution
+        conformance: optional
+        description: A sample distribution of the dataset.
+
+      source:
+        iri: dcterms:source
+        range: dcat:Dataset
+        conformance: optional
+        description: A related Dataset from which the described Dataset is derived.
+
+      spatialResolution:
+        iri: dcat:spatialResolutionInMeters
+        range: rdfs:Literal
+        datatype: xsd:decimal
+        conformance: optional
+        description: The minimum spatial separation resolvable in a dataset, measured in meters.
+
+      temporalCoverage:
+        iri: dcterms:temporal
+        range: dcterms:PeriodOfTime
+        conformance: recommended
+        description: A temporal period that the Dataset covers.
+
+      temporalResolution:
+        iri: dcat:temporalResolution
+        range: rdfs:Literal
+        datatype: xsd:duration
+        conformance: optional
+        description: The minimum time period resolvable in the dataset.
+
+      wasGeneratedBy:
+        iri: prov:wasGeneratedBy
+        range: prov:Activity
+        conformance: optional
+        description: An activity that generated, or provides the business context for, the creation of the dataset.
+
+      # Additional keywords
+      # -------------------
+      datamodel:
+        iri: oteio:hasDatamodel
+        range: oteio:Datamodel
+        description: URI of DLite datamodel for the dataset.
+
+      datamodelStorage:
+        iri: oteio:hasDatamodelStorage
+        range: rdfs:Literal
+        datatype: xsd:anyURI
+        description: URL to DLite storage plugin where the datamodel is stored.
+
+      hasDatum:
+        iri: emmo:EMMO_b19aacfc_5f73_4c33_9456_469c1e89a53e
+        range: emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a
+        description: Relates a dataset to its datum parts.
+        usageNote: "`hasDatum` relations are normally NOT specified manually, since they are generated from the DLite data model."
+
+      isDescriptionFor:
+        iri: emmo:EMMO_f702bad4_fc77_41f0_a26d_79f6444fd4f3
+        range: dcat:Resource
+        description: An object (e.g. a material) that this dataset describes.
+
+      isInputOf:
+        iri: emmo:EMMO_1494c1a9_00e1_40c2_a9cc_9bbf302a1cac
+        range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
+        description: A process that this dataset is the input to.
+
+      isOutputOf:
+        iri: emmo:EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461
+        range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
+        description: A process that this dataset is the output to.
+
+      mappings:
+        iri: oteio:mapping
+        range: rdfs:Literal
+        datatype: rdf:JSON
+        description: A list of subject-predicate-object triples mapping the datamodel to ontological concepts.
+
+      mappingURL:
+        iri: oteio:mappingURL
+        range: rdfs:Literal
+        datatype: xsd:anyURI
+        description: URL to a document defining the mappings of the datamodel. The file format is given by `mappingFormat`. Defaults to turtle.
+
+      mappingFormat:
+        iri: oteio:mappingFormat
+        range: rdfs:Literal
+        description: File format for `mappingURL`. Defaults to "turtle".
+
+
+  Distribution:
+    iri: dcat:Distribution
+    subclassOf: dcat:Resource
+    description: A physical embodiment of the Dataset in a particular format.
+    usageNote: This represents a general availability of a dataset. It implies no information about the actual access method of the data, i.e., whether by direct download, API, or through a Web page. The use of dcat:downloadURL property indicates directly downloadable distributions.
+    keywords:
+      accessService:
+        iri: dcat:accessService
+        range: dcat:DataSetvice
+        conformance: optional
+        description: A data service that gives access to the distribution of the dataset.
+
+      accessURL:
+        iri: dcat:accessURL
+        range: rdfs:Resource
+        conformance: mandatory
+        description: A URL that gives access to a Distribution of the Dataset.
+        usageNote: The resource at the access URL may contain information about how to get the Dataset.
+
+      availability:
+        iri: dcatap:availability
+        range: rdfs:Literal
+        datatype: ["xsd:date", "xsd:dateTime"]
+        conformance: recommended
+        description: An indication how long it is planned to keep the Distribution of the Dataset available.
+
+      byteSize:
+        iri: dcat:byteSize
+        range: rdfs:Literal
+        datatype: xsd:nonNegativeInteger
+        conformance: optional
+        description: The size of a Distribution in bytes.
+
+      checksum:
+        iri: spdx:checksum
+        range: spdx:Checksum
+        conformance: optional
+        description: A mechanism that can be used to verify that the contents of a distribution have not changed.
+        usageNote: The checksum is related to the downloadURL.
+
+      compressFormat:
+        iri: dcat:compressFormat
+        range: dcterms:MediaType
+        conformance: optional
+        description: The format of the file in which the data is contained in a compressed form, e.g. to reduce the size of the downloadable file.
+        usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
+
+      downloadURL:
+        iri: dcat:downloadURL
+        range: rdfs:Literal
+        datatype: xsd:anyURI
+        conformance: optional
+        description: A URL that is a direct link to a downloadable file in a given format.
+
+      format:
+        iri: dcterms:format
+        range: dcterms:MediaTypeOrExtent
+        conformance: optional
+        description: The file format of the Distribution.
+        usageNote: dcat:mediaType SHOULD be used if the type of the distribution is defined by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
+
+      generator:
+        iri: oteio:generator
+        range: oteio:Generator
+        description: A generator that can create the distribution.
+
+      mediaType:
+        iri: dcat:mediaType
+        range: rdfs:Literal
+        conformance: recommended
+        description: The media type of the Distribution as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
+
+      packageFormat:
+        iri: dcat:packageFormat
+        range: dcterms:MediaType
+        conformance: optional
+        description: The format of the file in which one or more data files are grouped together, e.g. to enable a set of related files to be downloaded together.
+        usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
+
+      parser:
+        iri: oteio:parser
+        range: oteio:Parser
+        description: A parser that can parse the distribution.
+
+      status:
+        iri: adms:status
+        range: rdfs:Literal
+        conformance: optional
+        description: The status of the distribution in the context of maturity lifecycle.
+        usageNote: "It MUST take one of the values: 'Completed', 'Deprecated', 'Under Development', 'Withdrawn'."
+
+
+  Parser:
+    iri: oteio:Parser
+    description: A parser that can parse a distribution into an instance of a datamodel.
+    keywords:
+      configuration:
+        iri: oteio:hasConfiguration
+        range: rdfs:Literal
+        datatype: rdf:JSON
+        description: A JSON string with configurations specific to the parser or generator.
+
+      parserType:
+        iri: oteio:parserType
+        range: rdfs:Literal
+        description: "Parser type. Ex: `application/vnd.dlite-parse`."
+
+  Generator:
+    iri: oteio:Generator
+    subclassOf: oteio:Parser
+    description: A generator that can serialise an instance of a datamodel into a distribution.
+    keywords:
+      generatorType:
+        iri: oteio:generatorType
+        range: rdfs:Literal
+        description: "Generator type. Ex: `application/vnd.dlite-generate`."
+
+
+  Agent:
+    iri: foaf:Agent
+    subClassOf: emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c
+    description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
+    keywords:
+      name:
+        iri: foaf:name
+        range: rdfs:Literal
+        conformance: mandatory
+        description: A name of the agent.
+      identifier:
+        iri: dcterms:identifier
+        range: rdfs:Literal
+        conformance: recommended
+        description: Identifier for the agent. E.g. organisation number.
+      type:
+        iri: dcterms:type
+        range: skos:Concept
+        conformance: optional
+        description: The nature of the agent.
+        usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
+
+
+  Checksum:
+    iri: spdx:Checksum
+    description: A preferred label of the concept.
+    keywords:
+      algorithm:
+        iri: spdx:algorithm
+        range: spdx:ChecksumAlgorithm
+        description: The algorithm used to produce the subject Checksum.
+      checksumValue:
+        iri: spdx:checksumValue
+        range: rdfs:Literal
+        datatype: xsd:hexBinary
+        description: A lower case hexadecimal encoded digest value produced using a specific algorithm.
+
+  ChecksumAlgorithm:
+    iri: spdx:ChecksumAlgorithm
+    description: Algorithm for Checksums.
+    usageNote: This specification does not impose any additional requirements to properties for this entity.
+
+
+  Concept:
+    iri: skos:Concept
+    description: An idea or notion; a unit of thought.
+    usageNote: In DCAT-AP, a Concept is used to denote codes within a codelist. See [DCAT-AP](https://semiceu.github.io/DCAT-AP/releases/3.0.0/#controlled-vocs) for expectations and more detail.
+    keywords:
+      prefLabel:
+        iri: skos:prefLabel
+        range: rdfs:Literal
+        description: A preferred label of the concept.
+
+
+  DataService:
+    iri: dcat:DataService
+    subclassOf: rdfs:Resource
+    description: A collection of operations that provides access to one or more datasets or data processing functions.
+    keywords:
+      endpointDescription:
+        iri: dcat:endpointDescription
+        range: rdfs:Resource
+        conformance: recommended
+        description: A description of the services available via the end-points, including their operations, parameters etc.
+
+      endpointURL:
+        iri: dcat:endpointURL
+        range: rdfs:Literal
+        datatype: xsd:anyURI
+        conformance: mandatory
+        description: The root location or primary endpoint of the service (an IRI).
+
+      servesDataset:
+        iri: dcat:servesDataset
+        range: dcat:Dataset
+        conformance: recommended
+        description: This property refers to a collection of data that this data service can distribute.
+
+
+  DatasetSeries:
+    iri: dcat:DatasetSeries
+    subclassOf: dcat:Dataset
+    description: A collection of datasets that are published separately, but share some characteristics that group them.
+
+
+
+  Geometry:
+    iri: locn:Geometry
+    description: The locn:Geometry class provides the means to identify a location as a point, line, polygon, etc. expressed using coordinates in some coordinate reference system.
+    usageNote: This specification does not impose any additional requirements to properties for this entity.
+
+
+  Kind:
+    iri: vcard:Kind
+    description: A description following the vCard specification, e.g. to provide telephone number and e-mail address for a contact point.
+    usageNote: Note that the class Kind is the parent class for the four explicit types of vCard (Individual, Organization, Location, Group).
+    keywords:
+      hasAddress:
+        iri: vcard:hasAddress
+        range: rdfs:Literal
+      hasCountryName:
+        iri: vcard:hasCountryName
+        range: rdfs:Literal
+      hasEmail:
+        iri: vcard:hasEmail
+        range: rdfs:Literal
+      hasFamilyName:
+        iri: vcard:hasFamilyName
+        range: rdfs:Literal
+      hasGender:
+        iri: vcard:hasGender
+        range: rdfs:Literal
+      hasGeo:
+        iri: vcard:hasGeo
+        range: rdfs:Literal
+      hasGivenName:
+        iri: vcard:hasGivenName
+        range: rdfs:Literal
+      hasHonorificPrefix:
+        iri: vcard:hasHonorificPrefix
+        range: rdfs:Literal
+      hasHonorificSuffix:
+        iri: vcard:hasHonorificSuffix
+        range: rdfs:Literal
+      hasKey:
+        iri: vcard:hasKey
+        range: rdfs:Literal
+      hasLanguage:
+        iri: vcard:hasLanguage
+        range: rdfs:Literal
+      hasLogo:
+        iri: vcard:hasLogo
+        range: rdfs:Literal
+      hasMember:
+        iri: vcard:hasMember
+        range: rdfs:Literal
+      hasInstantMessage:
+        iri: vcard:hasInstantMessage
+        range: rdfs:Literal
+      hasName:
+        iri: vcard:hasName
+        range: rdfs:Literal
+      hasNickname:
+        iri: vcard:hasNickname
+        range: rdfs:Literal
+      hasNote:
+        iri: vcard:hasNote
+        range: rdfs:Literal
+      hasOrganizationName:
+        iri: vcard:hasOrganizationName
+        range: rdfs:Literal
+      hasOrganizationUnit:
+        iri: vcard:hasOrganizationUnit
+        range: rdfs:Literal
+      hasPhoto:
+        iri: vcard:hasPhoto
+        range: rdfs:Literal
+      hasPostalCode:
+        iri: vcard:hasPostalCode
+        range: rdfs:Literal
+      hasRegion:
+        iri: vcard:hasRegion
+        range: rdfs:Literal
+      hasStreetAddress:
+        iri: vcard:hasStreetAddress
+        range: rdfs:Literal
+      hasTelephone:
+        iri: vcard:hasTelephone
+        range: rdfs:Literal
+      hasUID:
+        iri: vcard:hasUID
+        range: rdfs:Literal
+      hasURL:
+        iri: vcard:hasURL
+        range: rdfs:Literal
+
+
+  LicenseDocument:
+    iri: dcterms:LicenseDocument
+    description: A legal document giving official permission to do something with a resource.
+    keywords:
+      type:
+        iri: dcterms:type
+        range: skos:Concept
+        description: A type of licence, e.g. indicating 'public domain' or 'royalties required'.
+
+
+  Location:
+    iri: dcterms:Location
+    description: A spatial region or named place.
+    usageNote: It can be represented using a controlled vocabulary or with geographic coordinates. In the latter case, the use of the Core Location Vocabulary is recommended, following the approach described in the GeoDCAT-AP specification.
+    keywords:
+      bbox:
+        iri: dcat:bbox
+        range: rdfs:Literal
+        conformance: recommended
+        description: The geographic bounding box of a resource.
+
+      centroid:
+        iri: dcat:centroid
+        range: rdfs:Literal
+        conformance: recommended
+        description: The geographic center (centroid) of a resource.
+
+      geometry:
+        iri: locn:geometry
+        range: locn:Geometry
+        conformance: optional
+        description: The geographic center (centroid) of a resource.
+
+
+  Relationship:
+    iri: dcat:Relationship
+    description: An association class for attaching additional information to a relationship between DCAT Resources.
+    keywords:
+      hasRole:
+        iri: dcat:hasRole
+        range: dcat:Role
+        description: A function of an entity or agent with respect to another entity or resource.
+
+      relation:
+        iri: dcterms:relation
+        range: rdfs:Resource
+        description: A resource related to the source resource.
