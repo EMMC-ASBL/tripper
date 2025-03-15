@@ -10,8 +10,10 @@ from typing import TYPE_CHECKING
 import yaml
 
 from tripper import Triplestore
+from tripper.datadoc.errors import InvalidKeywordError
 from tripper.utils import (
     AttrDict,
+    expand_iri,
     get_entry_points,
     openfile,
     recursive_update,
@@ -42,6 +44,7 @@ class Keywords:
                 be an URI in which case it will be accessed via HTTP GET.
             timeout: Timeout in case `yamlfile` is a URI.
         """
+        self.data = AttrDict()
         self.keywords = AttrDict()
         self.field = None
 
@@ -77,6 +80,15 @@ class Keywords:
                 else:
                     raise TypeError(f"Unknown field name: {fieldname}")
 
+    def __contains__(self, item):
+        return item in self.keywords
+
+    def __getitem__(self, key):
+        return self.keywords[key]
+
+    def __iter__(self):
+        return iter(self.keywords)
+
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
@@ -89,29 +101,56 @@ class Keywords:
                 for dct in d["basedOn"]:
                     self.parse(dct, timeout=timeout)
 
-        recursive_update(self.keywords, d)
+        recursive_update(self.data, d)
+
+        resources = self.data.get("resources", {})
+        for resource in resources.values():
+            for keyword, value in resource.get("keywords", {}).items():
+                recursive_update(self.keywords, {keyword: value})
+
+    def isnested(self, keyword: str) -> bool:
+        """Returns whether the keyword corresponds to an object property."""
+        d = self.keywords[keyword]
+        if "datatype" in d or d.range == "rdfs:Literal":
+            return False
+        return True
+
+    def expanded(self, keyword: str) -> str:
+        """Return the keyword expanded to its full IRI."""
+        if keyword in self.keywords:
+            iri = self.keywords[keyword].iri
+        elif keyword in self.data.resources:
+            iri = self.data.resources[keyword].iri
+        elif ":" in keyword:
+            iri = keyword
+        else:
+            raise InvalidKeywordError(keyword)
+        return expand_iri(iri, self.data.get("prefixes", {}))
+
+    def range(self, keyword: str) -> "Union[str, list]":
+        """Return the range of the keyword."""
+        return self.keywords[keyword].range
 
     def write_context(self, outfile: "FileLoc") -> None:
         """Write JSON-LD context file."""
         c = {}
         c["@version"] = 1.1
 
-        prefixes = self.keywords.get("prefixes", {})
+        prefixes = self.data.get("prefixes", {})
         for prefix, ns in prefixes.items():
             c[prefix] = ns
 
-        resources = self.keywords.get("resources", {}).items()
+        resources = self.data.get("resources", {})
         for resource in resources.values():
             for k, v in resource.get("keywords", {}).items():
                 iri = v["iri"]
-                if v["range"] == "rdfs:Literal":
-                    if "datatype" in v:
-                        c[k] = {  # type: ignore
-                            "@id": iri,
-                            "@type": v["datatype"],
-                        }
-                    else:
-                        c[k] = iri
+                if "datatype" in v:
+                    c[k] = {  # type: ignore
+                        "@id": iri,
+                        "@type": v["datatype"],
+                    }
+                elif v["range"] == "rdfs:Literal":
+                    c[k] = iri
                 else:
                     c[k] = {  # type: ignore
                         "@id": iri,
@@ -127,7 +166,7 @@ class Keywords:
         """Write Markdown file with documentation of the keywords."""
         # pylint: disable=too-many-locals,too-many-branches
         ts = Triplestore("rdflib")
-        for prefix, ns in self.keywords.get("prefixes", {}).items():
+        for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
         field = f" for {self.field}" if self.field else ""
@@ -135,8 +174,8 @@ class Keywords:
         order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 
-        resources = self.keywords.get("resources", {}).items()
-        for resource_name, resource in resources:
+        resources = self.data.get("resources", {})
+        for resource_name, resource in resources.items():
             out.append("")
             out.append(f"## Properties on [{resource_name}]")
             if "description" in resource:
@@ -212,7 +251,7 @@ class Keywords:
         ]
         rows = [
             [prefix, ns]
-            for prefix, ns in self.keywords.get("prefixes", {}).items()
+            for prefix, ns in self.data.get("prefixes", {}).items()
         ]
         out.extend(self._to_table(["Prefix", "Namespace"], rows))
         out.append("")

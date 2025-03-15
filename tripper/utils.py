@@ -9,6 +9,7 @@ import re
 import string
 import sys
 import tempfile
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -55,13 +56,9 @@ __all__ = (
     "extend_namespace",
 )
 
-
-class TripperException(Exception):
-    """A BaseException class for Tripper"""
-
-
-class TripperWarning(Warning):
-    """A BaseWarning class for Tripper"""
+MATCH_PREFIXED_IRI = re.compile(
+    r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
+)
 
 
 class AttrDict(dict):
@@ -556,6 +553,18 @@ def extend_namespace(
         namespace._update_iris(  # pylint: disable=protected-access
             triplestore, reload=True, format=format
         )
+
+
+def expand_iri(iri: str, prefixes: dict) -> str:
+    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
+    returned."""
+    match = re.match(MATCH_PREFIXED_IRI, iri)
+    if match:
+        prefix, name, _ = match.groups()
+        if prefix in prefixes:
+            return f"{prefixes[prefix]}{name}"
+        warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+    return iri
 
 
 def get_entry_points(group: str):

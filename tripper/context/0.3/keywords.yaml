@@ -40,7 +40,7 @@ resources:
 
       applicableLegislation:
         iri: dcatap:applicableLegislation
-        range: eli:LegalReource
+        range: eli:LegalResource
         conformance: optional
         description: The legislation that mandates the creation or management of the resource.
 
@@ -73,6 +73,7 @@ resources:
       documentation:
         iri: foaf:documentation
         range: foaf:Document
+        datatype: xsd:anyURI
         conformance: optional
         description: A page or document about this resource.
 
@@ -105,6 +106,7 @@ resources:
       landingPage:
         iri: dcat:landingPage
         range: foaf:Document
+        datatype: xsd:anyURI
         conformance: optional
         description: A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
         usageNote: It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.
@@ -112,6 +114,7 @@ resources:
       language:
         iri: dcterms:language
         range: dcterms:LinguisticSystem
+        datatype: rdf:LangString
         conformance: optional
         description: A language of the resource.
         usageNote: This property can be repeated if the resource is expressed with multiple languages.
@@ -487,7 +490,7 @@ resources:
 
   Agent:
     iri: foaf:Agent
-    subClassOf: emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c
+    subClassOf: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
     description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
     keywords:
       name:
@@ -507,6 +510,11 @@ resources:
         description: The nature of the agent.
         usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
+  Attribution:
+    iri: prov:Attribution
+    subClassOf: Agent
+    description: An agent that has some form of responsibility for a resource, but which is not a publisher nor a creator of the resource.
+    usageNote: See [explanations and examples in W3C/DCAT](https://www.w3.org/TR/vocab-dcat-3/#qualified-attribution).
 
   Checksum:
     iri: spdx:Checksum
@@ -709,3 +717,17 @@ resources:
         iri: dcterms:relation
         range: rdfs:Resource
         description: A resource related to the source resource.
+
+
+  RightsStatement:
+    iri: dcterms:RightsStatement
+    description: A statement about the intellectual property rights (IPR) held in or over a resource, a legal document giving official permission to do something with a resource, or a statement about access rights.
+
+  LegalResource:
+    iri: eli:LegalResource
+    description: This class represents the legislation, policy or policies that lie behind the Rules that govern the service.
+    usageNote: The definition and properties of the Legal Resource class are aligned with the ontology included in "Council conclusions inviting the introduction of the European Legislation Identifier (ELI)". For describing the attributes of a Legal Resource (labels, preferred labels, alternative labels, definition, etc.) we refer to the (ELI) ontology. In this data specification the use is restricted to instances of this class that follow the (ELI) URI guidelines.
+
+  Standard:
+    iri: dcterms:Standard
+    description: A standard or other specification to which a resource conforms.

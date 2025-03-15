@@ -403,3 +403,36 @@ def test_extend_namespace():
     EX = Namespace("http://example.com#")
     with pytest.raises(TypeError):
         extend_namespace(EX, {"Item": EX + "Item"})
+
+
+def test_expand_iri():
+    """Test expand_iri()."""
+    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper.utils import expand_iri
+
+    prefixes = {
+        "chameo": str(CHAMEO),
+        "dcterms": str(DCTERMS),
+        "oteio": str(OTEIO),
+        "rdf": str(RDF),
+    }
+    assert expand_iri("chameo:Sample", prefixes) == CHAMEO.Sample
+    assert expand_iri("dcterms:title", prefixes) == DCTERMS.title
+    assert expand_iri("oteio:Parser", prefixes) == OTEIO.Parser
+    assert expand_iri("rdf:type", prefixes) == RDF.type
+    assert expand_iri("xxx", prefixes) == "xxx"
+    with pytest.warns(UserWarning):
+        assert expand_iri("xxx:type", prefixes) == "xxx:type"
+
+
+def test_get_entry_points():
+    """Test get_entry_points()"""
+    from tripper.utils import get_entry_points
+
+    for ep in get_entry_points("tripper.keywords"):
+        if ep.value == "default":
+            break
+    else:
+        raise RuntimeError(
+            "no tripper.keywords entry point with value 'default'"
+        )

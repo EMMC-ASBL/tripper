@@ -65,7 +65,7 @@ We therefore have to define them explicitly
       "creator": {
         "@type": [
           "http://xmlns.com/foaf/0.1/Agent",
-          "https://w3id.org/emmo#EMMO_c130614a_2985_476d_a7ed_8a137847703c"
+          "https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"
         ],
         "name": "Sigurd Wenner"
       },

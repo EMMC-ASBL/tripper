@@ -17,8 +17,11 @@ datasets:
     "@type": sem:SEMImage
     title: SEM image of cement
     description: Back-scattered SEM image of cement sample 77600 from Heidelberg, polished with 1 µm diamond compound.
-    creator: Sigurd Wenner
-    contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
+    creator:
+      name: Sigurd Wenner
+    contactPoint:
+      hasName: Sigurd Wenner
+      hasEmail: <Sigurd.Wenner@sintef.no>
     inSeries: semdata:SEM_cement_batch2/77600-23-001
 
     datamodel: http://onto-ns.com/meta/matchmaker/0.2/SEMImage
@@ -44,8 +47,11 @@ datasets:
     "@type": sem:SEMImageSeries
     title: Series of SEM image of cement sample 77600
     description: Back-scattered SEM image of cement sample 77600, polished with 1 µm diamond compound.
-    creator: Sigurd Wenner
-    contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
+    creator:
+      name: Sigurd Wenner
+    contactPoint:
+      hasName: Sigurd Wenner
+      hasEmail: <Sigurd.Wenner@sintef.no>
     inSeries: semdata:SEM_cement_batch2
 
     distribution:
@@ -56,8 +62,11 @@ datasets:
     "@type": sem:SEMImageSeries
     title: Nested series of SEM images of cement batch2
     description:  ...
-    creator: Sigurd Wenner
-    contactPoint: Sigurd Wenner <Sigurd.Wenner@sintef.no>
+    creator:
+      name: Sigurd Wenner
+    contactPoint:
+      hasName: Sigurd Wenner
+      hasEmail: <Sigurd.Wenner@sintef.no>
 
     distribution:
       downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2

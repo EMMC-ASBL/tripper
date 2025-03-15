@@ -42,25 +42,27 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Namespace, Triplestore
-from tripper.utils import AttrDict, as_python, openfile
+from tripper.datadoc.keywords import Keywords
+from tripper.utils import AttrDict, as_python, expand_iri, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
+    from tripper.datadoc.keywords import FileLoc
     from tripper.utils import Triple
+
 
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
-    Path(__file__).parent.parent / "context" / "0.2" / "context.json"
+    Path(__file__).parent.parent / "context" / "0.3" / "context.json"
 )
 CONTEXT_URL = (
+    # "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
+    # "master/tripper/context/0.3/context.json"
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
-    "master/tripper/context/0.2/context.json"
+    "294-validator-for-schema/tripper/context/0.3/context.json"
 )
 
-MATCH_PREFIXED_IRI = re.compile(
-    r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
-)
 
 # Resource types
 dicttypes = {
@@ -93,14 +95,12 @@ dicttypes = {
 }
 
 
-class InvalidKeywordError(KeyError):
-    """Keyword is not defined."""
-
-
 def save_dict(
     ts: Triplestore,
     dct: dict,
-    type: "Optional[str]" = "dataset",
+    type: "Optional[str]" = None,
+    field: "Optional[Union[str, Sequence[str]]]" = None,
+    keywordfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -114,6 +114,10 @@ def save_dict(
             pre-defined names: "dataset", "distribution", "accessService",
             "parser" and "generator" or an IRI to a class in an ontology.
             Defaults to "dataset".
+        field: Field name or sequence of field names that define the
+            keywords and prefixes used in `dct`.
+        keywordfile: Name of YAML file or sequence of filenames that define
+            the keywords and prefixes used in `dct`.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
@@ -145,7 +149,14 @@ def save_dict(
     if prefixes:
         all_prefixes.update(prefixes)
 
-    d = as_jsonld(dct=dct, type=type, prefixes=all_prefixes, **kwargs)
+    d = as_jsonld(
+        dct=dct,
+        type=type,
+        field=field,
+        keywordfile=keywordfile,
+        prefixes=all_prefixes,
+        **kwargs,
+    )
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -252,18 +263,17 @@ def load_dict(
     if use_sparql:
         return _load_sparql(ts, iri)
 
-    nested = dicttypes.keys()
     d = AttrDict()
     dct = _load_triples(ts, iri)
-    for k, v in dct.items():
-        if k in nested:
-            if not isinstance(v, list):
-                v = [v]
-            for vv in v:
-                d[k] = load_dict(ts, iri=vv, use_sparql=use_sparql)
-                add(d[k], "@type", dicttypes[k]["@type"])
-        else:
-            d[k] = v
+    for key, val in dct.items():
+        if not isinstance(val, list):
+            val = [val]
+        for v in val:
+            if key != "@id" and isinstance(v, str) and v.startswith("_:"):
+                add(d, key, load_dict(ts, iri=v, use_sparql=use_sparql))
+            else:
+                add(d, key, v)
+
     return d
 
 
@@ -302,18 +312,18 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     }}
     """
 
-    nested = dicttypes.keys()
-
     def recur(d):
         """Recursively load and insert referred resources into dict `d`."""
         if isinstance(d, dict):
             for k, v in d.items():
-                if k in nested:
+                if isinstance(v, dict):
                     val = v.get("@id")
                     if isinstance(val, str):
                         d[k] = load_dict(ts, val, use_sparql=True)
                     elif isinstance(v, (dict, list)):
                         recur(v)
+                else:
+                    d[k] = v
         elif isinstance(d, list):
             for e in d:
                 recur(e)
@@ -555,16 +565,16 @@ def get(
     return value
 
 
-def expand_iri(iri: str, prefixes: dict) -> str:
-    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-    returned."""
-    match = re.match(MATCH_PREFIXED_IRI, iri)
-    if match:
-        prefix, name, _ = match.groups()
-        if prefix in prefixes:
-            return f"{prefixes[prefix]}{name}"
-        warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
-    return iri
+# def expand_iri(iri: str, prefixes: dict) -> str:
+#    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
+#    returned."""
+#    match = re.match(MATCH_PREFIXED_IRI, iri)
+#    if match:
+#        prefix, name, _ = match.groups()
+#        if prefix in prefixes:
+#            return f"{prefixes[prefix]}{name}"
+#        warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+#    return iri
 
 
 def read_datadoc(filename: "Union[str, Path]") -> dict:
@@ -653,7 +663,9 @@ def prepare_datadoc(datadoc: dict) -> dict:
 
 def as_jsonld(
     dct: dict,
-    type: "Optional[str]" = "dataset",
+    type: "Optional[str]" = None,
+    field: "Optional[Union[str, Sequence[str]]]" = None,
+    keywordfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -664,7 +676,10 @@ def as_jsonld(
         type: Type of data to document.  Should either be one of the
             pre-defined names: "dataset", "distribution", "accessService",
             "parser" and "generator" or an IRI to a class in an ontology.
-            Defaults to "dataset".
+        field: Field name or sequence of field names that defines the
+            keywords and prefixes used in `dct`.
+        keywordfile: Name of YAML file or sequence of filenames that define
+            the keywords and prefixes used in `dct`.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned
@@ -679,6 +694,11 @@ def as_jsonld(
     """
     # pylint: disable=too-many-branches
 
+    if "_keywords" in kwargs:
+        keywords = kwargs.pop("_keywords")
+    else:
+        keywords = Keywords(field=field, yamlfile=keywordfile)
+
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
 
@@ -690,8 +710,17 @@ def as_jsonld(
         if context:
             add(d, "@context", context)
 
+    all_prefixes = get_prefixes(context=context)
+    all_prefixes.update(keywords.data.get("prefixes", {}))
+    if prefixes:
+        all_prefixes.update(prefixes)
+
     if type:
-        t = dicttypes[type]["@type"] if type in dicttypes else type
+        t = (
+            expand_iri(type, all_prefixes)
+            if ":" in type
+            else keywords.expanded(type)
+        )
         add(d, "@type", t)  # get type at top
         d.update(dct)
         add(d, "@type", t)  # readd type if overwritten
@@ -711,13 +740,8 @@ def as_jsonld(
     if "@type" not in d:
         warnings.warn(f"Missing '@type' in dict to document: {_entryid}")
 
-    all_prefixes = get_prefixes(context=context)
-    if prefixes:
-        all_prefixes.update(prefixes)
-
     # Recursively expand IRIs and prepare sub-directories
     # Nested lists are not supported
-    nested = dicttypes.keys()
     for k, v in d.items():
         if k == "mappingURL":
             for url in get(d, k):
@@ -743,12 +767,22 @@ def as_jsonld(
             for i, e in enumerate(v):
                 if isinstance(e, str):
                     v[i] = expand_iri(e, all_prefixes)
-                elif isinstance(e, dict) and k in nested:
+                elif isinstance(e, dict):
                     v[i] = as_jsonld(
-                        e, k, _entryid=_entryid, prefixes=all_prefixes
+                        dct=e,
+                        type=k,
+                        prefixes=all_prefixes,
+                        _entryid=_entryid,
+                        _keywords=keywords,
                     )
-        elif isinstance(v, dict) and k in nested:
-            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=all_prefixes)
+        elif isinstance(v, dict):
+            d[k] = as_jsonld(
+                dct=v,
+                type=k,
+                prefixes=all_prefixes,
+                _entryid=_entryid,
+                _keywords=keywords,
+            )
 
     return d
 

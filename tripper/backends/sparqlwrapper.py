@@ -7,7 +7,7 @@ from rdflib import Graph
 
 from tripper import Literal
 from tripper.backends.rdflib import _convert_triples_to_tripper
-from tripper.utils import TripperException
+from tripper.errors import TripperError
 
 try:
     from SPARQLWrapper import GET, JSON, POST, TURTLE, SPARQLWrapper
@@ -252,7 +252,7 @@ class SparqlwrapperStrategy:
     def _check_endpoint(self):
         """Check if the update endpoint is valid"""
         if not self.sparql.isSparqlUpdateRequest() and self.update_iri is None:
-            raise TripperException(
+            raise TripperError(
                 f"The base_iri '{self.sparql.updateEndpoint}' "
                 "is not a valid update endpoint. "
                 "For updates it is necessary to give the "

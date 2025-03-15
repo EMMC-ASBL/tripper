@@ -129,19 +129,26 @@ def test_get():
     assert get(d, "c", default="x", aslist=False) == "x"
 
 
-def test_expand_iri():
-    """Test help-function expand_iri()."""
-    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
-    from tripper.datadoc.dataset import expand_iri, get_prefixes
+# if True:
+def test_save_dict():
+    """Test save_dict()."""
+    from tripper import Triplestore
+    from tripper.datadoc import save_dict
 
-    prefixes = get_prefixes()
-    assert expand_iri("chameo:Sample", prefixes) == CHAMEO.Sample
-    assert expand_iri("dcterms:title", prefixes) == DCTERMS.title
-    assert expand_iri("oteio:Parser", prefixes) == OTEIO.Parser
-    assert expand_iri("rdf:type", prefixes) == RDF.type
-    assert expand_iri("xxx", prefixes) == "xxx"
-    with pytest.warns(UserWarning):
-        assert expand_iri("xxx:type", prefixes) == "xxx:type"
+    ts = Triplestore("rdflib")
+    EX = ts.bind("ex", "http://example.com/ex#")
+    d = {
+        "@id": EX.exdata,
+        "@type": EX.ExData,
+        "creator": {"name": "John Doe"},
+        "inSeries": EX.series,
+        "distribution": {
+            "downloadURL": "http://example.com/downloads/exdata.csv",
+            "mediaType": "text/csv",
+        },
+    }
+    save_dict(ts, d)
+    print(ts.serialize())
 
 
 def test_as_jsonld():
@@ -237,7 +244,7 @@ def test_datadoc():
     assert parser["@type"] == OTEIO.Parser
     assert parser.configuration == {"driver": "hitachi"}
     assert parser.parserType == "application/vnd.dlite-parse"
-    assert parser == d.distribution.parser
+    assert parser["@id"] == d.distribution.parser
 
     # Add generator to distribution (in KB)
     GEN = ts.namespaces["gen"]
@@ -245,9 +252,12 @@ def test_datadoc():
 
     # Test saving a generator and add it to the distribution
     dist = load_dict(ts, d.distribution["@id"])
-    assert dist.generator["@id"] == GEN.sem_hitachi
-    assert dist.generator["@type"] == OTEIO.Generator
-    assert dist.generator.generatorType == "application/vnd.dlite-generate"
+    assert dist.generator == GEN.sem_hitachi
+
+    gen = load_dict(ts, dist.generator)
+    assert gen["@id"] == GEN.sem_hitachi
+    assert gen["@type"] == OTEIO.Generator
+    assert gen.generatorType == "application/vnd.dlite-generate"
 
     # Test save dict
     save_dict(
@@ -262,7 +272,7 @@ def test_datadoc():
 
     # Test load updated distribution
     dd = load_dict(ts, iri)
-    assert dd.distribution.generator == load_dict(ts, GEN.sem_hitachi)
+    assert dd.distribution.generator == GEN.sem_hitachi
     del dd.distribution["generator"]
     assert dd == d
 

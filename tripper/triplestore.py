@@ -743,6 +743,7 @@ class Triplestore:
         Otherwise `iri` isreturned.
 
         Examples:
+
             ```python
             >>> from tripper import Triplestore
             >>> ts = Triplestore(backend="rdflib")
@@ -764,9 +765,9 @@ class Triplestore:
             ```
 
         """
-        match = re.match(_MATCH_PREFIXED_IRI, iri)
-        if match:
-            prefix, name = match.groups()
+        m = re.match(_MATCH_PREFIXED_IRI, iri)
+        if m:
+            prefix, name = m.groups()
             if prefix is None:
                 prefix = ""
             if prefix not in self.namespaces:
