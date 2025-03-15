@@ -242,7 +242,7 @@ Resource:
 
 
 Dataset:
-  iri: dcat:Dataset
+  iri: ["dcat:Dataset", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
   subclassOf: dcat:Resource
   description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
   keywords:
@@ -484,11 +484,8 @@ Generator:
       description: "Generator type. Ex: `application/vnd.dlite-generate`."
 
 
-
-
-
 Agent:
-  iri: foaf:Agent
+  iri: ["foaf:Agent", "emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c"]
   description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
   keywords:
     name:
@@ -496,11 +493,17 @@ Agent:
       range: rdfs:Literal
       conformance: mandatory
       description: A name of the agent.
+    identifier:
+      iri: dcterms:identifier
+      range: rdfs:Literal
+      conformance: recommended
+      description: Identifier for the agent. E.g. organisation number.
     type:
       iri: dcterms:type
       range: skos:Concept
       conformance: optional
       description: The nature of the agent.
+      usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
 
 Checksum:
@@ -689,7 +692,6 @@ Location:
       range: locn:Geometry
       conformance: optional
       description: The geographic center (centroid) of a resource.
-
 
 
 Relationship:
