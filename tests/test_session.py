@@ -33,3 +33,5 @@ def test_session():
             "http://example.com#lars",
         ),
     }
+
+    assert session.get_names() == ["RdflibTest"]
