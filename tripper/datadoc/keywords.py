@@ -1,7 +1,8 @@
+#!/usr/bin/env python3
 """Parse and generate context."""
 
 import json
-import re
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -55,16 +56,15 @@ class Keywords:
         if isinstance(field, str):
             field = [field]
 
-        for name in field:  # type: ignore
+        for fieldname in field:  # type: ignore
             if self.field is None:
-                self.field = name
+                self.field = fieldname
             for ep in get_entry_points("tripper.keywords"):
-                if ep.name == name:
-                    dirname = re.sub(r"(?<!\d)\.", "/", ep.value)
-                    self.parse(self.rootdir / dirname / "keywords.yaml")
+                if ep.value == fieldname:
+                    self.parse(self.rootdir / ep.name / "keywords.yaml")
                     break
             else:
-                raise TypeError(f"Unknown field: {name}")
+                raise TypeError(f"Unknown field: {fieldname}")
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
@@ -111,6 +111,7 @@ class Keywords:
         dct = {"@context": c}
         with open(outfile, "wt", encoding="utf-8") as f:
             json.dump(dct, f, indent=2)
+            f.write(os.linesep)
 
     def write_doc_keywords(self, outfile: "FileLoc") -> None:
         """Write Markdown file with documentation of the keywords."""
@@ -121,6 +122,7 @@ class Keywords:
 
         field = f" for {self.field}" if self.field else ""
         out = [f"# Keywords{field}"]
+        order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 
         for resource_name, resource in self.keywords.items():
@@ -146,7 +148,11 @@ class Keywords:
             for keyword, d in resource.get("keywords", {}).items():
                 rangestr = f"[{d.range}]" if "range" in d else ""
                 if "datatype" in d:
-                    rangestr += f" {d.datatype}"
+                    rangestr += (
+                        ", " + ", ".join(d.datatype)
+                        if isinstance(d.datatype, list)
+                        else f", {d.datatype}"
+                    )
                 table.append(
                     [
                         f"[{keyword}]",
@@ -159,7 +165,7 @@ class Keywords:
                 refs.append(f"[{keyword}]: {ts.expand_iri(d.iri)}")
                 if "range" in d:
                     refs.append(f"[{d.range}]: {ts.expand_iri(d.range)}")
-
+            table.sort(key=lambda row: order.get(row[2], 10))
             out.extend(self._to_table(header, table))
             out.append("")
 
@@ -240,3 +246,63 @@ class Keywords:
                 )
 
         return lines
+
+
+def main(argv=None):
+    """Main function providing CLI access to keywords."""
+    import argparse  # pylint: disable=import-outside-toplevel
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Tool for generation of JSON-LD context and documentation from "
+            "keyword definitions."
+        )
+    )
+    parser.add_argument(
+        "--yamlfile",
+        "-i",
+        metavar="YAMLFILE",
+        action="append",
+        help="Load keywords from this YAML file.",
+    )
+    parser.add_argument(
+        "--field",
+        "-f",
+        metavar="NAME",
+        action="append",
+        help="Load keywords from this field.",
+    )
+    parser.add_argument(
+        "--context",
+        "-c",
+        metavar="FILENAME",
+        help="Generate JSON-LD context file.",
+    )
+    parser.add_argument(
+        "--keywords",
+        "-k",
+        metavar="FILENAME",
+        help="Generate keywords Markdown documentation.",
+    )
+    parser.add_argument(
+        "--prefixes",
+        "-p",
+        metavar="FILENAME",
+        help="Generate prefixes Markdown documentation.",
+    )
+    args = parser.parse_args(argv)
+
+    keywords = Keywords(field=args.field, yamlfile=args.yamlfile)
+
+    if args.context:
+        keywords.write_context(args.context)
+
+    if args.keywords:
+        keywords.write_doc_keywords(args.keywords)
+
+    if args.prefixes:
+        keywords.write_doc_prefixes(args.prefixes)
+
+
+if __name__ == "__main__":
+    main()

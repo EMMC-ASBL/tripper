@@ -82,6 +82,8 @@ def get_triplestore(tsname: str) -> "Triplestore":
     return ts
 
 
+# if True:
+#    tsname = "Fuseki"
 def populate_and_search(tsname):  # pylint: disable=too-many-statements
     """Do the test on the desried backend."""
     # Test adding triples

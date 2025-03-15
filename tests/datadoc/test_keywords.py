@@ -6,7 +6,11 @@ def test_parse_default():
     """Test parse keywords."""
     import json
 
-    from dataset_paths import outdir, rootdir
+    import pytest
+
+    pytest.importorskip("rdflib")
+
+    from dataset_paths import outdir, rootdir  # pylint: disable=import-error
 
     from tripper.datadoc.keywords import Keywords
 
