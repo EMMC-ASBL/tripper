@@ -73,14 +73,12 @@ repos:
 
   - repo: local
     hooks:
-    # Commented out for now since running pre-commit on GitHub is impossible to skip or add dependencies to...
-    #- id: generate-context-and-doc
-    #  name: Generate JSON-LD context and documentation
-    #  entry: tripper/datadoc/keywords.py --context=tripper/context/0.3/context.json --keywords=docs/datadoc/keywords.md --prefixes=docs/datadoc/prefixes.md
-    #  language: script
-    #  types: [python]
-    #  pass_filenames: false
-    #  stages: ["pre-commit"]
+    - id: generate-context-and-doc
+      name: Generate JSON-LD context and documentation
+      entry: .hooks/generate-context-and-doc.sh
+      language: script
+      pass_filenames: false
+      stages: ["pre-commit"]
 
     - id: pylint
       name: pylint

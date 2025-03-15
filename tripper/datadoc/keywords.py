@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
 """Parse and generate context."""
+
+# pylint: disable=too-many-branches
 
 import json
 import os
@@ -64,7 +65,17 @@ class Keywords:
                     self.parse(self.rootdir / ep.name / "keywords.yaml")
                     break
             else:
-                raise TypeError(f"Unknown field: {fieldname}")
+                if fieldname == "default":
+                    # Fallback in case the entry point is not installed
+                    self.parse(
+                        self.rootdir
+                        / "tripper"
+                        / "context"
+                        / "0.3"
+                        / "keywords.yaml"
+                    )
+                else:
+                    raise TypeError(f"Unknown field name: {fieldname}")
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
@@ -130,9 +141,21 @@ class Keywords:
                 continue
 
             out.append("")
-            out.append(f"## Properties on {resource_name}")
+            out.append(f"## Properties on [{resource_name}]")
             if "description" in resource:
                 out.append(resource.description)
+            if "subClassOf" in resource:
+                out.append("")
+                subcl = (
+                    [resource.subClassOf]
+                    if isinstance(resource.subClassOf, str)
+                    else resource.subClassOf
+                )
+                out.append(
+                    f"- subClassOf: {', '.join(f'[{sc}]' for sc in subcl)}"
+                )
+                for sc in subcl:
+                    refs.append(f"[{sc}]: {ts.expand_iri(sc)}")
             if "iri" in resource:
                 refs.append(
                     f"[{resource_name}]: {ts.expand_iri(resource.iri)}"

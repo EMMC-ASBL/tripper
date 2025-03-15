@@ -1,6 +1,6 @@
 # Keywords for default
 
-## Properties on Resource
+## Properties on [Resource]
 Resource published or curated by an agent.
 
 | Keyword                 | Range                                  | Conformance | Definition                                                                                                                                   | Usage note                                                                                                                                                                                            |
@@ -40,8 +40,10 @@ Resource published or curated by an agent.
 | [statements]            | [rdfs:Literal], rdf:JSON               |             | A list of subject-predicate-object triples with additional RDF statements documenting the resource.                                          |                                                                                                                                                                                                       |
 
 
-## Properties on Dataset
+## Properties on [Dataset]
 A collection of data, published or curated by an agent, and available for access or download in one or more representations.
+
+- subClassOf: [dcat:Resource], [emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]
 
 | Keyword                | Range                                            | Conformance | Definition                                                                                                                 | Usage note                                                                                                    |
 | ---------------------- | ------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -67,7 +69,7 @@ A collection of data, published or curated by an agent, and available for access
 | [mappingFormat]        | [rdfs:Literal]                                   |             | File format for `mappingURL`. Defaults to "turtle".                                                                        |                                                                                                               |
 
 
-## Properties on Distribution
+## Properties on [Distribution]
 A physical embodiment of the Dataset in a particular format.
 
 | Keyword          | Range                                  | Conformance | Definition                                                                                                                                                         | Usage note                                                                                                                                                                |
@@ -87,7 +89,7 @@ A physical embodiment of the Dataset in a particular format.
 | [parser]         | [oteio:Parser]                         |             | A parser that can parse the distribution.                                                                                                                          |                                                                                                                                                                           |
 
 
-## Properties on Parser
+## Properties on [Parser]
 A parser that can parse a distribution into an instance of a datamodel.
 
 | Keyword         | Range                    | Conformance | Definition                                                             | Usage note |
@@ -96,7 +98,7 @@ A parser that can parse a distribution into an instance of a datamodel.
 | [parserType]    | [rdfs:Literal]           |             | Parser type. Ex: `application/vnd.dlite-parse`.                        |            |
 
 
-## Properties on Generator
+## Properties on [Generator]
 A generator that can serialise an instance of a datamodel into a distribution.
 
 | Keyword         | Range          | Conformance | Definition                                            | Usage note |
@@ -104,16 +106,19 @@ A generator that can serialise an instance of a datamodel into a distribution.
 | [generatorType] | [rdfs:Literal] |             | Generator type. Ex: `application/vnd.dlite-generate`. |            |
 
 
-## Properties on Agent
+## Properties on [Agent]
 Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
 
-| Keyword | Range          | Conformance | Definition               | Usage note |
-| ------- | -------------- | ----------- | ------------------------ | ---------- |
-| [name]  | [rdfs:Literal] | mandatory   | A name of the agent.     |            |
-| [type]  | [skos:Concept] | optional    | The nature of the agent. |            |
+- subClassOf: [emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c]
+
+| Keyword      | Range          | Conformance | Definition                                          | Usage note                                                                                                                                    |
+| ------------ | -------------- | ----------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [name]       | [rdfs:Literal] | mandatory   | A name of the agent.                                |                                                                                                                                               |
+| [identifier] | [rdfs:Literal] | recommended | Identifier for the agent. E.g. organisation number. |                                                                                                                                               |
+| [type]       | [skos:Concept] | optional    | The nature of the agent.                            | The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf). |
 
 
-## Properties on Checksum
+## Properties on [Checksum]
 A preferred label of the concept.
 
 | Keyword         | Range                         | Conformance | Definition                                                                         | Usage note |
@@ -122,11 +127,11 @@ A preferred label of the concept.
 | [checksumValue] | [rdfs:Literal], xsd:hexBinary |             | A lower case hexadecimal encoded digest value produced using a specific algorithm. |            |
 
 
-## Properties on ChecksumAlgorithm
+## Properties on [ChecksumAlgorithm]
 Algorithm for Checksums.
 
 
-## Properties on Concept
+## Properties on [Concept]
 An idea or notion; a unit of thought.
 
 | Keyword     | Range          | Conformance | Definition                        | Usage note |
@@ -134,7 +139,7 @@ An idea or notion; a unit of thought.
 | [prefLabel] | [rdfs:Literal] |             | A preferred label of the concept. |            |
 
 
-## Properties on DataService
+## Properties on [DataService]
 A collection of operations that provides access to one or more datasets or data processing functions.
 
 | Keyword               | Range                      | Conformance | Definition                                                                                              | Usage note |
@@ -144,15 +149,15 @@ A collection of operations that provides access to one or more datasets or data 
 | [servesDataset]       | [dcat:Dataset]             | recommended | This property refers to a collection of data that this data service can distribute.                     |            |
 
 
-## Properties on DatasetSeries
+## Properties on [DatasetSeries]
 A collection of datasets that are published separately, but share some characteristics that group them.
 
 
-## Properties on Geometry
+## Properties on [Geometry]
 The locn:Geometry class provides the means to identify a location as a point, line, polygon, etc. expressed using coordinates in some coordinate reference system.
 
 
-## Properties on Kind
+## Properties on [Kind]
 A description following the vCard specification, e.g. to provide telephone number and e-mail address for a contact point.
 
 | Keyword               | Range          | Conformance | Definition | Usage note |
@@ -185,7 +190,7 @@ A description following the vCard specification, e.g. to provide telephone numbe
 | [hasURL]              | [rdfs:Literal] |             |            |            |
 
 
-## Properties on LicenseDocument
+## Properties on [LicenseDocument]
 A legal document giving official permission to do something with a resource.
 
 | Keyword | Range          | Conformance | Definition                                                                  | Usage note |
@@ -193,7 +198,7 @@ A legal document giving official permission to do something with a resource.
 | [type]  | [skos:Concept] |             | A type of licence, e.g. indicating 'public domain' or 'royalties required'. |            |
 
 
-## Properties on Location
+## Properties on [Location]
 A spatial region or named place.
 
 | Keyword    | Range           | Conformance | Definition                                      | Usage note |
@@ -203,7 +208,7 @@ A spatial region or named place.
 | [geometry] | [locn:Geometry] | optional    | The geographic center (centroid) of a resource. |            |
 
 
-## Properties on Relationship
+## Properties on [Relationship]
 An association class for attaching additional information to a relationship between DCAT Resources.
 
 | Keyword    | Range           | Conformance | Definition                                                                   | Usage note |
@@ -281,6 +286,8 @@ An association class for attaching additional information to a relationship betw
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
 [statements]: https://w3id.org/emmo/domain/oteio#statement
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[dcat:Resource]: http://www.w3.org/ns/dcat#Resource
+[emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [Dataset]: http://www.w3.org/ns/dcat#Dataset
 [distribution]: http://www.w3.org/ns/dcat#distribution
 [dcat:Distribution]: http://www.w3.org/ns/dcat#Distribution
@@ -357,8 +364,11 @@ An association class for attaching additional information to a relationship betw
 [Generator]: https://w3id.org/emmo/domain/oteio#Generator
 [generatorType]: https://w3id.org/emmo/domain/oteio#generatorType
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c]: https://w3id.org/emmo#EMMO_c130614a_2985_476d_a7ed_8a137847703c
 [Agent]: http://xmlns.com/foaf/0.1/Agent
 [name]: http://xmlns.com/foaf/0.1/name
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[identifier]: http://purl.org/dc/terms/identifier
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [type]: http://purl.org/dc/terms/type
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept

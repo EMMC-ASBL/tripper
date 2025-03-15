@@ -242,8 +242,8 @@ Resource:
 
 
 Dataset:
-  iri: ["dcat:Dataset", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
-  subclassOf: dcat:Resource
+  iri: dcat:Dataset
+  subClassOf: ["dcat:Resource", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
   description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
   keywords:
     distribution:
@@ -485,7 +485,8 @@ Generator:
 
 
 Agent:
-  iri: ["foaf:Agent", "emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c"]
+  iri: foaf:Agent
+  subClassOf: emmo:EMMO_c130614a_2985_476d_a7ed_8a137847703c
   description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
   keywords:
     name:
