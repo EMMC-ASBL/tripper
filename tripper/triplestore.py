@@ -10,6 +10,7 @@ the triplestore backends may have.
 For developers: The usage of `s`, `p`, and `o` represent the different
 parts of an RDF Triple: subject, predicate, and object.
 
+
 """
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
@@ -577,12 +578,6 @@ class Triplestore:
     )
 
     @classmethod
-    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
-        """Returns the class implementing the given backend."""
-        module = cls._load_backend(backend, package=package)
-        return getattr(module, f"{backend.title()}Strategy")
-
-    @classmethod
     def _check_backend_method(cls, backend: str, name: str):
         """Checks that `backend` has a method called `name`.
 
@@ -594,6 +589,12 @@ class Triplestore:
                 f"Triplestore backend {backend!r} do not implement a "
                 f'"{name}()" method.'
             )
+
+    @classmethod
+    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
+        """Returns the class implementing the given backend."""
+        module = cls._load_backend(backend, package=package)
+        return getattr(module, f"{backend.title()}Strategy")
 
     def _check_method(self, name):
         """Check that backend implements the given method."""
@@ -671,12 +672,10 @@ class Triplestore:
             return value
         raise UniquenessError("More than one match")
 
-    def subjects(
-        self, predicate=None, object=None  # pylint: disable=redefined-builtin
-    ):
-        """Returns a generator of subjects for given predicate and object."""
-        for s, _, _ in self.triples(predicate=predicate, object=object):
-            yield s
+    def objects(self, subject=None, predicate=None):
+        """Returns a generator of objects for given subject and predicate."""
+        for _, _, o in self.triples(subject=subject, predicate=predicate):
+            yield o
 
     def predicates(
         self, subject=None, object=None  # pylint: disable=redefined-builtin
@@ -685,10 +684,24 @@ class Triplestore:
         for _, p, _ in self.triples(subject=subject, object=object):
             yield p
 
-    def objects(self, subject=None, predicate=None):
-        """Returns a generator of objects for given subject and predicate."""
-        for _, _, o in self.triples(subject=subject, predicate=predicate):
-            yield o
+    def subjects(
+        self, predicate=None, object=None  # pylint: disable=redefined-builtin
+    ):
+        """Returns a generator of subjects for given predicate and object."""
+        for s, _, _ in self.triples(predicate=predicate, object=object):
+            yield s
+
+    def predicate_objects(self, subject=None):
+        """Returns a generator of (predicate, object) tuples for given
+        subject."""
+        for _, p, o in self.triples(subject=subject):
+            yield p, o
+
+    def subject_objects(self, predicate=None):
+        """Returns a generator of (subject, object) tuples for given
+        predicate."""
+        for s, _, o in self.triples(predicate=predicate):
+            yield s, o
 
     def subject_predicates(
         self, object=None
@@ -697,28 +710,6 @@ class Triplestore:
         object."""
         for s, p, _ in self.triples(object=object):
             yield s, p
-
-    def subject_objects(self, predicate=None):
-        """Returns a generator of (subject, object) tuples for given
-        predicate."""
-        for s, _, o in self.triples(predicate=predicate):
-            yield s, o
-
-    def predicate_objects(self, subject=None):
-        """Returns a generator of (predicate, object) tuples for given
-        subject."""
-        for _, p, o in self.triples(subject=subject):
-            yield p, o
-
-    def set(self, triple):
-        """Convenience method to update the value of object.
-
-        Removes any existing triples for subject and predicate before adding
-        the given `triple`.
-        """
-        s, p, _ = triple
-        self.remove(s, p)
-        self.add(triple)
 
     def has(
         self, subject=None, predicate=None, object=None
@@ -733,6 +724,16 @@ class Triplestore:
         except StopIteration:
             return False
         return True
+
+    def set(self, triple):
+        """Convenience method to update the value of object.
+
+        Removes any existing triples for subject and predicate before adding
+        the given `triple`.
+        """
+        s, p, _ = triple
+        self.remove(s, p)
+        self.add(triple)
 
     # Methods providing additional functionality
     # ------------------------------------------
