@@ -29,6 +29,24 @@ def test_AttrDict():
     assert "a" in dir(d2)
 
 
+def test_recursive_update():
+    """Test recursive_update()."""
+    from tripper.utils import AttrDict, recursive_update
+
+    other = {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": 6}
+    d = {"a": []}
+    recursive_update(d, other)
+    assert d == other
+
+    d = AttrDict()
+    recursive_update(d, other)
+    assert d == other
+
+    d = {"d": 1}
+    recursive_update(d, other)
+    assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": [1, 6]}
+
+
 def test_openfile():
     """Test openfile()."""
     from paths import indir
@@ -385,3 +403,36 @@ def test_extend_namespace():
     EX = Namespace("http://example.com#")
     with pytest.raises(TypeError):
         extend_namespace(EX, {"Item": EX + "Item"})
+
+
+def test_expand_iri():
+    """Test expand_iri()."""
+    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper.utils import expand_iri
+
+    prefixes = {
+        "chameo": str(CHAMEO),
+        "dcterms": str(DCTERMS),
+        "oteio": str(OTEIO),
+        "rdf": str(RDF),
+    }
+    assert expand_iri("chameo:Sample", prefixes) == CHAMEO.Sample
+    assert expand_iri("dcterms:title", prefixes) == DCTERMS.title
+    assert expand_iri("oteio:Parser", prefixes) == OTEIO.Parser
+    assert expand_iri("rdf:type", prefixes) == RDF.type
+    assert expand_iri("xxx", prefixes) == "xxx"
+    with pytest.warns(UserWarning):
+        assert expand_iri("xxx:type", prefixes) == "xxx:type"
+
+
+def test_get_entry_points():
+    """Test get_entry_points()"""
+    from tripper.utils import get_entry_points
+
+    for ep in get_entry_points("tripper.keywords"):
+        if ep.value == "default":
+            break
+    else:
+        raise RuntimeError(
+            "no tripper.keywords entry point with value 'default'"
+        )

@@ -47,7 +47,14 @@ from tripper.namespace import (
     XSD,
     Namespace,
 )
-from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
+from tripper.utils import (
+    bnode_iri,
+    en,
+    function_id,
+    get_entry_points,
+    infer_iri,
+    split_iri,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
@@ -78,12 +85,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
-
-try:
-    from importlib.metadata import entry_points
-except ImportError:
-    # Use importlib_metadata backport for Python 3.6 and 3.7
-    from importlib_metadata import entry_points  # type: ignore
 
 
 # Default packages in which to look for tripper backends
@@ -226,17 +227,7 @@ class Triplestore:
             return importlib.import_module(backend, package)
 
         # Installed backend package
-        if sys.version_info < (3, 10):
-            # Fallback for Python < 3.10
-            eps = entry_points().get(  # pylint: disable=no-member
-                "tripper.backends", ()
-            )
-        else:
-            # New entry_point interface from Python 3.10+
-            eps = entry_points(  # pylint: disable=unexpected-keyword-arg
-                group="tripper.backends"
-            )
-        for entry_point in eps:
+        for entry_point in get_entry_points("tripper.backends"):
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
 
@@ -613,7 +604,7 @@ class Triplestore:
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(  # pylint: disable=redefined-builtin,too-many-positional-arguments
+    def value(  # pylint: disable=redefined-builtin
         self,
         subject=None,
         predicate=None,
@@ -752,6 +743,7 @@ class Triplestore:
         Otherwise `iri` isreturned.
 
         Examples:
+
             ```python
             >>> from tripper import Triplestore
             >>> ts = Triplestore(backend="rdflib")
@@ -773,9 +765,9 @@ class Triplestore:
             ```
 
         """
-        match = re.match(_MATCH_PREFIXED_IRI, iri)
-        if match:
-            prefix, name = match.groups()
+        m = re.match(_MATCH_PREFIXED_IRI, iri)
+        if m:
+            prefix, name = m.groups()
             if prefix is None:
                 prefix = ""
             if prefix not in self.namespaces:
@@ -828,7 +820,7 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    def add_restriction(  # pylint: disable=redefined-builtin,too-many-positional-arguments
+    def add_restriction(  # pylint: disable=redefined-builtin
         self,
         cls: str,
         property: str,
@@ -890,7 +882,7 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
-    def restrictions(  # pylint: disable=redefined-builtin,too-many-positional-arguments
+    def restrictions(  # pylint: disable=redefined-builtin
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
@@ -1031,7 +1023,7 @@ class Triplestore:
             target_cost=target_cost,
         )
 
-    def add_mapsTo(  # pylint: disable=too-many-positional-arguments
+    def add_mapsTo(
         self,
         target: str,
         source: str,
@@ -1175,7 +1167,7 @@ class Triplestore:
 
         return result
 
-    def add_function(  # pylint: disable=too-many-positional-arguments
+    def add_function(
         self,
         func: "Union[Callable, str]",
         expects: "Union[str, Sequence, Mapping]" = (),
@@ -1250,7 +1242,7 @@ class Triplestore:
 
         return func_iri
 
-    def _add_function_doc(  # pylint: disable=too-many-positional-arguments
+    def _add_function_doc(
         self,
         func_iri: "str",
         func: "Optional[Callable]" = None,

@@ -17,6 +17,7 @@ jobs:
 
       ## pre-commit
       run_pre-commit: false
+      skip_pre-commit_hooks: "generate-context-and-doc"
 
       ## pylint & safety
       python_version_pylint_safety: "3.9"

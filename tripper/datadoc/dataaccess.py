@@ -26,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
 
-def save(  # pylint: disable=too-many-positional-arguments
+def save(
     ts: Triplestore,
     data: bytes,
     class_iri: "Optional[str]" = None,

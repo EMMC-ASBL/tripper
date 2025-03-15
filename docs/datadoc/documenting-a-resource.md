@@ -18,7 +18,9 @@ Below is a simple example of how to document a SEM image dataset as a Python dic
 >>> dataset = {
 ...     "@id": "kb:image1",
 ...     "@type": "sem:SEMImage",
-...     "creator": "Sigurd Wenner",
+...     "creator": {
+...         "name": "Sigurd Wenner",
+...     },
 ...     "description": "Back-scattered SEM image of cement, polished with 1 µm diamond compound.",
 ...     "distribution": {
 ...         "downloadURL": "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif",
@@ -60,7 +62,13 @@ We therefore have to define them explicitly
         "https://w3id.com/emmo/domain/sem/0.1#SEMImage"
       ],
       "@id": "http://example.com/kb/image1",
-      "creator": "Sigurd Wenner",
+      "creator": {
+        "@type": [
+          "http://xmlns.com/foaf/0.1/Agent",
+          "https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"
+        ],
+        "name": "Sigurd Wenner"
+      },
       "description": "Back-scattered SEM image of cement, polished with 1 \u00b5m diamond compound.",
       "distribution": {
         "@type": "http://www.w3.org/ns/dcat#Distribution",

@@ -36,7 +36,7 @@ class Tripper(Triplestore):
     such as get_value, add_data and add_interpolation_source.
     """
 
-    def add_data(  # pylint: disable=too-many-positional-arguments
+    def add_data(
         self,
         func: "Union[Callable, Literal]",
         iri: "Optional[Union[str, Sequence]]" = None,
@@ -121,7 +121,7 @@ class Tripper(Triplestore):
 
         return data_source
 
-    def get_value(  # pylint: disable=too-many-positional-arguments
+    def get_value(
         self,
         iri,
         routeno=0,
@@ -209,7 +209,7 @@ class Tripper(Triplestore):
             quantity=quantity,
         )
 
-    def add_interpolation_source(  # pylint: disable=too-many-positional-arguments,too-many-arguments
+    def add_interpolation_source(  # pylint: disable=too-many-arguments
         self,
         xcoord: str,
         ycoord: str,

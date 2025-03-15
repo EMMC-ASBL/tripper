@@ -1,4 +1,4 @@
-"""Exceptions and warnings for the triplestore package."""
+"""Exceptions and warnings for the tripper package."""
 
 
 # === Exceptions ===
