@@ -5,8 +5,6 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import yaml
-
 from tripper.triplestore import Triplestore
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -43,6 +41,8 @@ class Session:
         - Darwin: $HOME/Library/Config/tripper/session.yaml
 
         """
+        import yaml  # pylint: disable=import-outside-toplevel,import-error
+
         if config is None:
             config = get_configdir() / "session.yaml"
 
@@ -60,7 +60,7 @@ class Session:
             if password:
                 conf["password"] = password
             elif "username" in conf and conf["password"] == "KEYRING":
-                import keyring  # pylint: disable=import-outside-toplevel
+                import keyring  # pylint: disable=import-outside-toplevel,import-error
 
                 conf["password"] = keyring.get_password(name, conf["username"])
 
