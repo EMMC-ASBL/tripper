@@ -60,6 +60,7 @@ repos:
       exclude: ^tests/.*$
       additional_dependencies:
         - "types-requests"
+        - "types-pyyaml"
         - "pydantic"
 
   - repo: https://github.com/SINTEF/ci-cd

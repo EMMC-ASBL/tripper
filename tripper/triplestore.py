@@ -612,7 +612,7 @@ class Triplestore:
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(  # pylint: disable=redefined-builtin,too-many-positional-arguments
+    def value(  # pylint: disable=redefined-builtin
         self,
         subject=None,
         predicate=None,
@@ -827,7 +827,7 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    def add_restriction(  # pylint: disable=redefined-builtin,too-many-positional-arguments
+    def add_restriction(  # pylint: disable=redefined-builtin
         self,
         cls: str,
         property: str,
@@ -889,7 +889,7 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
-    def restrictions(  # pylint: disable=redefined-builtin,too-many-positional-arguments
+    def restrictions(  # pylint: disable=redefined-builtin
         self,
         cls: "Optional[str]" = None,
         property: "Optional[str]" = None,
@@ -1030,7 +1030,7 @@ class Triplestore:
             target_cost=target_cost,
         )
 
-    def add_mapsTo(  # pylint: disable=too-many-positional-arguments
+    def add_mapsTo(
         self,
         target: str,
         source: str,
@@ -1174,7 +1174,7 @@ class Triplestore:
 
         return result
 
-    def add_function(  # pylint: disable=too-many-positional-arguments
+    def add_function(
         self,
         func: "Union[Callable, str]",
         expects: "Union[str, Sequence, Mapping]" = (),
@@ -1249,7 +1249,7 @@ class Triplestore:
 
         return func_iri
 
-    def _add_function_doc(  # pylint: disable=too-many-positional-arguments
+    def _add_function_doc(
         self,
         func_iri: "str",
         func: "Optional[Callable]" = None,
