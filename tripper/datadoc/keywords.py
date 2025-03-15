@@ -141,13 +141,23 @@ class Keywords:
             c[prefix] = ns
 
         resources = self.data.get("resources", {})
+
+        # Translate datatypes
+        translate = {"rdf:JSON": "@json"}
+
         for resource in resources.values():
             for k, v in resource.get("keywords", {}).items():
                 iri = v["iri"]
                 if "datatype" in v:
+                    dt = v["datatype"]
+                    if isinstance(dt, str):
+                        dt = translate.get(dt, dt)
+                    else:
+                        dt = [translate.get(t, t) for t in dt]
+
                     c[k] = {  # type: ignore
                         "@id": iri,
-                        "@type": v["datatype"],
+                        "@type": dt,
                     }
                 elif v["range"] == "rdfs:Literal":
                     c[k] = iri

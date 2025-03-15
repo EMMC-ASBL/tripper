@@ -77,10 +77,7 @@
     },
     "modificationDate": {
       "@id": "dcterms:modified",
-      "@type": [
-        "xsd:date",
-        "xsd:dateTime"
-      ]
+      "@type": "xsd:date"
     },
     "publisher": {
       "@id": "dcterms:publisher",
@@ -100,10 +97,7 @@
     },
     "releaseDate": {
       "@id": "dcterms:issued",
-      "@type": [
-        "xsd:date",
-        "xsd:dateTime"
-      ]
+      "@type": "xsd:date"
     },
     "theme": {
       "@id": "dcat:theme",
@@ -140,7 +134,7 @@
     },
     "statements": {
       "@id": "oteio:statement",
-      "@type": "rdf:JSON"
+      "@type": "@json"
     },
     "distribution": {
       "@id": "dcat:distribution",
@@ -212,7 +206,7 @@
     },
     "mappings": {
       "@id": "oteio:mapping",
-      "@type": "rdf:JSON"
+      "@type": "@json"
     },
     "mappingURL": {
       "@id": "oteio:mappingURL",
@@ -229,10 +223,7 @@
     },
     "availability": {
       "@id": "dcatap:availability",
-      "@type": [
-        "xsd:date",
-        "xsd:dateTime"
-      ]
+      "@type": "xsd:date"
     },
     "byteSize": {
       "@id": "dcat:byteSize",
@@ -270,7 +261,7 @@
     "status": "adms:status",
     "configuration": {
       "@id": "oteio:hasConfiguration",
-      "@type": "rdf:JSON"
+      "@type": "@json"
     },
     "parserType": "oteio:parserType",
     "generatorType": "oteio:generatorType",

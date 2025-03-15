@@ -133,7 +133,7 @@ def test_get():
 def test_save_dict():
     """Test save_dict()."""
     from tripper import Triplestore
-    from tripper.datadoc import save_dict
+    from tripper.datadoc import as_jsonld, save_dict
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -147,8 +147,10 @@ def test_save_dict():
             "mediaType": "text/csv",
         },
     }
-    save_dict(ts, d)
+    ld = as_jsonld(d)
+    ld2 = save_dict(ts, d)
     print(ts.serialize())
+    assert ld2 == ld
 
 
 def test_as_jsonld():

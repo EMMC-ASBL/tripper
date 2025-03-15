@@ -128,7 +128,8 @@ resources:
       modificationDate:
         iri: dcterms:modified
         range: rdfs:Literal
-        datatype: ["xsd:date", "xsd:dateTime"]
+        #datatype: ["xsd:date", "xsd:dateTime"]
+        datatype: xsd:date
         conformance: optional
         description: The most recent date on which the resource was changed or modified.
 
@@ -159,7 +160,8 @@ resources:
       releaseDate:
         iri: dcterms:issued
         range: rdfs:Literal
-        datatype: ["xsd:date", "xsd:dateTime"]
+        #datatype: ["xsd:date", "xsd:dateTime"]
+        datatype: xsd:date
         conformance: optional
         description: The date of formal issuance (e.g., publication) of the resource.
 
@@ -392,7 +394,8 @@ resources:
       availability:
         iri: dcatap:availability
         range: rdfs:Literal
-        datatype: ["xsd:date", "xsd:dateTime"]
+        #datatype: ["xsd:date", "xsd:dateTime"]
+        datatype: xsd:date
         conformance: recommended
         description: An indication how long it is planned to keep the Distribution of the Dataset available.
 

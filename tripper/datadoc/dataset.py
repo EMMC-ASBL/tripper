@@ -692,7 +692,7 @@ def as_jsonld(
         An updated copy of `dct` as valid JSON-LD.
 
     """
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-statements
 
     if "_keywords" in kwargs:
         keywords = kwargs.pop("_keywords")
@@ -715,12 +715,18 @@ def as_jsonld(
     if prefixes:
         all_prefixes.update(prefixes)
 
+    print()
+    print("*** dct:", dct)
+    print("*** type:", type)
+
     if type:
-        t = (
-            expand_iri(type, all_prefixes)
-            if ":" in type
-            else keywords.expanded(type)
-        )
+        t = expand_iri(type, all_prefixes) if ":" in type else type
+        # t = (
+        #    expand_iri(type, all_prefixes)
+        #    if ":" in type
+        #    else keywords.expanded(type)
+        # )
+        print("    t:", t)
         add(d, "@type", t)  # get type at top
         d.update(dct)
         add(d, "@type", t)  # readd type if overwritten
@@ -770,7 +776,7 @@ def as_jsonld(
                 elif isinstance(e, dict):
                     v[i] = as_jsonld(
                         dct=e,
-                        type=k,
+                        type=keywords[k].range,
                         prefixes=all_prefixes,
                         _entryid=_entryid,
                         _keywords=keywords,
@@ -778,7 +784,7 @@ def as_jsonld(
         elif isinstance(v, dict):
             d[k] = as_jsonld(
                 dct=v,
-                type=k,
+                type=keywords[k].range,
                 prefixes=all_prefixes,
                 _entryid=_entryid,
                 _keywords=keywords,
