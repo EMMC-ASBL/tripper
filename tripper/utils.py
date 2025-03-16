@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from tripper.errors import NamespaceError
 from tripper.literal import Literal
 from tripper.namespace import XSD, Namespace
 
@@ -564,6 +565,26 @@ def expand_iri(iri: str, prefixes: dict) -> str:
         if prefix in prefixes:
             return f"{prefixes[prefix]}{name}"
         warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+    return iri
+
+
+def prefix_iri(
+    iri: str, prefixes: dict, require_prefixed: bool = False
+) -> str:
+    """Return prefixed IRI.
+
+    This is the reverse of expand_iri().
+
+    If `require_prefixed` is true, a NamespaceError exception is raised
+    if no prefix can be found.
+
+    """
+    if not re.match(MATCH_PREFIXED_IRI, iri):
+        for prefix, ns in prefixes.items():
+            if iri.startswith(str(ns)):
+                return f"{prefix}:{iri[len(str(ns)):]}"
+        if require_prefixed:
+            raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
 
 

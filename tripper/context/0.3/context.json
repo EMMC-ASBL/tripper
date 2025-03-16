@@ -44,7 +44,7 @@
     },
     "description": {
       "@id": "dcterms:description",
-      "@type": "rdf:LangString"
+      "@type": "rdf:langString"
     },
     "documentation": {
       "@id": "foaf:documentation",
@@ -61,7 +61,7 @@
     },
     "keyword": {
       "@id": "dcat:keyword",
-      "@type": "rdf:LangString"
+      "@type": "rdf:langString"
     },
     "landingPage": {
       "@id": "dcat:landingPage",
@@ -69,7 +69,7 @@
     },
     "language": {
       "@id": "dcterms:language",
-      "@type": "rdf:LangString"
+      "@type": "rdf:langString"
     },
     "license": {
       "@id": "dcterms:license",

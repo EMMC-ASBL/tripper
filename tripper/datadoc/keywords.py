@@ -1,6 +1,6 @@
 """Parse and generate context."""
 
-# pylint: disable=too-many-branches
+# pylint: disable=too-many-branches,redefined-builtin
 
 import json
 import os
@@ -10,12 +10,13 @@ from typing import TYPE_CHECKING
 import yaml
 
 from tripper import Triplestore
-from tripper.datadoc.errors import InvalidKeywordError
+from tripper.datadoc.errors import InvalidKeywordError, NoSuchTypeError
 from tripper.utils import (
     AttrDict,
     expand_iri,
     get_entry_points,
     openfile,
+    prefix_iri,
     recursive_update,
 )
 
@@ -127,9 +128,51 @@ class Keywords:
             raise InvalidKeywordError(keyword)
         return expand_iri(iri, self.data.get("prefixes", {}))
 
-    def range(self, keyword: str) -> "Union[str, list]":
+    def range(self, keyword: str) -> str:
         """Return the range of the keyword."""
         return self.keywords[keyword].range
+
+    def normtype(self, type: str) -> "Union[str, list]":
+        """Return normalised and expanded type.
+
+        Example:
+
+        >>> keywords = Keywords()
+        >>> keywords.normtype("Dataset")
+        ['dcat:Dataset', 'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
+
+        >>> keywords.normtype("dcat:Dataset")
+        ['dcat:Dataset', 'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
+
+        """
+        if type in self.data.resources:
+            r = self.data.resources[type]
+        else:
+            type = prefix_iri(type, self.data.get("prefixes", {}))
+            rlst = [
+                r
+                for r in self.data.resources.values()
+                if type == r.iri
+                or (
+                    "type" in r
+                    and type
+                    in ([r.type] if isinstance(r.type, str) else r.type)
+                )
+            ]
+            if not rlst:
+                raise NoSuchTypeError(type)
+            if len(rlst) > 1:
+                raise RuntimeError(
+                    f"{type} matches more than one resource: "
+                    f"{', '.join(r.iri for r in rlst)}"
+                )
+            r = rlst[0]
+
+        if "type" in r:
+            if isinstance(r.type, str):
+                return [r.iri, r.type]
+            return [r.iri] + r.type
+        return r.iri
 
     def write_context(self, outfile: "FileLoc") -> None:
         """Write JSON-LD context file."""

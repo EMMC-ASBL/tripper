@@ -5,10 +5,10 @@ Resource published or curated by an agent.
 
 | Keyword                 | Range                                      | Conformance | Definition                                                                                                                                   | Usage note                                                                                                                                                                                            |
 | ----------------------- | ------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [description]           | [rdfs:Literal], rdf:LangString             | mandatory   | A free-text account of the resource.                                                                                                         | This property can be repeated for parallel language versions of the description.                                                                                                                      |
+| [description]           | [rdfs:Literal], rdf:langString             | mandatory   | A free-text account of the resource.                                                                                                         | This property can be repeated for parallel language versions of the description.                                                                                                                      |
 | [title]                 | [rdfs:Literal], rdf:langString             | mandatory   | A name given to the resource.                                                                                                                | This property can be repeated for parallel language versions of the name.                                                                                                                             |
 | [contactPoint]          | [vcard:Kind]                               | recommended | Contact information that can be used for sending comments about the resource.                                                                |                                                                                                                                                                                                       |
-| [keyword]               | [rdfs:Literal], rdf:LangString             | recommended | A keyword or tag describing the resource.                                                                                                    |                                                                                                                                                                                                       |
+| [keyword]               | [rdfs:Literal], rdf:langString             | recommended | A keyword or tag describing the resource.                                                                                                    |                                                                                                                                                                                                       |
 | [publisher]             | [foaf:Agent]                               | recommended | Agent responsible for making the resource available.                                                                                         |                                                                                                                                                                                                       |
 | [theme]                 | [skos:Concept]                             | recommended | A category of the resource.  A resource may be associated with multiple themes.                                                              | The set of themes used to categorize the resources are organized in a skos:ConceptScheme, skos:Collection, owl:Ontology or similar, describing all the categories and their relations in the catalog. |
 | [accessRights]          | [dcterms:RightsStatement]                  | optional    | Information about who can access the resource or an indication of its security status.                                                       |                                                                                                                                                                                                       |
@@ -20,7 +20,7 @@ Resource published or curated by an agent.
 | [identifier]            | [rdfs:Literal]                             | optional    | URI or other unique identifier of the resource being described or cataloged.                                                                 |                                                                                                                                                                                                       |
 | [isReferencedBy]        | [rdfs:Resource]                            | optional    | A related resource, such as a publication, that references, cites, or otherwise points to the documented resource.                           |                                                                                                                                                                                                       |
 | [landingPage]           | [foaf:Document], xsd:anyURI                | optional    | A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).                         | It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.                                                             |
-| [language]              | [dcterms:LinguisticSystem], rdf:LangString | optional    | A language of the resource.                                                                                                                  | This property can be repeated if the resource is expressed with multiple languages.                                                                                                                   |
+| [language]              | [dcterms:LinguisticSystem], rdf:langString | optional    | A language of the resource.                                                                                                                  | This property can be repeated if the resource is expressed with multiple languages.                                                                                                                   |
 | [license]               | [dcterms:LicenseDocument]                  | optional    | A licence under which the resource is made available.                                                                                        |                                                                                                                                                                                                       |
 | [modificationDate]      | [rdfs:Literal], xsd:date                   | optional    | The most recent date on which the resource was changed or modified.                                                                          |                                                                                                                                                                                                       |
 | [qualifiedAttribution]  | [prov:Attribution]                         | optional    | An Agent having some form of responsibility for the resource.                                                                                |                                                                                                                                                                                                       |
@@ -43,7 +43,7 @@ Resource published or curated by an agent.
 ## Properties on [Dataset]
 A collection of data, published or curated by an agent, and available for access or download in one or more representations.
 
-- subClassOf: [dcat:Resource], [emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]
+- subClassOf: [dcat:Resource]
 
 | Keyword                | Range                                            | Conformance | Definition                                                                                                                 | Usage note                                                                                                    |
 | ---------------------- | ------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -108,8 +108,6 @@ A generator that can serialise an instance of a datamodel into a distribution.
 
 ## Properties on [Agent]
 Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
-
-- subClassOf: [emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]
 
 | Keyword      | Range          | Conformance | Definition                                          | Usage note                                                                                                                                    |
 | ------------ | -------------- | ----------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -305,7 +303,6 @@ A standard or other specification to which a resource conforms.
 [statements]: https://w3id.org/emmo/domain/oteio#statement
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [dcat:Resource]: http://www.w3.org/ns/dcat#Resource
-[emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [Dataset]: http://www.w3.org/ns/dcat#Dataset
 [distribution]: http://www.w3.org/ns/dcat#distribution
 [dcat:Distribution]: http://www.w3.org/ns/dcat#Distribution
@@ -382,7 +379,6 @@ A standard or other specification to which a resource conforms.
 [Generator]: https://w3id.org/emmo/domain/oteio#Generator
 [generatorType]: https://w3id.org/emmo/domain/oteio#generatorType
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
-[emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]: https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
 [Agent]: http://xmlns.com/foaf/0.1/Agent
 [name]: http://xmlns.com/foaf/0.1/name
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal

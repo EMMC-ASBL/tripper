@@ -18,7 +18,6 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import importlib
 import inspect
-import re
 import subprocess  # nosec
 import sys
 import warnings
@@ -29,7 +28,6 @@ from tripper.errors import (
     ArgumentTypeError,
     ArgumentValueError,
     CannotGetFunctionError,
-    NamespaceError,
     TripperError,
     UniquenessError,
 )
@@ -50,9 +48,11 @@ from tripper.namespace import (
 from tripper.utils import (
     bnode_iri,
     en,
+    expand_iri,
     function_id,
     get_entry_points,
     infer_iri,
+    prefix_iri,
     split_iri,
 )
 
@@ -104,7 +104,7 @@ hasCost = DM.hasCost
 
 
 # Regular expression matching a prefixed IRI
-_MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
+# _MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
 
 
 class Triplestore:
@@ -737,7 +737,7 @@ class Triplestore:
 
     # Methods providing additional functionality
     # ------------------------------------------
-    def expand_iri(self, iri: str):
+    def expand_iri(self, iri: str) -> str:
         """
         Return the full IRI if `iri` is prefixed.
         Otherwise `iri` isreturned.
@@ -765,15 +765,7 @@ class Triplestore:
             ```
 
         """
-        m = re.match(_MATCH_PREFIXED_IRI, iri)
-        if m:
-            prefix, name = m.groups()
-            if prefix is None:
-                prefix = ""
-            if prefix not in self.namespaces:
-                raise NamespaceError(f"unknown namespace: '{prefix}'")
-            return f"{self.namespaces[prefix]}{name}"
-        return iri
+        return expand_iri(iri, self.namespaces)
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
         # pylint: disable=line-too-long
@@ -802,13 +794,7 @@ class Triplestore:
         'ex:Concept'
 
         """
-        if not re.match(_MATCH_PREFIXED_IRI, iri):
-            for prefix, namespace in self.namespaces.items():
-                if iri.startswith(str(namespace)):
-                    return f"{prefix}:{iri[len(str(namespace)):]}"
-            if require_prefixed:
-                raise NamespaceError(f"No prefix defined for IRI: {iri}")
-        return iri
+        return prefix_iri(iri, self.namespaces, require_prefixed)
 
     # Types of restrictions defined in OWL
     _restriction_types = {

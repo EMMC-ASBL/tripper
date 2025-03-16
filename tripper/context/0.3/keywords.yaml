@@ -65,7 +65,7 @@ resources:
       description:
         iri: dcterms:description
         range: rdfs:Literal
-        datatype: rdf:LangString
+        datatype: rdf:langString
         conformance: mandatory
         description: A free-text account of the resource.
         usageNote: This property can be repeated for parallel language versions of the description.
@@ -99,7 +99,7 @@ resources:
       keyword:
         iri: dcat:keyword
         range: rdfs:Literal
-        datatype: rdf:LangString
+        datatype: rdf:langString
         conformance: recommended
         description: A keyword or tag describing the resource.
 
@@ -114,7 +114,7 @@ resources:
       language:
         iri: dcterms:language
         range: dcterms:LinguisticSystem
-        datatype: rdf:LangString
+        datatype: rdf:langString
         conformance: optional
         description: A language of the resource.
         usageNote: This property can be repeated if the resource is expressed with multiple languages.
@@ -249,7 +249,8 @@ resources:
 
   Dataset:
     iri: dcat:Dataset
-    subClassOf: ["dcat:Resource", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
+    subClassOf: "dcat:Resource"
+    type: "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
     description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
     keywords:
       distribution:
@@ -493,7 +494,7 @@ resources:
 
   Agent:
     iri: foaf:Agent
-    subClassOf: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
+    type: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
     description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
     keywords:
       name:

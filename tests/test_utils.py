@@ -425,6 +425,27 @@ def test_expand_iri():
         assert expand_iri("xxx:type", prefixes) == "xxx:type"
 
 
+def test_prefix_iri():
+    """Test prefix_iri()."""
+    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper.errors import NamespaceError
+    from tripper.utils import prefix_iri
+
+    prefixes = {
+        "chameo": str(CHAMEO),
+        "dcterms": str(DCTERMS),
+        "oteio": str(OTEIO),
+        "rdf": str(RDF),
+    }
+    assert prefix_iri(CHAMEO.Sample, prefixes) == "chameo:Sample"
+    assert prefix_iri(DCTERMS.title, prefixes) == "dcterms:title"
+    assert prefix_iri(OTEIO.Parser, prefixes) == "oteio:Parser"
+    assert prefix_iri(RDF.type, prefixes) == "rdf:type"
+    assert prefix_iri("xxx", prefixes) == "xxx"
+    with pytest.raises(NamespaceError):
+        prefix_iri("xxx", prefixes, require_prefixed=True)
+
+
 def test_get_entry_points():
     """Test get_entry_points()"""
     from tripper.utils import get_entry_points

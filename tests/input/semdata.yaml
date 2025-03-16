@@ -12,7 +12,7 @@ prefixes:
 
 
 # List of documented datasets
-datasets:
+Dataset:
   - "@id": semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001
     "@type": sem:SEMImage
     title: SEM image of cement
@@ -73,7 +73,7 @@ datasets:
       mediaType: inode/directory
 
 
-parsers:
+Parser:
   - "@id": parser:sem_hitachi
     "@type": oteio:Parser
     parserType: application/vnd.dlite-parse
@@ -81,7 +81,7 @@ parsers:
       driver: hitachi
 
 
-generators:
+Generator:
   - "@id": gen:sem_hitachi
     "@type": oteio:Generator
     generatorType: application/vnd.dlite-generate
@@ -90,7 +90,7 @@ generators:
 
 
 # Other entities, like samples, instruments, persons, models etc...
-resources:
+Resource:
   - "@id": sample:SEM_cement_batch2/77600-23-001
     "@type": chameo:Sample
     title: Series for SEM images for sample 77600-23-001.

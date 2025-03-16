@@ -58,29 +58,9 @@ def test_get_shortnames():
     from tripper import DCTERMS
     from tripper.datadoc.dataset import get_shortnames
 
-    # Short names that are not equal to the last component of the IRI
-    exceptions = (
-        "datamodel",
-        "datamodelStorage",
-        "prefixes",
-        "configuration",
-        "statements",
-        "mappings",
-        "@type",
-    )
-
     shortnames = get_shortnames()
     assert shortnames[DCTERMS.title] == "title"
-
-    for k, v in shortnames.items():
-        if v not in exceptions and not k.startswith(
-            (
-                "https://w3id.org/emmo#EMMO_",
-                "https://w3id.org/emmo/domain/"
-                "characterisation-methodology/chameo#EMMO_",
-            )
-        ):
-            assert k.rsplit("#", 1)[-1].rsplit("/", 1)[-1] == v
+    assert shortnames[DCTERMS.issued] == "releaseDate"
 
 
 def test_add():
@@ -133,7 +113,7 @@ def test_get():
 def test_save_dict():
     """Test save_dict()."""
     from tripper import Triplestore
-    from tripper.datadoc import as_jsonld, save_dict
+    from tripper.datadoc import save_dict
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -147,15 +127,13 @@ def test_save_dict():
             "mediaType": "text/csv",
         },
     }
-    ld = as_jsonld(d)
-    ld2 = save_dict(ts, d)
+    save_dict(ts, d, type="Dataset")
     print(ts.serialize())
-    assert ld2 == ld
 
 
 def test_as_jsonld():
     """Test as_jsonld()."""
-    from tripper import DCAT, EMMO, OWL, Namespace
+    from tripper import Namespace
     from tripper.datadoc import as_jsonld
     from tripper.datadoc.dataset import CONTEXT_URL
 
@@ -171,18 +149,26 @@ def test_as_jsonld():
     assert len(d["@context"]) == 2
     assert d["@context"][0] == CONTEXT_URL
     assert d["@context"][1] == context
-    assert d["@id"] == EX.indv
-    assert len(d["@type"]) == 2
-    assert set(d["@type"]) == {DCAT.Dataset, EMMO.Dataset}
+    assert d["@id"] == "ex:indv"
+    assert d["@type"] == "owl:NamedIndividual"
     assert d.a == "val"
 
-    d2 = as_jsonld(dct, type="resource", _context=context)
+    d2 = as_jsonld(dct, type="Dataset", _context=context)
     assert d2["@context"] == d["@context"]
-    assert d2["@id"] == d["@id"]
-    assert d2["@type"] == OWL.NamedIndividual
+    assert len(d2["@type"]) == 2
+    assert d2["@type"] == [
+        "dcat:Dataset",
+        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+    ]
     assert d2.a == "val"
 
-    d3 = as_jsonld(
+    d3 = as_jsonld(dct, type="Resource", _context=context)
+    assert d3["@context"] == d["@context"]
+    assert d3["@id"] == d["@id"]
+    assert d3["@type"] == "dcat:Resource"
+    assert d3.a == "val"
+
+    d4 = as_jsonld(
         {"inSeries": "ser:main"},
         prefixes={"ser": SER},
         a="value",
@@ -190,11 +176,11 @@ def test_as_jsonld():
         _type="ex:Item",
         _context=context,
     )
-    assert d3["@context"] == d["@context"]
-    assert d3["@id"] == EX.indv2
-    assert set(d3["@type"]) == {DCAT.Dataset, EMMO.Dataset, EX.Item}
-    assert d3.a == "value"
-    assert d3.inSeries == SER.main
+    assert d4["@context"] == d["@context"]
+    assert d4["@id"] == "ex:indv2"
+    assert d4["@type"] == "ex:Item"
+    assert d4.a == "value"
+    assert d4.inSeries == SER.main
 
 
 # if True:

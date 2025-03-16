@@ -42,6 +42,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Namespace, Triplestore
+from tripper.datadoc.errors import NoSuchTypeError
 from tripper.datadoc.keywords import Keywords
 from tripper.utils import AttrDict, as_python, expand_iri, openfile
 
@@ -56,6 +57,7 @@ if TYPE_CHECKING:  # pragma: no cover
 CONTEXT_PATH = (
     Path(__file__).parent.parent / "context" / "0.3" / "context.json"
 )
+# TODO: fix IRI when merged to master
 CONTEXT_URL = (
     # "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
     # "master/tripper/context/0.3/context.json"
@@ -565,18 +567,6 @@ def get(
     return value
 
 
-# def expand_iri(iri: str, prefixes: dict) -> str:
-#    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-#    returned."""
-#    match = re.match(MATCH_PREFIXED_IRI, iri)
-#    if match:
-#        prefix, name, _ = match.groups()
-#        if prefix in prefixes:
-#            return f"{prefixes[prefix]}{name}"
-#        warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
-#    return iri
-
-
 def read_datadoc(filename: "Union[str, Path]") -> dict:
     """Read YAML data documentation and return it as a dict.
 
@@ -590,7 +580,9 @@ def read_datadoc(filename: "Union[str, Path]") -> dict:
 
 
 def save_datadoc(
-    ts: Triplestore, file_or_dict: "Union[str, Path, dict]"
+    ts: Triplestore,
+    file_or_dict: "Union[str, Path, dict]",
+    keywords: "Optional[Keywords]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -599,6 +591,9 @@ def save_datadoc(
         file_or_dict: Data documentation dict or name of a YAML file to read
             the data documentation from.  It may also be an URL to a file
             accessible with HTTP GET.
+        keywords: Optional Keywords object with keywords definitions.
+            The default is to infer the keywords from the `field` or
+            `keywordfile` keys in the YAML file.
 
     Returns:
         Dict-representation of the loaded dataset.
@@ -608,6 +603,12 @@ def save_datadoc(
     else:
         d = read_datadoc(file_or_dict)
 
+    # Get keywords
+    if keywords is None:
+        keywords = Keywords(
+            field=d.get("field"), yamlfile=d.get("keywordfile")
+        )
+
     # Bind prefixes
     context = d.get("@context")
     prefixes = get_prefixes(context=context)
@@ -615,15 +616,15 @@ def save_datadoc(
     for prefix, ns in prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
 
-    # Maps datadoc_labels to type
-    types = {v["datadoc_label"]: k for k, v in dicttypes.items()}
-
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    for spec in dicttypes.values():
-        label = spec["datadoc_label"]
-        for dct in get(d, label):
+    for name, lst in d.items():
+        if name in ("@context", "field", "keywordfile", "prefixes"):
+            continue
+        if name not in keywords.data.resources:
+            raise NoSuchTypeError(f"unknown type '{name}' in YAML file.")
+        for dct in lst:
             dct = as_jsonld(
-                dct=dct, type=types[label], prefixes=prefixes, _context=context
+                dct=dct, type=name, prefixes=prefixes, _context=context
             )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
@@ -702,40 +703,49 @@ def as_jsonld(
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
 
-    context = kwargs.pop("_context", None)
-
     d = AttrDict()
-    if not _entryid:
-        d["@context"] = CONTEXT_URL
-        if context:
-            add(d, "@context", context)
+    dct = dct.copy()
 
-    all_prefixes = get_prefixes(context=context)
-    all_prefixes.update(keywords.data.get("prefixes", {}))
+    if not _entryid:
+        if "@context" in dct:
+            d["@context"] = dct.pop("@context")
+        else:
+            d["@context"] = CONTEXT_URL
+        if "_context" in kwargs and kwargs["_context"]:
+            add(d, "@context", kwargs.pop("_context"))
+
+    all_prefixes = {}
+    if not _entryid:
+        all_prefixes = get_prefixes(context=d["@context"])
+        all_prefixes.update(keywords.data.get("prefixes", {}))
     if prefixes:
         all_prefixes.update(prefixes)
 
-    print()
-    print("*** dct:", dct)
-    print("*** type:", type)
+    def expand(iri):
+        if isinstance(iri, str):
+            return expand_iri(iri, all_prefixes)
+        return [expand_iri(i, all_prefixes) for i in iri]
 
+    if "@id" in dct:
+        d["@id"] = expand(dct.pop("@id"))
+    if "_id" in kwargs and kwargs["_id"]:
+        add(d, "@id", expand(kwargs.pop("_id")))
+
+    if "@type" in dct:
+        d["@type"] = expand(dct.pop("@type"))
+    if "_type" in kwargs and kwargs["_type"]:
+        add(d, "@type", expand(kwargs.pop("_type")))
     if type:
-        t = expand_iri(type, all_prefixes) if ":" in type else type
-        # t = (
-        #    expand_iri(type, all_prefixes)
-        #    if ":" in type
-        #    else keywords.expanded(type)
-        # )
-        print("    t:", t)
-        add(d, "@type", t)  # get type at top
-        d.update(dct)
-        add(d, "@type", t)  # readd type if overwritten
-    else:
-        d.update(dct)
+        add(d, "@type", expand(keywords.normtype(type)))
+    if "@type" not in d:
+        d["@type"] = "owl:NamedIndividual"
+
+    d.update(dct)
 
     for k, v in kwargs.items():
-        key = f"@{k[1:]}" if re.match("^_([^_]|([^_].*[^_]))$", k) else k
-        add(d, key, v)
+        key = f"@{k[1:]}" if re.match("^_[a-zA-Z]+$", k) else k
+        if v:
+            add(d, key, v)
 
     if "@id" not in d and not _entryid:
         raise ValueError("Missing '@id' in dict to document")
@@ -749,7 +759,9 @@ def as_jsonld(
     # Recursively expand IRIs and prepare sub-directories
     # Nested lists are not supported
     for k, v in d.items():
-        if k == "mappingURL":
+        if k in ("@context", "@id", "@type"):
+            pass
+        elif k == "mappingURL":
             for url in get(d, k):
                 with Triplestore("rdflib") as ts2:
                     ts2.parse(url, format=d.get("mappingFormat"))
@@ -757,7 +769,7 @@ def as_jsonld(
                         d.statements.extend(ts2.triples())
                     else:
                         d["statements"] = list(ts2.triples())
-        if k in ("statements", "mappings"):
+        elif k in ("statements", "mappings"):
             for i, spo in enumerate(d[k]):
                 d[k][i] = [
                     (
@@ -782,13 +794,16 @@ def as_jsonld(
                         _keywords=keywords,
                     )
         elif isinstance(v, dict):
-            d[k] = as_jsonld(
-                dct=v,
-                type=keywords[k].range,
-                prefixes=all_prefixes,
-                _entryid=_entryid,
-                _keywords=keywords,
-            )
+            if "datatype" in keywords[k]:
+                d[k] = v
+            else:
+                d[k] = as_jsonld(
+                    dct=v,
+                    type=keywords[k].range,
+                    prefixes=all_prefixes,
+                    _entryid=_entryid,
+                    _keywords=keywords,
+                )
 
     return d
 
@@ -986,8 +1001,8 @@ def search_iris(
     filters = []
     if type:
         if ":" in type:
-            expanded = ts.expand_iri(type)
-            crit.append(f"  ?iri rdf:type <{expanded}> .")
+            expanded_iri = ts.expand_iri(type)
+            crit.append(f"  ?iri rdf:type <{expanded_iri}> .")
         elif type in dicttypes:
             types = dicttypes[type]["@type"]
             if isinstance(types, str):

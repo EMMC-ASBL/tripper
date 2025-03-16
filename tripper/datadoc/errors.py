@@ -5,5 +5,5 @@ class InvalidKeywordError(KeyError):
     """Keyword is not defined."""
 
 
-class NoSuchClassError(KeyError):
-    """There are no class defined with the given name."""
+class NoSuchTypeError(KeyError):
+    """There are no pre-defined type defined with the given name."""
