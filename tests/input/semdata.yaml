@@ -2,7 +2,7 @@
 
 # This extends the list of prefixes that are already defined in the context
 prefixes:
-  sem: https://w3id.com/emmo/domain/sem/0.1#
+  sem: https://w3id.org/emmo/domain/sem/0.1#
   semdata: https://he-matchmaker.eu/data/sem/
   sample: https://he-matchmaker.eu/sample/
   mat: https://he-matchmaker.eu/material/

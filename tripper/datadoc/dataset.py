@@ -147,7 +147,7 @@ def save_dict(
         raise ValueError("`dct` must have an '@id' key")
 
     all_prefixes = get_prefixes()
-    all_prefixes.update(ts.namespaces)
+    all_prefixes.update({pf: str(ns) for pf, ns in ts.namespaces.items()})
     if prefixes:
         all_prefixes.update(prefixes)
 
@@ -268,13 +268,16 @@ def load_dict(
     d = AttrDict()
     dct = _load_triples(ts, iri)
     for key, val in dct.items():
-        if not isinstance(val, list):
-            val = [val]
-        for v in val:
-            if key != "@id" and isinstance(v, str) and v.startswith("_:"):
-                add(d, key, load_dict(ts, iri=v, use_sparql=use_sparql))
-            else:
-                add(d, key, v)
+        if key in ("mappings", "statements"):
+            add(d, key, val)
+        else:
+            if not isinstance(val, list):
+                val = [val]
+            for v in val:
+                if key != "@id" and isinstance(v, str) and v.startswith("_:"):
+                    add(d, key, load_dict(ts, iri=v, use_sparql=use_sparql))
+                else:
+                    add(d, key, v)
 
     return d
 
@@ -333,7 +336,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
         for prefix, namespace in ts.namespaces.items():
-            ts2.bind(prefix, namespace)
+            ts2.bind(prefix, str(namespace))
         ts2.add_triples(triples)  # type: ignore
         dct = load_dict(ts2, iri, use_sparql=False)
     recur(dct)
@@ -874,6 +877,8 @@ def get_partial_pipeline(
                 raise ValueError(
                     f"dataset '{iri}' has no such parser: {parser}"
                 )
+        if isinstance(par, str):
+            par = load_dict(ts, par)
         configuration = par.get("configuration")
     else:
         configuration = None
@@ -887,8 +892,12 @@ def get_partial_pipeline(
     )
 
     statements = dct.get("statements", [])
+    print("*** statements:", statements)
     statements.extend(dct.get("mappings", []))
     if statements:
+        print("*** prefixes:", {k: str(v) for k, v in ts.namespaces.items()})
+        print("*** statements:", statements)
+        # print("*** triples:", [tuple(t) for t in statements])
         mapping = client.create_mapping(
             mappingType="triples",
             # The OTEAPI datamodels stupidly strict, requireing us
@@ -934,13 +943,15 @@ def search_iris(
     type=None,
     criterias: "Optional[dict]" = None,
     regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
     Additional matching criterias can be specified by `kwargs`.
 
     Arguments:
         ts: Triplestore to search.
-        type: Either a [resource type] (ex: "dataset", "distribution", ...)
+        type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
             or the IRI of a class to limit the search to.
         criterias: Exact match criterias. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. The IRIs
@@ -949,6 +960,15 @@ def search_iris(
             is correctly parsed.
         regex: Like `criterias` but the values in the provided dict are regular
             expressions used for the matching.
+        flags: Flags passed to regular expressions.
+            - `s`: Dot-all mode. The . matches any character.  The default
+              doesn't match newline or carriage return.
+            - `m`: Multi-line mode. The ^ and $ characters matches beginning
+              or end of line instead of beginning or end of string.
+            - `i`: Case-insensitive mode.
+            - `q`: Special characters representing themselves.
+        keywords: Keywords instance defining the resource types used with
+            the `type` argument.
 
     Returns:
         List of IRIs for matching resources.
@@ -960,7 +980,7 @@ def search_iris(
 
         List IRIs of all resources with John Doe as `contactPoint`:
 
-            search_iris(ts, criteria={"contactPoint": "John Doe"})
+            search_iris(ts, criteria={"contactPoint.hasName": "John Doe"})
 
         List IRIs of all samples:
 
@@ -973,7 +993,7 @@ def search_iris(
                 ts,
                 type=DCAT.Dataset,
                 criteria={
-                    "contactPoint": "John Doe",
+                    "contactPoint.hasName": "John Doe",
                     "fromSample": SAMPLE.batch2/sample3,
                 },
             )
@@ -988,8 +1008,14 @@ def search_iris(
     SeeAlso:
     [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
+    # pylint: disable=too-many-statements
+
     if criterias is None:
         criterias = {}
+
+    expanded = {v: k for k, v in get_shortnames().items()}
+    crit = []
+    filters = []
 
     # Special handling of @id
     id = (
@@ -997,63 +1023,69 @@ def search_iris(
         if "@id" in criterias
         else criterias.pop("_id", None)
     )
+    if id:
+        crit.append("?iri ?p ?o .")
+        crit.append(f"<{id}> ?p ?o .")
 
-    crit = []
-    filters = []
     if type:
         if ":" in type:
             expanded_iri = ts.expand_iri(type)
-            crit.append(f"  ?iri rdf:type <{expanded_iri}> .")
-        elif type in dicttypes:
-            types = dicttypes[type]["@type"]
-            if isinstance(types, str):
-                types = [types]
-            for t in types:
-                crit.append(f"  ?iri rdf:type <{t}> .")
+            crit.append(f"?iri rdf:type <{expanded_iri}> .")
         else:
-            raise ValueError(
-                "`type` must either be an IRI or the name of one the "
-                f"resource types. Got: {type}"
-            )
+            if keywords is None:
+                keywords = Keywords()
+            typ = keywords.normtype(type)
+            if not isinstance(typ, str):
+                typ = typ[0]
+            crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
 
-    else:
-        crit.append("  ?iri rdf:type ?o .")
-
-    n = 0  # variable no
-    expanded = {v: k for k, v in get_shortnames().items()}
-
-    def get_predicate_value(k, v):
-        """Get value to match."""
+    def add_crit(k, v, regex=False, s="iri", n=0):
+        """Add criteria to SPARQL query."""
         key = f"@{k[1:]}" if k.startswith("_") else k
-        predicate = ts.expand_iri(key)
-        if v in expanded:
-            value = f"<{expanded[v]}>"
-        elif isinstance(v, str):
-            value = (
-                f"<{v}>" if re.match("^[a-z][a-z0-9.+-]*://", v) else f'"{v}"'
-            )
+        if "." in key:
+            newkey, restkey = key.split(".", 1)
+            if newkey in expanded:
+                newkey = expanded[newkey]
+            n += 1
+            var = f"v{n}"
+            crit.append(f"?{s} <{ts.expand_iri(newkey)}> ?{var} .")
+            add_crit(restkey, v, s=var, n=n)
         else:
-            value = v
-        return predicate, value
+            if key in expanded:
+                key = expanded[key]
+            if v in expanded:
+                value = f"<{expanded[v]}>"
+            elif isinstance(v, str):
+                value = (
+                    f"<{v}>"
+                    if re.match("^[a-z][a-z0-9.+-]*://", v)
+                    else f'"{v}"'
+                )
+            else:
+                value = v
+            if regex:
+                n += 1
+                var = f"v{n}"
+                crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
+                flg = f", {flags}" if flags else ""
+                filters.append(f"FILTER REGEX(str(?{var}), {value}{flg}) .")
+            else:
+                crit.append(f"?{s} <{ts.expand_iri(key)}> {value} .")
 
     for k, v in criterias.items():
-        predicate, value = get_predicate_value(k, v)
-        crit.append(f"      ?iri <{predicate}> {value} .")
+        add_crit(k, v)
 
     if regex:
         for k, v in regex.items():
-            n += 1
-            var = f"v{n}"
-            predicate, value = get_predicate_value(k, v)
-            crit.append(f"      ?iri <{predicate}> ?{var} .")
-            filters.append(f"      FILTER REGEX(str(?{var}), {value})")
+            add_crit(k, v, regex=True)
 
-    where_statements = "\n".join(crit + filters)
+    where_statements = "\n      ".join(crit + filters)
     query = f"""
     PREFIX rdf: <{RDF}>
     SELECT DISTINCT ?iri
     WHERE {{
-    {where_statements}
+      {where_statements}
     }}
     """
+
     return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore

@@ -133,7 +133,7 @@ def test_save_dict():
 
 def test_as_jsonld():
     """Test as_jsonld()."""
-    from tripper import Namespace
+    from tripper import DCAT, EMMO, Namespace
     from tripper.datadoc import as_jsonld
     from tripper.datadoc.dataset import CONTEXT_URL
 
@@ -149,23 +149,20 @@ def test_as_jsonld():
     assert len(d["@context"]) == 2
     assert d["@context"][0] == CONTEXT_URL
     assert d["@context"][1] == context
-    assert d["@id"] == "ex:indv"
+    assert d["@id"] == EX.indv
     assert d["@type"] == "owl:NamedIndividual"
     assert d.a == "val"
 
     d2 = as_jsonld(dct, type="Dataset", _context=context)
     assert d2["@context"] == d["@context"]
     assert len(d2["@type"]) == 2
-    assert d2["@type"] == [
-        "dcat:Dataset",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-    ]
+    assert d2["@type"] == [DCAT.Dataset, EMMO.Dataset]
     assert d2.a == "val"
 
     d3 = as_jsonld(dct, type="Resource", _context=context)
     assert d3["@context"] == d["@context"]
     assert d3["@id"] == d["@id"]
-    assert d3["@type"] == "dcat:Resource"
+    assert d3["@type"] == DCAT.Resource
     assert d3.a == "val"
 
     d4 = as_jsonld(
@@ -177,13 +174,12 @@ def test_as_jsonld():
         _context=context,
     )
     assert d4["@context"] == d["@context"]
-    assert d4["@id"] == "ex:indv2"
-    assert d4["@type"] == "ex:Item"
+    assert d4["@id"] == EX.indv2
+    assert d4["@type"] == EX.Item
     assert d4.a == "value"
     assert d4.inSeries == SER.main
 
 
-# if True:
 def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
@@ -192,6 +188,7 @@ def test_datadoc():
 
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
     from tripper.datadoc import load_dict, save_datadoc, save_dict, search_iris
+    from tripper.datadoc.errors import NoSuchTypeError
 
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")
@@ -266,7 +263,7 @@ def test_datadoc():
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    datasets = search_iris(ts, type="dataset")
+    datasets = search_iris(ts, type="Dataset")
     assert search_iris(ts, type="dcat:Dataset") == datasets
     named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
@@ -274,8 +271,9 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2"],
     }
     assert not named_datasets.difference(datasets)
+
     assert set(
-        search_iris(ts, criterias={"dcterms:creator": "Sigurd Wenner"})
+        search_iris(ts, criterias={"creator.name": "Sigurd Wenner"})
     ) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
@@ -285,7 +283,7 @@ def test_datadoc():
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
 
-    with pytest.raises(ValueError):
+    with pytest.raises(NoSuchTypeError):
         search_iris(ts, type="invalid-type")
 
     # Find all individuals that has "SEM images"in the title
@@ -315,23 +313,22 @@ def test_custom_context():
     d = save_datadoc(ts, indir / "custom_context.yaml")
 
     KB = ts.namespaces["kb"]
-    assert d.resources[0]["@id"] == KB.sampleA
-    assert d.resources[0].fromBatch == KB.batch1
+    assert d.Resource[0]["@id"] == KB.sampleA
+    assert d.Resource[0].fromBatch == KB.batch1
 
-    assert d.resources[1]["@id"] == KB.sampleB
-    assert d.resources[1].fromBatch == KB.batch1
+    assert d.Resource[1]["@id"] == KB.sampleB
+    assert d.Resource[1].fromBatch == KB.batch1
 
-    assert d.resources[2]["@id"] == KB.sampleC
-    assert d.resources[2].fromBatch == KB.batch2
+    assert d.Resource[2]["@id"] == KB.sampleC
+    assert d.Resource[2].fromBatch == KB.batch2
 
-    assert d.resources[3]["@id"] == KB.batch1
-    assert d.resources[3].batchNumber == 1
+    assert d.Resource[3]["@id"] == KB.batch1
+    assert d.Resource[3].batchNumber == 1
 
-    assert d.resources[4]["@id"] == KB.batch2
-    assert d.resources[4].batchNumber == 2
+    assert d.Resource[4]["@id"] == KB.batch2
+    assert d.Resource[4].batchNumber == 2
 
 
-# if True:
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
     from tripper import Triplestore
@@ -346,9 +343,9 @@ def test_pipeline():
     save_datadoc(ts, indir / "semdata.yaml")
 
     SEMDATA = ts.namespaces["semdata"]
+    iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
 
     client = otelib.OTEClient("python")
-    iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     parse = get_partial_pipeline(ts, client, iri, parser=True)
 
     # The generator was removed for clarity
