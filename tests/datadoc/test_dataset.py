@@ -251,7 +251,7 @@ def test_datadoc():
     save_dict(
         ts,
         dct={"@id": SEMDATA.newdistr, "format": "txt"},
-        type="distribution",
+        type="Distribution",
         prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
     )
     newdistr = load_dict(ts, SEMDATA.newdistr)

@@ -199,7 +199,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     # Save data models
     datamodels = {
         d["@id"]: d["datamodel"]
-        for d in dct.get("datasets", ())
+        for d in dct.get("Dataset", ())
         if "datamodel" in d
     }
     try:
@@ -652,11 +652,12 @@ def prepare_datadoc(datadoc: dict) -> dict:
     else:
         d.prefixes = prefixes.copy()
 
-    for type, spec in dicttypes.items():
-        label = spec["datadoc_label"]
-        for i, dct in enumerate(get(d, label)):
-            d[label][i] = as_jsonld(
-                dct=dct, type=type, prefixes=d.prefixes, _context=context
+    for name, lst in d.items():
+        if name in ("@context", "field", "keywordfile", "prefixes"):
+            continue
+        for i, dct in enumerate(lst):
+            lst[i] = as_jsonld(
+                dct=dct, type=name, prefixes=d.prefixes, _context=context
             )
 
     return d
