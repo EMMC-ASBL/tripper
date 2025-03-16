@@ -2,9 +2,10 @@
 
 import pytest
 
-from tripper.datadoc.keywords import Keywords
-
 pytest.importorskip("yaml")
+
+# pylint: disable=wrong-import-position
+from tripper.datadoc.keywords import Keywords
 
 # A fixture used by all the tests
 keywords = Keywords()
