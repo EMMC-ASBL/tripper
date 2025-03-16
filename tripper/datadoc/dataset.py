@@ -1102,14 +1102,14 @@ def search_iris(
                 )
             else:
                 value = v
+            n += 1
+            var = f"v{n}"
+            crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
             if regex:
-                n += 1
-                var = f"v{n}"
-                crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
                 flg = f", {flags}" if flags else ""
-                filters.append(f"FILTER REGEX(str(?{var}), {value}{flg}) .")
+                filters.append(f"FILTER REGEX(STR(?{var}), {value}{flg}) .")
             else:
-                crit.append(f"?{s} <{ts.expand_iri(key)}> {value} .")
+                filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
     for k, v in criterias.items():
         add_crit(k, v)

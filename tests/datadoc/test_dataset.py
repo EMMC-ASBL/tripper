@@ -180,6 +180,7 @@ def test_as_jsonld():
     assert d4.inSeries == SER.main
 
 
+# if True:
 def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
