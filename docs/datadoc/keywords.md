@@ -72,6 +72,8 @@ A collection of data, published or curated by an agent, and available for access
 ## Properties on [Distribution]
 A physical embodiment of the Dataset in a particular format.
 
+- subClassOf: [dcat:Resource]
+
 | Keyword          | Range                                   | Conformance | Definition                                                                                                                                                         | Usage note                                                                                                                                                                |
 | ---------------- | --------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [accessURL]      | [rdfs:Resource]                         | mandatory   | A URL that gives access to a Distribution of the Dataset.                                                                                                          | The resource at the access URL may contain information about how to get the Dataset.                                                                                      |
@@ -121,7 +123,7 @@ Any entity carrying out actions with respect to the entities Catalogue and the C
 ## Properties on [Attribution]
 An agent that has some form of responsibility for a resource, but which is not a publisher nor a creator of the resource.
 
-- subClassOf: [Agent]
+- subClassOf: [foaf:Agent]
 
 
 ## Properties on [Checksum]
@@ -148,6 +150,8 @@ An idea or notion; a unit of thought.
 ## Properties on [DataService]
 A collection of operations that provides access to one or more datasets or data processing functions.
 
+- subClassOf: [rdfs:Resource]
+
 | Keyword               | Range                      | Conformance | Definition                                                                                              | Usage note |
 | --------------------- | -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------- | ---------- |
 | [endpointURL]         | [rdfs:Literal], xsd:anyURI | mandatory   | The root location or primary endpoint of the service (an IRI).                                          |            |
@@ -157,6 +161,8 @@ A collection of operations that provides access to one or more datasets or data 
 
 ## Properties on [DatasetSeries]
 A collection of datasets that are published separately, but share some characteristics that group them.
+
+- subClassOf: [dcat:Dataset]
 
 
 ## Properties on [Geometry]
@@ -346,6 +352,7 @@ A standard or other specification to which a resource conforms.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [mappingFormat]: https://w3id.org/emmo/domain/oteio#mappingFormat
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[dcat:Resource]: http://www.w3.org/ns/dcat#Resource
 [Distribution]: http://www.w3.org/ns/dcat#Distribution
 [accessService]: http://www.w3.org/ns/dcat#accessService
 [dcat:DataSetvice]: http://www.w3.org/ns/dcat#DataSetvice
@@ -389,7 +396,7 @@ A standard or other specification to which a resource conforms.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [type]: http://purl.org/dc/terms/type
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
-[Agent]: Agent
+[foaf:Agent]: http://xmlns.com/foaf/0.1/Agent
 [Attribution]: http://www.w3.org/ns/prov#Attribution
 [Checksum]: http://spdx.org/rdf/terms#Checksum
 [algorithm]: http://spdx.org/rdf/terms#algorithm
@@ -400,12 +407,14 @@ A standard or other specification to which a resource conforms.
 [Concept]: http://www.w3.org/2004/02/skos/core#Concept
 [prefLabel]: http://www.w3.org/2004/02/skos/core#prefLabel
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [DataService]: http://www.w3.org/ns/dcat#DataService
 [endpointDescription]: http://www.w3.org/ns/dcat#endpointDescription
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [endpointURL]: http://www.w3.org/ns/dcat#endpointURL
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [servesDataset]: http://www.w3.org/ns/dcat#servesDataset
+[dcat:Dataset]: http://www.w3.org/ns/dcat#Dataset
 [dcat:Dataset]: http://www.w3.org/ns/dcat#Dataset
 [DatasetSeries]: http://www.w3.org/ns/dcat#DatasetSeries
 [Geometry]: http://www.w3.org/ns/locn#Geometry

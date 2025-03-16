@@ -250,7 +250,7 @@ resources:
 
   Dataset:
     iri: dcat:Dataset
-    subClassOf: "dcat:Resource"
+    subClassOf: dcat:Resource
     type: "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
     description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
     keywords:
@@ -376,7 +376,7 @@ resources:
 
   Distribution:
     iri: dcat:Distribution
-    subclassOf: dcat:Resource
+    subClassOf: dcat:Resource
     description: A physical embodiment of the Dataset in a particular format.
     usageNote: This represents a general availability of a dataset. It implies no information about the actual access method of the data, i.e., whether by direct download, API, or through a Web page. The use of dcat:downloadURL property indicates directly downloadable distributions.
     keywords:
@@ -522,7 +522,7 @@ resources:
 
   Attribution:
     iri: prov:Attribution
-    subClassOf: Agent
+    subClassOf: foaf:Agent
     description: An agent that has some form of responsibility for a resource, but which is not a publisher nor a creator of the resource.
     usageNote: See [explanations and examples in W3C/DCAT](https://www.w3.org/TR/vocab-dcat-3/#qualified-attribution).
 
@@ -559,7 +559,7 @@ resources:
 
   DataService:
     iri: dcat:DataService
-    subclassOf: rdfs:Resource
+    subClassOf: rdfs:Resource
     description: A collection of operations that provides access to one or more datasets or data processing functions.
     keywords:
       endpointDescription:
@@ -584,7 +584,7 @@ resources:
 
   DatasetSeries:
     iri: dcat:DatasetSeries
-    subclassOf: dcat:Dataset
+    subClassOf: dcat:Dataset
     description: A collection of datasets that are published separately, but share some characteristics that group them.
 
 
