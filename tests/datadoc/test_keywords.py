@@ -84,3 +84,15 @@ def test_normtype():
     assert keywords.normtype("Distribution") == "dcat:Distribution"
     with pytest.raises(NoSuchTypeError):
         keywords.normtype("distribution")
+
+
+def test_typename():
+    """Test typename() method."""
+    from tripper import DCAT
+    from tripper.datadoc.errors import NoSuchTypeError
+
+    assert keywords.typename("Dataset") == "Dataset"
+    assert keywords.typename("dcat:Dataset") == "Dataset"
+    assert keywords.typename(DCAT.Dataset) == "Dataset"
+    with pytest.raises(NoSuchTypeError):
+        keywords.typename("xxx")

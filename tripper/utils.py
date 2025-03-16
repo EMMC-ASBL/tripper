@@ -9,7 +9,6 @@ import re
 import string
 import sys
 import tempfile
-import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -556,7 +555,7 @@ def extend_namespace(
         )
 
 
-def expand_iri(iri: str, prefixes: dict) -> str:
+def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
     returned."""
     match = re.match(MATCH_PREFIXED_IRI, iri)
@@ -564,7 +563,9 @@ def expand_iri(iri: str, prefixes: dict) -> str:
         prefix, name, _ = match.groups()
         if prefix in prefixes:
             return f"{prefixes[prefix]}{name}"
-        warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+        if strict:
+            raise NamespaceError(f'Undefined prefix "{prefix}" in IRI: {iri}')
+        # warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
     return iri
 
 

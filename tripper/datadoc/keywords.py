@@ -107,7 +107,14 @@ class Keywords:
         resources = self.data.get("resources", {})
         for resource in resources.values():
             for keyword, value in resource.get("keywords", {}).items():
-                recursive_update(self.keywords, {keyword: value})
+                recursive_update(
+                    self.keywords,
+                    {
+                        keyword: value,
+                        value.iri: value,
+                        expand_iri(value.iri, self.data.prefixes): value,
+                    },
+                )
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
@@ -173,6 +180,24 @@ class Keywords:
                 return [r.iri, r.type]
             return [r.iri] + r.type
         return r.iri
+
+    def typename(self, type) -> str:
+        """Return the short name of `type`.
+
+        Example:
+
+        >>> keywords = Keywords()
+        >>> keywords.typename("dcat:Dataset")
+        'Dataset'
+
+        """
+        if type in self.data.resources:
+            return type
+        prefixed = prefix_iri(type, self.data.prefixes)
+        for name, r in self.data.resources.items():
+            if prefixed == r.iri:
+                return name
+        raise NoSuchTypeError(type)
 
     def write_context(self, outfile: "FileLoc") -> None:
         """Write JSON-LD context file."""

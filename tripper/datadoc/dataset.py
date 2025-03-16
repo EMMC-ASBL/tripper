@@ -34,6 +34,7 @@ Functions for interaction with OTEAPI:
 from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
+# pylint: disable=too-many-branches
 import io
 import json
 import re
@@ -41,10 +42,21 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Namespace, Triplestore
-from tripper.datadoc.errors import NoSuchTypeError
+from tripper import (
+    RDF,
+    Literal,
+    Namespace,
+    Triplestore,
+)
+from tripper.datadoc.errors import NoSuchTypeError, ValidateError
 from tripper.datadoc.keywords import Keywords
-from tripper.utils import AttrDict, as_python, expand_iri, openfile
+from tripper.utils import (
+    AttrDict,
+    as_python,
+    expand_iri,
+    openfile,
+    parse_literal,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
@@ -65,44 +77,17 @@ CONTEXT_URL = (
     "294-validator-for-schema/tripper/context/0.3/context.json"
 )
 
-
-# Resource types
-dicttypes = {
-    "parser": {
-        "datadoc_label": "parsers",
-        "@type": OTEIO.Parser,
-    },
-    "generator": {
-        "datadoc_label": "generators",
-        "@type": OTEIO.Generator,
-    },
-    "accessService": {
-        "datadoc_label": "dataServices",
-        "@type": DCAT.DataService,
-    },
-    "distribution": {
-        "datadoc_label": "distributions",
-        "@type": DCAT.Distribution,
-    },
-    "dataset": {
-        "datadoc_label": "datasets",
-        "@type": [DCAT.Dataset, EMMO.Dataset],
-    },
-    "resource": {
-        # General data resource
-        # Ex: samples, instruments, models, people, projects, ...
-        "datadoc_label": "resources",
-        "@type": OWL.NamedIndividual,
-    },
-}
+MATCH_IRI = re.compile(
+    r"^(([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?))|"
+    r"([a-zA-Z0-9]*://[a-zA-Z_]([a-zA-Z0-9_/.?#=+-]*))$"
+)
 
 
 def save_dict(
     ts: Triplestore,
     dct: dict,
     type: "Optional[str]" = None,
-    field: "Optional[Union[str, Sequence[str]]]" = None,
-    keywordfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+    keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -112,14 +97,10 @@ def save_dict(
     Arguments:
         ts: Triplestore to save to.
         dct: Dict with data to save.
-        type: Type of data to save.  Should either be one of the
-            pre-defined names: "dataset", "distribution", "accessService",
-            "parser" and "generator" or an IRI to a class in an ontology.
-            Defaults to "dataset".
-        field: Field name or sequence of field names that define the
-            keywords and prefixes used in `dct`.
-        keywordfile: Name of YAML file or sequence of filenames that define
-            the keywords and prefixes used in `dct`.
+        type: Type of data to save.  Should be one of the resource types
+            defined in `keywords`.
+        keywords: Keywords object with keywords definitions.  If not provided,
+            only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
@@ -143,6 +124,9 @@ def save_dict(
     References:
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json
     """
+    if keywords is None:
+        keywords = Keywords()
+
     if "@id" not in dct:
         raise ValueError("`dct` must have an '@id' key")
 
@@ -154,11 +138,13 @@ def save_dict(
     d = as_jsonld(
         dct=dct,
         type=type,
-        field=field,
-        keywordfile=keywordfile,
+        keywords=keywords,
         prefixes=all_prefixes,
         **kwargs,
     )
+
+    # Validate
+    validate(d, type=type, keywords=keywords)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -316,30 +302,12 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
-
-    def recur(d):
-        """Recursively load and insert referred resources into dict `d`."""
-        if isinstance(d, dict):
-            for k, v in d.items():
-                if isinstance(v, dict):
-                    val = v.get("@id")
-                    if isinstance(val, str):
-                        d[k] = load_dict(ts, val, use_sparql=True)
-                    elif isinstance(v, (dict, list)):
-                        recur(v)
-                else:
-                    d[k] = v
-        elif isinstance(d, list):
-            for e in d:
-                recur(e)
-
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
         for prefix, namespace in ts.namespaces.items():
             ts2.bind(prefix, str(namespace))
         ts2.add_triples(triples)  # type: ignore
         dct = load_dict(ts2, iri, use_sparql=False)
-    recur(dct)
     return dct
 
 
@@ -627,7 +595,11 @@ def save_datadoc(
             raise NoSuchTypeError(f"unknown type '{name}' in YAML file.")
         for dct in lst:
             dct = as_jsonld(
-                dct=dct, type=name, prefixes=prefixes, _context=context
+                dct=dct,
+                type=name,
+                keywords=keywords,
+                prefixes=prefixes,
+                _context=context,
             )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
@@ -669,8 +641,7 @@ def prepare_datadoc(datadoc: dict) -> dict:
 def as_jsonld(
     dct: dict,
     type: "Optional[str]" = None,
-    field: "Optional[Union[str, Sequence[str]]]" = None,
-    keywordfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+    keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -678,13 +649,10 @@ def as_jsonld(
 
     Arguments:
         dct: Dict documenting a resource to be represented as JSON-LD.
-        type: Type of data to document.  Should either be one of the
-            pre-defined names: "dataset", "distribution", "accessService",
-            "parser" and "generator" or an IRI to a class in an ontology.
-        field: Field name or sequence of field names that defines the
-            keywords and prefixes used in `dct`.
-        keywordfile: Name of YAML file or sequence of filenames that define
-            the keywords and prefixes used in `dct`.
+        type: Type of data to save.  Should be one of the resource types
+            defined in `keywords`.
+        keywords: Keywords object with keywords definitions.  If not provided,
+            only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned
@@ -699,10 +667,8 @@ def as_jsonld(
     """
     # pylint: disable=too-many-branches,too-many-statements
 
-    if "_keywords" in kwargs:
-        keywords = kwargs.pop("_keywords")
-    else:
-        keywords = Keywords(field=field, yamlfile=keywordfile)
+    if keywords is None:
+        keywords = Keywords()
 
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
@@ -793,9 +759,9 @@ def as_jsonld(
                     v[i] = as_jsonld(
                         dct=e,
                         type=keywords[k].range,
+                        keywords=keywords,
                         prefixes=all_prefixes,
                         _entryid=_entryid,
-                        _keywords=keywords,
                     )
         elif isinstance(v, dict):
             if "datatype" in keywords[k]:
@@ -804,12 +770,89 @@ def as_jsonld(
                 d[k] = as_jsonld(
                     dct=v,
                     type=keywords[k].range,
+                    keywords=keywords,
                     prefixes=all_prefixes,
                     _entryid=_entryid,
-                    _keywords=keywords,
                 )
 
     return d
+
+
+def validate(
+    dct: dict,
+    type: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+) -> None:
+    """Validates single-resource dict `dct`.
+
+    Arguments
+        dct: Single-resource dict to validate.
+        type: The type of resource to validate. Ex: "Dataset", "Agent", ...
+        keywords: Keywords object defining the keywords used in `dct`.
+
+    Raises:
+        ValidateError: If the validation fails.
+    """
+    if keywords is None:
+        keywords = Keywords()
+
+    if type is None and "@type" in dct:
+        try:
+            type = keywords.typename(dct["@type"])
+        except NoSuchTypeError:
+            pass
+
+    resources = keywords.data.resources
+
+    def check_keyword(keyword, type):
+        typename = keywords.typename(type)
+        if keyword in resources[typename].keywords:
+            return True
+        if "subClassOf" in resources[typename]:
+            subclass = resources[typename].subClassOf
+            return check_keyword(keyword, subclass)
+        return False
+
+    for k, v in dct.items():
+        if k.startswith("@"):
+            continue
+        if k in keywords:
+            r = keywords[k]
+            if "datatype" in r:
+                datatype = expand_iri(r.datatype, keywords.data.prefixes)
+                literal = parse_literal(v)
+                tr = {}
+                for t, seq in Literal.datatypes.items():
+                    for dt in seq:
+                        tr[dt] = t
+                if tr.get(literal.datatype) != tr.get(datatype):
+                    raise ValidateError(
+                        f"invalid datatype for '{v}'. "
+                        f"Got '{literal.datatype}', expected '{datatype}'"
+                    )
+            elif isinstance(v, dict):
+                validate(v, type=r.get("range"), keywords=keywords)
+            elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
+                raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
+        else:
+            raise ValidateError(f"unknown keyword: '{k}'")
+
+    if type:
+        typename = keywords.typename(type)
+
+        for k in dct:
+            if not k.startswith("@"):
+                if not check_keyword(k, typename):
+                    warnings.warn(
+                        f"unexpected keyword '{k}' provided for type: '{type}'"
+                    )
+
+        for kr, vr in resources[typename].items():
+            if "conformance" in vr and vr.conformance == "mandatory":
+                if kr not in dct:
+                    raise ValidateError(
+                        f"missing mandatory keyword '{kr}' for type: '{type}'"
+                    )
 
 
 def get_partial_pipeline(
@@ -892,12 +935,8 @@ def get_partial_pipeline(
     )
 
     statements = dct.get("statements", [])
-    print("*** statements:", statements)
     statements.extend(dct.get("mappings", []))
     if statements:
-        print("*** prefixes:", {k: str(v) for k, v in ts.namespaces.items()})
-        print("*** statements:", statements)
-        # print("*** triples:", [tuple(t) for t in statements])
         mapping = client.create_mapping(
             mappingType="triples",
             # The OTEAPI datamodels stupidly strict, requireing us
@@ -1008,7 +1047,7 @@ def search_iris(
     SeeAlso:
     [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
-    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-statements,too-many-branches
 
     if criterias is None:
         criterias = {}

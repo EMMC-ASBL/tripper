@@ -3,7 +3,6 @@
 import pytest
 
 
-# if True:
 def test_asdicts():
     """Test the asdicts() method."""
 
@@ -12,8 +11,8 @@ def test_asdicts():
     from tripper import DCAT, EMMO, Namespace, Triplestore
     from tripper.datadoc import TableDoc
 
-    ONTO = Namespace("http:/example.com/onto#")
-    DS = Namespace("http:/example.com/datasets#")
+    ONTO = Namespace("http://example.com/onto#")
+    DS = Namespace("http://example.com/datasets#")
 
     td = TableDoc(
         header=[
@@ -29,8 +28,8 @@ def test_asdicts():
             ("ds:d2", "onto:T2", None, "ds:s1", "file:///data/d2.txt"),
         ],
         prefixes={
-            "onto": "http:/example.com/onto#",
-            "ds": "http:/example.com/datasets#",
+            "onto": "http://example.com/onto#",
+            "ds": "http://example.com/datasets#",
         },
         # Replace the "ds" prefix above with this, once the "context" keyword
         # argument is fully implemented.

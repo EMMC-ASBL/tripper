@@ -11,6 +11,7 @@ from .dataset import (
     save_datadoc,
     save_dict,
     search_iris,
+    validate,
 )
 from .keywords import Keywords
 from .tabledoc import TableDoc

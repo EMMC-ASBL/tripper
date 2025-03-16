@@ -1,10 +1,12 @@
-datasets:
+Dataset:
 - "@id": https://onto-ns.com/datasets#our_nice_dataset2
   "@type": http://domain-onto.org/FancyDataset2
   title: This is a title of a completely invented dataset 2
   description: "This is a dataset description. I include:some strange characters to check that it does nåt crash anything."
-  creator: Tripper-team
-  contactPoint: Tripper-team
+  creator:
+    name: Tripper-team
+  contactPoint:
+    hasName: Tripper-team
   distribution.accessURL: https://onto-ns.com/datasets/our_nice_dataset2
   distribution.mediaType: application/hdf5
   distribution.format: HDF5

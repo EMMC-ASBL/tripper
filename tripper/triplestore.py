@@ -737,35 +737,35 @@ class Triplestore:
 
     # Methods providing additional functionality
     # ------------------------------------------
-    def expand_iri(self, iri: str) -> str:
+    def expand_iri(self, iri: str, strict: bool = False) -> str:
         """
         Return the full IRI if `iri` is prefixed.
         Otherwise `iri` isreturned.
 
         Examples:
 
-            ```python
-            >>> from tripper import Triplestore
-            >>> ts = Triplestore(backend="rdflib")
+        ```python
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
 
-            # Unknown prefix raises an exception
-            >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
-            Traceback (most recent call last):
-            ...
-            tripper.errors.NamespaceError: unknown namespace: 'ex'
+        # Unknown prefix raises an exception
+        >>> ts.expand_iri("ex:Concept", strict=True)  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: Undefined prefix "ex" in IRI: ex:Concept
 
-            >>> EX = ts.bind("ex", "http://example.com#")
-            >>> ts.expand_iri("ex:Concept")
-            'http://example.com#Concept'
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.expand_iri("ex:Concept")
+        'http://example.com#Concept'
 
-            # Returns iri if it has no prefix
-            >>> ts.expand_iri("http://example.com#Concept")
-            'http://example.com#Concept'
+        # Returns iri if it has no prefix
+        >>> ts.expand_iri("http://example.com#Concept")
+        'http://example.com#Concept'
 
-            ```
+        ```
 
         """
-        return expand_iri(iri, self.namespaces)
+        return expand_iri(iri, self.namespaces, strict=strict)
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
         # pylint: disable=line-too-long
@@ -777,6 +777,8 @@ class Triplestore:
         if no prefix can be found.
 
         Examples:
+
+        ```python
         >>> from tripper import Triplestore
         >>> ts = Triplestore(backend="rdflib")
         >>> ts.prefix_iri("http://example.com#Concept")
@@ -792,6 +794,8 @@ class Triplestore:
         >>> EX = ts.bind("ex", "http://example.com#")
         >>> ts.prefix_iri("http://example.com#Concept")
         'ex:Concept'
+
+        ```
 
         """
         return prefix_iri(iri, self.namespaces, require_prefixed)

@@ -178,7 +178,7 @@ ASK {
     save_datadoc(ts, datasetinput2)
 
     # search for datasets in triplestore
-    datasets = search_iris(ts, type="dataset")
+    datasets = search_iris(ts, type="Dataset")
 
     print("Found datasets:")
     print(datasets)
@@ -190,9 +190,9 @@ ASK {
     )
 
     retreived_info = load_dict(ts, datasets[0])
-    print("Info on one dataset")
-    print(retreived_info)
-    assert retreived_info.creator == "Tripper-team"
+    # print("Info on one dataset")
+    # print(retreived_info)
+    assert retreived_info.creator.name == "Tripper-team"
     assert (
         retreived_info.title
         == "This is a title of a completely invented dataset"
@@ -200,8 +200,8 @@ ASK {
 
     ts.bind("dataset", "https://onto-ns.com/datasets#")
     retreived_info_2 = load_dict(ts, f"dataset:{datasets[0].split('#')[-1]}")
-    print(retreived_info_2)
-    assert retreived_info_2.creator == "Tripper-team"
+    # print(retreived_info_2)
+    assert retreived_info_2.creator.name == "Tripper-team"
     assert (
         retreived_info_2.title
         == "This is a title of a completely invented dataset"
@@ -211,7 +211,7 @@ ASK {
 
     ts.remove(subject="https://onto-ns.com/datasets#our_nice_dataset2")
 
-    datasets3 = search_iris(ts, type="dataset")
+    datasets3 = search_iris(ts, type="Dataset")
 
     print("Found datasets after deletion:")
     print(datasets3)

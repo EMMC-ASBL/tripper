@@ -408,6 +408,7 @@ def test_extend_namespace():
 def test_expand_iri():
     """Test expand_iri()."""
     from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper.errors import NamespaceError
     from tripper.utils import expand_iri
 
     prefixes = {
@@ -421,8 +422,9 @@ def test_expand_iri():
     assert expand_iri("oteio:Parser", prefixes) == OTEIO.Parser
     assert expand_iri("rdf:type", prefixes) == RDF.type
     assert expand_iri("xxx", prefixes) == "xxx"
-    with pytest.warns(UserWarning):
-        assert expand_iri("xxx:type", prefixes) == "xxx:type"
+    assert expand_iri("xxx:type", prefixes) == "xxx:type"
+    with pytest.raises(NamespaceError):
+        expand_iri("xxx:type", prefixes, strict=True)
 
 
 def test_prefix_iri():

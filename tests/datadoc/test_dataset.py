@@ -329,6 +329,35 @@ def test_custom_context():
     assert d.Resource[4].batchNumber == 2
 
 
+def test_validate():
+    """Test validate datadoc dict."""
+    from tripper import Namespace
+    from tripper.datadoc import validate
+    from tripper.datadoc.errors import ValidateError
+
+    EX = Namespace("http://example.com/ex#")
+
+    d = {
+        "@id": EX.data,
+        "@type": EX.MyData,
+        "creator": {"name": "John Doe"},
+        "title": "Special data",
+        "description": "My dataset with some special data ...",
+        "theme": "ex:Data",
+    }
+    validate(d)
+
+    d2 = d.copy()
+    d2["unknownKeyword"] = EX.unknownKeyword
+    with pytest.raises(ValidateError):
+        validate(d2)
+
+    d3 = d.copy()
+    d3["distribution"] = "invalid-distribution-iri"
+    with pytest.raises(ValidateError):
+        validate(d3)
+
+
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
     from tripper import Triplestore
