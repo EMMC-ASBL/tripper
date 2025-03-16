@@ -407,6 +407,8 @@ def test_extend_namespace():
 
 def test_expand_iri():
     """Test expand_iri()."""
+    pytest.importorskip("rdflib")
+
     from tripper import CHAMEO, DCTERMS, OTEIO, RDF
     from tripper.errors import NamespaceError
     from tripper.utils import expand_iri
@@ -429,6 +431,8 @@ def test_expand_iri():
 
 def test_prefix_iri():
     """Test prefix_iri()."""
+    pytest.importorskip("rdflib")
+
     from tripper import CHAMEO, DCTERMS, OTEIO, RDF
     from tripper.errors import NamespaceError
     from tripper.utils import prefix_iri
