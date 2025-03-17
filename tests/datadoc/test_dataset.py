@@ -216,7 +216,9 @@ def test_datadoc():
         "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
     }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
-    assert d.distribution.mediaType == "image/tiff"
+    assert d.distribution.mediaType == (
+        "http://www.iana.org/assignments/media-types/image/tiff"
+    )
 
     assert not load_dict(ts, "non-existing")
     assert not load_dict(ts, "non-existing", use_sparql=True)

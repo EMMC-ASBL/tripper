@@ -806,11 +806,12 @@ def validate(
 
     def check_keyword(keyword, type):
         typename = keywords.typename(type)
-        if keyword in resources[typename].keywords:
+        name = keywords.keywordname(keyword)
+        if name in resources[typename].keywords:
             return True
         if "subClassOf" in resources[typename]:
             subclass = resources[typename].subClassOf
-            return check_keyword(keyword, subclass)
+            return check_keyword(name, subclass)
         return False
 
     for k, v in dct.items():
@@ -887,7 +888,7 @@ def get_partial_pipeline(
     Returns:
         OTELib partial pipeline.
     """
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-locals
     dct = load_dict(ts, iri, use_sparql=use_sparql)
 
     if isinstance(distribution, str):
@@ -926,9 +927,15 @@ def get_partial_pipeline(
     else:
         configuration = None
 
+    mediaType = distr.get("mediaType")
+    mediaTypeShort = (
+        mediaType[44:]
+        if mediaType.startswith("http://www.iana.org/assignments/media-types/")
+        else mediaType
+    )
     dataresource = client.create_dataresource(
         downloadUrl=distr.get("downloadURL"),
-        mediaType=distr.get("mediaType"),
+        mediaType=mediaTypeShort,
         accessUrl=distr.get("accessURL"),
         accessService=accessService,
         configuration=dict(configuration) if configuration else {},

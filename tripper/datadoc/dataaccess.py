@@ -136,7 +136,6 @@ def save(
     distribution: dict  # Tell mypy that this now is a dict
 
     if isinstance(generator, str):
-        print("*** distribution:", distribution)
         gen = get(distribution, "generator")
         if isinstance(gen, (str, dict)):
             gen = [gen]

@@ -87,6 +87,18 @@ def test_normtype():
         keywords.normtype("distribution")
 
 
+def test_keywordname():
+    """Test keywordname() method."""
+    from tripper import DCTERMS
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    assert keywords.keywordname("title") == "title"
+    assert keywords.keywordname("dcterms:title") == "title"
+    assert keywords.keywordname(DCTERMS.title) == "title"
+    with pytest.raises(InvalidKeywordError):
+        keywords.keywordname("xxx")
+
+
 def test_typename():
     """Test typename() method."""
     from tripper import DCAT

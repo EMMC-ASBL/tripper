@@ -107,6 +107,7 @@ class Keywords:
         resources = self.data.get("resources", {})
         for resource in resources.values():
             for keyword, value in resource.get("keywords", {}).items():
+                value["name"] = keyword
                 recursive_update(
                     self.keywords,
                     {
@@ -180,6 +181,20 @@ class Keywords:
                 return [r.iri, r.type]
             return [r.iri] + r.type
         return r.iri
+
+    def keywordname(self, keyword: str) -> str:
+        """Return the short name of `keyword`.
+
+        Example:
+
+        >>> keywords = Keywords()
+        >>> keywords.keywordname("dcterms:title")
+        'title'
+
+        """
+        if keyword not in self.keywords:
+            raise InvalidKeywordError(keyword)
+        return self.keywords[keyword].name
 
     def typename(self, type) -> str:
         """Return the short name of `type`.
