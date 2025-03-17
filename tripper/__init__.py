@@ -9,19 +9,28 @@ See the README.md file for a description for how to use this package.
 from . import backends  # pylint: disable=unused-import
 from .literal import Literal
 from .namespace import (
+    ADMS,
     DC,
     DCAT,
+    DCATAP,
     DCTERMS,
     DM,
     DOAP,
+    ELI,
+    EURIO,
     FNO,
     FOAF,
     MAP,
+    ODRL,
     OTEIO,
     OWL,
     RDF,
     RDFS,
+    SCHEMA,
     SKOS,
+    SPDX,
+    TIME,
+    VCARD,
     XML,
     XSD,
     Namespace,
@@ -47,23 +56,32 @@ CHAMEO = Namespace(
 __all__ = (
     "Literal",
     #
-    "CHAMEO",
-    "DCAT",
-    "DC",
-    "DCTERMS",
-    "DM",
-    "DOAP",
-    "EMMO",
-    "FNO",
-    "FOAF",
-    "MAP",
-    "OTEIO",
-    "OWL",
-    "RDF",
-    "RDFS",
-    "SKOS",
-    "XML",
-    "XSD",
+    "ADMS",  # Asset Description Metadata Schema
+    "CHAMEO",  # Characterisation Methodology Domain Ontology
+    "DC",  #  Dublin Core
+    "DCAT",  # Data Catalog Vocabulary
+    "DCATAP",  # DCAT Application Profile
+    "DCTERMS",  # Dublin Core terms
+    "DM",  # Datamodel ontology
+    "DOAP",  # Description of a Project
+    "ELI",  # European Legislation Identifier
+    "EMMO",  # Elementary Multiperspective Material Ontology
+    "EURIO",  # EUropean Research Information Ontology
+    "FNO",  # Function Ontology
+    "FOAF",  # Friend of a Friend
+    "MAP",  # Mapping Ontology
+    "ODRL",  # Open Digital Rights Language
+    "OTEIO",  # Open Translation Environment Interface Ontology
+    "OWL",  # Web Ontology Language
+    "RDF",  # Resource Description Framework
+    "RDFS",  # RDF Schema
+    "SCHEMA",  # schema.org
+    "SKOS",  # Simple Knowledge Organization System
+    "SPDX",  # open standard for material information
+    "TIME",  # Time Ontology
+    "VCARD",  # vCard Ontology - for describing People and Organizations
+    "XML",  # XML namespace
+    "XSD",  # XML Schema Datatypes
     "Namespace",
     "Session",
     #

@@ -85,6 +85,7 @@ Package = "https://pypi.org/project/tripper"
 
 [project.scripts]
 datadoc = "tripper.datadoc.clitool:main"
+keywords = "tripper.datadoc.keywords:main"
 
 [tool.isort]
 line_length = 79  # PEP8
@@ -133,3 +134,8 @@ filterwarnings = [
 
 [tool.setuptools.package-data]
 "tripper.context" = ["*.json", "*.yaml"]
+
+
+# Note the quotes around dlite.python_storage_plugins to escape the embedded dot
+[project.entry-points."tripper.keywords"]
+"tripper/context/0.3" = "default"

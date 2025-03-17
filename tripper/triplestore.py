@@ -10,6 +10,7 @@ the triplestore backends may have.
 For developers: The usage of `s`, `p`, and `o` represent the different
 parts of an RDF Triple: subject, predicate, and object.
 
+
 """
 
 # pylint: disable=invalid-name,too-many-public-methods,too-many-lines
@@ -17,7 +18,6 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import importlib
 import inspect
-import re
 import subprocess  # nosec
 import sys
 import warnings
@@ -28,7 +28,6 @@ from tripper.errors import (
     ArgumentTypeError,
     ArgumentValueError,
     CannotGetFunctionError,
-    NamespaceError,
     TripperError,
     UniquenessError,
 )
@@ -46,7 +45,16 @@ from tripper.namespace import (
     XSD,
     Namespace,
 )
-from tripper.utils import bnode_iri, en, function_id, infer_iri, split_iri
+from tripper.utils import (
+    bnode_iri,
+    en,
+    expand_iri,
+    function_id,
+    get_entry_points,
+    infer_iri,
+    prefix_iri,
+    split_iri,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
@@ -78,12 +86,6 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.mappings import Value
     from tripper.utils import OptionalTriple, Triple
 
-try:
-    from importlib.metadata import entry_points
-except ImportError:
-    # Use importlib_metadata backport for Python 3.6 and 3.7
-    from importlib_metadata import entry_points  # type: ignore
-
 
 # Default packages in which to look for tripper backends
 backend_packages = ["tripper.backends"]
@@ -102,7 +104,7 @@ hasCost = DM.hasCost
 
 
 # Regular expression matching a prefixed IRI
-_MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
+# _MATCH_PREFIXED_IRI = re.compile(r"^([a-z][a-z0-9]*)?:([^/]{1}.*)$")
 
 
 class Triplestore:
@@ -225,17 +227,7 @@ class Triplestore:
             return importlib.import_module(backend, package)
 
         # Installed backend package
-        if sys.version_info < (3, 10):
-            # Fallback for Python < 3.10
-            eps = entry_points().get(  # pylint: disable=no-member
-                "tripper.backends", ()
-            )
-        else:
-            # New entry_point interface from Python 3.10+
-            eps = entry_points(  # pylint: disable=unexpected-keyword-arg
-                group="tripper.backends"
-            )
-        for entry_point in eps:
+        for entry_point in get_entry_points("tripper.backends"):
             if entry_point.name == backend:
                 return importlib.import_module(entry_point.module)
 
@@ -586,12 +578,6 @@ class Triplestore:
     )
 
     @classmethod
-    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
-        """Returns the class implementing the given backend."""
-        module = cls._load_backend(backend, package=package)
-        return getattr(module, f"{backend.title()}Strategy")
-
-    @classmethod
     def _check_backend_method(cls, backend: str, name: str):
         """Checks that `backend` has a method called `name`.
 
@@ -603,6 +589,12 @@ class Triplestore:
                 f"Triplestore backend {backend!r} do not implement a "
                 f'"{name}()" method.'
             )
+
+    @classmethod
+    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
+        """Returns the class implementing the given backend."""
+        module = cls._load_backend(backend, package=package)
+        return getattr(module, f"{backend.title()}Strategy")
 
     def _check_method(self, name):
         """Check that backend implements the given method."""
@@ -680,12 +672,10 @@ class Triplestore:
             return value
         raise UniquenessError("More than one match")
 
-    def subjects(
-        self, predicate=None, object=None  # pylint: disable=redefined-builtin
-    ):
-        """Returns a generator of subjects for given predicate and object."""
-        for s, _, _ in self.triples(predicate=predicate, object=object):
-            yield s
+    def objects(self, subject=None, predicate=None):
+        """Returns a generator of objects for given subject and predicate."""
+        for _, _, o in self.triples(subject=subject, predicate=predicate):
+            yield o
 
     def predicates(
         self, subject=None, object=None  # pylint: disable=redefined-builtin
@@ -694,10 +684,24 @@ class Triplestore:
         for _, p, _ in self.triples(subject=subject, object=object):
             yield p
 
-    def objects(self, subject=None, predicate=None):
-        """Returns a generator of objects for given subject and predicate."""
-        for _, _, o in self.triples(subject=subject, predicate=predicate):
-            yield o
+    def subjects(
+        self, predicate=None, object=None  # pylint: disable=redefined-builtin
+    ):
+        """Returns a generator of subjects for given predicate and object."""
+        for s, _, _ in self.triples(predicate=predicate, object=object):
+            yield s
+
+    def predicate_objects(self, subject=None):
+        """Returns a generator of (predicate, object) tuples for given
+        subject."""
+        for _, p, o in self.triples(subject=subject):
+            yield p, o
+
+    def subject_objects(self, predicate=None):
+        """Returns a generator of (subject, object) tuples for given
+        predicate."""
+        for s, _, o in self.triples(predicate=predicate):
+            yield s, o
 
     def subject_predicates(
         self, object=None
@@ -706,28 +710,6 @@ class Triplestore:
         object."""
         for s, p, _ in self.triples(object=object):
             yield s, p
-
-    def subject_objects(self, predicate=None):
-        """Returns a generator of (subject, object) tuples for given
-        predicate."""
-        for s, _, o in self.triples(predicate=predicate):
-            yield s, o
-
-    def predicate_objects(self, subject=None):
-        """Returns a generator of (predicate, object) tuples for given
-        subject."""
-        for _, p, o in self.triples(subject=subject):
-            yield p, o
-
-    def set(self, triple):
-        """Convenience method to update the value of object.
-
-        Removes any existing triples for subject and predicate before adding
-        the given `triple`.
-        """
-        s, p, _ = triple
-        self.remove(s, p)
-        self.add(triple)
 
     def has(
         self, subject=None, predicate=None, object=None
@@ -743,44 +725,47 @@ class Triplestore:
             return False
         return True
 
+    def set(self, triple):
+        """Convenience method to update the value of object.
+
+        Removes any existing triples for subject and predicate before adding
+        the given `triple`.
+        """
+        s, p, _ = triple
+        self.remove(s, p)
+        self.add(triple)
+
     # Methods providing additional functionality
     # ------------------------------------------
-    def expand_iri(self, iri: str):
+    def expand_iri(self, iri: str, strict: bool = False) -> str:
         """
         Return the full IRI if `iri` is prefixed.
         Otherwise `iri` isreturned.
 
         Examples:
-            ```python
-            >>> from tripper import Triplestore
-            >>> ts = Triplestore(backend="rdflib")
 
-            # Unknown prefix raises an exception
-            >>> ts.expand_iri("ex:Concept")  # doctest: +ELLIPSIS
-            Traceback (most recent call last):
-            ...
-            tripper.errors.NamespaceError: unknown namespace: 'ex'
+        ```python
+        >>> from tripper import Triplestore
+        >>> ts = Triplestore(backend="rdflib")
 
-            >>> EX = ts.bind("ex", "http://example.com#")
-            >>> ts.expand_iri("ex:Concept")
-            'http://example.com#Concept'
+        # Unknown prefix raises an exception
+        >>> ts.expand_iri("ex:Concept", strict=True)  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        tripper.errors.NamespaceError: Undefined prefix "ex" in IRI: ex:Concept
 
-            # Returns iri if it has no prefix
-            >>> ts.expand_iri("http://example.com#Concept")
-            'http://example.com#Concept'
+        >>> EX = ts.bind("ex", "http://example.com#")
+        >>> ts.expand_iri("ex:Concept")
+        'http://example.com#Concept'
 
-            ```
+        # Returns iri if it has no prefix
+        >>> ts.expand_iri("http://example.com#Concept")
+        'http://example.com#Concept'
+
+        ```
 
         """
-        match = re.match(_MATCH_PREFIXED_IRI, iri)
-        if match:
-            prefix, name = match.groups()
-            if prefix is None:
-                prefix = ""
-            if prefix not in self.namespaces:
-                raise NamespaceError(f"unknown namespace: '{prefix}'")
-            return f"{self.namespaces[prefix]}{name}"
-        return iri
+        return expand_iri(iri, self.namespaces, strict=strict)
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
         # pylint: disable=line-too-long
@@ -792,6 +777,8 @@ class Triplestore:
         if no prefix can be found.
 
         Examples:
+
+        ```python
         >>> from tripper import Triplestore
         >>> ts = Triplestore(backend="rdflib")
         >>> ts.prefix_iri("http://example.com#Concept")
@@ -808,14 +795,10 @@ class Triplestore:
         >>> ts.prefix_iri("http://example.com#Concept")
         'ex:Concept'
 
+        ```
+
         """
-        if not re.match(_MATCH_PREFIXED_IRI, iri):
-            for prefix, namespace in self.namespaces.items():
-                if iri.startswith(str(namespace)):
-                    return f"{prefix}:{iri[len(str(namespace)):]}"
-            if require_prefixed:
-                raise NamespaceError(f"No prefix defined for IRI: {iri}")
-        return iri
+        return prefix_iri(iri, self.namespaces, require_prefixed)
 
     # Types of restrictions defined in OWL
     _restriction_types = {
