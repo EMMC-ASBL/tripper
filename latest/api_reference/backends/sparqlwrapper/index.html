@@ -1107,6 +1107,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../datadoc/errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datadoc/keywords/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    keywords
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../datadoc/tabledoc/" class="md-nav__link">
         
   
@@ -1717,7 +1759,7 @@ SparqlwrapperStrategy        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the update endpoint is valid&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">isSparqlUpdateRequest</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">TripperException</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="n">TripperError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;The base_iri &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">updateEndpoint</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
                 <span class="s2">&quot;is not a valid update endpoint. &quot;</span>
                 <span class="s2">&quot;For updates it is necessary to give the &quot;</span>

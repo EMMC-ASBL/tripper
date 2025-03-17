@@ -1069,6 +1069,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../datadoc/errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/keywords/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    keywords
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../datadoc/tabledoc/" class="md-nav__link">
         
   
@@ -1383,7 +1425,7 @@ such as get_value, add_data and add_interpolation_source.</p>
 <span class="sd">    such as get_value, add_data and add_interpolation_source.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Union[Callable, Literal]&quot;</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1468,7 +1510,7 @@ such as get_value, add_data and add_interpolation_source.</p>
 
         <span class="k">return</span> <span class="n">data_source</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">,</span>
         <span class="n">routeno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -1556,7 +1598,7 @@ such as get_value, add_data and add_interpolation_source.</p>
             <span class="n">quantity</span><span class="o">=</span><span class="n">quantity</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments,too-many-arguments</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">xcoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">ycoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1747,7 +1789,7 @@ returning the cost as a float.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Union[Callable, Literal]&quot;</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1960,7 +2002,7 @@ proper interpolation of angular x-coordinates. Parameters
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments,too-many-arguments</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_interpolation_source</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">xcoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">ycoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2132,7 +2174,7 @@ value (with no unit).</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">,</span>
     <span class="n">routeno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>

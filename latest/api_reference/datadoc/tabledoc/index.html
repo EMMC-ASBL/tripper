@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/tabledoc/">
       
       
-        <link rel="prev" href="../dataset/">
+        <link rel="prev" href="../keywords/">
       
       
         <link rel="next" href="../../mappings/mappings/">
@@ -977,6 +977,48 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keywords/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    keywords
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1441,7 +1483,7 @@ either be one of the pre-defined names: "dataset",
 "distribution", "accessService", "parser" and "generator"
 or an IRI to a class in an ontology.  Defaults to
 "dataset".</p></td>
-        <td><code>&#39;dataset&#39;</code></td>
+        <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
@@ -1496,11 +1538,11 @@ dicts.</p></td>
 
     <span class="c1"># pylint: disable=redefined-builtin,too-few-public-methods</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">header</span><span class="p">:</span> <span class="s2">&quot;Sequence[str]&quot;</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;Sequence[Sequence[str]]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1548,7 +1590,7 @@ dicts.</p></td>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
         <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1558,10 +1600,10 @@ dicts.</p></td>
 <span class="sd">        Arguments:</span>
 <span class="sd">            dicts: Sequence of single-resource dicts.</span>
 <span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">                either be one of the pre-defined names: &quot;dataset&quot;,</span>
-<span class="sd">                &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and</span>
-<span class="sd">                &quot;generator&quot; or an IRI to a class in an ontology.</span>
-<span class="sd">                Defaults to &quot;dataset&quot;.</span>
+<span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
+<span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
+<span class="sd">                &quot;Generator&quot; or an IRI to a class in an ontology.</span>
+<span class="sd">                Defaults to &quot;Dataset&quot;.</span>
 <span class="sd">            prefixes: Dict with prefixes in addition to those included</span>
 <span class="sd">                in the JSON-LD context.  Should map namespace prefixes</span>
 <span class="sd">                to IRIs.</span>
@@ -1644,9 +1686,9 @@ dicts.</p></td>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
         <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
@@ -1659,10 +1701,10 @@ dicts.</p></td>
 <span class="sd">        Arguments:</span>
 <span class="sd">            csvfile: Name of CSV file to parse or an iterable of strings.</span>
 <span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">                either be one of the pre-defined names: &quot;dataset&quot;,</span>
-<span class="sd">                &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
+<span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
+<span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
 <span class="sd">                or an IRI to a class in an ontology.  Defaults to</span>
-<span class="sd">                &quot;dataset&quot;.</span>
+<span class="sd">                &quot;Dataset&quot;.</span>
 <span class="sd">            prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">                JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">            context: Dict with user-defined JSON-LD context.</span>
@@ -1819,7 +1861,7 @@ dicts.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.fromdicts" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -1852,11 +1894,11 @@ dicts.</p></td>
         <td><code>type</code></td>
         <td><code>Optional[str]</code></td>
         <td><p>Type of data to save (applies to all rows).  Should
-either be one of the pre-defined names: "dataset",
-"distribution", "accessService", "parser" and
-"generator" or an IRI to a class in an ontology.
-Defaults to "dataset".</p></td>
-        <td><code>&#39;dataset&#39;</code></td>
+either be one of the pre-defined names: "Dataset",
+"Distribution", "AccessService", "Parser" and
+"Generator" or an IRI to a class in an ontology.
+Defaults to "Dataset".</p></td>
+        <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
@@ -1905,7 +1947,7 @@ from cells.</p></td>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
     <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1915,10 +1957,10 @@ from cells.</p></td>
 <span class="sd">    Arguments:</span>
 <span class="sd">        dicts: Sequence of single-resource dicts.</span>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">            either be one of the pre-defined names: &quot;dataset&quot;,</span>
-<span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and</span>
-<span class="sd">            &quot;generator&quot; or an IRI to a class in an ontology.</span>
-<span class="sd">            Defaults to &quot;dataset&quot;.</span>
+<span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
+<span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
+<span class="sd">            &quot;Generator&quot; or an IRI to a class in an ontology.</span>
+<span class="sd">            Defaults to &quot;Dataset&quot;.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included</span>
 <span class="sd">            in the JSON-LD context.  Should map namespace prefixes</span>
 <span class="sd">            to IRIs.</span>
@@ -2012,7 +2054,7 @@ from cells.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.parse_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2045,11 +2087,11 @@ from cells.</p></td>
         <td><code>type</code></td>
         <td><code>Optional[str]</code></td>
         <td><p>Type of data to save (applies to all rows).  Should
-either be one of the pre-defined names: "dataset",
-"distribution", "accessService", "parser" and "generator"
+either be one of the pre-defined names: "Dataset",
+"Distribution", "AccessService", "Parser" and "Generator"
 or an IRI to a class in an ontology.  Defaults to
-"dataset".</p></td>
-        <td><code>&#39;dataset&#39;</code></td>
+"Dataset".</p></td>
+        <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
         <td><code>prefixes</code></td>
@@ -2108,9 +2150,9 @@ formatting parameters.  For more details, see
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
     <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
@@ -2123,10 +2165,10 @@ formatting parameters.  For more details, see
 <span class="sd">    Arguments:</span>
 <span class="sd">        csvfile: Name of CSV file to parse or an iterable of strings.</span>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">            either be one of the pre-defined names: &quot;dataset&quot;,</span>
-<span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
+<span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
+<span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
 <span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
-<span class="sd">            &quot;dataset&quot;.</span>
+<span class="sd">            &quot;Dataset&quot;.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        context: Dict with user-defined JSON-LD context.</span>

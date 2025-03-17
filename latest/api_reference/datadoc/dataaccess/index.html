@@ -1047,6 +1047,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keywords/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    keywords
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tabledoc/" class="md-nav__link">
         
   
@@ -1583,7 +1625,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataaccess.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-positional-arguments</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="n">class_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1693,9 +1735,15 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="n">distribution</span><span class="p">:</span> <span class="nb">dict</span>  <span class="c1"># Tell mypy that this now is a dict</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">gen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">generator</span><span class="p">:</span>
-                <span class="k">break</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="n">gen</span> <span class="o">=</span> <span class="p">[</span><span class="n">gen</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">gen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">generator</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>  <span class="c1"># ???</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;dataset &#39;</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&#39; has no such generator: </span><span class="si">{</span><span class="n">generator</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1736,9 +1784,9 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="c1"># Update triplestore</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">save_dataset</span><span class="p">:</span>
-        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;dataset&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_distribution</span><span class="p">:</span>
-        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;Distribution&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
 </code></pre></div>

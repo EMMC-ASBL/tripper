@@ -1069,6 +1069,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/datadoc/errors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    errors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api_reference/datadoc/keywords/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    keywords
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/datadoc/tabledoc/" class="md-nav__link">
         
   
@@ -1346,7 +1388,9 @@ These are further described below.</p>
 <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="p">{</span>
 <span class="o">...</span>     <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;kb:image1&quot;</span><span class="p">,</span>
 <span class="o">...</span>     <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;sem:SEMImage&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="s2">&quot;Sigurd Wenner&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sigurd Wenner&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="p">},</span>
 <span class="o">...</span>     <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Back-scattered SEM image of cement, polished with 1 µm diamond compound.&quot;</span><span class="p">,</span>
 <span class="o">...</span>     <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="p">{</span>
 <span class="o">...</span>         <span class="s2">&quot;downloadURL&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif&quot;</span><span class="p">,</span>
@@ -1379,7 +1423,13 @@ In addition to add a <code>@context</code> field, this function also adds some i
     <span class="s2">&quot;https://w3id.com/emmo/domain/sem/0.1#SEMImage&quot;</span>
   <span class="p">],</span>
   <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://example.com/kb/image1&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="s2">&quot;Sigurd Wenner&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;http://xmlns.com/foaf/0.1/Agent&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sigurd Wenner&quot;</span>
+  <span class="p">},</span>
   <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Back-scattered SEM image of cement, polished with 1 </span><span class="se">\u00b5</span><span class="s2">m diamond compound.&quot;</span><span class="p">,</span>
   <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/ns/dcat#Distribution&quot;</span><span class="p">,</span>
