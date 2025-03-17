@@ -124,7 +124,9 @@ def test_save_dict():
         "inSeries": EX.series,
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
-            "mediaType": "text/csv",
+            "mediaType": (
+                "http://www.iana.org/assignments/media-types/text/csv"
+            ),
         },
     }
     save_dict(ts, d, type="Dataset")
@@ -248,13 +250,21 @@ def test_datadoc():
     # Test save dict
     save_dict(
         ts,
-        dct={"@id": SEMDATA.newdistr, "format": "txt"},
+        dct={
+            "@id": SEMDATA.newdistr,
+            "mediaType": (
+                "http://www.iana.org/assignments/media-types/text/plain"
+            ),
+        },
         type="Distribution",
         prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
     )
     newdistr = load_dict(ts, SEMDATA.newdistr)
     assert newdistr["@type"] == DCAT.Distribution
-    assert newdistr.format == "txt"
+    assert (
+        newdistr.mediaType
+        == "http://www.iana.org/assignments/media-types/text/plain"
+    )
 
     # Test load updated distribution
     dd = load_dict(ts, iri)

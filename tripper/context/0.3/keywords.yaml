@@ -418,7 +418,6 @@ resources:
       compressFormat:
         iri: dcat:compressFormat
         range: dcterms:MediaType
-        datatype: xsd:string
         conformance: optional
         description: The format of the file in which the data is contained in a compressed form, e.g. to reduce the size of the downloadable file.
         usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
@@ -433,7 +432,6 @@ resources:
       format:
         iri: dcterms:format
         range: dcterms:MediaTypeOrExtent
-        datatype: xsd:string
         conformance: optional
         description: The file format of the Distribution.
         usageNote: dcat:mediaType SHOULD be used if the type of the distribution is defined by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
@@ -445,15 +443,13 @@ resources:
 
       mediaType:
         iri: dcat:mediaType
-        range: rdfs:Literal
-        datatype: xsd:string
+        range: dcterms:MediaType
         conformance: recommended
         description: The media type of the Distribution as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
 
       packageFormat:
         iri: dcat:packageFormat
         range: dcterms:MediaType
-        datatype: xsd:string
         conformance: optional
         description: The format of the file in which one or more data files are grouped together, e.g. to enable a set of related files to be downloaded together.
         usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
@@ -741,3 +737,8 @@ resources:
   Standard:
     iri: dcterms:Standard
     description: A standard or other specification to which a resource conforms.
+
+  MediaType:
+    iri: dcterms:MediaType
+    description: A media type, e.g. the format of a computer file.
+    usageNote: Media type instances follow the [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) vocabulary using the <<http://www.iana.org/assignments/media-types/> namespace. For example, the IRI of the media type `text/turtle` is <http://www.iana.org/assignments/media-types/text/turtle>.

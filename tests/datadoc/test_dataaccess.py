@@ -39,7 +39,9 @@ def test_save_and_load():
                     "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/"
                     "master/tests/input/77600-23-001_5kV_400x_m001.tif"
                 ),
-                "format": "tiff",
+                "mediaType": (
+                    "http://www.iana.org/assignments/media-types/image/tiff"
+                ),
             },
         },
         type="Dataset",
@@ -47,7 +49,10 @@ def test_save_and_load():
     newdistr = load_dict(ts, SEMDATA.img1)
     assert newdistr["@type"] == [DCAT.Dataset, EMMO.Dataset]
     assert newdistr.distribution["@type"] == DCAT.Distribution
-    assert newdistr.distribution.format == "tiff"
+    assert (
+        newdistr.distribution.mediaType
+        == "http://www.iana.org/assignments/media-types/image/tiff"
+    )
 
     save_dict(
         ts,
@@ -97,7 +102,9 @@ def test_save_and_load():
         distribution={
             "@id": SEMDATA.newdistr2,
             "downloadURL": f"file:{newfile2}",
-            "mediaType": "image/png",
+            "mediaType": (
+                "http://www.iana.org/assignments/media-types/image/png"
+            ),
             "generator": GEN.sem_hitachi,
             "parser": PARSER.sem_hitachi,
         },

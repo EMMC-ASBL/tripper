@@ -235,7 +235,7 @@
     },
     "compressFormat": {
       "@id": "dcat:compressFormat",
-      "@type": "xsd:string"
+      "@type": "@id"
     },
     "downloadURL": {
       "@id": "dcat:downloadURL",
@@ -243,7 +243,7 @@
     },
     "format": {
       "@id": "dcterms:format",
-      "@type": "xsd:string"
+      "@type": "@id"
     },
     "generator": {
       "@id": "oteio:generator",
@@ -251,11 +251,11 @@
     },
     "mediaType": {
       "@id": "dcat:mediaType",
-      "@type": "xsd:string"
+      "@type": "@id"
     },
     "packageFormat": {
       "@id": "dcat:packageFormat",
-      "@type": "xsd:string"
+      "@type": "@id"
     },
     "parser": {
       "@id": "oteio:parser",
