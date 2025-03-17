@@ -127,7 +127,7 @@ def save_dict(
     if keywords is None:
         keywords = Keywords()
 
-    if "@id" not in dct:
+    if "@id" not in dct and "@graph" not in dct:
         raise ValueError("`dct` must have an '@id' key")
 
     all_prefixes = get_prefixes()
@@ -670,23 +670,47 @@ def as_jsonld(
     if keywords is None:
         keywords = Keywords()
 
-    # Id of base entry that is documented
-    _entryid = kwargs.pop("_entryid", None)
-
     d = AttrDict()
     dct = dct.copy()
 
-    if not _entryid:
-        if "@context" in dct:
-            d["@context"] = dct.pop("@context")
-        else:
-            d["@context"] = CONTEXT_URL
-        if "_context" in kwargs and kwargs["_context"]:
-            add(d, "@context", kwargs.pop("_context"))
+    # Id of base entry that is documented
+    _entryid = kwargs.pop("_entryid", None)
+
+    # Marks that the top-level dict contains a @graph keyword
+    _graph = kwargs.pop("_graph", None)
+
+    # The context
+    _context = dct.pop("@context") if "@context" in dct else CONTEXT_URL
+    add(_context, "@context", kwargs.pop("_context", {}))
+
+    if not _entryid and not _graph:
+        d["@context"] = context
+        # if "@context" in dct:
+        #     d["@context"] = dct.pop("@context")
+        # else:
+        #     d["@context"] = CONTEXT_URL
+        # if "_context" in kwargs and kwargs["_context"]:
+        #     add(d, "@context", kwargs.pop("_context"))
+
+    if "@graph" in dct:
+        d["@graph"] = []
+        for subdict in dct["@graph"]:
+            d["@graph"].append(
+                as_jsonld(
+                    dct=subdict,
+                    type=type,
+                    keywords=keywords,
+                    prefixes=prefixes,
+                    _graph=True,
+                    _context=_context,
+                    **kwargs,
+                )
+            )
+        return d
 
     all_prefixes = {}
     if not _entryid:
-        all_prefixes = get_prefixes(context=d["@context"])
+        all_prefixes = get_prefixes(context=_context)
         all_prefixes.update(keywords.data.get("prefixes", {}))
     if prefixes:
         all_prefixes.update(prefixes)
@@ -762,6 +786,8 @@ def as_jsonld(
                         keywords=keywords,
                         prefixes=all_prefixes,
                         _entryid=_entryid,
+                        _context=_context,
+                        _graph=_graph,
                     )
         elif isinstance(v, dict):
             if "datatype" in keywords[k]:
@@ -773,6 +799,8 @@ def as_jsonld(
                     keywords=keywords,
                     prefixes=all_prefixes,
                     _entryid=_entryid,
+                    _context=_context,
+                    _graph=_graph,
                 )
 
     return d
