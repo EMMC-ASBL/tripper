@@ -7,13 +7,21 @@ import inspect
 import random
 import re
 import string
+import sys
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from tripper.errors import NamespaceError
 from tripper.literal import Literal
 from tripper.namespace import XSD, Namespace
+
+try:
+    from importlib.metadata import entry_points
+except ImportError:
+    # Use importlib_metadata backport for Python 3.6 and 3.7
+    from importlib_metadata import entry_points  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
@@ -48,13 +56,9 @@ __all__ = (
     "extend_namespace",
 )
 
-
-class TripperException(Exception):
-    """A BaseException class for Tripper"""
-
-
-class TripperWarning(Warning):
-    """A BaseWarning class for Tripper"""
+MATCH_PREFIXED_IRI = re.compile(
+    r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
+)
 
 
 class AttrDict(dict):
@@ -80,6 +84,48 @@ class AttrDict(dict):
         return dict.__dir__(self) + list(self.keys())
 
 
+def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
+    """Recursively update dict `d` with dict `other`."""
+    # pylint: disable=too-many-branches
+    if cls is None:
+        cls = d.__class__
+    if isinstance(other, dict):
+        if not isinstance(d, dict):
+            raise TypeError("`d` must be a dict when `other` is a dict")
+        for k, v in other.items():
+            if isinstance(v, dict):
+                if k not in d:
+                    d[k] = cls()
+                recursive_update(d[k], v, cls=cls)
+            elif isinstance(v, list):
+                if k not in d:
+                    d[k] = []
+                elif not isinstance(d[k], list):
+                    d[k] = [d.pop(k)]
+                recursive_update(d[k], v, cls=cls)  # type: ignore
+            else:
+                if k in d:
+                    d[k] = [d.pop(k), v]
+                else:
+                    d[k] = v
+    elif isinstance(other, list):
+        if not isinstance(d, list):
+            raise TypeError("`d` must be a list when `other` is a list")
+        for x in other:
+            if isinstance(x, dict):
+                new = cls()
+                recursive_update(new, x, cls=cls)
+                d.append(new)
+            elif isinstance(x, list):
+                new = []
+                recursive_update(new, x, cls=cls)
+                d.append(new)
+            else:
+                d.append(x)
+    else:
+        raise TypeError("`other` should either be a dict or list")
+
+
 @contextmanager
 def openfile(
     url: "Union[str, Path]", timeout: float = 3, **kwargs
@@ -100,6 +146,7 @@ def openfile(
     url = str(url)
     u = url.lower()
     tmpfile = False
+    f = None
 
     if u.startswith("file:"):
         fname = url[7:] if u.startswith("file://") else url[5:]
@@ -124,7 +171,8 @@ def openfile(
         f = open(fname, **kwargs)  # pylint: disable=unspecified-encoding
         yield f
     finally:
-        f.close()
+        if f is not None:
+            f.close()
         if tmpfile:
             Path(fname).unlink()
 
@@ -505,3 +553,53 @@ def extend_namespace(
         namespace._update_iris(  # pylint: disable=protected-access
             triplestore, reload=True, format=format
         )
+
+
+def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
+    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
+    returned."""
+    match = re.match(MATCH_PREFIXED_IRI, iri)
+    if match:
+        prefix, name, _ = match.groups()
+        if prefix in prefixes:
+            return f"{prefixes[prefix]}{name}"
+        if strict:
+            raise NamespaceError(f'Undefined prefix "{prefix}" in IRI: {iri}')
+        # warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+    return iri
+
+
+def prefix_iri(
+    iri: str, prefixes: dict, require_prefixed: bool = False
+) -> str:
+    """Return prefixed IRI.
+
+    This is the reverse of expand_iri().
+
+    If `require_prefixed` is true, a NamespaceError exception is raised
+    if no prefix can be found.
+
+    """
+    if not re.match(MATCH_PREFIXED_IRI, iri):
+        for prefix, ns in prefixes.items():
+            if iri.startswith(str(ns)):
+                return f"{prefix}:{iri[len(str(ns)):]}"
+        if require_prefixed:
+            raise NamespaceError(f"No prefix defined for IRI: {iri}")
+    return iri
+
+
+def get_entry_points(group: str):
+    """Consistent interface to entry points for the given group.
+
+    Works for all supported versions of Python.
+    """
+    if sys.version_info < (3, 10):
+        # Fallback for Python < 3.10
+        eps = entry_points().get(group, ())  # pylint: disable=no-member
+    else:
+        # New entry_point interface from Python 3.10+
+        eps = entry_points(  # pylint: disable=unexpected-keyword-arg
+            group=group
+        )
+    return eps

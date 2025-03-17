@@ -44,7 +44,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
     assert ts.prefix_iri(RDF.type) == "rdf:type"
 
     with pytest.raises(NamespaceError):
-        ts.expand_iri(":MyConcept")
+        ts.expand_iri(":MyConcept", strict=True)
 
     assert ts.prefix_iri("http://example.com#MyConcept") == (
         "http://example.com#MyConcept"

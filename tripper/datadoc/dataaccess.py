@@ -26,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
 
-def save(  # pylint: disable=too-many-positional-arguments
+def save(
     ts: Triplestore,
     data: bytes,
     class_iri: "Optional[str]" = None,
@@ -136,9 +136,15 @@ def save(  # pylint: disable=too-many-positional-arguments
     distribution: dict  # Tell mypy that this now is a dict
 
     if isinstance(generator, str):
-        for gen in get(distribution, "generator"):
-            if gen.get("@id") == generator:
-                break
+        gen = get(distribution, "generator")
+        if isinstance(gen, (str, dict)):
+            gen = [gen]
+        for g in gen:
+            if isinstance(g, dict):
+                if gen.get("@id") == generator:
+                    break
+            else:
+                break  # ???
         else:
             raise ValueError(
                 f"dataset '{dataset}' has no such generator: {generator}"
@@ -179,9 +185,9 @@ def save(  # pylint: disable=too-many-positional-arguments
     # Update triplestore
     ts.add_triples(triples)
     if save_dataset:
-        save_dict(ts, dataset, "dataset", prefixes=prefixes)
+        save_dict(ts, dataset, "Dataset", prefixes=prefixes)
     elif save_distribution:
-        save_dict(ts, distribution, "distribution", prefixes=prefixes)
+        save_dict(ts, distribution, "Distribution", prefixes=prefixes)
 
     return dataset["@id"]
 

@@ -74,10 +74,6 @@ class Literal(str):
         >>> l4.value
         {'name': 'Jon Doe'}
 
-        # Literal of custom datatype (`value` must be a string)
-        >>> Literal("my value...", datatype="http://example.com/onto#MyType")
-        Literal('my value...', datatype='http://example.com/onto#MyType')
-
         ```
 
     """

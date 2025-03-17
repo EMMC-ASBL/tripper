@@ -1,0 +1,3 @@
+# keywords
+
+::: tripper.datadoc.keywords

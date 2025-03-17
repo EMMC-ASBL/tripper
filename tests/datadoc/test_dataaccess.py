@@ -8,7 +8,6 @@ pytest.importorskip("yaml")
 pytest.importorskip("requests")
 
 
-# if True:
 def test_save_and_load():
     """Test save() and load()."""
     # pylint: disable=too-many-statements
@@ -40,15 +39,20 @@ def test_save_and_load():
                     "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/"
                     "master/tests/input/77600-23-001_5kV_400x_m001.tif"
                 ),
-                "format": "tiff",
+                "mediaType": (
+                    "http://www.iana.org/assignments/media-types/image/tiff"
+                ),
             },
         },
-        type="dataset",
+        type="Dataset",
     )
     newdistr = load_dict(ts, SEMDATA.img1)
     assert newdistr["@type"] == [DCAT.Dataset, EMMO.Dataset]
     assert newdistr.distribution["@type"] == DCAT.Distribution
-    assert newdistr.distribution.format == "tiff"
+    assert (
+        newdistr.distribution.mediaType
+        == "http://www.iana.org/assignments/media-types/image/tiff"
+    )
 
     save_dict(
         ts,
@@ -57,7 +61,7 @@ def test_save_and_load():
             "generatorType": "application/vnd.dlite-generate",
             "configuration": {"driver": "hitachi"},
         },
-        type="generator",
+        type="Generator",
     )
 
     # Test load dataset (this downloads an actual image from github)
@@ -98,7 +102,9 @@ def test_save_and_load():
         distribution={
             "@id": SEMDATA.newdistr2,
             "downloadURL": f"file:{newfile2}",
-            "mediaType": "image/png",
+            "mediaType": (
+                "http://www.iana.org/assignments/media-types/image/png"
+            ),
             "generator": GEN.sem_hitachi,
             "parser": PARSER.sem_hitachi,
         },
@@ -108,9 +114,12 @@ def test_save_and_load():
     newimage2 = load_dict(ts, SEMDATA.newimage2)
     assert newimage2["@id"] == SEMDATA.newimage2
     assert newimage2["@type"] == [DCAT.Dataset, EMMO.Dataset]
-    assert newimage2.distribution["@id"] == SEMDATA.newdistr2
-    assert newimage2.distribution["@type"] == DCAT.Distribution
-    assert newimage2.distribution.downloadURL == f"file:{newfile2}"
+    assert newimage2.distribution == SEMDATA.newdistr2
+
+    newdist2 = load_dict(ts, newimage2.distribution)
+    assert newdist2["@id"] == newimage2.distribution
+    assert newdist2["@type"] == DCAT.Distribution
+    assert newdist2.downloadURL == f"file:{newfile2}"
 
     # Test save anonymous dataset with existing distribution
     newfile2.unlink(missing_ok=True)
