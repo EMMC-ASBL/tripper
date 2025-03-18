@@ -34,7 +34,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Union,
     )
 
-    from tripper import Triplestore
+    from tripper.triplestore import Triplestore
 
     # Additional types
     OptionalTriple = Tuple[

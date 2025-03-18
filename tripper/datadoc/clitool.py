@@ -8,7 +8,7 @@ import json
 import os
 from pathlib import Path
 
-from tripper import Triplestore
+from tripper import Session, Triplestore
 from tripper.datadoc import (
     TableDoc,
     get_jsonld_context,
@@ -236,6 +236,19 @@ def main(argv=None):
 
     # General: options
     parser.add_argument(
+        "--config",
+        "-c",
+        help="Session configuration file.",
+    )
+    parser.add_argument(
+        "--triplestore",
+        "-t",
+        help=(
+            "Name of triplestore to connect to. The name should be defined "
+            "in the session configuration file."
+        ),
+    )
+    parser.add_argument(
         "--backend",
         "-b",
         default="rdflib",
@@ -283,12 +296,17 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
 
-    ts = Triplestore(
-        backend=args.backend,
-        base_iri=args.base_iri,
-        database=args.database,
-        package=args.package,
-    )
+    if args.triplestore:
+        session = Session(config=args.config)
+        ts = session.get_triplestore(args.triplestore)
+    else:
+        ts = Triplestore(
+            backend=args.backend,
+            base_iri=args.base_iri,
+            database=args.database,
+            package=args.package,
+        )
+
     if args.parse:
         ts.parse(args.parse, format=args.parse_format)
 
