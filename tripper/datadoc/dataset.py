@@ -71,10 +71,8 @@ CONTEXT_PATH = (
 )
 # TODO: fix IRI when merged to master
 CONTEXT_URL = (
-    # "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
-    # "master/tripper/context/0.3/context.json"
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
-    "294-validator-for-schema/tripper/context/0.3/context.json"
+    "master/tripper/context/0.3/context.json"
 )
 
 MATCH_IRI = re.compile(
