@@ -53,7 +53,7 @@ Currently, `datadoc` has currently three sub-commands, `add`, `find` and `load` 
 ### General options
 
 * The `--config`, `--triplestore`, `--backend`, `--base-iri`, `--database` and `--package` options are all for connecting to a triplestore.
-  Most convenient is to configure a [session] and use the `--triplestore` argument select the triplestore to connect to.
+  The most convenient method is to configure a [session] and use the `--triplestore` argument to select the triplestore to connect to.
 
 * The `--parse`, `--parse-format` and `--prefix` options are for pre-loading the triplestore with triples from an external source, like a ntriples or turtle file, and for adding namespace prefixes.
 They are typically used with the default "rdflib" in-memory backend.
