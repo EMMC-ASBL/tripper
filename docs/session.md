@@ -35,7 +35,7 @@ MyKB:
 ```
 
 The two first entries correspond to the GraphDB and Fuseki services
-that can be started with docker as described on the [developers]
+that can be started with docker as described in the [developers]
 section.
 
 The third entry is just a dummy example, showing how to use [keyring].
