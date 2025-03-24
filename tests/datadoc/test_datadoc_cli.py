@@ -2,10 +2,10 @@
 
 from tripper.datadoc.clitool import main
 
-if True:
-    # def test_delete_fuseki(tsname: str):
+
+def test_delete():
     """Test `datadoc delete` with Fuseki."""
-    from dataset_paths import indir, outdir
+    from dataset_paths import indir
 
     cmd = [
         "--triplestore=FusekiTest",
@@ -16,12 +16,10 @@ if True:
             "77600-23-001/77600-23-001_5kV_400x_m001"
         ),
     ]
-    print(f"*** datadoc {' '.join(cmd)}")
     main(cmd)
 
 
-if True:
-    # def test_add_fuseki(tsname: str):
+def test_add():
     """Test `datadoc add` with Fuseki."""
     from dataset_paths import indir, outdir
 
@@ -33,14 +31,13 @@ if True:
         f"--dump={outdir/'semdata.ttl'}",
         f"{indir/'semdata.csv'}",
     ]
-    print(f"*** datadoc {' '.join(cmd)}")
     main(cmd)
 
 
 if True:
-    # def test_find_fuseki(tsname: str):
+    # def test_find():
     """Test `datadoc find` with Fuseki."""
-    from dataset_paths import outdir
+    from dataset_paths import indir
 
     cmd = [
         "--triplestore=FusekiTest",

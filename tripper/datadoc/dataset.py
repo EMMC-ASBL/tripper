@@ -292,27 +292,22 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
-    query1 = f"ASK {{ {subj} ?p ?o . }}"
-    query2 = f"""
+    # Some backends, like GraphDB, requires the empty prefix to be defined
+    query = f"""
+    PREFIX : <http:ex.com/>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
       ?s ?p ?o .
     }}
     """
-    if ts.query(query1):
-        print("+++ query:", query2)
-        triples = ts.query(query2)
-        with Triplestore(backend="rdflib") as ts2:
-            for prefix, namespace in ts.namespaces.items():
-                ts2.bind(prefix, str(namespace))
-            ts2.add_triples(triples)  # type: ignore
-            print()
-            print(ts2.serialize())
-            print()
-            dct = load_dict(ts2, iri, use_sparql=False)
-        return dct
-    return {}
+    triples = ts.query(query)
+    with Triplestore(backend="rdflib") as ts2:
+        for prefix, namespace in ts.namespaces.items():
+            ts2.bind(prefix, str(namespace))
+        ts2.add_triples(triples)  # type: ignore
+        dct = load_dict(ts2, iri, use_sparql=False)
+    return dct
 
 
 def get_values(
@@ -477,7 +472,7 @@ def add(d: dict, key: str, value: "Any") -> None:
                 # Sort dicts at end, by representing them with a huge
                 # unicode character
                 v,
-                key=lambda x: "\uffff" if isinstance(x, dict) else x,
+                key=lambda x: "\uffff" if isinstance(x, dict) else str(x),
             )
         )
 
