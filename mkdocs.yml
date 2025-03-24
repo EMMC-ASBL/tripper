@@ -94,6 +94,7 @@ nav:
     - Customisation: datadoc/customisation.md
     - Predefined prefixes: datadoc/prefixes.md
     - Predefined keywords: datadoc/keywords.md
+  - Session: session.md
   - ... | api_reference/**
   - Known issues: known-issues.md
   - For developers: developers.md
