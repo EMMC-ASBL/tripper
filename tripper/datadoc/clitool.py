@@ -11,6 +11,7 @@ from pathlib import Path
 from tripper import Session, Triplestore
 from tripper.datadoc import (
     TableDoc,
+    delete,
     get_jsonld_context,
     load,
     load_dict,
@@ -43,6 +44,21 @@ def subcommand_add(ts, args):
 
     if args.dump:
         ts.serialize(args.dump, format=args.format)
+
+
+def subcommand_delete(ts, args):
+    """Subcommand for removing matching entries in the triplestore."""
+    criterias = {}
+    regex = {}
+    if args.criteria:
+        for crit in args.criteria:
+            if "=~" in crit:
+                key, value = crit.split("=~", 1)
+                regex[key] = value
+            else:
+                key, value = crit.split("=", 1)
+                criterias[key] = value
+    delete(ts, type=args.type, criterias=criterias, regex=regex)
 
 
 def subcommand_find(ts, args):
@@ -94,6 +110,8 @@ def subcommand_find(ts, args):
     else:
         print(s)
 
+    return s
+
 
 def subcommand_fetch(ts, args):
     """Subcommand for fetching a documented dataset from a storage."""
@@ -104,6 +122,8 @@ def subcommand_fetch(ts, args):
             f.write(data)
     else:
         print(data)
+
+    return data
 
 
 def main(argv=None):
@@ -167,6 +187,34 @@ def main(argv=None):
         help='Format to use with `--dump`.  Default is "turtle".',
     )
 
+    # Subcommand: delete
+    parser_delete = subparsers.add_parser(
+        "delete", help="Delete matching resources in the triplestore."
+    )
+    parser_delete.set_defaults(func=subcommand_delete)
+    parser_delete.add_argument(
+        "--type",
+        "-t",
+        help=(
+            'Either a resource type (ex: "dataset", "distribution", ...) '
+            "or the IRI of a class to limit the search to."
+        ),
+    )
+    parser_delete.add_argument(
+        "--criteria",
+        "-c",
+        action="append",
+        metavar="IRI=VALUE",
+        help=(
+            "Matching criteria for resources to delete. The IRI may be "
+            'written with namespace prefix, like `dcterms:title="My title"`. '
+            'Writing the criteria with the "=" operator, corresponds to '
+            "exact match. "
+            'If the operator is written "=~", regular expression matching '
+            "will be used instead. This option can be given multiple times."
+        ),
+    )
+
     # Subcommand: find
     parser_find = subparsers.add_parser(
         "find", help="Find documented resources in the triplestore."
@@ -187,7 +235,7 @@ def main(argv=None):
         metavar="IRI=VALUE",
         help=(
             "Matching criteria for resources to find. The IRI may be written "
-            'using a namespace prefix, like `tcterms:title="My title"`. '
+            'using a namespace prefix, like `dcterms:title="My title"`. '
             'Writing the criteria with the "=" operator, corresponds to '
             "exact match. "
             'If the operator is written "=~", regular expression matching '
@@ -316,7 +364,7 @@ def main(argv=None):
             ts.bind(prefix, ns)
 
     # Call subcommand handler
-    args.func(ts, args)
+    return args.func(ts, args)
 
 
 if __name__ == "__main__":

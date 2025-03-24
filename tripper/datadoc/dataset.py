@@ -293,7 +293,6 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
-    PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
@@ -982,75 +981,34 @@ def get_partial_pipeline(
     return pipeline
 
 
-def search_iris(
+def delete_iri(ts: Triplestore, iri: str) -> None:
+    """Delete `iri` from triplestore by calling `ts.update().`"""
+    subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
+    query = f"""
+    DELETE {{ ?s ?p ?o }}
+    WHERE {{
+      {subj} (:|!:)* ?s .
+      ?s ?p ?o .
+    }}
+    """
+    ts.query(query)
+
+
+def make_query(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
-) -> "List[str]":
-    """Return a list of IRIs for all matching resources.
-    Additional matching criterias can be specified by `kwargs`.
+    query_type: "Optional[str]" = "SELECT DISTINCT",
+) -> "str":
+    """Help function for creating a SPARQL query.
 
-    Arguments:
-        ts: Triplestore to search.
-        type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
-            or the IRI of a class to limit the search to.
-        criterias: Exact match criterias. A dict of IRI, value pairs, where the
-            IRIs refer to data properties on the resource match. The IRIs
-            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
-            is in `ts`, it is expanded and the match criteria `dcterms:title`
-            is correctly parsed.
-        regex: Like `criterias` but the values in the provided dict are regular
-            expressions used for the matching.
-        flags: Flags passed to regular expressions.
-            - `s`: Dot-all mode. The . matches any character.  The default
-              doesn't match newline or carriage return.
-            - `m`: Multi-line mode. The ^ and $ characters matches beginning
-              or end of line instead of beginning or end of string.
-            - `i`: Case-insensitive mode.
-            - `q`: Special characters representing themselves.
-        keywords: Keywords instance defining the resource types used with
-            the `type` argument.
+    See search_iris() for description of arguments.
 
-    Returns:
-        List of IRIs for matching resources.
-
-    Examples:
-        List all data resources IRIs:
-
-            search_iris(ts)
-
-        List IRIs of all resources with John Doe as `contactPoint`:
-
-            search_iris(ts, criteria={"contactPoint.hasName": "John Doe"})
-
-        List IRIs of all samples:
-
-            search_iris(ts, type=CHAMEO.Sample)
-
-        List IRIs of all datasets with John Doe as `contactPoint` AND are
-        measured on a given sample:
-
-            search_iris(
-                ts,
-                type=DCAT.Dataset,
-                criteria={
-                    "contactPoint.hasName": "John Doe",
-                    "fromSample": SAMPLE.batch2/sample3,
-                },
-            )
-
-        List IRIs of all datasets who's title matches the regular expression
-        "[Mm]agnesium":
-
-            search_iris(
-                ts, type=DCAT.Dataset, regex={"title": "[Mm]agnesium"},
-            )
-
-    SeeAlso:
-    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
+    The `query_type` argument is typically one of "SELECT DISTINCT"
+    "SELECT", or "DELETE".
     """
     # pylint: disable=too-many-statements,too-many-branches
 
@@ -1126,10 +1084,111 @@ def search_iris(
     where_statements = "\n      ".join(crit + filters)
     query = f"""
     PREFIX rdf: <{RDF}>
-    SELECT DISTINCT ?iri
+    {query_type} ?iri
     WHERE {{
       {where_statements}
     }}
     """
+    return query
 
+
+def search_iris(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+) -> "List[str]":
+    """Return a list of IRIs for all matching resources.
+
+    Arguments:
+        ts: Triplestore to search.
+        type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
+            or the IRI of a class to limit the search to.
+        criterias: Exact match criterias. A dict of IRI, value pairs, where the
+            IRIs refer to data properties on the resource match. The IRIs
+            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
+            is in `ts`, it is expanded and the match criteria `dcterms:title`
+            is correctly parsed.
+        regex: Like `criterias` but the values in the provided dict are regular
+            expressions used for the matching.
+        flags: Flags passed to regular expressions.
+            - `s`: Dot-all mode. The . matches any character.  The default
+              doesn't match newline or carriage return.
+            - `m`: Multi-line mode. The ^ and $ characters matches beginning
+              or end of line instead of beginning or end of string.
+            - `i`: Case-insensitive mode.
+            - `q`: Special characters representing themselves.
+        keywords: Keywords instance defining the resource types used with
+            the `type` argument.
+
+    Returns:
+        List of IRIs for matching resources.
+
+    Examples:
+        List all data resources IRIs:
+
+            search_iris(ts)
+
+        List IRIs of all resources with John Doe as `contactPoint`:
+
+            search_iris(ts, criteria={"contactPoint.hasName": "John Doe"})
+
+        List IRIs of all samples:
+
+            search_iris(ts, type=CHAMEO.Sample)
+
+        List IRIs of all datasets with John Doe as `contactPoint` AND are
+        measured on a given sample:
+
+            search_iris(
+                ts,
+                type=DCAT.Dataset,
+                criteria={
+                    "contactPoint.hasName": "John Doe",
+                    "fromSample": SAMPLE.batch2/sample3,
+                },
+            )
+
+        List IRIs of all datasets who's title matches the regular expression
+        "[Mm]agnesium":
+
+            search_iris(
+                ts, type=DCAT.Dataset, regex={"title": "[Mm]agnesium"},
+            )
+
+    SeeAlso:
+    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
+    """
+    query = make_query(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+        query_type="SELECT DISTINCT",
+    )
     return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
+
+
+def delete(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+) -> None:
+    """Delete matching resources. See `search_iris()` for a description of arguments."""
+    iris = search_iris(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+    )
+    for iri in iris:
+        delete_iri(ts, iri)
