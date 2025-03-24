@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/datadoc/introduction/">
+        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/session/">
       
       
-        <link rel="prev" href="../../tools/datadoc/">
+        <link rel="prev" href="../namespace/">
       
       
-        <link rel="next" href="../documenting-a-resource/">
+        <link rel="next" href="../triplestore/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Introduction - Tripper</title>
+        <title>session - Tripper</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#data-documentation" class="md-skip">
+        <a href="#session" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Introduction
+              session
             
           </span>
         </div>
@@ -355,19 +355,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -381,7 +379,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Data documentation
@@ -392,30 +390,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Introduction
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../datadoc/introduction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -424,44 +402,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#introduction" class="md-nav__link">
-    <span class="md-ellipsis">
-      Introduction
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resource-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resource types
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -474,7 +414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../documenting-a-resource/" class="md-nav__link">
+      <a href="../../datadoc/documenting-a-resource/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -495,7 +435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../customisation/" class="md-nav__link">
+      <a href="../../datadoc/customisation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -516,7 +456,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../prefixes/" class="md-nav__link">
+      <a href="../../datadoc/prefixes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -537,7 +477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../keywords/" class="md-nav__link">
+      <a href="../../datadoc/keywords/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -582,17 +522,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
@@ -606,7 +548,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             API Reference
@@ -620,7 +562,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/errors/" class="md-nav__link">
+      <a href="../errors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -641,7 +583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/interface/" class="md-nav__link">
+      <a href="../interface/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -662,7 +604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/literal/" class="md-nav__link">
+      <a href="../literal/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -683,7 +625,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/namespace/" class="md-nav__link">
+      <a href="../namespace/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -701,10 +643,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../api_reference/session/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    session
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -713,6 +675,86 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.session" class="md-nav__link">
+    <span class="md-ellipsis">
+      tripper.session
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.session.Session" class="md-nav__link">
+    <span class="md-ellipsis">
+      Session
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.session.Session.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.session.Session.get_names" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_names()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.session.Session.get_triplestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_triplestore()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.session.get_configdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_configdir()
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -725,7 +767,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/triplestore/" class="md-nav__link">
+      <a href="../triplestore/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -746,7 +788,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/triplestore_extend/" class="md-nav__link">
+      <a href="../triplestore_extend/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -767,7 +809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/utils/" class="md-nav__link">
+      <a href="../utils/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -823,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/backends/collection/" class="md-nav__link">
+      <a href="../backends/collection/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -844,7 +886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/backends/ontopy/" class="md-nav__link">
+      <a href="../backends/ontopy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -865,7 +907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/backends/rdflib/" class="md-nav__link">
+      <a href="../backends/rdflib/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -886,7 +928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/backends/sparqlwrapper/" class="md-nav__link">
+      <a href="../backends/sparqlwrapper/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -950,7 +992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/convert/convert/" class="md-nav__link">
+      <a href="../convert/convert/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1014,7 +1056,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/datadoc/clitool/" class="md-nav__link">
+      <a href="../datadoc/clitool/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1035,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/datadoc/dataaccess/" class="md-nav__link">
+      <a href="../datadoc/dataaccess/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1056,7 +1098,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/datadoc/dataset/" class="md-nav__link">
+      <a href="../datadoc/dataset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1077,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/datadoc/errors/" class="md-nav__link">
+      <a href="../datadoc/errors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1098,7 +1140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/datadoc/keywords/" class="md-nav__link">
+      <a href="../datadoc/keywords/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1119,7 +1161,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/datadoc/tabledoc/" class="md-nav__link">
+      <a href="../datadoc/tabledoc/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1183,7 +1225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api_reference/mappings/mappings/" class="md-nav__link">
+      <a href="../mappings/mappings/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1319,18 +1361,60 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#introduction" class="md-nav__link">
+  <a href="#tripper.session" class="md-nav__link">
     <span class="md-ellipsis">
-      Introduction
+      tripper.session
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#resource-types" class="md-nav__link">
+  <a href="#tripper.session.Session" class="md-nav__link">
     <span class="md-ellipsis">
-      Resource types
+      Session
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.session.Session.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.session.Session.get_names" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_names()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.session.Session.get_triplestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_triplestore()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.session.get_configdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_configdir()
     </span>
   </a>
   
@@ -1351,39 +1435,341 @@
                   
 
 
-<h1 id="data-documentation">Data documentation<a class="headerlink" href="#data-documentation" title="Permanent link">&para;</a></h1>
-<!-- markdownlint-disable MD007 -->
+<h1 id="session">session<a class="headerlink" href="#session" title="Permanent link">&para;</a></h1>
 
-<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
-<p>The data documentation is based on small <a href="https://json-ld.org/">JSON-LD documents</a>, each documenting a single resource.
-Examples of resources can be a dataset, an instrument, a sample, etc.
-All resources are uniquely identified by their IRI.</p>
-<p>The primary focus of the <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/introduction">tripper.datadoc</a> module is to document datasets such that they are consistent with the <a href="https://www.w3.org/TR/vocab-dcat-3/">DCAT vocabulary</a>, but at the same time easily extended additional semantic meaning provided by other ontologies.
-It is also easy to add and relate the datasets to other types of documents, like people, instruments and samples.</p>
-<p>The <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/introduction">tripper.datadoc</a> module provides a Python API for documenting resources at all four levels of data documentation, including:</p>
+
+  <div class="doc doc-object doc-module">
+
+<a id="tripper.session"></a>
+    <div class="doc doc-contents first">
+
+      <p>A session that makes it easy to manage triplestore connections.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.session.Session" class="doc doc-heading">
+        <code>
+Session        </code>
+
+
+
+<a href="#tripper.session.Session" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>A class making it easy to access pre-configured triplestores.</p>
+<p>Each triplestore is identified by a name and configured in a
+user-defined YAML file.</p>
+<p>See https://emmc-asbl.github.io/tripper/latest/session/ for more info.</p>
+<p>This class can also be used to configure other resources. The
+easies is to create a subclass that implements a method similar to
+get_triplestore() for the other resource.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/session.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class making it easy to access pre-configured triplestores.</span>
+
+<span class="sd">    Each triplestore is identified by a name and configured in a</span>
+<span class="sd">    user-defined YAML file.</span>
+
+<span class="sd">    See https://emmc-asbl.github.io/tripper/latest/session/ for more info.</span>
+
+<span class="sd">    This class can also be used to configure other resources. The</span>
+<span class="sd">    easies is to create a subclass that implements a method similar to</span>
+<span class="sd">    get_triplestore() for the other resource.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=too-few-public-methods</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Path, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialises a session.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            config: Configuration file.</span>
+
+
+<span class="sd">        The default location of the configuration file depends on the system:</span>
+
+<span class="sd">        - Linux: $HOME/.config/tripper/session.yaml</span>
+<span class="sd">        - Windows: $HOME/AppData/Local/tripper/Config/session.yaml</span>
+<span class="sd">        - Darwin: $HOME/Library/Config/tripper/session.yaml</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>  <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
+
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;session.yaml&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns configrations for the named service.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no session configured for: &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;password&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
+                <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+            <span class="k">elif</span> <span class="s2">&quot;username&quot;</span> <span class="ow">in</span> <span class="n">conf</span> <span class="ow">and</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;KEYRING&quot;</span><span class="p">:</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">keyring</span>  <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
+
+                <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyring</span><span class="o">.</span><span class="n">get_password</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">conf</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list with all configured session names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_triplestore</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new triplestore instance with the given name.&quot;&quot;&quot;</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Triplestore</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.session.Session.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#tripper.session.Session.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Initialises a session.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>config</code></td>
+        <td><code>Optional[Union[Path, str]]</code></td>
+        <td><p>Configuration file.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>      <p>The default location of the configuration file depends on the system:</p>
 <ul>
-<li><strong>Cataloguing</strong>: Storing and accessing <em>documents</em> based on their IRI and data properties.
-  (Addressed FAIR aspects: <em>findability</em> and <em>accessibility</em>).</li>
-<li><strong>Structural documentation</strong>: The structure of a dataset. Provided via <a href="https://github.com/SINTEF/dlite">DLite</a> data models.
-  (Addressed FAIR aspects: <em>interoperability</em>).</li>
-<li><strong>Contextual documentation</strong>: Relations between resources, i.e. <em>linked data</em>. Enables contextual search.
-  (Addressed FAIR aspects: <em>findability</em> and <em>reusability</em>).</li>
-<li><strong>Semantic documentation</strong>: Describe what the resource <em>is</em> using ontologies. In combination with structural documentation, maps the properties of a data model to ontological concepts.
-  (Addressed FAIR aspects: <em>findability</em>, <em>interoperability</em> and <em>reusability</em>).</li>
+<li>Linux: $HOME/.config/tripper/session.yaml</li>
+<li>Windows: $HOME/AppData/Local/tripper/Config/session.yaml</li>
+<li>Darwin: $HOME/Library/Config/tripper/session.yaml</li>
 </ul>
-<p>The figure below shows illustrates how a dataset is documented in a triplestore.</p>
-<p><img alt="Documentation of a dataset" src="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/docs/figs/dataset-Dataset.png" /></p>
-<h2 id="resource-types">Resource types<a class="headerlink" href="#resource-types" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/introduction">tripper.datadoc</a> module include the following set of predefined resource types:</p>
-<ul>
-<li><strong>dataset</strong>: Individual of <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Dataset">dcat:Dataset</a> and <a href="https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a">emmo:Dataset</a>.</li>
-<li><strong>distribution</strong>: Individual of <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:Distribution">dcat:Distribution</a>.</li>
-<li><strong>accessService</strong>: Individual of <a href="https://www.w3.org/TR/vocab-dcat-3/#Class:AccessService">dcat:AccessService</a>.</li>
-<li><strong>generator</strong>: Individual of <a href="https://w3id.org/emmo/domain/oteio/Generator">oteio:Generator</a>.</li>
-<li><strong>parser</strong>: Individual of <a href="https://w3id.org/emmo/domain/oteio/Parser">oteio:Parser</a>.</li>
-<li><strong>resource</strong>: Any other documented resource, with no implicit type.</li>
-</ul>
-<p>Future releases will support adding custom resource types.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/session.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Path, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialises a session.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        config: Configuration file.</span>
+
+
+<span class="sd">    The default location of the configuration file depends on the system:</span>
+
+<span class="sd">    - Linux: $HOME/.config/tripper/session.yaml</span>
+<span class="sd">    - Windows: $HOME/AppData/Local/tripper/Config/session.yaml</span>
+<span class="sd">    - Darwin: $HOME/Library/Config/tripper/session.yaml</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>  <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
+
+    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;session.yaml&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.session.Session.get_names" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#tripper.session.Session.get_names" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a list with all configured session names.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/session.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list with all configured session names.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.session.Session.get_triplestore" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_triplestore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.session.Session.get_triplestore" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a new triplestore instance with the given name.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/session.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_triplestore</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new triplestore instance with the given name.&quot;&quot;&quot;</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Triplestore</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.session.get_configdir" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_configdir</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+
+<a href="#tripper.session.get_configdir" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns cross-platform path to tripper config directory.</p>
+<p>If <code>create</code> is true, create the config directory if it doesn't exists.</p>
+<p>The XDG_CONFIG_HOME environment variable is used if it exists.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/session.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_configdir</span><span class="p">(</span><span class="n">create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns cross-platform path to tripper config directory.</span>
+
+<span class="sd">    If `create` is true, create the config directory if it doesn&#39;t exists.</span>
+
+<span class="sd">    The XDG_CONFIG_HOME environment variable is used if it exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XDG_CONFIG_HOME&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">site_configdir</span><span class="p">:</span>
+        <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XDG_CONFIG_DIRS&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">site_configdir</span><span class="p">:</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">site_configdir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">finaldir</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">site_configdir</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win32&quot;</span><span class="p">):</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;AppData&quot;</span> <span class="o">/</span> <span class="s2">&quot;Local&quot;</span>
+            <span class="n">finaldir</span> <span class="o">=</span> <span class="s2">&quot;Config&quot;</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;darwin&quot;</span><span class="p">):</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;Library&quot;</span> <span class="o">/</span> <span class="s2">&quot;Config&quot;</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Default to UNIX</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.config&quot;</span>  <span class="c1"># type: ignore</span>
+    <span class="n">configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">site_configdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;tripper&quot;</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">finaldir</span><span class="p">:</span>
+        <span class="n">configdir</span> <span class="o">/=</span> <span class="n">finaldir</span>
+
+    <span class="k">if</span> <span class="n">create</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">configdir</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">configdir</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">path</span> <span class="o">/=</span> <span class="n">part</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">configdir</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
 
 
 
