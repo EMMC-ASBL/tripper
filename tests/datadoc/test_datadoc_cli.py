@@ -1,7 +1,5 @@
 """Test the datadoc clitool."""
 
-import pytest
-
 from tripper.datadoc.clitool import main
 
 if True:
@@ -13,10 +11,10 @@ if True:
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "delete",
-        #f"--context={indir/'semdata-context.json'}",
-        #f"--dump={outdir/'semdata.ttl'}",
-        #f"{indir/'semdata.csv'}",
-        f"--criteria=@id=semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001",
+        (
+            "--criteria=@id=semdata:SEM_cement_batch2/"
+            "77600-23-001/77600-23-001_5kV_400x_m001"
+        ),
     ]
     print(f"*** datadoc {' '.join(cmd)}")
     main(cmd)
@@ -48,7 +46,7 @@ if True:
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "find",
-        f"--criteria=creator.name='Sigurd Wenner'",
+        "--criteria=creator.name='Sigurd Wenner'",
     ]
     print(f"*** datadoc {' '.join(cmd)}")
     r = main(cmd)

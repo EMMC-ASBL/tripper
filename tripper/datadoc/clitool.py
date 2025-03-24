@@ -88,6 +88,17 @@ def subcommand_find(ts, args):
     if fmt in ("iris", "txt"):
         s = "\n".join(iris)
     elif fmt == "json":
+
+        ###
+        print("<" + "=" * 30)
+        print(ts.serialize())
+        print("=" * 30 + ">")
+        for iri in iris:
+            print()
+            print("*** iri:", iri)
+            d = load_dict(ts, iri)
+            print(d)
+
         s = json.dumps([load_dict(ts, iri) for iri in iris], indent=2)
     elif fmt in ("turtle", "ttl"):
         ts2 = Triplestore("rdflib")

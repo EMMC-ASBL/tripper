@@ -292,20 +292,27 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
-    query = f"""
+    query1 = f"ASK {{ {subj} ?p ?o . }}"
+    query2 = f"""
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
       ?s ?p ?o .
     }}
     """
-    triples = ts.query(query)
-    with Triplestore(backend="rdflib") as ts2:
-        for prefix, namespace in ts.namespaces.items():
-            ts2.bind(prefix, str(namespace))
-        ts2.add_triples(triples)  # type: ignore
-        dct = load_dict(ts2, iri, use_sparql=False)
-    return dct
+    if ts.query(query1):
+        print("+++ query:", query2)
+        triples = ts.query(query2)
+        with Triplestore(backend="rdflib") as ts2:
+            for prefix, namespace in ts.namespaces.items():
+                ts2.bind(prefix, str(namespace))
+            ts2.add_triples(triples)  # type: ignore
+            print()
+            print(ts2.serialize())
+            print()
+            dct = load_dict(ts2, iri, use_sparql=False)
+        return dct
+    return {}
 
 
 def get_values(
@@ -1020,14 +1027,9 @@ def make_query(
     filters = []
 
     # Special handling of @id
-    id = (
-        criterias.pop("@id")
-        if "@id" in criterias
-        else criterias.pop("_id", None)
-    )
+    id = criterias.pop("@id", criterias.pop("_id", None))
     if id:
-        crit.append("?iri ?p ?o .")
-        crit.append(f"<{id}> ?p ?o .")
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(id)}") .')
 
     if type:
         if ":" in type:
@@ -1173,15 +1175,7 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
-
-    # Special handling of @id
-    id = (
-        criterias.pop("@id")
-        if "@id" in criterias
-        else criterias.pop("_id", None)
-    )
-
-    return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
+    return [r[0] for r in ts.query(query)]  # type: ignore
 
 
 def delete(
