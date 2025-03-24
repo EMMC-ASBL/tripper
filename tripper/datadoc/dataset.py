@@ -1173,11 +1173,14 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
-    print("===============")
-    print(query)
-    print("---------------")
-    print(ts.query(query))
-    print("===============")
+
+    # Special handling of @id
+    id = (
+        criterias.pop("@id")
+        if "@id" in criterias
+        else criterias.pop("_id", None)
+    )
+
     return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
 
 
