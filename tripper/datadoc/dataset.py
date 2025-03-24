@@ -1077,6 +1077,9 @@ def make_query(
     for k, v in criterias.items():
         add_crit(k, v)
 
+    if not crit:
+        crit.append("?iri ?p ?o .")
+
     if regex:
         for k, v in regex.items():
             add_crit(k, v, regex=True)
@@ -1170,6 +1173,11 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
+    print("===============")
+    print(query)
+    print("---------------")
+    print(ts.query(query))
+    print("===============")
     return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
 
 
