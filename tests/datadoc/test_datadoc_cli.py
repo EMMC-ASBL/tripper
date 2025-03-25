@@ -2,11 +2,13 @@
 
 import pytest
 
-from tripper.datadoc.clitool import maincommand
-
 pytest.importorskip("yaml")
 pytest.importorskip("rdflib")
 pytest.importorskip("sparqlwrapper")
+
+from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
+    maincommand,
+)
 
 
 def test_delete():
