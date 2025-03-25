@@ -75,11 +75,6 @@ def subcommand_find(ts, args):
                 criterias[key] = value
 
     iris = search_iris(ts, type=args.type, criterias=criterias, regex=regex)
-    print("*** len:", len(ts.serialize()))
-    print("*** type:", args.type)
-    print("*** criterias:", criterias)
-    print("*** regex:", regex)
-    print("*** iris:", iris)
 
     # Infer format
     if args.format:

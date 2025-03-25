@@ -1,11 +1,17 @@
 """Test the datadoc clitool."""
 
+import pytest
+
 from tripper.datadoc.clitool import maincommand
+
+pytest.importorskip("yaml")
+pytest.importorskip("rdflib")
+pytest.importorskip("sparqlwrapper")
 
 
 def test_delete():
     """Test `datadoc delete` with Fuseki."""
-    from dataset_paths import indir
+    from dataset_paths import indir  # pylint: disable=import-error
 
     cmd = [
         "--triplestore=FusekiTest",
@@ -21,7 +27,7 @@ def test_delete():
 
 def test_add():
     """Test `datadoc add` with Fuseki."""
-    from dataset_paths import indir, outdir
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
 
     cmd = [
         "--triplestore=FusekiTest",
@@ -36,7 +42,7 @@ def test_add():
 
 def test_find():
     """Test `datadoc find` with Fuseki."""
-    from dataset_paths import indir
+    from dataset_paths import indir  # pylint: disable=import-error
 
     cmd = [
         "--triplestore=FusekiTest",
@@ -62,7 +68,7 @@ def test_find_json():
     """Test `datadoc find` with Fuseki."""
     import json
 
-    from dataset_paths import indir
+    from dataset_paths import indir  # pylint: disable=import-error
 
     cmd = [
         "--triplestore=FusekiTest",
