@@ -85,12 +85,39 @@ class SparqlwrapperStrategy:
 
         Returns:
             The return type depends on type of query:
-              - SELECT: list of tuples of IRIs for each matching row
+              - ASK: whether there is a match
               - CONSTRUCT: generator over triples
-              - ASK: TODO
-              - DESCRIBE: TODO
+              - DESCRIBE: generator over triples
+              - SELECT: list of tuples of IRIs
         """
         query_type = self._get_sparql_query_type(query_object)
+
+        if query_type == "ASK":
+            self.sparql.setReturnFormat(JSON)
+            self.sparql.setMethod(POST)
+            self.sparql.setQuery(query_object)
+            result = self.sparql.queryAndConvert()
+            value = result["boolean"]
+            return value
+
+        if query_type == "CONSTRUCT":
+            self.sparql.setReturnFormat(TURTLE)
+            self.sparql.setMethod(POST)
+            self.sparql.setQuery(query_object)
+            results = self.sparql.queryAndConvert()
+            graph = Graph()
+            graph.parse(data=results.decode("utf-8"), format="turtle")
+            return _convert_triples_to_tripper(graph)
+
+        if query_type == "DESCRIBE":
+            self.sparql.setReturnFormat(TURTLE)
+            self.sparql.setMethod(POST)
+            self.sparql.setQuery(query_object)
+            results = self.sparql.queryAndConvert()
+            graph = Graph()
+            graph.parse(data=results.decode("utf-8"), format="turtle")
+            return _convert_triples_to_tripper(graph)
+
         if query_type == "SELECT":
             self.sparql.setReturnFormat(JSON)
             self.sparql.setMethod(POST)
@@ -101,14 +128,6 @@ class SparqlwrapperStrategy:
                 tuple(convert_json_entrydict(v) for v in row.values())
                 for row in bindings
             ]
-        if query_type == "CONSTRUCT":
-            self.sparql.setReturnFormat(TURTLE)
-            self.sparql.setMethod(POST)
-            self.sparql.setQuery(query_object)
-            results = self.sparql.queryAndConvert()
-            graph = Graph()
-            graph.parse(data=results.decode("utf-8"), format="turtle")
-            return _convert_triples_to_tripper(graph)
 
         raise NotImplementedError(
             f"Query type '{query_type}' not implemented."
