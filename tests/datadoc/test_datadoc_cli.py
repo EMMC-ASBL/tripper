@@ -1,6 +1,6 @@
 """Test the datadoc clitool."""
 
-from tripper.datadoc.clitool import main
+from tripper.datadoc.clitool import maincommand
 
 
 def test_delete():
@@ -16,7 +16,7 @@ def test_delete():
             "77600-23-001/77600-23-001_5kV_400x_m001"
         ),
     ]
-    main(cmd)
+    maincommand(cmd)
 
 
 def test_add():
@@ -31,10 +31,9 @@ def test_add():
         f"--dump={outdir/'semdata.ttl'}",
         f"{indir/'semdata.csv'}",
     ]
-    main(cmd)
+    maincommand(cmd)
 
 
-# if True:
 def test_find():
     """Test `datadoc find` with Fuseki."""
     from dataset_paths import indir
@@ -43,8 +42,37 @@ def test_find():
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "find",
-        "--criteria=creator.name='Sigurd Wenner'",
+        "--criteria=creator.name=Sigurd Wenner",
     ]
-    print(f"*** datadoc {' '.join(cmd)}")
-    r = main(cmd)
-    print(r)
+    r = maincommand(cmd)
+    iris = set(r.split())
+    assert iris == set(
+        [
+            (
+                "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
+                "77600-23-001/77600-23-001_5kV_400x_m001"
+            ),
+            "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001",
+            "https://he-matchmaker.eu/data/sem/SEM_cement_batch2",
+        ]
+    )
+
+
+def test_find_json():
+    """Test `datadoc find` with Fuseki."""
+    import json
+
+    from dataset_paths import indir
+
+    cmd = [
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "find",
+        "--criteria=creator.name=Sigurd Wenner",
+        "--format=json",
+    ]
+    r = maincommand(cmd)
+    lst = json.loads(r)
+    resources = {d["@id"]: d for d in lst}
+    assert "https://he-matchmaker.eu/data/sem/SEM_cement_batch2" in resources
+    assert len(resources) == 3

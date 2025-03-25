@@ -75,6 +75,11 @@ def subcommand_find(ts, args):
                 criterias[key] = value
 
     iris = search_iris(ts, type=args.type, criterias=criterias, regex=regex)
+    print("*** len:", len(ts.serialize()))
+    print("*** type:", args.type)
+    print("*** criterias:", criterias)
+    print("*** regex:", regex)
+    print("*** iris:", iris)
 
     # Infer format
     if args.format:
@@ -129,8 +134,8 @@ def subcommand_fetch(ts, args):
     return data
 
 
-def main(argv=None):
-    """Main function."""
+def maincommand(argv=None):
+    """Main command."""
     parser = argparse.ArgumentParser(
         description=(
             "Tool for data documentation.\n\n"
@@ -368,6 +373,16 @@ def main(argv=None):
 
     # Call subcommand handler
     return args.func(ts, args)
+
+
+def main(argv=None):
+    """Main function."""
+    try:
+        maincommand(argv)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        print(exc)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
