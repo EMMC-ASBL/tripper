@@ -88,7 +88,10 @@ def subcommand_find(ts, args):
     if fmt in ("iris", "txt"):
         s = "\n".join(iris)
     elif fmt == "json":
-        s = json.dumps([load_dict(ts, iri) for iri in iris], indent=2)
+        s = json.dumps(
+            [load_dict(ts, iri) for iri in iris if not iri.startswith("_:")],
+            indent=2,
+        )
     elif fmt in ("turtle", "ttl"):
         ts2 = Triplestore("rdflib")
         for iri in iris:

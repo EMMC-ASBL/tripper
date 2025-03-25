@@ -292,7 +292,9 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
+    # Some backends, like GraphDB, requires the empty prefix to be defined
     query = f"""
+    PREFIX : <http:ex.com/>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
@@ -470,7 +472,7 @@ def add(d: dict, key: str, value: "Any") -> None:
                 # Sort dicts at end, by representing them with a huge
                 # unicode character
                 v,
-                key=lambda x: "\uffff" if isinstance(x, dict) else x,
+                key=lambda x: "\uffff" if isinstance(x, dict) else str(x),
             )
         )
 
@@ -1020,14 +1022,9 @@ def make_query(
     filters = []
 
     # Special handling of @id
-    id = (
-        criterias.pop("@id")
-        if "@id" in criterias
-        else criterias.pop("_id", None)
-    )
+    id = criterias.pop("@id", criterias.pop("_id", None))
     if id:
-        crit.append("?iri ?p ?o .")
-        crit.append(f"<{id}> ?p ?o .")
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(id)}") .')
 
     if type:
         if ":" in type:
@@ -1173,15 +1170,7 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
-
-    # Special handling of @id
-    id = (
-        criterias.pop("@id")
-        if "@id" in criterias
-        else criterias.pop("_id", None)
-    )
-
-    return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
+    return [r[0] for r in ts.query(query)]  # type: ignore
 
 
 def delete(

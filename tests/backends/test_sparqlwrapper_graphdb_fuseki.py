@@ -86,7 +86,7 @@ def get_triplestore(tsname: str) -> "Triplestore":
 #    tsname = "Fuseki"
 def populate_and_search(tsname):  # pylint: disable=too-many-statements
     """Do the test on the desried backend."""
-    # Test adding triples
+    # pylint: disable=too-many-locals
 
     from pathlib import Path
 
@@ -98,30 +98,23 @@ def populate_and_search(tsname):  # pylint: disable=too-many-statements
     datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
 
     ts = get_triplestore(tsname)
+    EX = ts.bind("ex", "http://www.example.org/")
 
+    # Test DELETE query - clear the triplestore
+    ts.update("DELETE WHERE { ?s ?p ?o . }")
+
+    # Add some triples
     ts.add_triples(
         [
-            (
-                "http://www.example.org/subject",
-                "http://www.example.org/predicate",
-                Literal("a"),
-            ),
-            (
-                "http://www.example.org/subject",
-                "http://www.example.org/predicate",
-                Literal(1.0),
-            ),
+            (EX.subject, EX.predicate, Literal("a")),
+            (EX.subject, EX.predicate, Literal(1.0)),
+            (EX.subject2, EX.predicate, EX.obj),
         ]
     )
 
     # Test SELECT query
-    query_object = (
-        "SELECT ?p ?o WHERE { <http://www.example.org/subject> ?p ?o }"
-    )
-
-    # Run the query using your triplestore instance.
-    result = ts.query(query_object)
-
+    query = "SELECT ?p ?o WHERE { <http://www.example.org/subject> ?p ?o }"
+    result = ts.query(query)
     assert set(result) == {
         ("http://www.example.org/predicate", Literal("a")),
         ("http://www.example.org/predicate", Literal(1.0)),
@@ -137,8 +130,6 @@ WHERE {
   ?s ?p ?o .
 }
 """
-
-    # Run the query.
     results = set(ts.query(query))
     assert (
         "http://www.example.org/subject",
@@ -152,26 +143,36 @@ WHERE {
     ) in results
 
     # Test ASK query
-    query = """
+    query1 = """
 ASK {
-<http://www.example.org/subject> <http://www.example.org/predicate> 'a' }
+  <http://www.example.org/subject> <http://www.example.org/predicate> "a" .
+}
 """
-    # Check that it raises NotImplementedError
-    with pytest.raises(NotImplementedError):
-        ts.query(query)
-    with pytest.raises(NotImplementedError):
-        ts.update(query)
-
-    # Test DELETE query - clear the triplestore
-    ts.update("DELETE WHERE { ?s ?p ?o . }")
+    query2 = """
+ASK {
+  <http://www.example.org/subject> <http://www.example.org/predicate> "b" .
+}
+"""
+    query3 = """
+PREFIX ex: <http://www.example.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+ASK {
+  ex:subject ex:predicate "1.0"^^xsd:double .
+}
+"""
+    assert ts.query(query1) is True
+    assert ts.query(query2) is False
+    assert ts.query(query3) is True
 
     # Test DESCRIBE query
     query = "DESCRIBE <http://www.example.org/subject>"
-    # Check that it raises NotImplementedError
-    with pytest.raises(NotImplementedError):
-        ts.query(query)
-    with pytest.raises(NotImplementedError):
-        ts.update(query)
+    triples = set(ts.query(query))
+    assert triples == set(
+        [
+            (EX.subject, EX.predicate, Literal("a")),
+            (EX.subject, EX.predicate, Literal(1.0)),
+        ]
+    )
 
     # save a dataset to triplestore
     save_datadoc(ts, datasetinput)

@@ -34,4 +34,4 @@ def test_session():
         ),
     }
 
-    assert session.get_names() == ["RdflibTest"]
+    assert session.get_names() == ["RdflibTest", "FusekiTest", "GraphDBTest"]
