@@ -1633,12 +1633,39 @@ SparqlwrapperStrategy        </code>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The return type depends on type of query:</span>
-<span class="sd">              - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">              - ASK: whether there is a match</span>
 <span class="sd">              - CONSTRUCT: generator over triples</span>
-<span class="sd">              - ASK: TODO</span>
-<span class="sd">              - DESCRIBE: TODO</span>
+<span class="sd">              - DESCRIBE: generator over triples</span>
+<span class="sd">              - SELECT: list of tuples of IRIs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;boolean&quot;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -1649,14 +1676,6 @@ SparqlwrapperStrategy        </code>
                 <span class="nb">tuple</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
             <span class="p">]</span>
-        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-            <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
@@ -1946,10 +1965,10 @@ SparqlwrapperStrategy        </code>
     <tr>
       <td><code>The return type depends on type of query</code></td>
       <td><ul>
-<li>SELECT: list of tuples of IRIs for each matching row</li>
+<li>ASK: whether there is a match</li>
 <li>CONSTRUCT: generator over triples</li>
-<li>ASK: TODO</li>
-<li>DESCRIBE: TODO</li>
+<li>DESCRIBE: generator over triples</li>
+<li>SELECT: list of tuples of IRIs</li>
 </ul></td>
     </tr>
   </tbody>
@@ -1969,12 +1988,39 @@ SparqlwrapperStrategy        </code>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The return type depends on type of query:</span>
-<span class="sd">          - SELECT: list of tuples of IRIs for each matching row</span>
+<span class="sd">          - ASK: whether there is a match</span>
 <span class="sd">          - CONSTRUCT: generator over triples</span>
-<span class="sd">          - ASK: TODO</span>
-<span class="sd">          - DESCRIBE: TODO</span>
+<span class="sd">          - DESCRIBE: generator over triples</span>
+<span class="sd">          - SELECT: list of tuples of IRIs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;boolean&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -1985,14 +2031,6 @@ SparqlwrapperStrategy        </code>
             <span class="nb">tuple</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
         <span class="p">]</span>
-    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-        <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
