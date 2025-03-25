@@ -27,6 +27,19 @@ def test_delete():
     maincommand(cmd)
 
 
+def test_delete_regex():
+    """Test `datadoc delete` with Fuseki."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    cmd = [
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "delete",
+        "--criteria=@id=~https://he-matchmaker.eu/data/sem/.*",
+    ]
+    maincommand(cmd)
+
+
 def test_add():
     """Test `datadoc add` with Fuseki."""
     from dataset_paths import indir, outdir  # pylint: disable=import-error
