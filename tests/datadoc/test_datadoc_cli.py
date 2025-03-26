@@ -140,3 +140,27 @@ def test_find_json():
     resources = {d["@id"]: d for d in lst}
     assert "https://he-matchmaker.eu/data/sem/SEM_cement_batch2" in resources
     assert len(resources) == 3
+
+
+def test_fetch():
+    """Test `datadoc fetch` with Fuseki."""
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
+
+    outfile = outdir / "sem.tif"
+    outfile.unlink(missing_ok=True)
+
+    iri = (
+        "https://he-matchmaker.eu/data/sem/"
+        "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+    )
+
+    cmd = [
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "fetch",
+        iri,
+        f"--output={outfile}",
+    ]
+    maincommand(cmd)
+
+    assert outfile.exists()
