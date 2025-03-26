@@ -1709,14 +1709,14 @@
 <tbody>
 <tr>
 <td><a href="http://purl.org/dc/terms/description">description</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:langString</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
 <td>mandatory</td>
 <td>A free-text account of the resource.</td>
 <td>This property can be repeated for parallel language versions of the description.</td>
 </tr>
 <tr>
 <td><a href="http://purl.org/dc/terms/title">title</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:langString</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
 <td>mandatory</td>
 <td>A name given to the resource.</td>
 <td>This property can be repeated for parallel language versions of the name.</td>
@@ -1730,7 +1730,7 @@
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#keyword">keyword</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:langString</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
 <td>recommended</td>
 <td>A keyword or tag describing the resource.</td>
 <td></td>
@@ -1779,7 +1779,7 @@
 </tr>
 <tr>
 <td><a href="http://xmlns.com/foaf/0.1/documentation">documentation</a></td>
-<td><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a>, xsd:anyURI</td>
+<td><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a><br>(xsd:anyURI)</td>
 <td>optional</td>
 <td>A page or document about this resource.</td>
 <td></td>
@@ -1807,14 +1807,14 @@
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#landingPage">landingPage</a></td>
-<td><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a>, xsd:anyURI</td>
+<td><a href="http://xmlns.com/foaf/0.1/Document">foaf:Document</a><br>(xsd:anyURI)</td>
 <td>optional</td>
 <td>A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).</td>
 <td>It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.</td>
 </tr>
 <tr>
 <td><a href="http://purl.org/dc/terms/language">language</a></td>
-<td><a href="http://purl.org/dc/terms/LinguisticSystem">dcterms:LinguisticSystem</a>, rdf:langString</td>
+<td><a href="http://purl.org/dc/terms/LinguisticSystem">dcterms:LinguisticSystem</a><br>(rdf:langString)</td>
 <td>optional</td>
 <td>A language of the resource.</td>
 <td>This property can be repeated if the resource is expressed with multiple languages.</td>
@@ -1828,7 +1828,7 @@
 </tr>
 <tr>
 <td><a href="http://purl.org/dc/terms/modified">modificationDate</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:date</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:date)</td>
 <td>optional</td>
 <td>The most recent date on which the resource was changed or modified.</td>
 <td></td>
@@ -1856,7 +1856,7 @@
 </tr>
 <tr>
 <td><a href="http://purl.org/dc/terms/issued">releaseDate</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:date</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:date)</td>
 <td>optional</td>
 <td>The date of formal issuance (e.g., publication) of the resource.</td>
 <td></td>
@@ -1884,7 +1884,7 @@
 </tr>
 <tr>
 <td><a href="http://purl.org/dc/terms/abstract">abstract</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:langString</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
 <td></td>
 <td>A summary of the resource.</td>
 <td></td>
@@ -1905,7 +1905,7 @@
 </tr>
 <tr>
 <td><a href="http://www.w3.org/2002/07/owl#deprecated">deprecated</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:boolean</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:boolean)</td>
 <td></td>
 <td>The annotation property that indicates that a given entity has been deprecated. It should equal to <code>"true"^^xsd:boolean</code>.</td>
 <td></td>
@@ -1933,7 +1933,7 @@
 </tr>
 <tr>
 <td><a href="https://w3id.org/emmo/domain/oteio#statement">statements</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:JSON</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:JSON)</td>
 <td></td>
 <td>A list of subject-predicate-object triples with additional RDF statements documenting the resource.</td>
 <td></td>
@@ -2014,14 +2014,14 @@
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#spatialResolutionInMeters">spatialResolution</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:decimal</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:decimal)</td>
 <td>optional</td>
 <td>The minimum spatial separation resolvable in a dataset, measured in meters.</td>
 <td></td>
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#temporalResolution">temporalResolution</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:duration</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:duration)</td>
 <td>optional</td>
 <td>The minimum time period resolvable in the dataset.</td>
 <td></td>
@@ -2042,7 +2042,7 @@
 </tr>
 <tr>
 <td><a href="https://w3id.org/emmo/domain/oteio#hasDatamodelStorage">datamodelStorage</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:anyURI</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:anyURI)</td>
 <td></td>
 <td>URL to DLite storage plugin where the datamodel is stored.</td>
 <td></td>
@@ -2077,14 +2077,14 @@
 </tr>
 <tr>
 <td><a href="https://w3id.org/emmo/domain/oteio#mapping">mappings</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:JSON</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:JSON)</td>
 <td></td>
 <td>A list of subject-predicate-object triples mapping the datamodel to ontological concepts.</td>
 <td></td>
 </tr>
 <tr>
 <td><a href="https://w3id.org/emmo/domain/oteio#mappingURL">mappingURL</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:anyURI</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:anyURI)</td>
 <td></td>
 <td>URL to a document defining the mappings of the datamodel. The file format is given by <code>mappingFormat</code>. Defaults to turtle.</td>
 <td></td>
@@ -2123,7 +2123,7 @@
 </tr>
 <tr>
 <td><a href="http://data.europa.eu/r5r/availability">availability</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:date</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:date)</td>
 <td>recommended</td>
 <td>An indication how long it is planned to keep the Distribution of the Dataset available.</td>
 <td></td>
@@ -2144,7 +2144,7 @@
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#byteSize">byteSize</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:nonNegativeInteger</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:nonNegativeInteger)</td>
 <td>optional</td>
 <td>The size of a Distribution in bytes.</td>
 <td></td>
@@ -2165,7 +2165,7 @@
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#downloadURL">downloadURL</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:anyURI</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:anyURI)</td>
 <td>optional</td>
 <td>A URL that is a direct link to a downloadable file in a given format.</td>
 <td></td>
@@ -2222,7 +2222,7 @@
 <tbody>
 <tr>
 <td><a href="https://w3id.org/emmo/domain/oteio#hasConfiguration">configuration</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, rdf:JSON</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:JSON)</td>
 <td></td>
 <td>A JSON string with configurations specific to the parser or generator.</td>
 <td></td>
@@ -2276,7 +2276,7 @@
 <tbody>
 <tr>
 <td><a href="http://xmlns.com/foaf/0.1/name">name</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:string</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:string)</td>
 <td>mandatory</td>
 <td>A name of the agent.</td>
 <td></td>
@@ -2324,7 +2324,7 @@
 </tr>
 <tr>
 <td><a href="http://spdx.org/rdf/terms#checksumValue">checksumValue</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:hexBinary</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:hexBinary)</td>
 <td></td>
 <td>A lower case hexadecimal encoded digest value produced using a specific algorithm.</td>
 <td></td>
@@ -2373,7 +2373,7 @@
 <tbody>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#endpointURL">endpointURL</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a>, xsd:anyURI</td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:anyURI)</td>
 <td>mandatory</td>
 <td>The root location or primary endpoint of the service (an IRI).</td>
 <td></td>

@@ -1257,6 +1257,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#testing-documentation-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing documentation locally
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1364,6 +1373,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#testing-documentation-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing documentation locally
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1414,6 +1432,13 @@ This will be included as part of the changelog as well as the release notes on G
 <p>Then, go to <a href="https://github.com/EMMC-ASBL/tripper/releases/new">create a new GitHub releases</a> and select the tag that matches the milestone (creating a new one).
 Add again the tag as the release title (optionally write something else that defines this release as a title).</p>
 <p>Finally, press the "Publish release" button and ensure the release workflow succeeds (check <a href="https://github.com/EMMC-ASBL/tripper/actions/workflows/cd_release.yml">the release workflow</a>).</p>
+<h2 id="testing-documentation-locally">Testing documentation locally<a class="headerlink" href="#testing-documentation-locally" title="Permanent link">&para;</a></h2>
+<p>To test the documentation locally, just install and run <a href="https://www.mkdocs.org/">mkdocs</a>:</p>
+<div class="highlight"><pre><span></span><code>pip install .[dev]
+mkdocs build
+mkdocs serve
+</code></pre></div>
+<p>Then open http://127.0.0.1:8000/tripper/ in your browser.</p>
 
 
 
