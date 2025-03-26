@@ -61,5 +61,16 @@ Finally, press the "Publish release" button and ensure the release workflow succ
 
 
 
+## Testing documentation locally
+
+To test the documentation locally, just install and run [mkdocs]:
+
+    pip install .[dev]
+    mkdocs serve
+
+Then open http://127.0.0.1:8000/tripper/ in your browser.
+
+
 
 [interface.py]: https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py
+[mkdocs]: https://www.mkdocs.org/
