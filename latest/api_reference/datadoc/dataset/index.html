@@ -1082,6 +1082,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      delete()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.delete_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      delete_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.get" class="md-nav__link">
     <span class="md-ellipsis">
       get()
@@ -1148,6 +1166,15 @@
   <a href="#tripper.datadoc.dataset.load_list" class="md-nav__link">
     <span class="md-ellipsis">
       load_list()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.make_query" class="md-nav__link">
+    <span class="md-ellipsis">
+      make_query()
     </span>
   </a>
   
@@ -1510,6 +1537,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      delete()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.delete_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      delete_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.get" class="md-nav__link">
     <span class="md-ellipsis">
       get()
@@ -1576,6 +1621,15 @@
   <a href="#tripper.datadoc.dataset.load_list" class="md-nav__link">
     <span class="md-ellipsis">
       load_list()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.make_query" class="md-nav__link">
+    <span class="md-ellipsis">
+      make_query()
     </span>
   </a>
   
@@ -1752,7 +1806,7 @@ are not duplicated.</p>
                 <span class="c1"># Sort dicts at end, by representing them with a huge</span>
                 <span class="c1"># unicode character</span>
                 <span class="n">v</span><span class="p">,</span>
-                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uffff</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uffff</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 </code></pre></div>
@@ -2052,6 +2106,84 @@ respectively.</p></td>
                 <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">d</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.dataset.delete" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.delete" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Delete matching resources. See <code>search_iris()</code> for a description of arguments.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete matching resources. See `search_iris()` for a description of arguments.&quot;&quot;&quot;</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">search_iris</span><span class="p">(</span>
+        <span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span>
+        <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">:</span>
+        <span class="n">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.dataset.delete_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.delete_iri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Delete <code>iri</code> from triplestore by calling <code>ts.update().</code></p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete `iri` from triplestore by calling `ts.update().`&quot;&quot;&quot;</span>
+    <span class="n">subj</span> <span class="o">=</span> <span class="n">iri</span> <span class="k">if</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    DELETE </span><span class="se">{{</span><span class="s2"> ?s ?p ?o </span><span class="se">}}</span>
+<span class="s2">    WHERE </span><span class="se">{{</span>
+<span class="s2">      </span><span class="si">{</span><span class="n">subj</span><span class="si">}</span><span class="s2"> (:|!:)* ?s .</span>
+<span class="s2">      ?s ?p ?o .</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2733,6 +2865,137 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 
+<h2 id="tripper.datadoc.dataset.make_query" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">make_query</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query_type</span><span class="o">=</span><span class="s1">&#39;SELECT DISTINCT&#39;</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.make_query" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Help function for creating a SPARQL query.</p>
+<p>See search_iris() for description of arguments.</p>
+<p>The <code>query_type</code> argument is typically one of "SELECT DISTINCT"
+"SELECT", or "DELETE".</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_query</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">query_type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;SELECT DISTINCT&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function for creating a SPARQL query.</span>
+
+<span class="sd">    See search_iris() for description of arguments.</span>
+
+<span class="sd">    The `query_type` argument is typically one of &quot;SELECT DISTINCT&quot;</span>
+<span class="sd">    &quot;SELECT&quot;, or &quot;DELETE&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-statements,too-many-branches,too-many-locals</span>
+
+    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">criterias</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">regex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># counter for creating new unique sparql variables</span>
+    <span class="n">flags_arg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="n">flags</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">flags</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Special handling of @id</span>
+    <span class="n">cid</span> <span class="o">=</span> <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">rid</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">cid</span><span class="p">:</span>
+        <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;FILTER(STR(?iri) = &quot;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;) .&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">rid</span><span class="p">:</span>
+        <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;FILTER REGEX(STR(?iri), &quot;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;</span><span class="si">{</span><span class="n">flags_arg</span><span class="si">}</span><span class="s1">) .&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="n">expanded_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">expanded_iri</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">()</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">normtype</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;iri&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add criteria to SPARQL query.&quot;&quot;&quot;</span>
+        <span class="k">nonlocal</span> <span class="n">n</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">newkey</span><span class="p">,</span> <span class="n">restkey</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">newkey</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
+                <span class="n">newkey</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">newkey</span><span class="p">]</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">newkey</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; ?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
+            <span class="n">add_crit</span><span class="p">(</span><span class="n">restkey</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">expanded</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[a-z][a-z0-9.+-]*://&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; ?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
+                <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;FILTER REGEX(STR(?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="n">value</span><span class="si">}{</span><span class="n">flags_arg</span><span class="si">}</span><span class="s2">) .&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILTER(STR(?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">) .&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">criterias</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">crit</span><span class="p">:</span>
+        <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;?iri ?p ?o .&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">regex</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">where_statements</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crit</span> <span class="o">+</span> <span class="n">filters</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    PREFIX rdf: &lt;</span><span class="si">{</span><span class="n">RDF</span><span class="si">}</span><span class="s2">&gt;</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2"> ?iri</span>
+<span class="s2">    WHERE </span><span class="se">{{</span>
+<span class="s2">      </span><span class="si">{</span><span class="n">where_statements</span><span class="si">}</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">query</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 id="tripper.datadoc.dataset.prepare_datadoc" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">prepare_datadoc</span><span class="p">(</span><span class="n">datadoc</span><span class="p">)</span></code>
 
@@ -3264,8 +3527,7 @@ as "_id=...".</p></td>
 
     <div class="doc doc-contents ">
 
-      <p>Return a list of IRIs for all matching resources.
-Additional matching criterias can be specified by <code>kwargs</code>.</p>
+      <p>Return a list of IRIs for all matching resources.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -3384,7 +3646,6 @@ measured on a given sample:</p>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[str]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of IRIs for all matching resources.</span>
-<span class="sd">    Additional matching criterias can be specified by `kwargs`.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to search.</span>
@@ -3445,87 +3706,18 @@ measured on a given sample:</p>
 <span class="sd">    SeeAlso:</span>
 <span class="sd">    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># pylint: disable=too-many-statements,too-many-branches</span>
-
-    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">criterias</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">filters</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="c1"># Special handling of @id</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">criterias</span>
-        <span class="k">else</span> <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">make_query</span><span class="p">(</span>
+        <span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span>
+        <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
+        <span class="n">query_type</span><span class="o">=</span><span class="s2">&quot;SELECT DISTINCT&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="nb">id</span><span class="p">:</span>
-        <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;?iri ?p ?o .&quot;</span><span class="p">)</span>
-        <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&gt; ?p ?o .&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">:</span>
-            <span class="n">expanded_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">expanded_iri</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">()</span>
-            <span class="n">typ</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">normtype</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;iri&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add criteria to SPARQL query.&quot;&quot;&quot;</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
-        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-            <span class="n">newkey</span><span class="p">,</span> <span class="n">restkey</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">newkey</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
-                <span class="n">newkey</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">newkey</span><span class="p">]</span>
-            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">newkey</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; ?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
-            <span class="n">add_crit</span><span class="p">(</span><span class="n">restkey</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">expanded</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[a-z][a-z0-9.+-]*://&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
-            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; ?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
-                <span class="n">flg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="n">flags</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">flags</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-                <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILTER REGEX(STR(?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">), </span><span class="si">{</span><span class="n">value</span><span class="si">}{</span><span class="n">flg</span><span class="si">}</span><span class="s2">) .&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILTER(STR(?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">) .&quot;</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">criterias</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">regex</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">where_statements</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">crit</span> <span class="o">+</span> <span class="n">filters</span><span class="p">)</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    PREFIX rdf: &lt;</span><span class="si">{</span><span class="n">RDF</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">    SELECT DISTINCT ?iri</span>
-<span class="s2">    WHERE </span><span class="se">{{</span>
-<span class="s2">      </span><span class="si">{</span><span class="n">where_statements</span><span class="si">}</span>
-<span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">id</span> <span class="ow">or</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="nb">id</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** query:&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 </code></pre></div>
         </details>
     </div>

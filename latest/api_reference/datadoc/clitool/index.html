@@ -1022,9 +1022,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.clitool.maincommand" class="md-nav__link">
+    <span class="md-ellipsis">
+      maincommand()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.clitool.subcommand_add" class="md-nav__link">
     <span class="md-ellipsis">
       subcommand_add()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.clitool.subcommand_delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      subcommand_delete()
     </span>
   </a>
   
@@ -1366,9 +1384,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.clitool.maincommand" class="md-nav__link">
+    <span class="md-ellipsis">
+      maincommand()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.clitool.subcommand_add" class="md-nav__link">
     <span class="md-ellipsis">
       subcommand_add()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.clitool.subcommand_delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      subcommand_delete()
     </span>
   </a>
   
@@ -1446,6 +1482,38 @@
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main function.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">maincommand</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="mi">0</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.clitool.maincommand" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">maincommand</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.clitool.maincommand" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Main command.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">maincommand</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main command.&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Tool for data documentation.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
@@ -1505,6 +1573,34 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Format to use with `--dump`.  Default is &quot;turtle&quot;.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="c1"># Subcommand: delete</span>
+    <span class="n">parser_delete</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delete matching resources in the triplestore.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser_delete</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">subcommand_delete</span><span class="p">)</span>
+    <span class="n">parser_delete</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--type&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Either a resource type (ex: &quot;dataset&quot;, &quot;distribution&quot;, ...) &#39;</span>
+            <span class="s2">&quot;or the IRI of a class to limit the search to.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser_delete</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--criteria&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;IRI=VALUE&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Matching criteria for resources to delete. The IRI may be &quot;</span>
+            <span class="s1">&#39;written with namespace prefix, like `dcterms:title=&quot;My title&quot;`. &#39;</span>
+            <span class="s1">&#39;Writing the criteria with the &quot;=&quot; operator, corresponds to &#39;</span>
+            <span class="s2">&quot;exact match. &quot;</span>
+            <span class="s1">&#39;If the operator is written &quot;=~&quot;, regular expression matching &#39;</span>
+            <span class="s2">&quot;will be used instead. This option can be given multiple times.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
     <span class="c1"># Subcommand: find</span>
     <span class="n">parser_find</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s2">&quot;find&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Find documented resources in the triplestore.&quot;</span>
@@ -1525,7 +1621,7 @@
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;IRI=VALUE&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Matching criteria for resources to find. The IRI may be written &quot;</span>
-            <span class="s1">&#39;using a namespace prefix, like `tcterms:title=&quot;My title&quot;`. &#39;</span>
+            <span class="s1">&#39;using a namespace prefix, like `dcterms:title=&quot;My title&quot;`. &#39;</span>
             <span class="s1">&#39;Writing the criteria with the &quot;=&quot; operator, corresponds to &#39;</span>
             <span class="s2">&quot;exact match. &quot;</span>
             <span class="s1">&#39;If the operator is written &quot;=~&quot;, regular expression matching &#39;</span>
@@ -1654,7 +1750,7 @@
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
     <span class="c1"># Call subcommand handler</span>
-    <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1714,6 +1810,43 @@
 
 
 
+<h2 id="tripper.datadoc.clitool.subcommand_delete" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subcommand_delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.clitool.subcommand_delete" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Subcommand for removing matching entries in the triplestore.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subcommand_delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subcommand for removing matching entries in the triplestore.&quot;&quot;&quot;</span>
+    <span class="n">criterias</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">crit</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;=~&quot;</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=~&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">regex</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">criterias</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="n">delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 id="tripper.datadoc.clitool.subcommand_fetch" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">subcommand_fetch</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></code>
 
@@ -1735,6 +1868,8 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span>
 </code></pre></div>
         </details>
     </div>
@@ -1786,7 +1921,10 @@
     <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;iris&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">],</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)],</span>
+            <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span> <span class="s2">&quot;ttl&quot;</span><span class="p">):</span>
         <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">:</span>
@@ -1807,6 +1945,8 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s</span>
 </code></pre></div>
         </details>
     </div>
