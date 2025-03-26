@@ -14,7 +14,7 @@ keywords = Keywords()
 def test_dir():
     """Test `dir(keywords)`."""
     dirlist = set(dir(keywords))
-    assert "write" in dirlist
+    assert "write_context" in dirlist
     assert "__dir__" in dirlist
     assert "data" in dirlist
     assert "keywords" in dirlist
