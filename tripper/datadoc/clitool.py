@@ -8,9 +8,10 @@ import json
 import os
 from pathlib import Path
 
-from tripper import Triplestore
+from tripper import Session, Triplestore
 from tripper.datadoc import (
     TableDoc,
+    delete,
     get_jsonld_context,
     load,
     load_dict,
@@ -45,6 +46,21 @@ def subcommand_add(ts, args):
         ts.serialize(args.dump, format=args.format)
 
 
+def subcommand_delete(ts, args):
+    """Subcommand for removing matching entries in the triplestore."""
+    criterias = {}
+    regex = {}
+    if args.criteria:
+        for crit in args.criteria:
+            if "=~" in crit:
+                key, value = crit.split("=~", 1)
+                regex[key] = value
+            else:
+                key, value = crit.split("=", 1)
+                criterias[key] = value
+    delete(ts, type=args.type, criterias=criterias, regex=regex)
+
+
 def subcommand_find(ts, args):
     """Subcommand for finding IRIs in the triplestore."""
     criterias = {}
@@ -72,7 +88,10 @@ def subcommand_find(ts, args):
     if fmt in ("iris", "txt"):
         s = "\n".join(iris)
     elif fmt == "json":
-        s = json.dumps([load_dict(ts, iri) for iri in iris], indent=2)
+        s = json.dumps(
+            [load_dict(ts, iri) for iri in iris if not iri.startswith("_:")],
+            indent=2,
+        )
     elif fmt in ("turtle", "ttl"):
         ts2 = Triplestore("rdflib")
         for iri in iris:
@@ -94,6 +113,8 @@ def subcommand_find(ts, args):
     else:
         print(s)
 
+    return s
+
 
 def subcommand_fetch(ts, args):
     """Subcommand for fetching a documented dataset from a storage."""
@@ -105,9 +126,11 @@ def subcommand_fetch(ts, args):
     else:
         print(data)
 
+    return data
 
-def main(argv=None):
-    """Main function."""
+
+def maincommand(argv=None):
+    """Main command."""
     parser = argparse.ArgumentParser(
         description=(
             "Tool for data documentation.\n\n"
@@ -167,6 +190,34 @@ def main(argv=None):
         help='Format to use with `--dump`.  Default is "turtle".',
     )
 
+    # Subcommand: delete
+    parser_delete = subparsers.add_parser(
+        "delete", help="Delete matching resources in the triplestore."
+    )
+    parser_delete.set_defaults(func=subcommand_delete)
+    parser_delete.add_argument(
+        "--type",
+        "-t",
+        help=(
+            'Either a resource type (ex: "dataset", "distribution", ...) '
+            "or the IRI of a class to limit the search to."
+        ),
+    )
+    parser_delete.add_argument(
+        "--criteria",
+        "-c",
+        action="append",
+        metavar="IRI=VALUE",
+        help=(
+            "Matching criteria for resources to delete. The IRI may be "
+            'written with namespace prefix, like `dcterms:title="My title"`. '
+            'Writing the criteria with the "=" operator, corresponds to '
+            "exact match. "
+            'If the operator is written "=~", regular expression matching '
+            "will be used instead. This option can be given multiple times."
+        ),
+    )
+
     # Subcommand: find
     parser_find = subparsers.add_parser(
         "find", help="Find documented resources in the triplestore."
@@ -187,7 +238,7 @@ def main(argv=None):
         metavar="IRI=VALUE",
         help=(
             "Matching criteria for resources to find. The IRI may be written "
-            'using a namespace prefix, like `tcterms:title="My title"`. '
+            'using a namespace prefix, like `dcterms:title="My title"`. '
             'Writing the criteria with the "=" operator, corresponds to '
             "exact match. "
             'If the operator is written "=~", regular expression matching '
@@ -236,6 +287,19 @@ def main(argv=None):
 
     # General: options
     parser.add_argument(
+        "--config",
+        "-c",
+        help="Session configuration file.",
+    )
+    parser.add_argument(
+        "--triplestore",
+        "-t",
+        help=(
+            "Name of triplestore to connect to. The name should be defined "
+            "in the session configuration file."
+        ),
+    )
+    parser.add_argument(
         "--backend",
         "-b",
         default="rdflib",
@@ -283,12 +347,17 @@ def main(argv=None):
 
     args = parser.parse_args(argv)
 
-    ts = Triplestore(
-        backend=args.backend,
-        base_iri=args.base_iri,
-        database=args.database,
-        package=args.package,
-    )
+    if args.triplestore:
+        session = Session(config=args.config)
+        ts = session.get_triplestore(args.triplestore)
+    else:
+        ts = Triplestore(
+            backend=args.backend,
+            base_iri=args.base_iri,
+            database=args.database,
+            package=args.package,
+        )
+
     if args.parse:
         ts.parse(args.parse, format=args.parse_format)
 
@@ -298,7 +367,17 @@ def main(argv=None):
             ts.bind(prefix, ns)
 
     # Call subcommand handler
-    args.func(ts, args)
+    return args.func(ts, args)
+
+
+def main(argv=None):
+    """Main function."""
+    try:
+        maincommand(argv)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        print(exc)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

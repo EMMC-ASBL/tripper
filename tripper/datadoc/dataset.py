@@ -292,6 +292,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
+    # Some backends, like GraphDB, requires the empty prefix to be defined
     query = f"""
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
@@ -492,7 +493,7 @@ def add(d: dict, key: str, value: "Any") -> None:
                 # Sort dicts at end, by representing them with a huge
                 # unicode character
                 v,
-                key=lambda x: "\uffff" if isinstance(x, dict) else x,
+                key=lambda x: "\uffff" if isinstance(x, dict) else str(x),
             )
         )
 
@@ -1026,6 +1027,125 @@ def get_partial_pipeline(
     return pipeline
 
 
+def delete_iri(ts: Triplestore, iri: str) -> None:
+    """Delete `iri` from triplestore by calling `ts.update().`"""
+    subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
+    query = f"""
+    DELETE {{ ?s ?p ?o }}
+    WHERE {{
+      {subj} (:|!:)* ?s .
+      ?s ?p ?o .
+    }}
+    """
+    ts.update(query)
+
+
+def make_query(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+    query_type: "Optional[str]" = "SELECT DISTINCT",
+) -> "str":
+    """Help function for creating a SPARQL query.
+
+    See search_iris() for description of arguments.
+
+    The `query_type` argument is typically one of "SELECT DISTINCT"
+    "SELECT", or "DELETE".
+    """
+    # pylint: disable=too-many-statements,too-many-branches,too-many-locals
+
+    if criterias is None:
+        criterias = {}
+    if regex is None:
+        regex = {}
+
+    expanded = {v: k for k, v in get_shortnames().items()}
+    crit = []
+    filters = []
+    n = 0  # counter for creating new unique sparql variables
+    flags_arg = f", {flags}" if flags else ""
+
+    # Special handling of @id
+    cid = criterias.pop("@id", criterias.pop("_id", None))
+    rid = regex.pop("@id", regex.pop("_id", None))
+    if cid:
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')
+    elif rid:
+        filters.append(
+            f'FILTER REGEX(STR(?iri), "{ts.expand_iri(rid)}"{flags_arg}) .'
+        )
+
+    if type:
+        if ":" in type:
+            expanded_iri = ts.expand_iri(type)
+            crit.append(f"?iri rdf:type <{expanded_iri}> .")
+        else:
+            if keywords is None:
+                keywords = Keywords()
+            typ = keywords.normtype(type)
+            if not isinstance(typ, str):
+                typ = typ[0]
+            crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
+
+    def add_crit(k, v, regex=False, s="iri"):
+        """Add criteria to SPARQL query."""
+        nonlocal n
+        key = f"@{k[1:]}" if k.startswith("_") else k
+        if "." in key:
+            newkey, restkey = key.split(".", 1)
+            if newkey in expanded:
+                newkey = expanded[newkey]
+            n += 1
+            var = f"v{n}"
+            crit.append(f"?{s} <{ts.expand_iri(newkey)}> ?{var} .")
+            add_crit(restkey, v, s=var)
+        else:
+            if key in expanded:
+                key = expanded[key]
+            if v in expanded:
+                value = f"<{expanded[v]}>"
+            elif isinstance(v, str):
+                value = (
+                    f"<{v}>"
+                    if re.match("^[a-z][a-z0-9.+-]*://", v)
+                    else f'"{v}"'
+                )
+            else:
+                value = v
+            n += 1
+            var = f"v{n}"
+            crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
+            if regex:
+                filters.append(
+                    f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                )
+            else:
+                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+
+    for k, v in criterias.items():
+        add_crit(k, v)
+
+    if not crit:
+        crit.append("?iri ?p ?o .")
+
+    for k, v in regex.items():
+        add_crit(k, v, regex=True)
+
+    where_statements = "\n      ".join(crit + filters)
+    query = f"""
+    PREFIX rdf: <{RDF}>
+    {query_type} ?iri
+    WHERE {{
+      {where_statements}
+    }}
+    """
+    return query
+
+
 def search_iris(
     ts: Triplestore,
     type=None,
@@ -1035,7 +1155,6 @@ def search_iris(
     keywords: "Optional[Keywords]" = None,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
-    Additional matching criterias can be specified by `kwargs`.
 
     Arguments:
         ts: Triplestore to search.
@@ -1096,84 +1215,36 @@ def search_iris(
     SeeAlso:
     [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
-    # pylint: disable=too-many-statements,too-many-branches
-
-    if criterias is None:
-        criterias = {}
-
-    expanded = {v: k for k, v in get_shortnames().items()}
-    crit = []
-    filters = []
-
-    # Special handling of @id
-    id = (
-        criterias.pop("@id")
-        if "@id" in criterias
-        else criterias.pop("_id", None)
+    query = make_query(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+        query_type="SELECT DISTINCT",
     )
-    if id:
-        crit.append("?iri ?p ?o .")
-        crit.append(f"<{id}> ?p ?o .")
 
-    if type:
-        if ":" in type:
-            expanded_iri = ts.expand_iri(type)
-            crit.append(f"?iri rdf:type <{expanded_iri}> .")
-        else:
-            if keywords is None:
-                keywords = Keywords()
-            typ = keywords.normtype(type)
-            if not isinstance(typ, str):
-                typ = typ[0]
-            crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
+    print("*** query:", query)
+    return [r[0] for r in ts.query(query)]  # type: ignore
 
-    def add_crit(k, v, regex=False, s="iri", n=0):
-        """Add criteria to SPARQL query."""
-        key = f"@{k[1:]}" if k.startswith("_") else k
-        if "." in key:
-            newkey, restkey = key.split(".", 1)
-            if newkey in expanded:
-                newkey = expanded[newkey]
-            n += 1
-            var = f"v{n}"
-            crit.append(f"?{s} <{ts.expand_iri(newkey)}> ?{var} .")
-            add_crit(restkey, v, s=var, n=n)
-        else:
-            if key in expanded:
-                key = expanded[key]
-            if v in expanded:
-                value = f"<{expanded[v]}>"
-            elif isinstance(v, str):
-                value = (
-                    f"<{v}>"
-                    if re.match("^[a-z][a-z0-9.+-]*://", v)
-                    else f'"{v}"'
-                )
-            else:
-                value = v
-            n += 1
-            var = f"v{n}"
-            crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
-            if regex:
-                flg = f", {flags}" if flags else ""
-                filters.append(f"FILTER REGEX(STR(?{var}), {value}{flg}) .")
-            else:
-                filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
-    for k, v in criterias.items():
-        add_crit(k, v)
-
-    if regex:
-        for k, v in regex.items():
-            add_crit(k, v, regex=True)
-
-    where_statements = "\n      ".join(crit + filters)
-    query = f"""
-    PREFIX rdf: <{RDF}>
-    SELECT DISTINCT ?iri
-    WHERE {{
-      {where_statements}
-    }}
-    """
-
-    return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
+def delete(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+) -> None:
+    """Delete matching resources. See `search_iris()` for a description of arguments."""
+    iris = search_iris(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+    )
+    for iri in iris:
+        delete_iri(ts, iri)
