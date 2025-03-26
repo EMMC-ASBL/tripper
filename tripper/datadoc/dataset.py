@@ -294,7 +294,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     # Some backends, like GraphDB, requires the empty prefix to be defined
     query = f"""
-    PREFIX : <http:ex.com/>
+    PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
