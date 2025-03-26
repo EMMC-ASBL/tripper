@@ -303,7 +303,7 @@ class Keywords:
                     rangestr += (
                         ", " + ", ".join(d.datatype)
                         if isinstance(d.datatype, list)
-                        else f", {d.datatype}"
+                        else f"<br>({d.datatype})"
                     )
                 table.append(
                     [
