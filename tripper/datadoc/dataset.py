@@ -993,7 +993,7 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
       ?s ?p ?o .
     }}
     """
-    ts.query(query)
+    ts.update(query)
 
 
 def make_query(
