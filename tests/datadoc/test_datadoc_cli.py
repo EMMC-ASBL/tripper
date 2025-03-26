@@ -4,7 +4,7 @@ import pytest
 
 pytest.importorskip("yaml")
 pytest.importorskip("rdflib")
-pytest.importorskip("sparqlwrapper")
+pytest.importorskip("SPARQLWrapper")
 
 from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
     maincommand,
@@ -15,29 +15,52 @@ def test_delete():
     """Test `datadoc delete` with Fuseki."""
     from dataset_paths import indir  # pylint: disable=import-error
 
+    iri = "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+
     cmd = [
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "delete",
-        (
-            "--criteria=@id=semdata:SEM_cement_batch2/"
-            "77600-23-001/77600-23-001_5kV_400x_m001"
-        ),
+        f"--criteria=@id={iri}",
     ]
     maincommand(cmd)
+
+    # Ensure that KB doesn't contain the removed dataset
+    findcmd = [
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "find",
+        f"--criteria=@id={iri}",
+    ]
+    r = maincommand(findcmd)
+    iris = set(r.split())
+    assert not iris
 
 
 def test_delete_regex():
     """Test `datadoc delete` with Fuseki."""
     from dataset_paths import indir  # pylint: disable=import-error
 
+    iri_regexp = "https://he-matchmaker.eu/data/sem/.*"
+
     cmd = [
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "delete",
-        "--criteria=@id=~https://he-matchmaker.eu/data/sem/.*",
+        f"--criteria=@id=~{iri_regexp}",
     ]
     maincommand(cmd)
+
+    # Ensure that KB doesn't contain the removed dataset
+    findcmd = [
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "find",
+        f"--criteria=@id=~{iri_regexp}",
+    ]
+    r = maincommand(findcmd)
+    iris = set(r.split())
+    assert not iris
 
 
 def test_add():
@@ -53,6 +76,26 @@ def test_add():
         f"{indir/'semdata.csv'}",
     ]
     maincommand(cmd)
+
+    # Ensure that KB contains the added datasets
+    findcmd = [
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "find",
+        "--criteria=@id=~https://he-matchmaker.eu/data/sem/.*",
+    ]
+    r = maincommand(findcmd)
+    iris = set(r.split())
+    assert set(iris) == set(
+        [
+            (
+                "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
+                "77600-23-001/77600-23-001_5kV_400x_m001"
+            ),
+            "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001",
+            "https://he-matchmaker.eu/data/sem/SEM_cement_batch2",
+        ]
+    )
 
 
 def test_find():

@@ -1012,20 +1012,28 @@ def make_query(
     The `query_type` argument is typically one of "SELECT DISTINCT"
     "SELECT", or "DELETE".
     """
-    # pylint: disable=too-many-statements,too-many-branches
+    # pylint: disable=too-many-statements,too-many-branches,too-many-locals
 
     if criterias is None:
         criterias = {}
+    if regex is None:
+        regex = {}
 
     expanded = {v: k for k, v in get_shortnames().items()}
     crit = []
     filters = []
     n = 0  # counter for creating new unique sparql variables
+    flags_arg = f", {flags}" if flags else ""
 
     # Special handling of @id
-    id = criterias.pop("@id", criterias.pop("_id", None))
-    if id:
-        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(id)}") .')
+    cid = criterias.pop("@id", criterias.pop("_id", None))
+    rid = regex.pop("@id", regex.pop("_id", None))
+    if cid:
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')
+    elif rid:
+        filters.append(
+            f'FILTER REGEX(STR(?iri), "{ts.expand_iri(rid)}"{flags_arg}) .'
+        )
 
     if type:
         if ":" in type:
@@ -1068,8 +1076,9 @@ def make_query(
             var = f"v{n}"
             crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
             if regex:
-                flg = f", {flags}" if flags else ""
-                filters.append(f"FILTER REGEX(STR(?{var}), {value}{flg}) .")
+                filters.append(
+                    f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                )
             else:
                 filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
@@ -1079,9 +1088,8 @@ def make_query(
     if not crit:
         crit.append("?iri ?p ?o .")
 
-    if regex:
-        for k, v in regex.items():
-            add_crit(k, v, regex=True)
+    for k, v in regex.items():
+        add_crit(k, v, regex=True)
 
     where_statements = "\n      ".join(crit + filters)
     query = f"""
@@ -1173,6 +1181,7 @@ def search_iris(
         query_type="SELECT DISTINCT",
     )
 
+    print("*** query:", query)
     return [r[0] for r in ts.query(query)]  # type: ignore
 
 
