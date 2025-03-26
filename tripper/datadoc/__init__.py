@@ -3,6 +3,7 @@
 from .dataaccess import load, save
 from .dataset import (
     as_jsonld,
+    delete,
     get_jsonld_context,
     get_partial_pipeline,
     get_prefixes,
