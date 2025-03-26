@@ -1020,6 +1020,7 @@ def make_query(
     expanded = {v: k for k, v in get_shortnames().items()}
     crit = []
     filters = []
+    n = 0  # counter for creating new unique sparql variables
 
     # Special handling of @id
     id = criterias.pop("@id", criterias.pop("_id", None))
@@ -1038,8 +1039,9 @@ def make_query(
                 typ = typ[0]
             crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
 
-    def add_crit(k, v, regex=False, s="iri", n=0):
+    def add_crit(k, v, regex=False, s="iri"):
         """Add criteria to SPARQL query."""
+        nonlocal n
         key = f"@{k[1:]}" if k.startswith("_") else k
         if "." in key:
             newkey, restkey = key.split(".", 1)
@@ -1048,7 +1050,7 @@ def make_query(
             n += 1
             var = f"v{n}"
             crit.append(f"?{s} <{ts.expand_iri(newkey)}> ?{var} .")
-            add_crit(restkey, v, s=var, n=n)
+            add_crit(restkey, v, s=var)
         else:
             if key in expanded:
                 key = expanded[key]
