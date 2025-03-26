@@ -66,6 +66,7 @@ Finally, press the "Publish release" button and ensure the release workflow succ
 To test the documentation locally, just install and run [mkdocs]:
 
     pip install .[dev]
+    mkdocs build
     mkdocs serve
 
 Then open http://127.0.0.1:8000/tripper/ in your browser.
