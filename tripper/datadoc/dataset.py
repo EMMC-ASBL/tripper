@@ -1180,8 +1180,6 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
-
-    print("*** query:", query)
     return [r[0] for r in ts.query(query)]  # type: ignore
 
 
