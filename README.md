@@ -1,4 +1,6 @@
-Tripper <img src="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tripper_logo/docs/figs/tripper_logo.svg" alt="Tripper logo" align="right" width="80" height="80">
+<img src="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tripper_logo/docs/figs/tripper_logo.svg" alt="Tripper logo" align="right" width="72" height="72">
+
+Tripper
 =======
 *Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends.*
 
