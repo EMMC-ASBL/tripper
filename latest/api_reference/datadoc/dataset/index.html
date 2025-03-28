@@ -3715,8 +3715,6 @@ measured on a given sample:</p>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">query_type</span><span class="o">=</span><span class="s2">&quot;SELECT DISTINCT&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** query:&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 </code></pre></div>
         </details>
