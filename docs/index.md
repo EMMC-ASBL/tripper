@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/tripper_logo/figs/tripper_logo.svg" alt="Tripper logo" align="right" width="72" height="72">
+<img src="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/figs/tripper_logo.svg" alt="Tripper logo" align="right" width="72" height="72">
 
 Tripper
 =======
