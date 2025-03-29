@@ -8,6 +8,36 @@ pytest.importorskip("yaml")
 pytest.importorskip("requests")
 
 
+def test_normalise_context():
+    """Test normalise_context()."""
+    from tripper.datadoc.dataset import CONTEXT_URL, normalise_context
+
+    assert not normalise_context(None)
+    assert normalise_context({"a": "ex:a"}) == {"a": "ex:a"}
+    assert normalise_context([{"a": "ex:a"}]) == {"a": "ex:a"}
+    assert normalise_context([{"a": "ex:a"}, {"b": "ex:b"}]) == {
+        "a": "ex:a",
+        "b": "ex:b",
+    }
+    assert normalise_context([{"a": "ex:a"}, {"b": "ex:b"}, None]) == {
+        "a": "ex:a",
+        "b": "ex:b",
+    }
+    assert normalise_context([{"a": "ex:a"}, [{"b": "ex:b"}]]) == {
+        "a": "ex:a",
+        "b": "ex:b",
+    }
+    assert normalise_context([{"a": "ex:a"}, {"b": "ex:b"}, []]) == {
+        "a": "ex:a",
+        "b": "ex:b",
+    }
+    context = normalise_context([CONTEXT_URL, {"a": "ex:a"}, {"b": "ex:b"}])
+    assert context["@version"] == 1.1
+    assert context["status"] == "adms:status"
+    assert context["a"] == "ex:a"
+    assert context["b"] == "ex:b"
+
+
 def test_get_jsonld_context():
     """Test get_jsonld_context()."""
     from tripper.datadoc import get_jsonld_context
@@ -36,8 +66,8 @@ def test_get_jsonld_context():
     context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
     assert context3["newkey"] == "onto:newkey"
 
-    with pytest.raises(TypeError):
-        get_jsonld_context(context=[None])
+    context4 = get_jsonld_context(context=[None])
+    assert context4 == context
 
 
 def test_get_prefixes():
@@ -137,7 +167,6 @@ def test_as_jsonld():
     """Test as_jsonld()."""
     from tripper import DCAT, EMMO, Namespace
     from tripper.datadoc import as_jsonld
-    from tripper.datadoc.dataset import CONTEXT_URL
 
     with pytest.raises(ValueError):
         as_jsonld({})
@@ -148,9 +177,11 @@ def test_as_jsonld():
     context = {"ex": EX, "a": "ex:a"}
 
     d = as_jsonld(dct, _context=context)
-    assert len(d["@context"]) == 2
-    assert d["@context"][0] == CONTEXT_URL
-    assert d["@context"][1] == context
+    ctx = d["@context"]
+    assert ctx["dcat"] == DCAT
+    assert ctx["emmo"] == EMMO
+    assert ctx["ex"] == EX
+    assert ctx["a"] == "ex:a"
     assert d["@id"] == EX.indv
     assert d["@type"] == "owl:NamedIndividual"
     assert d.a == "val"

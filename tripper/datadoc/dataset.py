@@ -125,7 +125,7 @@ def save_dict(
     if keywords is None:
         keywords = Keywords()
 
-    if "@id" not in dct:
+    if "@id" not in dct and "@graph" not in dct:
         raise ValueError("`dct` must have an '@id' key")
 
     all_prefixes = get_prefixes()
@@ -338,6 +338,39 @@ def get_values(
     return values
 
 
+def normalise_context(
+    context: "Union[str, dict, Sequence[Union[str, dict]]]",
+    timeout: float = 5,
+) -> dict:
+    """Return `context` as a normalised dict.
+
+    Arguments:
+        context: Context to normalise.
+        timeout: Timeout in seconds when downloading from the web.
+
+    """
+    if isinstance(context, (str, dict, None.__class__)):
+        context = [context]
+    ctx = {}
+    for token in context:
+        if token is None:
+            pass
+        elif isinstance(token, str):
+            with openfile(token, timeout=timeout, mode="rt") as f:
+                content = f.read()
+            ctx.update(normalise_context(json.loads(content)["@context"]))
+        elif isinstance(token, dict):
+            ctx.update(token)
+        elif isinstance(token, list):
+            ctx.update(normalise_context(token))
+        else:
+            raise TypeError(
+                "`context` must be a string (URL), dict or a sequence of "
+                f"strings and dicts.  Not '{type(token)}'"
+            )
+    return ctx
+
+
 def get_jsonld_context(
     context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
     timeout: float = 5,
@@ -362,27 +395,15 @@ def get_jsonld_context(
 
     if fromfile:
         with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
-            ctx = json.load(f)["@context"]
+            ctx = normalise_context(json.load(f)["@context"], timeout=timeout)
     else:
         r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
-        ctx = json.loads(r.content)["@context"]
-
-    if isinstance(context, (str, dict)):
-        context = [context]
+        ctx = normalise_context(
+            json.loads(r.content)["@context"], timeout=timeout
+        )
 
     if context:
-        for token in context:
-            if isinstance(token, str):
-                with openfile(token, timeout=timeout, mode="rt") as f:
-                    content = f.read()
-                ctx.update(json.loads(content)["@context"])
-            elif isinstance(token, dict):
-                ctx.update(token)
-            else:
-                raise TypeError(
-                    "`context` must be a string (URL), dict or a sequence of "
-                    f"strings and dicts.  Not '{type(token)}'"
-                )
+        ctx.update(normalise_context(context, timeout=timeout))
 
     return ctx
 
@@ -669,23 +690,42 @@ def as_jsonld(
     if keywords is None:
         keywords = Keywords()
 
-    # Id of base entry that is documented
-    _entryid = kwargs.pop("_entryid", None)
-
     d = AttrDict()
     dct = dct.copy()
 
-    if not _entryid:
-        if "@context" in dct:
-            d["@context"] = dct.pop("@context")
-        else:
-            d["@context"] = CONTEXT_URL
-        if "_context" in kwargs and kwargs["_context"]:
-            add(d, "@context", kwargs.pop("_context"))
+    # Id of base entry that is documented
+    _entryid = kwargs.pop("_entryid", None)
+
+    # Marks that the top-level dict contains a @graph keyword
+    _graph = kwargs.pop("_graph", None)
+
+    # The context
+    context = get_jsonld_context(dct.pop("@context", {}))
+    if "_context" in kwargs:
+        context.update(normalise_context(kwargs.pop("_context")))
+
+    if not _entryid and not _graph:
+        d["@context"] = context
+
+    if "@graph" in dct:
+        d["@graph"] = []
+        for subdict in dct["@graph"]:
+            d["@graph"].append(
+                as_jsonld(
+                    dct=subdict,
+                    type=type,
+                    keywords=keywords,
+                    prefixes=prefixes,
+                    _graph=True,
+                    _context=context,
+                    **kwargs,
+                )
+            )
+        return d
 
     all_prefixes = {}
     if not _entryid:
-        all_prefixes = get_prefixes(context=d["@context"])
+        all_prefixes = get_prefixes(context=context)
         all_prefixes.update(keywords.data.get("prefixes", {}))
     if prefixes:
         all_prefixes.update(prefixes)
@@ -761,6 +801,8 @@ def as_jsonld(
                         keywords=keywords,
                         prefixes=all_prefixes,
                         _entryid=_entryid,
+                        _context=context,
+                        _graph=_graph,
                     )
         elif isinstance(v, dict):
             if "datatype" in keywords[k]:
@@ -772,6 +814,8 @@ def as_jsonld(
                     keywords=keywords,
                     prefixes=all_prefixes,
                     _entryid=_entryid,
+                    _context=context,
+                    _graph=_graph,
                 )
 
     return d
