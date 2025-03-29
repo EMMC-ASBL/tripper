@@ -1,0 +1,92 @@
+{
+    "@context": [
+      "https://raw.githubusercontent.com/EMMC-ASBL/tripper/ba66490757f8722ea7f9b7d50dcdeebeb0ba996d/tripper/context/0.2/context.json",
+      {
+        "sem": "https://w3id.com/emmo/domain/sem/0.1#",
+        "semdata": "https://he-matchmaker.eu/data/sem/",
+        "sample": "https://he-matchmaker.eu/sample/",
+        "mat": "https://he-matchmaker.eu/material/",
+        "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
+        "parsers": "http://sintef.no/dlite/parser#",
+        "gen": "http://sintef.no/dlite/generator#",
+        "isDescriptionOf": {
+          "@type" : "@id",
+          "@id" : "https://www.example.org/emmo#isDescriptionOf"
+        },
+        "fromSample" : {
+          "@type" : "@id",
+          "@id" : "sem:fromSample"
+        },
+        "inSeries" : {
+          "@type" : "@id",
+          "@id" : "dcat:inSeries"
+        }
+      }
+  ],
+  "@graph" : [
+    {
+      "@id": "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001",
+      "@type": ["dcat:Dataset", "sem:SEMImage"],
+      "title": "SEM image of cement",
+      "description": "Back-scattered SEM image of cement sample 77600 from Heidelberg, polished with 1 µm diamond compound.",
+      "creator": "Sigurd Wenner",
+      "contactPoint": "Sigurd Wenner <Sigurd.Wenner@sintef.no>",
+      "inSeries": "semdata:SEM_cement_batch2/77600-23-001",
+      "datamodel": "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
+      "datamodelStorage": "https://github.com/HEU-MatCHMaker/DataDocumentation/blob/master/SEM/datamodels/SEMImage.yaml",
+      "fromSample" : "sample:SEM_cement_batch2/77600-23-001",
+      "isDescriptionOf": "mat:concrete1",
+      "distribution": {
+        "downloadURL": "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/dataset/tests/input/77600-23-001_5kV_400x_m001.tif",
+        "mediaType": "image/tiff",
+        "parser": "parsers:sem_hitachi"
+      }
+    },
+    {
+      "@id": "semdata:SEM_cement_batch2/77600-23-001",
+      "@type": ["dcat:Dataset", "sem:SEMImageSeries"],
+      "title": "Series of SEM image of cement sample 77600",
+      "description": "Back-scattered SEM image of cement sample 77600 from Heidelberg, polished with 1 µm diamond compound.",
+      "creator": "Sigurd Wenner",
+      "contactPoint": "Sigurd Wenner <Sigurd.Wenner@sintef.no>",
+      "inSeries": "semdata:SEM_cement_batch2",
+      "distribution": {
+        "downloadURL": "sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001",
+        "mediaType": "inode/directory"
+      }
+    },
+    {
+      "@id": "semdata:SEM_cement_batch2",
+      "@type": ["dcat:Dataset", "sem:SEMImageSeries"],
+      "title": "Nested series of SEM images of cement batch2",
+      "description": "...",
+      "creator": "Sigurd Wenner",
+      "contactPoint": "Sigurd Wenner <Sigurd.Wenner@sintef.no>",
+      "distribution": {
+        "downloadURL": "sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2",
+        "mediaType": "inode/directory"
+      }
+    },
+    {
+      "@id": "parsers:sem_hitachi",
+      "@type": "oteio:Parser",
+      "parserType": "application/vnd.dlite-parse",
+      "configuration": {
+        "driver": "hitachi"
+      }
+    },
+    {
+      "@id": "gen:sem_hitachi",
+      "@type": "oteio:Generator",
+      "parserType": "application/vnd.dlite-generate",
+      "configuration": {
+        "driver": "hitachi"
+      }
+    },
+    {
+      "@id": "sample:SEM_cement_batch2/77600-23-001",
+      "@type": "chameo:Sample",
+      "title": "Series for SEM images for sample 77600-23-001."
+    }
+  ]
+}
