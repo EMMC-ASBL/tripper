@@ -1637,6 +1637,12 @@ Keywords        </code>
 <span class="sd">            yamlfile: YAML file with keyword definitions to parse.  May also</span>
 <span class="sd">                be an URI in which case it will be accessed via HTTP GET.</span>
 <span class="sd">            timeout: Timeout in case `yamlfile` is a URI.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            data: The dict loaded from the keyword yamlfile.</span>
+<span class="sd">            keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts</span>
+<span class="sd">                describing the keywords.</span>
+<span class="sd">            field: Name of the scientic field that the keywords belong to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
@@ -1682,6 +1688,9 @@ Keywords        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dir</span><span class="p">(</span><span class="n">Keywords</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse YAML file with keyword definitions.&quot;&quot;&quot;</span>
@@ -1812,6 +1821,7 @@ Keywords        </code>
         <span class="n">c</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">c</span><span class="p">[</span><span class="s2">&quot;@version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span>
 
+        <span class="c1"># Add prefixes to context</span>
         <span class="n">prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">c</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span>
@@ -1821,6 +1831,7 @@ Keywords        </code>
         <span class="c1"># Translate datatypes</span>
         <span class="n">translate</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rdf:JSON&quot;</span><span class="p">:</span> <span class="s2">&quot;@json&quot;</span><span class="p">}</span>
 
+        <span class="c1"># Add keywords (properties) to context</span>
         <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resource</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">iri</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">]</span>
@@ -1842,6 +1853,10 @@ Keywords        </code>
                         <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span>
                         <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span>
                     <span class="p">}</span>
+
+        <span class="c1"># Add resources (classes) to context</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">iri</span><span class="p">)</span>
 
         <span class="n">dct</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">}</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -2009,6 +2024,7 @@ Keywords        </code>
 
 
 
+
   <div class="doc doc-object doc-method">
 
 
@@ -2058,6 +2074,34 @@ be an URI in which case it will be accessed via HTTP GET.</p></td>
       </tr>
   </tbody>
 </table>
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>data</code></td>
+        <td></td>
+        <td><p>The dict loaded from the keyword yamlfile.</p></td>
+      </tr>
+      <tr>
+        <td><code>keywords</code></td>
+        <td></td>
+        <td><p>A dict mapping keywords (name/prefixed iri/iri) to dicts
+describing the keywords.</p></td>
+      </tr>
+      <tr>
+        <td><code>field</code></td>
+        <td></td>
+        <td><p>Name of the scientic field that the keywords belong to.</p></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -2073,6 +2117,12 @@ be an URI in which case it will be accessed via HTTP GET.</p></td>
 <span class="sd">        yamlfile: YAML file with keyword definitions to parse.  May also</span>
 <span class="sd">            be an URI in which case it will be accessed via HTTP GET.</span>
 <span class="sd">        timeout: Timeout in case `yamlfile` is a URI.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        data: The dict loaded from the keyword yamlfile.</span>
+<span class="sd">        keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts</span>
+<span class="sd">            describing the keywords.</span>
+<span class="sd">        field: Name of the scientic field that the keywords belong to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
@@ -2462,6 +2512,7 @@ keywords.typename("dcat:Dataset")
     <span class="n">c</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">c</span><span class="p">[</span><span class="s2">&quot;@version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span>
 
+    <span class="c1"># Add prefixes to context</span>
     <span class="n">prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="p">{})</span>
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">c</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span>
@@ -2471,6 +2522,7 @@ keywords.typename("dcat:Dataset")
     <span class="c1"># Translate datatypes</span>
     <span class="n">translate</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rdf:JSON&quot;</span><span class="p">:</span> <span class="s2">&quot;@json&quot;</span><span class="p">}</span>
 
+    <span class="c1"># Add keywords (properties) to context</span>
     <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resource</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">iri</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">]</span>
@@ -2492,6 +2544,10 @@ keywords.typename("dcat:Dataset")
                     <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span>
                     <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span>
                 <span class="p">}</span>
+
+    <span class="c1"># Add resources (classes) to context</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">iri</span><span class="p">)</span>
 
     <span class="n">dct</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">}</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
