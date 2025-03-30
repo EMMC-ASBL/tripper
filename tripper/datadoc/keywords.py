@@ -1,4 +1,4 @@
-"""Parse and generate context."""
+"""Parse keywords definition and generate context."""
 
 # pylint: disable=too-many-branches,redefined-builtin
 
@@ -33,14 +33,14 @@ class Keywords:
 
     def __init__(
         self,
-        field: "Optional[Union[str, Sequence[str]]]" = None,
+        domain: "Optional[Union[str, Sequence[str]]]" = "default",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
         """Initialises keywords object.
 
         Arguments:
-            field: Name of field to load keywords for.
+            domain: Name of one of more domains to load keywords for.
             yamlfile: YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
             timeout: Timeout in case `yamlfile` is a URI.
@@ -49,11 +49,14 @@ class Keywords:
             data: The dict loaded from the keyword yamlfile.
             keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts
                 describing the keywords.
-            field: Name of the scientic field that the keywords belong to.
+            domain: Name of the scientic domain that the keywords belong to.
         """
         self.data = AttrDict()
         self.keywords = AttrDict()
-        self.field = None
+        self.domain = None
+
+        if domain:
+            self.add_domain(domain)
 
         if yamlfile:
             if isinstance(yamlfile, (str, Path)):
@@ -61,31 +64,6 @@ class Keywords:
             else:
                 for path in yamlfile:
                     self.parse(path, timeout=timeout)
-        elif not field:
-            field = "default"
-
-        if isinstance(field, str):
-            field = [field]
-
-        for fieldname in field:  # type: ignore
-            if self.field is None:
-                self.field = fieldname
-            for ep in get_entry_points("tripper.keywords"):
-                if ep.value == fieldname:
-                    self.parse(self.rootdir / ep.name / "keywords.yaml")
-                    break
-            else:
-                if fieldname == "default":
-                    # Fallback in case the entry point is not installed
-                    self.parse(
-                        self.rootdir
-                        / "tripper"
-                        / "context"
-                        / "0.3"
-                        / "keywords.yaml"
-                    )
-                else:
-                    raise TypeError(f"Unknown field name: {fieldname}")
 
     def __contains__(self, item):
         return item in self.keywords
@@ -97,7 +75,33 @@ class Keywords:
         return iter(self.keywords)
 
     def __dir__(self):
-        return dir(Keywords) + ["data", "keywords", "field"]
+        return dir(Keywords) + ["data", "keywords", "domain"]
+
+    def add_domain(self, domain: "Union[str, Sequence[str]]") -> None:
+        """Add keywords for `domain`, where `domain` is the name of a
+        scientific domain or a list of scientific domain names."""
+        if isinstance(domain, str):
+            domain = [domain]
+
+        for name in domain:  # type: ignore
+            if self.domain is None:
+                self.domain = name
+            for ep in get_entry_points("tripper.keywords"):
+                if ep.value == name:
+                    self.parse(self.rootdir / ep.name / "keywords.yaml")
+                    break
+            else:
+                if name == "default":
+                    # Fallback in case the entry point is not installed
+                    self.parse(
+                        self.rootdir
+                        / "tripper"
+                        / "context"
+                        / "0.3"
+                        / "keywords.yaml"
+                    )
+                else:
+                    raise TypeError(f"Unknown domain name: {name}")
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
@@ -277,8 +281,8 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        field = f" for {self.field}" if self.field else ""
-        out = [f"# Keywords{field}"]
+        domain = f" for {self.domain}" if self.domain else ""
+        out = [f"# Keywords{domain}"]
         order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 
@@ -433,11 +437,11 @@ def main(argv=None):
         help="Load keywords from this YAML file.",
     )
     parser.add_argument(
-        "--field",
+        "--domain",
         "-f",
         metavar="NAME",
         action="append",
-        help="Load keywords from this field.",
+        help="Load keywords from this domain.",
     )
     parser.add_argument(
         "--context",
@@ -459,7 +463,7 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    keywords = Keywords(field=args.field, yamlfile=args.yamlfile)
+    keywords = Keywords(domain=args.domain, yamlfile=args.yamlfile)
 
     if args.context:
         keywords.write_context(args.context)

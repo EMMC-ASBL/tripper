@@ -18,7 +18,7 @@ def test_dir():
     assert "__dir__" in dirlist
     assert "data" in dirlist
     assert "keywords" in dirlist
-    assert "field" in dirlist
+    assert "domain" in dirlist
 
 
 def test_write():

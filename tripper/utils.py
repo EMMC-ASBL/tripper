@@ -29,6 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Generator,
         Iterable,
+        List,
         Optional,
         Tuple,
         Union,
@@ -84,8 +85,19 @@ class AttrDict(dict):
         return dict.__dir__(self) + list(self.keys())
 
 
-def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
-    """Recursively update dict `d` with dict `other`."""
+def recursive_update(
+    d: dict,
+    other: "Union[dict, List[dict, list]]",
+    cls: "Optional[type]" = None,
+):
+    """Recursively update dict `d` with dict `other`.
+
+    Arguments:
+        d: Dict to update. Can either be a dict or a dict subclass
+        other: Dict or sequence of dicts to update `d` from.
+        cls: Class of created sub-dicts. Should be either `dict` or a dict
+            subclass, like AttrDict. Defaults to the class of `d`.
+    """
     # pylint: disable=too-many-branches
     if cls is None:
         cls = d.__class__
