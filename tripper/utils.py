@@ -87,7 +87,7 @@ class AttrDict(dict):
 
 def recursive_update(
     d: dict,
-    other: "Union[dict, List[dict, list]]",
+    other: "Union[dict, List[Union[dict, list]]]",
     cls: "Optional[type]" = None,
 ):
     """Recursively update dict `d` with dict `other`.
@@ -615,3 +615,33 @@ def get_entry_points(group: str):
             group=group
         )
     return eps
+
+
+def check_service_availability(url: str, timeout=5, interval=1) -> bool:
+    """Check whether the service with given URL is available.
+
+    Arguments:
+        url: URL of the service to check.
+        timeout: Total time in seconds to wait for a respond.
+        interval: Interval for checking response.
+
+    Returns:
+        Returns true if the service responds with code 200,
+        otherwise false is returned.
+    """
+    import time  # pylint: disable=import-outside-toplevel
+
+    import requests  # pylint: disable=import-outside-toplevel
+
+    start_time = time.time()
+    while True:
+        try:
+            response = requests.get(url, timeout=timeout)
+            if response.status_code == 200:
+                return True
+        except requests.exceptions.RequestException:
+            pass
+
+        if time.time() - start_time >= timeout:
+            return False
+        time.sleep(interval)

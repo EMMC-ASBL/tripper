@@ -85,7 +85,7 @@ class Keywords:
 
         for name in domain:  # type: ignore
             if self.domain is None:
-                self.domain = name
+                self.domain = name  # type: ignore
             for ep in get_entry_points("tripper.keywords"):
                 if ep.value == name:
                     self.parse(self.rootdir / ep.name / "keywords.yaml")
@@ -227,15 +227,19 @@ class Keywords:
                 return name
         raise NoSuchTypeError(type)
 
-    def write_context(self, outfile: "FileLoc") -> None:
-        """Write JSON-LD context file."""
-        c = {}
-        c["@version"] = 1.1
+    def get_context(self) -> dict:
+        """Return JSON-LD context as a dict.
+
+        Note: The returned dict corresponds to the value of the "@context"
+        keyword in a JSON-LD document.
+        """
+        ctx = {}
+        ctx["@version"] = 1.1
 
         # Add prefixes to context
         prefixes = self.data.get("prefixes", {})
         for prefix, ns in prefixes.items():
-            c[prefix] = ns
+            ctx[prefix] = ns
 
         resources = self.data.get("resources", {})
 
@@ -253,25 +257,29 @@ class Keywords:
                     else:
                         dt = [translate.get(t, t) for t in dt]
 
-                    c[k] = {  # type: ignore
+                    ctx[k] = {  # type: ignore
                         "@id": iri,
                         "@type": dt,
                     }
                 elif v["range"] == "rdfs:Literal":
-                    c[k] = iri
+                    ctx[k] = iri
                 else:
-                    c[k] = {  # type: ignore
+                    ctx[k] = {  # type: ignore
                         "@id": iri,
                         "@type": "@id",
                     }
 
         # Add resources (classes) to context
         for k, v in resources.items():
-            c.setdefault(k, v.iri)
+            ctx.setdefault(k, v.iri)
 
-        dct = {"@context": c}
+        return ctx
+
+    def write_context(self, outfile: "FileLoc") -> None:
+        """Write JSON-LD context file."""
+        context = {"@context": self.get_context()}
         with open(outfile, "wt", encoding="utf-8") as f:
-            json.dump(dct, f, indent=2)
+            json.dump(context, f, indent=2)
             f.write(os.linesep)
 
     def write_doc_keywords(self, outfile: "FileLoc") -> None:
@@ -462,6 +470,9 @@ def main(argv=None):
         help="Generate prefixes Markdown documentation.",
     )
     args = parser.parse_args(argv)
+
+    if not args.domain and not args.yamlfile:
+        args.domain = "default"
 
     keywords = Keywords(domain=args.domain, yamlfile=args.yamlfile)
 

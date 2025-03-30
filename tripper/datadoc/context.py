@@ -2,19 +2,15 @@
 
 # pylint: disable=too-many-branches,redefined-builtin
 
-import json
-import os
-from pathlib import Path
 from typing import TYPE_CHECKING
 
-import yaml
 from pyld import jsonld
 
 from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Sequence, Union
+    from typing import Optional, Sequence, Union
 
     # Possible types for a JSON-LD context
     ContextType = Union[str, dict, Sequence[Union[str, dict]]]
@@ -25,9 +21,9 @@ class Context:
 
     def __init__(
         self,
-        keywords: "Keywords" = None,
+        keywords: "Optional[Keywords]" = None,
         domain: "Union[str, Sequence[str]]" = "default",
-        context: "ContextType" = None,
+        context: "Optional[ContextType]" = None,
         processingMode: str = "json-ld-1.1",
     ) -> None:
         """Initialises context object.
@@ -43,9 +39,9 @@ class Context:
         self.ctx = self.ld._get_initial_context(
             options={"processingMode": processingMode}
         )
-        self._expanded = {}
-        self._prefixed = {}
-        self._shortnamed = {}
+        self._expanded: dict = {}
+        self._prefixed: dict = {}
+        self._shortnamed: dict = {}
 
         if keywords:
             if domain:

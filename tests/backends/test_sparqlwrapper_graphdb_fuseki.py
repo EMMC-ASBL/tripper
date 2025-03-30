@@ -5,55 +5,11 @@ as described in the for_developers documentation on
 https://emmc-asbl.github.io/tripper/latest/developers/.
 """
 
-import time
-
 import pytest
-import requests
 
 # URL to check if GraphDB is running.
 GRAPHDB_CHECK_URL = "http://localhost:7200/repositories"
 FUSEKI_CHECK_URL = "http://localhost:3030"
-
-
-def graphdb_available():
-    """
-    Help function that checks if the GraphDB instance is available.
-    If it is not, the tests that depend on it will be skipped.
-    """
-    timeout = 10  # seconds
-    interval = 1  # seconds
-    start_time = time.time()
-    while True:
-        try:
-            response = requests.get(GRAPHDB_CHECK_URL, timeout=timeout)
-            if response.status_code == 200:
-                return True
-        except requests.exceptions.RequestException:
-            pass
-
-        if time.time() - start_time > timeout:
-            return False
-        time.sleep(interval)
-
-
-def fuseki_available():
-    """
-    Help function that checks if the Fuseki instance is available
-    """
-    timeout = 10  # seconds
-    interval = 1  # seconds
-    start_time = time.time()
-    while True:
-        try:
-            response = requests.get(FUSEKI_CHECK_URL, timeout=timeout)
-            if response.status_code == 200:
-                return True
-        except requests.exceptions.RequestException:
-            pass
-
-        if time.time() - start_time > timeout:
-            return False
-        time.sleep(interval)
 
 
 def get_triplestore(tsname: str) -> "Triplestore":
@@ -240,7 +196,9 @@ def test_graphdb():
     Test the sparqlwrapper backend using GraphDB.
     """
     # Check if GraphDB is available and write a warning if it is not.
-    if not graphdb_available():
+    from tripper.utils import check_service_availability
+
+    if not check_service_availability(GRAPHDB_CHECK_URL, timeout=1):
         pytest.skip("GraphDB instance not available locally; skipping tests.")
 
     print("Testing graphdb")
@@ -252,7 +210,9 @@ def test_fuseki():
     Test the sparqlwrapper backend using Fuseki.
     """
     # Check if Fuseki is available and write a warning if it is not.
-    if not fuseki_available():
+    from tripper.utils import check_service_availability
+
+    if not check_service_availability(FUSEKI_CHECK_URL, timeout=1):
         pytest.skip("Fuseki instance not available locally; skipping tests.")
 
     print("Testing fuseki")

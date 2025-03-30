@@ -21,6 +21,15 @@ def test_dir():
     assert "domain" in dirlist
 
 
+def test_get_context():
+    """Test get_context()."""
+    ctx = keywords.get_context()
+    assert ctx["dcat"] == "http://www.w3.org/ns/dcat#"
+    assert ctx["creator"] == {"@id": "dcterms:creator", "@type": "@id"}
+    assert ctx["title"] == {"@id": "dcterms:title", "@type": "rdf:langString"}
+    assert ctx["version"] == "dcat:version"
+
+
 def test_write():
     """Test write JSON-LD context and documentation."""
     import json
