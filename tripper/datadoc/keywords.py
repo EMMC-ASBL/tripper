@@ -286,6 +286,7 @@ class Keywords:
             f"The tables below lists the keywords the domain {self.field}.",
             "",
             "The meaning of the columns are as follows:",
+            "",
             "- **Keyword**: The keyword referring to a property used for "
             "the data documentation.",
             "- **Range**: Refer to the class for the values of the keyword.",

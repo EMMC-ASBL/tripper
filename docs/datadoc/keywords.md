@@ -4,6 +4,7 @@
 The tables below lists the keywords the domain default.
 
 The meaning of the columns are as follows:
+
 - **Keyword**: The keyword referring to a property used for the data documentation.
 - **Range**: Refer to the class for the values of the keyword.
 - **Conformance**: Whether the keyword is mandatory, recommended or optional when documenting the given type of resources.
