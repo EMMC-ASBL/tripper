@@ -1871,7 +1871,23 @@ Keywords        </code>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
         <span class="n">field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;# Keywords</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;&lt;!-- Do not edit! This file is generated with Tripper. &quot;</span>
+            <span class="s2">&quot;Edit the keywords.yaml file instead. --&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;# Keywords</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;The tables below lists the keywords the domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;The meaning of the columns are as follows:&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;- **Keyword**: The keyword referring to a property used for &quot;</span>
+            <span class="s2">&quot;the data documentation.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;- **Range**: Refer to the class for the values of the keyword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;- **Conformance**: Whether the keyword is mandatory, recommended &quot;</span>
+            <span class="s2">&quot;or optional when documenting the given type of resources.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;- **Definition**: The definition of the keyword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;- **Usage note**: Notes about how to use the keyword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
         <span class="n">order</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mandatory&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
         <span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -2585,7 +2601,23 @@ keywords.typename("dcat:Dataset")
         <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
     <span class="n">field</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;# Keywords</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;&lt;!-- Do not edit! This file is generated with Tripper. &quot;</span>
+        <span class="s2">&quot;Edit the keywords.yaml file instead. --&gt;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;# Keywords</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;The tables below lists the keywords the domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;The meaning of the columns are as follows:&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;- **Keyword**: The keyword referring to a property used for &quot;</span>
+        <span class="s2">&quot;the data documentation.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;- **Range**: Refer to the class for the values of the keyword.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;- **Conformance**: Whether the keyword is mandatory, recommended &quot;</span>
+        <span class="s2">&quot;or optional when documenting the given type of resources.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;- **Definition**: The definition of the keyword.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;- **Usage note**: Notes about how to use the keyword.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
     <span class="n">order</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mandatory&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
     <span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
 
