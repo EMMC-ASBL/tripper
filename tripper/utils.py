@@ -84,8 +84,22 @@ class AttrDict(dict):
         return dict.__dir__(self) + list(self.keys())
 
 
-def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
-    """Recursively update dict `d` with dict `other`."""
+def recursive_update(
+    d: dict,
+    other: dict,
+    append: bool = True,
+    cls: "Optional[type]" = None,
+):
+    """Recursively update dict `d` with dict `other`.
+
+    Arguments:
+        d: Dict to update.
+        other: The source to update `d` from.
+        append: Whether to append a keys from `other` to existing keys in `d`.
+            If False, the existing value will be updated.
+        cls: Dict subclass for new sub-dicts in `d`. Defaults to the class
+            of `d`.
+    """
     # pylint: disable=too-many-branches
     if cls is None:
         cls = d.__class__
@@ -96,15 +110,17 @@ def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
             if isinstance(v, dict):
                 if k not in d:
                     d[k] = cls()
-                recursive_update(d[k], v, cls=cls)
+                recursive_update(d[k], v, append=append, cls=cls)
             elif isinstance(v, list):
                 if k not in d:
                     d[k] = []
                 elif not isinstance(d[k], list):
                     d[k] = [d.pop(k)]
-                recursive_update(d[k], v, cls=cls)  # type: ignore
+                recursive_update(
+                    d[k], v, append=append, cls=cls  # type: ignore
+                )
             else:
-                if k in d:
+                if append and k in d:
                     d[k] = [d.pop(k), v]
                 else:
                     d[k] = v
@@ -114,11 +130,11 @@ def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
         for x in other:
             if isinstance(x, dict):
                 new = cls()
-                recursive_update(new, x, cls=cls)
+                recursive_update(new, x, append=append, cls=cls)
                 d.append(new)
             elif isinstance(x, list):
                 new = []
-                recursive_update(new, x, cls=cls)
+                recursive_update(new, x, append=append, cls=cls)
                 d.append(new)
             else:
                 d.append(x)

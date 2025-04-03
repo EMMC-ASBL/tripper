@@ -804,13 +804,9 @@ def validate(
     resources = keywords.data.resources
 
     def check_keyword(keyword, type):
-        """ """
-        print("type", type)
+        """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
-        print("typename", typename)
-        print("keyword", keyword)
         name = keywords.keywordname(keyword)
-        print("anme", name)
         if name in resources[typename].keywords:
             return True
         if "subClassOf" in resources[typename]:
@@ -818,14 +814,9 @@ def validate(
             return check_keyword(name, subclass)
         return False
 
-    print("dicr", dct)
-
     def _check_keywords(k, v):
         if k in keywords:
             r = keywords[k]
-            print("r", r)
-            print("k", k)
-            print("v", v)
             if "datatype" in r:
                 datatype = expand_iri(r.datatype, keywords.data.prefixes)
                 literal = parse_literal(v)
