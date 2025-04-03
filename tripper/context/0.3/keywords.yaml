@@ -577,6 +577,11 @@ resources:
         conformance: recommended
         description: This property refers to a collection of data that this data service can distribute.
 
+      parser:
+        iri: oteio:parser
+        range: oteio:Parser
+        description: A parser that can parse the distribution.
+
 
   DatasetSeries:
     iri: dcat:DatasetSeries
@@ -742,3 +747,8 @@ resources:
     iri: dcterms:MediaType
     description: A media type, e.g. the format of a computer file.
     usageNote: Media type instances follow the [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) vocabulary using the <http://www.iana.org/assignments/media-types/> namespace. For example, the IRI of the media type `text/turtle` is <http://www.iana.org/assignments/media-types/text/turtle>.
+
+  GenericResource:
+    iri: rdfs:Resource
+    description: A generic resource.
+

@@ -372,11 +372,11 @@ def maincommand(argv=None):
 
 def main(argv=None):
     """Main function."""
-    try:
-        maincommand(argv)
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        print(exc)
-        return 1
+    # try:
+    maincommand(argv)
+    # except Exception as exc:  # pylint: disable=broad-exception-caught
+    #    print(exc)
+    #    return 1
     return 0
 
 

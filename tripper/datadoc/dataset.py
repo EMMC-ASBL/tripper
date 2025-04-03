@@ -804,8 +804,13 @@ def validate(
     resources = keywords.data.resources
 
     def check_keyword(keyword, type):
+        """ """
+        print("type", type)
         typename = keywords.typename(type)
+        print("typename", typename)
+        print("keyword", keyword)
         name = keywords.keywordname(keyword)
+        print("anme", name)
         if name in resources[typename].keywords:
             return True
         if "subClassOf" in resources[typename]:
@@ -813,11 +818,14 @@ def validate(
             return check_keyword(name, subclass)
         return False
 
-    for k, v in dct.items():
-        if k.startswith("@"):
-            continue
+    print("dicr", dct)
+
+    def _check_keywords(k, v):
         if k in keywords:
             r = keywords[k]
+            print("r", r)
+            print("k", k)
+            print("v", v)
             if "datatype" in r:
                 datatype = expand_iri(r.datatype, keywords.data.prefixes)
                 literal = parse_literal(v)
@@ -832,10 +840,18 @@ def validate(
                     )
             elif isinstance(v, dict):
                 validate(v, type=r.get("range"), keywords=keywords)
+            elif isinstance(v, list):
+                for it in v:
+                    _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
         else:
             raise ValidateError(f"unknown keyword: '{k}'")
+
+    for k, v in dct.items():
+        if k.startswith("@"):
+            continue
+        _check_keywords(k, v)
 
     if type:
         typename = keywords.typename(type)
