@@ -382,7 +382,7 @@ resources:
     keywords:
       accessService:
         iri: dcat:accessService
-        range: dcat:DataSetvice
+        range: dcat:DataService
         conformance: optional
         description: A data service that gives access to the distribution of the dataset.
 
