@@ -131,6 +131,8 @@ def subcommand_fetch(ts, args):
 
 def maincommand(argv=None):
     """Main command."""
+    # pylint: disable=too-many-statements
+
     parser = argparse.ArgumentParser(
         description=(
             "Tool for data documentation.\n\n"
@@ -292,6 +294,9 @@ def maincommand(argv=None):
         help="Session configuration file.",
     )
     parser.add_argument(
+        "--debug", action="store_true", help="Show Python traceback on error."
+    )
+    parser.add_argument(
         "--triplestore",
         "-t",
         help=(
@@ -367,17 +372,19 @@ def maincommand(argv=None):
             ts.bind(prefix, ns)
 
     # Call subcommand handler
-    return args.func(ts, args)
+    try:
+        return args.func(ts, args)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        if args.debug:
+            raise
+        print(f"{exc.__class__.__name__}: {exc}")
+        return exc
 
 
 def main(argv=None):
     """Main function."""
-    # try:
-    maincommand(argv)
-    # except Exception as exc:  # pylint: disable=broad-exception-caught
-    #    print(exc)
-    #    return 1
-    return 0
+    retval = maincommand(argv)
+    return 1 if isinstance(retval, Exception) else 0
 
 
 if __name__ == "__main__":

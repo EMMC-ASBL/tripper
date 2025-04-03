@@ -18,6 +18,7 @@ def test_delete():
     iri = "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
 
     cmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "delete",
@@ -27,6 +28,7 @@ def test_delete():
 
     # Ensure that KB doesn't contain the removed dataset
     findcmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "find",
@@ -44,6 +46,7 @@ def test_delete_regex():
     iri_regexp = "https://he-matchmaker.eu/data/sem/.*"
 
     cmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "delete",
@@ -53,6 +56,7 @@ def test_delete_regex():
 
     # Ensure that KB doesn't contain the removed dataset
     findcmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "find",
@@ -68,6 +72,7 @@ def test_add():
     from dataset_paths import indir, outdir  # pylint: disable=import-error
 
     cmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "add",
@@ -103,6 +108,7 @@ def test_find():
     from dataset_paths import indir  # pylint: disable=import-error
 
     cmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "find",
@@ -129,6 +135,7 @@ def test_find_json():
     from dataset_paths import indir  # pylint: disable=import-error
 
     cmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "find",
@@ -155,6 +162,7 @@ def test_fetch():
     )
 
     cmd = [
+        "--debug",
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "fetch",

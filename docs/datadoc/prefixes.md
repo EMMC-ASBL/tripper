@@ -25,6 +25,7 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | emmo    | https://w3id.org/emmo#                                            |
 | oteio   | https://w3id.org/emmo/domain/oteio#                               |
 | chameo  | https://w3id.org/emmo/domain/characterisation-methodology/chameo# |
+| iana    | https://www.iana.org/assignments/media-types/                     |
 
 
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
