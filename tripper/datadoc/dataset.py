@@ -994,6 +994,7 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
     """Delete `iri` from triplestore by calling `ts.update().`"""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
+    PREFIX : <http://example.com#>
     DELETE {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
