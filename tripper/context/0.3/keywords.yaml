@@ -25,6 +25,7 @@ prefixes:
   emmo: "https://w3id.org/emmo#"
   oteio: "https://w3id.org/emmo/domain/oteio#"
   chameo: "https://w3id.org/emmo/domain/characterisation-methodology/chameo#"
+  iana: "https://www.iana.org/assignments/media-types/"
 
 
 resources:
