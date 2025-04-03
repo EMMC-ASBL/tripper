@@ -7,10 +7,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
-from tripper.datadoc.dataset import (
+from tripper.datadoc.dataset import (  # get_prefixes,
     addnested,
     as_jsonld,
-    get_prefixes,
     save_dict,
 )
 from tripper.utils import AttrDict, openfile

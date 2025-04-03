@@ -48,6 +48,7 @@ from tripper import (
     Namespace,
     Triplestore,
 )
+from tripper.datadoc.context import Context
 from tripper.datadoc.errors import NoSuchTypeError, ValidateError
 from tripper.datadoc.keywords import Keywords
 from tripper.utils import (
@@ -86,6 +87,7 @@ def save_dict(
     dct: dict,
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -99,6 +101,7 @@ def save_dict(
             defined in `keywords`.
         keywords: Keywords object with keywords definitions.  If not provided,
             only default keywords are considered.
+        context: Context object defining custom prefixes and mappings.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
@@ -125,10 +128,13 @@ def save_dict(
     if keywords is None:
         keywords = Keywords()
 
+    if context is None:
+        context = Context(keywords=keywords)
+
     if "@id" not in dct:
         raise ValueError("`dct` must have an '@id' key")
 
-    all_prefixes = get_prefixes()
+    all_prefixes = context.get_prefixes()
     all_prefixes.update({pf: str(ns) for pf, ns in ts.namespaces.items()})
     if prefixes:
         all_prefixes.update(prefixes)
@@ -137,6 +143,7 @@ def save_dict(
         dct=dct,
         type=type,
         keywords=keywords,
+        context=context,
         prefixes=all_prefixes,
         **kwargs,
     )
@@ -338,100 +345,100 @@ def get_values(
     return values
 
 
-def get_jsonld_context(
-    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
-    timeout: float = 5,
-    fromfile: bool = True,
-) -> dict:
-    """Returns the JSON-LD context as a dict.
-
-    The JSON-LD context maps all the keywords that can be used as keys
-    in the dict-representation of a dataset to properties defined in
-    common vocabularies and ontologies.
-
-    Arguments:
-        context: Additional user-defined context that should be returned
-            on top of the default context.  It may be a string with an URL
-            to the user-defined context, a dict with the user-defined context
-            or a sequence of strings and dicts.
-        timeout: Number of seconds before timing out.
-        fromfile: Whether to load the context from local file.
-
-    """
-    import requests
-
-    if fromfile:
-        with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
-            ctx = json.load(f)["@context"]
-    else:
-        r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
-        ctx = json.loads(r.content)["@context"]
-
-    if isinstance(context, (str, dict)):
-        context = [context]
-
-    if context:
-        for token in context:
-            if isinstance(token, str):
-                with openfile(token, timeout=timeout, mode="rt") as f:
-                    content = f.read()
-                ctx.update(json.loads(content)["@context"])
-            elif isinstance(token, dict):
-                ctx.update(token)
-            else:
-                raise TypeError(
-                    "`context` must be a string (URL), dict or a sequence of "
-                    f"strings and dicts.  Not '{type(token)}'"
-                )
-
-    return ctx
-
-
-def get_prefixes(
-    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
-    timeout: float = 5,
-    fromfile: bool = True,
-) -> dict:
-    """Loads the JSON-LD context and returns a dict mapping prefixes to
-    their namespace URL.
-
-    Arguments are passed to `get_jsonld_context()`.
-    """
-    ctx = get_jsonld_context(
-        context=context, timeout=timeout, fromfile=fromfile
-    )
-    prefixes = {
-        k: str(v)
-        for k, v in ctx.items()
-        if isinstance(v, (str, Namespace)) and str(v).endswith(("#", "/"))
-    }
-    return prefixes
-
-
-def get_shortnames(
-    context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
-    timeout: float = 5,
-    fromfile: bool = True,
-) -> dict:
-    """Loads the JSON-LD context and returns a dict mapping IRIs to their
-    short names defined in the context.
-
-    Arguments are passed to `get_jsonld_context()`.
-    """
-    ctx = get_jsonld_context(
-        context=context, timeout=timeout, fromfile=fromfile
-    )
-    prefixes = get_prefixes(context=ctx)
-    shortnames = {
-        expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
-        for k, v in ctx.items()
-        if (
-            (isinstance(v, str) and not v.endswith(("#", "/")))
-            or isinstance(v, dict)
-        )
-    }
-    shortnames.setdefault(RDF.type, "@type")
-    return shortnames
+# def get_jsonld_context(
+#     context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+#     timeout: float = 5,
+#     fromfile: bool = True,
+# ) -> dict:
+#     """Returns the JSON-LD context as a dict.
+#
+#     The JSON-LD context maps all the keywords that can be used as keys
+#     in the dict-representation of a dataset to properties defined in
+#     common vocabularies and ontologies.
+#
+#     Arguments:
+#         context: Additional user-defined context that should be returned
+#             on top of the default context.  It may be a string with an URL
+#             to the user-defined context, a dict with the user-defined context
+#             or a sequence of strings and dicts.
+#         timeout: Number of seconds before timing out.
+#         fromfile: Whether to load the context from local file.
+#
+#     """
+#     import requests
+#
+#     if fromfile:
+#         with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
+#             ctx = json.load(f)["@context"]
+#     else:
+#         r = requests.get(CONTEXT_URL, allow_redirects=True, timeout=timeout)
+#         ctx = json.loads(r.content)["@context"]
+#
+#     if isinstance(context, (str, dict)):
+#         context = [context]
+#
+#     if context:
+#         for token in context:
+#             if isinstance(token, str):
+#                 with openfile(token, timeout=timeout, mode="rt") as f:
+#                     content = f.read()
+#                 ctx.update(json.loads(content)["@context"])
+#             elif isinstance(token, dict):
+#                 ctx.update(token)
+#             else:
+#                 raise TypeError(
+#                     "`context` must be a string (URL), dict or a sequence of "
+#                     f"strings and dicts.  Not '{type(token)}'"
+#                 )
+#
+#     return ctx
+#
+#
+# def get_prefixes(
+#     context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+#     timeout: float = 5,
+#     fromfile: bool = True,
+# ) -> dict:
+#     """Loads the JSON-LD context and returns a dict mapping prefixes to
+#     their namespace URL.
+#
+#     Arguments are passed to `get_jsonld_context()`.
+#     """
+#     ctx = get_jsonld_context(
+#         context=context, timeout=timeout, fromfile=fromfile
+#     )
+#     prefixes = {
+#         k: str(v)
+#         for k, v in ctx.items()
+#         if isinstance(v, (str, Namespace)) and str(v).endswith(("#", "/"))
+#     }
+#     return prefixes
+#
+#
+# def get_shortnames(
+#     context: "Optional[Union[str, dict, Sequence[Union[str, dict]]]]" = None,
+#     timeout: float = 5,
+#     fromfile: bool = True,
+# ) -> dict:
+#     """Loads the JSON-LD context and returns a dict mapping IRIs to their
+#     short names defined in the context.
+#
+#     Arguments are passed to `get_jsonld_context()`.
+#     """
+#     ctx = get_jsonld_context(
+#         context=context, timeout=timeout, fromfile=fromfile
+#     )
+#     prefixes = get_prefixes(context=ctx)
+#     shortnames = {
+#         expand_iri(v["@id"] if isinstance(v, dict) else v, prefixes): k
+#         for k, v in ctx.items()
+#         if (
+#             (isinstance(v, str) and not v.endswith(("#", "/")))
+#             or isinstance(v, dict)
+#         )
+#     }
+#     shortnames.setdefault(RDF.type, "@type")
+#     return shortnames
 
 
 def load_list(ts: Triplestore, iri: str):
@@ -537,7 +544,11 @@ def get(
     return value
 
 
-def read_datadoc(filename: "Union[str, Path]") -> dict:
+def read_datadoc(
+    filename: "Union[str, Path]",
+    keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
+) -> dict:
     """Read YAML data documentation and return it as a dict.
 
     The filename may also be an URL to a file accessible with HTTP GET.
@@ -546,13 +557,14 @@ def read_datadoc(filename: "Union[str, Path]") -> dict:
 
     with openfile(filename, mode="rt", encoding="utf-8") as f:
         d = yaml.safe_load(f)
-    return prepare_datadoc(d)
+    return prepare_datadoc(d, keywords=keywords, context=context)
 
 
 def save_datadoc(
     ts: Triplestore,
     file_or_dict: "Union[str, Path, dict]",
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -564,24 +576,30 @@ def save_datadoc(
         keywords: Optional Keywords object with keywords definitions.
             The default is to infer the keywords from the `domain` or
             `keywordfile` keys in the YAML file.
+        context: Context object defining custom prefixes and mappings.
+        prefixes: Dict with prefixes in addition to those included in the
+            JSON-LD context.  Should map namespace prefixes to IRIs.
 
     Returns:
         Dict-representation of the loaded dataset.
     """
-    if isinstance(file_or_dict, dict):
-        d = prepare_datadoc(file_or_dict)
-    else:
-        d = read_datadoc(file_or_dict)
-
-    # Get keywords
+    # Get keywords and context
     if keywords is None:
         keywords = Keywords(
             domain=d.get("domain", "default"), yamlfile=d.get("keywordfile")
         )
+    if context is None:
+        context = Context(keywords=keywords)
+    if "@context" in d:
+        context.add_context(d.get("@context"))
+
+    if isinstance(file_or_dict, dict):
+        d = prepare_datadoc(file_or_dict, keywords=keywords, context=context)
+    else:
+        d = read_datadoc(file_or_dict, keywords=keywords, context=context)
 
     # Bind prefixes
-    context = d.get("@context")
-    prefixes = get_prefixes(context=context)
+    prefixes = context.get_prefixes()
     prefixes.update(d.get("prefixes", {}))
     for prefix, ns in prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
@@ -597,8 +615,8 @@ def save_datadoc(
                 dct=dct,
                 type=name,
                 keywords=keywords,
+                context=context,
                 prefixes=prefixes,
-                _context=context,
             )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
@@ -610,7 +628,11 @@ def save_datadoc(
     return d
 
 
-def prepare_datadoc(datadoc: dict) -> dict:
+def prepare_datadoc(
+    datadoc: dict,
+    keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
+) -> dict:
     """Return an updated version of dict `datadoc` that is prepared with
     additional key-value pairs needed for creating valid JSON-LD that
     can be serialised to RDF.
@@ -619,19 +641,17 @@ def prepare_datadoc(datadoc: dict) -> dict:
     d = AttrDict({"@context": CONTEXT_URL})
     d.update(datadoc)
 
-    context = datadoc.get("@context")
-    prefixes = get_prefixes(context=context)
-    if "prefixes" in d:
-        d.prefixes.update(prefixes)
-    else:
-        d.prefixes = prefixes.copy()
+    if not context:
+        context = Context(keywords=keywords)
+    if "@context" in datadoc:
+        context.add_context(datadoc["@context"])
 
     for name, lst in d.items():
         if name in ("@context", "domain", "keywordfile", "prefixes"):
             continue
         for i, dct in enumerate(lst):
             lst[i] = as_jsonld(
-                dct=dct, type=name, prefixes=d.prefixes, _context=context
+                dct=dct, type=name, keywords=keywords, context=context
             )
 
     return d
@@ -641,6 +661,7 @@ def as_jsonld(
     dct: dict,
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -652,6 +673,7 @@ def as_jsonld(
             defined in `keywords`.
         keywords: Keywords object with keywords definitions.  If not provided,
             only default keywords are considered.
+        context: Context object defining custom prefixes and mappings.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned
@@ -668,6 +690,8 @@ def as_jsonld(
 
     if keywords is None:
         keywords = Keywords()
+    if context is None:
+        context = Context(keywords=keywords)
 
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
