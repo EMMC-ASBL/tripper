@@ -37,6 +37,12 @@ def test_recursive_update():
     d = {"a": []}
     recursive_update(d, other)
     assert d == other
+    assert isinstance(d["a"][1], dict)
+
+    d = {"a": []}
+    recursive_update(d, other, cls=AttrDict)
+    assert d == other
+    assert isinstance(d["a"][1], AttrDict)
 
     d = AttrDict()
     recursive_update(d, other)
@@ -53,11 +59,11 @@ def test_recursive_update():
 
     d = {"a": {"b": 2}}
     recursive_update(d, {"a": [1, {"b": 2}]})
-    assert d == {"a": [{"b": 2}, 1]}
+    assert d == {"a": [1, {"b": 2}]}
 
     d = {"a": {"b": 2}}
     recursive_update(d, {"a": [1, {"b": 2}]}, append=False)
-    assert d == {"a": [{"b": 2}, 1]}
+    assert d == {"a": [1, {"b": 2}]}
 
     d = {"a": [1, {"b": 2}]}
     recursive_update(d, {"a": [1, {"b": 2}]})
@@ -65,11 +71,11 @@ def test_recursive_update():
 
     d = {"a": {"b": 2}}
     recursive_update(d, {"a": [1, {"b": 3}]})
-    assert d == {"a": [{"b": 2}, 1, {"b": 3}]}
+    assert d == {"a": [1, {"b": [2, 3]}]}
 
     d = {"a": {"b": 2}}
     recursive_update(d, {"a": [1, {"b": 3}]}, append=False)
-    assert d == {"a": [{"b": 2}, 1, {"b": 3}]}
+    assert d == {"a": [1, {"b": 3}]}
 
 
 def test_openfile():
