@@ -41,10 +41,15 @@ def test_recursive_update():
     d = AttrDict()
     recursive_update(d, other)
     assert d == other
+    assert isinstance(d.a[1], AttrDict)
 
     d = {"d": 1}
     recursive_update(d, other)
     assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": [1, 6]}
+
+    d = {"d": 1}
+    recursive_update(d, other, append=False)
+    assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": 6}
 
 
 def test_openfile():
