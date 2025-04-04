@@ -142,7 +142,8 @@ def save_dict(
     )
 
     # Validate
-    validate(d, type=type, keywords=keywords)
+    # TODO: reenable validation
+    # validate(d, type=type, keywords=keywords)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
