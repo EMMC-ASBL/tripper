@@ -105,7 +105,9 @@ def recursive_update(
         cls = d.__class__
     if isinstance(other, dict):
         if not isinstance(d, dict):
-            raise TypeError("`d` must be a dict when `other` is a dict")
+            raise TypeError(
+                f"`other` is a dict when `d` is not a dict (is {type(d)})"
+            )
         for k, v in other.items():
             if isinstance(v, dict):
                 if k not in d:
@@ -126,17 +128,21 @@ def recursive_update(
                     d[k] = v
     elif isinstance(other, list):
         if not isinstance(d, list):
-            raise TypeError("`d` must be a list when `other` is a list")
+            raise TypeError(
+                f"`other` is a list when `d` is not a list (is {type(d)})"
+            )
         for x in other:
             if isinstance(x, dict):
-                new = cls()
-                recursive_update(new, x, append=append, cls=cls)
-                d.append(new)
+                if x not in d:
+                    new = cls()
+                    recursive_update(new, x, append=append, cls=cls)
+                    d.append(new)
             elif isinstance(x, list):
+                newx = [y for y in x if y not in d]
                 new = []
-                recursive_update(new, x, append=append, cls=cls)
+                recursive_update(new, newx, append=append, cls=cls)
                 d.append(new)
-            else:
+            elif x not in d:
                 d.append(x)
     else:
         raise TypeError("`other` should either be a dict or list")

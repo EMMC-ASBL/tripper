@@ -51,6 +51,26 @@ def test_recursive_update():
     recursive_update(d, other, append=False)
     assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": 6}
 
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 2}]})
+    assert d == {"a": [{"b": 2}, 1]}
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 2}]}, append=False)
+    assert d == {"a": [{"b": 2}, 1]}
+
+    d = {"a": [1, {"b": 2}]}
+    recursive_update(d, {"a": [1, {"b": 2}]})
+    assert d == {"a": [1, {"b": 2}]}
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 3}]})
+    assert d == {"a": [{"b": 2}, 1, {"b": 3}]}
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 3}]}, append=False)
+    assert d == {"a": [{"b": 2}, 1, {"b": 3}]}
+
 
 def test_openfile():
     """Test openfile()."""
