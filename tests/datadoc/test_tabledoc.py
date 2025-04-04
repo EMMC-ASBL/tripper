@@ -222,6 +222,7 @@ def test_csv_duplicated_columns():
 
 def test_csvsniff():
     """Test csvsniff()."""
+    pytest.importorskip("yaml")
     from tripper.datadoc.tabledoc import csvsniff
 
     lines = [

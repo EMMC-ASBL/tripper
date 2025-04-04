@@ -95,10 +95,14 @@ def recursive_update(
     Arguments:
         d: Dict to update.
         other: The source to update `d` from.
-        append: Whether to append a keys from `other` to existing keys in `d`.
-            If False, the existing value will be updated.
+        append: If `append` is true and `other` has a key that also exists
+            in `d`, then the value in `d` will be converted to a list with
+            the value from `other` appended to it.
+            If `append` is false, the values in `d` will be replaced by
+            corresponding values in `other`.
         cls: Dict subclass for new sub-dicts in `d`. Defaults to the class
             of `d`.
+
     """
     # pylint: disable=too-many-branches
     if cls is None:
