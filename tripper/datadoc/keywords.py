@@ -26,6 +26,9 @@ if TYPE_CHECKING:  # pragma: no cover
     FileLoc = Union[Path, str]
 
 
+# TODO: rename "field" to "domain"
+
+
 class Keywords:
     """A class representing all keywords within a domain."""
 
