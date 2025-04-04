@@ -124,6 +124,7 @@ class Keywords:
                         value.iri: value,
                         expand_iri(value.iri, self.data.prefixes): value,
                     },
+                    append=False,
                 )
 
     def isnested(self, keyword: str) -> bool:
@@ -277,7 +278,7 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        field = f" for {self.field}" if self.field else ""
+        field = f" for domain: {self.field}" if self.field else ""
         out = [
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",

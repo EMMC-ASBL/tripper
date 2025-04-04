@@ -804,6 +804,7 @@ def validate(
     resources = keywords.data.resources
 
     def check_keyword(keyword, type):
+        """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
         name = keywords.keywordname(keyword)
         if name in resources[typename].keywords:
@@ -813,9 +814,7 @@ def validate(
             return check_keyword(name, subclass)
         return False
 
-    for k, v in dct.items():
-        if k.startswith("@"):
-            continue
+    def _check_keywords(k, v):
         if k in keywords:
             r = keywords[k]
             if "datatype" in r:
@@ -832,10 +831,18 @@ def validate(
                     )
             elif isinstance(v, dict):
                 validate(v, type=r.get("range"), keywords=keywords)
+            elif isinstance(v, list):
+                for it in v:
+                    _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
         else:
             raise ValidateError(f"unknown keyword: '{k}'")
+
+    for k, v in dct.items():
+        if k.startswith("@"):
+            continue
+        _check_keywords(k, v)
 
     if type:
         typename = keywords.typename(type)
@@ -987,6 +994,7 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
     """Delete `iri` from triplestore by calling `ts.update().`"""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
+    PREFIX : <http://example.com#>
     DELETE {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
