@@ -45,7 +45,7 @@ class Context:
 
         if keywords:
             if domain:
-                keywords.add_domain(domain)
+                keywords.add_field(domain)
             self.add_context(keywords.get_context())
         elif domain:
             keywords = Keywords(field=domain)
