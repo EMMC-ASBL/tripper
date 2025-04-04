@@ -31,8 +31,8 @@ def subcommand_add(ts, args):
         save_datadoc(ts, infile)
     elif fmt in ("csv",):
         kw = {}
-        if args.csv_options:
-            for token in args.csv_options:
+        if args.csv_option:
+            for token in args.csv_option:
                 option, value = token.split("=", 1)
                 kw[option] = value
         td = TableDoc.parse_csv(
@@ -166,13 +166,13 @@ def maincommand(argv=None):
         ),
     )
     parser_add.add_argument(
-        "--csv-options",
-        action="extend",
-        nargs="+",
+        "--csv-option",
+        action="append",
         metavar="OPTION=VALUE",
         help=(
             "Options describing the CSV dialect for --input-format=csv. "
-            "Common options are 'dialect', 'delimiter' and 'quotechar'."
+            "Common options are 'dialect', 'delimiter' and 'quotechar'. "
+            "This option may be provided multiple times."
         ),
     )
     parser_add.add_argument(

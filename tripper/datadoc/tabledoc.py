@@ -3,6 +3,7 @@
 # pylint: disable=too-many-locals
 
 import csv
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -241,8 +242,15 @@ class TableDoc:
         def read(f, dialect):
             """Return csv reader from file-like object `f`."""
             if dialect is None and not kwargs:
-                dialect = csv.Sniffer().sniff(f.read(1024), delimiters=",;\t ")
-                f.seek(0)
+                sample = f.read(1024)
+                try:
+                    dialect = csv.Sniffer().sniff(sample, delimiters=",;\t ")
+                except csv.Error:
+                    # The build-in sniffer not always work well with
+                    # non-numerical csv files. Try our simple sniffer
+                    dialect = csvsniff(sample)
+                finally:
+                    f.seek(0)
             reader = csv.reader(f, dialect=dialect, **kwargs)
             header = next(reader)
             data = list(reader)
@@ -312,3 +320,61 @@ class TableDoc:
                 write(f)
         else:
             write(csvfile)
+
+
+def csvsniff(sample):
+    """Custom csv sniffer.
+
+    Analyse csv sample and returns a csv.Dialect instance.
+    """
+    lines = re.split("\r\n|\n|\r", sample)
+    del lines[-1]  # skip last line since it might be truncated
+    if not lines:
+        raise csv.Error(
+            "too long csv header. No line terminator within sample"
+        )
+    header = lines[0]
+
+    # Possible delimiters and quote chars to check
+    delims = [d for d in ",;\t :" if header.count(d)]
+    quotes = [q for q in "\"'" if sample.count(q)]
+    if not quotes:
+        quotes = ['"']
+
+    # For each (quote, delim)-pair, count the number of tokens per line
+    # Only pairs for which all lines has the same number of tokens are added
+    # to ntokens
+    ntokens = {}  # map (quote, delim) to number of tokens per line
+    for q in quotes:
+        for d in delims:
+            ntok = []
+            for ln in lines:
+                # Remove quoted tokens
+                ln = re.sub(f"(^{q}[^{q}]*{q}{d})|({d}{q}[^{q}]*{q}$)", d, ln)
+                ln = re.sub(f"{d}{q}[^{q}]*{q}{d}", d * 2, ln)
+                ntok.append(len(ln.split(d)))
+
+            if ntok and max(ntok) == min(ntok):
+                ntokens[(q, d)] = ntok[0]
+
+    # From ntokens, select (quote, delim) pair that results in the highest
+    # number of tokens per line
+    if not ntokens:
+        raise csv.Error("not able to determine delimiter")
+    quote, delim = max(ntokens, key=lambda k: ntokens[k])
+
+    class dialect(csv.Dialect):
+        """Custom dialect."""
+
+        # pylint: disable=too-few-public-methods
+        _name = "sniffed"
+        delimiter = delim
+        doublequote = True  # quote chars inside quotes are duplicated
+        # escapechar = "\\"  # unused
+        lineterminator = "\r\n" if header.endswith("\r\n") else header[-1]
+        quotechar = quote
+        quoting = csv.QUOTE_MINIMAL
+        skipinitialspace = False  # don't ignore spaces before a delimiter
+        strict = False  # be permissive on malformed csv input
+
+    return dialect
