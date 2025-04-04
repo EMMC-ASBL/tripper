@@ -327,7 +327,14 @@ def csvsniff(sample):
 
     Analyse csv sample and returns a csv.Dialect instance.
     """
-    lines = re.split("\r\n|\n|\r", sample)
+    # Determine line terminator
+    if "\r\n" in sample:
+        linesep = "\r\n"
+    else:
+        counts = {s: sample.count(s) for s in "\n\r"}
+        linesep = max(counts, key=lambda k: counts[k])
+
+    lines = sample.split(linesep)
     del lines[-1]  # skip last line since it might be truncated
     if not lines:
         raise csv.Error(
@@ -371,7 +378,7 @@ def csvsniff(sample):
         delimiter = delim
         doublequote = True  # quote chars inside quotes are duplicated
         # escapechar = "\\"  # unused
-        lineterminator = "\r\n" if header.endswith("\r\n") else header[-1]
+        lineterminator = linesep
         quotechar = quote
         quoting = csv.QUOTE_MINIMAL
         skipinitialspace = False  # don't ignore spaces before a delimiter

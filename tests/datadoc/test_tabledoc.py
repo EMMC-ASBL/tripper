@@ -218,3 +218,22 @@ def test_csv_duplicated_columns():
         "distribution.downloadURL",
     ]
     td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
+
+
+def test_csvsniff():
+    """Test csvsniff()."""
+    from tripper.datadoc.tabledoc import csvsniff
+
+    lines = [
+        "A,B,C,D",
+        "a,'b,bb','c1;c2;c3;c4',d",
+    ]
+    dialect = csvsniff("\r\n".join(lines))
+    assert dialect.delimiter == ","
+    assert dialect.lineterminator == "\r\n"
+    assert dialect.quotechar == "'"
+
+    dialect = csvsniff("\n".join(lines))
+    assert dialect.delimiter == ","
+    assert dialect.lineterminator == "\n"
+    assert dialect.quotechar == "'"
