@@ -11,6 +11,7 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | dctype  | http://purl.org/dc/dcmitype/                                      |
 | eli     | http://data.europa.eu/eli/ontology#                               |
 | foaf    | http://xmlns.com/foaf/0.1/                                        |
+| iana    | https://www.iana.org/assignments/media-types/                     |
 | locn    | http://www.w3.org/ns/locn#                                        |
 | odrl    | http://www.w3.org/ns/odrl/2/                                      |
 | owl     | http://www.w3.org/2002/07/owl#                                    |

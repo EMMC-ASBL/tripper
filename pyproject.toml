@@ -40,6 +40,7 @@ mappings = [
 ]
 datadoc = [
     "tripper[mappings]",
+    "PyLD>=2.0.0,<2.0.5",
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
 ]

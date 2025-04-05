@@ -3,20 +3,23 @@
 # pylint: disable=too-many-locals
 
 import csv
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
+from tripper.datadoc.context import Context
 from tripper.datadoc.dataset import (
     addnested,
     as_jsonld,
-    get_prefixes,
     save_dict,
 )
 from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterable, List, Optional, Protocol, Sequence, Union
+
+    from tripper.datadoc.context import ContextType
 
     class Writer(Protocol):
         """Prototype for a class with a write() method."""
@@ -57,29 +60,39 @@ class TableDoc:
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
+        context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
-        context: "Optional[Union[str, dict, list]]" = None,
         strip: bool = True,
     ):
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.prefixes = get_prefixes(context=context)
+        self.context: Context = Context(context=context)
+        ## self.prefixes = get_prefixes(context=context)
         if prefixes:
-            self.prefixes.update(prefixes)
-        self.context = context if context else {}
+            ## self.prefixes.update(prefixes)
+            self.context.add_context(prefixes)
+        ## self.context = context if context else {}
         self.strip = strip
 
     def save(self, ts: Triplestore) -> None:
         """Save tabular datadocumentation to triplestore."""
-        self.prefixes.update(ts.namespaces)
+        ## self.prefixes.update(ts.namespaces)
+
+        self.context.add_context(
+            {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
+        )
+
+        for prefix, ns in self.context.get_prefixes().items():
+            ts.bind(prefix, ns)
+
         for d in self.asdicts():
             save_dict(
                 ts,
                 d,
                 type=self.type,
-                prefixes=self.prefixes,
-                _context=self.context,
+                ## prefixes=self.prefixes,
+                context=self.context,
             )
 
     def asdicts(self) -> "List[dict]":
@@ -96,7 +109,10 @@ class TableDoc:
                         d, colname.strip() if self.strip else colname, cell
                     )
             jsonld = as_jsonld(
-                d, type=self.type, prefixes=self.prefixes, **kw  # type: ignore
+                d,
+                type=self.type,
+                prefixes=self.context.get_prefixes(),
+                **kw,  # type: ignore
             )
             results.append(jsonld)
         return results
@@ -241,8 +257,15 @@ class TableDoc:
         def read(f, dialect):
             """Return csv reader from file-like object `f`."""
             if dialect is None and not kwargs:
-                dialect = csv.Sniffer().sniff(f.read(1024), delimiters=",;\t ")
-                f.seek(0)
+                sample = f.read(1024)
+                try:
+                    dialect = csv.Sniffer().sniff(sample, delimiters=",;\t ")
+                except csv.Error:
+                    # The build-in sniffer not always work well with
+                    # non-numerical csv files. Try our simple sniffer
+                    dialect = csvsniff(sample)
+                finally:
+                    f.seek(0)
             reader = csv.reader(f, dialect=dialect, **kwargs)
             header = next(reader)
             data = list(reader)
@@ -291,6 +314,7 @@ class TableDoc:
         def write(f):
             writer = csv.writer(f, dialect=dialect, **kwargs)
 
+            # TODO: use self.context and compact to shortnames
             if prefixes:
                 header = []
                 for h in self.header:
@@ -312,3 +336,68 @@ class TableDoc:
                 write(f)
         else:
             write(csvfile)
+
+
+def csvsniff(sample):
+    """Custom csv sniffer.
+
+    Analyse csv sample and returns a csv.Dialect instance.
+    """
+    # Determine line terminator
+    if "\r\n" in sample:
+        linesep = "\r\n"
+    else:
+        counts = {s: sample.count(s) for s in "\n\r"}
+        linesep = max(counts, key=lambda k: counts[k])
+
+    lines = sample.split(linesep)
+    del lines[-1]  # skip last line since it might be truncated
+    if not lines:
+        raise csv.Error(
+            "too long csv header. No line terminator within sample"
+        )
+    header = lines[0]
+
+    # Possible delimiters and quote chars to check
+    delims = [d for d in ",;\t :" if header.count(d)]
+    quotes = [q for q in "\"'" if sample.count(q)]
+    if not quotes:
+        quotes = ['"']
+
+    # For each (quote, delim)-pair, count the number of tokens per line
+    # Only pairs for which all lines has the same number of tokens are added
+    # to ntokens
+    ntokens = {}  # map (quote, delim) to number of tokens per line
+    for q in quotes:
+        for d in delims:
+            ntok = []
+            for ln in lines:
+                # Remove quoted tokens
+                ln = re.sub(f"(^{q}[^{q}]*{q}{d})|({d}{q}[^{q}]*{q}$)", d, ln)
+                ln = re.sub(f"{d}{q}[^{q}]*{q}{d}", d * 2, ln)
+                ntok.append(len(ln.split(d)))
+
+            if ntok and max(ntok) == min(ntok):
+                ntokens[(q, d)] = ntok[0]
+
+    # From ntokens, select (quote, delim) pair that results in the highest
+    # number of tokens per line
+    if not ntokens:
+        raise csv.Error("not able to determine delimiter")
+    quote, delim = max(ntokens, key=lambda k: ntokens[k])
+
+    class dialect(csv.Dialect):
+        """Custom dialect."""
+
+        # pylint: disable=too-few-public-methods
+        _name = "sniffed"
+        delimiter = delim
+        doublequote = True  # quote chars inside quotes are duplicated
+        # escapechar = "\\"  # unused
+        lineterminator = linesep
+        quotechar = quote
+        quoting = csv.QUOTE_MINIMAL
+        skipinitialspace = False  # don't ignore spaces before a delimiter
+        strict = False  # be permissive on malformed csv input
+
+    return dialect

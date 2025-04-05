@@ -26,8 +26,11 @@ if TYPE_CHECKING:  # pragma: no cover
     FileLoc = Union[Path, str]
 
 
+# TODO: rename "field" to "domain"
+
+
 class Keywords:
-    """A class representing all keywords within a domain."""
+    """A class representing all keywords within a field."""
 
     rootdir = Path(__file__).absolute().parent.parent.parent.resolve()
 
@@ -99,6 +102,32 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "field"]
 
+    def add_field(self, field: "Union[str, Sequence[str]]") -> None:
+        """Add keywords for `field`, where `field` is the name of a
+        scientific field or a list of scientific field names."""
+        if isinstance(field, str):
+            field = [field]
+
+        for name in field:  # type: ignore
+            if self.field is None:  # type: ignore
+                self.field = name  # type: ignore
+            for ep in get_entry_points("tripper.keywords"):
+                if ep.value == name:
+                    self.parse(self.rootdir / ep.name / "keywords.yaml")
+                    break
+            else:
+                if name == "default":
+                    # Fallback in case the entry point is not installed
+                    self.parse(
+                        self.rootdir
+                        / "tripper"
+                        / "context"
+                        / "0.3"
+                        / "keywords.yaml"
+                    )
+                else:
+                    raise TypeError(f"Unknown field name: {name}")
+
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
@@ -124,6 +153,7 @@ class Keywords:
                         value.iri: value,
                         expand_iri(value.iri, self.data.prefixes): value,
                     },
+                    append=False,
                 )
 
     def isnested(self, keyword: str) -> bool:
@@ -223,6 +253,54 @@ class Keywords:
                 return name
         raise NoSuchTypeError(type)
 
+    def get_context(self) -> dict:
+        """Return JSON-LD context as a dict.
+
+        Note: The returned dict corresponds to the value of the "@context"
+        keyword in a JSON-LD document.
+        """
+        ctx = {}
+        ctx["@version"] = 1.1
+
+        # Add prefixes to context
+        prefixes = self.data.get("prefixes", {})
+        for prefix, ns in prefixes.items():
+            ctx[prefix] = ns
+
+        resources = self.data.get("resources", {})
+
+        # Translate datatypes
+        translate = {"rdf:JSON": "@json"}
+
+        # Add keywords (properties) to context
+        for resource in resources.values():
+            for k, v in resource.get("keywords", {}).items():
+                iri = v["iri"]
+                if "datatype" in v:
+                    dt = v["datatype"]
+                    if isinstance(dt, str):
+                        dt = translate.get(dt, dt)
+                    else:
+                        dt = [translate.get(t, t) for t in dt]
+
+                    ctx[k] = {  # type: ignore
+                        "@id": iri,
+                        "@type": dt,
+                    }
+                elif v["range"] == "rdfs:Literal":
+                    ctx[k] = iri
+                else:
+                    ctx[k] = {  # type: ignore
+                        "@id": iri,
+                        "@type": "@id",
+                    }
+
+        # Add resources (classes) to context
+        for k, v in resources.items():
+            ctx.setdefault(k, v.iri)
+
+        return ctx
+
     def write_context(self, outfile: "FileLoc") -> None:
         """Write JSON-LD context file."""
         c = {}
@@ -249,10 +327,13 @@ class Keywords:
                     else:
                         dt = [translate.get(t, t) for t in dt]
 
-                    c[k] = {  # type: ignore
-                        "@id": iri,
-                        "@type": dt,
-                    }
+                    d = {"@id": iri}
+                    if dt == "rdf:langString" or "language" in v:
+                        d["@language"] = v.get("language", "en")
+                    else:
+                        d["@type"] = dt
+
+                    c[k] = d  # type: ignore
                 elif v["range"] == "rdfs:Literal":
                     c[k] = iri
                 else:
@@ -277,7 +358,7 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        field = f" for {self.field}" if self.field else ""
+        field = f" for domain: {self.field}" if self.field else ""
         out = [
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",

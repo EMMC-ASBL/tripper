@@ -107,7 +107,6 @@ def test_fromdicts():
     ]
 
 
-# if True:
 def test_csv():
     """Test parsing a csv file."""
     import io
@@ -128,7 +127,7 @@ def test_csv():
             "sample": "https://he-matchmaker.eu/sample/",
             "mat": "https://he-matchmaker.eu/material/",
             "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-            "parser": "http://sintef.no/dlite/parser#",
+            "par": "http://sintef.no/dlite/parser#",
             "gen": "http://sintef.no/dlite/generator#",
         },
     )
@@ -164,7 +163,7 @@ def test_csv():
                 "sample": "https://he-matchmaker.eu/sample/",
                 "mat": "https://he-matchmaker.eu/material/",
                 "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-                "parser": "http://sintef.no/dlite/parser#",
+                "par": "http://sintef.no/dlite/parser#",
                 "gen": "http://sintef.no/dlite/generator#",
             },
         )
@@ -218,3 +217,23 @@ def test_csv_duplicated_columns():
         "distribution.downloadURL",
     ]
     td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
+
+
+def test_csvsniff():
+    """Test csvsniff()."""
+    pytest.importorskip("yaml")
+    from tripper.datadoc.tabledoc import csvsniff
+
+    lines = [
+        "A,B,C,D",
+        "a,'b,bb','c1;c2;c3;c4',d",
+    ]
+    dialect = csvsniff("\r\n".join(lines))
+    assert dialect.delimiter == ","
+    assert dialect.lineterminator == "\r\n"
+    assert dialect.quotechar == "'"
+
+    dialect = csvsniff("\n".join(lines))
+    assert dialect.delimiter == ","
+    assert dialect.lineterminator == "\n"
+    assert dialect.quotechar == "'"

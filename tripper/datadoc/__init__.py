@@ -1,5 +1,6 @@
 """Tripper subpackage for documenting datasets."""
 
+from .context import Context, get_context
 from .dataaccess import load, save
 from .dataset import (
     as_jsonld,
