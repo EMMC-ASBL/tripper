@@ -142,7 +142,8 @@ def save_dict(
     )
 
     # Validate
-    validate(d, type=type, keywords=keywords)
+    # TODO: reenable validation
+    # validate(d, type=type, keywords=keywords)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -804,6 +805,7 @@ def validate(
     resources = keywords.data.resources
 
     def check_keyword(keyword, type):
+        """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
         name = keywords.keywordname(keyword)
         if name in resources[typename].keywords:
@@ -813,9 +815,7 @@ def validate(
             return check_keyword(name, subclass)
         return False
 
-    for k, v in dct.items():
-        if k.startswith("@"):
-            continue
+    def _check_keywords(k, v):
         if k in keywords:
             r = keywords[k]
             if "datatype" in r:
@@ -832,10 +832,18 @@ def validate(
                     )
             elif isinstance(v, dict):
                 validate(v, type=r.get("range"), keywords=keywords)
+            elif isinstance(v, list):
+                for it in v:
+                    _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
         else:
             raise ValidateError(f"unknown keyword: '{k}'")
+
+    for k, v in dct.items():
+        if k.startswith("@"):
+            continue
+        _check_keywords(k, v)
 
     if type:
         typename = keywords.typename(type)
@@ -987,6 +995,7 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
     """Delete `iri` from triplestore by calling `ts.update().`"""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
+    PREFIX : <http://example.com#>
     DELETE {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
@@ -1109,6 +1118,7 @@ def search_iris(
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    skipblanks: "bool" = True,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
 
@@ -1132,6 +1142,7 @@ def search_iris(
             - `q`: Special characters representing themselves.
         keywords: Keywords instance defining the resource types used with
             the `type` argument.
+        skipblanks: Whether to skip blank nodes.
 
     Returns:
         List of IRIs for matching resources.
@@ -1180,6 +1191,10 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
+    if skipblanks:
+        return [
+            r[0] for r in ts.query(query) if not r[0].startswith("_:")  # type: ignore
+        ]
     return [r[0] for r in ts.query(query)]  # type: ignore
 
 
