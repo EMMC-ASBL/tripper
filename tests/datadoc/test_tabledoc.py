@@ -107,7 +107,6 @@ def test_fromdicts():
     ]
 
 
-# if True:
 def test_csv():
     """Test parsing a csv file."""
     import io
@@ -128,7 +127,7 @@ def test_csv():
             "sample": "https://he-matchmaker.eu/sample/",
             "mat": "https://he-matchmaker.eu/material/",
             "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-            "parser": "http://sintef.no/dlite/parser#",
+            "par": "http://sintef.no/dlite/parser#",
             "gen": "http://sintef.no/dlite/generator#",
         },
     )
@@ -164,7 +163,7 @@ def test_csv():
                 "sample": "https://he-matchmaker.eu/sample/",
                 "mat": "https://he-matchmaker.eu/material/",
                 "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-                "parser": "http://sintef.no/dlite/parser#",
+                "par": "http://sintef.no/dlite/parser#",
                 "gen": "http://sintef.no/dlite/generator#",
             },
         )

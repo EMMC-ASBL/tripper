@@ -11,6 +11,7 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | dctype  | http://purl.org/dc/dcmitype/                                      |
 | eli     | http://data.europa.eu/eli/ontology#                               |
 | foaf    | http://xmlns.com/foaf/0.1/                                        |
+| iana    | https://www.iana.org/assignments/media-types/                     |
 | locn    | http://www.w3.org/ns/locn#                                        |
 | odrl    | http://www.w3.org/ns/odrl/2/                                      |
 | owl     | http://www.w3.org/2002/07/owl#                                    |
@@ -25,7 +26,6 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | emmo    | https://w3id.org/emmo#                                            |
 | oteio   | https://w3id.org/emmo/domain/oteio#                               |
 | chameo  | https://w3id.org/emmo/domain/characterisation-methodology/chameo# |
-| iana    | https://www.iana.org/assignments/media-types/                     |
 
 
 [default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json

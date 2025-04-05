@@ -8,6 +8,7 @@
     "dctype": "http://purl.org/dc/dcmitype/",
     "eli": "http://data.europa.eu/eli/ontology#",
     "foaf": "http://xmlns.com/foaf/0.1/",
+    "iana": "https://www.iana.org/assignments/media-types/",
     "locn": "http://www.w3.org/ns/locn#",
     "odrl": "http://www.w3.org/ns/odrl/2/",
     "owl": "http://www.w3.org/2002/07/owl#",
@@ -22,7 +23,6 @@
     "emmo": "https://w3id.org/emmo#",
     "oteio": "https://w3id.org/emmo/domain/oteio#",
     "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
-    "iana": "https://www.iana.org/assignments/media-types/",
     "accessRights": {
       "@id": "dcterms:accessRights",
       "@type": "@id"
@@ -45,7 +45,7 @@
     },
     "description": {
       "@id": "dcterms:description",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "documentation": {
       "@id": "foaf:documentation",
@@ -62,7 +62,7 @@
     },
     "keyword": {
       "@id": "dcat:keyword",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "landingPage": {
       "@id": "dcat:landingPage",
@@ -70,7 +70,7 @@
     },
     "language": {
       "@id": "dcterms:language",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "license": {
       "@id": "dcterms:license",
@@ -106,7 +106,7 @@
     },
     "title": {
       "@id": "dcterms:title",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "type": {
       "@id": "dcterms:type",
@@ -116,7 +116,7 @@
     "versionNotes": "adms:versionNotes",
     "abstract": {
       "@id": "dcterms:abstract",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",

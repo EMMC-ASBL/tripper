@@ -327,10 +327,13 @@ class Keywords:
                     else:
                         dt = [translate.get(t, t) for t in dt]
 
-                    c[k] = {  # type: ignore
-                        "@id": iri,
-                        "@type": dt,
-                    }
+                    d = {"@id": iri}
+                    if dt == "rdf:langString" or "language" in v:
+                        d["@language"] = v.get("language", "en")
+                    else:
+                        d["@type"] = dt
+
+                    c[k] = d  # type: ignore
                 elif v["range"] == "rdfs:Literal":
                     c[k] = iri
                 else:

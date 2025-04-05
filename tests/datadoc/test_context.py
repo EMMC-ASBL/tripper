@@ -5,7 +5,7 @@ import pytest
 pytest.importorskip("pyld")
 
 # pylint: disable=wrong-import-position
-from tripper.datadoc.context import Context
+from tripper.datadoc.context import Context, get_context
 
 # A fixture used by all the tests
 ctx = Context()
@@ -44,7 +44,10 @@ def test_get_context_dict():
     """Test get_context() method."""
     context = ctx.get_context_dict()
     assert context["adms"] == "http://www.w3.org/ns/adms#"
-    assert context["mediaType"] == "http://www.w3.org/ns/dcat#mediaType"
+    assert context["mediaType"] == {
+        "@id": "http://www.w3.org/ns/dcat#mediaType",
+        "@type": "@id",
+    }
 
 
 def test_get_prefixes():
@@ -82,3 +85,35 @@ def test_shortname():
     assert ctx.shortname("mediaType") == "mediaType"
     assert ctx.shortname("dcat:mediaType") == "mediaType"
     assert ctx.shortname("http://www.w3.org/ns/dcat#mediaType") == "mediaType"
+
+
+def test_expanddoc_compactdoc():
+    """Test expanddoc() method."""
+    doc = {
+        "@context": {
+            "@base": "http://example1.com/",
+            "@vocab": "http://example2.com/",
+            "knows": {"@id": "http://example2.com/knows", "@type": "@vocab"},
+        },
+        "@id": "fred",
+        "knows": [{"@id": "barney", "mnemonic": "the sidekick"}, "barney"],
+    }
+
+    context = get_context(context=doc)
+    exp = context.expanddoc(doc)
+    assert exp == [
+        {
+            "@id": "fred",
+            "http://example2.com/knows": [
+                {
+                    "@id": "barney",
+                    "http://example2.com/mnemonic": [
+                        {"@value": "the sidekick"}
+                    ],
+                },
+                {"@id": "http://example2.com/barney"},
+            ],
+        }
+    ]
+    compact = context.compactdoc(exp)
+    assert compact == doc

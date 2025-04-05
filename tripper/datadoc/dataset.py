@@ -48,6 +48,7 @@ from tripper import (
     Namespace,
     Triplestore,
 )
+from tripper.datadoc.context import Context, get_context
 from tripper.datadoc.errors import NoSuchTypeError, ValidateError
 from tripper.datadoc.keywords import Keywords
 from tripper.utils import (
@@ -85,6 +86,7 @@ def save_dict(
     ts: Triplestore,
     dct: dict,
     type: "Optional[str]" = None,
+    context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
@@ -97,6 +99,7 @@ def save_dict(
         dct: Dict with data to save.
         type: Type of data to save.  Should be one of the resource types
             defined in `keywords`.
+        context: Context object providing mapings.
         keywords: Keywords object with keywords definitions.  If not provided,
             only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
@@ -125,6 +128,9 @@ def save_dict(
     if keywords is None:
         keywords = Keywords()
 
+    if context is None:
+        context = Context(keywords=keywords)
+
     if "@id" not in dct:
         raise ValueError("`dct` must have an '@id' key")
 
@@ -142,7 +148,7 @@ def save_dict(
     )
 
     # Validate
-    validate(d, type=type, keywords=keywords)
+    validate(d, type=type, context=context, keywords=keywords)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -397,6 +403,9 @@ def get_prefixes(
 
     Arguments are passed to `get_jsonld_context()`.
     """
+    if isinstance(context, Context):
+        return context.get_prefixes()
+
     ctx = get_jsonld_context(
         context=context, timeout=timeout, fromfile=fromfile
     )
@@ -553,6 +562,7 @@ def save_datadoc(
     ts: Triplestore,
     file_or_dict: "Union[str, Path, dict]",
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -564,6 +574,8 @@ def save_datadoc(
         keywords: Optional Keywords object with keywords definitions.
             The default is to infer the keywords from the `field` or
             `keywordfile` keys in the YAML file.
+        context: Optional Context object with mappings. By default it is
+            inferred from `keywords`.
 
     Returns:
         Dict-representation of the loaded dataset.
@@ -573,17 +585,26 @@ def save_datadoc(
     else:
         d = read_datadoc(file_or_dict)
 
-    # Get keywords
+    # Get keywords & context
     if keywords is None:
         keywords = Keywords(
             field=d.get("field"), yamlfile=d.get("keywordfile")
         )
+    if context is None:
+        context = Context(keywords=keywords)
+
+    if "@context" in d:
+        context.add_context(d["@context"])
+    if "prefixes" in d:
+        context.add_context(d["prefixes"])
 
     # Bind prefixes
-    context = d.get("@context")
-    prefixes = get_prefixes(context=context)
-    prefixes.update(d.get("prefixes", {}))
-    for prefix, ns in prefixes.items():  # type: ignore
+    ## context = d.get("@context")
+    ## prefixes = get_prefixes(context=context)
+    ## prefixes.update(d.get("prefixes", {}))
+    ## for prefix, ns in prefixes.items():  # type: ignore
+    ##     ts.bind(prefix, ns)
+    for prefix, ns in context.get_prefixes().items():  # type: ignore
         ts.bind(prefix, ns)
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
@@ -597,8 +618,7 @@ def save_datadoc(
                 dct=dct,
                 type=name,
                 keywords=keywords,
-                prefixes=prefixes,
-                _context=context,
+                context=context,
             )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
@@ -641,6 +661,7 @@ def as_jsonld(
     dct: dict,
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -652,6 +673,8 @@ def as_jsonld(
             defined in `keywords`.
         keywords: Keywords object with keywords definitions.  If not provided,
             only default keywords are considered.
+        context: Optional Context object with mappings. By default it is
+            inferred from `keywords`.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned
@@ -669,6 +692,10 @@ def as_jsonld(
     if keywords is None:
         keywords = Keywords()
 
+    context = get_context(keywords=keywords, context=context)
+    if prefixes:
+        context.add_context({k: str(v) for k, v in prefixes.items()})
+
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
 
@@ -677,23 +704,28 @@ def as_jsonld(
 
     if not _entryid:
         if "@context" in dct:
-            d["@context"] = dct.pop("@context")
-        else:
-            d["@context"] = CONTEXT_URL
+            ## d["@context"] = dct.pop("@context")
+            context.add_context(dct.pop("@context"))
+        ## else:
+        ##     d["@context"] = CONTEXT_URL
         if "_context" in kwargs and kwargs["_context"]:
-            add(d, "@context", kwargs.pop("_context"))
+            ## add(d, "@context", kwargs.pop("_context"))
+            context.add_context(kwargs.pop("_context"))
+        d["@context"] = context.get_context_dict()
 
-    all_prefixes = {}
-    if not _entryid:
-        all_prefixes = get_prefixes(context=d["@context"])
-        all_prefixes.update(keywords.data.get("prefixes", {}))
-    if prefixes:
-        all_prefixes.update(prefixes)
+    ## all_prefixes = {}
+    ## if not _entryid:
+    ##     all_prefixes = get_prefixes(context=d["@context"])
+    ##     all_prefixes.update(keywords.data.get("prefixes", {}))
+    ## if prefixes:
+    ##    all_prefixes.update(prefixes)
 
     def expand(iri):
         if isinstance(iri, str):
-            return expand_iri(iri, all_prefixes)
-        return [expand_iri(i, all_prefixes) for i in iri]
+            ## return expand_iri(iri, all_prefixes)
+            return context.expand(iri, strict=False)
+        ## return [expand_iri(i, all_prefixes) for i in iri]
+        return [context.expand(i, strict=False) for i in iri]
 
     if "@id" in dct:
         d["@id"] = expand(dct.pop("@id"))
@@ -713,7 +745,7 @@ def as_jsonld(
 
     for k, v in kwargs.items():
         key = f"@{k[1:]}" if re.match("^_[a-zA-Z]+$", k) else k
-        if v:
+        if v and key != "@context":
             add(d, key, v)
 
     if "@id" not in d and not _entryid:
@@ -744,23 +776,27 @@ def as_jsonld(
                     (
                         get(d, e, e)[0]
                         if e.startswith("@")
-                        else expand_iri(e, prefixes=all_prefixes)
+                        ## else expand_iri(e, prefixes=all_prefixes)
+                        else context.expand(e)
                     )
                     for e in spo
                 ]
         elif isinstance(v, str):
-            d[k] = expand_iri(v, all_prefixes)
+            ## d[k] = expand_iri(v, all_prefixes)
+            d[k] = context.expand(v, strict=False)
         elif isinstance(v, list):
             for i, e in enumerate(v):
                 if isinstance(e, str):
-                    v[i] = expand_iri(e, all_prefixes)
+                    ## v[i] = expand_iri(e, all_prefixes)
+                    v[i] = context.expand(e)
                 elif isinstance(e, dict):
                     v[i] = as_jsonld(
                         dct=e,
                         type=keywords[k].range,
                         keywords=keywords,
-                        prefixes=all_prefixes,
+                        ## prefixes=all_prefixes,
                         _entryid=_entryid,
+                        _context=context,  ##
                     )
         elif isinstance(v, dict):
             if "datatype" in keywords[k]:
@@ -770,8 +806,9 @@ def as_jsonld(
                     dct=v,
                     type=keywords[k].range,
                     keywords=keywords,
-                    prefixes=all_prefixes,
+                    ## prefixes=all_prefixes,
                     _entryid=_entryid,
+                    _context=context,  ##
                 )
 
     return d
@@ -780,6 +817,7 @@ def as_jsonld(
 def validate(
     dct: dict,
     type: "Optional[str]" = None,
+    context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
 ) -> None:
     """Validates single-resource dict `dct`.
@@ -794,6 +832,9 @@ def validate(
     """
     if keywords is None:
         keywords = Keywords()
+
+    if context is None:
+        context = Context(keywords=keywords)
 
     if type is None and "@type" in dct:
         try:
@@ -836,9 +877,10 @@ def validate(
                     _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
-        else:
+        elif k not in context:
             raise ValidateError(f"unknown keyword: '{k}'")
 
+    # Check the keyword-value pairs in `dct`
     for k, v in dct.items():
         if k.startswith("@"):
             continue
@@ -866,6 +908,7 @@ def get_partial_pipeline(
     ts: Triplestore,
     client,
     iri: str,
+    context: "Optional[Context]" = None,
     parser: "Optional[Union[bool, str]]" = None,
     generator: "Optional[Union[bool, str]]" = None,
     distribution: "Optional[str]" = None,
@@ -877,6 +920,7 @@ def get_partial_pipeline(
         ts: Triplestore to load data from.
         client: OTELib client to create pipeline with.
         iri: IRI of the dataset to load.
+        context: Context object.
         parser: Whether to return a datasource partial pipeline.
             Should be True or an IRI of parser to use in case the
             distribution has multiple parsers.  By default the first
@@ -895,6 +939,8 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
+    context = get_context(context=context, domain="default")
+
     dct = load_dict(ts, iri, use_sparql=use_sparql)
 
     if isinstance(distribution, str):
