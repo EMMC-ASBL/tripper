@@ -81,6 +81,7 @@ plugins:
             docstring_options:
               replace_admonitions: true
   - awesome-pages
+  - gh-admonitions
 
 nav:
   - Home: index.md

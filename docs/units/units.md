@@ -6,9 +6,8 @@ The `tripper.units` subpackage provide support for using [Pint] to work with uni
 Currently, only [EMMO] and EMMO-based ontologies can be used as a source for units and quantities.
 However, since [EMMO] include references to the [QUDT] and [OM] ontologies, it is also possible to work with IRIs for these ontologies as well.
 
-!!! note
-
-    Currently the support for [OM] is weak.  Improvements are planned.
+> [!NOTE]
+> Currently the support for [OM] is weak.  Improvements are planned.
 
 
 Unit access
