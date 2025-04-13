@@ -18,7 +18,7 @@ prefixes:
   kb: http://example.com/kb#
 
 
-resources:
+Resource:
   # Samples
   - "@id": kb:sampleA
     "@type": chameo:Sample

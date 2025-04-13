@@ -34,6 +34,7 @@ Functions for interaction with OTEAPI:
 from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
+# pylint: disable=too-many-branches
 import io
 import json
 import re
@@ -41,66 +42,50 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from tripper import DCAT, EMMO, OTEIO, OWL, RDF, Namespace, Triplestore
-from tripper.utils import AttrDict, as_python, openfile
+from tripper import (
+    RDF,
+    Literal,
+    Namespace,
+    Triplestore,
+)
+from tripper.datadoc.errors import NoSuchTypeError, ValidateError
+from tripper.datadoc.keywords import Keywords
+from tripper.utils import (
+    AttrDict,
+    as_python,
+    expand_iri,
+    openfile,
+    parse_literal,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
 
+    from tripper.datadoc.keywords import FileLoc
     from tripper.utils import Triple
+
 
 # Local path (for fast loading) and URL to the JSON-LD context
 CONTEXT_PATH = (
-    Path(__file__).parent.parent / "context" / "0.2" / "context.json"
+    Path(__file__).parent.parent / "context" / "0.3" / "context.json"
 )
+# TODO: fix IRI when merged to master
 CONTEXT_URL = (
     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
-    "master/tripper/context/0.2/context.json"
+    "master/tripper/context/0.3/context.json"
 )
 
-MATCH_PREFIXED_IRI = re.compile(
-    r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
+MATCH_IRI = re.compile(
+    r"^(([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?))|"
+    r"([a-zA-Z0-9]*://[a-zA-Z_]([a-zA-Z0-9_/.?#=+-]*))$"
 )
-
-# Resource types
-dicttypes = {
-    "parser": {
-        "datadoc_label": "parsers",
-        "@type": OTEIO.Parser,
-    },
-    "generator": {
-        "datadoc_label": "generators",
-        "@type": OTEIO.Generator,
-    },
-    "accessService": {
-        "datadoc_label": "dataServices",
-        "@type": DCAT.DataService,
-    },
-    "distribution": {
-        "datadoc_label": "distributions",
-        "@type": DCAT.Distribution,
-    },
-    "dataset": {
-        "datadoc_label": "datasets",
-        "@type": [DCAT.Dataset, EMMO.Dataset],
-    },
-    "resource": {
-        # General data resource
-        # Ex: samples, instruments, models, people, projects, ...
-        "datadoc_label": "resources",
-        "@type": OWL.NamedIndividual,
-    },
-}
-
-
-class InvalidKeywordError(KeyError):
-    """Keyword is not defined."""
 
 
 def save_dict(
     ts: Triplestore,
     dct: dict,
-    type: "Optional[str]" = "dataset",
+    type: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -110,10 +95,10 @@ def save_dict(
     Arguments:
         ts: Triplestore to save to.
         dct: Dict with data to save.
-        type: Type of data to save.  Should either be one of the
-            pre-defined names: "dataset", "distribution", "accessService",
-            "parser" and "generator" or an IRI to a class in an ontology.
-            Defaults to "dataset".
+        type: Type of data to save.  Should be one of the resource types
+            defined in `keywords`.
+        keywords: Keywords object with keywords definitions.  If not provided,
+            only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned dict.
@@ -137,15 +122,27 @@ def save_dict(
     References:
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json
     """
+    if keywords is None:
+        keywords = Keywords()
+
     if "@id" not in dct:
         raise ValueError("`dct` must have an '@id' key")
 
     all_prefixes = get_prefixes()
-    all_prefixes.update(ts.namespaces)
+    all_prefixes.update({pf: str(ns) for pf, ns in ts.namespaces.items()})
     if prefixes:
         all_prefixes.update(prefixes)
 
-    d = as_jsonld(dct=dct, type=type, prefixes=all_prefixes, **kwargs)
+    d = as_jsonld(
+        dct=dct,
+        type=type,
+        keywords=keywords,
+        prefixes=all_prefixes,
+        **kwargs,
+    )
+
+    # Validate
+    validate(d, type=type, keywords=keywords)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -186,7 +183,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
     # Save data models
     datamodels = {
         d["@id"]: d["datamodel"]
-        for d in dct.get("datasets", ())
+        for d in dct.get("Dataset", ())
         if "datamodel" in d
     }
     try:
@@ -252,18 +249,20 @@ def load_dict(
     if use_sparql:
         return _load_sparql(ts, iri)
 
-    nested = dicttypes.keys()
     d = AttrDict()
     dct = _load_triples(ts, iri)
-    for k, v in dct.items():
-        if k in nested:
-            if not isinstance(v, list):
-                v = [v]
-            for vv in v:
-                d[k] = load_dict(ts, iri=vv, use_sparql=use_sparql)
-                add(d[k], "@type", dicttypes[k]["@type"])
+    for key, val in dct.items():
+        if key in ("mappings", "statements"):
+            add(d, key, val)
         else:
-            d[k] = v
+            if not isinstance(val, list):
+                val = [val]
+            for v in val:
+                if key != "@id" and isinstance(v, str) and v.startswith("_:"):
+                    add(d, key, load_dict(ts, iri=v, use_sparql=use_sparql))
+                else:
+                    add(d, key, v)
+
     return d
 
 
@@ -293,6 +292,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
+    # Some backends, like GraphDB, requires the empty prefix to be defined
     query = f"""
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
@@ -301,30 +301,12 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
       ?s ?p ?o .
     }}
     """
-
-    nested = dicttypes.keys()
-
-    def recur(d):
-        """Recursively load and insert referred resources into dict `d`."""
-        if isinstance(d, dict):
-            for k, v in d.items():
-                if k in nested:
-                    val = v.get("@id")
-                    if isinstance(val, str):
-                        d[k] = load_dict(ts, val, use_sparql=True)
-                    elif isinstance(v, (dict, list)):
-                        recur(v)
-        elif isinstance(d, list):
-            for e in d:
-                recur(e)
-
     triples = ts.query(query)
     with Triplestore(backend="rdflib") as ts2:
         for prefix, namespace in ts.namespaces.items():
-            ts2.bind(prefix, namespace)
+            ts2.bind(prefix, str(namespace))
         ts2.add_triples(triples)  # type: ignore
         dct = load_dict(ts2, iri, use_sparql=False)
-    recur(dct)
     return dct
 
 
@@ -490,7 +472,7 @@ def add(d: dict, key: str, value: "Any") -> None:
                 # Sort dicts at end, by representing them with a huge
                 # unicode character
                 v,
-                key=lambda x: "\uffff" if isinstance(x, dict) else x,
+                key=lambda x: "\uffff" if isinstance(x, dict) else str(x),
             )
         )
 
@@ -555,18 +537,6 @@ def get(
     return value
 
 
-def expand_iri(iri: str, prefixes: dict) -> str:
-    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-    returned."""
-    match = re.match(MATCH_PREFIXED_IRI, iri)
-    if match:
-        prefix, name, _ = match.groups()
-        if prefix in prefixes:
-            return f"{prefixes[prefix]}{name}"
-        warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
-    return iri
-
-
 def read_datadoc(filename: "Union[str, Path]") -> dict:
     """Read YAML data documentation and return it as a dict.
 
@@ -580,7 +550,9 @@ def read_datadoc(filename: "Union[str, Path]") -> dict:
 
 
 def save_datadoc(
-    ts: Triplestore, file_or_dict: "Union[str, Path, dict]"
+    ts: Triplestore,
+    file_or_dict: "Union[str, Path, dict]",
+    keywords: "Optional[Keywords]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -589,6 +561,9 @@ def save_datadoc(
         file_or_dict: Data documentation dict or name of a YAML file to read
             the data documentation from.  It may also be an URL to a file
             accessible with HTTP GET.
+        keywords: Optional Keywords object with keywords definitions.
+            The default is to infer the keywords from the `field` or
+            `keywordfile` keys in the YAML file.
 
     Returns:
         Dict-representation of the loaded dataset.
@@ -598,6 +573,12 @@ def save_datadoc(
     else:
         d = read_datadoc(file_or_dict)
 
+    # Get keywords
+    if keywords is None:
+        keywords = Keywords(
+            field=d.get("field"), yamlfile=d.get("keywordfile")
+        )
+
     # Bind prefixes
     context = d.get("@context")
     prefixes = get_prefixes(context=context)
@@ -605,15 +586,19 @@ def save_datadoc(
     for prefix, ns in prefixes.items():  # type: ignore
         ts.bind(prefix, ns)
 
-    # Maps datadoc_labels to type
-    types = {v["datadoc_label"]: k for k, v in dicttypes.items()}
-
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    for spec in dicttypes.values():
-        label = spec["datadoc_label"]
-        for dct in get(d, label):
+    for name, lst in d.items():
+        if name in ("@context", "field", "keywordfile", "prefixes"):
+            continue
+        if name not in keywords.data.resources:
+            raise NoSuchTypeError(f"unknown type '{name}' in YAML file.")
+        for dct in lst:
             dct = as_jsonld(
-                dct=dct, type=types[label], prefixes=prefixes, _context=context
+                dct=dct,
+                type=name,
+                keywords=keywords,
+                prefixes=prefixes,
+                _context=context,
             )
             f = io.StringIO(json.dumps(dct))
             with Triplestore(backend="rdflib") as ts2:
@@ -641,11 +626,12 @@ def prepare_datadoc(datadoc: dict) -> dict:
     else:
         d.prefixes = prefixes.copy()
 
-    for type, spec in dicttypes.items():
-        label = spec["datadoc_label"]
-        for i, dct in enumerate(get(d, label)):
-            d[label][i] = as_jsonld(
-                dct=dct, type=type, prefixes=d.prefixes, _context=context
+    for name, lst in d.items():
+        if name in ("@context", "field", "keywordfile", "prefixes"):
+            continue
+        for i, dct in enumerate(lst):
+            lst[i] = as_jsonld(
+                dct=dct, type=name, prefixes=d.prefixes, _context=context
             )
 
     return d
@@ -653,7 +639,8 @@ def prepare_datadoc(datadoc: dict) -> dict:
 
 def as_jsonld(
     dct: dict,
-    type: "Optional[str]" = "dataset",
+    type: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     **kwargs,
 ) -> dict:
@@ -661,10 +648,10 @@ def as_jsonld(
 
     Arguments:
         dct: Dict documenting a resource to be represented as JSON-LD.
-        type: Type of data to document.  Should either be one of the
-            pre-defined names: "dataset", "distribution", "accessService",
-            "parser" and "generator" or an IRI to a class in an ontology.
-            Defaults to "dataset".
+        type: Type of data to save.  Should be one of the resource types
+            defined in `keywords`.
+        keywords: Keywords object with keywords definitions.  If not provided,
+            only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         kwargs: Additional keyword arguments to add to the returned
@@ -677,30 +664,57 @@ def as_jsonld(
         An updated copy of `dct` as valid JSON-LD.
 
     """
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-statements
+
+    if keywords is None:
+        keywords = Keywords()
 
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
 
-    context = kwargs.pop("_context", None)
-
     d = AttrDict()
-    if not _entryid:
-        d["@context"] = CONTEXT_URL
-        if context:
-            add(d, "@context", context)
+    dct = dct.copy()
 
+    if not _entryid:
+        if "@context" in dct:
+            d["@context"] = dct.pop("@context")
+        else:
+            d["@context"] = CONTEXT_URL
+        if "_context" in kwargs and kwargs["_context"]:
+            add(d, "@context", kwargs.pop("_context"))
+
+    all_prefixes = {}
+    if not _entryid:
+        all_prefixes = get_prefixes(context=d["@context"])
+        all_prefixes.update(keywords.data.get("prefixes", {}))
+    if prefixes:
+        all_prefixes.update(prefixes)
+
+    def expand(iri):
+        if isinstance(iri, str):
+            return expand_iri(iri, all_prefixes)
+        return [expand_iri(i, all_prefixes) for i in iri]
+
+    if "@id" in dct:
+        d["@id"] = expand(dct.pop("@id"))
+    if "_id" in kwargs and kwargs["_id"]:
+        add(d, "@id", expand(kwargs.pop("_id")))
+
+    if "@type" in dct:
+        d["@type"] = expand(dct.pop("@type"))
+    if "_type" in kwargs and kwargs["_type"]:
+        add(d, "@type", expand(kwargs.pop("_type")))
     if type:
-        t = dicttypes[type]["@type"] if type in dicttypes else type
-        add(d, "@type", t)  # get type at top
-        d.update(dct)
-        add(d, "@type", t)  # readd type if overwritten
-    else:
-        d.update(dct)
+        add(d, "@type", expand(keywords.normtype(type)))
+    if "@type" not in d:
+        d["@type"] = "owl:NamedIndividual"
+
+    d.update(dct)
 
     for k, v in kwargs.items():
-        key = f"@{k[1:]}" if re.match("^_([^_]|([^_].*[^_]))$", k) else k
-        add(d, key, v)
+        key = f"@{k[1:]}" if re.match("^_[a-zA-Z]+$", k) else k
+        if v:
+            add(d, key, v)
 
     if "@id" not in d and not _entryid:
         raise ValueError("Missing '@id' in dict to document")
@@ -711,15 +725,12 @@ def as_jsonld(
     if "@type" not in d:
         warnings.warn(f"Missing '@type' in dict to document: {_entryid}")
 
-    all_prefixes = get_prefixes(context=context)
-    if prefixes:
-        all_prefixes.update(prefixes)
-
     # Recursively expand IRIs and prepare sub-directories
     # Nested lists are not supported
-    nested = dicttypes.keys()
     for k, v in d.items():
-        if k == "mappingURL":
+        if k in ("@context", "@id", "@type"):
+            pass
+        elif k == "mappingURL":
             for url in get(d, k):
                 with Triplestore("rdflib") as ts2:
                     ts2.parse(url, format=d.get("mappingFormat"))
@@ -727,7 +738,7 @@ def as_jsonld(
                         d.statements.extend(ts2.triples())
                     else:
                         d["statements"] = list(ts2.triples())
-        if k in ("statements", "mappings"):
+        elif k in ("statements", "mappings"):
             for i, spo in enumerate(d[k]):
                 d[k][i] = [
                     (
@@ -743,17 +754,108 @@ def as_jsonld(
             for i, e in enumerate(v):
                 if isinstance(e, str):
                     v[i] = expand_iri(e, all_prefixes)
-                elif isinstance(e, dict) and k in nested:
+                elif isinstance(e, dict):
                     v[i] = as_jsonld(
-                        e, k, _entryid=_entryid, prefixes=all_prefixes
+                        dct=e,
+                        type=keywords[k].range,
+                        keywords=keywords,
+                        prefixes=all_prefixes,
+                        _entryid=_entryid,
                     )
-        elif isinstance(v, dict) and k in nested:
-            d[k] = as_jsonld(v, k, _entryid=_entryid, prefixes=all_prefixes)
+        elif isinstance(v, dict):
+            if "datatype" in keywords[k]:
+                d[k] = v
+            else:
+                d[k] = as_jsonld(
+                    dct=v,
+                    type=keywords[k].range,
+                    keywords=keywords,
+                    prefixes=all_prefixes,
+                    _entryid=_entryid,
+                )
 
     return d
 
 
-def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
+def validate(
+    dct: dict,
+    type: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+) -> None:
+    """Validates single-resource dict `dct`.
+
+    Arguments
+        dct: Single-resource dict to validate.
+        type: The type of resource to validate. Ex: "Dataset", "Agent", ...
+        keywords: Keywords object defining the keywords used in `dct`.
+
+    Raises:
+        ValidateError: If the validation fails.
+    """
+    if keywords is None:
+        keywords = Keywords()
+
+    if type is None and "@type" in dct:
+        try:
+            type = keywords.typename(dct["@type"])
+        except NoSuchTypeError:
+            pass
+
+    resources = keywords.data.resources
+
+    def check_keyword(keyword, type):
+        typename = keywords.typename(type)
+        name = keywords.keywordname(keyword)
+        if name in resources[typename].keywords:
+            return True
+        if "subClassOf" in resources[typename]:
+            subclass = resources[typename].subClassOf
+            return check_keyword(name, subclass)
+        return False
+
+    for k, v in dct.items():
+        if k.startswith("@"):
+            continue
+        if k in keywords:
+            r = keywords[k]
+            if "datatype" in r:
+                datatype = expand_iri(r.datatype, keywords.data.prefixes)
+                literal = parse_literal(v)
+                tr = {}
+                for t, seq in Literal.datatypes.items():
+                    for dt in seq:
+                        tr[dt] = t
+                if tr.get(literal.datatype) != tr.get(datatype):
+                    raise ValidateError(
+                        f"invalid datatype for '{v}'. "
+                        f"Got '{literal.datatype}', expected '{datatype}'"
+                    )
+            elif isinstance(v, dict):
+                validate(v, type=r.get("range"), keywords=keywords)
+            elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
+                raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
+        else:
+            raise ValidateError(f"unknown keyword: '{k}'")
+
+    if type:
+        typename = keywords.typename(type)
+
+        for k in dct:
+            if not k.startswith("@"):
+                if not check_keyword(k, typename):
+                    warnings.warn(
+                        f"unexpected keyword '{k}' provided for type: '{type}'"
+                    )
+
+        for kr, vr in resources[typename].items():
+            if "conformance" in vr and vr.conformance == "mandatory":
+                if kr not in dct:
+                    raise ValidateError(
+                        f"missing mandatory keyword '{kr}' for type: '{type}'"
+                    )
+
+
+def get_partial_pipeline(
     ts: Triplestore,
     client,
     iri: str,
@@ -785,7 +887,7 @@ def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
     Returns:
         OTELib partial pipeline.
     """
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-locals
     dct = load_dict(ts, iri, use_sparql=use_sparql)
 
     if isinstance(distribution, str):
@@ -818,13 +920,21 @@ def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
                 raise ValueError(
                     f"dataset '{iri}' has no such parser: {parser}"
                 )
+        if isinstance(par, str):
+            par = load_dict(ts, par)
         configuration = par.get("configuration")
     else:
         configuration = None
 
+    mediaType = distr.get("mediaType")
+    mediaTypeShort = (
+        mediaType[44:]
+        if mediaType.startswith("http://www.iana.org/assignments/media-types/")
+        else mediaType
+    )
     dataresource = client.create_dataresource(
         downloadUrl=distr.get("downloadURL"),
-        mediaType=distr.get("mediaType"),
+        mediaType=mediaTypeShort,
         accessUrl=distr.get("accessURL"),
         accessService=accessService,
         configuration=dict(configuration) if configuration else {},
@@ -873,18 +983,138 @@ def get_partial_pipeline(  # pylint: disable=too-many-positional-arguments
     return pipeline
 
 
+def delete_iri(ts: Triplestore, iri: str) -> None:
+    """Delete `iri` from triplestore by calling `ts.update().`"""
+    subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
+    query = f"""
+    DELETE {{ ?s ?p ?o }}
+    WHERE {{
+      {subj} (:|!:)* ?s .
+      ?s ?p ?o .
+    }}
+    """
+    ts.update(query)
+
+
+def make_query(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+    query_type: "Optional[str]" = "SELECT DISTINCT",
+) -> "str":
+    """Help function for creating a SPARQL query.
+
+    See search_iris() for description of arguments.
+
+    The `query_type` argument is typically one of "SELECT DISTINCT"
+    "SELECT", or "DELETE".
+    """
+    # pylint: disable=too-many-statements,too-many-branches,too-many-locals
+
+    if criterias is None:
+        criterias = {}
+    if regex is None:
+        regex = {}
+
+    expanded = {v: k for k, v in get_shortnames().items()}
+    crit = []
+    filters = []
+    n = 0  # counter for creating new unique sparql variables
+    flags_arg = f", {flags}" if flags else ""
+
+    # Special handling of @id
+    cid = criterias.pop("@id", criterias.pop("_id", None))
+    rid = regex.pop("@id", regex.pop("_id", None))
+    if cid:
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')
+    elif rid:
+        filters.append(
+            f'FILTER REGEX(STR(?iri), "{ts.expand_iri(rid)}"{flags_arg}) .'
+        )
+
+    if type:
+        if ":" in type:
+            expanded_iri = ts.expand_iri(type)
+            crit.append(f"?iri rdf:type <{expanded_iri}> .")
+        else:
+            if keywords is None:
+                keywords = Keywords()
+            typ = keywords.normtype(type)
+            if not isinstance(typ, str):
+                typ = typ[0]
+            crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
+
+    def add_crit(k, v, regex=False, s="iri"):
+        """Add criteria to SPARQL query."""
+        nonlocal n
+        key = f"@{k[1:]}" if k.startswith("_") else k
+        if "." in key:
+            newkey, restkey = key.split(".", 1)
+            if newkey in expanded:
+                newkey = expanded[newkey]
+            n += 1
+            var = f"v{n}"
+            crit.append(f"?{s} <{ts.expand_iri(newkey)}> ?{var} .")
+            add_crit(restkey, v, s=var)
+        else:
+            if key in expanded:
+                key = expanded[key]
+            if v in expanded:
+                value = f"<{expanded[v]}>"
+            elif isinstance(v, str):
+                value = (
+                    f"<{v}>"
+                    if re.match("^[a-z][a-z0-9.+-]*://", v)
+                    else f'"{v}"'
+                )
+            else:
+                value = v
+            n += 1
+            var = f"v{n}"
+            crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
+            if regex:
+                filters.append(
+                    f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                )
+            else:
+                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+
+    for k, v in criterias.items():
+        add_crit(k, v)
+
+    if not crit:
+        crit.append("?iri ?p ?o .")
+
+    for k, v in regex.items():
+        add_crit(k, v, regex=True)
+
+    where_statements = "\n      ".join(crit + filters)
+    query = f"""
+    PREFIX rdf: <{RDF}>
+    {query_type} ?iri
+    WHERE {{
+      {where_statements}
+    }}
+    """
+    return query
+
+
 def search_iris(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,
     regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
-    Additional matching criterias can be specified by `kwargs`.
 
     Arguments:
         ts: Triplestore to search.
-        type: Either a [resource type] (ex: "dataset", "distribution", ...)
+        type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
             or the IRI of a class to limit the search to.
         criterias: Exact match criterias. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. The IRIs
@@ -893,6 +1123,15 @@ def search_iris(
             is correctly parsed.
         regex: Like `criterias` but the values in the provided dict are regular
             expressions used for the matching.
+        flags: Flags passed to regular expressions.
+            - `s`: Dot-all mode. The . matches any character.  The default
+              doesn't match newline or carriage return.
+            - `m`: Multi-line mode. The ^ and $ characters matches beginning
+              or end of line instead of beginning or end of string.
+            - `i`: Case-insensitive mode.
+            - `q`: Special characters representing themselves.
+        keywords: Keywords instance defining the resource types used with
+            the `type` argument.
 
     Returns:
         List of IRIs for matching resources.
@@ -904,7 +1143,7 @@ def search_iris(
 
         List IRIs of all resources with John Doe as `contactPoint`:
 
-            search_iris(ts, criteria={"contactPoint": "John Doe"})
+            search_iris(ts, criteria={"contactPoint.hasName": "John Doe"})
 
         List IRIs of all samples:
 
@@ -917,7 +1156,7 @@ def search_iris(
                 ts,
                 type=DCAT.Dataset,
                 criteria={
-                    "contactPoint": "John Doe",
+                    "contactPoint.hasName": "John Doe",
                     "fromSample": SAMPLE.batch2/sample3,
                 },
             )
@@ -932,72 +1171,34 @@ def search_iris(
     SeeAlso:
     [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
-    if criterias is None:
-        criterias = {}
-
-    # Special handling of @id
-    id = (
-        criterias.pop("@id")
-        if "@id" in criterias
-        else criterias.pop("_id", None)
+    query = make_query(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+        query_type="SELECT DISTINCT",
     )
+    return [r[0] for r in ts.query(query)]  # type: ignore
 
-    crit = []
-    filters = []
-    if type:
-        if ":" in type:
-            expanded = ts.expand_iri(type)
-            crit.append(f"  ?iri rdf:type <{expanded}> .")
-        elif type in dicttypes:
-            types = dicttypes[type]["@type"]
-            if isinstance(types, str):
-                types = [types]
-            for t in types:
-                crit.append(f"  ?iri rdf:type <{t}> .")
-        else:
-            raise ValueError(
-                "`type` must either be an IRI or the name of one the "
-                f"resource types. Got: {type}"
-            )
 
-    else:
-        crit.append("  ?iri rdf:type ?o .")
-
-    n = 0  # variable no
-    expanded = {v: k for k, v in get_shortnames().items()}
-
-    def get_predicate_value(k, v):
-        """Get value to match."""
-        key = f"@{k[1:]}" if k.startswith("_") else k
-        predicate = ts.expand_iri(key)
-        if v in expanded:
-            value = f"<{expanded[v]}>"
-        elif isinstance(v, str):
-            value = (
-                f"<{v}>" if re.match("^[a-z][a-z0-9.+-]*://", v) else f'"{v}"'
-            )
-        else:
-            value = v
-        return predicate, value
-
-    for k, v in criterias.items():
-        predicate, value = get_predicate_value(k, v)
-        crit.append(f"      ?iri <{predicate}> {value} .")
-
-    if regex:
-        for k, v in regex.items():
-            n += 1
-            var = f"v{n}"
-            predicate, value = get_predicate_value(k, v)
-            crit.append(f"      ?iri <{predicate}> ?{var} .")
-            filters.append(f"      FILTER REGEX(str(?{var}), {value})")
-
-    where_statements = "\n".join(crit + filters)
-    query = f"""
-    PREFIX rdf: <{RDF}>
-    SELECT DISTINCT ?iri
-    WHERE {{
-    {where_statements}
-    }}
-    """
-    return [r[0] for r in ts.query(query) if not id or r[0] == ts.expand_iri(id)]  # type: ignore
+def delete(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+) -> None:
+    """Delete matching resources. See `search_iris()` for a description of arguments."""
+    iris = search_iris(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+    )
+    for iri in iris:
+        delete_iri(ts, iri)

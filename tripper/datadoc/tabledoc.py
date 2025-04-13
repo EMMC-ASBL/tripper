@@ -52,11 +52,11 @@ class TableDoc:
 
     # pylint: disable=redefined-builtin,too-few-public-methods
 
-    def __init__(  # pylint: disable=too-many-positional-arguments
+    def __init__(
         self,
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
-        type: "Optional[str]" = "dataset",
+        type: "Optional[str]" = "Dataset",
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[str, dict, list]]" = None,
         strip: bool = True,
@@ -104,7 +104,7 @@ class TableDoc:
     @staticmethod
     def fromdicts(
         dicts: "Sequence[dict]",
-        type: "Optional[str]" = "dataset",
+        type: "Optional[str]" = "Dataset",
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[str, dict, list]]" = None,
         strip: bool = True,
@@ -114,10 +114,10 @@ class TableDoc:
         Arguments:
             dicts: Sequence of single-resource dicts.
             type: Type of data to save (applies to all rows).  Should
-                either be one of the pre-defined names: "dataset",
-                "distribution", "accessService", "parser" and
-                "generator" or an IRI to a class in an ontology.
-                Defaults to "dataset".
+                either be one of the pre-defined names: "Dataset",
+                "Distribution", "AccessService", "Parser" and
+                "Generator" or an IRI to a class in an ontology.
+                Defaults to "Dataset".
             prefixes: Dict with prefixes in addition to those included
                 in the JSON-LD context.  Should map namespace prefixes
                 to IRIs.
@@ -200,9 +200,9 @@ class TableDoc:
         )
 
     @staticmethod
-    def parse_csv(  # pylint: disable=too-many-positional-arguments
+    def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
-        type: "Optional[str]" = "dataset",
+        type: "Optional[str]" = "Dataset",
         prefixes: "Optional[dict]" = None,
         context: "Optional[Union[dict, list]]" = None,
         encoding: str = "utf-8",
@@ -215,10 +215,10 @@ class TableDoc:
         Arguments:
             csvfile: Name of CSV file to parse or an iterable of strings.
             type: Type of data to save (applies to all rows).  Should
-                either be one of the pre-defined names: "dataset",
-                "distribution", "accessService", "parser" and "generator"
+                either be one of the pre-defined names: "Dataset",
+                "Distribution", "AccessService", "Parser" and "Generator"
                 or an IRI to a class in an ontology.  Defaults to
-                "dataset".
+                "Dataset".
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
             context: Dict with user-defined JSON-LD context.

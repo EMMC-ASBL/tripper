@@ -29,7 +29,7 @@ requires-python = ">=3.8"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions>=4.7.0,<4.7.1; python_version<'3.9'",
+    "typing-extensions>=4.7.0,<4.13.1; python_version < '3.9'",
 ]
 
 [project.optional-dependencies]
@@ -56,7 +56,7 @@ testing-core = [
     "pytest-cov==6.0.0; python_version>='3.9'",
 ]
 testing = [
-    "tripper[testing-core,mappings,datadoc]",
+    "tripper[datadoc,mappings,testing-core]",
     "dlite-python>=0.5.27; python_version>='3.8'",
     "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
@@ -88,6 +88,7 @@ Package = "https://pypi.org/project/tripper"
 
 [project.scripts]
 datadoc = "tripper.datadoc.clitool:main"
+keywords = "tripper.datadoc.keywords:main"
 
 [tool.isort]
 line_length = 79  # PEP8
@@ -111,6 +112,7 @@ max-locals = 20
 disable = [
     "fixme",
     "invalid-name",
+    "too-many-positional-arguments",
 ]
 good-names = [
     # Default
@@ -135,3 +137,8 @@ filterwarnings = [
 
 [tool.setuptools.package-data]
 "tripper.context" = ["*.json", "*.yaml"]
+
+
+# Note the quotes around dlite.python_storage_plugins to escape the embedded dot
+[project.entry-points."tripper.keywords"]
+"tripper/context/0.3" = "default"

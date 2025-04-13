@@ -10,13 +10,14 @@ on:
 jobs:
   basic-tests:
     name: External
-    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.9.1
+    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.9.2
     with:
       ## General settings:
       install_extras: "[dev]"
 
       ## pre-commit
       run_pre-commit: false
+      skip_pre-commit_hooks: "generate-context-and-doc"
 
       ## pylint & safety
       python_version_pylint_safety: "3.11"
