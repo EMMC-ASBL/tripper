@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 import pint
 
-from tripper import EMMO, RDFS, SKOS, Namespace, Triplestore
+from tripper import EMMO, RDFS, SCHEMA, SKOS, Namespace, Triplestore
 from tripper.errors import TripperError
 from tripper.namespace import get_cachedir
 from tripper.utils import AttrDict
@@ -76,7 +76,9 @@ def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
         if cachefile.exists():
             _emmo_ts.parse(cachefile, format="ntriples")
         else:
+            print("Parsing EMMO...", end="")
             _emmo_ts.parse(f"https://w3id.org/emmo/{emmo_version}")
+            print(" done")
             try:
                 _emmo_ts.serialize(
                     cachefile, format="ntriples", encoding="utf-8"
@@ -283,6 +285,11 @@ class Units:
             qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
             omIRI = self.ts.value(iri, EMMO.omReference, any=True)
 
+            for unitCodeIRI in (SCHEMA.unitCode, EMMO.uneceCommonCode):
+                unitCode = self.ts.value(iri, unitCodeIRI)
+                if unitCode:
+                    break
+
             d[name] = AttrDict(
                 name=name,
                 description=self.ts.value(iri, EMMO.elucidation),
@@ -297,7 +304,7 @@ class Units:
                 ucumCodes=[
                     str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
                 ],
-                unitCode=str(self.ts.value(iri, EMMO.uneceCommonCode)),
+                unitCode=str(unitCode),
                 multiplier=float(mult[0]["value"]) if mult else None,
                 offset=float(offset[0]["value"]) if offset else None,
             )
