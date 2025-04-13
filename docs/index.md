@@ -1,13 +1,15 @@
-Tripper
-=======
-*Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends.*
-
+<img src="figs/tripper_logo.svg" alt="Tripper logo" align="right" width="96" height="96">
 
 [![PyPI](https://img.shields.io/pypi/v/tripper?logo=pypi)](https://pypi.org/project/tripper)
 [![Documentation](https://img.shields.io/badge/documentation-informational?logo=github)](https://emmc-asbl.github.io/tripper/latest/)
 [![CI tests](https://github.com/EMMC-ASBL/tripper/workflows/CI%20-%20Tests/badge.svg)](https://github.com/EMMC-ASBL/tripper/actions/workflows/ci_tests.yml?query=branch%3Amaster)
 [![DOI](https://zenodo.org/badge/547162834.svg)](https://zenodo.org/badge/latestdoi/547162834)
 
+*Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends*
+
+
+Tripper
+=======
 
 Getting started
 ---------------
