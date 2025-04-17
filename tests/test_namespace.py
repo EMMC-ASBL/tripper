@@ -102,20 +102,21 @@ def test_triplestore_arg() -> None:
         EX.Class  # pylint: disable=pointless-statement
 
 
-# if True:
 def test_namespace_emmo():
-    """Test EMMO"""
+    """Test EMMO namespace."""
     pytest.importorskip("rdflib")
-    from tripper import Namespace
+    from tripper import EMMO
     from tripper.errors import NoSuchIRIError
 
-    EMMO = Namespace(
-        iri="https://w3id.org/emmo#",
-        label_annotations=True,
-        check=True,
-    )
     assert EMMO.Atom == (
         "https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
     )
     with pytest.raises(NoSuchIRIError):
         EMMO.NonExisting  # pylint: disable=pointless-statement
+
+    # Test _get_labels() method.
+    # pylint: disable=protected-access
+    assert EMMO._get_labels(EMMO.Atom) == ["Atom"]
+    assert EMMO._get_labels("EMMO_eb77076b_a104_42ac_a065_798b2d2809ad") == [
+        "Atom"
+    ]

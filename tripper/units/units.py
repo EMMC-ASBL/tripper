@@ -3,24 +3,36 @@
 Pint is used for programatic unit conversions.
 """
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods,too-many-lines
 
+import math
 import pickle  # nosec
 import re
 import warnings
 from collections import namedtuple
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
 import pint
 
-from tripper import EMMO, RDFS, SCHEMA, SKOS, Namespace, Triplestore
-from tripper.errors import TripperError
+from tripper import (
+    EMMO,
+    OWL,
+    RDF,
+    RDFS,
+    SCHEMA,
+    SKOS,
+    Literal,
+    Namespace,
+    Triplestore,
+)
+from tripper.errors import IRIExistsError, TripperError
 from tripper.namespace import get_cachedir
-from tripper.utils import AttrDict
+from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
-    from typing import Any, Iterable, Mapping, Optional, Union
+    from typing import Any, Iterable, Mapping, Optional, Tuple, Union
 
     from pint.compat import TypeAlias
 
@@ -36,13 +48,13 @@ _unit_cache: dict = {}  # Maps unit names to IRIs
 # Note we use H instead of ϴ to represent the thermodynamic temperature
 Dimension = namedtuple("Dimension", "T,L,M,I,H,N,J")
 Dimension.__doc__ = "SI quantity dimension"
-Dimension.T.__doc__ = "time"
-Dimension.L.__doc__ = "length"
-Dimension.M.__doc__ = "mass"
-Dimension.I.__doc__ = "electric current"
-Dimension.H.__doc__ = "thermodynamic temperature"
-Dimension.N.__doc__ = "amount of substance"
-Dimension.J.__doc__ = "luminous intensity"
+Dimension.T.__doc__ = "Time"
+Dimension.L.__doc__ = "Length"
+Dimension.M.__doc__ = "Mass"
+Dimension.I.__doc__ = "ElectricCurrent"
+Dimension.H.__doc__ = "ThermodynamicTemperature"
+Dimension.N.__doc__ = "AmountOfSubstance"
+Dimension.J.__doc__ = "LuminousIntensity"
 
 
 class UnitError(TripperError):
@@ -76,9 +88,9 @@ def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
         if cachefile.exists():
             _emmo_ts.parse(cachefile, format="ntriples")
         else:
-            print("Parsing EMMO...", end="")
+            print("* parsing EMMO... ", end="", flush=True)
             _emmo_ts.parse(f"https://w3id.org/emmo/{emmo_version}")
-            print(" done")
+            print("done")
             try:
                 _emmo_ts.serialize(
                     cachefile, format="ntriples", encoding="utf-8"
@@ -123,8 +135,70 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
+def emmo_quantity_value(ts: Triplestore, iri: str) -> "Tuple[float, str]":
+    """Return value and unit for EMMO quantity with given `iri`."""
+    isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
+
+    def value_restriction_query(prop, target="hasValue", number=False):
+        """Return SPARQL query for value restriction for property `prop`."""
+        crit1 = f"?r owl:{target} ?qvalue ."
+        crit2 = f"?r owl:{target} ?v .\n  ?v <{EMMO.hasNumberValue}> ?qvalue ."
+        crit = crit2 if number else crit1
+        return f"""
+        PREFIX rdfs: <{RDFS}>
+        SELECT ?qvalue
+        WHERE {{
+          <{iri}> rdfs:subClassOf+ ?r .
+          # ?r a owl:Restriction .
+          ?r owl:onProperty <{prop}> .
+          {crit}
+        }}
+        """
+
+    # Check for emmo:hasSIQuantityValue
+    if isclass:
+        result = ts.query(value_restriction_query(EMMO.hasSIQuantityValue))
+        qval = result[0][0] if result else None
+    else:
+        result = ts.value(iri, EMMO.hasSIQuantityValue)
+        qval = str(result) if result else None
+
+    if qval:
+        m = re.match(
+            r"([+-]?[0-9]*\.?[0-9]*([eE][+-]?[0-9]+)?)[ *⋅]*(.*)?", qval
+        )
+        if m:
+            value, _, unit = m.groups()
+            return float(value), unit
+
+    # Check for emmo:hasNumericalPart/emmo:hasReferencePart
+    if isclass:
+        num = ts.query(
+            value_restriction_query(EMMO.hasNumericalPart, number=True)
+        )
+        ref = ts.query(
+            value_restriction_query(
+                EMMO.hasReferencePart, target="someValuesFrom"
+            )
+        )[0][0]
+    else:
+        num = ts.query(
+            f"""
+        SELECT ?qvalue WHERE {{
+          <{iri}> <{EMMO.hasNumericalPart}> ?v .
+          ?v <{EMMO.hasNumberValue}> ?qvalue .
+        }}
+        """
+        )
+        ref = ts.value(iri, EMMO.hasReferencePart)
+
+    return float(num[0][0]), ref
+
+
 class Units:
     """A class representing all units in an EMMO-based ontology."""
+
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(
         self,
@@ -171,9 +245,18 @@ class Units:
         cachefile = cachedir / fname
         if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
-                self.units = pickle.load(f)  # nosec
+                d = pickle.load(f)  # nosec
+                self.units = d["units"]
+                self.quantities = d["quantities"]
+                self.constants = d["constants"]
         else:
+            print("* parsing units... ", end="", flush=True)
             self.units = self._parse_units(include_prefixed=include_prefixed)
+            print("done\n* parsing quantities... ", end="", flush=True)
+            self.quantities = self._parse_quantities(constants=False)
+            print("done\n* parsing constants... ", end="", flush=True)
+            self.constants = self._parse_quantities(constants=True)
+            print("done")
 
         if cache in (True, None):
             try:
@@ -185,7 +268,12 @@ class Units:
                 )
             else:
                 with open(cachefile, "wb") as f:
-                    pickle.dump(self.units, f)
+                    d = {
+                        "units": self.units,
+                        "quantities": self.quantities,
+                        "constants": self.constants,
+                    }
+                    pickle.dump(d, f)
 
         self.unit_ontology = unit_ontology
         self.ontology_version = ontology_version
@@ -217,6 +305,39 @@ class Units:
         # Bug in mupy... seems to be fixed in master
         return [iri for iri, in self.ts.query(query)]  # type: ignore
 
+    def _emmo_quantity_iris(self, constants: bool = False) -> list:
+        """Return a list with the IRIs of all EMMO quantities.
+
+        If `constants` is true, only physical constants are returned,
+        otherwise all quantities, but physical constants are returned.
+        """
+        # Note, we liberately do not include
+        #
+        #    ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
+        #
+        # in the query, since that makes it very slow.
+        constonly = "" if constants else "NOT"
+        query = f"""
+        PREFIX rdfs: <{RDFS}>
+        PREFIX owl: <{OWL}>
+        SELECT ?q
+        WHERE {{
+          # {{
+          #   SELECT ?q WHERE {{
+          #     ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
+          #   }}
+          # }}
+          ?q rdfs:subClassOf* ?r .
+          ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
+          FILTER {constonly} EXISTS {{
+            ?q rdfs:subClassOf+ <{EMMO.PhysicalConstant}> .
+          }}
+          FILTER (!isBlank(?q))
+        }}
+        """
+        # Bug in mupy... seems to be fixed in master
+        return [iri for iri, in self.ts.query(query)]  # type: ignore
+
     def _get_unit_symbols(self, iri: str) -> list:
         """Return a list with unit symbols for unit with the given IRI."""
         symbols = []
@@ -231,10 +352,11 @@ class Units:
 
         return symbols
 
-    def _get_dimension_string(self, iri: str) -> str:
+    def _get_unit_dimension_string(self, iri: str) -> str:
         """Return the dimension string for unit with the given IRI."""
         query = f"""
         PREFIX rdfs: <{RDFS}>
+        PREFIX owl: <{OWL}>
         SELECT ?dimstr
         WHERE {{
           <{iri}> rdfs:subClassOf+ ?r .
@@ -242,6 +364,32 @@ class Units:
           ?r owl:hasValue ?dimstr .
         }}
         """
+        result = self.ts.query(query)
+        if result:
+            # Bug in mupy
+            return result[0][0]  # type: ignore
+        raise MissingDimensionStringError(iri)
+
+    def _get_quantity_dimension_string(self, iri: str) -> str:
+        """Return the dimension string for quantity with the given IRI."""
+        # Note, the use of subquery greately speeds up this SPARQL query
+        query = f"""
+        PREFIX rdfs: <{RDFS}>
+        PREFIX owl: <{OWL}>
+        SELECT ?dimstr
+        WHERE {{
+          {{
+            SELECT ?dimunit WHERE {{
+              <{iri}> rdfs:subClassOf+ ?r .
+              ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
+              ?r owl:someValuesFrom ?dimunit .
+            }}
+          }}
+          ?dimunit rdfs:subClassOf+ ?rr .
+          ?rr owl:onProperty <{EMMO.hasDimensionString}> .
+          ?rr owl:hasValue ?dimstr .
+        }}
+        """  # nosec
         result = self.ts.query(query)
         if result:
             # Bug in mupy
@@ -262,17 +410,90 @@ class Units:
             return Dimension(*[int(d) for d in m.groups()])
         raise InvalidDimensionStringError(dimstr)
 
+    def _parse_unitname(self, unitname: str) -> "Tuple[float, dict]":
+        """Parse CamelCase unit name and return a multiplication factor (from
+        prefixes) and a dict mapping each unit component to its power.
+
+        """
+        exp = {
+            "Square": 2,
+            "Cube": 3,
+            "Cubic": 3,
+            "Quartic": 4,
+            "Quintic": 5,
+            "Sextic": 6,
+            "Septic": 7,
+            "Heptic": 7,
+            "Octic": 8,
+            "Nonic": 9,
+        }
+        # TODO: infer prefixes from EMMO (requires inferred ontology or
+        # current dev branch)
+        prefixes = {
+            "Quecto": 1e-30,
+            "Ronto": 1e-27,
+            "Yocto": 1e-24,
+            "Zepto": 1e-21,
+            "Atto": 1e-18,
+            "Femto": 1e-15,
+            "Pico": 1e-12,
+            "Nano": 1e-9,
+            "Micro": 1e-6,
+            "Milli": 1e-3,
+            "Centi": 1e-2,
+            "Deci": 1e-1,
+            "Deca": 1e1,
+            "Hecto": 1e2,
+            "Kilo": 1e3,
+            "Mega": 1e6,
+            "Giga": 1e9,
+            "Tera": 1e12,
+            "Peta": 1e15,
+            "Exa": 1e18,
+            "Zetta": 1e21,
+            "Yotta": 1e24,
+            "Ronna": 1e27,
+            "Quetta": 1e30,
+        }
+        d = {}
+        sign = power = 1
+        mult = prefix = 1.0
+        for token in re.split("(?<!^)(?=[A-Z])", unitname):
+            if token in ("Per", "Reciprocal"):
+                sign, power, prefix = -1, 1, 1.0
+            elif token in exp:
+                power = exp[token]
+            elif token in prefixes:
+                prefix = prefixes[token]
+            elif token in self.units:
+                mult *= prefix ** (sign * power)
+                d[token] = sign * power
+                power, prefix = 1, 1.0
+            else:
+                raise MissingUnitError(
+                    "No such unit (or prefix or degree): {token}"
+                )
+        return mult, d
+
     def _parse_units(self, include_prefixed=False) -> "dict[str, AttrDict]":
         """Parse EMMO units and return them as an iterator over named
         tuples.
 
         Arguments:
             include_prefixed: Whether to return prefixed units.
+
+        Returns:
+            Dict mapping unit names to AttrDicts with describing the unit.
+            See the get_unit() method for details.
+
         """
         d = {}
         for iri in self._emmo_unit_iris(include_prefixed=include_prefixed):
             name = str(self.ts.value(iri, SKOS.prefLabel))
-            dimstr = str(self._get_dimension_string(iri))
+            description = self.ts.value(iri, EMMO.elucidation)
+            if not description:
+                description = self.ts.value(iri, EMMO.definition)
+            dimstr = str(self._get_unit_dimension_string(iri))
             dimension = self._parse_dimension_string(dimstr)
             mult = list(
                 self.ts.restrictions(
@@ -292,7 +513,7 @@ class Units:
 
             d[name] = AttrDict(
                 name=name,
-                description=self.ts.value(iri, EMMO.elucidation),
+                description=description,
                 aliases=[
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
                 ],
@@ -304,9 +525,49 @@ class Units:
                 ucumCodes=[
                     str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
                 ],
-                unitCode=str(unitCode),
+                unitCode=str(unitCode) if unitCode else None,
                 multiplier=float(mult[0]["value"]) if mult else None,
                 offset=float(offset[0]["value"]) if offset else None,
+            )
+        return d
+
+    def _parse_quantities(self, constants: bool) -> "dict[str, AttrDict]":
+        """Parse EMMO quantities and return them as an iterator over named
+        tuples.
+
+        Arguments:
+            constants: If true, only parse phycical constants. Otherwise,
+                parse all quantities, but physical constants.
+
+        Returns:
+            Dict mapping quantity names to AttrDicts with describing the
+                quantity.  See the get_quantity() method for details.
+        """
+        d = {}
+        for iri in self._emmo_quantity_iris(constants=constants):
+            name = str(self.ts.value(iri, SKOS.prefLabel))
+            description = self.ts.value(iri, EMMO.elucidation)
+            if not description:
+                description = self.ts.value(iri, EMMO.definition)
+            dimstr = str(self._get_quantity_dimension_string(iri))
+            dimension = self._parse_dimension_string(dimstr)
+            qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
+            omIRI = self.ts.value(iri, EMMO.omReference, any=True)
+            iupacIRI = self.ts.value(iri, EMMO.iupacReference, any=True)
+            iso80000Ref = self.ts.value(iri, EMMO.ISO80000Reference, any=True)
+
+            d[name] = AttrDict(
+                name=name,
+                description=description,
+                aliases=[
+                    str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
+                ],
+                dimension=dimension,
+                emmoIRI=iri,
+                qudtIRI=str(qudtIRI) if qudtIRI else None,
+                omIRI=str(omIRI) if omIRI else None,
+                iupacIRI=str(iupacIRI) if iupacIRI else None,
+                iso80000Ref=str(iso80000Ref) if iso80000Ref else None,
             )
         return d
 
@@ -319,31 +580,36 @@ class Units:
     ) -> AttrDict:
         """Find unit by one of the arguments and return a dict describing it.
 
-        Argument:
-            name: Search for unit by name. Ex: "Ampere"
+        Arguments:
+            name: Search for unit by name. May also be an IRI. Ex: "Ampere"
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
 
         Returns:
-            A dict with attribute access describing the unit. The dict has
-            the following keys:
+            dict: A dict with attribute access describing the unit. The dict
+            has the following keys:
 
-              - name: Preferred label.
-              - description: Unit description.
-              - aliases: List of alternative labels.
-              - symbols: List with unit symbols.
-              - dimension: Named tuple with quantity dimension.
-              - emmoIRI: IRI of the unit in the EMMO ontology.
-              - qudtIRI: IRI of the unit in the QUDT ontology.
-              - omIRI: IRI of the unit in the OM ontology.
-              - ucumCodes: List of UCUM codes for the unit.
-              - unitCode: UNECE common code for the unit.
-              - multiplier: Unit multiplier.
-              - offset: Unit offset.
+            - name: Preferred label.
+            - description: Unit description.
+            - aliases: List of alternative labels.
+            - symbols: List with unit symbols.
+            - dimension: Named tuple with quantity dimension.
+            - emmoIRI: IRI of the unit in the EMMO ontology.
+            - qudtIRI: IRI of the unit in the QUDT ontology.
+            - omIRI: IRI of the unit in the OM ontology.
+            - ucumCodes: List of UCUM codes for the unit.
+            - unitCode: UNECE common code for the unit.
+            - multiplier: Unit multiplier.
+            - offset: Unit offset.
         """
         if name and name in self.units:
             return self.units[name]
+
+        if not iri and name and ":" in name:  # allow name to be an IRI
+            r = urlparse(name)
+            if r.scheme and r.netloc:
+                iri = name
 
         for unit in self.units.values():
             if name and name in unit.aliases:
@@ -388,6 +654,7 @@ class Units:
         # pylint: disable=too-many-branches
 
         # For now, include prefixes and base units...
+        # TODO: infer from ontology
         content: list = [
             "# Pint units definitions file",
             (
@@ -395,57 +662,69 @@ class Units:
                 f"{self.unit_ontology}-{self.ontology_version}"
             ),
             "",
+            "@defaults",
+            "    group = international",
+            "    system = SI",
+            "@end",
+            "",
             "# Decimal prefixes",
-            "quecto- = 1e-30 = q-",
-            "ronto- = 1e-27 = r-",
-            "yocto- = 1e-24 = y-",
-            "zepto- = 1e-21 = z-",
-            "atto- =  1e-18 = a-",
-            "femto- = 1e-15 = f-",
-            "pico- =  1e-12 = p-",
-            "nano- =  1e-9  = n-",
-            "micro- = 1e-6  = µ- = μ- = u-",
-            "milli- = 1e-3  = m-",
-            "centi- = 1e-2  = c-",
-            "deci- =  1e-1  = d-",
-            "deca- =  1e+1  = da- = deka-",
-            "hecto- = 1e2   = h-",
-            "kilo- =  1e3   = k-",
-            "mega- =  1e6   = M-",
-            "giga- =  1e9   = G-",
-            "tera- =  1e12  = T-",
-            "peta- =  1e15  = P-",
-            "exa- =   1e18  = E-",
-            "zetta- = 1e21  = Z-",
-            "yotta- = 1e24  = Y-",
-            "ronna- = 1e27  = R-",
-            "quetta- = 1e30 = Q-",
+            "Quecto- = 1e-30 = q-",
+            "Ronto- = 1e-27 = r-",
+            "Yocto- = 1e-24 = y-",
+            "Zepto- = 1e-21 = z-",
+            "Atto- =  1e-18 = a-",
+            "Femto- = 1e-15 = f-",
+            "Pico- =  1e-12 = p-",
+            "Nano- =  1e-9  = n-",
+            "Micro- = 1e-6  = µ- = μ- = u-",
+            "Milli- = 1e-3  = m-",
+            "Centi- = 1e-2  = c-",
+            "Deci- =  1e-1  = d-",
+            "Deca- =  1e+1  = da- = deka-",
+            "Hecto- = 1e2   = h-",
+            "Kilo- =  1e3   = k-",
+            "Mega- =  1e6   = M-",
+            "Giga- =  1e9   = G-",
+            "Tera- =  1e12  = T-",
+            "Peta- =  1e15  = P-",
+            "Exa- =   1e18  = E-",
+            "Zetta- = 1e21  = Z-",
+            "Yotta- = 1e24  = Y-",
+            "Ronna- = 1e27  = R-",
+            "Quetta- = 1e30 = Q-",
             "",
             "# Binary prefixes",
-            "kibi- = 2**10 = Ki-",
-            "mebi- = 2**20 = Mi-",
-            "gibi- = 2**30 = Gi-",
-            "tebi- = 2**40 = Ti-",
-            "pebi- = 2**50 = Pi-",
-            "exbi- = 2**60 = Ei-",
-            "zebi- = 2**70 = Zi-",
-            "yobi- = 2**80 = Yi-",
+            "Kibi- = 2**10 = Ki-",
+            "Mebi- = 2**20 = Mi-",
+            "Gibi- = 2**30 = Gi-",
+            "Tebi- = 2**40 = Ti-",
+            "Pebi- = 2**50 = Pi-",
+            "Exbi- = 2**60 = Ei-",
+            "Zebi- = 2**70 = Zi-",
+            "Yobi- = 2**80 = Yi-",
             "",
             "# Base units",
-            "Second = [time] = s = second",
-            "Metre = [length] = m = metre = meter",
+            "Second = [Time] = s = second",
+            "Metre = [Length] = m = metre = meter",
             # Note: gram is used instead of kilogram to get prefixes right...
-            "Gram = [mass] = g = gram",
-            "Ampere = [current] = A = ampere",
-            "Kelvin = [temperature]; offset: 0 = K = kelvin",
-            "Mole = [substance] = mole = mol",
-            "Candela = [luminosity] = cd = candela",
+            "Gram = [Mass] = g = gram",
+            "Ampere = [ElectricCurrent] = A = ampere",
+            "Kelvin = [ThermodynamicTemperature]; offset: 0 = K = kelvin",
+            "Mole = [AmountOfSubstance] = mole = mol",
+            "Candela = [LuminousIntensity] = cd = candela",
             "",
             "# Units",
+            "Kilogram = 1000*Gram = kg = kilogram",
         ]
 
-        snake_pattern = re.compile(r"(?<!^)(?=[A-Z])")
+        # Regex that converts "CamelCase" to "snake_case".
+        # Keeps a sequence of uppercase together.
+        # Ex: HTTPResponseCodeXYZ -> http_response_code_xyz
+        snake_pattern = re.compile(
+            r"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])"
+        )
 
+        # Units
         skipunits = {
             "Second",
             "Metre",
@@ -466,12 +745,12 @@ class Units:
                 if unit.multiplier and unit.offset:
                     s = [
                         f"{unit.name} = {mult}{baseexpr}; "
-                        f"offset: {unit.offset}"
+                        f"offset: {-unit.offset}"
                     ]
                 elif unit.multiplier:
                     s = [f"{unit.name} = {mult}{baseexpr}"]
                 elif unit.offset:
-                    s = [f"{unit.name} = {baseexpr}; offset: {unit.offset}"]
+                    s = [f"{unit.name} = {baseexpr}; offset: {-unit.offset}"]
                 else:
                     assert False, "should never happen"  # nosec
             elif baseexpr == "1":
@@ -495,12 +774,58 @@ class Units:
                 if " " not in alias:
                     s.append(f" = {alias}")
 
-            content.append(" ".join(s))
+            for code in [unit.unitCode] + unit.ucumCodes:
+                if code and f" = {code}" not in s:
+                    # code = re.sub(r"([a-zA-Z])([0-9+-])", r"\1^\2", code)
+                    s.append(f" = {code}")
+
+            # IRIs cannot be added to unit registry since they contain
+            # invalid characters like ':', '/' and '#'.
+            #
+            # for iri in unit.emmoIRI, unit.qudtIRI, unit.omIRI:
+            #     if iri and f" = {iri}" not in s:
+            #         s.append(f" = {iri}")
+
+            content.append("".join(s))
+
+        # Quantities
+        content.append("")
+        content.append("# Quantities:")
+        dimensions = [getattr(Dimension, d).__doc__ for d in Dimension._fields]
+        for q in self.quantities.values():
+            if q.name in dimensions:
+                continue
+            expr = [
+                f"[{dim}]" if exp == 1 else f"[{dim}]**{exp}"
+                for dim, exp in zip(dimensions, q.dimension)
+                if exp
+            ]
+            content.append(f"[{q.name}] = " + " * ".join(expr))
+
+        # Constants
+        # TODO: Add physical constants. See the PINT constants_en.txt file.
+
+        # Unit systems
+        content.extend(
+            [
+                "",
+                "# Unit systems:",
+                "@system SI",
+                "    Second",
+                "    Metre",
+                "    Kilogram",
+                "    Ampere",
+                "    Kelvin",
+                "    Mole",
+                "    Candela",
+                "@end",
+            ]
+        )
 
         with open(filename, "wt", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
 
-    def clear_cache(self):
+    def clear_cache(self) -> None:
         """Clear caches used by this Units object."""
         cachefile = self.cachefile
         if cachefile.exists():
@@ -517,7 +842,7 @@ class Units:
 class Unit(pint.Unit):
     """A subclass of pint.Unit with additional methods and properties."""
 
-    def get_unit_info(self):
+    def _get_info(self) -> dict:
         """Return a dict with attribute access describing the unit.
 
         SeeAlso:
@@ -526,22 +851,102 @@ class Unit(pint.Unit):
         ureg = self._REGISTRY
         return ureg.get_unit_info(str(self))
 
+    # def compatible_units(self) -> list:
+    #     """Return a list with the names of units in the ontology that are
+    #     compatible with the current unit.
+    #     """
+    #     ureg = self._REGISTRY
+    #     units = ureg._get_tripper_units()  # pylint: disable=protected-access
+    #     q = (1 * self).to_base_units()  # type: ignore
+    #     dim = q.get_dimension()
+    #     infoseq = units.units.values()
+    #     return [i.name for i in infoseq if i.dimension == dim]
+
+    info = property(
+        lambda self: self._get_info(),
+        doc="Dict with attribute access describing this unit.",
+    )
     emmoIRI = property(
-        lambda self: self.get_unit_info().emmoIRI,
+        lambda self: self._get_info().emmoIRI,
         doc="IRI of the unit in the EMMO ontology.",
     )
     qudtIRI = property(
-        lambda self: self.get_unit_info().qudtIRI,
+        lambda self: self._get_info().qudtIRI,
         doc="IRI of the unit in the QUDT ontology.",
     )
     omIRI = property(
-        lambda self: self.get_unit_info().omIRI,
+        lambda self: self._get_info().omIRI,
         doc="IRI of the unit in the OM ontology.",
     )
 
 
 class Quantity(pint.Quantity):
     """A subclass of pint.Quantity with support for tripper.units."""
+
+    def get_dimension(self) -> Dimension:
+        """Return a Dimension object with the dimensionality of this
+        quantity.
+        """
+
+        def asint(x):
+            """Convert floats close to whole integers to int."""
+            return int(x) if abs(int(x) - x) < 1e-7 else x
+
+        q = self.to_base_units()
+        return Dimension(
+            *tuple(
+                asint(
+                    q.u.dimensionality.get(
+                        f"[{getattr(Dimension, dim).__doc__}]", 0
+                    )
+                )
+                for dim in Dimension._fields
+            )
+        )
+
+    def to_ontology_unit(self) -> "Quantity":
+        """Return new quantity rescale to a unit with the same
+        dimensionality that exists in the ontology.
+        """
+        ureg = self._REGISTRY
+
+        try:
+            return self.m * ureg.get_unit(symbol=f"{self.u:~P}")
+        except (MissingUnitError, pint.OffsetUnitCalculusError):
+            pass
+
+        q = self.to_base_units()
+        try:
+            return q.m * ureg.get_unit(symbol=f"{q.u:~P}")
+        except MissingUnitError:
+            pass
+
+        units = ureg._get_tripper_units()  # pylint: disable=protected-access
+        # dim = q.u.info.dimension
+        dim = q.get_dimension()
+        compatible_units = []
+        for info in units.units.values():
+            if info.dimension == dim:
+                try:
+                    # pylint: disable=protected-access
+                    mult, d = units._parse_unitname(info.name)
+                    compatible_units.append((info.name, q.m / mult, d))
+                except MissingUnitError:
+                    pass
+
+        def sortkey(x):
+            """Returns sort key for `compatible_units`."""
+            # This function prioritise compact unit expression with
+            # small exponents.  Lower priority is given to pre-factor
+            # close to one.
+            _, mult, d = x
+            return 100 * sum(abs(v) for v in d.values()) + abs(
+                math.log10(mult)
+            )
+
+        compatible_units.sort(key=sortkey)
+        name, mult, _ = compatible_units[0]
+        return mult * ureg[name]
 
 
 class UnitRegistry(pint.UnitRegistry):
@@ -621,8 +1026,21 @@ class UnitRegistry(pint.UnitRegistry):
                 self._tripper_cachedir.mkdir(parents=True, exist_ok=True)
                 units.write_pint_units(unitsfile)
 
+        if cache:
+            kwargs.setdefault("cache_folder", self._tripper_cachedir)
+
         super().__init__(*args, **kwargs)
         self._tripper_unitsfile = unitsfile
+
+    def parse_units(  # pylint: disable=arguments-differ
+        self, units, *args, **kwargs
+    ):
+        try:
+            return super().parse_units(units, *args, **kwargs)
+        except pint.UndefinedUnitError:
+            pass
+        info = self.get_unit_info(symbol=units)
+        return super().parse_units(info.name, *args, **kwargs)
 
     def _get_tripper_units(self) -> Units:
         """Returns a tripper.units.Units instance for the current ontology."""
@@ -639,8 +1057,8 @@ class UnitRegistry(pint.UnitRegistry):
     ) -> "Any":
         """Return unit matching any of the arguments.
 
-        Argument:
-            name: Search for unit by name. Ex: "Ampere"
+        Arguments:
+            name: Search for unit by name. May also be an IRI. Ex: "Ampere".
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
@@ -662,34 +1080,144 @@ class UnitRegistry(pint.UnitRegistry):
     ) -> AttrDict:
         """Return information about a unit.
 
-        Argument:
-            name: Search for unit by name. Ex: "Ampere"
+        Arguments:
+            name: Search for unit by name. May also be an IRI. Ex: "Ampere"
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
 
         Returns:
-            A dict with attribute access describing the unit. The dict has
-            the following keys:
+            dict: A dict with attribute access describing the unit.
+            The dict has the following keys:
 
-              - name: Preferred label.
-              - description: Unit description.
-              - aliases: List of alternative labels.
-              - symbols: List with unit symbols.
-              - dimension: Named tuple with quantity dimension.
-              - emmoIRI: IRI of the unit in the EMMO ontology.
-              - qudtIRI: IRI of the unit in the QUDT ontology.
-              - omIRI: IRI of the unit in the OM ontology.
-              - ucumCodes: List of UCUM codes for the unit.
-              - unitCode: UNECE common code for the unit.
-              - multiplier: Unit multiplier.
-              - offset: Unit offset.
+            - name: Preferred label.
+            - description: Unit description.
+            - aliases: List of alternative labels.
+            - symbols: List with unit symbols.
+            - dimension: Named tuple with quantity dimension.
+            - emmoIRI: IRI of the unit in the EMMO ontology.
+            - qudtIRI: IRI of the unit in the QUDT ontology.
+            - omIRI: IRI of the unit in the OM ontology.
+            - ucumCodes: List of UCUM codes for the unit.
+            - unitCode: UNECE common code for the unit.
+            - multiplier: Unit multiplier.
+            - offset: Unit offset.
 
         """
         units = self._get_tripper_units()
         return units.get_unit(
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
+
+    def load_quantity(self, ts: Triplestore, iri: str) -> Quantity:
+        """Load quantity from triplestore.
+
+        Arguments:
+            ts: Triplestore to load from.
+            iri: IRI of quantity to load.
+
+        Returns:
+            Quantity: Pint representation of the quantity.
+
+        """
+        value, unit = emmo_quantity_value(ts, iri)
+        u = self.get_unit(iri=unit) if ":" in unit else self[unit]
+        return value * u
+
+    def save_quantity(
+        self,
+        ts: Triplestore,
+        q: Quantity,
+        iri: str,
+        type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+        tbox: bool = False,
+        use_si_value: bool = True,
+        annotations: "Optional[dict]" = None,
+    ) -> None:
+        """Load quantity from triplestore.
+
+        Arguments:
+            ts: Triplestore to save to.
+            q: Quantity to save.
+            iri: IRI of the quantity in the triplestore.
+            type: IRI of the type or superclass (if `tbox` is true) of the
+                quantity.
+            tbox: Whether to document the quantity in the tbox.
+            use_si_value: Whether to represent the value using the
+                `emmo:hasSIQuantityDatatype` datatype.
+            annotations: Additional annotations describing the quantity.
+                Use Literal() for literal annotations.
+
+        """
+        if ts.has(iri):
+            raise IRIExistsError(iri)
+
+        if not type:
+            type = EMMO.Quantity
+
+        triples = [(iri, RDF.type, OWL.Class if tbox else type)]
+        if tbox:
+            r = bnode_iri("restriction")
+            triples.extend(
+                [
+                    (iri, RDFS.subClassOf, type),
+                    (iri, RDFS.subClassOf, r),
+                    (r, RDF.type, OWL.Restriction),
+                ]
+            )
+            if use_si_value:
+                triples.extend(
+                    [
+                        (r, OWL.onProperty, EMMO.hasSIQuantityValue),
+                        (
+                            r,
+                            OWL.hasValue,
+                            Literal(
+                                f"{q:~P}", datatype=EMMO.SIQuantityDatatype
+                            ),
+                        ),
+                    ]
+                )
+            else:
+                v = bnode_iri("value")
+                r2 = bnode_iri("restriction")
+                q2 = q.to_ontology_unit()
+                triples.extend(
+                    [
+                        (r, OWL.onProperty, EMMO.hasNumericalPart),
+                        (r, OWL.hasValue, v),
+                        (v, EMMO.hasNumberValue, Literal(q2.m)),
+                        (iri, RDFS.subClassOf, r2),
+                        (r2, RDF.type, OWL.Restriction),
+                        (r2, OWL.onProperty, EMMO.hasReferencePart),
+                        (r2, OWL.someValuesFrom, q2.u.emmoIRI),  # XXX
+                    ]
+                )
+        else:
+            if use_si_value:
+                triples.append(
+                    (
+                        iri,
+                        EMMO.hasSIQuantityValue,
+                        Literal(f"{q:~P}", datatype=EMMO.SIQuantityDatatype),
+                    )
+                )
+            else:
+                v = bnode_iri("value")
+                q2 = q.to_ontology_unit()
+                triples.extend(
+                    [
+                        (iri, EMMO.hasNumericalPart, v),
+                        (v, EMMO.hasNumberValue, Literal(q2.m)),
+                        (iri, EMMO.hasReferencePart, q2.u.emmoIRI),
+                    ]
+                )
+
+        if annotations:
+            for pred, obj in annotations.items():
+                triples.append((iri, pred, obj))
+
+        ts.add_triples(triples)
 
     def clear_cache(self):
         """Clear caches related to this unit registry."""

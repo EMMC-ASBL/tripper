@@ -110,7 +110,11 @@ class Namespace:
     def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
 
-        If `reload` is true, reload regardless we have a local cache.
+        Arguments:
+            triplestore: Triplestore to update the cache from.
+            reload: If true, reload regardless we have a local cache.
+            format: If `triplestore` is a tring or Path, parse it using this
+                format.
         """
         # pylint: disable=redefined-builtin
 
@@ -154,6 +158,17 @@ class Namespace:
             for s in ts.subjects()
             if s.startswith(iri)
         )
+
+    def _get_labels(self, iri):
+        """Return annotation labels corresponding to the given IRI."""
+        if not ":" in iri:
+            iri = self._iri + iri
+        labels = [
+            k
+            for k, v in self._iris.items()
+            if v == iri and iri != self._iri + k
+        ]
+        return labels
 
     def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
@@ -257,6 +272,18 @@ class Namespace:
     def __del__(self):
         if self._iris:
             self._save_cache()
+
+    def __dir__(self):
+        names = dir(self.__class__)
+        if self._iris == {}:
+            self._update_iris(
+                triplestore=self._triplestore,
+                reload=self._reload,
+                format=self._format,
+            )
+        if self._iris:
+            names += list(self._iris.keys())
+        return names
 
 
 def get_cachedir(create=True) -> Path:
