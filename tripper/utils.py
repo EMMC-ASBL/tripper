@@ -44,9 +44,14 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 __all__ = (
+    "AttrDict",
+    "recursive_update",
+    "openfile",
     "infer_iri",
     "split_iri",
     "function_id",
+    "bnode_iri",
+    "tfilter",
     "en",
     "parse_literal",
     "parse_object",
@@ -54,6 +59,9 @@ __all__ = (
     "check_function",
     "random_string",
     "extend_namespace",
+    "expand_iri",
+    "prefix_iri",
+    "get_entry_points",
 )
 
 MATCH_PREFIXED_IRI = re.compile(
@@ -352,7 +360,8 @@ def parse_literal(literal: "Any") -> "Any":
     The main difference between this function and the Literal constructor,
     is that this function correctly interprets n3-encoded literal strings.
     """
-    # pylint: disable=invalid-name,too-many-branches,too-many-return-statements
+    # pylint: disable=invalid-name,too-many-branches,too-many-statements
+    # pylint: disable=too-many-return-statements
     lang, datatype = None, None
 
     if isinstance(literal, Literal):
@@ -383,13 +392,17 @@ def parse_literal(literal: "Any") -> "Any":
 
     if not isinstance(literal, str):
         if isinstance(literal, tuple(Literal.datatypes)):
-            return Literal(
-                literal,
-                lang=lang,
-                datatype=Literal.datatypes.get(type(literal))[
-                    0
-                ],  # type: ignore
-            )
+            if type(literal) in Literal.datatypes:
+                datatype = Literal.datatypes[type(literal)][0]
+            else:
+                # literal is in instance of a subclass of one of the datatypes
+                for k, v in Literal.datatypes.items():
+                    if isinstance(literal, k):
+                        datatype = v[0]
+                        break
+                else:
+                    assert False, "should never be reached"  # nosec
+            return Literal(literal, lang=lang, datatype=datatype)
         raise TypeError(f"unsupported literal type: {type(literal)}")
 
     if hasattr(literal, "n3") and callable(literal.n3):

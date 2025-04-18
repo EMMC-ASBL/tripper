@@ -36,10 +36,10 @@ def test_base_unit_expression():
     )
 
 
-def emmo_quantity_value():
-    """Test emmo_quantity_value()."""
+def load_emmo_quantity():
+    """Test load_emmo_quantity()."""
     from tripper import EMMO, OWL, RDF, RDFS, Literal, Triplestore
-    from tripper.units.units import emmo_quantity_value
+    from tripper.units.units import load_emmo_quantity
 
     ts = Triplestore(backend="rdflib")
     EX = ts.bind("ex", "http://example.com/")
@@ -78,10 +78,10 @@ def emmo_quantity_value():
             (EX.body_energy, EMMO.hasReferencePart, EMMO.Joule),
         ]
     )
-    assert emmo_quantity_value(ts, EX.Width) == (2, "mm")
-    assert emmo_quantity_value(ts, EX.width) == (3, "cm")
-    assert emmo_quantity_value(ts, EX.BodyEnergy) == (1.1, EMMO.MilliJoule)
-    assert emmo_quantity_value(ts, EX.body_energy) == (2.2, EMMO.Joule)
+    assert load_emmo_quantity(ts, EX.Width) == (2, "mm")
+    assert load_emmo_quantity(ts, EX.width) == (3, "cm")
+    assert load_emmo_quantity(ts, EX.BodyEnergy) == (1.1, EMMO.MilliJoule)
+    assert load_emmo_quantity(ts, EX.body_energy) == (2.2, EMMO.Joule)
 
 
 def test_units():

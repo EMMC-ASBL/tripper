@@ -135,7 +135,7 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
-def emmo_quantity_value(ts: Triplestore, iri: str) -> "Tuple[float, str]":
+def load_emmo_quantity(ts: Triplestore, iri: str) -> "Tuple[float, str]":
     """Return value and unit for EMMO quantity with given `iri`."""
     isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
 
@@ -195,6 +195,99 @@ def emmo_quantity_value(ts: Triplestore, iri: str) -> "Tuple[float, str]":
     return float(num[0][0]), ref
 
 
+def save_emmo_quantity(
+    ts: Triplestore,
+    q: "Quantity",
+    iri: str,
+    type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
+    tbox: bool = False,
+    use_si_value: bool = True,
+    annotations: "Optional[dict]" = None,
+) -> None:
+    """Save quantity to triplestore.
+
+    Arguments:
+        ts: Triplestore to save to.
+        q: Quantity to save.
+        iri: IRI of the quantity in the triplestore.
+        type: IRI of the type or superclass (if `tbox` is true) of the
+            quantity.
+        tbox: Whether to document the quantity in the tbox.
+        use_si_value: Whether to represent the value using the
+            `emmo:hasSIQuantityDatatype` datatype.
+        annotations: Additional annotations describing the quantity.
+            Use Literal() for literal annotations.
+
+    """
+    if ts.has(iri):
+        raise IRIExistsError(iri)
+
+    if not type:
+        type = EMMO.Quantity
+
+    triples = [(iri, RDF.type, OWL.Class if tbox else type)]
+    if tbox:
+        r = bnode_iri("restriction")
+        triples.extend(
+            [
+                (iri, RDFS.subClassOf, type),
+                (iri, RDFS.subClassOf, r),
+                (r, RDF.type, OWL.Restriction),
+            ]
+        )
+        if use_si_value:
+            triples.extend(
+                [
+                    (r, OWL.onProperty, EMMO.hasSIQuantityValue),
+                    (
+                        r,
+                        OWL.hasValue,
+                        Literal(f"{q:~P}", datatype=EMMO.SIQuantityDatatype),
+                    ),
+                ]
+            )
+        else:
+            v = bnode_iri("value")
+            r2 = bnode_iri("restriction")
+            q2 = q.to_ontology_unit()
+            triples.extend(
+                [
+                    (r, OWL.onProperty, EMMO.hasNumericalPart),
+                    (r, OWL.hasValue, v),
+                    (v, EMMO.hasNumberValue, Literal(q2.m)),
+                    (iri, RDFS.subClassOf, r2),
+                    (r2, RDF.type, OWL.Restriction),
+                    (r2, OWL.onProperty, EMMO.hasReferencePart),
+                    (r2, OWL.someValuesFrom, q2.u.emmoIRI),  # XXX
+                ]
+            )
+    else:
+        if use_si_value:
+            triples.append(
+                (
+                    iri,
+                    EMMO.hasSIQuantityValue,
+                    Literal(f"{q:~P}", datatype=EMMO.SIQuantityDatatype),
+                )
+            )
+        else:
+            v = bnode_iri("value")
+            q2 = q.to_ontology_unit()
+            triples.extend(
+                [
+                    (iri, EMMO.hasNumericalPart, v),
+                    (v, EMMO.hasNumberValue, Literal(q2.m)),
+                    (iri, EMMO.hasReferencePart, q2.u.emmoIRI),
+                ]
+            )
+
+    if annotations:
+        for pred, obj in annotations.items():
+            triples.append((iri, pred, obj))
+
+    ts.add_triples(triples)
+
+
 class Units:
     """A class representing all units in an EMMO-based ontology."""
 
@@ -203,8 +296,10 @@ class Units:
     def __init__(
         self,
         ts: "Optional[Triplestore]" = None,
-        unit_ontology: str = "emmo",
+        ontology_url: "Optional[str]" = None,
+        ontology_name: str = "emmo",
         ontology_version: str = EMMO_VERSION,
+        ontology_formalisation: str = "emmo",
         include_prefixed: bool = False,
         cache: "Optional[bool]" = True,
     ) -> None:
@@ -213,11 +308,16 @@ class Units:
         Arguments:
             ts: Triplestore object containing the ontology to load
                 units from.  The default is to determine the ontology to
-                load from `unit_ontology` and `ontology_version`.
-            unit_ontology: Name of unit ontology to parse. Currently only
-                "emmo" is supported.
-            ontology_version: Version of `unit_ontology` to load if `ts` is
-                None.
+                load from `ontology_formalisation` and `ontology_version`.
+            ontology_url: URL from which to load the ontology.
+            ontology_name: Name of ontology from which the units and
+                quantities are read. Used for labeling caches.
+                is supported.
+            ontology_version: Version of `ontology_formalisation` to load
+                if `ts` is None.
+            ontology_formalisation: Ontological formalisation with which
+                units and quantities are represented. Currently only "emmo"
+                is supported.
             include_prefixed: Whether to also include prefixed units.
             cache: Whether to cache the unit table. If `cache` is:
                 - True: Load cache if it exists, otherwise create new cache.
@@ -227,10 +327,12 @@ class Units:
         """
         if ts:
             self.ts = ts
-        elif unit_ontology == "emmo":
+        elif ontology_formalisation == "emmo":
             self.ts = get_emmo_triplestore(ontology_version)
         else:
-            raise ValueError(f"Unsupported unit ontology: {unit_ontology}")
+            raise ValueError(
+                f"Unsupported unit ontology: {ontology_formalisation}"
+            )
 
         self.ns = Namespace(
             iri="https://w3id.org/emmo#",
@@ -240,7 +342,7 @@ class Units:
         )
 
         pf = "-prefixed" if include_prefixed else ""
-        fname = f"units-{unit_ontology}-{ontology_version}{pf}.pickle"
+        fname = f"units-{ontology_formalisation}-{ontology_version}{pf}.pickle"
         cachedir = get_cachedir()
         cachefile = cachedir / fname
         if cache and cachefile.exists():
@@ -275,8 +377,10 @@ class Units:
                     }
                     pickle.dump(d, f)
 
-        self.unit_ontology = unit_ontology
+        self.ontology_name = ontology_name
         self.ontology_version = ontology_version
+        self.ontology_url = ontology_url
+        self.ontology_formalisation = ontology_formalisation
         self.cachefile = cachefile
 
     def _emmo_unit_iris(self, include_prefixed: bool = False) -> list:
@@ -659,7 +763,7 @@ class Units:
             "# Pint units definitions file",
             (
                 "# Created with tripper.units from "
-                f"{self.unit_ontology}-{self.ontology_version}"
+                f"{self.ontology_formalisation}-{self.ontology_version}"
             ),
             "",
             "@defaults",
@@ -832,7 +936,9 @@ class Units:
             cachefile.unlink()
 
         cachedir = cachefile.parent
-        fname = f"{self.unit_ontology}-{self.ontology_version}.ntriples"
+        fname = (
+            f"{self.ontology_formalisation}-{self.ontology_version}.ntriples"
+        )
         ontofile = cachedir / fname
         if ontofile.exists():
             ontofile.unlink()
@@ -961,8 +1067,10 @@ class UnitRegistry(pint.UnitRegistry):
         self,
         *args: "Any",
         ts: "Optional[Triplestore]" = None,
-        unit_ontology: str = "emmo",
+        ontology_url: "Optional[str]" = None,
+        ontology_name: str = "emmo",
         ontology_version: str = EMMO_VERSION,
+        ontology_formalisation: str = "emmo",
         include_prefixed: bool = False,
         cache: "Optional[bool]" = True,
         **kwargs: "Any",
@@ -975,11 +1083,15 @@ class UnitRegistry(pint.UnitRegistry):
             args: Positional arguments passed to pint.UnitRegistry().
             ts: Triplestore object containing the ontology to load
                 units from.  The default is to determine the ontology to
-                load from `unit_ontology` and `ontology_version`.
-            unit_ontology: Name of unit ontology to parse. Currently only
-                "emmo" is supported.
-            ontology_version: Version of `unit_ontology` to load if `ts` is
-                None.
+                load from `ontology_formalisation` and `ontology_version`.
+            ontology_name: Name of ontology from which the units and
+                quantities are read. Used for labeling caches.
+                is supported.
+            ontology_version: Version of `ontology_formalisation` to load
+                if `ts` is None.
+            ontology_formalisation: Ontological formalisation with which
+                units and quantities are represented. Currently only "emmo"
+                is supported.
             include_prefixed: Whether to also include prefixed units.
             cache: Whether to cache the unit table. If `cache` is:
                 - True: Load cache if it exists, otherwise create new cache.
@@ -1006,18 +1118,20 @@ class UnitRegistry(pint.UnitRegistry):
 
         """
         self._tripper_cachedir = get_cachedir()
-        self._tripper_units: "Optional[Units]" = None
-        self._tripper_unitsargs = (
-            ts,
-            unit_ontology,
-            ontology_version,
-            include_prefixed,
-            cache,
-        )
+        self._tripper_units = None
+        self._tripper_unitsargs = {
+            "ts": ts,
+            "ontology_url": ontology_url,
+            "ontology_name": ontology_name,
+            "ontology_version": ontology_version,
+            "ontology_formalisation": ontology_formalisation,
+            "include_prefixed": include_prefixed,
+            "cache": cache,
+        }
 
         # If no explicit `filename` is not provided, ensure that an unit
         # definition file has been created and assign `filename` to it.
-        fname = f"units-{unit_ontology}-{ontology_version}.txt"
+        fname = f"units-{ontology_formalisation}-{ontology_version}.txt"
         unitsfile = self._tripper_cachedir / fname
         if "filename" not in kwargs:
             kwargs["filename"] = unitsfile
@@ -1045,8 +1159,10 @@ class UnitRegistry(pint.UnitRegistry):
     def _get_tripper_units(self) -> Units:
         """Returns a tripper.units.Units instance for the current ontology."""
         if not self._tripper_units:
-            self._tripper_units = Units(*self._tripper_unitsargs)
-        return self._tripper_units
+            self._tripper_units = Units(
+                **self._tripper_unitsargs  # type: ignore
+            )
+        return self._tripper_units  # type: ignore
 
     def get_unit(
         self,
@@ -1120,7 +1236,7 @@ class UnitRegistry(pint.UnitRegistry):
             Quantity: Pint representation of the quantity.
 
         """
-        value, unit = emmo_quantity_value(ts, iri)
+        value, unit = load_emmo_quantity(ts, iri)
         u = self.get_unit(iri=unit) if ":" in unit else self[unit]
         return value * u
 
@@ -1134,7 +1250,7 @@ class UnitRegistry(pint.UnitRegistry):
         use_si_value: bool = True,
         annotations: "Optional[dict]" = None,
     ) -> None:
-        """Load quantity from triplestore.
+        """Save quantity to triplestore.
 
         Arguments:
             ts: Triplestore to save to.
@@ -1149,85 +1265,26 @@ class UnitRegistry(pint.UnitRegistry):
                 Use Literal() for literal annotations.
 
         """
-        if ts.has(iri):
-            raise IRIExistsError(iri)
-
-        if not type:
-            type = EMMO.Quantity
-
-        triples = [(iri, RDF.type, OWL.Class if tbox else type)]
-        if tbox:
-            r = bnode_iri("restriction")
-            triples.extend(
-                [
-                    (iri, RDFS.subClassOf, type),
-                    (iri, RDFS.subClassOf, r),
-                    (r, RDF.type, OWL.Restriction),
-                ]
-            )
-            if use_si_value:
-                triples.extend(
-                    [
-                        (r, OWL.onProperty, EMMO.hasSIQuantityValue),
-                        (
-                            r,
-                            OWL.hasValue,
-                            Literal(
-                                f"{q:~P}", datatype=EMMO.SIQuantityDatatype
-                            ),
-                        ),
-                    ]
-                )
-            else:
-                v = bnode_iri("value")
-                r2 = bnode_iri("restriction")
-                q2 = q.to_ontology_unit()
-                triples.extend(
-                    [
-                        (r, OWL.onProperty, EMMO.hasNumericalPart),
-                        (r, OWL.hasValue, v),
-                        (v, EMMO.hasNumberValue, Literal(q2.m)),
-                        (iri, RDFS.subClassOf, r2),
-                        (r2, RDF.type, OWL.Restriction),
-                        (r2, OWL.onProperty, EMMO.hasReferencePart),
-                        (r2, OWL.someValuesFrom, q2.u.emmoIRI),  # XXX
-                    ]
-                )
-        else:
-            if use_si_value:
-                triples.append(
-                    (
-                        iri,
-                        EMMO.hasSIQuantityValue,
-                        Literal(f"{q:~P}", datatype=EMMO.SIQuantityDatatype),
-                    )
-                )
-            else:
-                v = bnode_iri("value")
-                q2 = q.to_ontology_unit()
-                triples.extend(
-                    [
-                        (iri, EMMO.hasNumericalPart, v),
-                        (v, EMMO.hasNumberValue, Literal(q2.m)),
-                        (iri, EMMO.hasReferencePart, q2.u.emmoIRI),
-                    ]
-                )
-
-        if annotations:
-            for pred, obj in annotations.items():
-                triples.append((iri, pred, obj))
-
-        ts.add_triples(triples)
+        save_emmo_quantity(
+            ts=ts,
+            q=q,
+            iri=iri,
+            type=type,
+            tbox=tbox,
+            use_si_value=use_si_value,
+            annotations=annotations,
+        )
 
     def clear_cache(self):
         """Clear caches related to this unit registry."""
         if self._tripper_unitsfile.exists():
             self._tripper_unitsfile.unlink()
 
-        ontology, version = self._tripper_unitsargs[1:3]
+        name = self._tripper_unitsargs["ontology_name"]
+        version = self._tripper_unitsargs["ontology_version"]
         cachedir = self._tripper_cachedir
-        ontofile = cachedir / f"{ontology}-{version}.ntriples"
-        unitsfile = cachedir / f"units-{ontology}-{version}.pickle"
+        ontofile = cachedir / f"{name}-{version}.ntriples"
+        unitsfile = cachedir / f"units-{name}-{version}.pickle"
         if ontofile.exists():
             ontofile.unlink()
         if unitsfile.exists():
