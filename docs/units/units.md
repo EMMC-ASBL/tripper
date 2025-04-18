@@ -93,13 +93,17 @@ Quantities are also understood by the `Literal` constructor
 >>> literal
 Literal('101325 Pa', datatype='https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676')
 
+# Check the label of the datatype
+>>> from tripper import EMMO
+>>> EMMO._get_labels(literal.datatype)
+['SIQuantityDatatype']
+
 ```
 
 which uses the `emmo:SIQuantityDatatype` datatype.
 The `Literal.value` property and `Literal.n3()` method can be used to convert back to a quantity or represent it in N3 notation:
 
 ```python
->>>
 >>> literal = Literal(pressure)
 >>> literal.value
 <Quantity(101325, 'Pascal')>
@@ -109,7 +113,7 @@ The `Literal.value` property and `Literal.n3()` method can be used to convert ba
 
 ```
 
-### Saving/loading to/from a triplestore
+### Saving and loading to/from a triplestore
 
 Lets do a small calculation using the quantities constructed above:
 
@@ -131,8 +135,8 @@ and store our calculated `mean_speed` to a triplestore:
 ```
 
 Above we have created a new triplestore, bound empty prefix to the namespace
-"http://example.com#" and saved the calculated `mean_speed` to a new individual
-with IRI "http://example.com#MeanSpeed".
+`http://example.com#` and saved the calculated `mean_speed` to a new individual
+with IRI `http://example.com#MeanSpeed`.
 The final `type` argument to `ureg.save_quantity()` states that our new individual
 will be an individual of the class `emmo:Speed`.
 
@@ -151,7 +155,7 @@ The content of the triplestore is now
 ```
 
 By default `ureg.save_quantity()` saves the quantity as an individual using the `emmo:SIQuantityDatatype` datatype.
-But, the `ureg.save_quantity()` method has also options for saving the quantity as a class (`tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (`si_datatype=False`).
+But, the `ureg.save_quantity()` method has also options for saving the quantity as a class (argument `tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (argument `si_datatype=False`).
 
 Loading a quantity from the triplestore can be with `ureg_load_quantity()`:
 
@@ -244,7 +248,14 @@ Dimension(T=0, L=3, M=0, I=0, H=0, N=0, J=0)
 
 ```
 
-The same dict can also be accessed from the  `get_unit_info()` returns a
+The same dict can also be accessed from the unit registry with the `UnitRegistry.get_unit_info()` method.
+
+```python
+>>> info = ureg.get_unit_info("CubicMetre")
+>>> info.name
+'CubicMetre'
+
+```
 
 
 ### Setting up custom unit registry

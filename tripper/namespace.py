@@ -162,6 +162,7 @@ class Namespace:
 
     def _get_labels(self, iri):
         """Return annotation labels corresponding to the given IRI."""
+        self._update_iris()
         if not ":" in iri:
             iri = self._iri + iri
         labels = [
