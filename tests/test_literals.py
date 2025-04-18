@@ -179,7 +179,7 @@ def test_SIQuantityDatatype() -> None:
     assert literal.value == q
     assert literal.lang is None
     assert literal.datatype == SIQuantityDatatype
-    assert literal.n3() == f'"2 meter"^^<{SIQuantityDatatype}>'
+    assert literal.n3() == f'"2 m"^^<{SIQuantityDatatype}>'
 
     literal = Literal("2.5 N", datatype=SIQuantityDatatype)
     assert literal.value == pint.Quantity("2.5 newton")

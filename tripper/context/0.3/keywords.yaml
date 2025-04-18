@@ -452,7 +452,7 @@ resources:
         range: dcterms:MediaType
         conformance: optional
         description: The format of the file in which one or more data files are grouped together, e.g. to enable a set of related files to be downloaded together.
-        usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).
+        usageNote: It SHOULD be expressed using a media type as defined in the official register of media types managed by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) and prefixed with `https://www.iana.org/assignments/media-types/`.
 
       parser:
         iri: oteio:parser

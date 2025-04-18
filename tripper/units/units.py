@@ -113,6 +113,7 @@ def _default_url_name(url, name) -> tuple:
 
 def get_unit_triplestore(
     url: "Optional[Union[str, Path]]" = None,
+    format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
     name: "Optional[str]" = None,
     cache: "Union[bool, None]" = True,
 ) -> Triplestore:
@@ -121,6 +122,7 @@ def get_unit_triplestore(
     Arguments:
         url: URL or path to unit triplestore.
             Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+        format: Optional format of the source referred to by `url`.
         name: A (versioned) name for the triplestore. Used for caching.
             Ex: "emmo-1.0.0".
         cache: Whether to load from cache. If `cache` is:
@@ -139,7 +141,7 @@ def get_unit_triplestore(
             _unit_ts.parse(cachefile, format="ntriples")
         else:
             print("* parsing units triplestore... ", end="", flush=True)
-            _unit_ts.parse(url)
+            _unit_ts.parse(url, format=format)
             print("done")
             if cache is not None:
                 try:
@@ -239,7 +241,7 @@ def save_emmo_quantity(
     iri: str,
     type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
     tbox: bool = False,
-    use_si_value: bool = True,
+    si_datatype: bool = True,
     annotations: "Optional[dict]" = None,
 ) -> None:
     """Save quantity to triplestore.
@@ -251,12 +253,15 @@ def save_emmo_quantity(
         type: IRI of the type or superclass (if `tbox` is true) of the
             quantity.
         tbox: Whether to document the quantity in the tbox.
-        use_si_value: Whether to represent the value using the
-            `emmo:hasSIQuantityDatatype` datatype.
+        si_datatype: Whether to represent the value using the
+            `emmo:SIQuantityDatatype` datatype.
         annotations: Additional annotations describing the quantity.
             Use Literal() for literal annotations.
 
     """
+    if EMMO not in ts.namespaces.values():
+        ts.bind("emmo", EMMO)
+
     if ts.has(iri):
         raise IRIExistsError(iri)
 
@@ -273,7 +278,7 @@ def save_emmo_quantity(
                 (r, RDF.type, OWL.Restriction),
             ]
         )
-        if use_si_value:
+        if si_datatype:
             triples.extend(
                 [
                     (r, OWL.onProperty, EMMO.hasSIQuantityValue),
@@ -296,7 +301,7 @@ def save_emmo_quantity(
                 ]
             )
     else:
-        if use_si_value:
+        if si_datatype:
             triples.append((iri, EMMO.hasSIQuantityValue, Literal(q)))
         else:
             v = bnode_iri("value")
@@ -325,6 +330,7 @@ class Units:
         self,
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
+        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
@@ -338,6 +344,7 @@ class Units:
             url: URL (or path) to triplestore from where to load the unit
                 definitions if `ts` is not given.
                 Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+            format: Optional format of the source referred to by `url`.
             name: A (versioned) name for the triplestore. Used for caching.
                 Ex: "emmo-1.0.0".
             formalisation: The ontological formalisation with which units
@@ -355,7 +362,9 @@ class Units:
         if ts:
             self.ts = ts
         else:
-            self.ts = get_unit_triplestore(url=url, name=name, cache=cache)
+            self.ts = get_unit_triplestore(
+                url=url, format=format, name=name, cache=cache
+            )
 
         self.ns = Namespace(
             iri="https://w3id.org/emmo#",
@@ -1079,6 +1088,7 @@ class UnitRegistry(pint.UnitRegistry):
         *args: "Any",
         ts: "Optional[Triplestore]" = None,
         url: "Optional[Union[str, Path]]" = None,
+        format: "Optional[str]" = None,  # pylint: disable=redefined-builtin
         name: "Optional[str]" = None,
         formalisation: str = "emmo",
         include_prefixed: bool = False,
@@ -1096,6 +1106,7 @@ class UnitRegistry(pint.UnitRegistry):
             url: URL (or path) to triplestore from where to load the unit
                 definitions if `ts` is not given.
                 Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+            format: Optional format of the source referred to by `url`.
             name: A (versioned) name for the triplestore. Used for caching.
                 Ex: "emmo-1.0.0".
             formalisation: The ontological formalisation with which units
@@ -1131,6 +1142,7 @@ class UnitRegistry(pint.UnitRegistry):
         self._tripper_unitsargs = {
             "ts": ts,
             "url": url,
+            "format": format,
             "name": name,
             "formalisation": formalisation,
             "include_prefixed": include_prefixed,
@@ -1253,7 +1265,7 @@ class UnitRegistry(pint.UnitRegistry):
         iri: str,
         type: "Optional[str]" = None,  # pylint: disable=redefined-builtin
         tbox: bool = False,
-        use_si_value: bool = True,
+        si_datatype: bool = True,
         annotations: "Optional[dict]" = None,
     ) -> None:
         """Save quantity to triplestore.
@@ -1265,8 +1277,8 @@ class UnitRegistry(pint.UnitRegistry):
             type: IRI of the type or superclass (if `tbox` is true) of the
                 quantity.
             tbox: Whether to document the quantity in the tbox.
-            use_si_value: Whether to represent the value using the
-                `emmo:hasSIQuantityDatatype` datatype.
+            si_datatype: Whether to represent the value using the
+                `emmo:SIQuantityDatatype` datatype.
             annotations: Additional annotations describing the quantity.
                 Use Literal() for literal annotations.
 
@@ -1277,7 +1289,7 @@ class UnitRegistry(pint.UnitRegistry):
             iri=iri,
             type=type,
             tbox=tbox,
-            use_si_value=use_si_value,
+            si_datatype=si_datatype,
             annotations=annotations,
         )
 
@@ -1299,6 +1311,8 @@ class UnitRegistry(pint.UnitRegistry):
 
     def set_as_default(self) -> "Union[UnitRegistry, None]":
         """Set current unit registry as the default one.
+
+        This unit registry can then be accessed with `get_ureg()`.
 
         Returns the previous default unit registry."""
         global _unit_reg  # pylint: disable=global-statement

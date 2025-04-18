@@ -237,9 +237,7 @@ def test_units():
 
 
 # if True:
-@pytest.mark.skipif(
-    sys.version_info < (3, 9), reason="pint requires Python 3.9"
-)
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
     # pylint: disable=too-many-statements
@@ -300,7 +298,7 @@ def test_unit_registry():
         NS.ExperimentPressure,
         type=EMMO.Pressure,
         tbox=True,
-        use_si_value=True,
+        si_datatype=True,
         annotations={RDFS.label: en("ExperimentPressure")},
     )
 
@@ -310,7 +308,7 @@ def test_unit_registry():
         NS.ExperimentTemperature,
         type=EMMO.ThermodynamicTemperature,
         tbox=True,
-        use_si_value=False,
+        si_datatype=False,
         annotations={RDFS.label: en("ExperimentTemperature")},
     )
 
@@ -320,7 +318,7 @@ def test_unit_registry():
         NS.ExperimentEnergy,
         type=EMMO.Energy,
         tbox=False,
-        use_si_value=True,
+        si_datatype=True,
         annotations={RDFS.label: en("ExperimentEnergy")},
     )
 
@@ -330,7 +328,7 @@ def test_unit_registry():
         NS.ExperimentSpeed,
         type=EMMO.Speed,
         tbox=False,
-        use_si_value=False,
+        si_datatype=False,
         annotations={RDFS.label: en("ExperimentSpeed")},
     )
 
@@ -350,6 +348,12 @@ def test_unit_registry():
     assert abs((speed - ureg.Quantity(4.4, "km/h")).m) < 1e-7
 
     # Test set_as_default()
+    # Since pytest lacks proper test separation, we have to manually
+    # reset the module variable holding the default ureg
+    import tripper.units.units
+
+    tripper.units.units._unit_reg = None  # pylint: disable=protected-access
+
     with pytest.raises(NoDefaultUnitRegistryError):
         get_ureg(nocreate=True)
 

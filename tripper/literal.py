@@ -240,6 +240,8 @@ class Literal(str):
             string.lang = None
             string.datatype = RDF.JSON
         elif Quantity and isinstance(value, Quantity):
+            string = super().__new__(cls, f"{value:~P}")
+            string.lang = None
             string.datatype = SIQuantityDatatype
 
         # Some consistency checking
@@ -332,9 +334,9 @@ class Literal(str):
         elif self.datatype == SIQuantityDatatype:
             if Quantity:
                 # pylint: disable=import-outside-toplevel,cyclic-import
-                from tripper.units import UnitRegistry
+                from tripper.units import get_ureg
 
-                ureg = UnitRegistry()
+                ureg = get_ureg()
                 value = ureg.Quantity(self)
             else:
                 warnings.warn(
