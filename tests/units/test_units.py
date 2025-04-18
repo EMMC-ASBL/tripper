@@ -16,22 +16,6 @@ def test_get_unit_triplestore():
     assert ts.has(EMMO.Atom)
 
 
-# def test_get_emmo_triplestore():
-#     """Test get_emmo_triplestore()."""
-#     from tripper import EMMO, units
-#
-#     ts = units.units.get_emmo_triplestore()
-#     assert ts.has(EMMO.Atom)
-#
-#
-# def test_emmo_namespace():
-#     """Test get_emmo_namespace()."""
-#     from tripper import EMMO, units
-#
-#     ns = units.units.get_emmo_namespace()
-#     assert ns.Atom == EMMO.Atom
-
-
 def test_base_unit_expression():
     """Test base_unit_expression()."""
     from tripper.units.units import Dimension, base_unit_expression
@@ -99,8 +83,7 @@ def test_units():
     from pathlib import Path
 
     from tripper import EMMO
-    from tripper.units import Units
-    from tripper.units.units import Dimension
+    from tripper.units.units import Dimension, Units
 
     units = Units()
 
@@ -254,12 +237,20 @@ def test_units():
 
 
 # if True:
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="requires Python 3.9")
+@pytest.mark.skipif(
+    sys.version_info < (3, 9), reason="pint requires Python 3.9"
+)
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
+    # pylint: disable=too-many-statements
+
     from tripper import EMMO, RDFS, Triplestore
-    from tripper.units import UnitRegistry
-    from tripper.units.units import Dimension, MissingUnitError
+    from tripper.units import UnitRegistry, get_ureg
+    from tripper.units.units import (
+        Dimension,
+        MissingUnitError,
+        NoDefaultUnitRegistryError,
+    )
     from tripper.utils import en
 
     ureg = UnitRegistry()
@@ -357,3 +348,11 @@ def test_unit_registry():
 
     speed = ureg.load_quantity(ts, NS.ExperimentSpeed)
     assert abs((speed - ureg.Quantity(4.4, "km/h")).m) < 1e-7
+
+    # Test set_as_default()
+    with pytest.raises(NoDefaultUnitRegistryError):
+        get_ureg(nocreate=True)
+
+    ureg.set_as_default()
+    assert get_ureg(nocreate=True) == ureg
+    assert get_ureg(nocreate=False) == ureg

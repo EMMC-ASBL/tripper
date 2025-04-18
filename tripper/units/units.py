@@ -42,6 +42,7 @@ EMMO_VERSION = "1.0.0"
 
 # Cached module variables
 _unit_ts = None  # Unit triplestore object
+_unit_reg = None  # Default unit registry
 
 # Named tuple used to represent a dimension string
 # Note we use H instead of ϴ to represent the thermodynamic temperature
@@ -70,6 +71,33 @@ class MissingDimensionStringError(UnitError):
 
 class InvalidDimensionStringError(UnitError):
     """Invalid dimension string."""
+
+
+class NoDefaultUnitRegistryError(UnitError):
+    """No default unit registry has been defined."""
+
+
+def get_ureg(*args, nocreate=False, **kwargs) -> "UnitRegistry":
+    """Return default unit registry.
+
+    If a default unit registry has been set (using the
+    `UnitRegistry.set_as_default()` method), it is returned.
+
+    If no default unit registry has been set and `nocreate` is true,
+    a `NoDefaultUnitRegistryError` exception is raised. Otherwise,
+    a new default unit registry is created using the `args` and `kwargs`
+    arguments.
+
+    """
+    global _unit_reg  # pylint: disable=global-statement
+    if not _unit_reg:
+        if nocreate:
+            raise NoDefaultUnitRegistryError("No default unit registry")
+        ureg = UnitRegistry(*args, **kwargs)
+        _unit_reg = ureg
+    else:
+        ureg = _unit_reg
+    return ureg
 
 
 def _default_url_name(url, name) -> tuple:
@@ -249,11 +277,7 @@ def save_emmo_quantity(
             triples.extend(
                 [
                     (r, OWL.onProperty, EMMO.hasSIQuantityValue),
-                    (
-                        r,
-                        OWL.hasValue,
-                        Literal(f"{q:~P}", datatype=EMMO.SIQuantityDatatype),
-                    ),
+                    (r, OWL.hasValue, Literal(q)),
                 ]
             )
         else:
@@ -268,18 +292,12 @@ def save_emmo_quantity(
                     (iri, RDFS.subClassOf, r2),
                     (r2, RDF.type, OWL.Restriction),
                     (r2, OWL.onProperty, EMMO.hasReferencePart),
-                    (r2, OWL.someValuesFrom, q2.u.emmoIRI),  # XXX
+                    (r2, OWL.someValuesFrom, q2.u.emmoIRI),
                 ]
             )
     else:
         if use_si_value:
-            triples.append(
-                (
-                    iri,
-                    EMMO.hasSIQuantityValue,
-                    Literal(f"{q:~P}", datatype=EMMO.SIQuantityDatatype),
-                )
-            )
+            triples.append((iri, EMMO.hasSIQuantityValue, Literal(q)))
         else:
             v = bnode_iri("value")
             q2 = q.to_ontology_unit()
@@ -1278,3 +1296,12 @@ class UnitRegistry(pint.UnitRegistry):
             ontofile.unlink()
         if unitsfile.exists():
             unitsfile.unlink()
+
+    def set_as_default(self) -> "Union[UnitRegistry, None]":
+        """Set current unit registry as the default one.
+
+        Returns the previous default unit registry."""
+        global _unit_reg  # pylint: disable=global-statement
+        old = _unit_reg
+        _unit_reg = self
+        return old
