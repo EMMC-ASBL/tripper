@@ -1,6 +1,15 @@
 """Run doctest on all markdown files in the docs/ folder."""
 
+import sys
 
+import pytest
+
+pytest.importorskip("rdflib")
+pytest.importorskip("pyyaml")
+pytest.importorskip("pint")
+
+
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def markdown_doctest():
     """Runs doctest on all markdown files in the docs/ folder."""
     import doctest
