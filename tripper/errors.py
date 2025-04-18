@@ -45,3 +45,7 @@ class UnusedArgumentWarning(TripperWarning):
 
 class UnknownDatatypeWarning(TripperWarning):
     """Unknown datatype."""
+
+
+class PermissionWarning(TripperWarning, UserWarning):
+    """Not enough permissions."""

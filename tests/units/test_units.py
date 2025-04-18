@@ -8,20 +8,28 @@ pytest.importorskip("pint")
 pytest.importorskip("rdflib")
 
 
-def test_get_emmo_triplestore():
-    """Test get_emmo_triplestore()."""
+def test_get_unit_triplestore():
+    """Test get_unit_triplestore()."""
     from tripper import EMMO, units
 
-    ts = units.units.get_emmo_triplestore()
+    ts = units.units.get_unit_triplestore()
     assert ts.has(EMMO.Atom)
 
 
-def test_emmo_namespace():
-    """Test get_emmo_namespace()."""
-    from tripper import EMMO, units
-
-    ns = units.units.get_emmo_namespace()
-    assert ns.Atom == EMMO.Atom
+# def test_get_emmo_triplestore():
+#     """Test get_emmo_triplestore()."""
+#     from tripper import EMMO, units
+#
+#     ts = units.units.get_emmo_triplestore()
+#     assert ts.has(EMMO.Atom)
+#
+#
+# def test_emmo_namespace():
+#     """Test get_emmo_namespace()."""
+#     from tripper import EMMO, units
+#
+#     ns = units.units.get_emmo_namespace()
+#     assert ns.Atom == EMMO.Atom
 
 
 def test_base_unit_expression():

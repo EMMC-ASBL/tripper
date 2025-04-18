@@ -26,23 +26,22 @@ from tripper import (
     Namespace,
     Triplestore,
 )
-from tripper.errors import IRIExistsError, TripperError
+from tripper.errors import IRIExistsError, PermissionWarning, TripperError
 from tripper.namespace import get_cachedir
 from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
-    from pathlib import Path
+    from pathlib import Path, PurePath
     from typing import Any, Iterable, Mapping, Optional, Tuple, Union
 
     from pint.compat import TypeAlias
+
 
 # Default EMMO version
 EMMO_VERSION = "1.0.0"
 
 # Cached module variables
-_emmo_ts = None  # EMMO triplestore object
-_emmo_ns = None  # EMMO namespace object
-_unit_cache: dict = {}  # Maps unit names to IRIs
+_unit_ts = None  # Unit triplestore object
 
 # Named tuple used to represent a dimension string
 # Note we use H instead of ϴ to represent the thermodynamic temperature
@@ -73,47 +72,58 @@ class InvalidDimensionStringError(UnitError):
     """Invalid dimension string."""
 
 
-class PermissionWarning(UserWarning):
-    """Not enough permissions."""
+def _default_url_name(url, name) -> tuple:
+    "Return default unit triplestore url and name."
+    if url is None:
+        url = f"https://w3id.org/emmo/{EMMO_VERSION}"
+        if not name:
+            name = f"emmo-{EMMO_VERSION}"
+    elif not name:
+        raise ValueError("`name` must be given with `url`")
+    return url, name
 
 
-def get_emmo_triplestore(emmo_version: str = EMMO_VERSION) -> Triplestore:
-    """Return, potentially cached, triplestore object containing the
-    given version of EMMO."""
-    global _emmo_ts  # pylint: disable=global-statement
-    if not _emmo_ts:
-        _emmo_ts = Triplestore("rdflib")
+def get_unit_triplestore(
+    url: "Optional[Union[str, Path]]" = None,
+    name: "Optional[str]" = None,
+    cache: "Union[bool, None]" = True,
+) -> Triplestore:
+    """Return, potentially cached, triplestore object that defines the units.
 
-        cachefile = get_cachedir() / f"emmo-{emmo_version}.ntriples"
-        if cachefile.exists():
-            _emmo_ts.parse(cachefile, format="ntriples")
+    Arguments:
+        url: URL or path to unit triplestore.
+            Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+        name: A (versioned) name for the triplestore. Used for caching.
+            Ex: "emmo-1.0.0".
+        cache: Whether to load from cache. If `cache` is:
+            - True: Load cache if it exists, otherwise create new cache.
+            - False: Don't load cache, but (over)write new cache.
+            - None: Don't use cache.
+
+    """
+    global _unit_ts  # pylint: disable=global-statement
+    if not _unit_ts:
+        _unit_ts = Triplestore("rdflib")
+        url, name = _default_url_name(url, name)
+
+        cachefile = get_cachedir() / f"units-{name}.ntriples"
+        if cache and cachefile.exists():
+            _unit_ts.parse(cachefile, format="ntriples")
         else:
-            print("* parsing EMMO... ", end="", flush=True)
-            _emmo_ts.parse(f"https://w3id.org/emmo/{emmo_version}")
+            print("* parsing units triplestore... ", end="", flush=True)
+            _unit_ts.parse(url)
             print("done")
-            try:
-                _emmo_ts.serialize(
-                    cachefile, format="ntriples", encoding="utf-8"
-                )
-            except PermissionError as exc:
-                warnings.warn(
-                    f"{exc}: {cachefile}",
-                    category=PermissionWarning,
-                )
-    return _emmo_ts
-
-
-def get_emmo_namespace(emmo_version: str = EMMO_VERSION) -> Namespace:
-    """Return potentially cached EMMO namespace object."""
-    global _emmo_ns  # pylint: disable=global-statement
-    if not _emmo_ns:
-        _emmo_ns = Namespace(
-            iri="https://w3id.org/emmo#",
-            label_annotations=True,
-            check=True,
-            triplestore=get_emmo_triplestore(emmo_version),
-        )
-    return _emmo_ns
+            if cache is not None:
+                try:
+                    _unit_ts.serialize(
+                        cachefile, format="ntriples", encoding="utf-8"
+                    )
+                except PermissionError as exc:
+                    warnings.warn(
+                        f"{exc}: {cachefile}",
+                        category=PermissionWarning,
+                    )
+    return _unit_ts
 
 
 def base_unit_expression(dimension: Dimension) -> str:
@@ -296,43 +306,38 @@ class Units:
     def __init__(
         self,
         ts: "Optional[Triplestore]" = None,
-        ontology_url: "Optional[str]" = None,
-        ontology_name: str = "emmo",
-        ontology_version: str = EMMO_VERSION,
-        ontology_formalisation: str = "emmo",
+        url: "Optional[Union[str, Path]]" = None,
+        name: "Optional[str]" = None,
+        formalisation: str = "emmo",
         include_prefixed: bool = False,
-        cache: "Optional[bool]" = True,
+        cache: "Union[bool, None]" = True,
     ) -> None:
         """Initialise a Units class from triplestore `ts`
 
         Arguments:
             ts: Triplestore object containing the ontology to load
-                units from.  The default is to determine the ontology to
-                load from `ontology_formalisation` and `ontology_version`.
-            ontology_url: URL from which to load the ontology.
-            ontology_name: Name of ontology from which the units and
-                quantities are read. Used for labeling caches.
-                is supported.
-            ontology_version: Version of `ontology_formalisation` to load
-                if `ts` is None.
-            ontology_formalisation: Ontological formalisation with which
-                units and quantities are represented. Currently only "emmo"
-                is supported.
+                units from.
+            url: URL (or path) to triplestore from where to load the unit
+                definitions if `ts` is not given.
+                Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+            name: A (versioned) name for the triplestore. Used for caching.
+                Ex: "emmo-1.0.0".
+            formalisation: The ontological formalisation with which units
+                and quantities are represented. Currently only "emmo" is
+                supported.
             include_prefixed: Whether to also include prefixed units.
             cache: Whether to cache the unit table. If `cache` is:
                 - True: Load cache if it exists, otherwise create new cache.
-                - False: Don't use cache.
-                - None: Don't load cache, but (over)write new cache.
+                - False: Don't load cache, but (over)write new cache.
+                - None: Don't use cache.
 
         """
+        url, name = _default_url_name(url, name)
+
         if ts:
             self.ts = ts
-        elif ontology_formalisation == "emmo":
-            self.ts = get_emmo_triplestore(ontology_version)
         else:
-            raise ValueError(
-                f"Unsupported unit ontology: {ontology_formalisation}"
-            )
+            self.ts = get_unit_triplestore(url=url, name=name, cache=cache)
 
         self.ns = Namespace(
             iri="https://w3id.org/emmo#",
@@ -342,8 +347,8 @@ class Units:
         )
 
         pf = "-prefixed" if include_prefixed else ""
-        fname = f"units-{ontology_formalisation}-{ontology_version}{pf}.pickle"
-        cachedir = get_cachedir()
+        fname = f"units{pf}-{name}.pickle"
+        cachedir = get_cachedir(create=True)
         cachefile = cachedir / fname
         if cache and cachefile.exists():
             with open(cachefile, "rb") as f:
@@ -360,27 +365,19 @@ class Units:
             self.constants = self._parse_quantities(constants=True)
             print("done")
 
-        if cache in (True, None):
-            try:
-                cachedir.mkdir(parents=True, exist_ok=True)
-            except PermissionError as exc:
-                warnings.warn(
-                    f"{exc}: {cachedir}",
-                    category=PermissionWarning,
-                )
-            else:
-                with open(cachefile, "wb") as f:
-                    d = {
-                        "units": self.units,
-                        "quantities": self.quantities,
-                        "constants": self.constants,
-                    }
-                    pickle.dump(d, f)
+        if cache is not None:
+            with open(cachefile, "wb") as f:
+                d = {
+                    "units": self.units,
+                    "quantities": self.quantities,
+                    "constants": self.constants,
+                }
+                pickle.dump(d, f)
 
-        self.ontology_name = ontology_name
-        self.ontology_version = ontology_version
-        self.ontology_url = ontology_url
-        self.ontology_formalisation = ontology_formalisation
+        self.url = url
+        self.name = name
+        self.formalisation = formalisation
+        self.cachedir = cachedir
         self.cachefile = cachefile
 
     def _emmo_unit_iris(self, include_prefixed: bool = False) -> list:
@@ -762,8 +759,8 @@ class Units:
         content: list = [
             "# Pint units definitions file",
             (
-                "# Created with tripper.units from "
-                f"{self.ontology_formalisation}-{self.ontology_version}"
+                f"# Created with tripper.units from {self.formalisation} "
+                f"- {self.name}"
             ),
             "",
             "@defaults",
@@ -935,13 +932,9 @@ class Units:
         if cachefile.exists():
             cachefile.unlink()
 
-        cachedir = cachefile.parent
-        fname = (
-            f"{self.ontology_formalisation}-{self.ontology_version}.ntriples"
-        )
-        ontofile = cachedir / fname
-        if ontofile.exists():
-            ontofile.unlink()
+        tsfile = self.cachedir / f"{self.name}.ntriples"
+        if tsfile.exists():
+            tsfile.unlink()
 
 
 # pylint: disable=too-many-ancestors
@@ -1067,10 +1060,9 @@ class UnitRegistry(pint.UnitRegistry):
         self,
         *args: "Any",
         ts: "Optional[Triplestore]" = None,
-        ontology_url: "Optional[str]" = None,
-        ontology_name: str = "emmo",
-        ontology_version: str = EMMO_VERSION,
-        ontology_formalisation: str = "emmo",
+        url: "Optional[Union[str, Path]]" = None,
+        name: "Optional[str]" = None,
+        formalisation: str = "emmo",
         include_prefixed: bool = False,
         cache: "Optional[bool]" = True,
         **kwargs: "Any",
@@ -1082,21 +1074,20 @@ class UnitRegistry(pint.UnitRegistry):
         Arguments:
             args: Positional arguments passed to pint.UnitRegistry().
             ts: Triplestore object containing the ontology to load
-                units from.  The default is to determine the ontology to
-                load from `ontology_formalisation` and `ontology_version`.
-            ontology_name: Name of ontology from which the units and
-                quantities are read. Used for labeling caches.
-                is supported.
-            ontology_version: Version of `ontology_formalisation` to load
-                if `ts` is None.
-            ontology_formalisation: Ontological formalisation with which
-                units and quantities are represented. Currently only "emmo"
-                is supported.
+                units from.
+            url: URL (or path) to triplestore from where to load the unit
+                definitions if `ts` is not given.
+                Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+            name: A (versioned) name for the triplestore. Used for caching.
+                Ex: "emmo-1.0.0".
+            formalisation: The ontological formalisation with which units
+                and quantities are represented. Currently only "emmo" is
+                supported.
             include_prefixed: Whether to also include prefixed units.
             cache: Whether to cache the unit table. If `cache` is:
                 - True: Load cache if it exists, otherwise create new cache.
-                - False: Don't use cache.
-                - None: Don't load cache, but (over)write new cache.
+                - False: Don't load cache, but (over)write new cache.
+                - None: Don't use cache.
             kwargs: Keyword arguments passed to pint.UnitRegistry().
 
         Examples:
@@ -1117,34 +1108,31 @@ class UnitRegistry(pint.UnitRegistry):
             'http://qudt.org/vocab/unit/HR'
 
         """
-        self._tripper_cachedir = get_cachedir()
+        self._tripper_cachedir = get_cachedir(create=cache is not None)
         self._tripper_units = None
         self._tripper_unitsargs = {
             "ts": ts,
-            "ontology_url": ontology_url,
-            "ontology_name": ontology_name,
-            "ontology_version": ontology_version,
-            "ontology_formalisation": ontology_formalisation,
+            "url": url,
+            "name": name,
+            "formalisation": formalisation,
             "include_prefixed": include_prefixed,
             "cache": cache,
         }
+        unitsfile = self._tripper_cachedir / f"units-{name}.txt"
+        self._tripper_unitsfile = unitsfile
 
         # If no explicit `filename` is not provided, ensure that an unit
         # definition file has been created and assign `filename` to it.
-        fname = f"units-{ontology_formalisation}-{ontology_version}.txt"
-        unitsfile = self._tripper_cachedir / fname
         if "filename" not in kwargs:
             kwargs["filename"] = unitsfile
             if not unitsfile.exists():
                 units = self._get_tripper_units()
-                self._tripper_cachedir.mkdir(parents=True, exist_ok=True)
                 units.write_pint_units(unitsfile)
 
         if cache:
             kwargs.setdefault("cache_folder", self._tripper_cachedir)
 
         super().__init__(*args, **kwargs)
-        self._tripper_unitsfile = unitsfile
 
     def parse_units(  # pylint: disable=arguments-differ
         self, units, *args, **kwargs
@@ -1280,11 +1268,12 @@ class UnitRegistry(pint.UnitRegistry):
         if self._tripper_unitsfile.exists():
             self._tripper_unitsfile.unlink()
 
-        name = self._tripper_unitsargs["ontology_name"]
-        version = self._tripper_unitsargs["ontology_version"]
+        name = self._tripper_unitsargs["name"]
+        include_prefixed = self._tripper_unitsargs["include_prefixed"]
+        pf = "-prefixed" if include_prefixed else ""
         cachedir = self._tripper_cachedir
-        ontofile = cachedir / f"{name}-{version}.ntriples"
-        unitsfile = cachedir / f"units-{name}-{version}.pickle"
+        ontofile = cachedir / f"{name}.ntriples"
+        unitsfile = cachedir / f"units{pf}-{name}.pickle"
         if ontofile.exists():
             ontofile.unlink()
         if unitsfile.exists():

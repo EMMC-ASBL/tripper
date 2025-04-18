@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from tripper.errors import (
     NamespaceError,
     NoSuchIRIError,
+    PermissionWarning,
     UnusedArgumentWarning,
 )
 
@@ -308,11 +309,13 @@ def get_cachedir(create=True) -> Path:
         cachedir /= finaldir
 
     if create:
-        path = Path(cachedir.root)
-        for part in cachedir.parts[1:]:
-            path /= part
-            if not path.exists():
-                path.mkdir()
+        try:
+            cachedir.mkdir(parents=True, exist_ok=True)
+        except PermissionError as exc:
+            warnings.warn(
+                f"{exc}: {cachedir}",
+                category=PermissionWarning,
+            )
 
     return cachedir
 
