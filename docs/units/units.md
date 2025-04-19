@@ -56,6 +56,7 @@ Item access creates a quantity representation (see [Working with quantities](#wo
 
 ### Extra unit registry methods
 Tripper adds some extra methods to the unit registry on top of what is already provided by [Pint], including:
+
 - **get_unit()**: Access unit from name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
 - **get_unit_info()**: Returns a dict with attribute access providing additional information about the unit.
 - **load_quantity()**: Loads a quantity from a triplestore.
