@@ -294,8 +294,8 @@ class Keywords:
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",
             "",
-            f"# Keywords{field}",
-            f"The tables below lists the keywords the domain {self.field}.",
+            f"# Keywords{domain}",
+            f"The tables below lists the keywords the domain {self.domain}.",
             "",
             "The meaning of the columns are as follows:",
             "",
