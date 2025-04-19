@@ -1,6 +1,6 @@
 Units and quantities
 ====================
-The `tripper.units` subpackage provide support for using [Pint] to work with units and quantites defined in ontologies.
+The [tripper.units] subpackage provide support for using [Pint] to work with units and quantites defined in ontologies.
 
 Currently, only [EMMO] and EMMO-based ontologies can be used as a source for units and quantities.
 However, since [EMMO] include references to the [QUDT] and [OM] ontologies, it is also possible to work with IRIs for these ontologies as well.
@@ -11,7 +11,7 @@ However, since [EMMO] include references to the [QUDT] and [OM] ontologies, it i
 
 Unit registry
 -------------
-The `tripper.units` subpackage subclasses the `UnitRegistry` from [Pint].
+The [UnitRegistry] in [tripper.units] is a subclass the [Pint] unit registry.
 By default it is populated with units from [EMMO].
 
 ```python
@@ -43,7 +43,7 @@ However, unit access also work with "snake_case":
 
 ```
 
-Item access creates a quantity representation (see [Working with quantities](#working-with-quantities)):
+Item access creates a quantity representation (see [Working with quantities]):
 
 ```python
 >>> ureg["Pa"]
@@ -57,14 +57,14 @@ Item access creates a quantity representation (see [Working with quantities](#wo
 ### Extra unit registry methods
 Tripper adds some extra methods to the unit registry on top of what is already provided by [Pint], including:
 
-- **get_unit()**: Access unit from name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
-- **get_unit_info()**: Returns a dict with attribute access providing additional information about the unit.
-- **load_quantity()**: Loads a quantity from a triplestore.
-- **save_quantity()**: Saves a quantity to a triplestore.
-- **clear_cache()**: Clear caches.
-- **set_as_default()**: Set the current unit registry as the default. This allows to access the registry with the `get_ureg()` method.
+- [get_unit()]: Access unit from name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
+- [get_unit_info()]: Returns a dict with attribute access providing additional information about the unit.
+- [load_quantity()]: Loads a quantity from a triplestore.
+- [save_quantity()]: Saves a quantity to a triplestore.
+- [clear_cache()]: Clear caches.
+- [set_as_default()]: Set the current unit registry as the default. This allows to access the registry with the [get_ureg()] method.
 
-Here we will only discuss `get_unit()` and `get_unit_info()`.
+Here we will only discuss [get_unit()] and [get_unit_info()] methods.
 See [Accessing quantities in a triplestore] and [Setting up custom unit registry] for the rest.
 
 For example:
@@ -107,7 +107,7 @@ When you have a unit, you can also ask it for its IRI using its `emmoIRI`, `qudt
 
 ```
 
-Units have an `info` property providing a dict with attribute access with description of the unit provided by the ontology.
+Units have an [info] property providing a dict with attribute access with description of the unit provided by the ontology.
 It contains the following fields:
 
   - **name**: Preferred label.
@@ -123,7 +123,7 @@ It contains the following fields:
   - **multiplier**: Unit multiplier.
   - **offset**: Unit offset.
 
-This dict can also be accessed with the `ureg.get_unit()` method.
+This dict can also be accessed with the [get_unit()] method.
 
 For example:
 
@@ -137,7 +137,7 @@ Dimension(T=0, L=3, M=0, I=0, H=0, N=0, J=0)
 
 ```
 
-The same dict can also be accessed from the unit registry with the `UnitRegistry.get_unit_info()` method.
+The same dict can also be accessed from the unit registry with the `get_unit_info()` method.
 
 ```python
 >>> info = ureg.get_unit_info("CubicMetre")
@@ -150,7 +150,7 @@ Working with quantities
 -----------------------
 Physical quantities consisting of a numerical value and a unit, can be constructed in several ways.
 
-For example by using `ureg.Quantity()` with two arguments
+For example by using [ureg.Quantity()] with two arguments
 
 ```python
 >>> length = ureg.Quantity(6, "km")
@@ -205,7 +205,7 @@ tripper.units.units.MissingUnitError: name=KiloHour
 
 ```
 
-You can use to `to_ontology_units()` method (or its in-place variant `ito_ontology_units()`) to rescale the quantity to a unit that exists in the ontology:
+You can use to [to_ontology_units()] method (or its in-place variant [ito_ontology_units()]) to rescale the quantity to a unit that exists in the ontology:
 
 ```python
 >>> duration.ito_ontology_units()
@@ -220,7 +220,7 @@ You can use to `to_ontology_units()` method (or its in-place variant `ito_ontolo
 
 
 ### Quantities as literals
-Quantities are also understood by the `Literal` constructor
+Quantities are also understood by the [Literal] constructor
 
 ```python
 >>> from tripper import Literal
@@ -236,7 +236,7 @@ Literal('101325 Pa', datatype='https://w3id.org/emmo#EMMO_799c067b_083f_4365_945
 ```
 
 which uses the `emmo:SIQuantityDatatype` datatype.
-The `Literal.value` property and `Literal.n3()` method can be used to convert back to a quantity or represent it in N3 notation:
+The [Literal.value] property and [Literal.n3()] method can be used to convert back to a quantity or represent it in N3 notation:
 
 ```python
 >>> literal = Literal(pressure)
@@ -271,7 +271,7 @@ and store our calculated `mean_speed` to a triplestore:
 Above we have created a new triplestore, bound empty prefix to the namespace
 `http://example.com#` and saved the calculated `mean_speed` to a new individual
 with IRI `http://example.com#MeanSpeed`.
-The final `type` argument to `ureg.save_quantity()` states that our new individual
+The final `type` argument to [ureg.save_quantity()] states that our new individual
 will be an individual of the class `emmo:Speed`.
 
 The content of the triplestore is now
@@ -288,10 +288,10 @@ The content of the triplestore is now
 
 ```
 
-By default `ureg.save_quantity()` saves the quantity as an individual using the `emmo:SIQuantityDatatype` datatype.
-But, the `ureg.save_quantity()` method has also options for saving the quantity as a class (argument `tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (argument `si_datatype=False`).
+By default [ureg.save_quantity()] saves the quantity as an individual using the `emmo:SIQuantityDatatype` datatype.
+But, the [ureg.save_quantity()] method has also options for saving the quantity as a class (argument `tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (argument `si_datatype=False`).
 
-Loading a quantity from the triplestore can be with `ureg_load_quantity()`:
+Loading a quantity from the triplestore can be with [ureg.load_quantity()]:
 
 
 ```python
@@ -317,7 +317,7 @@ Use the `url` and `name` options when instantiating the unit registry
 where `url` is the URL or file path to the ontology and `name` is a, preferred versioned, name for the custom ontology used for caching.
 
 Typically you create the unit registry when initialising your application.
-After creating it, you can call the `set_as_default()` method.
+After creating it, you can call the [set_as_default()] method.
 
 
 ```python
@@ -326,7 +326,7 @@ After creating it, you can call the `set_as_default()` method.
 
 ```
 
-This will allow to retrieve the custom unit register from anywhere in your application using the `get_ureg()` function
+This will allow to retrieve the custom unit register from anywhere in your application using the [get_ureg()] function
 
 ```python
 >>> from tripper.units import get_ureg
@@ -339,13 +339,43 @@ Tips & tricks
 -------------
 Tripper caches the ontology and [Pint] units definition file for performance reasons.
 If the ontology has been updated, you may need to clear the cache.
-That can either be done manually or by calling the `ureg.clear_cache()` method.
+That can either be done manually or by calling the [ureg.clear_cache()] method.
 
 For manual deletion of the cache files, the cache directory can be found using the `ureg._tripper_cachedir` attribute.
 
 [Working with quantities]: #working-with-quantities
 [Accessing quantities in a triplestore]: #accessing-quantities-in-a-triplestore
 [Setting up custom unit registry]: #setting-up-custom-unit-registry
+
+[tripper.units]: ../../api_reference/units/units/
+[UnitRegistry]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry
+[get_unit()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit
+[get_unit_info()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit_info
+[load_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.load_quantity
+[save_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.save_quantity
+[clear_cache()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.clear_cache
+[set_as_default()]:
+../../api_reference/units/units/#tripper.units.units.UnitRegistry.set_as_default
+[to_ontology_units()]:
+../../api_reference/units/units/#tripper.units.units.UnitRegistry.Quantity.to_ontology_units
+[ito_ontology_units()]:
+../../api_reference/units/units/#tripper.units.units.UnitRegistry.Quantity.ito_ontology_units
+[ureg.Unit()]:
+../../api_reference/units/units/#tripper.units.units.UnitRegistry.Unit
+[ureg.Quantity()]:
+../../api_reference/units/units/#tripper.units.units.UnitRegistry.Quantity
+[ureg.save_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.save_quantity
+[ureg.load_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.load_quantity
+[ureg.clear_cache()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.clear_cache
+
+[get_ureg()]: ../../api_reference/units/units/#tripper.units.units.get_ureg
+
+[info]:
+../../api_reference/units/units/#tripper.units.units.UnitRegistry.Unit.info
+
+[Literal]: ../../api_reference/literal/#tripper.literal.Literal
+[Literal.value]: ../../api_reference/literal/#tripper.literal.Literal.value
+[Literal.n3()]: ../../api_reference/literal/#tripper.literal.Literal.n3
 
 [Pint]: https://pint.readthedocs.io/en/
 [EMMO]: https://github.com/emmo-repo/EMMO

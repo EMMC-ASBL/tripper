@@ -599,7 +599,7 @@ class Units:
                 power, prefix = 1, 1.0
             else:
                 raise MissingUnitError(
-                    "No such unit (or prefix or degree): {token}"
+                    f"No such unit (or prefix or degree): {token}"
                 )
         return mult, d
 
@@ -1027,6 +1027,7 @@ class Quantity(pint.Quantity):
         """Return new quantity rescale to a unit with the same
         dimensionality that exists in the ontology.
         """
+        # pylint: disable=protected-access
         ureg = self._REGISTRY
 
         try:
@@ -1034,21 +1035,28 @@ class Quantity(pint.Quantity):
         except (MissingUnitError, pint.OffsetUnitCalculusError):
             pass
 
-        units = ureg._get_tripper_units()  # pylint: disable=protected-access
+        units = ureg._get_tripper_units()
         dim = self._get_dimension()
         compatible_units = []
         for info in units.units.values():
             if info.dimension == dim:
                 q = self.to(info.name)
-                compatible_units.append((info.name, q.m, info.dimension))
+                try:
+                    d = units._parse_unitname(info.name)
+                except MissingUnitError:
+                    pass
+                else:
+                    compatible_units.append((info.name, q.m, d))
 
         def sortkey(x):
             """Returns sort key for `compatible_units`."""
             # This function prioritise compact unit expression with
             # small exponents.  Lower priority is given to pre-factor
             # close to five.
-            _, m, d = x
-            return 100 * sum(abs(v) for v in d) + abs(math.log10(m / 5))
+            _, m, (_, d) = x
+            return 100 * sum(abs(v) for v in d.values()) + abs(
+                math.log10(m / 5)
+            )
 
         compatible_units.sort(key=sortkey)
         name, mult, _ = compatible_units[0]
