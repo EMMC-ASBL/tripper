@@ -22,7 +22,8 @@ When your package is installed, this would make `mybackend1` and `mybackend2` au
 
 ```python
 >>> from tripper import Triplestore
->>> ts = Triplestore(backend="mybackend1")
+>>> ts = Triplestore(backend="mybackend1")  # doctest: +SKIP
+
 ```
 
 
@@ -38,10 +39,10 @@ An explicit module path can either be absolute or relative as shown in the examp
 
 ```
 # Absolute
->>> ts = Triplestore(backend="mypackage.backends.mybackend")
+ts = Triplestore(backend="mypackage.backends.mybackend")
 
 # Relative to the `package` argument
->>> ts = Triplestore(backend="backends.mybackend", package="mypackage")
+ts = Triplestore(backend="backends.mybackend", package="mypackage")
 ```
 
 A backend is considered to be specified explicitly if the `backend` argument contain a dot (.) or if the `package` argument is provided.

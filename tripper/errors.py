@@ -30,6 +30,10 @@ class ArgumentValueError(TripperError, ValueError):
     """Invalid argument value (of correct type)."""
 
 
+class IRIExistsError(NamespaceError):
+    """IRI already exists."""
+
+
 # === Warnings ===
 class TripperWarning(Warning):
     """Base class for tripper warnings."""
@@ -41,3 +45,7 @@ class UnusedArgumentWarning(TripperWarning):
 
 class UnknownDatatypeWarning(TripperWarning):
     """Unknown datatype."""
+
+
+class PermissionWarning(TripperWarning, UserWarning):
+    """Not enough permissions."""
