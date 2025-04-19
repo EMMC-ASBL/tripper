@@ -115,7 +115,7 @@ We gratefully acknowledge the following projects for supporting the development 
 [Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
 [tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/
 [tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
-[tripper.units]: https://emmc-asbl.github.io/tripper/latest/api_reference/units/units/
+[tripper.units]: https://emmc-asbl.github.io/tripper/latest/units/units/
 [tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
 [Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues/
 [MIT license]: https://emmc-asbl.github.io/tripper/latest/LICENSE/
