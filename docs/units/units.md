@@ -343,39 +343,40 @@ That can either be done manually or by calling the [ureg.clear_cache()] method.
 
 For manual deletion of the cache files, the cache directory can be found using the `ureg._tripper_cachedir` attribute.
 
+
 [Working with quantities]: #working-with-quantities
 [Accessing quantities in a triplestore]: #accessing-quantities-in-a-triplestore
 [Setting up custom unit registry]: #setting-up-custom-unit-registry
 
-[tripper.units]: ../../api_reference/units/units/
-[UnitRegistry]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry
-[get_unit()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit
-[get_unit_info()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit_info
-[load_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.load_quantity
-[save_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.save_quantity
-[clear_cache()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.clear_cache
+[tripper.units]: ../api_reference/units/units.md
+[UnitRegistry]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry
+[get_unit()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.get_unit
+[get_unit_info()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.get_unit_info
+[load_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.load_quantity
+[save_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.save_quantity
+[clear_cache()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.clear_cache
 [set_as_default()]:
-../../api_reference/units/units/#tripper.units.units.UnitRegistry.set_as_default
+../api_reference/units/units.md#tripper.units.units.UnitRegistry.set_as_default
 [to_ontology_units()]:
-../../api_reference/units/units/#tripper.units.units.UnitRegistry.Quantity.to_ontology_units
+../api_reference/units/units.md#tripper.units.units.UnitRegistry.Quantity.to_ontology_units
 [ito_ontology_units()]:
-../../api_reference/units/units/#tripper.units.units.UnitRegistry.Quantity.ito_ontology_units
+../api_reference/units/units.md#tripper.units.units.UnitRegistry.Quantity.ito_ontology_units
 [ureg.Unit()]:
-../../api_reference/units/units/#tripper.units.units.UnitRegistry.Unit
+../api_reference/units/units.md#tripper.units.units.UnitRegistry.Unit
 [ureg.Quantity()]:
-../../api_reference/units/units/#tripper.units.units.UnitRegistry.Quantity
-[ureg.save_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.save_quantity
-[ureg.load_quantity()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.load_quantity
-[ureg.clear_cache()]: ../../api_reference/units/units/#tripper.units.units.UnitRegistry.clear_cache
+../api_reference/units/units.md#tripper.units.units.UnitRegistry.Quantity
+[ureg.save_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.save_quantity
+[ureg.load_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.load_quantity
+[ureg.clear_cache()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.clear_cache
 
-[get_ureg()]: ../../api_reference/units/units/#tripper.units.units.get_ureg
+[get_ureg()]: ../api_reference/units/units.md#tripper.units.units.get_ureg
 
 [info]:
-../../api_reference/units/units/#tripper.units.units.UnitRegistry.Unit.info
+../api_reference/units/units.md#tripper.units.units.UnitRegistry.Unit.info
 
-[Literal]: ../../api_reference/literal/#tripper.literal.Literal
-[Literal.value]: ../../api_reference/literal/#tripper.literal.Literal.value
-[Literal.n3()]: ../../api_reference/literal/#tripper.literal.Literal.n3
+[Literal]: ../api_reference/literal.md#tripper.literal.Literal
+[Literal.value]: ../api_reference/literal.md#tripper.literal.Literal.value
+[Literal.n3()]: ../api_reference/literal.md#tripper.literal.Literal.n3
 
 [Pint]: https://pint.readthedocs.io/en/
 [EMMO]: https://github.com/emmo-repo/EMMO

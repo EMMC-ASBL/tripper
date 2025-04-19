@@ -379,3 +379,11 @@ def test_unit_registry():
     ureg.set_as_default()
     assert get_ureg(nocreate=True) == ureg
     assert get_ureg(nocreate=False) == ureg
+
+
+def test_clear_cache():
+    """Test clear_cache() method."""
+    from tripper.units import get_ureg
+
+    ureg = get_ureg()
+    ureg.clear_cache()

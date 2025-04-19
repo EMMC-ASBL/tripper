@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from typing import Callable
 
 
-# if True:
 def test_namespaces() -> None:
     """Test namespaces."""
     pytest.importorskip("rdflib")
@@ -68,6 +67,10 @@ def test_namespaces() -> None:
     assert FOOD3.Vegetable == FOOD3 + name
     with pytest.raises(NoSuchIRIError):
         FOOD3.NonExisting  # pylint: disable=pointless-statement
+
+    # Test __dir__() method
+    assert "Age" in dir(FAM)
+    assert "Child" in dir(FAM)
 
 
 # if True:
