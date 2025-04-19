@@ -61,18 +61,16 @@ you can now do:
 >>> ts = session.get_triplestore("FusekiTest")
 >>> EX = ts.bind("ex", "http://example.com#")
 
->>> ts.remove()  # clear the triplestore
+>>> ts.remove()  # clear the triplestore  # doctest: +ELLIPSIS
+<SPARQLWrapper.Wrapper.QueryResult object at 0x...>
+
 >>> ts.add_triples([
 ...     (EX.john, EX.hasName, Literal("John")),
 ...     (EX.john, EX.hasSon, EX.lars),
 ... ])
->>> list(ts.triples())
-[('http://example.com#john',
-  'http://example.com#hasName',
-  Literal('John'),
- ('http://example.com#john',
-  'http://example.com#hasSon',
-  'http://example.com#lars')]
+>>> list(ts.triples())  # doctest: +NORMALIZE_WHITESPACE
+[('http://example.com#john', 'http://example.com#hasName', Literal('John')),
+ ('http://example.com#john', 'http://example.com#hasSon', 'http://example.com#lars')]
 
 ```
 
