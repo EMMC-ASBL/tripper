@@ -290,7 +290,24 @@ class Keywords:
             ts.bind(prefix, ns)
 
         domain = f" for {self.domain}" if self.domain else ""
-        out = [f"# Keywords{domain}"]
+        out = [
+            "<!-- Do not edit! This file is generated with Tripper. "
+            "Edit the keywords.yaml file instead. -->",
+            "",
+            f"# Keywords{field}",
+            f"The tables below lists the keywords the domain {self.field}.",
+            "",
+            "The meaning of the columns are as follows:",
+            "",
+            "- **Keyword**: The keyword referring to a property used for "
+            "the data documentation.",
+            "- **Range**: Refer to the class for the values of the keyword.",
+            "- **Conformance**: Whether the keyword is mandatory, recommended "
+            "or optional when documenting the given type of resources.",
+            "- **Definition**: The definition of the keyword.",
+            "- **Usage note**: Notes about how to use the keyword.",
+            "",
+        ]
         order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 

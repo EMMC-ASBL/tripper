@@ -38,7 +38,9 @@ extra_css:
 markdown_extensions:
   - admonition
   - attr_list
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      use_pygments: true
+      pygments_lang_class: true
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.inlinehilite
@@ -81,6 +83,7 @@ plugins:
             docstring_options:
               replace_admonitions: true
   - awesome-pages
+  - gh-admonitions
 
 nav:
   - Home: index.md
@@ -94,6 +97,7 @@ nav:
     - Customisation: datadoc/customisation.md
     - Predefined prefixes: datadoc/prefixes.md
     - Predefined keywords: datadoc/keywords.md
+  - Units and quantities: units/units.md
   - Session: session.md
   - ... | api_reference/**
   - Known issues: known-issues.md

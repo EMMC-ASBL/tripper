@@ -1,12 +1,12 @@
 """Test RDF literals."""
 
+import pytest
+
 # pylint: disable=invalid-name,too-many-statements,import-outside-toplevel
 
 
 def test_untyped() -> None:
     """Test creating a untyped literal."""
-    import pytest
-
     from tripper.errors import UnknownDatatypeWarning
     from tripper.literal import XSD, Literal
 
@@ -70,8 +70,6 @@ def test_string_lang() -> None:
 
 def test_cannot_combine_datatype_and_lang() -> None:
     """Test that combining datatype and lang raises TypeError."""
-    import pytest
-
     from tripper import XSD, Literal
 
     with pytest.raises(TypeError):
@@ -88,8 +86,6 @@ def test_en() -> None:
 
 def test_integer() -> None:
     """Test creating an integer literal."""
-    import pytest
-
     from tripper import XSD, Literal
 
     literal = Literal(42)
@@ -131,37 +127,77 @@ def test_json() -> None:
     """Test creating JSON literal."""
     import json
 
-    import pytest
-
     from tripper import RDF, Literal
 
     literal = Literal(None)
     assert literal.value is None
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
+    assert literal.n3() == f'"null"^^<{RDF.JSON}>'
 
     literal = Literal({"a": 1, "b": [2.2, None, True]})
     assert literal.value == {"a": 1, "b": [2.2, None, True]}
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
+    assert literal.n3() == (
+        r'"{\"a\": 1, \"b\": [2.2, null, true]}"^^' + f"<{RDF.JSON}>"
+    )
 
     literal = Literal(["a", 1, True, {"a": 2.2, "b": None}])
     assert literal.value == ["a", 1, True, {"a": 2.2, "b": None}]
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
+    assert literal.n3() == (
+        r'"[\"a\", 1, true, {\"a\": 2.2, \"b\": null}]"^^' + f"<{RDF.JSON}>"
+    )
 
     literal = Literal('{"a": 1}', datatype=RDF.JSON)
     assert literal.value == {"a": 1}
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
+    assert literal.n3() == (r'"{\"a\": 1}"^^' + f"<{RDF.JSON}>")
 
     literal = Literal('"a"', datatype=RDF.JSON)
     assert literal.value == "a"
     assert literal.lang is None
     assert literal.datatype == RDF.JSON
+    assert literal.n3() == (r'"\"a\""^^' + f"<{RDF.JSON}>")
 
     with pytest.raises(json.JSONDecodeError):
         literal = Literal("a", datatype=RDF.JSON)
+
+
+def test_SIQuantityDatatype() -> None:
+    """Test pint Quantity."""
+    pint = pytest.importorskip("pint")
+    from tripper import Literal
+    from tripper.literal import SIQuantityDatatype
+    from tripper.utils import parse_literal
+
+    q = pint.Quantity("2 m")
+    literal = Literal(q)
+    assert literal.value == q
+    assert literal.lang is None
+    assert literal.datatype == SIQuantityDatatype
+    assert literal.n3() == f'"2 m"^^<{SIQuantityDatatype}>'
+
+    literal = Literal("2.5 N", datatype=SIQuantityDatatype)
+    assert literal.value == pint.Quantity("2.5 newton")
+    assert literal.lang is None
+    assert literal.datatype == SIQuantityDatatype
+    assert literal.n3() == f'"2.5 N"^^<{SIQuantityDatatype}>'
+
+    literal = parse_literal(f'"3.2 m/s²"^^<{SIQuantityDatatype}>')
+    assert literal.value == pint.Quantity("3.2 m/s²")
+    assert literal.lang is None
+    assert literal.datatype == SIQuantityDatatype
+    assert literal.n3() == f'"3.2 m/s²"^^<{SIQuantityDatatype}>'
+
+    literal = parse_literal(pint.Quantity("3.2 m/s²"))
+    assert literal.value == pint.Quantity("3.2 m/s²")
+    assert literal.lang is None
+    assert literal.datatype == SIQuantityDatatype
+    assert literal.n3() == f'"3.2 m/s²"^^<{SIQuantityDatatype}>'
 
 
 def test_float_through_datatype() -> None:
@@ -224,8 +260,6 @@ def test_split_iri() -> None:
 def test_parse_literal() -> None:
     """Test parse n3-encoded literal value."""
     from datetime import datetime
-
-    import pytest
 
     from tripper import RDF, XSD, Literal
     from tripper.errors import UnknownDatatypeWarning
@@ -338,8 +372,6 @@ def test_parse_literal() -> None:
 
 def test_rdflib_literal():
     """Test parsing rdflib literals."""
-    import pytest
-
     rdflib = pytest.importorskip("rdflib")
     from tripper import RDF, XSD
     from tripper.utils import parse_literal

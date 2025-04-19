@@ -29,14 +29,17 @@ requires-python = ">=3.8"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions>=4.7.0,<4.7.1; python_version<'3.9'",
+    "typing-extensions>=4.7.0,<4.13.1; python_version < '3.9'",
 ]
 
 [project.optional-dependencies]
-mappings = [
-    "pint>=0.21.1,<1; python_version<'3.9'",
-    "pint>=0.24,<1; python_version>='3.9'",
+units = [
+    "pint>=0.21.1,<0.26; python_version<'3.9'",
+    "pint>=0.24.1,<0.26; python_version>='3.9'",
     "rdflib>=6.3.0,<7.0.0",
+]
+mappings = [
+    "tripper[units]",
 ]
 datadoc = [
     "tripper[mappings]",
@@ -54,7 +57,7 @@ testing-core = [
     "pytest-cov==6.0.0; python_version>='3.9'",
 ]
 testing = [
-    "tripper[testing-core,mappings,datadoc]",
+    "tripper[datadoc,mappings,testing-core]",
     "dlite-python>=0.5.27; python_version>='3.8'",
     "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
@@ -66,9 +69,10 @@ docs = [
     "tripper[testing]",
     "mike==2.1.3",
     "mkdocs==1.6.1",
-    "mkdocs-autorefs==1.2.0",
+    "mkdocs-autorefs==1.4.1",
     "mkdocs-awesome-pages-plugin==2.10.1",
-    "mkdocs-material==9.5.49",
+    "mkdocs-github-admonitions-plugin==0.0.3",
+    "mkdocs-material==9.6.11",
     "mkdocstrings==0.27.0",
     "mkdocstrings-python-legacy==0.2.4",
 ]
@@ -103,7 +107,7 @@ show_error_codes = true
 allow_redefinition = true
 
 [tool.pylint]
-max-line-length = 79
+max-line-length = 80
 max-args = 10
 max-public-methods = 25
 max-locals = 20

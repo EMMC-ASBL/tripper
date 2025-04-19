@@ -18,6 +18,15 @@ from tripper.namespace import RDF, RDFS, XSD
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Optional, Union
 
+try:
+    from pint import Quantity
+except ModuleNotFoundError:
+    Quantity = None
+
+SIQuantityDatatype = (
+    "https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676"
+)
+
 
 class Literal(str):
     """A literal RDF value.
@@ -74,6 +83,17 @@ class Literal(str):
         >>> l4.value
         {'name': 'Jon Doe'}
 
+        # Literal of custom datatype (`value` must be a string)
+        # This will issue an `UnknownDatatypeWarning` which we ignore...
+        >>> import warnings
+        >>> from tripper.errors import UnknownDatatypeWarning
+        >>> with warnings.catch_warnings():
+        ...     warnings.filterwarnings(
+        ...         action="ignore", category=UnknownDatatypeWarning,
+        ...     )
+        ...     Literal("a value", datatype="http://example.com/onto#MyType")
+        Literal('a value', datatype='http://example.com/onto#MyType')
+
         ```
 
     """
@@ -126,6 +146,8 @@ class Literal(str):
         dict: (RDF.JSON,),
         None.__class__: (RDF.JSON,),
     }
+    if Quantity:
+        datatypes[Quantity] = (SIQuantityDatatype,)
 
     lang: "Union[str, None]"
     datatype: "Union[str, None]"
@@ -164,6 +186,12 @@ class Literal(str):
             string = super().__new__(cls, value)
             string.lang = None
             string.datatype = RDF.JSON
+        elif datatype == SIQuantityDatatype:
+            if Quantity and isinstance(value, Quantity):
+                value = f"{value:~P}"
+            string = super().__new__(cls, value)
+            string.lang = None
+            string.datatype = SIQuantityDatatype
         elif datatype:
             assert isinstance(datatype, str)  # nosec
             # Create canonical representation of value for
@@ -211,6 +239,10 @@ class Literal(str):
             string = super().__new__(cls, json.dumps(value))
             string.lang = None
             string.datatype = RDF.JSON
+        elif Quantity and isinstance(value, Quantity):
+            string = super().__new__(cls, f"{value:~P}")
+            string.lang = None
+            string.datatype = SIQuantityDatatype
 
         # Some consistency checking
         if (
@@ -299,6 +331,19 @@ class Literal(str):
             value = datetime.fromisoformat(self)
         elif self.datatype == RDF.JSON:
             value = json.loads(str(self))
+        elif self.datatype == SIQuantityDatatype:
+            if Quantity:
+                # pylint: disable=import-outside-toplevel,cyclic-import
+                from tripper.units import get_ureg
+
+                ureg = get_ureg()
+                value = ureg.Quantity(self)
+            else:
+                warnings.warn(
+                    "pint is needed to convert emmo:SIQuantityDatatype to "
+                    "a quantity"
+                )
+                value = str(self)
         else:
             value = str(self)
 

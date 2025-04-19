@@ -517,6 +517,8 @@ def test_bind_errors():
     """Test for errors in Triplestore.bind()."""
     pytest.importorskip("rdflib")
 
+    import warnings
+
     from tripper import Triplestore
 
     ts = Triplestore(backend="rdflib", base_iri="http://example.com#")
@@ -524,7 +526,9 @@ def test_bind_errors():
     assert EX == "http://example.com#"
     assert "ex" in ts.namespaces
 
-    ts.bind("ex", None)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        ts.bind("ex", None)
     assert "ex" not in ts.namespaces
 
     ts2 = Triplestore(backend="rdflib")
