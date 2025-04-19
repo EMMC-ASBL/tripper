@@ -29,6 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Generator,
         Iterable,
+        List,
         Optional,
         Tuple,
         Union,
@@ -246,7 +247,7 @@ def _dicttype(s, cls):
 
 def recursive_update(
     d: dict,
-    other: dict,
+    other: "Union[dict, List[Union[dict, list]]]",
     append: bool = True,
     cls: "Optional[type]" = None,
 ):
@@ -756,6 +757,24 @@ def get_entry_points(group: str):
     """Consistent interface to entry points for the given group.
 
     Works for all supported versions of Python.
+
+    Examples:
+
+    >>> get_entry_points("tripper.backends")  # doctest: +SKIP
+    [
+        EntryPoint(
+            name='fuseki',
+            value='pybacktrip.backends.fuseki',
+            group='tripper.backends',
+        ),
+        EntryPoint(
+            name='stardog',
+            value='pybacktrip.backends.stardog',
+            group='tripper.backends',
+       ),
+       ...
+    ]
+
     """
     if sys.version_info < (3, 10):
         # Fallback for Python < 3.10
@@ -766,3 +785,33 @@ def get_entry_points(group: str):
             group=group
         )
     return eps
+
+
+def check_service_availability(url: str, timeout=5, interval=1) -> bool:
+    """Check whether the service with given URL is available.
+
+    Arguments:
+        url: URL of the service to check.
+        timeout: Total time in seconds to wait for a respond.
+        interval: Interval for checking response.
+
+    Returns:
+        Returns true if the service responds with code 200,
+        otherwise false is returned.
+    """
+    import time  # pylint: disable=import-outside-toplevel
+
+    import requests  # pylint: disable=import-outside-toplevel
+
+    start_time = time.time()
+    while True:
+        try:
+            response = requests.get(url, timeout=timeout)
+            if response.status_code == 200:
+                return True
+        except requests.exceptions.RequestException:
+            pass
+
+        if time.time() - start_time >= timeout:
+            return False
+        time.sleep(interval)

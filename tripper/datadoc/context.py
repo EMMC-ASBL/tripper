@@ -39,7 +39,7 @@ def get_context(
             if not keywords:
                 keywords = Keywords()
             if domain:
-                keywords.add_field(domain)
+                keywords.add_domain(domain)
             context.add_context(keywords.get_context())
     else:
         context = Context(
@@ -80,10 +80,10 @@ class Context:
 
         if keywords:
             if domain:
-                keywords.add_field(domain)
+                keywords.add_domain(domain)
             self.add_context(keywords.get_context())
         elif domain:
-            keywords = Keywords(field=domain)
+            keywords = Keywords(domain=domain)
             self.add_context(keywords.get_context())
 
         if context:
@@ -150,6 +150,10 @@ class Context:
             else:
                 context[name] = info["@id"]
         return context
+
+    # def get_context(self) -> dict:
+    #     """Return a context dict."""
+    #     return {k: v.get("@id") for k, v in self.ctx["mappings"].items()}
 
     def get_prefixes(self) -> dict:
         """Return a dict mapping prefixes to IRIs."""

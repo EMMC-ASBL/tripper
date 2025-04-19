@@ -105,6 +105,8 @@ scripts_are_modules = true
 warn_unused_configs = true
 show_error_codes = true
 allow_redefinition = true
+#explicit-package-bases = true
+
 
 [tool.pylint]
 max-line-length = 80

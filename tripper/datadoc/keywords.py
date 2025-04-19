@@ -1,4 +1,4 @@
-"""Parse and generate context."""
+"""Parse keywords definition and generate context."""
 
 # pylint: disable=too-many-branches,redefined-builtin
 
@@ -26,24 +26,21 @@ if TYPE_CHECKING:  # pragma: no cover
     FileLoc = Union[Path, str]
 
 
-# TODO: rename "field" to "domain"
-
-
 class Keywords:
-    """A class representing all keywords within a field."""
+    """A class representing all keywords within a domain."""
 
     rootdir = Path(__file__).absolute().parent.parent.parent.resolve()
 
     def __init__(
         self,
-        field: "Optional[Union[str, Sequence[str]]]" = None,
+        domain: "Optional[Union[str, Sequence[str]]]" = "default",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
         """Initialises keywords object.
 
         Arguments:
-            field: Name of field to load keywords for.
+            domain: Name of one of more domains to load keywords for.
             yamlfile: YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
             timeout: Timeout in case `yamlfile` is a URI.
@@ -52,11 +49,14 @@ class Keywords:
             data: The dict loaded from the keyword yamlfile.
             keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts
                 describing the keywords.
-            field: Name of the scientic field that the keywords belong to.
+            domain: Name of the scientic domain that the keywords belong to.
         """
         self.data = AttrDict()
         self.keywords = AttrDict()
-        self.field = None
+        self.domain = None
+
+        if domain:
+            self.add_domain(domain)
 
         if yamlfile:
             if isinstance(yamlfile, (str, Path)):
@@ -64,31 +64,6 @@ class Keywords:
             else:
                 for path in yamlfile:
                     self.parse(path, timeout=timeout)
-        elif not field:
-            field = "default"
-
-        if isinstance(field, str):
-            field = [field]
-
-        for fieldname in field:  # type: ignore
-            if self.field is None:
-                self.field = fieldname
-            for ep in get_entry_points("tripper.keywords"):
-                if ep.value == fieldname:
-                    self.parse(self.rootdir / ep.name / "keywords.yaml")
-                    break
-            else:
-                if fieldname == "default":
-                    # Fallback in case the entry point is not installed
-                    self.parse(
-                        self.rootdir
-                        / "tripper"
-                        / "context"
-                        / "0.3"
-                        / "keywords.yaml"
-                    )
-                else:
-                    raise TypeError(f"Unknown field name: {fieldname}")
 
     def __contains__(self, item):
         return item in self.keywords
@@ -100,17 +75,17 @@ class Keywords:
         return iter(self.keywords)
 
     def __dir__(self):
-        return dir(Keywords) + ["data", "keywords", "field"]
+        return dir(Keywords) + ["data", "keywords", "domain"]
 
-    def add_field(self, field: "Union[str, Sequence[str]]") -> None:
-        """Add keywords for `field`, where `field` is the name of a
-        scientific field or a list of scientific field names."""
-        if isinstance(field, str):
-            field = [field]
+    def add_domain(self, domain: "Union[str, Sequence[str]]") -> None:
+        """Add keywords for `domain`, where `domain` is the name of a
+        scientific domain or a list of scientific domain names."""
+        if isinstance(domain, str):
+            domain = [domain]
 
-        for name in field:  # type: ignore
-            if self.field is None:  # type: ignore
-                self.field = name  # type: ignore
+        for name in domain:  # type: ignore
+            if self.domain is None:
+                self.domain = name  # type: ignore
             for ep in get_entry_points("tripper.keywords"):
                 if ep.value == name:
                     self.parse(self.rootdir / ep.name / "keywords.yaml")
@@ -126,7 +101,7 @@ class Keywords:
                         / "keywords.yaml"
                     )
                 else:
-                    raise TypeError(f"Unknown field name: {name}")
+                    raise TypeError(f"Unknown domain name: {name}")
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
@@ -283,10 +258,13 @@ class Keywords:
                     else:
                         dt = [translate.get(t, t) for t in dt]
 
-                    ctx[k] = {  # type: ignore
-                        "@id": iri,
-                        "@type": dt,
-                    }
+                    d = {"@id": iri}
+                    if dt == "rdf:langString" or "language" in v:
+                        d["@language"] = v.get("language", "en")
+                    else:
+                        d["@type"] = dt
+
+                    ctx[k] = d  # type: ignore
                 elif v["range"] == "rdfs:Literal":
                     ctx[k] = iri
                 else:
@@ -303,52 +281,9 @@ class Keywords:
 
     def write_context(self, outfile: "FileLoc") -> None:
         """Write JSON-LD context file."""
-        c = {}
-        c["@version"] = 1.1
-
-        # Add prefixes to context
-        prefixes = self.data.get("prefixes", {})
-        for prefix, ns in prefixes.items():
-            c[prefix] = ns
-
-        resources = self.data.get("resources", {})
-
-        # Translate datatypes
-        translate = {"rdf:JSON": "@json"}
-
-        # Add keywords (properties) to context
-        for resource in resources.values():
-            for k, v in resource.get("keywords", {}).items():
-                iri = v["iri"]
-                if "datatype" in v:
-                    dt = v["datatype"]
-                    if isinstance(dt, str):
-                        dt = translate.get(dt, dt)
-                    else:
-                        dt = [translate.get(t, t) for t in dt]
-
-                    d = {"@id": iri}
-                    if dt == "rdf:langString" or "language" in v:
-                        d["@language"] = v.get("language", "en")
-                    else:
-                        d["@type"] = dt
-
-                    c[k] = d  # type: ignore
-                elif v["range"] == "rdfs:Literal":
-                    c[k] = iri
-                else:
-                    c[k] = {  # type: ignore
-                        "@id": iri,
-                        "@type": "@id",
-                    }
-
-        # Add resources (classes) to context
-        for k, v in resources.items():
-            c.setdefault(k, v.iri)
-
-        dct = {"@context": c}
+        context = {"@context": self.get_context()}
         with open(outfile, "wt", encoding="utf-8") as f:
-            json.dump(dct, f, indent=2)
+            json.dump(context, f, indent=2)
             f.write(os.linesep)
 
     def write_doc_keywords(self, outfile: "FileLoc") -> None:
@@ -358,13 +293,13 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        field = f" for domain: {self.field}" if self.field else ""
+        domain = f" for domain: {self.domain}" if self.domain else ""
         out = [
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",
             "",
-            f"# Keywords{field}",
-            f"The tables below lists the keywords the domain {self.field}.",
+            f"# Keywords{domain}",
+            f"The tables below lists the keywords the domain {self.domain}.",
             "",
             "The meaning of the columns are as follows:",
             "",
@@ -531,11 +466,11 @@ def main(argv=None):
         help="Load keywords from this YAML file.",
     )
     parser.add_argument(
-        "--field",
+        "--domain",
         "-f",
         metavar="NAME",
         action="append",
-        help="Load keywords from this field.",
+        help="Load keywords from this domain.",
     )
     parser.add_argument(
         "--context",
@@ -557,7 +492,10 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    keywords = Keywords(field=args.field, yamlfile=args.yamlfile)
+    if not args.domain and not args.yamlfile:
+        args.domain = "default"
+
+    keywords = Keywords(domain=args.domain, yamlfile=args.yamlfile)
 
     if args.context:
         keywords.write_context(args.context)

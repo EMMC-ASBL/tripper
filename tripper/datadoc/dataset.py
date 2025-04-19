@@ -299,8 +299,8 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
-    # Some backends, like GraphDB, requires the empty prefix to be defined
     query = f"""
+    # Some backends requires the prefix to be defined...
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
@@ -573,7 +573,7 @@ def save_datadoc(
             the data documentation from.  It may also be an URL to a file
             accessible with HTTP GET.
         keywords: Optional Keywords object with keywords definitions.
-            The default is to infer the keywords from the `field` or
+            The default is to infer the keywords from the `domain` or
             `keywordfile` keys in the YAML file.
         context: Optional Context object with mappings. By default it is
             inferred from `keywords`.
@@ -589,7 +589,7 @@ def save_datadoc(
     # Get keywords & context
     if keywords is None:
         keywords = Keywords(
-            field=d.get("field"), yamlfile=d.get("keywordfile")
+            domain=d.get("domain", "default"), yamlfile=d.get("keywordfile")
         )
     if context is None:
         context = Context(keywords=keywords)
@@ -610,7 +610,7 @@ def save_datadoc(
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
     for name, lst in d.items():
-        if name in ("@context", "field", "keywordfile", "prefixes"):
+        if name in ("@context", "domain", "keywordfile", "prefixes"):
             continue
         if name not in keywords.data.resources:
             raise NoSuchTypeError(f"unknown type '{name}' in YAML file.")
@@ -648,7 +648,7 @@ def prepare_datadoc(datadoc: dict) -> dict:
         d.prefixes = prefixes.copy()
 
     for name, lst in d.items():
-        if name in ("@context", "field", "keywordfile", "prefixes"):
+        if name in ("@context", "domain", "keywordfile", "prefixes"):
             continue
         for i, dct in enumerate(lst):
             lst[i] = as_jsonld(
@@ -1041,6 +1041,7 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
     """Delete `iri` from triplestore by calling `ts.update().`"""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
+    # Some backends requires the prefix to be defined...
     PREFIX : <http://example.com#>
     DELETE {{ ?s ?p ?o }}
     WHERE {{
