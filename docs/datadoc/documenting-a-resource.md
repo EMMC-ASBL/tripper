@@ -35,7 +35,7 @@ The keywords are defined in the [default JSON-LD context] and documented under [
 This example uses two namespace prefixes not included in the [predefined prefixes].
 We therefore have to define them explicitly
 
-```pycon
+```python
 >>> prefixes = {
 ...     "sem": "https://w3id.com/emmo/domain/sem/0.1#",
 ...     "kb": "http://example.com/kb/"

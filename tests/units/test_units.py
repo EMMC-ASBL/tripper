@@ -280,7 +280,19 @@ def test_unit_registry():
     assert q.to_ontology_unit() == 200 * ureg.Joule
 
     # Test get_unit()
+    q = ureg.get_unit("Metre")
+    assert str(q) == "1 Metre"
+
+    q = ureg.get_unit("Meter")  # alias
+    assert str(q) == "1 Metre"
+
+    q = ureg.get_unit("meter")  # case insensitive alias
+    assert str(q) == "1 Metre"
+
     q = ureg.get_unit(iri="http://qudt.org/vocab/unit/PA")
+    assert str(q) == "1 Pascal"
+
+    q = ureg.get_unit("http://qudt.org/vocab/unit/PA")  # implicit IRI lookup
     assert str(q) == "1 Pascal"
 
     # Test get_unit_info()
