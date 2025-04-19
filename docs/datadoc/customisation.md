@@ -188,29 +188,29 @@ The content of the triplestore should now be
 ```python
 >>> print(ts.serialize())
 @prefix chameo: <https://w3id.org/emmo/domain/characterisation-methodology/chameo#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix kb: <http://example.com/kb#> .
 @prefix myonto: <http://example.com/myonto#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <BLANKLINE>
-kb:sampleA a owl:NamedIndividual,
+kb:sampleA a dcat:Resource,
         chameo:Sample ;
     myonto:fromBatch kb:batch1 .
 <BLANKLINE>
-kb:sampleB a owl:NamedIndividual,
+kb:sampleB a dcat:Resource,
         chameo:Sample ;
     myonto:fromBatch kb:batch1 .
 <BLANKLINE>
-kb:sampleC a owl:NamedIndividual,
+kb:sampleC a dcat:Resource,
         chameo:Sample ;
     myonto:fromBatch kb:batch2 .
 <BLANKLINE>
 kb:batch2 a myonto:Batch,
-        owl:NamedIndividual ;
+        dcat:Resource ;
     myonto:batchNumber 2 .
 <BLANKLINE>
 kb:batch1 a myonto:Batch,
-        owl:NamedIndividual ;
+        dcat:Resource ;
     myonto:batchNumber 1 .
 <BLANKLINE>
 <BLANKLINE>

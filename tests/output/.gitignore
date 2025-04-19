@@ -1,4 +1,5 @@
 *.png
+*.tif
 *.tiff
 *.ttl
 *.png
@@ -7,3 +8,4 @@
 context.json
 keywords.md
 prefixes.md
+units-emmo.txt
