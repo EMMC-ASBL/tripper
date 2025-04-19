@@ -1,6 +1,5 @@
 Units and quantities
 ====================
-
 The `tripper.units` subpackage provide support for using [Pint] to work with units and quantites defined in ontologies.
 
 Currently, only [EMMO] and EMMO-based ontologies can be used as a source for units and quantities.
@@ -10,9 +9,10 @@ However, since [EMMO] include references to the [QUDT] and [OM] ontologies, it i
 > Currently the support for [OM] is weak.  Improvements are planned.
 
 
-Unit access
------------
-Create a [Pint] unit registry using [EMMO]:
+Unit registry
+-------------
+The `tripper.units` subpackage subclasses the `UnitRegistry` from [Pint].
+By default it is populated with units from [EMMO].
 
 ```python
 >>> from tripper.units import UnitRegistry
@@ -20,7 +20,7 @@ Create a [Pint] unit registry using [EMMO]:
 
 ```
 
-The registry provide attribute access to units based on their [EMMO] prefLabel or symbol.
+The registry provide attribute and item access to units based on their [EMMO] prefLabel or symbol.
 
 ```python
 >>> ureg.Pascal
@@ -43,7 +43,7 @@ However, unit access also work with "snake_case":
 
 ```
 
-Item access creates a quantity representation:
+Item access creates a quantity representation (see [Working with quantities](#working-with-quantities)):
 
 ```python
 >>> ureg["Pa"]
@@ -54,122 +54,7 @@ Item access creates a quantity representation:
 
 ```
 
-Working with quantities
------------------------
-Physical quantities consisting of a numerical value and a unit, can be constructed in several ways.
-
-For example by using `ureg.Quantity()` with two arguments
-
-```python
->>> length = ureg.Quantity(6, "km")
->>> length
-<Quantity(6, 'KiloMetre')>
-
-```
-
-or with a single string argument
-
-```python
->>> time = ureg.Quantity("1.2 h")
->>> time
-<Quantity(1.2, 'Hour')>
-
-```
-
-or by multiplying a numerical value with a unit
-
-```python
->>> pressure = 101325 * ureg.Pa
->>> pressure
-<Quantity(101325, 'Pascal')>
-
-```
-
-Quantities are also understood by the `Literal` constructor
-
-```python
->>> from tripper import Literal
->>> literal = Literal(pressure)
->>> literal
-Literal('101325 Pa', datatype='https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676')
-
-# Check the label of the datatype
->>> from tripper import EMMO
->>> EMMO._get_labels(literal.datatype)
-['SIQuantityDatatype']
-
-```
-
-which uses the `emmo:SIQuantityDatatype` datatype.
-The `Literal.value` property and `Literal.n3()` method can be used to convert back to a quantity or represent it in N3 notation:
-
-```python
->>> literal = Literal(pressure)
->>> literal.value
-<Quantity(101325, 'Pascal')>
-
->>> literal.n3()
-'"101325 Pa"^^<https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676>'
-
-```
-
-### Saving and loading to/from a triplestore
-
-Lets do a small calculation using the quantities constructed above:
-
-```python
->>> mean_speed = length / time
->>> mean_speed
-<Quantity(5.0, 'KiloMetre / Hour')>
-
-```
-
-and store our calculated `mean_speed` to a triplestore:
-
-```python
->>> from tripper import EMMO, Triplestore
->>> ts = Triplestore(backend="rdflib")
->>> NS = ts.bind("", "http://example.com#")
->>> ureg.save_quantity(ts, mean_speed, iri=NS.MeanSpeed, type=EMMO.Speed)
-
-```
-
-Above we have created a new triplestore, bound empty prefix to the namespace
-`http://example.com#` and saved the calculated `mean_speed` to a new individual
-with IRI `http://example.com#MeanSpeed`.
-The final `type` argument to `ureg.save_quantity()` states that our new individual
-will be an individual of the class `emmo:Speed`.
-
-The content of the triplestore is now
-
-```python
->>> print(ts.serialize())
-@prefix : <http://example.com#> .
-@prefix emmo: <https://w3id.org/emmo#> .
-<BLANKLINE>
-:MeanSpeed a emmo:EMMO_81369540_1b0e_471b_9bae_6801af22800e ;
-    emmo:EMMO_42806efc_581b_4ff8_81b0_b4d62153458b "5.0 km/h"^^emmo:EMMO_799c067b_083f_4365_9452_1f1433b03676 .
-<BLANKLINE>
-<BLANKLINE>
-
-```
-
-By default `ureg.save_quantity()` saves the quantity as an individual using the `emmo:SIQuantityDatatype` datatype.
-But, the `ureg.save_quantity()` method has also options for saving the quantity as a class (argument `tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (argument `si_datatype=False`).
-
-Loading a quantity from the triplestore can be with `ureg_load_quantity()`:
-
-
-```python
->>> q = ureg.load_quantity(ts, iri=NS.MeanSpeed)
->>> q
-<Quantity(5.0, 'KiloMetre / Hour')>
-
-```
-
-
-Extra unit registry methods
----------------------------
+### Extra unit registry methods
 Tripper adds some extra methods to the unit registry on top of what is already provided by [Pint], including:
 - **get_unit()**: Access unit from name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
 - **get_unit_info()**: Returns a dict with attribute access providing additional information about the unit.
@@ -177,6 +62,9 @@ Tripper adds some extra methods to the unit registry on top of what is already p
 - **save_quantity()**: Saves a quantity to a triplestore.
 - **clear_cache()**: Clear caches.
 - **set_as_default()**: Set the current unit registry as the default. This allows to access the registry with the `get_ureg()` method.
+
+Here we will only discuss `get_unit()` and `get_unit_info()`.
+See [Accessing quantities in a triplestore] and [Setting up custom unit registry] for the rest.
 
 For example:
 
@@ -257,9 +145,164 @@ The same dict can also be accessed from the unit registry with the `UnitRegistry
 
 ```
 
+Working with quantities
+-----------------------
+Physical quantities consisting of a numerical value and a unit, can be constructed in several ways.
 
-### Setting up custom unit registry
+For example by using `ureg.Quantity()` with two arguments
 
+```python
+>>> length = ureg.Quantity(6, "km")
+>>> length
+<Quantity(6, 'KiloMetre')>
+
+```
+
+or with a single string argument
+
+```python
+>>> time = ureg.Quantity("1.2 h")
+>>> time
+<Quantity(1.2, 'Hour')>
+
+```
+
+or by multiplying a numerical value with a unit
+
+```python
+>>> pressure = 101325 * ureg.Pa
+>>> pressure
+<Quantity(101325, 'Pascal')>
+
+```
+
+The magnitude and unit of a quantity can be accessed individually with the properties `m` and `u`:
+
+```python
+>>> pressure.m
+101325
+
+>>> pressure.u
+<Unit('Pascal')>
+
+```
+
+By default, [EMMO] does not include prefixed units (with a few exceptions).
+It is therefore not uncommon to have a quantity with a unit not in the ontology.
+For example:
+
+```python
+>>> duration = 1.2 * ureg.kh
+>>> duration
+<Quantity(1.2, 'KiloHour')>
+
+# This raises an exception since KiloHour is not in the ontology
+>>> duration.u.info
+Traceback (most recent call last):
+...
+tripper.units.units.MissingUnitError: name=KiloHour
+
+```
+
+You can use to `to_ontology_units()` method (or its in-place variant `ito_ontology_units()`) to rescale the quantity to a unit that exists in the ontology:
+
+```python
+>>> duration.ito_ontology_units()
+>>> f"{duration:.1f}"  # avoid rounding errors
+'50.0 Day'
+
+# The unit now has a `info` property
+>>> duration.u.info.qudtIRI
+'http://qudt.org/vocab/unit/DAY'
+
+```
+
+
+### Quantities as literals
+Quantities are also understood by the `Literal` constructor
+
+```python
+>>> from tripper import Literal
+>>> literal = Literal(pressure)
+>>> literal
+Literal('101325 Pa', datatype='https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676')
+
+# Check the label of the datatype
+>>> from tripper import EMMO
+>>> EMMO._get_labels(literal.datatype)
+['SIQuantityDatatype']
+
+```
+
+which uses the `emmo:SIQuantityDatatype` datatype.
+The `Literal.value` property and `Literal.n3()` method can be used to convert back to a quantity or represent it in N3 notation:
+
+```python
+>>> literal = Literal(pressure)
+>>> literal.value
+<Quantity(101325, 'Pascal')>
+
+>>> literal.n3()
+'"101325 Pa"^^<https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676>'
+
+```
+
+### Accessing quantities in a triplestore
+Lets do a small calculation using the quantities constructed above:
+
+```python
+>>> mean_speed = length / time
+>>> mean_speed
+<Quantity(5.0, 'KiloMetre / Hour')>
+
+```
+
+and store our calculated `mean_speed` to a triplestore:
+
+```python
+>>> from tripper import EMMO, Triplestore
+>>> ts = Triplestore(backend="rdflib")
+>>> NS = ts.bind("", "http://example.com#")
+>>> ureg.save_quantity(ts, mean_speed, iri=NS.MeanSpeed, type=EMMO.Speed)
+
+```
+
+Above we have created a new triplestore, bound empty prefix to the namespace
+`http://example.com#` and saved the calculated `mean_speed` to a new individual
+with IRI `http://example.com#MeanSpeed`.
+The final `type` argument to `ureg.save_quantity()` states that our new individual
+will be an individual of the class `emmo:Speed`.
+
+The content of the triplestore is now
+
+```python
+>>> print(ts.serialize())
+@prefix : <http://example.com#> .
+@prefix emmo: <https://w3id.org/emmo#> .
+<BLANKLINE>
+:MeanSpeed a emmo:EMMO_81369540_1b0e_471b_9bae_6801af22800e ;
+    emmo:EMMO_42806efc_581b_4ff8_81b0_b4d62153458b "5.0 km/h"^^emmo:EMMO_799c067b_083f_4365_9452_1f1433b03676 .
+<BLANKLINE>
+<BLANKLINE>
+
+```
+
+By default `ureg.save_quantity()` saves the quantity as an individual using the `emmo:SIQuantityDatatype` datatype.
+But, the `ureg.save_quantity()` method has also options for saving the quantity as a class (argument `tbox=True`) or to represent the quantity using the `emmo:hasNumericalPart` and `emmo:hasReferencePart` properties (argument `si_datatype=False`).
+
+Loading a quantity from the triplestore can be with `ureg_load_quantity()`:
+
+
+```python
+>>> q = ureg.load_quantity(ts, iri=NS.MeanSpeed)
+>>> q
+<Quantity(5.0, 'KiloMetre / Hour')>
+
+```
+
+
+Setting up custom unit registry
+-------------------------------
 You can extend the default set of units by creating a domain or application ontology with additional custom units.
 It should import EMMO to get the default units.
 
@@ -299,6 +342,9 @@ That can either be done manually or by calling the `ureg.clear_cache()` method.
 
 For manual deletion of the cache files, the cache directory can be found using the `ureg._tripper_cachedir` attribute.
 
+[Working with quantities]: #working-with-quantities
+[Accessing quantities in a triplestore]: #accessing-quantities-in-a-triplestore
+[Setting up custom unit registry]: #setting-up-custom-unit-registry
 
 [Pint]: https://pint.readthedocs.io/en/
 [EMMO]: https://github.com/emmo-repo/EMMO

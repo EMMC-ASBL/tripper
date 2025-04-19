@@ -240,7 +240,7 @@ def test_units():
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
-    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-statements,too-many-locals
 
     from tripper import EMMO, RDFS, Triplestore
     from tripper.units import UnitRegistry, get_ureg
@@ -257,6 +257,7 @@ def test_unit_registry():
     u = ureg.Metre
     assert ureg["Metre"].u == u
     assert str(u) == "Metre"
+    assert u.name == "Metre"
     assert u.emmoIRI == "https://w3id.org/emmo#Metre"
     assert u.qudtIRI == "http://qudt.org/vocab/unit/M"
     assert u.info.name == "Metre"
@@ -266,18 +267,24 @@ def test_unit_registry():
     q = ureg.Quantity("3 h")  # Hour exists in the ontology
     assert q.u.emmoIRI == "https://w3id.org/emmo#Hour"
     assert q.u.qudtIRI == "http://qudt.org/vocab/unit/HR"
-    assert q.get_dimension() == q.u.info.dimension
-    assert q.to_ontology_unit() == 3 * ureg.Hour
+    assert q.dimension == q.u.info.dimension
+    assert q.to_ontology_units() == 3 * ureg.Hour
 
     q = ureg.Quantity("3 kh")  # KiloHour does NOT exists in the ontology
     with pytest.raises(MissingUnitError):
         q.u.info  # pylint: disable=pointless-statement
-    assert q.get_dimension() == Dimension(1, 0, 0, 0, 0, 0, 0)
-    assert q.to_ontology_unit() == 3000 * ureg.Hour
+    assert q.dimension == Dimension(1, 0, 0, 0, 0, 0, 0)
+    q2 = q.to_ontology_units()
+    assert q2 == 3000 * ureg.Hour
+    assert q2.u.info  # info is now available
 
     q = ureg.Quantity("2 hJ")
-    assert q.get_dimension() == Dimension(-2, 2, 1, 0, 0, 0, 0)
-    assert q.to_ontology_unit() == 200 * ureg.Joule
+    assert q.dimension == Dimension(-2, 2, 1, 0, 0, 0, 0)
+    assert q.u == ureg.HectoJoule
+    assert q.to_ontology_units() == 200 * ureg.Joule
+
+    q.ito_ontology_units()
+    assert q.u == ureg.Joule
 
     # Test get_unit()
     q = ureg.get_unit("Metre")

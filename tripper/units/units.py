@@ -288,7 +288,7 @@ def save_emmo_quantity(
         else:
             v = bnode_iri("value")
             r2 = bnode_iri("restriction")
-            q2 = q.to_ontology_unit()
+            q2 = q.to_ontology_units()
             triples.extend(
                 [
                     (r, OWL.onProperty, EMMO.hasNumericalPart),
@@ -305,7 +305,7 @@ def save_emmo_quantity(
             triples.append((iri, EMMO.hasSIQuantityValue, Literal(q)))
         else:
             v = bnode_iri("value")
-            q2 = q.to_ontology_unit()
+            q2 = q.to_ontology_units()
             triples.extend(
                 [
                     (iri, EMMO.hasNumericalPart, v),
@@ -977,20 +977,13 @@ class Unit(pint.Unit):
         ureg = self._REGISTRY
         return ureg.get_unit_info(str(self))
 
-    # def compatible_units(self) -> list:
-    #     """Return a list with the names of units in the ontology that are
-    #     compatible with the current unit.
-    #     """
-    #     ureg = self._REGISTRY
-    #     units = ureg._get_tripper_units()  # pylint: disable=protected-access
-    #     q = (1 * self).to_base_units()  # type: ignore
-    #     dim = q.get_dimension()
-    #     infoseq = units.units.values()
-    #     return [i.name for i in infoseq if i.dimension == dim]
-
     info = property(
         lambda self: self._get_info(),
         doc="Dict with attribute access describing this unit.",
+    )
+    name = property(
+        lambda self: self._get_info().name,
+        doc="Preferred label of the unit in the ontology.",
     )
     emmoIRI = property(
         lambda self: self._get_info().emmoIRI,
@@ -1009,7 +1002,7 @@ class Unit(pint.Unit):
 class Quantity(pint.Quantity):
     """A subclass of pint.Quantity with support for tripper.units."""
 
-    def get_dimension(self) -> Dimension:
+    def _get_dimension(self) -> Dimension:
         """Return a Dimension object with the dimensionality of this
         quantity.
         """
@@ -1030,7 +1023,7 @@ class Quantity(pint.Quantity):
             )
         )
 
-    def to_ontology_unit(self) -> "Quantity":
+    def to_ontology_units(self) -> "Quantity":
         """Return new quantity rescale to a unit with the same
         dimensionality that exists in the ontology.
         """
@@ -1041,38 +1034,35 @@ class Quantity(pint.Quantity):
         except (MissingUnitError, pint.OffsetUnitCalculusError):
             pass
 
-        q = self.to_base_units()
-        try:
-            return q.m * ureg.get_unit(symbol=f"{q.u:~P}")
-        except MissingUnitError:
-            pass
-
         units = ureg._get_tripper_units()  # pylint: disable=protected-access
-        # dim = q.u.info.dimension
-        dim = q.get_dimension()
+        dim = self._get_dimension()
         compatible_units = []
         for info in units.units.values():
             if info.dimension == dim:
-                try:
-                    # pylint: disable=protected-access
-                    mult, d = units._parse_unitname(info.name)
-                    compatible_units.append((info.name, q.m / mult, d))
-                except MissingUnitError:
-                    pass
+                q = self.to(info.name)
+                compatible_units.append((info.name, q.m, info.dimension))
 
         def sortkey(x):
             """Returns sort key for `compatible_units`."""
             # This function prioritise compact unit expression with
             # small exponents.  Lower priority is given to pre-factor
-            # close to one.
-            _, mult, d = x
-            return 100 * sum(abs(v) for v in d.values()) + abs(
-                math.log10(mult)
-            )
+            # close to five.
+            _, m, d = x
+            return 100 * sum(abs(v) for v in d) + abs(math.log10(m / 5))
 
         compatible_units.sort(key=sortkey)
         name, mult, _ = compatible_units[0]
         return mult * ureg[name]
+
+    def ito_ontology_units(self) -> None:
+        """Inplace rescale to ontology units."""
+        q = self.to_ontology_units()
+        self.ito(q.u)
+
+    dimension = property(
+        lambda self: self._get_dimension(),
+        doc="Named tuple with the SI dimensionality of the quantity.",
+    )
 
 
 class UnitRegistry(pint.UnitRegistry):
