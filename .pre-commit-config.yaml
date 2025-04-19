@@ -70,6 +70,7 @@ repos:
       args:
       - --package-dir=tripper
     - id: docs-landing-page
+    # - id: update-pyproject
 
   - repo: local
     hooks:
@@ -79,6 +80,15 @@ repos:
       language: script
       pass_filenames: false
       stages: ["pre-commit"]
+
+    # The doctests are too slow for running them in pre-commit.
+    # Run it as a test instead.
+    # - id: markdown-doctest
+    #   name: Run doctest on markdown documentation
+    #   entry: .hooks/markdown-doctest.sh
+    #   language: script
+    #   pass_filenames: false
+    #   stages: ["pre-commit"]
 
     - id: pylint
       name: pylint

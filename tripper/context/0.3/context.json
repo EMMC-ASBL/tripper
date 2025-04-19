@@ -332,6 +332,27 @@
     "relation": {
       "@id": "dcterms:relation",
       "@type": "@id"
-    }
+    },
+    "Resource": "dcat:Resource",
+    "Dataset": "dcat:Dataset",
+    "Distribution": "dcat:Distribution",
+    "Parser": "oteio:Parser",
+    "Generator": "oteio:Generator",
+    "Agent": "foaf:Agent",
+    "Attribution": "prov:Attribution",
+    "Checksum": "spdx:Checksum",
+    "ChecksumAlgorithm": "spdx:ChecksumAlgorithm",
+    "Concept": "skos:Concept",
+    "DataService": "dcat:DataService",
+    "DatasetSeries": "dcat:DatasetSeries",
+    "Geometry": "locn:Geometry",
+    "Kind": "vcard:Kind",
+    "LicenseDocument": "dcterms:LicenseDocument",
+    "Location": "dcterms:Location",
+    "Relationship": "dcat:Relationship",
+    "RightsStatement": "dcterms:RightsStatement",
+    "LegalResource": "eli:LegalResource",
+    "Standard": "dcterms:Standard",
+    "MediaType": "dcterms:MediaType"
   }
 }

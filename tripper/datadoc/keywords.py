@@ -44,6 +44,12 @@ class Keywords:
             yamlfile: YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
             timeout: Timeout in case `yamlfile` is a URI.
+
+        Attributes:
+            data: The dict loaded from the keyword yamlfile.
+            keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts
+                describing the keywords.
+            field: Name of the scientic field that the keywords belong to.
         """
         self.data = AttrDict()
         self.keywords = AttrDict()
@@ -89,6 +95,9 @@ class Keywords:
 
     def __iter__(self):
         return iter(self.keywords)
+
+    def __dir__(self):
+        return dir(Keywords) + ["data", "keywords", "field"]
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
@@ -219,6 +228,7 @@ class Keywords:
         c = {}
         c["@version"] = 1.1
 
+        # Add prefixes to context
         prefixes = self.data.get("prefixes", {})
         for prefix, ns in prefixes.items():
             c[prefix] = ns
@@ -228,6 +238,7 @@ class Keywords:
         # Translate datatypes
         translate = {"rdf:JSON": "@json"}
 
+        # Add keywords (properties) to context
         for resource in resources.values():
             for k, v in resource.get("keywords", {}).items():
                 iri = v["iri"]
@@ -250,6 +261,10 @@ class Keywords:
                         "@type": "@id",
                     }
 
+        # Add resources (classes) to context
+        for k, v in resources.items():
+            c.setdefault(k, v.iri)
+
         dct = {"@context": c}
         with open(outfile, "wt", encoding="utf-8") as f:
             json.dump(dct, f, indent=2)
@@ -263,7 +278,24 @@ class Keywords:
             ts.bind(prefix, ns)
 
         field = f" for {self.field}" if self.field else ""
-        out = [f"# Keywords{field}"]
+        out = [
+            "<!-- Do not edit! This file is generated with Tripper. "
+            "Edit the keywords.yaml file instead. -->",
+            "",
+            f"# Keywords{field}",
+            f"The tables below lists the keywords the domain {self.field}.",
+            "",
+            "The meaning of the columns are as follows:",
+            "",
+            "- **Keyword**: The keyword referring to a property used for "
+            "the data documentation.",
+            "- **Range**: Refer to the class for the values of the keyword.",
+            "- **Conformance**: Whether the keyword is mandatory, recommended "
+            "or optional when documenting the given type of resources.",
+            "- **Definition**: The definition of the keyword.",
+            "- **Usage note**: Notes about how to use the keyword.",
+            "",
+        ]
         order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
 

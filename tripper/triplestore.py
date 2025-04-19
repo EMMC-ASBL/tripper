@@ -412,9 +412,7 @@ class Triplestore:
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
 
-    def query(
-        self, query_object, **kwargs
-    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+    def query(self, query_object, **kwargs) -> "Any":
         """SPARQL query.
 
         Arguments:
@@ -458,7 +456,7 @@ class Triplestore:
         prefix: str,
         namespace: "Union[str, Namespace, Triplestore, None]" = "",
         **kwargs,
-    ) -> Namespace:
+    ) -> "Union[Namespace, None]":
         """Bind prefix to namespace and return the new Namespace object.
 
         Arguments:
@@ -488,7 +486,9 @@ class Triplestore:
             ns = Namespace(namespace._iri, **kwargs)
         elif namespace is None:
             del self.namespaces[prefix]
-            return  # type: ignore
+            if hasattr(self.backend, "bind"):
+                self.backend.bind(prefix, None)
+            return None
         else:
             raise TypeError(f"invalid `namespace` type: {type(namespace)}")
 
@@ -670,7 +670,9 @@ class Triplestore:
 
         if any is True:
             return value
-        raise UniquenessError("More than one match")
+        raise UniquenessError(
+            f"More than one match: {(subject, predicate, object)}"
+        )
 
     def objects(self, subject=None, predicate=None):
         """Returns a generator of objects for given subject and predicate."""
@@ -880,7 +882,7 @@ class Triplestore:
         type: "Optional[RestrictionType]" = None,
         cardinality: "Optional[int]" = None,
         asdict: bool = True,
-    ) -> "Generator[Triple, None, None]":
+    ) -> "Generator[dict, None, None]":
         # pylint: disable=too-many-boolean-expressions
         """Returns a generator over matching restrictions.
 

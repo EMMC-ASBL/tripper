@@ -21,10 +21,10 @@ Below is a simple example of how to document a SEM image dataset as a Python dic
 ...     "creator": {
 ...         "name": "Sigurd Wenner",
 ...     },
-...     "description": "Back-scattered SEM image of cement, polished with 1 µm diamond compound.",
+...     "description": "Back-scattered SEM image of cement, polished with 1 um diamond compound.",
 ...     "distribution": {
 ...         "downloadURL": "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif",
-...         "mediaType": "image/tiff"
+...         "mediaType": "https://www.iana.org/assignments/media-types/image/tiff"
 ...     }
 ... }
 
@@ -53,30 +53,28 @@ We therefore have to define them explicitly
     >>> import json
     >>> from tripper.datadoc import as_jsonld
     >>> d = as_jsonld(dataset, prefixes=prefixes)
-    >>> print(json.dumps(d, indent=2))
-    {
-      "@context": "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json",
-      "@type": [
-        "http://www.w3.org/ns/dcat#Dataset",
-        "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-        "https://w3id.com/emmo/domain/sem/0.1#SEMImage"
-      ],
-      "@id": "http://example.com/kb/image1",
-      "creator": {
-        "@type": [
-          "http://xmlns.com/foaf/0.1/Agent",
-          "https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"
-        ],
-        "name": "Sigurd Wenner"
-      },
-      "description": "Back-scattered SEM image of cement, polished with 1 \u00b5m diamond compound.",
-      "distribution": {
-        "@type": "http://www.w3.org/ns/dcat#Distribution",
-        "downloadURL": "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif",
-        "mediaType": "image/tiff"
-      }
-    }
+    >>> print(json.dumps(d, indent=4))  # doctest: +SKIP
+    ```
 
+    ```json
+    {
+        "@context": "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json",
+        "@id": "http://example.com/kb/image1",
+        "@type": "https://w3id.com/emmo/domain/sem/0.1#SEMImage",
+        "creator": {
+            "@type": [
+                "http://xmlns.com/foaf/0.1/Agent",
+                "https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"
+            ],
+            "name": "Sigurd Wenner"
+        },
+        "description": "Back-scattered SEM image of cement, polished with 1 um diamond compound.",
+        "distribution": {
+            "@type": "http://www.w3.org/ns/dcat#Distribution",
+            "downloadURL": "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif",
+            "mediaType": "https://www.iana.org/assignments/media-types/image/tiff"
+        }
+    }
     ```
 
 You can use [save_dict()] to save this documentation to a triplestore.
@@ -86,8 +84,7 @@ Since the prefixes "sem" and "kb" are not included in the [Predefined prefixes],
 >>> from tripper import Triplestore
 >>> from tripper.datadoc import save_dict
 >>> ts = Triplestore(backend="rdflib")
->>> save_dict(ts, dataset, prefixes=prefixes)  # doctest: +ELLIPSIS
-AttrDict(...)
+>>> d = save_dict(ts, dataset, prefixes=prefixes)
 
 ```
 
@@ -97,23 +94,27 @@ It correspond to a valid JSON-LD document and is the same as returned by [as_jso
 You can use `ts.serialize()` to list the content of the triplestore (defaults to turtle):
 
 ```python
->>> print(ts.serialize())
+>>> print(ts.serialize())  # doctest: +SKIP
+```
+
+```turtle
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <https://w3id.org/emmo#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix kb: <http://example.com/kb/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sem: <https://w3id.com/emmo/domain/sem/0.1#> .
-<BLANKLINE>
-kb:image1 a dcat:Dataset,
-        sem:SEMImage,
-        emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a ;
-    dcterms:creator "Sigurd Wenner" ;
-    dcterms:description "Back-scattered SEM image of cement, polished with 1 µm diamond compound." ;
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+kb:image1 a sem:SEMImage ;
+    dcterms:creator [ a foaf:Agent,
+                emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046 ;
+            foaf:name "Sigurd Wenner"^^xsd:string ] ;
+    dcterms:description "Back-scattered SEM image of cement, polished with 1 um diamond compound."^^rdf:langString ;
     dcat:distribution [ a dcat:Distribution ;
-            dcat:downloadURL "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif" ;
-            dcat:mediaType "image/tiff" ] .
-<BLANKLINE>
-<BLANKLINE>
+            dcat:downloadURL "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif"^^xsd:anyURI ;
+            dcat:mediaType <https://www.iana.org/assignments/media-types/image/tiff> ] .
 
 ```
 

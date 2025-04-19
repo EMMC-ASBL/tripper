@@ -1,13 +1,15 @@
-Tripper
-=======
-*Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends.*
-
+<img src="docs/figs/tripper_logo.svg" alt="Tripper logo" align="right" width="96" height="96">
 
 [![PyPI](https://img.shields.io/pypi/v/tripper?logo=pypi)](https://pypi.org/project/tripper)
 [![Documentation](https://img.shields.io/badge/documentation-informational?logo=github)](https://emmc-asbl.github.io/tripper/latest/)
 [![CI tests](https://github.com/EMMC-ASBL/tripper/workflows/CI%20-%20Tests/badge.svg)](https://github.com/EMMC-ASBL/tripper/actions/workflows/ci_tests.yml?query=branch%3Amaster)
 [![DOI](https://zenodo.org/badge/547162834.svg)](https://zenodo.org/badge/latestdoi/547162834)
 
+*Triplestore wrapper for Python providing a simple and consistent interface to a range of triplestore backends*
+
+
+Tripper
+=======
 
 Getting started
 ---------------
@@ -43,6 +45,7 @@ Sub-packages
 Additional functionality beyond interfacing triplestore backends is provided by specialised sub-package:
 
 * [tripper.datadoc]: An API for data documentation.
+* [tripper.units]: Working with units and quantities defined in ontologies.
 * [tripper.mappings]: Traverse mappings stored in the triplestore and find possible mapping routes.
 * [tripper.convert]: Convert between RDF and other data representations.
 
@@ -112,6 +115,7 @@ We gratefully acknowledge the following projects for supporting the development 
 [Discovery of custom backends]: https://emmc-asbl.github.io/tripper/latest/backend_discovery/
 [tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/
 [tripper.mappings]: https://emmc-asbl.github.io/tripper/latest/api_reference/mappings/mappings/
+[tripper.units]: https://emmc-asbl.github.io/tripper/latest/api_reference/units/units/
 [tripper.convert]: https://emmc-asbl.github.io/tripper/latest/api_reference/convert/convert/
 [Known issues]: https://emmc-asbl.github.io/tripper/latest/known-issues/
 [MIT license]: https://emmc-asbl.github.io/tripper/latest/LICENSE/
