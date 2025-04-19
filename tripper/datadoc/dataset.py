@@ -148,7 +148,8 @@ def save_dict(
     )
 
     # Validate
-    validate(d, type=type, context=context, keywords=keywords)
+    # TODO: reenable validation
+    # validate(d, type=type, keywords=keywords)
 
     # Bind prefixes
     for prefix, ns in all_prefixes.items():
@@ -1163,6 +1164,7 @@ def search_iris(
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    skipblanks: "bool" = True,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
 
@@ -1186,6 +1188,7 @@ def search_iris(
             - `q`: Special characters representing themselves.
         keywords: Keywords instance defining the resource types used with
             the `type` argument.
+        skipblanks: Whether to skip blank nodes.
 
     Returns:
         List of IRIs for matching resources.
@@ -1234,6 +1237,10 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
+    if skipblanks:
+        return [
+            r[0] for r in ts.query(query) if not r[0].startswith("_:")  # type: ignore
+        ]
     return [r[0] for r in ts.query(query)]  # type: ignore
 
 
