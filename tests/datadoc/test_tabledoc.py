@@ -44,12 +44,13 @@ def test_asdicts():
     assert set(s1["@type"]) == {
         DCAT.Dataset,
         EMMO.Dataset,
+        DCAT.Resource,
         ONTO.T1,
         ONTO.T2,
     }
     assert "inSeries" not in s1
     assert s1.distribution == {
-        "@type": DCAT.Distribution,
+        "@type": [DCAT.Distribution, DCAT.Resource],
         "downloadURL": "file:///data/",
     }
 
@@ -57,11 +58,12 @@ def test_asdicts():
     assert set(d1["@type"]) == {
         DCAT.Dataset,
         EMMO.Dataset,
+        DCAT.Resource,
         ONTO.T1,
     }
     assert d1.inSeries == DS.s1
     assert d1.distribution == {
-        "@type": DCAT.Distribution,
+        "@type": [DCAT.Distribution, DCAT.Resource],
         "downloadURL": "file:///data/d1.txt",
     }
 
@@ -69,11 +71,12 @@ def test_asdicts():
     assert set(d2["@type"]) == {
         DCAT.Dataset,
         EMMO.Dataset,
+        DCAT.Resource,
         ONTO.T2,
     }
     assert d2.inSeries == DS.s1
     assert d2.distribution == {
-        "@type": DCAT.Distribution,
+        "@type": [DCAT.Distribution, DCAT.Resource],
         "downloadURL": "file:///data/d2.txt",
     }
 
@@ -187,9 +190,11 @@ def test_csv_duplicated_columns():
 
     pytest.importorskip("rdflib")
 
+    from tripper import DCAT, EMMO, Namespace
     from tripper.datadoc import TableDoc
 
-    prefixes = {"pm": "https://www.ntnu.edu/physmet/data#"}
+    PM = Namespace("https://www.ntnu.edu/physmet/data#")
+    prefixes = {"pm": str(PM)}
 
     td = TableDoc.parse_csv(
         indir / "tem.csv",
@@ -200,19 +205,21 @@ def test_csv_duplicated_columns():
     img1, img2, img3 = td.asdicts()
 
     assert set(img1["@type"]) == {
-        "http://www.w3.org/ns/dcat#Dataset",
-        "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-        "https://www.ntnu.edu/physmet/data#BrightFieldImage",
-        "https://www.ntnu.edu/physmet/data#TEMImage",
+        DCAT.Dataset,
+        DCAT.Resource,
+        EMMO.Dataset,
+        PM.BrightFieldImage,
+        PM.TEMImage,
     }
 
     td2 = TableDoc.fromdicts([img2, img3], prefixes=prefixes)
     assert td2.header == [
         "@id",
-        "@type",
-        "@type",
-        "@type",
-        "@type",
+        "@type",  # TEMImage
+        "@type",  # BrightFieldEmage
+        "@type",  # emmo:Dataset
+        "@type",  # dcat:Resource
+        "@type",  # dcat:Dataset
         "description",
         "distribution.downloadURL",
     ]

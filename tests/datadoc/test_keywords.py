@@ -5,10 +5,36 @@ import pytest
 pytest.importorskip("yaml")
 
 # pylint: disable=wrong-import-position
-from tripper.datadoc.keywords import Keywords
+from tripper.datadoc import Keywords
 
 # A fixture used by all the tests
 keywords = Keywords()
+
+
+def test_get_keywords():
+    """Test get_keywords() function."""
+    from tripper.datadoc import get_keywords
+
+    kw1 = get_keywords()
+    assert kw1.data == keywords.data
+    assert kw1.keywords == keywords.keywords
+    assert kw1.domain == keywords.domain
+    assert kw1.data.__class__.__name__ == "AttrDict"
+    assert kw1.keywords.__class__.__name__ == "AttrDict"
+
+    kw2 = get_keywords(keywords, domain=None)
+    assert kw2.data == keywords.data
+    assert kw2.keywords == keywords.keywords
+    assert kw2.domain == keywords.domain
+    assert kw2.data.__class__.__name__ == "AttrDict"
+    assert kw2.keywords.__class__.__name__ == "AttrDict"
+
+    kw3 = get_keywords(keywords)
+    assert kw3.data == keywords.data
+    assert kw3.keywords == keywords.keywords
+    assert kw3.domain == keywords.domain
+    assert kw3.data.__class__.__name__ == "AttrDict"
+    assert kw3.keywords.__class__.__name__ == "AttrDict"
 
 
 def test_dir():
@@ -21,12 +47,26 @@ def test_dir():
     assert "domain" in dirlist
 
 
+def test_copy():
+    """Test copy()."""
+    copy = keywords.copy()
+    assert copy.data == keywords.data
+    assert copy.keywords == keywords.keywords
+    assert copy.domain == keywords.domain
+
+
+def test_get_prefixes():
+    """Test get_prefixes()."""
+    prefixes = keywords.get_prefixes()
+    assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
+
+
 def test_get_context():
     """Test get_context()."""
     ctx = keywords.get_context()
     assert ctx["dcat"] == "http://www.w3.org/ns/dcat#"
     assert ctx["creator"] == {"@id": "dcterms:creator", "@type": "@id"}
-    assert ctx["title"] == {"@id": "dcterms:title", "@type": "rdf:langString"}
+    assert ctx["title"] == {"@id": "dcterms:title", "@language": "en"}
     assert ctx["version"] == "dcat:version"
 
 
@@ -84,26 +124,32 @@ def test_range():
         keywords.range("Dataset")
 
 
-def test_normtype():
-    """Test normtype() method."""
+def test_superclasses():
+    """Test superclasses() method."""
     from tripper import DCAT
     from tripper.datadoc.errors import NoSuchTypeError
 
-    assert keywords.normtype("Dataset") == [
+    assert keywords.superclasses("Dataset") == [
         "dcat:Dataset",
+        "dcat:Resource",
         "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     ]
-    assert keywords.normtype("dcat:Dataset") == [
+    assert keywords.superclasses("dcat:Dataset") == [
         "dcat:Dataset",
+        "dcat:Resource",
         "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     ]
-    assert keywords.normtype(DCAT.Dataset) == [
+    assert keywords.superclasses(DCAT.Dataset) == [
         "dcat:Dataset",
+        "dcat:Resource",
         "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     ]
-    assert keywords.normtype("Distribution") == "dcat:Distribution"
+    assert keywords.superclasses("Distribution") == [
+        "dcat:Distribution",
+        "dcat:Resource",
+    ]
     with pytest.raises(NoSuchTypeError):
-        keywords.normtype("distribution")
+        keywords.superclasses("distribution")
 
 
 def test_keywordname():

@@ -4,6 +4,7 @@
 
 import json
 import os
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -24,6 +25,32 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Optional, Sequence, Union
 
     FileLoc = Union[Path, str]
+
+
+@lru_cache(maxsize=32)
+def get_keywords(
+    keywords: "Optional[Keywords]" = None,
+    domain: "Optional[Union[str, Sequence[str]]]" = "default",
+    yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+    timeout: float = 3,
+) -> "Keywords":
+    """A convinient function that returns an Context instance.
+
+    Arguments:
+        keywords: Optional existing keywords object.
+        domain: Name of one of more domains to load keywords for.
+        yamlfile: YAML file with keyword definitions to parse.  May also
+            be an URI in which case it will be accessed via HTTP GET.
+        timeout: Timeout in case `yamlfile` is a URI.
+    """
+    if not keywords:
+        return Keywords(domain=domain, yamlfile=yamlfile)
+    kw = keywords.copy()
+    if domain:
+        kw.add_domain(domain)
+    if yamlfile:
+        kw.parse(yamlfile, timeout=timeout)
+    return kw
 
 
 class Keywords:
@@ -77,6 +104,14 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "domain"]
 
+    def copy(self):
+        """Returns a copy of self."""
+        new = Keywords(domain=None)
+        new.data.update(self.data)
+        new.keywords.update(self.keywords)
+        new.domain = self.domain
+        return new
+
     def add_domain(self, domain: "Union[str, Sequence[str]]") -> None:
         """Add keywords for `domain`, where `domain` is the name of a
         scientific domain or a list of scientific domain names."""
@@ -125,8 +160,8 @@ class Keywords:
                     self.keywords,
                     {
                         keyword: value,
-                        value.iri: value,
-                        expand_iri(value.iri, self.data.prefixes): value,
+                        value["iri"]: value,
+                        expand_iri(value["iri"], self.data["prefixes"]): value,
                     },
                     append=False,
                 )
@@ -154,46 +189,43 @@ class Keywords:
         """Return the range of the keyword."""
         return self.keywords[keyword].range
 
-    def normtype(self, type: str) -> "Union[str, list]":
-        """Return normalised and expanded type.
+    def superclasses(self, cls: str) -> "Union[str, list]":
+        """Return a list with `cls` and it superclasses prefixed.
 
         Example:
 
         >>> keywords = Keywords()
-        >>> keywords.normtype("Dataset")
-        ['dcat:Dataset', 'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
+        >>> keywords.superclasses("Dataset")
+        ... # doctest: +NORMALIZE_WHITESPACE
+        ['dcat:Dataset',
+         'dcat:Resource',
+         'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
 
-        >>> keywords.normtype("dcat:Dataset")
-        ['dcat:Dataset', 'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
+        >>> keywords.superclasses("dcat:Dataset")
+        ... # doctest: +NORMALIZE_WHITESPACE
+        ['dcat:Dataset',
+         'dcat:Resource',
+         'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
 
         """
-        if type in self.data.resources:
-            r = self.data.resources[type]
+        if cls in self.data.resources:
+            r = self.data.resources[cls]
         else:
-            type = prefix_iri(type, self.data.get("prefixes", {}))
-            rlst = [
-                r
-                for r in self.data.resources.values()
-                if type == r.iri
-                or (
-                    "type" in r
-                    and type
-                    in ([r.type] if isinstance(r.type, str) else r.type)
-                )
-            ]
+            cls = prefix_iri(cls, self.data.get("prefixes", {}))
+            rlst = [r for r in self.data.resources.values() if cls == r.iri]
             if not rlst:
-                raise NoSuchTypeError(type)
+                raise NoSuchTypeError(cls)
             if len(rlst) > 1:
                 raise RuntimeError(
-                    f"{type} matches more than one resource: "
+                    f"{cls} matches more than one resource: "
                     f"{', '.join(r.iri for r in rlst)}"
                 )
             r = rlst[0]
 
-        if "type" in r:
-            if isinstance(r.type, str):
-                return [r.iri, r.type]
-            return [r.iri] + r.type
+        if "subClassOf" in r:
+            if isinstance(r.subClassOf, str):
+                return [r.iri, r.subClassOf]
+            return [r.iri] + r.subClassOf
         return r.iri
 
     def keywordname(self, keyword: str) -> str:
@@ -227,6 +259,10 @@ class Keywords:
             if prefixed == r.iri:
                 return name
         raise NoSuchTypeError(type)
+
+    def get_prefixes(self) -> dict:
+        """Return prefixes dict."""
+        return self.data.prefixes
 
     def get_context(self) -> dict:
         """Return JSON-LD context as a dict.

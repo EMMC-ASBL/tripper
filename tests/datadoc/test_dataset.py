@@ -6,6 +6,195 @@ import pytest
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
+pytest.importorskip("pyld")
+
+
+def test__get_range():
+    """Test _get_default_keywords()."""
+    from tripper.datadoc.dataset import _get_range
+
+    assert _get_range("mediaType") == "dcterms:MediaType"
+    assert _get_range("dcat:mediaType") == "dcterms:MediaType"
+    assert _get_range("dcat:distribution") == "dcat:Distribution"
+
+
+def test_told():
+    """Test told()."""
+    # pylint: disable=too-many-statements
+    from pathlib import Path
+
+    from tripper import DCAT, DCTERMS, OWL, RDF, Literal, Triplestore
+    from tripper.datadoc.dataset import save_dict, told
+
+    indir = Path(__file__).resolve().parent.parent / "input"
+    prefixes = {"ex": "http://example.com/ex#"}
+    ts = Triplestore("rdflib")
+
+    # Single-resource representations
+    descrA = {
+        "@id": "ex:a",
+        "@type": "ex:A",
+        "title": "Dataset a",
+        "distribution": {
+            "mediaType": "iana:text/csv",
+            "downloadURL": "http://json.org/ex.txt",
+        },
+        "mappingURL": str(indir / "mappings.ttl"),
+        "mappings": [("@id", "rdf:type", "ex:TechnicalDataset")],
+    }
+    d1 = told(descrA)
+    assert d1["@id"] == "ex:a"
+    assert d1["@type"] == "ex:A"
+    assert d1["distribution"]["@type"] == [
+        "dcat:Distribution",
+        "dcat:Resource",
+    ]
+    assert set(d1["mappings"]) == {
+        (
+            "http://data.com/domain#doc",
+            "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "http://xmlns.com/foaf/0.1/Document",
+        ),
+        (  # unexpanded
+            "ex:a",
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "ex:TechnicalDataset",
+        ),
+    }
+
+    # Test save_dict()on descrA
+    save_dict(ts, descrA, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    assert ts.has(EX.a, RDF.type, EX.A)
+    # assert ts.has(EX.a, RDF.type, EX.TechnicalDataset)
+
+    d2 = told(descrA, prefixes=prefixes)
+    assert d2["@id"] == "ex:a"
+    assert d2["@type"] == "ex:A"
+    assert d2["distribution"]["@type"] == [
+        "dcat:Distribution",
+        "dcat:Resource",
+    ]
+    assert set(d2["mappings"]) == {
+        (
+            "http://data.com/domain#doc",
+            "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            "http://xmlns.com/foaf/0.1/Document",
+        ),
+        (  # expanded
+            "http://example.com/ex#a",
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "http://example.com/ex#TechnicalDataset",
+        ),
+    }
+
+    d3 = told(descrA, type="ex:AA")
+    assert d3["@id"] == "ex:a"
+    assert d3["@type"] == ["ex:A", "ex:AA"]
+    assert d3["distribution"]["@type"] == [
+        "dcat:Distribution",
+        "dcat:Resource",
+    ]
+
+    descrB = {
+        "@graph": [
+            {
+                "@id": "ex:a",
+                "@type": "ex:A",
+                "title": "Dataset a",
+                "distribution": {
+                    "mediaType": "iana:text/csv",
+                    "downloadURL": "http://json.org/ex.txt",
+                },
+            },
+            {
+                "@id": "ex:b",
+                "title": "Dataset b",
+            },
+        ],
+    }
+    d4 = told(descrB)
+    assert d4["@graph"][0]["@id"] == "ex:a"
+    assert d4["@graph"][1]["@id"] == "ex:b"
+    assert len(d4["@graph"]) == 2
+    assert d4["@graph"][0]["distribution"]["@type"] == [
+        "dcat:Distribution",
+        "dcat:Resource",
+    ]
+    assert d4["@graph"][1]["@type"] == "owl:NamedIndividual"
+
+    # Test save_dict()on descrB
+    ts.remove()
+    save_dict(ts, descrB, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    assert ts.has(EX.a, DCAT.distribution)
+    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+
+    descrC = [
+        {
+            "@id": "ex:a",
+            "@type": "ex:A",
+            "title": "Dataset a",
+            "distribution": {
+                "mediaType": "iana:text/csv",
+                "downloadURL": "http://json.org/ex.txt",
+            },
+        },
+        {
+            "@id": "ex:b",
+            "title": "Dataset b",
+        },
+    ]
+    d5 = told(descrC)
+    assert d5 == d4
+
+    # Test save_dict() on descrC
+    ts.remove()
+    save_dict(ts, descrB, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    assert ts.has(EX.a, DCAT.distribution)
+    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+
+    # Multi-resource representation
+    descrD = {
+        "prefixes": prefixes,
+        "base": "http://base.com#",
+        "Dataset": [
+            {
+                "@id": "a",
+                "@type": "ex:A",
+                "title": "Dataset a",
+                "distribution": {
+                    "mediaType": "iana:text/csv",
+                    "downloadURL": "http://json.org/ex.txt",
+                },
+            },
+            {
+                "@id": "b",
+                "title": "Dataset b",
+            },
+        ],
+    }
+    d6 = told(descrD)
+    assert len(d6["@graph"]) == 2
+    assert d6["@graph"][0]["distribution"]["@type"] == [
+        "dcat:Distribution",
+        "dcat:Resource",
+    ]
+    assert d6["@graph"][1]["@type"] == [
+        "dcat:Dataset",
+        "dcat:Resource",
+        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+    ]
+
+    # Test save_dict() on descrC
+    ts.remove()
+    save_dict(ts, descrB, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    assert ts.has(EX.a, DCAT.distribution)
+    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, RDF.type, EX.A)
+    assert ts.has(EX.b, RDF.type, OWL.NamedIndividual)
 
 
 def test_get_jsonld_context():
@@ -133,48 +322,97 @@ def test_save_dict():
     print(ts.serialize())
 
 
-def test_as_jsonld():
-    """Test as_jsonld()."""
-    from tripper import DCAT, EMMO, Namespace
-    from tripper.datadoc import as_jsonld
-
-    with pytest.raises(ValueError):
-        as_jsonld({})
-
-    EX = Namespace("http://example.com/ex#")
-    SER = Namespace("http://example.com/series#")
-    dct = {"@id": "ex:indv", "a": "val"}
-    context = {"ex": str(EX), "a": "ex:a"}
-
-    d = as_jsonld(dct, _context=context)
-    assert d["@id"] == EX.indv
-    assert d["@type"] == "owl:NamedIndividual"
-    assert d.a == "val"
-
-    d2 = as_jsonld(dct, type="Dataset", _context=context)
-    assert d2["@context"] == d["@context"]
-    assert len(d2["@type"]) == 2
-    assert d2["@type"] == [DCAT.Dataset, EMMO.Dataset]
-    assert d2.a == "val"
-
-    d3 = as_jsonld(dct, type="Resource", _context=context)
-    assert d3["@context"] == d["@context"]
-    assert d3["@id"] == d["@id"]
-    assert d3["@type"] == DCAT.Resource
-    assert d3.a == "val"
-
-    d4 = as_jsonld(
-        {"inSeries": "ser:main"},
-        prefixes={"ser": SER},
-        a="value",
-        _id="ex:indv2",
-        _type="ex:Item",
-        _context=context,
-    )
-    assert d4["@id"] == EX.indv2
-    assert d4["@type"] == EX.Item
-    assert d4.a == "value"
-    assert d4.inSeries == SER.main
+# def test_as_jsonld():
+#     """Test as_jsonld()."""
+#     from tripper import DCAT, EMMO, Namespace
+#     from tripper.datadoc import as_jsonld
+#
+#     with pytest.raises(ValueError):
+#         as_jsonld({})
+#
+#     EX = Namespace("http://example.com/ex#")
+#     SER = Namespace("http://example.com/series#")
+#     dct = {"@id": "ex:indv", "a": "val"}
+#     context = {"ex": str(EX), "a": "ex:a"}
+#
+#     d = as_jsonld(dct, _context=context)
+#     assert d["@id"] == EX.indv
+#     assert d["@type"] == "owl:NamedIndividual"
+#     assert d.a == "val"
+#
+#     d2 = as_jsonld(dct, type="Dataset", _context=context)
+#     assert d2["@context"] == d["@context"]
+#     assert len(d2["@type"]) == 2
+#     assert d2["@type"] == [DCAT.Dataset, EMMO.Dataset]
+#     assert d2.a == "val"
+#
+#     d3 = as_jsonld(dct, type="Resource", _context=context)
+#     assert d3["@context"] == d["@context"]
+#     assert d3["@id"] == d["@id"]
+#     assert d3["@type"] == DCAT.Resource
+#     assert d3.a == "val"
+#
+#     d4 = as_jsonld(
+#         {"inSeries": "ser:main"},
+#         prefixes={"ser": SER},
+#         a="value",
+#         _id="ex:indv2",
+#         _type="ex:Item",
+#         _context=context,
+#     )
+#     assert d4["@id"] == EX.indv2
+#     assert d4["@type"] == EX.Item
+#     assert d4.a == "value"
+#     assert d4.inSeries == SER.main
+#
+#
+# if False:  # XXX
+#     from tripper import DCAT, EMMO, Namespace
+#     from tripper.datadoc import as_jsonld
+#
+#     EX = Namespace("http://example.com/ex#")
+#     SER = Namespace("http://example.com/series#")
+#
+#     d5 = {
+#         "@context": {
+#             "": str(EX),
+#             "ser": str(SER),
+#             "a": "ser:a",
+#             "b": "ser:b",
+#             "c": {"@id": "ser:c", "@type": "@id"},
+#         },
+#         "@id": "ser:myid",
+#         "a": 1,
+#         "b": "STRING_VALUE",
+#         "c": "ser:id2",
+#     }
+#     d = d5.copy()
+#     d["@context"]["@base"] = d["@context"].pop("")
+#     # d["@id"] = "myid"
+#     # d["c"] = "id2"
+#
+#     # print("----- 1")
+#     # print("----- 2")
+#     import json
+#
+#     from pyld import jsonld
+#
+#     from tripper import Triplestore
+#     from tripper.datadoc import Keywords, get_context, save_dict
+#     from tripper.datadoc.dataset import show
+#
+#     keywords = Keywords(None)
+#     print("----- 3")
+#     ctx = get_context(context=d5, keywords=keywords)
+#     print("----- 4")
+#     ts = Triplestore("rdflib")
+#     save_dict(ts, d5)
+#     print("----- 5")
+#     print(ts.serialize())
+#
+#     dct = as_jsonld(d5, keywords=keywords)
+#     print("----- 6")
+#     print(json.dumps(dct, indent=4))
 
 
 # if True:
@@ -206,6 +444,7 @@ def test_datadoc():
     assert d["@id"] == iri
     assert set(d["@type"]) == {
         DCAT.Dataset,
+        DCAT.Resource,
         EMMO.Dataset,
         SEM.SEMImage,
         "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
@@ -241,7 +480,7 @@ def test_datadoc():
 
     gen = load_dict(ts, dist.generator)
     assert gen["@id"] == GEN.sem_hitachi
-    assert gen["@type"] == OTEIO.Generator
+    assert gen["@type"] == [OTEIO.Generator, OTEIO.Parser]
     assert gen.generatorType == "application/vnd.dlite-generate"
 
     # Test save dict
@@ -257,7 +496,7 @@ def test_datadoc():
         prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
     )
     newdistr = load_dict(ts, SEMDATA.newdistr)
-    assert newdistr["@type"] == DCAT.Distribution
+    assert newdistr["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert (
         newdistr.mediaType
         == "http://www.iana.org/assignments/media-types/text/plain"

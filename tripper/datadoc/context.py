@@ -2,12 +2,14 @@
 
 # pylint: disable=too-many-branches,redefined-builtin
 
+import json
 import re
-import warnings
 from typing import TYPE_CHECKING
 
 from pyld import jsonld
 
+from tripper import Triplestore
+from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
 from tripper.utils import MATCH_PREFIXED_IRI
@@ -20,17 +22,19 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 def get_context(
-    keywords: "Optional[Keywords]" = None,
-    domain: "Optional[Union[str, Sequence[str]]]" = None,
     context: "Optional[ContextType]" = None,
+    domain: "Optional[Union[str, Sequence[str]]]" = None,
+    keywords: "Optional[Keywords]" = None,
+    prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
 ) -> "Context":
     """A convinient function that returns an Context instance.
 
     Arguments:
-        keywords: Initialise from this keywords instance.
-        domain: Load initial context for this domain.
         context: Optional context to load.
+        domain: Load initial context for this domain.
+        keywords: Initialise from this keywords instance.
+        prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
 
     """
@@ -48,6 +52,8 @@ def get_context(
             context=context,
             processingMode=processingMode,
         )
+    if prefixes:
+        context.add_context(prefixes)
     return context
 
 
@@ -56,9 +62,9 @@ class Context:
 
     def __init__(
         self,
-        keywords: "Optional[Keywords]" = None,
-        domain: "Union[str, Sequence[str]]" = "default",
         context: "Optional[ContextType]" = None,
+        domain: "Union[str, Sequence[str]]" = "default",
+        keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
     ) -> None:
         """Initialises context object.
@@ -109,6 +115,9 @@ class Context:
     ##     js = json.dumps(self.get_context_dict(), indent=4)
     ##     return f"Context(context={js})"
 
+    def __str__(self):
+        return json.dumps({"@context": self.get_context_dict()}, indent=2)
+
     def copy(self) -> "Context":
         """Return a copy of this context."""
         copy = Context()
@@ -119,16 +128,38 @@ class Context:
         """Add a context to this object."""
         if isinstance(context, Context):
             context = context.get_context_dict()
-        elif "@context" in context:
-            context = context["@context"]  # type: ignore
 
         if "@id" in context:
-            warnings.warn(
-                f"skip adding context with @id keyword: {repr(context)[:100]}"
-            )
-            return
+            if "@context" in context:
+                context = context["@context"]  # type: ignore
+            else:
+                r = repr(context)
+                c = f"{r}..." if len(r) > 100 else r
+                raise InvalidContextError(
+                    f"context cannot have an @id key: {c}"
+                )
 
-        self.ctx = self.ld.process_context(self.ctx, context, options={})
+        def rec(dct):
+            """Return a copy of `dct` with all empty key names replaced
+            with "@base"."""
+            if not isinstance(dct, dict):
+                return dct
+
+            d = dct.copy()
+            for k, v in dct.items():
+                if k == "":
+                    if isinstance(v, str):
+                        d["@base"] = d.pop("")
+                    else:
+                        raise InvalidContextError(
+                            f"empty key with non-string value: {v}"
+                        )
+                if isinstance(v, dict):
+                    d[k] = rec(v)
+            return d
+
+        self.ctx = self.ld.process_context(self.ctx, rec(context), options={})
+
         # Clear caches
         self._expanded.clear()
         self._prefixed.clear()
@@ -155,21 +186,57 @@ class Context:
     #     """Return a context dict."""
     #     return {k: v.get("@id") for k, v in self.ctx["mappings"].items()}
 
-    def get_prefixes(self) -> dict:
-        """Return a dict mapping prefixes to IRIs."""
-        return {
-            k: v["@id"]
-            for k, v in self.ctx["mappings"].items()
-            if v.get("_prefix") and "@id" in v
-        }
-
     def get_mappings(self) -> dict:
-        """Return a dict mapping prefixes to IRIs."""
+        """Return a dict mapping keywords to IRIs."""
         return {
             k: v["@id"]
             for k, v in self.ctx["mappings"].items()
             if v.get("_prefix") is False and "@id" in v
         }
+
+    def get_prefixes(self) -> dict:
+        """Return a dict mapping prefixes to IRIs."""
+        prefixes = {"": self.base} if self.base else {}
+        for k, v in self.ctx["mappings"].items():
+            if v.get("_prefix") and "@id" in v:
+                prefixes[k] = v["@id"]
+        return prefixes
+
+    def sync_prefixes(
+        self, ts: Triplestore, update: "Optional[bool]" = None
+    ) -> None:
+        """Syncronise prefixes between context and triplestore.
+
+        The `update` option controls how prefix inconsistencies are handeled.
+        If `update` is:
+
+        - True:  Prefixes in the context will be updated.
+        - False: Prefixes in the triplestore will be updated.
+        - None:  A PrefixMismatchError is raised.
+
+        """
+        ns1 = self.get_prefixes().copy()
+        ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}
+
+        if update is None:
+            mismatch = [
+                p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]
+            ]
+            if mismatch:
+                raise PrefixMismatchError(f"{mismatch}")
+
+        if update:
+            ns1.update(ns2)
+            ns2 = ns1
+        else:
+            ns2.update(ns1)
+            ns1 = ns2
+
+        self.add_context(ns2)
+
+        for prefix, ns in ns1.items():
+            if prefix not in ts.namespaces:
+                ts.bind(prefix, ns)
 
     def expand(self, name, strict=False) -> str:
         """Return `name` expanded to a full IRI.
@@ -271,3 +338,13 @@ class Context:
                     self._shortnamed[prefixed] = key
                     self._shortnamed[expanded] = key
                     break
+
+    base = property(
+        fget=lambda self: self.ctx.get("@base"),
+        fset=lambda self, ns: self.add_context({"@base": ns}),
+        doc="Base IRI against which to resolve those relative IRIs.",
+    )
+    processingMode = property(
+        lambda self: self.ctx.get("processingMode"),
+        doc="Tag for JSON-LD version that this context is processed against.",
+    )

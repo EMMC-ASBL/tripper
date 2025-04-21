@@ -37,10 +37,13 @@ from __future__ import annotations
 # pylint: disable=too-many-branches
 import io
 import json
+import logging
 import re
 import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from pyld import jsonld
 
 from tripper import (
     RDF,
@@ -49,14 +52,20 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.errors import NoSuchTypeError, ValidateError
-from tripper.datadoc.keywords import Keywords
+from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,
+    InvalidDatadocError,
+    NoSuchTypeError,
+    UnknownKeywordWarning,
+    ValidateError,
+)
+from tripper.datadoc.keywords import Keywords, get_keywords
 from tripper.utils import (
     AttrDict,
     as_python,
     expand_iri,
     openfile,
     parse_literal,
+    prefix_iri,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -81,6 +90,214 @@ MATCH_IRI = re.compile(
     r"([a-zA-Z0-9]*://[a-zA-Z_]([a-zA-Z0-9_/.?#=+-]*))$"
 )
 
+logger = logging.getLogger(__name__)
+
+
+def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
+    """Return the range of `keyword`.
+
+    If `keywords` is None, the keywords for the default domain are used.
+    """
+    keywords = get_keywords(keywords)
+    return keywords[keyword].range
+
+
+def show(obj, indent=2) -> None:
+    """Print object to screen as pretty json."""
+    if isinstance(obj, (bytes, str)):
+        d = json.loads(obj)
+    elif isinstance(obj, Keywords):
+        d = obj.get_context()
+    elif isinstance(obj, Context):
+        d = obj.get_context_dict()
+    else:
+        d = obj
+    print(json.dumps(d, indent=indent))
+
+
+def told(
+    descr: "Union[dict, list]",
+    type: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+    prefixes: "Optional[dict]" = None,
+) -> "AttrDict":
+    """Return an updated copy of data description `descr` as valid JSON-LD.
+
+    The following transformations are performed:
+
+    - insert @type keywords
+    - expand IRIs and substitute @id and @type in `statements` keyword
+    - expand IRIs and substitute @id and @type in `mappings` keyword
+    - insert mappings from `mappingURL` keyword (uses `mappingFormat`)
+
+    Arguments:
+        data: Documenting of one or several resources to be represented as
+            JSON-LD.  Supports both single- and multi-resource dicts.
+        type: Type of data to save.  Should be one of the resource types
+            defined in `keywords`.
+        keywords: Keywords object with keywords definitions.  If not provided,
+            only default keywords are considered.
+        prefixes: Dict with prefixes in addition to those known in keywords
+            or included in the JSON-LD context.
+
+    Returns:
+        An updated copy of `descr` as valid JSON-LD.
+
+    """
+    single = "@id", "@type", "@graph"
+    multi = "domain", "keywordfile", "prefixes", "base"
+    singlerepr = any(s in descr for s in single) or isinstance(descr, list)
+    multirepr = any(s in descr for s in multi)
+    if singlerepr and multirepr:
+        raise InvalidDatadocError(
+            "invalid mixture of single- and multi-resource dict"
+        )
+    if not singlerepr:
+        keywords = get_keywords(
+            keywords=keywords,
+            domain=descr.get("domain", "default"),  # type: ignore
+            yamlfile=descr.get("keywordfile"),  # type: ignore
+        )
+    else:
+        keywords = get_keywords(keywords=keywords)
+
+    resources = keywords.data.resources
+    ctx = descr.get("@context") if isinstance(descr, dict) else None
+    context = get_context(context=ctx, keywords=keywords, prefixes=prefixes)
+
+    if singlerepr:  # single-resource representation
+        d = descr
+    elif multirepr:  # multi-resource representation
+        d = {}
+        graph = []
+        for k, v in descr.items():  # type: ignore
+            if k == "@context":
+                d[k] = v
+            elif k == "prefixes":
+                context.add_context(v)
+            elif k == "base":
+                context.base = v
+            elif k in resources:
+                if isinstance(v, list):
+                    for dct in v:
+                        add(dct, "@type", resources[k].iri)
+                        graph.append(dct)
+                else:
+                    graph.append(v)
+            else:
+                raise InvalidDatadocError(
+                    f"Invalid keyword in root of multi-resource dict: {k}"
+                )
+        d["@graph"] = graph
+
+    return _told(
+        d,
+        type=type,
+        keywords=keywords,
+        prefixes=context.get_prefixes(),
+        root=True,
+        hasid=False,
+    )
+
+
+def _told(
+    descr: "Union[dict, list, str]",
+    type: "Optional[str]",
+    keywords: "Keywords",
+    prefixes: "dict",
+    root: bool = False,  # true at first recursive call
+    hasid: bool = True,  # whether description has an @id
+):
+    """Recursive help function for told()."""
+
+    def expand(iri):
+        return expand_iri(iri, prefixes)
+
+    def torange(kw):
+        return keywords[kw].range if kw in keywords else None
+
+    def addsuperclasses(d, cls):
+        """Add `cls` and its superclasses to key "@type" in dict `d`."""
+        classes = cls if isinstance(cls, list) else [cls]
+        missing = []
+        for c in classes:
+            try:
+                add(d, "@type", keywords.superclasses(c))
+            except NoSuchTypeError:
+                missing.append(prefix_iri(c, keywords.get_prefixes()))
+                add(d, "@type", c)
+            if missing:
+                # Using logging.info() here, since warnings seem too verbose
+                # pylint: disable=logging-fstring-interpolation
+                logging.info(
+                    f"Class not in keywords: {', '.join(missing)}",
+                )
+                # warnings.warn(
+                #     ', '.join(missing), category=MissingKeywordsClassWarning,
+                # )
+
+    if isinstance(descr, str):
+        return descr
+
+    if isinstance(descr, list):
+        lst = [_told(token, type, keywords, prefixes) for token in descr]
+        return {"@graph": lst} if root else lst
+
+    if not isinstance(descr, dict):
+        raise InvalidDatadocError(
+            "Malformed data documentation. Expected dict, list or string. "
+            f"Got: {descr:!}"
+        )
+
+    # Handle dicts
+    if not hasid and "@id" not in descr and "@graph" not in descr:
+        raise InvalidDatadocError("Missing '@id' key in data documentation.")
+
+    d = {}
+    for k in "@context", "@id":  # Ensure order of
+        if k in descr:
+            d[k] = descr[k]
+    if "@type" in descr:
+        addsuperclasses(d, descr["@type"])
+    if type:
+        addsuperclasses(d, type)
+    elif not "@type" in descr and not "@graph" in descr:
+        d["@type"] = "owl:NamedIndividual"
+
+    for k, v in descr.items():
+        if not k.startswith("@") and k not in keywords:
+            warnings.warn(
+                f"Unknown keyword in data documentation: {k}",
+                UnknownKeywordWarning,
+            )
+        if k in ("@context", "@id", "@type"):
+            pass
+        elif k == "@graph":
+            d[k] = _told(v, type, keywords, prefixes)
+        elif k == "mappingURL":
+            for url in get(descr, k):
+                with Triplestore("rdflib") as ts:
+                    ts.parse(url, format=descr.get("mappingFormat"))
+                    add(d, "mappings", list(ts.triples()))
+        elif k in ("statements", "mappings"):
+            lst = [
+                [
+                    expand(get(descr, e, e)[0] if e[0] == "@" else e)
+                    for e in spo
+                ]
+                for i, spo in enumerate(descr[k])
+            ]
+            add(d, k, [tuple(t) for t in lst])
+        elif isinstance(v, (str, list)):
+            d[k] = _told(v, torange(k), keywords, prefixes)
+        elif isinstance(v, dict):
+            if k in keywords and "datatype" in keywords[k]:
+                d[k] = v
+            else:
+                d[k] = _told(v, torange(k), keywords, prefixes)
+
+    return d
+
 
 def save_dict(
     ts: Triplestore,
@@ -89,7 +306,6 @@ def save_dict(
     context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
-    **kwargs,
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Save a dict representation of given type of data to a triplestore.
@@ -104,10 +320,6 @@ def save_dict(
             only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
-        kwargs: Additional keyword arguments to add to the returned dict.
-            A leading underscore in a key will be translated to a
-            leading "@"-sign.  For example, "@id=..." may be provided
-            as "_id=...".
 
     Returns:
         An updated copy of `dct`.
@@ -129,40 +341,29 @@ def save_dict(
         keywords = Keywords()
 
     if context is None:
-        context = Context(keywords=keywords)
+        context = get_context(
+            keywords=keywords, context=context, prefixes=prefixes
+        )
+    context.sync_prefixes(ts)
 
-    if "@id" not in dct:
-        raise ValueError("`dct` must have an '@id' key")
-
-    all_prefixes = get_prefixes()
-    all_prefixes.update({pf: str(ns) for pf, ns in ts.namespaces.items()})
-    if prefixes:
-        all_prefixes.update(prefixes)
-
-    d = as_jsonld(
-        dct=dct,
-        type=type,
-        keywords=keywords,
-        prefixes=all_prefixes,
-        **kwargs,
-    )
+    d = told(dct, type=type, keywords=keywords, prefixes=prefixes)
+    add(d, "@context", context.get_context_dict())
+    # if "@context" in d:
+    #     context.add_context(d["@context"])
+    #     d = jsonld.compact(d, context.get_context_dict())
+    # else:
+    #    d["@context"] = context.get_context_dict()
 
     # Validate
     # TODO: reenable validation
-    validate(d, type=type, keywords=keywords)
-
-    # Bind prefixes
-    for prefix, ns in all_prefixes.items():
-        ts.bind(prefix, ns)
+    # validate(d, type=type, keywords=keywords)
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    f = io.StringIO(json.dumps(d))
-    with Triplestore(backend="rdflib") as ts2:
-        ts2.parse(f, format="json-ld")
-        ts.add_triples(ts2.triples())
+    nt = jsonld.to_rdf(d, options={"format": "application/n-quads"})
+    ts.parse(data=nt, format="ntriples")
 
     # Add statements and data models to triplestore
-    save_extra_content(ts, d)
+    save_extra_content(ts, d)  # FIXME: SLOW!!
 
     return d
 
@@ -581,6 +782,14 @@ def save_datadoc(
     Returns:
         Dict-representation of the loaded dataset.
     """
+    # if isinstance(file_or_dict, dict):
+    #     d = file_or_dict
+    # else:
+    #     with openfile(filename, mode="rt", encoding="utf-8") as f:
+    #         d = yaml.safe_load(f)
+    #
+    # XXX
+
     if isinstance(file_or_dict, dict):
         d = prepare_datadoc(file_or_dict)
     else:
@@ -668,6 +877,10 @@ def as_jsonld(
 ) -> dict:
     """Return an updated copy of dict `dct` as valid JSON-LD.
 
+    If neither of `keywords` or `context` are provided, new Keywords
+    and Context objects are created using terms from the "default"
+    domain.
+
     Arguments:
         dct: Dict documenting a resource to be represented as JSON-LD.
         type: Type of data to save.  Should be one of the resource types
@@ -693,9 +906,11 @@ def as_jsonld(
     if keywords is None:
         keywords = Keywords()
 
-    context = get_context(keywords=keywords, context=context)
-    if prefixes:
-        context.add_context({k: str(v) for k, v in prefixes.items()})
+    context = get_context(
+        keywords=keywords, context=context, prefixes=prefixes
+    )
+    # if prefixes:
+    #    context.add_context({k: str(v) for k, v in prefixes.items()})
 
     # Id of base entry that is documented
     _entryid = kwargs.pop("_entryid", None)
@@ -738,7 +953,7 @@ def as_jsonld(
     if "_type" in kwargs and kwargs["_type"]:
         add(d, "@type", expand(kwargs.pop("_type")))
     if type:
-        add(d, "@type", expand(keywords.normtype(type)))
+        add(d, "@type", expand(keywords.superclasses(type)))
     if "@type" not in d:
         d["@type"] = "owl:NamedIndividual"
 
@@ -1098,7 +1313,7 @@ def make_query(
         else:
             if keywords is None:
                 keywords = Keywords()
-            typ = keywords.normtype(type)
+            typ = keywords.superclasses(type)
             if not isinstance(typ, str):
                 typ = typ[0]
             crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
@@ -1227,7 +1442,7 @@ def search_iris(
             )
 
     SeeAlso:
-    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
+        [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
     query = make_query(
         ts=ts,

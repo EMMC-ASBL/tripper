@@ -55,7 +55,7 @@ Resource published or curated by an agent.
 ## Properties on [Dataset]
 A collection of data, published or curated by an agent, and available for access or download in one or more representations.
 
-- subClassOf: [dcat:Resource]
+- subClassOf: [dcat:Resource], [emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]
 
 | Keyword                | Range                                            | Conformance | Definition                                                                                                                 | Usage note                                                                                                    |
 | ---------------------- | ------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -124,6 +124,8 @@ A generator that can serialise an instance of a datamodel into a distribution.
 
 ## Properties on [Agent]
 Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
+
+- subClassOf: [emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]
 
 | Keyword      | Range                          | Conformance | Definition                                          | Usage note                                                                                                                                    |
 | ------------ | ------------------------------ | ----------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -332,6 +334,7 @@ A generic resource.
 [statements]: https://w3id.org/emmo/domain/oteio#statement
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [dcat:Resource]: http://www.w3.org/ns/dcat#Resource
+[emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [Dataset]: http://www.w3.org/ns/dcat#Dataset
 [distribution]: http://www.w3.org/ns/dcat#distribution
 [dcat:Distribution]: http://www.w3.org/ns/dcat#Distribution
@@ -410,6 +413,7 @@ A generic resource.
 [Generator]: https://w3id.org/emmo/domain/oteio#Generator
 [generatorType]: https://w3id.org/emmo/domain/oteio#generatorType
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]: https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
 [Agent]: http://xmlns.com/foaf/0.1/Agent
 [name]: http://xmlns.com/foaf/0.1/name
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal

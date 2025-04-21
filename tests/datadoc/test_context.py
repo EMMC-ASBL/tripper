@@ -50,6 +50,13 @@ def test_get_context_dict():
     }
 
 
+def test_get_mappings():
+    """Test get_mappings() method."""
+    mappings = ctx.get_mappings()
+    assert "adms" not in mappings
+    assert mappings["mediaType"] == "http://www.w3.org/ns/dcat#mediaType"
+
+
 def test_get_prefixes():
     """Test get_prefixes() method."""
     prefixes = ctx.get_prefixes()
@@ -57,11 +64,20 @@ def test_get_prefixes():
     assert "mediaType" not in prefixes
 
 
-def test_get_mappings():
-    """Test get_mappings() method."""
-    mappings = ctx.get_mappings()
-    assert "adms" not in mappings
-    assert mappings["mediaType"] == "http://www.w3.org/ns/dcat#mediaType"
+def test_sync_prefixes():
+    """Test sync_prefixes() method."""
+    from tripper import Triplestore
+
+    ts = Triplestore("rdflib")
+    ns1 = ts.namespaces.copy()
+    pf1 = ctx.get_prefixes().copy()
+    ctx.sync_prefixes(ts)
+    ns2 = ts.namespaces.copy()
+    pf2 = ctx.get_prefixes().copy()
+    assert len(ns2) > len(ns1)
+    assert len(pf2) >= len(pf1)
+    # xml cannot be added to `ctx` since it doesn't end with a slash or hash
+    # assert pf2 == ns2
 
 
 def test_expand():
@@ -117,3 +133,15 @@ def test_expanddoc_compactdoc():
     ]
     compact = context.compactdoc(exp)
     assert compact == doc
+
+
+def test_base():
+    """Test base property."""
+    assert ctx.base is None
+    ctx.base = "http://base.org/"
+    assert ctx.base == "http://base.org/"
+
+
+def test_processingmode():
+    """Test processingMode property."""
+    assert ctx.processingMode == "json-ld-1.1"
