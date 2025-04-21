@@ -31,20 +31,22 @@ def get_context(
     """A convinient function that returns an Context instance.
 
     Arguments:
-        context: Optional context to load.
+        context: Input context.  If it is a `Context` instance,
+             it will be updated and returned.
         domain: Load initial context for this domain.
         keywords: Initialise from this keywords instance.
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
 
+    Returns:
+        Context object.
     """
     if isinstance(context, Context):
         if keywords or domain:
-            if not keywords:
-                keywords = Keywords()
+            kw = keywords.copy() if keywords else Keywords()
             if domain:
-                keywords.add_domain(domain)
-            context.add_context(keywords.get_context())
+                kw.add_domain(domain)
+            context.add_context(kw.get_context())
     else:
         context = Context(
             keywords=keywords,

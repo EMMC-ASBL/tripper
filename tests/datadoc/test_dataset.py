@@ -322,100 +322,6 @@ def test_save_dict():
     print(ts.serialize())
 
 
-# def test_as_jsonld():
-#     """Test as_jsonld()."""
-#     from tripper import DCAT, EMMO, Namespace
-#     from tripper.datadoc import as_jsonld
-#
-#     with pytest.raises(ValueError):
-#         as_jsonld({})
-#
-#     EX = Namespace("http://example.com/ex#")
-#     SER = Namespace("http://example.com/series#")
-#     dct = {"@id": "ex:indv", "a": "val"}
-#     context = {"ex": str(EX), "a": "ex:a"}
-#
-#     d = as_jsonld(dct, _context=context)
-#     assert d["@id"] == EX.indv
-#     assert d["@type"] == "owl:NamedIndividual"
-#     assert d.a == "val"
-#
-#     d2 = as_jsonld(dct, type="Dataset", _context=context)
-#     assert d2["@context"] == d["@context"]
-#     assert len(d2["@type"]) == 2
-#     assert d2["@type"] == [DCAT.Dataset, EMMO.Dataset]
-#     assert d2.a == "val"
-#
-#     d3 = as_jsonld(dct, type="Resource", _context=context)
-#     assert d3["@context"] == d["@context"]
-#     assert d3["@id"] == d["@id"]
-#     assert d3["@type"] == DCAT.Resource
-#     assert d3.a == "val"
-#
-#     d4 = as_jsonld(
-#         {"inSeries": "ser:main"},
-#         prefixes={"ser": SER},
-#         a="value",
-#         _id="ex:indv2",
-#         _type="ex:Item",
-#         _context=context,
-#     )
-#     assert d4["@id"] == EX.indv2
-#     assert d4["@type"] == EX.Item
-#     assert d4.a == "value"
-#     assert d4.inSeries == SER.main
-#
-#
-# if False:  # XXX
-#     from tripper import DCAT, EMMO, Namespace
-#     from tripper.datadoc import as_jsonld
-#
-#     EX = Namespace("http://example.com/ex#")
-#     SER = Namespace("http://example.com/series#")
-#
-#     d5 = {
-#         "@context": {
-#             "": str(EX),
-#             "ser": str(SER),
-#             "a": "ser:a",
-#             "b": "ser:b",
-#             "c": {"@id": "ser:c", "@type": "@id"},
-#         },
-#         "@id": "ser:myid",
-#         "a": 1,
-#         "b": "STRING_VALUE",
-#         "c": "ser:id2",
-#     }
-#     d = d5.copy()
-#     d["@context"]["@base"] = d["@context"].pop("")
-#     # d["@id"] = "myid"
-#     # d["c"] = "id2"
-#
-#     # print("----- 1")
-#     # print("----- 2")
-#     import json
-#
-#     from pyld import jsonld
-#
-#     from tripper import Triplestore
-#     from tripper.datadoc import Keywords, get_context, save_dict
-#     from tripper.datadoc.dataset import show
-#
-#     keywords = Keywords(None)
-#     print("----- 3")
-#     ctx = get_context(context=d5, keywords=keywords)
-#     print("----- 4")
-#     ts = Triplestore("rdflib")
-#     save_dict(ts, d5)
-#     print("----- 5")
-#     print(ts.serialize())
-#
-#     dct = as_jsonld(d5, keywords=keywords)
-#     print("----- 6")
-#     print(json.dumps(dct, indent=4))
-
-
-# if True:
 def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
@@ -558,22 +464,22 @@ def test_custom_context():
 
     ts = Triplestore("rdflib")
     d = save_datadoc(ts, indir / "custom_context.yaml")
+    resources = d["@graph"]
 
-    KB = ts.namespaces["kb"]
-    assert d.Resource[0]["@id"] == KB.sampleA
-    assert d.Resource[0].fromBatch == KB.batch1
+    assert resources[0]["@id"] == "kb:sampleA"
+    assert resources[0]["fromBatch"] == "kb:batch1"
 
-    assert d.Resource[1]["@id"] == KB.sampleB
-    assert d.Resource[1].fromBatch == KB.batch1
+    assert resources[1]["@id"] == "kb:sampleB"
+    assert resources[1]["fromBatch"] == "kb:batch1"
 
-    assert d.Resource[2]["@id"] == KB.sampleC
-    assert d.Resource[2].fromBatch == KB.batch2
+    assert resources[2]["@id"] == "kb:sampleC"
+    assert resources[2]["fromBatch"] == "kb:batch2"
 
-    assert d.Resource[3]["@id"] == KB.batch1
-    assert d.Resource[3].batchNumber == 1
+    assert resources[3]["@id"] == "kb:batch1"
+    assert resources[3]["batchNumber"] == 1
 
-    assert d.Resource[4]["@id"] == KB.batch2
-    assert d.Resource[4].batchNumber == 2
+    assert resources[4]["@id"] == "kb:batch2"
+    assert resources[4]["batchNumber"] == 2
 
 
 def test_validate():

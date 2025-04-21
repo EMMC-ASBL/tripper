@@ -18,7 +18,7 @@ Functions for working with the dict-representation:
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
-  - `as_jsonld()`: Return the dict as JSON-LD (represented as a Python dict)
+  - `told()`: Return the dict as JSON-LD (represented as a Python dict)
 
 Functions for interaction with OTEAPI:
 
@@ -35,7 +35,6 @@ from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 # pylint: disable=too-many-branches
-import io
 import json
 import logging
 import re
@@ -120,6 +119,7 @@ def told(
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
+    context: "Optional[Context]" = None,
 ) -> "AttrDict":
     """Return an updated copy of data description `descr` as valid JSON-LD.
 
@@ -139,9 +139,11 @@ def told(
             only default keywords are considered.
         prefixes: Dict with prefixes in addition to those known in keywords
             or included in the JSON-LD context.
+        context: Optional context object. It will be updated from the input
+            data documentation `descr`.
 
     Returns:
-        An updated copy of `descr` as valid JSON-LD.
+        Dict with an updated copy of `descr` as valid JSON-LD.
 
     """
     single = "@id", "@type", "@graph"
@@ -161,17 +163,19 @@ def told(
     else:
         keywords = get_keywords(keywords=keywords)
 
+    context = get_context(
+        context=context, keywords=keywords, prefixes=prefixes
+    )
     resources = keywords.data.resources
-    ctx = descr.get("@context") if isinstance(descr, dict) else None
-    context = get_context(context=ctx, keywords=keywords, prefixes=prefixes)
 
     if singlerepr:  # single-resource representation
         d = descr
-    elif multirepr:  # multi-resource representation
+    else:  # multi-resource representation
         d = {}
         graph = []
         for k, v in descr.items():  # type: ignore
             if k == "@context":
+                context.add_context(v)
                 d[k] = v
             elif k == "prefixes":
                 context.add_context(v)
@@ -209,6 +213,7 @@ def _told(
     hasid: bool = True,  # whether description has an @id
 ):
     """Recursive help function for told()."""
+    # pylint: disable=too-many-statements
 
     def expand(iri):
         return expand_iri(iri, prefixes)
@@ -249,12 +254,14 @@ def _told(
             f"Got: {descr:!}"
         )
 
-    # Handle dicts
+    # From hereon `descr` must be a dict.
+    # Check that it has an "@id" or "@graph" key
     if not hasid and "@id" not in descr and "@graph" not in descr:
         raise InvalidDatadocError("Missing '@id' key in data documentation.")
 
+    # Create returned dict with @context, @id and @type as the first items
     d = {}
-    for k in "@context", "@id":  # Ensure order of
+    for k in "@context", "@id":
         if k in descr:
             d[k] = descr[k]
     if "@type" in descr:
@@ -288,7 +295,12 @@ def _told(
                 for i, spo in enumerate(descr[k])
             ]
             add(d, k, [tuple(t) for t in lst])
-        elif isinstance(v, (str, list)):
+        elif k == "datamodel":
+            add(d, "@type", v)
+            d[k] = v
+        elif isinstance(v, (str, int, float, bool, None.__class__)):
+            d[k] = v
+        elif isinstance(v, list):
             d[k] = _told(v, torange(k), keywords, prefixes)
         elif isinstance(v, dict):
             if k in keywords and "datatype" in keywords[k]:
@@ -337,16 +349,35 @@ def save_dict(
     References:
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json
     """
-    if keywords is None:
-        keywords = Keywords()
+    keywords = get_keywords(keywords)
+    context = get_context(
+        keywords=keywords, context=context, prefixes=prefixes
+    )
 
-    if context is None:
-        context = get_context(
-            keywords=keywords, context=context, prefixes=prefixes
-        )
+    # if keywords is None:
+    #     keywords = Keywords()
+    #
+    # if context is None:
+    #     context = get_context(
+    #         keywords=keywords, context=context, prefixes=prefixes
+    #     )
+
+    # print("*** prefixes:")
+    # show(context.get_prefixes())
+    # print("*** namespaces:")
+    # show({p: str(n) for p, n in ts.namespaces.items()})
+
+    # XXX
+    # print("--> prefixes:")
+    # show(context.get_prefixes())
+    # print("--> namespaces:")
+    # show({p: str(n) for p, n in ts.namespaces.items()})
+
+    d = told(
+        dct, type=type, keywords=keywords, prefixes=prefixes, context=context
+    )
     context.sync_prefixes(ts)
 
-    d = told(dct, type=type, keywords=keywords, prefixes=prefixes)
     add(d, "@context", context.get_context_dict())
     # if "@context" in d:
     #     context.add_context(d["@context"])
@@ -782,62 +813,15 @@ def save_datadoc(
     Returns:
         Dict-representation of the loaded dataset.
     """
-    # if isinstance(file_or_dict, dict):
-    #     d = file_or_dict
-    # else:
-    #     with openfile(filename, mode="rt", encoding="utf-8") as f:
-    #         d = yaml.safe_load(f)
-    #
-    # XXX
+    import yaml  # type: ignore
 
     if isinstance(file_or_dict, dict):
-        d = prepare_datadoc(file_or_dict)
+        d = file_or_dict
     else:
-        d = read_datadoc(file_or_dict)
+        with openfile(file_or_dict, mode="rt", encoding="utf-8") as f:
+            d = yaml.safe_load(f)
 
-    # Get keywords & context
-    if keywords is None:
-        keywords = Keywords(
-            domain=d.get("domain", "default"), yamlfile=d.get("keywordfile")
-        )
-    if context is None:
-        context = Context(keywords=keywords)
-
-    if "@context" in d:
-        context.add_context(d["@context"])
-    if "prefixes" in d:
-        context.add_context(d["prefixes"])
-
-    # Bind prefixes
-    ## context = d.get("@context")
-    ## prefixes = get_prefixes(context=context)
-    ## prefixes.update(d.get("prefixes", {}))
-    ## for prefix, ns in prefixes.items():  # type: ignore
-    ##     ts.bind(prefix, ns)
-    for prefix, ns in context.get_prefixes().items():  # type: ignore
-        ts.bind(prefix, ns)
-
-    # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    for name, lst in d.items():
-        if name in ("@context", "domain", "keywordfile", "prefixes"):
-            continue
-        if name not in keywords.data.resources:
-            raise NoSuchTypeError(f"unknown type '{name}' in YAML file.")
-        for dct in lst:
-            dct = as_jsonld(
-                dct=dct,
-                type=name,
-                keywords=keywords,
-                context=context,
-            )
-            f = io.StringIO(json.dumps(dct))
-            with Triplestore(backend="rdflib") as ts2:
-                ts2.parse(f, format="json-ld")
-                ts.add_triples(ts2.triples())
-
-    # Add statements and datamodels to triplestore
-    save_extra_content(ts, d)
-    return d
+    return save_dict(ts, d, keywords=keywords, context=context)
 
 
 def prepare_datadoc(datadoc: dict) -> dict:
