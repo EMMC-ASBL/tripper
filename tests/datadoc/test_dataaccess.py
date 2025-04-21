@@ -32,7 +32,7 @@ def test_save_and_load():
     # Test save dict
     save_dict(
         ts,
-        dct={
+        source={
             "@id": SEMDATA.img1,
             "distribution": {
                 "downloadURL": (
@@ -56,7 +56,7 @@ def test_save_and_load():
 
     save_dict(
         ts,
-        dct={
+        source={
             "@id": GEN.sem_hitachi,
             "generatorType": "application/vnd.dlite-generate",
             "configuration": {"driver": "hitachi"},

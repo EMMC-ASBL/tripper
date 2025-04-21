@@ -3,6 +3,7 @@
 # pylint: disable=too-many-branches,redefined-builtin
 
 import json
+import os
 import re
 from typing import TYPE_CHECKING
 
@@ -225,7 +226,16 @@ class Context:
                 p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]
             ]
             if mismatch:
-                raise PrefixMismatchError(f"{mismatch}")
+                msg = ["Mismatch in definition of prefix(es): "]
+                for mis in mismatch:
+                    msg.extend(
+                        [
+                            f"* Prefix '{mis}' is defined as",
+                            f"  - {ns1[mis]} in context",
+                            f"  - {ns2[mis]} in triplestore",
+                        ]
+                    )
+                raise PrefixMismatchError(os.linesep.join(msg))
 
         if update:
             ns1.update(ns2)

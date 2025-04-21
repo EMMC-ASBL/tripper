@@ -51,10 +51,9 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,
+from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     NoSuchTypeError,
-    UnknownKeywordWarning,
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
@@ -232,13 +231,15 @@ def _told(
                 missing.append(prefix_iri(c, keywords.get_prefixes()))
                 add(d, "@type", c)
             if missing:
-                # Using logging.info() here, since warnings seem too verbose
+                # Using logging.info() here, since warnings is too verbose
                 # pylint: disable=logging-fstring-interpolation
                 logging.info(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
                 # warnings.warn(
-                #     ', '.join(missing), category=MissingKeywordsClassWarning,
+                #     "No superclass info. Not in keywords file: "
+                #     + ", ".join(missing),
+                #     category=MissingKeywordsClassWarning,
                 # )
 
     if isinstance(descr, str):
@@ -273,10 +274,12 @@ def _told(
 
     for k, v in descr.items():
         if not k.startswith("@") and k not in keywords:
-            warnings.warn(
-                f"Unknown keyword in data documentation: {k}",
-                UnknownKeywordWarning,
-            )
+            # pylint: disable=logging-fstring-interpolation
+            logging.info(f"Property not in keywords: {k}")
+            # warnings.warn(
+            #     f"No range info. Not in keywords file: {k}",
+            #     UnknownKeywordWarning,
+            # )
         if k in ("@context", "@id", "@type"):
             pass
         elif k == "@graph":
@@ -313,7 +316,7 @@ def _told(
 
 def save_dict(
     ts: Triplestore,
-    dct: dict,
+    source: "Union[dict, list]",
     type: "Optional[str]" = None,
     context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -324,7 +327,7 @@ def save_dict(
 
     Arguments:
         ts: Triplestore to save to.
-        dct: Dict with data to save.
+        source: Dict with data to save.
         type: Type of data to save.  Should be one of the resource types
             defined in `keywords`.
         context: Context object providing mapings.
@@ -334,10 +337,10 @@ def save_dict(
             JSON-LD context.  Should map namespace prefixes to IRIs.
 
     Returns:
-        An updated copy of `dct`.
+        An updated copy of `source`.
 
     Notes:
-        The keys in `dct` and `kwargs` may be either properties defined in the
+        The keys in `source` and `kwargs` may be either properties defined in the
         [JSON-LD context] or one of the following special keywords:
 
           - "@id": Dataset IRI.  Must always be given.
@@ -354,27 +357,12 @@ def save_dict(
         keywords=keywords, context=context, prefixes=prefixes
     )
 
-    # if keywords is None:
-    #     keywords = Keywords()
-    #
-    # if context is None:
-    #     context = get_context(
-    #         keywords=keywords, context=context, prefixes=prefixes
-    #     )
-
-    # print("*** prefixes:")
-    # show(context.get_prefixes())
-    # print("*** namespaces:")
-    # show({p: str(n) for p, n in ts.namespaces.items()})
-
-    # XXX
-    # print("--> prefixes:")
-    # show(context.get_prefixes())
-    # print("--> namespaces:")
-    # show({p: str(n) for p, n in ts.namespaces.items()})
-
     d = told(
-        dct, type=type, keywords=keywords, prefixes=prefixes, context=context
+        source,
+        type=type,
+        keywords=keywords,
+        prefixes=prefixes,
+        context=context,
     )
     context.sync_prefixes(ts)
 
@@ -391,6 +379,7 @@ def save_dict(
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
     nt = jsonld.to_rdf(d, options={"format": "application/n-quads"})
+
     ts.parse(data=nt, format="ntriples")
 
     # Add statements and data models to triplestore
@@ -399,8 +388,8 @@ def save_dict(
     return d
 
 
-def save_extra_content(ts: Triplestore, dct: dict) -> None:
-    """Save extra content in `dct` to the triplestore.
+def save_extra_content(ts: Triplestore, source: dict) -> None:
+    """Save extra content in `source` to the triplestore.
 
     Currently, this includes:
     - statements and mappings
@@ -408,21 +397,21 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
 
     Arguments:
         ts: Triplestore to load data from.
-        dct: Dict in multi-resource format.
+        source: Dict in multi-resource format.
 
     """
     import requests
 
     # Save statements and mappings
-    statements = get_values(dct, "statements")
-    statements.extend(get_values(dct, "mappings"))
+    statements = get_values(source, "statements")
+    statements.extend(get_values(source, "mappings"))
     if statements:
         ts.add_triples(statements)
 
     # Save data models
     datamodels = {
         d["@id"]: d["datamodel"]
-        for d in dct.get("Dataset", ())
+        for d in source.get("Dataset", ())
         if "datamodel" in d
     }
     try:
@@ -436,7 +425,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                 "the triplestore"
             )
     else:
-        for url in get_values(dct, "datamodelStorage"):
+        for url in get_values(source, "datamodelStorage"):
             dlite.storage_path.append(url)
 
         for iri, uri in datamodels.items():
@@ -788,7 +777,8 @@ def read_datadoc(filename: "Union[str, Path]") -> dict:
 
     with openfile(filename, mode="rt", encoding="utf-8") as f:
         d = yaml.safe_load(f)
-    return prepare_datadoc(d)
+    return told(d)
+    # return prepare_datadoc(d)
 
 
 def save_datadoc(
@@ -822,196 +812,6 @@ def save_datadoc(
             d = yaml.safe_load(f)
 
     return save_dict(ts, d, keywords=keywords, context=context)
-
-
-def prepare_datadoc(datadoc: dict) -> dict:
-    """Return an updated version of dict `datadoc` that is prepared with
-    additional key-value pairs needed for creating valid JSON-LD that
-    can be serialised to RDF.
-
-    """
-    d = AttrDict({"@context": CONTEXT_URL})
-    d.update(datadoc)
-
-    context = datadoc.get("@context")
-    prefixes = get_prefixes(context=context)
-    if "prefixes" in d:
-        d.prefixes.update(prefixes)
-    else:
-        d.prefixes = prefixes.copy()
-
-    for name, lst in d.items():
-        if name in ("@context", "domain", "keywordfile", "prefixes"):
-            continue
-        for i, dct in enumerate(lst):
-            lst[i] = as_jsonld(
-                dct=dct, type=name, prefixes=d.prefixes, _context=context
-            )
-
-    return d
-
-
-def as_jsonld(
-    dct: dict,
-    type: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
-    context: "Optional[Context]" = None,
-    prefixes: "Optional[dict]" = None,
-    **kwargs,
-) -> dict:
-    """Return an updated copy of dict `dct` as valid JSON-LD.
-
-    If neither of `keywords` or `context` are provided, new Keywords
-    and Context objects are created using terms from the "default"
-    domain.
-
-    Arguments:
-        dct: Dict documenting a resource to be represented as JSON-LD.
-        type: Type of data to save.  Should be one of the resource types
-            defined in `keywords`.
-        keywords: Keywords object with keywords definitions.  If not provided,
-            only default keywords are considered.
-        context: Optional Context object with mappings. By default it is
-            inferred from `keywords`.
-        prefixes: Dict with prefixes in addition to those included in the
-            JSON-LD context.  Should map namespace prefixes to IRIs.
-        kwargs: Additional keyword arguments to add to the returned
-            dict.  A leading underscore in a key will be translated to
-            a leading "@"-sign.  For example, "@id", "@type" or
-            "@context" may be provided as "_id" "_type" or "_context",
-            respectively.
-
-    Returns:
-        An updated copy of `dct` as valid JSON-LD.
-
-    """
-    # pylint: disable=too-many-branches,too-many-statements
-
-    if keywords is None:
-        keywords = Keywords()
-
-    context = get_context(
-        keywords=keywords, context=context, prefixes=prefixes
-    )
-    # if prefixes:
-    #    context.add_context({k: str(v) for k, v in prefixes.items()})
-
-    # Id of base entry that is documented
-    _entryid = kwargs.pop("_entryid", None)
-
-    d = AttrDict()
-    dct = dct.copy()
-
-    if not _entryid:
-        if "@context" in dct:
-            ## d["@context"] = dct.pop("@context")
-            context.add_context(dct.pop("@context"))
-        ## else:
-        ##     d["@context"] = CONTEXT_URL
-        if "_context" in kwargs and kwargs["_context"]:
-            ## add(d, "@context", kwargs.pop("_context"))
-            context.add_context(kwargs.pop("_context"))
-        d["@context"] = context.get_context_dict()
-
-    ## all_prefixes = {}
-    ## if not _entryid:
-    ##     all_prefixes = get_prefixes(context=d["@context"])
-    ##     all_prefixes.update(keywords.data.get("prefixes", {}))
-    ## if prefixes:
-    ##    all_prefixes.update(prefixes)
-
-    def expand(iri):
-        if isinstance(iri, str):
-            ## return expand_iri(iri, all_prefixes)
-            return context.expand(iri, strict=False)
-        ## return [expand_iri(i, all_prefixes) for i in iri]
-        return [context.expand(i, strict=False) for i in iri]
-
-    if "@id" in dct:
-        d["@id"] = expand(dct.pop("@id"))
-    if "_id" in kwargs and kwargs["_id"]:
-        add(d, "@id", expand(kwargs.pop("_id")))
-
-    if "@type" in dct:
-        d["@type"] = expand(dct.pop("@type"))
-    if "_type" in kwargs and kwargs["_type"]:
-        add(d, "@type", expand(kwargs.pop("_type")))
-    if type:
-        add(d, "@type", expand(keywords.superclasses(type)))
-    if "@type" not in d:
-        d["@type"] = "owl:NamedIndividual"
-
-    d.update(dct)
-
-    for k, v in kwargs.items():
-        key = f"@{k[1:]}" if re.match("^_[a-zA-Z]+$", k) else k
-        if v and key != "@context":
-            add(d, key, v)
-
-    if "@id" not in d and not _entryid:
-        raise ValueError("Missing '@id' in dict to document")
-
-    if not _entryid:
-        _entryid = d["@id"]
-
-    if "@type" not in d:
-        warnings.warn(f"Missing '@type' in dict to document: {_entryid}")
-
-    # Recursively expand IRIs and prepare sub-directories
-    # Nested lists are not supported
-    for k, v in d.items():
-        if k in ("@context", "@id", "@type"):
-            pass
-        elif k == "mappingURL":
-            for url in get(d, k):
-                with Triplestore("rdflib") as ts2:
-                    ts2.parse(url, format=d.get("mappingFormat"))
-                    if "statements" in d:
-                        d.statements.extend(ts2.triples())
-                    else:
-                        d["statements"] = list(ts2.triples())
-        elif k in ("statements", "mappings"):
-            for i, spo in enumerate(d[k]):
-                d[k][i] = [
-                    (
-                        get(d, e, e)[0]
-                        if e.startswith("@")
-                        ## else expand_iri(e, prefixes=all_prefixes)
-                        else context.expand(e)
-                    )
-                    for e in spo
-                ]
-        elif isinstance(v, str):
-            ## d[k] = expand_iri(v, all_prefixes)
-            d[k] = context.expand(v, strict=False)
-        elif isinstance(v, list):
-            for i, e in enumerate(v):
-                if isinstance(e, str):
-                    ## v[i] = expand_iri(e, all_prefixes)
-                    v[i] = context.expand(e)
-                elif isinstance(e, dict):
-                    v[i] = as_jsonld(
-                        dct=e,
-                        type=keywords[k].range,
-                        keywords=keywords,
-                        ## prefixes=all_prefixes,
-                        _entryid=_entryid,
-                        _context=context,  ##
-                    )
-        elif isinstance(v, dict):
-            if "datatype" in keywords[k]:
-                d[k] = v
-            else:
-                d[k] = as_jsonld(
-                    dct=v,
-                    type=keywords[k].range,
-                    keywords=keywords,
-                    ## prefixes=all_prefixes,
-                    _entryid=_entryid,
-                    _context=context,  ##
-                )
-
-    return d
 
 
 def validate(

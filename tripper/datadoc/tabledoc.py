@@ -11,8 +11,8 @@ from tripper import Triplestore
 from tripper.datadoc.context import Context
 from tripper.datadoc.dataset import (
     addnested,
-    as_jsonld,
     save_dict,
+    told,
 )
 from tripper.utils import AttrDict, openfile
 
@@ -86,19 +86,10 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        for d in self.asdicts():
-            save_dict(
-                ts,
-                d,
-                type=self.type,
-                ## prefixes=self.prefixes,
-                context=self.context,
-            )
+        save_dict(ts, self.asdicts(), type=self.type, context=self.context)
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
-        kw = {"_context": self.context} if self.context else {}
-
         results = []
         for row in self.data:
             d = AttrDict()
@@ -108,14 +99,15 @@ class TableDoc:
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
                     )
-            jsonld = as_jsonld(
-                d,
-                type=self.type,
-                prefixes=self.context.get_prefixes(),
-                **kw,  # type: ignore
-            )
-            results.append(jsonld)
-        return results
+            results.append(d)
+        ld = told(
+            results,
+            type=self.type,
+            prefixes=self.context.get_prefixes(),
+            context=self.context,
+        )
+        dicts = ld["@graph"]
+        return dicts
 
     @staticmethod
     def fromdicts(

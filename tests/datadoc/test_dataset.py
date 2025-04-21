@@ -392,7 +392,7 @@ def test_datadoc():
     # Test save dict
     save_dict(
         ts,
-        dct={
+        source={
             "@id": SEMDATA.newdistr,
             "mediaType": (
                 "http://www.iana.org/assignments/media-types/text/plain"

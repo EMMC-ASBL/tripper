@@ -20,6 +20,7 @@ from .namespace import (
     EURIO,
     FNO,
     FOAF,
+    IANA,
     MAP,
     ODRL,
     OTEIO,
@@ -54,8 +55,7 @@ CHAMEO = Namespace(
 )
 
 __all__ = (
-    "Literal",
-    #
+    # Namespaces
     "ADMS",  # Asset Description Metadata Schema
     "CHAMEO",  # Characterisation Methodology Domain Ontology
     "DC",  #  Dublin Core
@@ -69,6 +69,7 @@ __all__ = (
     "EURIO",  # EUropean Research Information Ontology
     "FNO",  # Function Ontology
     "FOAF",  # Friend of a Friend
+    "IANA",  # IANA, registered media types
     "MAP",  # Mapping Ontology
     "ODRL",  # Open Digital Rights Language
     "OTEIO",  # Open Translation Environment Interface Ontology
@@ -82,12 +83,14 @@ __all__ = (
     "VCARD",  # vCard Ontology - for describing People and Organizations
     "XML",  # XML namespace
     "XSD",  # XML Schema Datatypes
+    # Classes
+    "Literal",
     "Namespace",
     "Session",
-    #
     "Triplestore",
-    "backend_packages",
     "Tripper",
-    #
+    # Functions
+    "backend_packages",
+    # Other
     "__version__",
 )
