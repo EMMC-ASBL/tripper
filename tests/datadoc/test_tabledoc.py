@@ -8,11 +8,8 @@ def test_asdicts():
 
     pytest.importorskip("rdflib")
 
-    from tripper import DCAT, EMMO, Namespace, Triplestore
+    from tripper import Triplestore
     from tripper.datadoc import TableDoc
-
-    ONTO = Namespace("http://example.com/onto#")
-    DS = Namespace("http://example.com/datasets#")
 
     td = TableDoc(
         header=[
@@ -40,40 +37,43 @@ def test_asdicts():
 
     s1, d1, d2 = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
 
-    assert s1["@id"] == DS.s1
+    assert s1["@id"] == "ds:s1"
     assert set(s1["@type"]) == {
-        DCAT.Dataset,
-        EMMO.Dataset,
-        ONTO.T1,
-        ONTO.T2,
+        "dcat:Dataset",
+        "dcat:Resource",
+        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "onto:T1",
+        "onto:T2",
     }
     assert "inSeries" not in s1
-    assert s1.distribution == {
-        "@type": DCAT.Distribution,
+    assert s1["distribution"] == {
+        "@type": ["dcat:Distribution", "dcat:Resource"],
         "downloadURL": "file:///data/",
     }
 
-    assert d1["@id"] == DS.d1
+    assert d1["@id"] == "ds:d1"
     assert set(d1["@type"]) == {
-        DCAT.Dataset,
-        EMMO.Dataset,
-        ONTO.T1,
+        "dcat:Dataset",
+        "dcat:Resource",
+        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "onto:T1",
     }
-    assert d1.inSeries == DS.s1
-    assert d1.distribution == {
-        "@type": DCAT.Distribution,
+    assert d1["inSeries"] == "ds:s1"
+    assert d1["distribution"] == {
+        "@type": ["dcat:Distribution", "dcat:Resource"],
         "downloadURL": "file:///data/d1.txt",
     }
 
-    assert d2["@id"] == DS.d2
+    assert d2["@id"] == "ds:d2"
     assert set(d2["@type"]) == {
-        DCAT.Dataset,
-        EMMO.Dataset,
-        ONTO.T2,
+        "dcat:Dataset",
+        "dcat:Resource",
+        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "onto:T2",
     }
-    assert d2.inSeries == DS.s1
-    assert d2.distribution == {
-        "@type": DCAT.Distribution,
+    assert d2["inSeries"] == "ds:s1"
+    assert d2["distribution"] == {
+        "@type": ["dcat:Distribution", "dcat:Resource"],
         "downloadURL": "file:///data/d2.txt",
     }
 
@@ -107,7 +107,6 @@ def test_fromdicts():
     ]
 
 
-# if True:
 def test_csv():
     """Test parsing a csv file."""
     import io
@@ -128,7 +127,7 @@ def test_csv():
             "sample": "https://he-matchmaker.eu/sample/",
             "mat": "https://he-matchmaker.eu/material/",
             "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-            "parser": "http://sintef.no/dlite/parser#",
+            "par": "http://sintef.no/dlite/parser#",
             "gen": "http://sintef.no/dlite/generator#",
         },
     )
@@ -137,10 +136,9 @@ def test_csv():
     img, series, batch, sample = td.asdicts()
 
     assert img["@id"] == (
-        "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
-        "77600-23-001/77600-23-001_5kV_400x_m001"
+        "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
     )
-    assert img.distribution.downloadURL == (
+    assert img["distribution"]["downloadURL"] == (
         "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/"
         "tests/input/77600-23-001_5kV_400x_m001.tif"
     )
@@ -164,7 +162,7 @@ def test_csv():
                 "sample": "https://he-matchmaker.eu/sample/",
                 "mat": "https://he-matchmaker.eu/material/",
                 "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-                "parser": "http://sintef.no/dlite/parser#",
+                "par": "http://sintef.no/dlite/parser#",
                 "gen": "http://sintef.no/dlite/generator#",
             },
         )
@@ -188,9 +186,11 @@ def test_csv_duplicated_columns():
 
     pytest.importorskip("rdflib")
 
+    from tripper import Namespace
     from tripper.datadoc import TableDoc
 
-    prefixes = {"pm": "https://www.ntnu.edu/physmet/data#"}
+    PM = Namespace("https://www.ntnu.edu/physmet/data#")
+    prefixes = {"pm": str(PM)}
 
     td = TableDoc.parse_csv(
         indir / "tem.csv",
@@ -201,20 +201,42 @@ def test_csv_duplicated_columns():
     img1, img2, img3 = td.asdicts()
 
     assert set(img1["@type"]) == {
-        "http://www.w3.org/ns/dcat#Dataset",
-        "https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-        "https://www.ntnu.edu/physmet/data#BrightFieldImage",
-        "https://www.ntnu.edu/physmet/data#TEMImage",
+        "dcat:Dataset",
+        "dcat:Resource",
+        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        "pm:BrightFieldImage",
+        "pm:TEMImage",
     }
 
     td2 = TableDoc.fromdicts([img2, img3], prefixes=prefixes)
     assert td2.header == [
         "@id",
-        "@type",
-        "@type",
-        "@type",
-        "@type",
+        "@type",  # TEMImage
+        "@type",  # BrightFieldEmage
+        "@type",  # emmo:Dataset
+        "@type",  # dcat:Resource
+        "@type",  # dcat:Dataset
         "description",
         "distribution.downloadURL",
     ]
     td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
+
+
+def test_csvsniff():
+    """Test csvsniff()."""
+    pytest.importorskip("yaml")
+    from tripper.datadoc.tabledoc import csvsniff
+
+    lines = [
+        "A,B,C,D",
+        "a,'b,bb','c1;c2;c3;c4',d",
+    ]
+    dialect = csvsniff("\r\n".join(lines))
+    assert dialect.delimiter == ","
+    assert dialect.lineterminator == "\r\n"
+    assert dialect.quotechar == "'"
+
+    dialect = csvsniff("\n".join(lines))
+    assert dialect.delimiter == ","
+    assert dialect.lineterminator == "\n"
+    assert dialect.quotechar == "'"

@@ -18,7 +18,7 @@ Functions for working with the dict-representation:
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `save_dict()`: Save dict documentation to the triplestore.
   - `load_dict()`: Load dict documentation from the triplestore.
-  - `as_jsonld()`: Return the dict as JSON-LD (represented as a Python dict)
+  - `told()`: Return the dict as JSON-LD (represented as a Python dict)
 
 Functions for interaction with OTEAPI:
 
@@ -35,12 +35,14 @@ from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 # pylint: disable=too-many-branches
-import io
 import json
+import logging
 import re
 import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from pyld import jsonld
 
 from tripper import (
     RDF,
@@ -48,14 +50,20 @@ from tripper import (
     Namespace,
     Triplestore,
 )
-from tripper.datadoc.errors import NoSuchTypeError, ValidateError
-from tripper.datadoc.keywords import Keywords
+from tripper.datadoc.context import Context, get_context
+from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
+    InvalidDatadocError,
+    NoSuchTypeError,
+    ValidateError,
+)
+from tripper.datadoc.keywords import Keywords, get_keywords
 from tripper.utils import (
     AttrDict,
     as_python,
     expand_iri,
     openfile,
     parse_literal,
+    prefix_iri,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -80,37 +88,259 @@ MATCH_IRI = re.compile(
     r"([a-zA-Z0-9]*://[a-zA-Z_]([a-zA-Z0-9_/.?#=+-]*))$"
 )
 
+logger = logging.getLogger(__name__)
 
-def save_dict(
-    ts: Triplestore,
-    dct: dict,
+
+def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
+    """Return the range of `keyword`.
+
+    If `keywords` is None, the keywords for the default domain are used.
+    """
+    keywords = get_keywords(keywords)
+    return keywords[keyword].range
+
+
+def show(obj, indent=2) -> None:
+    """Print object to screen as pretty json."""
+    if isinstance(obj, (bytes, str)):
+        d = json.loads(obj)
+    elif isinstance(obj, Keywords):
+        d = obj.get_context()
+    elif isinstance(obj, Context):
+        d = obj.get_context_dict()
+    else:
+        d = obj
+    print(json.dumps(d, indent=indent))
+
+
+def told(
+    descr: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
-    **kwargs,
+    context: "Optional[Context]" = None,
+) -> "AttrDict":
+    """Return an updated copy of data description `descr` as valid JSON-LD.
+
+    The following transformations are performed:
+
+    - insert @type keywords
+    - expand IRIs and substitute @id and @type in `statements` keyword
+    - expand IRIs and substitute @id and @type in `mappings` keyword
+    - insert mappings from `mappingURL` keyword (uses `mappingFormat`)
+
+    Arguments:
+        descr: Documenting of one or several resources to be represented as
+            JSON-LD.  Supports both single- and multi-resource dicts.
+        type: Type of data to save.  Should be one of the resource types
+            defined in `keywords`.
+        keywords: Keywords object with keywords definitions.  If not provided,
+            only default keywords are considered.
+        prefixes: Dict with prefixes in addition to those known in keywords
+            or included in the JSON-LD context.
+        context: Optional context object. It will be updated from the input
+            data documentation `descr`.
+
+    Returns:
+        Dict with an updated copy of `descr` as valid JSON-LD.
+
+    """
+    single = "@id", "@type", "@graph"
+    multi = "domain", "keywordfile", "prefixes", "base"
+    singlerepr = any(s in descr for s in single) or isinstance(descr, list)
+    multirepr = any(s in descr for s in multi)
+    if singlerepr and multirepr:
+        raise InvalidDatadocError(
+            "invalid mixture of single- and multi-resource dict"
+        )
+    if not singlerepr:
+        keywords = get_keywords(
+            keywords=keywords,
+            domain=descr.get("domain", "default"),  # type: ignore
+            yamlfile=descr.get("keywordfile"),  # type: ignore
+        )
+    else:
+        keywords = get_keywords(keywords=keywords)
+
+    context = get_context(
+        context=context, keywords=keywords, prefixes=prefixes
+    )
+    resources = keywords.data.resources
+
+    if singlerepr:  # single-resource representation
+        d = descr
+    else:  # multi-resource representation
+        d = {}
+        graph = []
+        for k, v in descr.items():  # type: ignore
+            if k == "@context":
+                context.add_context(v)
+                d[k] = v
+            elif k == "prefixes":
+                context.add_context(v)
+            elif k == "base":
+                context.base = v
+            elif k in resources:
+                if isinstance(v, list):
+                    for dct in v:
+                        add(dct, "@type", resources[k].iri)
+                        graph.append(dct)
+                else:
+                    graph.append(v)
+            else:
+                raise InvalidDatadocError(
+                    f"Invalid keyword in root of multi-resource dict: {k}"
+                )
+        d["@graph"] = graph
+
+    return _told(
+        d,
+        type=type,
+        keywords=keywords,
+        prefixes=context.get_prefixes(),
+        root=True,
+        hasid=False,
+    )
+
+
+def _told(
+    descr: "Union[dict, list, str]",
+    type: "Optional[str]",
+    keywords: "Keywords",
+    prefixes: "dict",
+    root: bool = False,  # true at first recursive call
+    hasid: bool = True,  # whether description has an @id
+):
+    """Recursive help function for told()."""
+    # pylint: disable=too-many-statements
+
+    def expand(iri):
+        return expand_iri(iri, prefixes)
+
+    def torange(kw):
+        return keywords[kw].range if kw in keywords else None
+
+    def addsuperclasses(d, cls):
+        """Add `cls` and its superclasses to key "@type" in dict `d`."""
+        classes = cls if isinstance(cls, list) else [cls]
+        missing = []
+        for c in classes:
+            try:
+                add(d, "@type", keywords.superclasses(c))
+            except NoSuchTypeError:
+                missing.append(prefix_iri(c, keywords.get_prefixes()))
+                add(d, "@type", c)
+            if missing:
+                # Using logging.info() here, since warnings is too verbose
+                # pylint: disable=logging-fstring-interpolation
+                logging.info(
+                    f"Class not in keywords: {', '.join(missing)}",
+                )
+                # warnings.warn(
+                #     "No superclass info. Not in keywords file: "
+                #     + ", ".join(missing),
+                #     category=MissingKeywordsClassWarning,
+                # )
+
+    if isinstance(descr, str):
+        return descr
+
+    if isinstance(descr, list):
+        lst = [_told(token, type, keywords, prefixes) for token in descr]
+        return {"@graph": lst} if root else lst
+
+    if not isinstance(descr, dict):
+        raise InvalidDatadocError(
+            "Malformed data documentation. Expected dict, list or string. "
+            f"Got: {descr:!}"
+        )
+
+    # From hereon `descr` must be a dict.
+    # Check that it has an "@id" or "@graph" key
+    if not hasid and "@id" not in descr and "@graph" not in descr:
+        raise InvalidDatadocError("Missing '@id' key in data documentation.")
+
+    # Create returned dict with @context, @id and @type as the first items
+    d = {}
+    for k in "@context", "@id":
+        if k in descr:
+            d[k] = descr[k]
+    if "@type" in descr:
+        addsuperclasses(d, descr["@type"])
+    if type:
+        addsuperclasses(d, type)
+    elif not "@type" in descr and not "@graph" in descr:
+        d["@type"] = "owl:NamedIndividual"
+
+    for k, v in descr.items():
+        if not k.startswith("@") and k not in keywords:
+            # pylint: disable=logging-fstring-interpolation
+            logging.info(f"Property not in keywords: {k}")
+            # warnings.warn(
+            #     f"No range info. Not in keywords file: {k}",
+            #     UnknownKeywordWarning,
+            # )
+        if k in ("@context", "@id", "@type"):
+            pass
+        elif k == "@graph":
+            d[k] = _told(v, type, keywords, prefixes)
+        elif k == "mappingURL":
+            for url in get(descr, k):
+                with Triplestore("rdflib") as ts:
+                    ts.parse(url, format=descr.get("mappingFormat"))
+                    add(d, "mappings", list(ts.triples()))
+        elif k in ("statements", "mappings"):
+            lst = [
+                [
+                    expand(get(descr, e, e)[0] if e[0] == "@" else e)
+                    for e in spo
+                ]
+                for i, spo in enumerate(descr[k])
+            ]
+            add(d, k, [tuple(t) for t in lst])
+        elif k == "datamodel":
+            add(d, "@type", v)
+            d[k] = v
+        elif isinstance(v, (str, int, float, bool, None.__class__)):
+            d[k] = v
+        elif isinstance(v, list):
+            d[k] = _told(v, torange(k), keywords, prefixes)
+        elif isinstance(v, dict):
+            if k in keywords and "datatype" in keywords[k]:
+                d[k] = v
+            else:
+                d[k] = _told(v, torange(k), keywords, prefixes)
+
+    return d
+
+
+def save_dict(
+    ts: Triplestore,
+    source: "Union[dict, list]",
+    type: "Optional[str]" = None,
+    context: "Optional[Context]" = None,
+    keywords: "Optional[Keywords]" = None,
+    prefixes: "Optional[dict]" = None,
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Save a dict representation of given type of data to a triplestore.
 
     Arguments:
         ts: Triplestore to save to.
-        dct: Dict with data to save.
+        source: Dict with data to save.
         type: Type of data to save.  Should be one of the resource types
             defined in `keywords`.
+        context: Context object providing mapings.
         keywords: Keywords object with keywords definitions.  If not provided,
             only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
-        kwargs: Additional keyword arguments to add to the returned dict.
-            A leading underscore in a key will be translated to a
-            leading "@"-sign.  For example, "@id=..." may be provided
-            as "_id=...".
 
     Returns:
-        An updated copy of `dct`.
+        An updated copy of `source`.
 
     Notes:
-        The keys in `dct` and `kwargs` may be either properties defined in the
+        The keys in `source` and `kwargs` may be either properties defined in the
         [JSON-LD context] or one of the following special keywords:
 
           - "@id": Dataset IRI.  Must always be given.
@@ -122,46 +352,44 @@ def save_dict(
     References:
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json
     """
-    if keywords is None:
-        keywords = Keywords()
-
-    if "@id" not in dct:
-        raise ValueError("`dct` must have an '@id' key")
-
-    all_prefixes = get_prefixes()
-    all_prefixes.update({pf: str(ns) for pf, ns in ts.namespaces.items()})
-    if prefixes:
-        all_prefixes.update(prefixes)
-
-    d = as_jsonld(
-        dct=dct,
-        type=type,
-        keywords=keywords,
-        prefixes=all_prefixes,
-        **kwargs,
+    keywords = get_keywords(keywords)
+    context = get_context(
+        keywords=keywords, context=context, prefixes=prefixes
     )
 
-    # Validate
-    validate(d, type=type, keywords=keywords)
+    d = told(
+        source,
+        type=type,
+        keywords=keywords,
+        prefixes=prefixes,
+        context=context,
+    )
+    context.sync_prefixes(ts)
 
-    # Bind prefixes
-    for prefix, ns in all_prefixes.items():
-        ts.bind(prefix, ns)
+    add(d, "@context", context.get_context_dict())
+    # if "@context" in d:
+    #     context.add_context(d["@context"])
+    #     d = jsonld.compact(d, context.get_context_dict())
+    # else:
+    #    d["@context"] = context.get_context_dict()
+
+    # Validate
+    # TODO: reenable validation
+    # validate(d, type=type, keywords=keywords)
 
     # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    f = io.StringIO(json.dumps(d))
-    with Triplestore(backend="rdflib") as ts2:
-        ts2.parse(f, format="json-ld")
-        ts.add_triples(ts2.triples())
+    nt = jsonld.to_rdf(d, options={"format": "application/n-quads"})
+
+    ts.parse(data=nt, format="ntriples")
 
     # Add statements and data models to triplestore
-    save_extra_content(ts, d)
+    save_extra_content(ts, d)  # FIXME: SLOW!!
 
     return d
 
 
-def save_extra_content(ts: Triplestore, dct: dict) -> None:
-    """Save extra content in `dct` to the triplestore.
+def save_extra_content(ts: Triplestore, source: dict) -> None:
+    """Save extra content in `source` to the triplestore.
 
     Currently, this includes:
     - statements and mappings
@@ -169,21 +397,21 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
 
     Arguments:
         ts: Triplestore to load data from.
-        dct: Dict in multi-resource format.
+        source: Dict in multi-resource format.
 
     """
     import requests
 
     # Save statements and mappings
-    statements = get_values(dct, "statements")
-    statements.extend(get_values(dct, "mappings"))
+    statements = get_values(source, "statements")
+    statements.extend(get_values(source, "mappings"))
     if statements:
         ts.add_triples(statements)
 
     # Save data models
     datamodels = {
         d["@id"]: d["datamodel"]
-        for d in dct.get("Dataset", ())
+        for d in source.get("Dataset", ())
         if "datamodel" in d
     }
     try:
@@ -197,7 +425,7 @@ def save_extra_content(ts: Triplestore, dct: dict) -> None:
                 "the triplestore"
             )
     else:
-        for url in get_values(dct, "datamodelStorage"):
+        for url in get_values(source, "datamodelStorage"):
             dlite.storage_path.append(url)
 
         for iri, uri in datamodels.items():
@@ -292,8 +520,8 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
     # blank nodes, which avoids problems with backends that renames
     # blank nodes.
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
-    # Some backends, like GraphDB, requires the empty prefix to be defined
     query = f"""
+    # Some backends requires the prefix to be defined...
     PREFIX : <http://example.com#>
     CONSTRUCT {{ ?s ?p ?o }}
     WHERE {{
@@ -397,6 +625,9 @@ def get_prefixes(
 
     Arguments are passed to `get_jsonld_context()`.
     """
+    if isinstance(context, Context):
+        return context.get_prefixes()
+
     ctx = get_jsonld_context(
         context=context, timeout=timeout, fromfile=fromfile
     )
@@ -546,13 +777,15 @@ def read_datadoc(filename: "Union[str, Path]") -> dict:
 
     with openfile(filename, mode="rt", encoding="utf-8") as f:
         d = yaml.safe_load(f)
-    return prepare_datadoc(d)
+    return told(d)
+    # return prepare_datadoc(d)
 
 
 def save_datadoc(
     ts: Triplestore,
     file_or_dict: "Union[str, Path, dict]",
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -562,224 +795,29 @@ def save_datadoc(
             the data documentation from.  It may also be an URL to a file
             accessible with HTTP GET.
         keywords: Optional Keywords object with keywords definitions.
-            The default is to infer the keywords from the `field` or
+            The default is to infer the keywords from the `domain` or
             `keywordfile` keys in the YAML file.
+        context: Optional Context object with mappings. By default it is
+            inferred from `keywords`.
 
     Returns:
         Dict-representation of the loaded dataset.
     """
+    import yaml  # type: ignore
+
     if isinstance(file_or_dict, dict):
-        d = prepare_datadoc(file_or_dict)
+        d = file_or_dict
     else:
-        d = read_datadoc(file_or_dict)
+        with openfile(file_or_dict, mode="rt", encoding="utf-8") as f:
+            d = yaml.safe_load(f)
 
-    # Get keywords
-    if keywords is None:
-        keywords = Keywords(
-            field=d.get("field"), yamlfile=d.get("keywordfile")
-        )
-
-    # Bind prefixes
-    context = d.get("@context")
-    prefixes = get_prefixes(context=context)
-    prefixes.update(d.get("prefixes", {}))
-    for prefix, ns in prefixes.items():  # type: ignore
-        ts.bind(prefix, ns)
-
-    # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    for name, lst in d.items():
-        if name in ("@context", "field", "keywordfile", "prefixes"):
-            continue
-        if name not in keywords.data.resources:
-            raise NoSuchTypeError(f"unknown type '{name}' in YAML file.")
-        for dct in lst:
-            dct = as_jsonld(
-                dct=dct,
-                type=name,
-                keywords=keywords,
-                prefixes=prefixes,
-                _context=context,
-            )
-            f = io.StringIO(json.dumps(dct))
-            with Triplestore(backend="rdflib") as ts2:
-                ts2.parse(f, format="json-ld")
-                ts.add_triples(ts2.triples())
-
-    # Add statements and datamodels to triplestore
-    save_extra_content(ts, d)
-    return d
-
-
-def prepare_datadoc(datadoc: dict) -> dict:
-    """Return an updated version of dict `datadoc` that is prepared with
-    additional key-value pairs needed for creating valid JSON-LD that
-    can be serialised to RDF.
-
-    """
-    d = AttrDict({"@context": CONTEXT_URL})
-    d.update(datadoc)
-
-    context = datadoc.get("@context")
-    prefixes = get_prefixes(context=context)
-    if "prefixes" in d:
-        d.prefixes.update(prefixes)
-    else:
-        d.prefixes = prefixes.copy()
-
-    for name, lst in d.items():
-        if name in ("@context", "field", "keywordfile", "prefixes"):
-            continue
-        for i, dct in enumerate(lst):
-            lst[i] = as_jsonld(
-                dct=dct, type=name, prefixes=d.prefixes, _context=context
-            )
-
-    return d
-
-
-def as_jsonld(
-    dct: dict,
-    type: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
-    prefixes: "Optional[dict]" = None,
-    **kwargs,
-) -> dict:
-    """Return an updated copy of dict `dct` as valid JSON-LD.
-
-    Arguments:
-        dct: Dict documenting a resource to be represented as JSON-LD.
-        type: Type of data to save.  Should be one of the resource types
-            defined in `keywords`.
-        keywords: Keywords object with keywords definitions.  If not provided,
-            only default keywords are considered.
-        prefixes: Dict with prefixes in addition to those included in the
-            JSON-LD context.  Should map namespace prefixes to IRIs.
-        kwargs: Additional keyword arguments to add to the returned
-            dict.  A leading underscore in a key will be translated to
-            a leading "@"-sign.  For example, "@id", "@type" or
-            "@context" may be provided as "_id" "_type" or "_context",
-            respectively.
-
-    Returns:
-        An updated copy of `dct` as valid JSON-LD.
-
-    """
-    # pylint: disable=too-many-branches,too-many-statements
-
-    if keywords is None:
-        keywords = Keywords()
-
-    # Id of base entry that is documented
-    _entryid = kwargs.pop("_entryid", None)
-
-    d = AttrDict()
-    dct = dct.copy()
-
-    if not _entryid:
-        if "@context" in dct:
-            d["@context"] = dct.pop("@context")
-        else:
-            d["@context"] = CONTEXT_URL
-        if "_context" in kwargs and kwargs["_context"]:
-            add(d, "@context", kwargs.pop("_context"))
-
-    all_prefixes = {}
-    if not _entryid:
-        all_prefixes = get_prefixes(context=d["@context"])
-        all_prefixes.update(keywords.data.get("prefixes", {}))
-    if prefixes:
-        all_prefixes.update(prefixes)
-
-    def expand(iri):
-        if isinstance(iri, str):
-            return expand_iri(iri, all_prefixes)
-        return [expand_iri(i, all_prefixes) for i in iri]
-
-    if "@id" in dct:
-        d["@id"] = expand(dct.pop("@id"))
-    if "_id" in kwargs and kwargs["_id"]:
-        add(d, "@id", expand(kwargs.pop("_id")))
-
-    if "@type" in dct:
-        d["@type"] = expand(dct.pop("@type"))
-    if "_type" in kwargs and kwargs["_type"]:
-        add(d, "@type", expand(kwargs.pop("_type")))
-    if type:
-        add(d, "@type", expand(keywords.normtype(type)))
-    if "@type" not in d:
-        d["@type"] = "owl:NamedIndividual"
-
-    d.update(dct)
-
-    for k, v in kwargs.items():
-        key = f"@{k[1:]}" if re.match("^_[a-zA-Z]+$", k) else k
-        if v:
-            add(d, key, v)
-
-    if "@id" not in d and not _entryid:
-        raise ValueError("Missing '@id' in dict to document")
-
-    if not _entryid:
-        _entryid = d["@id"]
-
-    if "@type" not in d:
-        warnings.warn(f"Missing '@type' in dict to document: {_entryid}")
-
-    # Recursively expand IRIs and prepare sub-directories
-    # Nested lists are not supported
-    for k, v in d.items():
-        if k in ("@context", "@id", "@type"):
-            pass
-        elif k == "mappingURL":
-            for url in get(d, k):
-                with Triplestore("rdflib") as ts2:
-                    ts2.parse(url, format=d.get("mappingFormat"))
-                    if "statements" in d:
-                        d.statements.extend(ts2.triples())
-                    else:
-                        d["statements"] = list(ts2.triples())
-        elif k in ("statements", "mappings"):
-            for i, spo in enumerate(d[k]):
-                d[k][i] = [
-                    (
-                        get(d, e, e)[0]
-                        if e.startswith("@")
-                        else expand_iri(e, prefixes=all_prefixes)
-                    )
-                    for e in spo
-                ]
-        elif isinstance(v, str):
-            d[k] = expand_iri(v, all_prefixes)
-        elif isinstance(v, list):
-            for i, e in enumerate(v):
-                if isinstance(e, str):
-                    v[i] = expand_iri(e, all_prefixes)
-                elif isinstance(e, dict):
-                    v[i] = as_jsonld(
-                        dct=e,
-                        type=keywords[k].range,
-                        keywords=keywords,
-                        prefixes=all_prefixes,
-                        _entryid=_entryid,
-                    )
-        elif isinstance(v, dict):
-            if "datatype" in keywords[k]:
-                d[k] = v
-            else:
-                d[k] = as_jsonld(
-                    dct=v,
-                    type=keywords[k].range,
-                    keywords=keywords,
-                    prefixes=all_prefixes,
-                    _entryid=_entryid,
-                )
-
-    return d
+    return save_dict(ts, d, keywords=keywords, context=context)
 
 
 def validate(
     dct: dict,
     type: "Optional[str]" = None,
+    context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
 ) -> None:
     """Validates single-resource dict `dct`.
@@ -795,6 +833,9 @@ def validate(
     if keywords is None:
         keywords = Keywords()
 
+    if context is None:
+        context = Context(keywords=keywords)
+
     if type is None and "@type" in dct:
         try:
             type = keywords.typename(dct["@type"])
@@ -804,6 +845,7 @@ def validate(
     resources = keywords.data.resources
 
     def check_keyword(keyword, type):
+        """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
         name = keywords.keywordname(keyword)
         if name in resources[typename].keywords:
@@ -813,9 +855,7 @@ def validate(
             return check_keyword(name, subclass)
         return False
 
-    for k, v in dct.items():
-        if k.startswith("@"):
-            continue
+    def _check_keywords(k, v):
         if k in keywords:
             r = keywords[k]
             if "datatype" in r:
@@ -832,10 +872,19 @@ def validate(
                     )
             elif isinstance(v, dict):
                 validate(v, type=r.get("range"), keywords=keywords)
+            elif isinstance(v, list):
+                for it in v:
+                    _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
-        else:
+        elif k not in context:
             raise ValidateError(f"unknown keyword: '{k}'")
+
+    # Check the keyword-value pairs in `dct`
+    for k, v in dct.items():
+        if k.startswith("@"):
+            continue
+        _check_keywords(k, v)
 
     if type:
         typename = keywords.typename(type)
@@ -859,6 +908,7 @@ def get_partial_pipeline(
     ts: Triplestore,
     client,
     iri: str,
+    context: "Optional[Context]" = None,
     parser: "Optional[Union[bool, str]]" = None,
     generator: "Optional[Union[bool, str]]" = None,
     distribution: "Optional[str]" = None,
@@ -870,6 +920,7 @@ def get_partial_pipeline(
         ts: Triplestore to load data from.
         client: OTELib client to create pipeline with.
         iri: IRI of the dataset to load.
+        context: Context object.
         parser: Whether to return a datasource partial pipeline.
             Should be True or an IRI of parser to use in case the
             distribution has multiple parsers.  By default the first
@@ -888,6 +939,8 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
+    context = get_context(context=context, domain="default")
+
     dct = load_dict(ts, iri, use_sparql=use_sparql)
 
     if isinstance(distribution, str):
@@ -987,6 +1040,8 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
     """Delete `iri` from triplestore by calling `ts.update().`"""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
+    # Some backends requires the prefix to be defined...
+    PREFIX : <http://example.com#>
     DELETE {{ ?s ?p ?o }}
     WHERE {{
       {subj} (:|!:)* ?s .
@@ -1042,7 +1097,7 @@ def make_query(
         else:
             if keywords is None:
                 keywords = Keywords()
-            typ = keywords.normtype(type)
+            typ = keywords.superclasses(type)
             if not isinstance(typ, str):
                 typ = typ[0]
             crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
@@ -1109,6 +1164,7 @@ def search_iris(
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    skipblanks: "bool" = True,
 ) -> "List[str]":
     """Return a list of IRIs for all matching resources.
 
@@ -1132,6 +1188,7 @@ def search_iris(
             - `q`: Special characters representing themselves.
         keywords: Keywords instance defining the resource types used with
             the `type` argument.
+        skipblanks: Whether to skip blank nodes.
 
     Returns:
         List of IRIs for matching resources.
@@ -1169,7 +1226,7 @@ def search_iris(
             )
 
     SeeAlso:
-    [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
+        [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
     query = make_query(
         ts=ts,
@@ -1180,6 +1237,10 @@ def search_iris(
         keywords=keywords,
         query_type="SELECT DISTINCT",
     )
+    if skipblanks:
+        return [
+            r[0] for r in ts.query(query) if not r[0].startswith("_:")  # type: ignore
+        ]
     return [r[0] for r in ts.query(query)]  # type: ignore
 
 

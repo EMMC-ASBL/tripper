@@ -100,8 +100,8 @@ nav:
   - Units and quantities: units/units.md
   - Session: session.md
   - ... | api_reference/**
-  - Known issues: known-issues.md
   - For developers: developers.md
+  - Known issues: known-issues.md
   - Changelog: CHANGELOG.md
   - License: LICENSE.md
 

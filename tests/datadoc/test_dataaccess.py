@@ -32,7 +32,7 @@ def test_save_and_load():
     # Test save dict
     save_dict(
         ts,
-        dct={
+        source={
             "@id": SEMDATA.img1,
             "distribution": {
                 "downloadURL": (
@@ -47,8 +47,8 @@ def test_save_and_load():
         type="Dataset",
     )
     newdistr = load_dict(ts, SEMDATA.img1)
-    assert newdistr["@type"] == [DCAT.Dataset, EMMO.Dataset]
-    assert newdistr.distribution["@type"] == DCAT.Distribution
+    assert newdistr["@type"] == [DCAT.Dataset, DCAT.Resource, EMMO.Dataset]
+    assert newdistr.distribution["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert (
         newdistr.distribution.mediaType
         == "http://www.iana.org/assignments/media-types/image/tiff"
@@ -56,7 +56,7 @@ def test_save_and_load():
 
     save_dict(
         ts,
-        dct={
+        source={
             "@id": GEN.sem_hitachi,
             "generatorType": "application/vnd.dlite-generate",
             "configuration": {"driver": "hitachi"},
@@ -89,7 +89,7 @@ def test_save_and_load():
     assert DCAT.Dataset in newimage["@type"]
     assert SEM.SEMImage in newimage["@type"]
     assert newimage.distribution["@id"].startswith("_:")
-    assert newimage.distribution["@type"] == DCAT.Distribution
+    assert newimage.distribution["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert newimage.distribution.downloadURL == f"file:{newfile}"
 
     # Test save dataset with named distribution
@@ -113,12 +113,12 @@ def test_save_and_load():
     assert newfile2.stat().st_size == len(buf)
     newimage2 = load_dict(ts, SEMDATA.newimage2)
     assert newimage2["@id"] == SEMDATA.newimage2
-    assert newimage2["@type"] == [DCAT.Dataset, EMMO.Dataset]
+    assert newimage2["@type"] == [DCAT.Dataset, DCAT.Resource, EMMO.Dataset]
     assert newimage2.distribution == SEMDATA.newdistr2
 
     newdist2 = load_dict(ts, newimage2.distribution)
     assert newdist2["@id"] == newimage2.distribution
-    assert newdist2["@type"] == DCAT.Distribution
+    assert newdist2["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert newdist2.downloadURL == f"file:{newfile2}"
 
     # Test save anonymous dataset with existing distribution

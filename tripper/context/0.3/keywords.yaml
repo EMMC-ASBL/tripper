@@ -10,13 +10,14 @@ prefixes:
   dctype: "http://purl.org/dc/dcmitype/"
   eli: "http://data.europa.eu/eli/ontology#"
   foaf: "http://xmlns.com/foaf/0.1/"
+  iana: "https://www.iana.org/assignments/media-types/"
   locn: "http://www.w3.org/ns/locn#"
   odrl: "http://www.w3.org/ns/odrl/2/"
   owl: "http://www.w3.org/2002/07/owl#"
   prov: "http://www.w3.org/ns/prov#"
   rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   rdfs: "http://www.w3.org/2000/01/rdf-schema#"
-  schema: "http://schema.org/"
+  schema: "https://schema.org/"
   skos: "http://www.w3.org/2004/02/skos/core#"
   spdx: "http://spdx.org/rdf/terms#"
   vcard: "http://www.w3.org/2006/vcard/ns#"
@@ -250,8 +251,7 @@ resources:
 
   Dataset:
     iri: dcat:Dataset
-    subClassOf: dcat:Resource
-    type: "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"
+    subClassOf: ["dcat:Resource", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
     description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
     keywords:
       distribution:
@@ -495,7 +495,7 @@ resources:
 
   Agent:
     iri: foaf:Agent
-    type: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
+    subClassOf: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
     description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
     keywords:
       name:
@@ -576,6 +576,11 @@ resources:
         range: dcat:Dataset
         conformance: recommended
         description: This property refers to a collection of data that this data service can distribute.
+
+      parser:
+        iri: oteio:parser
+        range: oteio:Parser
+        description: A parser that can parse the distribution.
 
 
   DatasetSeries:
@@ -742,3 +747,7 @@ resources:
     iri: dcterms:MediaType
     description: A media type, e.g. the format of a computer file.
     usageNote: Media type instances follow the [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) vocabulary using the <http://www.iana.org/assignments/media-types/> namespace. For example, the IRI of the media type `text/turtle` is <http://www.iana.org/assignments/media-types/text/turtle>.
+
+  GenericResource:
+    iri: rdfs:Resource
+    description: A generic resource.
