@@ -29,22 +29,7 @@ jobs:
         --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests
 
       # safety-specific settings
-      run_safety: true
-      # 48547: RDFLib vulnerability: https://pyup.io/vulnerabilities/PVE-2022-48547/48547/
-      # 44715-44717: NumPy vulnerabilities:
-      #  https://pyup.io/vulnerabilities/CVE-2021-41495/44715/
-      #  https://pyup.io/vulnerabilities/CVE-2021-41496/44716/
-      #  https://pyup.io/vulnerabilities/CVE-2021-34141/44717/
-      # 70612: Jinja2 vulnerability. Only used as subdependency for mkdocs++ in tripper.
-      #  https://data.safetycli.com/v/70612/97c/
-      #  https://data.safetycli.com/v/72715/97c/   # update to mkdocs>=9.5.32
-      safety_options: |
-        --ignore=48547
-        --ignore=44715
-        --ignore=44716
-        --ignore=44717
-        --ignore=70612
-        --ignore=72715
+      run_safety: false
 
       ## Build package
       run_build_package: true
@@ -62,6 +47,16 @@ jobs:
       update_python_api_ref: true
       update_docs_landing_page: true
       package_dirs: tripper
+
+  safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Run Safety CLI to check for vulnerabilities
+        uses: pyupio/safety-action@v1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
+          args: --detailed-output # To always see detailed output from this action
 
   pytest:
     runs-on: ubuntu-latest
