@@ -65,7 +65,7 @@ jobs:
 
   safety:
     runs-on: ubuntu-latest
-    steos:
+    steps:
       - uses: actions/checkou@main
       - name: Run Safety CLI to check for vulnerabilities
         uses: pyupio/safety-action@v1
