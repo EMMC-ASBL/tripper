@@ -66,7 +66,7 @@ jobs:
   safety:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkou@main
+      - uses: actions/checkout@main
       - name: Run Safety CLI to check for vulnerabilities
         uses: pyupio/safety-action@v1
         with:
