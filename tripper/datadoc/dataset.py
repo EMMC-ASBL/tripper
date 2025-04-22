@@ -130,7 +130,7 @@ def told(
     - insert mappings from `mappingURL` keyword (uses `mappingFormat`)
 
     Arguments:
-        data: Documenting of one or several resources to be represented as
+        descr: Documenting of one or several resources to be represented as
             JSON-LD.  Supports both single- and multi-resource dicts.
         type: Type of data to save.  Should be one of the resource types
             defined in `keywords`.
