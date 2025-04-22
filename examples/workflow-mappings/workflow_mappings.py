@@ -1,9 +1,14 @@
 """Workflow example"""
 
 import warnings
+from typing import TYPE_CHECKING
 
 from tripper import Triplestore
 from tripper.mappings import MappingStep, mapping_routes
+
+if TYPE_CHECKING:  # pragma: no cover
+    from tripper import Namespace
+
 
 warnings.filterwarnings(
     action="ignore",
@@ -12,7 +17,9 @@ warnings.filterwarnings(
 )
 
 ts = Triplestore(backend="rdflib")
-EX = ts.bind("ex", "http://example.com/generic_example#")
+EX: "Namespace" = ts.bind(  # type: ignore
+    "ex", "http://example.com/generic_example#"
+)
 ts.add_function(
     EX.model1,
     expects=EX.model1_input,

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from tripper.errors import (
     NamespaceError,
     NoSuchIRIError,
+    PermissionWarning,
     UnusedArgumentWarning,
 )
 
@@ -110,7 +111,11 @@ class Namespace:
     def _update_iris(self, triplestore=None, reload=False, format=None):
         """Update the internal cache from `triplestore`.
 
-        If `reload` is true, reload regardless we have a local cache.
+        Arguments:
+            triplestore: Triplestore to update the cache from.
+            reload: If true, reload regardless we have a local cache.
+            format: If `triplestore` is a tring or Path, parse it using this
+                format.
         """
         # pylint: disable=redefined-builtin
 
@@ -154,6 +159,18 @@ class Namespace:
             for s in ts.subjects()
             if s.startswith(iri)
         )
+
+    def _get_labels(self, iri):
+        """Return annotation labels corresponding to the given IRI."""
+        self._update_iris()
+        if not ":" in iri:
+            iri = self._iri + iri
+        labels = [
+            k
+            for k, v in self._iris.items()
+            if v == iri and iri != self._iri + k
+        ]
+        return labels
 
     def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
@@ -258,6 +275,18 @@ class Namespace:
         if self._iris:
             self._save_cache()
 
+    def __dir__(self):
+        names = dir(self.__class__)
+        if self._iris == {}:
+            self._update_iris(
+                triplestore=self._triplestore,
+                reload=self._reload,
+                format=self._format,
+            )
+        if self._iris:
+            names += list(self._iris.keys())
+        return names
+
 
 def get_cachedir(create=True) -> Path:
     """Returns cross-platform path to tripper cache directory.
@@ -281,11 +310,13 @@ def get_cachedir(create=True) -> Path:
         cachedir /= finaldir
 
     if create:
-        path = Path(cachedir.root)
-        for part in cachedir.parts[1:]:
-            path /= part
-            if not path.exists():
-                path.mkdir()
+        try:
+            cachedir.mkdir(parents=True, exist_ok=True)
+        except PermissionError as exc:
+            warnings.warn(
+                f"{exc}: {cachedir}",
+                category=PermissionWarning,
+            )
 
     return cachedir
 
@@ -307,7 +338,7 @@ OWL = Namespace("http://www.w3.org/2002/07/owl#")
 PROV = Namespace("http://www.w3.org/ns/prov#")
 RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#")
-SCHEMA = Namespace("http://schema.org/")
+SCHEMA = Namespace("https://schema.org/")
 SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
 SPDX = Namespace("http://spdx.org/rdf/terms#")
 TIME = Namespace("http://www.w3.org/2006/time#")
