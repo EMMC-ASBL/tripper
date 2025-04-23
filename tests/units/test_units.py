@@ -380,6 +380,7 @@ def test_unit_registry():
     assert get_ureg(nocreate=False) == ureg
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_get_quantity():
     """Test ureg.get_quantity() method."""
     from tripper import EMMO
