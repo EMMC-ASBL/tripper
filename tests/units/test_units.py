@@ -391,10 +391,10 @@ def test_get_quantity():
     q = ureg.get_quantity("Energy", value=1e-19)
     assert q.u == ureg.eV
     assert abs(q.m - 1 / 1.602) < 1e-4
-    assert ureg.get_quantity(emmoIRI=EMMO.Energy) == 1 * ureg.Joule
+    assert ureg.get_quantity(iri=EMMO.Energy) == 1 * ureg.Joule
     assert ureg.get_quantity(iso80000Ref="5-20-1") == 1 * ureg.Joule  # Energy
     assert (
-        ureg.get_quantity(iupacIRI="https://doi.org/10.1351/goldbook.A00051")
+        ureg.get_quantity(iri="https://doi.org/10.1351/goldbook.A00051")
         == ureg["1 m/s²"]
     )  # Acceleration
 

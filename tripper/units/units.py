@@ -1249,10 +1249,7 @@ class UnitRegistry(pint.UnitRegistry):
     def get_quantity(
         self,
         name: "Optional[str]" = None,
-        emmoIRI: "Optional[str]" = None,
-        qudtIRI: "Optional[str]" = None,
-        omIRI: "Optional[str]" = None,
-        iupacIRI: "Optional[str]" = None,
+        iri: "Optional[str]" = None,
         iso80000Ref: "Optional[str]" = None,
         value: float = 1.0,
     ) -> "Quantity":
@@ -1260,47 +1257,42 @@ class UnitRegistry(pint.UnitRegistry):
 
         Arguments:
             name: Access quantity its name (preferred label in the ontology).
-            emmoIRI: Access quantity by its EMMO IRI.
-            qudtIRI: Access quantity by its QUDT IRI.
-            omIRI: Access quantity by its OM IRI.
-            iupacIRI: Access quantity by its IUPAC IRI.
+            iri: Access quantity by its IRI, which may refer to EMMO, QUDT,
+                OM or IUPAC.
             iso80000Ref: Access quantity by its ISO80000 reference. Ex: 5-20-1
             value: Value of the quantity value in units of SI base units.
 
         """
-        # pylint: disable=unused-argument
+        # pylint: disable=too-many-branches
         units = self._get_tripper_units()
         if name:
             if name not in units.quantities:
                 raise MissingQuantityError(name)
             info = units.quantities[name]
-        else:
-            annotations = (
-                "emmoIRI",
-                "qudtIRI",
-                "omIRI",
-                "iupacIRI",
-                "iso80000Ref",
-            )
-            for annotation in annotations:
-                val = locals().get(annotation)
-                if val:
-                    for info in units.quantities.values():
-                        if getattr(info, annotation) == val:
-                            break
-                    else:
-                        raise MissingQuantityError(f"{annotation}={val}")
+        elif iri:
+            iri_attr = "emmoIRI", "qudtIRI", "omIRI", "iupacIRI"
+            found = False
+            for info in units.quantities.values():
+                for attr in iri_attr:
+                    if info[attr] == iri:
+                        found = True
+                        break
+                if found:
                     break
             else:
-                raise ValueError(
-                    "Missing argument to get_quantity(). One of the name, "
-                    "emmoIRI, qudtIRI, omIRI, iupacIRI, iso80000Ref arguments "
-                    "must be given"
-                )
-        # print("*** info:", info.dimension)
-
+                raise MissingQuantityError(f"iri={iri}")
+        elif iso80000Ref:
+            for info in units.quantities.values():
+                if info.iso80000Ref == iso80000Ref:
+                    break
+            else:
+                raise MissingQuantityError(f"iso80000Ref={iso80000Ref}")
+        else:
+            raise ValueError(
+                "Missing argument to get_quantity(). Either `name`, "
+                "`iri` or `iso80000Ref` must be provided"
+            )
         q = self.Quantity(value, base_unit_expression(info.dimension))
-        # print("*** q:", q)
         return q.to_ontology_units()
 
     def load_quantity(self, ts: Triplestore, iri: str) -> Quantity:
