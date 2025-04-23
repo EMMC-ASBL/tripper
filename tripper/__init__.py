@@ -40,7 +40,7 @@ from .session import Session
 from .triplestore import Triplestore, backend_packages
 from .triplestore_extend import Tripper
 
-__version__ = "0.4.0"
+__version__ = "0.4.2"
 
 # Pre-defined namespaces
 EMMO = Namespace(
