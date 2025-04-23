@@ -28,7 +28,7 @@ def test_base_unit_expression():
     )
 
 
-def load_emmo_quantity():
+def test_load_emmo_quantity():
     """Test load_emmo_quantity()."""
     from tripper import EMMO, OWL, RDF, RDFS, Literal, Triplestore
     from tripper.units.units import load_emmo_quantity
@@ -236,7 +236,6 @@ def test_units():
     units.write_pint_units(outdir / "units-emmo.txt")
 
 
-# if True:
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
@@ -381,6 +380,28 @@ def test_unit_registry():
     assert get_ureg(nocreate=False) == ureg
 
 
+def test_get_quantity():
+    """Test ureg.get_quantity() method."""
+    from tripper import EMMO
+    from tripper.units import get_ureg
+
+    ureg = get_ureg()
+    assert ureg.get_quantity("MagneticPolarisation") == 1 * ureg.Tesla
+    assert ureg.get_quantity("Energy", value=2.5) == 2.5 * ureg.Joule
+    q = ureg.get_quantity("Energy", value=1e-19)
+    assert q.u == ureg.eV
+    assert abs(q.m - 1 / 1.602) < 1e-4
+    assert ureg.get_quantity(emmoIRI=EMMO.Energy) == 1 * ureg.Joule
+    assert ureg.get_quantity(iso80000Ref="5-20-1") == 1 * ureg.Joule  # Energy
+    assert (
+        ureg.get_quantity(iupacIRI="https://doi.org/10.1351/goldbook.A00051")
+        == ureg["1 m/s²"]
+    )  # Acceleration
+
+
+@pytest.mark.skip(
+    reason="makes testing slow, since cache needs to be recreated afterwords"
+)
 def test_clear_cache():
     """Test clear_cache() method."""
     from tripper.units import get_ureg

@@ -65,6 +65,10 @@ class MissingUnitError(UnitError):
     """Unit not found in ontology."""
 
 
+class MissingQuantityError(UnitError):
+    """Quantity not found in ontology."""
+
+
 class MissingDimensionStringError(UnitError):
     """Unit does not have a dimensional string."""
 
@@ -140,7 +144,7 @@ def get_unit_triplestore(
         if cache and cachefile.exists():
             _unit_ts.parse(cachefile, format="ntriples")
         else:
-            print("* parsing units triplestore... ", end="", flush=True)
+            print("* caching units triplestore... ", end="", flush=True)
             _unit_ts.parse(url, format=format)
             print("done")
             if cache is not None:
@@ -384,11 +388,11 @@ class Units:
                 self.quantities = d["quantities"]
                 self.constants = d["constants"]
         else:
-            print("* parsing units... ", end="", flush=True)
+            print("* caching units... ", end="", flush=True)
             self.units = self._parse_units(include_prefixed=include_prefixed)
-            print("done\n* parsing quantities... ", end="", flush=True)
+            print("done\n* caching quantities... ", end="", flush=True)
             self.quantities = self._parse_quantities(constants=False)
-            print("done\n* parsing constants... ", end="", flush=True)
+            print("done\n* caching constants... ", end="", flush=True)
             self.constants = self._parse_quantities(constants=True)
             print("done")
 
@@ -1044,9 +1048,8 @@ class Quantity(pint.Quantity):
                 try:
                     d = units._parse_unitname(info.name)
                 except MissingUnitError:
-                    pass
-                else:
-                    compatible_units.append((info.name, q.m, d))
+                    d = 1.0, {q.u.name: 1}
+                compatible_units.append((info.name, q.m, d))
 
         def sortkey(x):
             """Returns sort key for `compatible_units`."""
@@ -1060,7 +1063,7 @@ class Quantity(pint.Quantity):
 
         compatible_units.sort(key=sortkey)
         name, mult, _ = compatible_units[0]
-        return mult * ureg[name]
+        return ureg.Quantity(mult, name)
 
     def ito_ontology_units(self) -> None:
         """Inplace rescale to ontology units."""
@@ -1135,6 +1138,8 @@ class UnitRegistry(pint.UnitRegistry):
             'http://qudt.org/vocab/unit/HR'
 
         """
+        url, name = _default_url_name(url, name)
+
         self._tripper_cachedir = get_cachedir(create=cache is not None)
         self._tripper_units = None
         self._tripper_unitsargs = {
@@ -1241,6 +1246,63 @@ class UnitRegistry(pint.UnitRegistry):
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
 
+    def get_quantity(
+        self,
+        name: "Optional[str]" = None,
+        emmoIRI: "Optional[str]" = None,
+        qudtIRI: "Optional[str]" = None,
+        omIRI: "Optional[str]" = None,
+        iupacIRI: "Optional[str]" = None,
+        iso80000Ref: "Optional[str]" = None,
+        value: float = 1.0,
+    ) -> "Quantity":
+        """Convert quantity name to a Pint quantity object.
+
+        Arguments:
+            name: Access quantity its name (preferred label in the ontology).
+            emmoIRI: Access quantity by its EMMO IRI.
+            qudtIRI: Access quantity by its QUDT IRI.
+            omIRI: Access quantity by its OM IRI.
+            iupacIRI: Access quantity by its IUPAC IRI.
+            iso80000Ref: Access quantity by its ISO80000 reference. Ex: 5-20-1
+            value: Value of the quantity value in units of SI base units.
+
+        """
+        # pylint: disable=unused-argument
+        units = self._get_tripper_units()
+        if name:
+            if name not in units.quantities:
+                raise MissingQuantityError(name)
+            info = units.quantities[name]
+        else:
+            annotations = (
+                "emmoIRI",
+                "qudtIRI",
+                "omIRI",
+                "iupacIRI",
+                "iso80000Ref",
+            )
+            for annotation in annotations:
+                val = locals().get(annotation)
+                if val:
+                    for info in units.quantities.values():
+                        if getattr(info, annotation) == val:
+                            break
+                    else:
+                        raise MissingQuantityError(f"{annotation}={val}")
+                    break
+            else:
+                raise ValueError(
+                    "Missing argument to get_quantity(). One of the name, "
+                    "emmoIRI, qudtIRI, omIRI, iupacIRI, iso80000Ref arguments "
+                    "must be given"
+                )
+        # print("*** info:", info.dimension)
+
+        q = self.Quantity(value, base_unit_expression(info.dimension))
+        # print("*** q:", q)
+        return q.to_ontology_units()
+
     def load_quantity(self, ts: Triplestore, iri: str) -> Quantity:
         """Load quantity from triplestore.
 
@@ -1253,8 +1315,9 @@ class UnitRegistry(pint.UnitRegistry):
 
         """
         value, unit = load_emmo_quantity(ts, iri)
-        u = self.get_unit(iri=unit) if ":" in unit else self[unit]
-        return value * u
+        return self.Quantity(
+            value, self.get_unit(iri=unit) if ":" in unit else unit
+        )
 
     def save_quantity(
         self,
@@ -1300,7 +1363,7 @@ class UnitRegistry(pint.UnitRegistry):
         include_prefixed = self._tripper_unitsargs["include_prefixed"]
         pf = "-prefixed" if include_prefixed else ""
         cachedir = self._tripper_cachedir
-        ontofile = cachedir / f"{name}.ntriples"
+        ontofile = cachedir / f"units-{name}.ntriples"
         unitsfile = cachedir / f"units{pf}-{name}.pickle"
         if ontofile.exists():
             ontofile.unlink()

@@ -59,10 +59,11 @@ Tripper adds some extra methods to the unit registry on top of what is already p
 
 - [get_unit()]: Access unit from name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
 - [get_unit_info()]: Returns a dict with attribute access providing additional information about the unit.
+- [get_quantity()]: Get quantity by its name in the ontology.
 - [load_quantity()]: Loads a quantity from a triplestore.
 - [save_quantity()]: Saves a quantity to a triplestore.
-- [clear_cache()]: Clear caches.
 - [set_as_default()]: Set the current unit registry as the default. This allows to access the registry with the [get_ureg()] method.
+- [clear_cache()]: Clear caches.
 
 Here we will only discuss [get_unit()] and [get_unit_info()] methods.
 See [Accessing quantities in a triplestore] and [Setting up custom unit registry] for the rest.
@@ -218,6 +219,34 @@ You can use to [to_ontology_units()] method (or its in-place variant [ito_ontolo
 
 ```
 
+The [get_quantity()] method allows to represent a physical quantity in the ontology as a Pint quantity. By default access is by name (prefLabel):
+
+```python
+>>> ureg.get_quantity("Energy")
+<Quantity(1.0, 'Joule')>
+
+# A value can also be provided (in units of the base SI units)
+>>> ureg.get_quantity("Energy", value=2.5)
+<Quantity(2.5, 'Joule')>
+
+>>> q = ureg.get_quantity("Energy", value=1e-19)
+>>> f"{q:.4~P}"
+'0.6242 eV'
+
+```
+
+Access by "emmoIRI", "qudtIRI", "omIRI", "iupacIRI" or "iso80000Ref" is also possible:
+
+```python
+>>> from tripper import EMMO
+>>> ureg.get_quantity(emmoIRI=EMMO.Acceleration)
+<Quantity(1.0, 'MetrePerSquareSecond')>
+
+>>> ureg.get_quantity(iso80000Ref="3-9.1")  # also acceleration
+<Quantity(1.0, 'MetrePerSquareSecond')>
+
+```
+
 
 ### Quantities as literals
 Quantities are also understood by the [Literal] constructor
@@ -247,6 +276,7 @@ The [Literal.value] property and [Literal.n3()] method can be used to convert ba
 '"101325 Pa"^^<https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676>'
 
 ```
+
 
 ### Accessing quantities in a triplestore
 Lets do a small calculation using the quantities constructed above:
@@ -352,6 +382,7 @@ For manual deletion of the cache files, the cache directory can be found using t
 [UnitRegistry]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry
 [get_unit()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.get_unit
 [get_unit_info()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.get_unit_info
+[get_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.get_quantity
 [load_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.load_quantity
 [save_quantity()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.save_quantity
 [clear_cache()]: ../api_reference/units/units.md#tripper.units.units.UnitRegistry.clear_cache
