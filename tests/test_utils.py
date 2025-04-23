@@ -29,22 +29,70 @@ def test_AttrDict():
     assert "a" in dir(d2)
 
 
+# if True:
 def test_recursive_update():
     """Test recursive_update()."""
     from tripper.utils import AttrDict, recursive_update
+
+    d = {"a": {"b": "bval", "c": "cval"}}
+    recursive_update(d, {"a": {"b": "bval"}})
+    assert d == {"a": {"b": "bval", "c": "cval"}}
 
     other = {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": 6}
     d = {"a": []}
     recursive_update(d, other)
     assert d == other
+    assert isinstance(d["a"][1], dict)
+
+    d = {"a": []}
+    recursive_update(d, other, cls=AttrDict)
+    assert d == other
+    assert isinstance(d["a"][1], AttrDict)
 
     d = AttrDict()
     recursive_update(d, other)
     assert d == other
+    assert isinstance(d.a[1], AttrDict)
 
     d = {"d": 1}
     recursive_update(d, other)
     assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": [1, 6]}
+
+    d = {"d": 1}
+    recursive_update(d, other, append=False)
+    assert d == {"a": [1, {"b": 2, "c": [3, 4]}, 5], "d": 6}
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 2}]})
+    assert d == {"a": [1, {"b": 2}]}  #
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 2}]}, append=False)
+    assert d == {"a": [1, {"b": 2}]}
+
+    d = {"a": [1, {"b": 2}]}
+    recursive_update(d, {"a": [1, {"b": 2}]})
+    assert d == {"a": [1, {"b": 2}]}
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 3}]})
+    assert d == {"a": [1, {"b": [2, 3]}]}
+
+    d = {"a": {"b": 2}}
+    recursive_update(d, {"a": [1, {"b": 3}]}, append=False)
+    assert d == {"a": [1, {"b": 3}]}
+
+    d = {"a": "val1"}
+    recursive_update(d, {"a": "val1", "b": "val2"})
+    assert d == {"a": "val1", "b": "val2"}
+
+    d = {"a": {"b": "val1"}, "c": 1}
+    recursive_update(d, {"a": {"b": "val1"}})
+    assert d == {"a": {"b": "val1"}, "c": 1}
+
+    d = {"a": {"b": "bval"}}
+    recursive_update(d, {"a": {"b": "bval"}})
+    assert d == {"a": {"b": "bval"}}
 
 
 def test_openfile():

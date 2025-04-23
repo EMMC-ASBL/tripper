@@ -46,13 +46,13 @@ We therefore have to define them explicitly
 !!! note "Side note"
 
     This dict is actually a [JSON-LD] document with an implicit context.
-    You can use [as_jsonld()] to create a valid JSON-LD document from it.
+    You can use [told()] to create a valid JSON-LD document from it.
     In addition to add a `@context` field, this function also adds some implicit `@type` declarations.
 
     ```python
     >>> import json
-    >>> from tripper.datadoc import as_jsonld
-    >>> d = as_jsonld(dataset, prefixes=prefixes)
+    >>> from tripper.datadoc import told
+    >>> d = told(dataset, prefixes=prefixes)
     >>> print(json.dumps(d, indent=4))  # doctest: +SKIP
     ```
 
@@ -89,7 +89,7 @@ Since the prefixes "sem" and "kb" are not included in the [Predefined prefixes],
 ```
 
 The returned `AttrDict` instance is an updated copy of `dataset` (casted to a dict subclass with attribute access).
-It correspond to a valid JSON-LD document and is the same as returned by [as_jsonld()].
+It correspond to a valid JSON-LD document and is the same as returned by [told()].
 
 You can use `ts.serialize()` to list the content of the triplestore (defaults to turtle):
 
@@ -216,7 +216,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
 [save_dict()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_dict
-[as_jsonld()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.as_jsonld
+[told()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.told
 [save_datadoc()]:
 ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_datadoc
 [TableDoc]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc

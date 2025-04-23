@@ -1,9 +1,10 @@
-"""Parse and generate context."""
+"""Parse keywords definition and generate context."""
 
 # pylint: disable=too-many-branches,redefined-builtin
 
 import json
 import os
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -26,6 +27,32 @@ if TYPE_CHECKING:  # pragma: no cover
     FileLoc = Union[Path, str]
 
 
+@lru_cache(maxsize=32)
+def get_keywords(
+    keywords: "Optional[Keywords]" = None,
+    domain: "Optional[Union[str, Sequence[str]]]" = "default",
+    yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+    timeout: float = 3,
+) -> "Keywords":
+    """A convinient function that returns an Context instance.
+
+    Arguments:
+        keywords: Optional existing keywords object.
+        domain: Name of one of more domains to load keywords for.
+        yamlfile: YAML file with keyword definitions to parse.  May also
+            be an URI in which case it will be accessed via HTTP GET.
+        timeout: Timeout in case `yamlfile` is a URI.
+    """
+    if not keywords:
+        return Keywords(domain=domain, yamlfile=yamlfile)
+    kw = keywords.copy()
+    if domain:
+        kw.add_domain(domain)
+    if yamlfile:
+        kw.parse(yamlfile, timeout=timeout)
+    return kw
+
+
 class Keywords:
     """A class representing all keywords within a domain."""
 
@@ -33,14 +60,14 @@ class Keywords:
 
     def __init__(
         self,
-        field: "Optional[Union[str, Sequence[str]]]" = None,
+        domain: "Optional[Union[str, Sequence[str]]]" = "default",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
         """Initialises keywords object.
 
         Arguments:
-            field: Name of field to load keywords for.
+            domain: Name of one of more domains to load keywords for.
             yamlfile: YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
             timeout: Timeout in case `yamlfile` is a URI.
@@ -49,11 +76,14 @@ class Keywords:
             data: The dict loaded from the keyword yamlfile.
             keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts
                 describing the keywords.
-            field: Name of the scientic field that the keywords belong to.
+            domain: Name of the scientic domain that the keywords belong to.
         """
         self.data = AttrDict()
         self.keywords = AttrDict()
-        self.field = None
+        self.domain = None
+
+        if domain:
+            self.add_domain(domain)
 
         if yamlfile:
             if isinstance(yamlfile, (str, Path)):
@@ -61,31 +91,6 @@ class Keywords:
             else:
                 for path in yamlfile:
                     self.parse(path, timeout=timeout)
-        elif not field:
-            field = "default"
-
-        if isinstance(field, str):
-            field = [field]
-
-        for fieldname in field:  # type: ignore
-            if self.field is None:
-                self.field = fieldname
-            for ep in get_entry_points("tripper.keywords"):
-                if ep.value == fieldname:
-                    self.parse(self.rootdir / ep.name / "keywords.yaml")
-                    break
-            else:
-                if fieldname == "default":
-                    # Fallback in case the entry point is not installed
-                    self.parse(
-                        self.rootdir
-                        / "tripper"
-                        / "context"
-                        / "0.3"
-                        / "keywords.yaml"
-                    )
-                else:
-                    raise TypeError(f"Unknown field name: {fieldname}")
 
     def __contains__(self, item):
         return item in self.keywords
@@ -97,7 +102,41 @@ class Keywords:
         return iter(self.keywords)
 
     def __dir__(self):
-        return dir(Keywords) + ["data", "keywords", "field"]
+        return dir(Keywords) + ["data", "keywords", "domain"]
+
+    def copy(self):
+        """Returns a copy of self."""
+        new = Keywords(domain=None)
+        new.data.update(self.data)
+        new.keywords.update(self.keywords)
+        new.domain = self.domain
+        return new
+
+    def add_domain(self, domain: "Union[str, Sequence[str]]") -> None:
+        """Add keywords for `domain`, where `domain` is the name of a
+        scientific domain or a list of scientific domain names."""
+        if isinstance(domain, str):
+            domain = [domain]
+
+        for name in domain:  # type: ignore
+            if self.domain is None:
+                self.domain = name  # type: ignore
+            for ep in get_entry_points("tripper.keywords"):
+                if ep.value == name:
+                    self.parse(self.rootdir / ep.name / "keywords.yaml")
+                    break
+            else:
+                if name == "default":
+                    # Fallback in case the entry point is not installed
+                    self.parse(
+                        self.rootdir
+                        / "tripper"
+                        / "context"
+                        / "0.3"
+                        / "keywords.yaml"
+                    )
+                else:
+                    raise TypeError(f"Unknown domain name: {name}")
 
     def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
         """Parse YAML file with keyword definitions."""
@@ -121,9 +160,10 @@ class Keywords:
                     self.keywords,
                     {
                         keyword: value,
-                        value.iri: value,
-                        expand_iri(value.iri, self.data.prefixes): value,
+                        value["iri"]: value,
+                        expand_iri(value["iri"], self.data["prefixes"]): value,
                     },
+                    append=False,
                 )
 
     def isnested(self, keyword: str) -> bool:
@@ -149,46 +189,43 @@ class Keywords:
         """Return the range of the keyword."""
         return self.keywords[keyword].range
 
-    def normtype(self, type: str) -> "Union[str, list]":
-        """Return normalised and expanded type.
+    def superclasses(self, cls: str) -> "Union[str, list]":
+        """Return a list with `cls` and it superclasses prefixed.
 
         Example:
 
         >>> keywords = Keywords()
-        >>> keywords.normtype("Dataset")
-        ['dcat:Dataset', 'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
+        >>> keywords.superclasses("Dataset")
+        ... # doctest: +NORMALIZE_WHITESPACE
+        ['dcat:Dataset',
+         'dcat:Resource',
+         'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
 
-        >>> keywords.normtype("dcat:Dataset")
-        ['dcat:Dataset', 'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
+        >>> keywords.superclasses("dcat:Dataset")
+        ... # doctest: +NORMALIZE_WHITESPACE
+        ['dcat:Dataset',
+         'dcat:Resource',
+         'emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a']
 
         """
-        if type in self.data.resources:
-            r = self.data.resources[type]
+        if cls in self.data.resources:
+            r = self.data.resources[cls]
         else:
-            type = prefix_iri(type, self.data.get("prefixes", {}))
-            rlst = [
-                r
-                for r in self.data.resources.values()
-                if type == r.iri
-                or (
-                    "type" in r
-                    and type
-                    in ([r.type] if isinstance(r.type, str) else r.type)
-                )
-            ]
+            cls = prefix_iri(cls, self.data.get("prefixes", {}))
+            rlst = [r for r in self.data.resources.values() if cls == r.iri]
             if not rlst:
-                raise NoSuchTypeError(type)
+                raise NoSuchTypeError(cls)
             if len(rlst) > 1:
                 raise RuntimeError(
-                    f"{type} matches more than one resource: "
+                    f"{cls} matches more than one resource: "
                     f"{', '.join(r.iri for r in rlst)}"
                 )
             r = rlst[0]
 
-        if "type" in r:
-            if isinstance(r.type, str):
-                return [r.iri, r.type]
-            return [r.iri] + r.type
+        if "subClassOf" in r:
+            if isinstance(r.subClassOf, str):
+                return [r.iri, r.subClassOf]
+            return [r.iri] + r.subClassOf
         return r.iri
 
     def keywordname(self, keyword: str) -> str:
@@ -223,15 +260,23 @@ class Keywords:
                 return name
         raise NoSuchTypeError(type)
 
-    def write_context(self, outfile: "FileLoc") -> None:
-        """Write JSON-LD context file."""
-        c = {}
-        c["@version"] = 1.1
+    def get_prefixes(self) -> dict:
+        """Return prefixes dict."""
+        return self.data.prefixes
+
+    def get_context(self) -> dict:
+        """Return JSON-LD context as a dict.
+
+        Note: The returned dict corresponds to the value of the "@context"
+        keyword in a JSON-LD document.
+        """
+        ctx = {}
+        ctx["@version"] = 1.1
 
         # Add prefixes to context
         prefixes = self.data.get("prefixes", {})
         for prefix, ns in prefixes.items():
-            c[prefix] = ns
+            ctx[prefix] = ns
 
         resources = self.data.get("resources", {})
 
@@ -249,25 +294,32 @@ class Keywords:
                     else:
                         dt = [translate.get(t, t) for t in dt]
 
-                    c[k] = {  # type: ignore
-                        "@id": iri,
-                        "@type": dt,
-                    }
+                    d = {"@id": iri}
+                    if dt == "rdf:langString" or "language" in v:
+                        d["@language"] = v.get("language", "en")
+                    else:
+                        d["@type"] = dt
+
+                    ctx[k] = d  # type: ignore
                 elif v["range"] == "rdfs:Literal":
-                    c[k] = iri
+                    ctx[k] = iri
                 else:
-                    c[k] = {  # type: ignore
+                    ctx[k] = {  # type: ignore
                         "@id": iri,
                         "@type": "@id",
                     }
 
         # Add resources (classes) to context
         for k, v in resources.items():
-            c.setdefault(k, v.iri)
+            ctx.setdefault(k, v.iri)
 
-        dct = {"@context": c}
+        return ctx
+
+    def write_context(self, outfile: "FileLoc") -> None:
+        """Write JSON-LD context file."""
+        context = {"@context": self.get_context()}
         with open(outfile, "wt", encoding="utf-8") as f:
-            json.dump(dct, f, indent=2)
+            json.dump(context, f, indent=2)
             f.write(os.linesep)
 
     def write_doc_keywords(self, outfile: "FileLoc") -> None:
@@ -277,13 +329,13 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        field = f" for {self.field}" if self.field else ""
+        domain = f" for domain: {self.domain}" if self.domain else ""
         out = [
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",
             "",
-            f"# Keywords{field}",
-            f"The tables below lists the keywords the domain {self.field}.",
+            f"# Keywords{domain}",
+            f"The tables below lists the keywords the domain {self.domain}.",
             "",
             "The meaning of the columns are as follows:",
             "",
@@ -450,11 +502,11 @@ def main(argv=None):
         help="Load keywords from this YAML file.",
     )
     parser.add_argument(
-        "--field",
+        "--domain",
         "-f",
         metavar="NAME",
         action="append",
-        help="Load keywords from this field.",
+        help="Load keywords from this domain.",
     )
     parser.add_argument(
         "--context",
@@ -476,7 +528,10 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    keywords = Keywords(field=args.field, yamlfile=args.yamlfile)
+    if not args.domain and not args.yamlfile:
+        args.domain = "default"
+
+    keywords = Keywords(domain=args.domain, yamlfile=args.yamlfile)
 
     if args.context:
         keywords.write_context(args.context)

@@ -8,13 +8,14 @@
     "dctype": "http://purl.org/dc/dcmitype/",
     "eli": "http://data.europa.eu/eli/ontology#",
     "foaf": "http://xmlns.com/foaf/0.1/",
+    "iana": "https://www.iana.org/assignments/media-types/",
     "locn": "http://www.w3.org/ns/locn#",
     "odrl": "http://www.w3.org/ns/odrl/2/",
     "owl": "http://www.w3.org/2002/07/owl#",
     "prov": "http://www.w3.org/ns/prov#",
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "schema": "http://schema.org/",
+    "schema": "https://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "spdx": "http://spdx.org/rdf/terms#",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
@@ -44,7 +45,7 @@
     },
     "description": {
       "@id": "dcterms:description",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "documentation": {
       "@id": "foaf:documentation",
@@ -61,7 +62,7 @@
     },
     "keyword": {
       "@id": "dcat:keyword",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "landingPage": {
       "@id": "dcat:landingPage",
@@ -69,7 +70,7 @@
     },
     "language": {
       "@id": "dcterms:language",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "license": {
       "@id": "dcterms:license",
@@ -105,7 +106,7 @@
     },
     "title": {
       "@id": "dcterms:title",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "type": {
       "@id": "dcterms:type",
@@ -115,7 +116,7 @@
     "versionNotes": "adms:versionNotes",
     "abstract": {
       "@id": "dcterms:abstract",
-      "@type": "rdf:langString"
+      "@language": "en"
     },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",
@@ -353,6 +354,7 @@
     "RightsStatement": "dcterms:RightsStatement",
     "LegalResource": "eli:LegalResource",
     "Standard": "dcterms:Standard",
-    "MediaType": "dcterms:MediaType"
+    "MediaType": "dcterms:MediaType",
+    "GenericResource": "rdfs:Resource"
   }
 }

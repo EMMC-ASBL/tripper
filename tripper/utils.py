@@ -29,6 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Generator,
         Iterable,
+        List,
         Optional,
         Tuple,
         Union,
@@ -98,46 +99,190 @@ class AttrDict(dict):
         pass
 
 
-def recursive_update(d: dict, other: dict, cls: "Optional[type]" = None):
-    """Recursively update dict `d` with dict `other`."""
+# def _rec(d, other, append, cls):
+#     """Recursive help function for recursive_update() that returns the
+#     updated version of d."""
+#     # pylint: disable=too-many-nested-blocks,too-many-branches
+#
+#     print(f"*** {d=}, {other=}")
+#     if other == d:
+#         return d
+#     if isinstance(d, dict):
+#         if isinstance(other, dict):
+#             new = cls()
+#             for k, v in other.items():
+#                 print(f"  - {k=}, {v=}")
+#                 if isinstance(v, (dict, list)):
+#                     if k in d:
+#                         if v == d[k]:
+#                             continue
+#                         if isinstance(d[k], (dict, list)):
+#                             new[k] = _rec(d[k], v, append=append, cls=cls)
+#                         else:
+#                             new[k] = [d[k], v] if append else v
+#                     else:
+#                         new[k] = v
+#                 elif k in d:
+#                     print(f"  + {d[k]=}, {v=}")
+#                     if v == d[k]:
+#                         print(f" ++ {d[k]=}, {v=}")
+#                         new[k] = d[k]
+#                     elif isinstance(d[k], (dict, list)):
+#                         new[k] = _rec(d[k], v, append=append, cls=cls)
+#                     else:
+#                         new[k] = [d[k], v] if append else v
+#                 else:
+#                     new[k] = v
+#
+#             new = _dicttype(new, cls)
+#         elif isinstance(other, list):
+#             if append:
+#                 if sum(e != d for e in other):
+#                     new = []
+#                     for e in other:
+#                         if e in new:
+#                             continue
+#                         if isinstance(e, dict):
+#                             new.append(
+#                                 _rec(d, cls(e), append=append, cls=cls)
+#                             )
+#                         elif isinstance(e, list):
+#                             new.extend(_rec(d, e, append=append, cls=cls))
+#                         else:
+#                             new.append(e)
+#                 else:
+#                     new = d
+#             else:
+#                 new = other
+#         else:
+#             return other
+#     elif isinstance(d, list):
+#         new = []
+#         if isinstance(other, list):
+#             for e in other:
+#                 if isinstance(e, dict):
+#                     new.extend(_rec(d, cls(e), append=append, cls=cls))
+#                 elif isinstance(e, list):
+#                     new.extend(_rec(d, e, append=append, cls=cls))
+#                 else:
+#                     new.append(e)
+#         else:
+#             if other not in new:
+#                 new.append(other)
+#     else:
+#         raise TypeError("`d` must be a dict or list")
+#     print(f"--> {new=}")
+#     return new
+#
+
+
+def _rec(d, other, append, cls):
+    """Recursive help function for recursive_update() that returns the
+    updated version of d."""
+    # pylint: disable=too-many-nested-blocks,too-many-branches
+
+    if other == d:
+        return d
+
+    if isinstance(d, dict):
+        if isinstance(other, dict):
+            new = cls(d)
+            for k, v in other.items():
+                if k in d:
+                    if isinstance(d[k], (dict, list)):
+                        new[k] = _rec(d[k], v, append=append, cls=cls)
+                    elif v != d[k]:
+                        new[k] = [d[k], v] if append else v
+                else:
+                    new[k] = v
+            new = _dicttype(new, cls)
+        elif isinstance(other, list):
+            if append:
+                if any(e != d for e in other):
+                    new = []
+                    for e in other:
+                        if e in new:
+                            pass
+                        elif isinstance(e, dict):
+                            new.append(_rec(d, cls(e), append=append, cls=cls))
+                        elif isinstance(e, list):
+                            new.extend(_rec(d, e, append=append, cls=cls))
+                        else:
+                            new.append(_rec(d, e, append=append, cls=cls))
+                else:
+                    new = d
+            else:
+                new = other
+        else:
+            new = other
+    elif isinstance(d, list):
+        new = [d] if d else []
+        if isinstance(other, list):
+            for e in other:
+                if isinstance(e, dict):
+                    new.extend(_rec(d, cls(e), append=append, cls=cls))
+                elif isinstance(e, list):
+                    new.extend(_rec(d, e, append=append, cls=cls))
+                else:
+                    new.append(e)
+        else:
+            if other not in new:
+                new.append(other)
+    else:
+        raise TypeError("`d` must be a dict or list")
+    return new
+
+
+def _dicttype(s, cls):
+    """Return `s` with all dicts changed to instances of `cls`."""
+    if isinstance(s, dict):
+        s = cls(s)
+        for k, v in s.items():
+            s[k] = _dicttype(v, cls=cls)
+    elif isinstance(s, list):
+        for i, e in enumerate(s):
+            s[i] = _dicttype(e, cls=cls)
+    return s
+
+
+def recursive_update(
+    d: dict,
+    other: "Union[dict, List[Union[dict, list]]]",
+    append: bool = True,
+    cls: "Optional[type]" = None,
+):
+    """Recursively update dict `d` with dict `other`.
+
+    Arguments:
+        d: Dict to update.
+        other: The source to update `d` from.
+        append: If `append` is true and `other` has a key that also exists
+            in `d`, then the value in `d` will be converted to a list with
+            the value from `other` appended to it.
+            If `append` is false, the values in `d` will be replaced by
+            corresponding values in `other`.
+        cls: Dict subclass for new sub-dicts in `d`. Defaults to the class
+            of `d`.
+
+    Example:
+
+        >>> d = {"a": 1}
+        >>> recursive_update(d, {"a": 2})
+        >>> d
+        {'a': [1, 2]}
+
+        >>> d = {"a": 1}
+        >>> recursive_update(d, {"a": 2}, append=False)
+        >>> d
+        {'a': 2}
+
+    """
     # pylint: disable=too-many-branches
     if cls is None:
         cls = d.__class__
-    if isinstance(other, dict):
-        if not isinstance(d, dict):
-            raise TypeError("`d` must be a dict when `other` is a dict")
-        for k, v in other.items():
-            if isinstance(v, dict):
-                if k not in d:
-                    d[k] = cls()
-                recursive_update(d[k], v, cls=cls)
-            elif isinstance(v, list):
-                if k not in d:
-                    d[k] = []
-                elif not isinstance(d[k], list):
-                    d[k] = [d.pop(k)]
-                recursive_update(d[k], v, cls=cls)  # type: ignore
-            else:
-                if k in d:
-                    d[k] = [d.pop(k), v]
-                else:
-                    d[k] = v
-    elif isinstance(other, list):
-        if not isinstance(d, list):
-            raise TypeError("`d` must be a list when `other` is a list")
-        for x in other:
-            if isinstance(x, dict):
-                new = cls()
-                recursive_update(new, x, cls=cls)
-                d.append(new)
-            elif isinstance(x, list):
-                new = []
-                recursive_update(new, x, cls=cls)
-                d.append(new)
-            else:
-                d.append(x)
-    else:
-        raise TypeError("`other` should either be a dict or list")
+
+    new = _rec(d, other, append=append, cls=cls)
+    d.update(new)
 
 
 @contextmanager
@@ -612,6 +757,24 @@ def get_entry_points(group: str):
     """Consistent interface to entry points for the given group.
 
     Works for all supported versions of Python.
+
+    Examples:
+
+    >>> get_entry_points("tripper.backends")  # doctest: +SKIP
+    [
+        EntryPoint(
+            name='fuseki',
+            value='pybacktrip.backends.fuseki',
+            group='tripper.backends',
+        ),
+        EntryPoint(
+            name='stardog',
+            value='pybacktrip.backends.stardog',
+            group='tripper.backends',
+       ),
+       ...
+    ]
+
     """
     if sys.version_info < (3, 10):
         # Fallback for Python < 3.10
@@ -622,3 +785,33 @@ def get_entry_points(group: str):
             group=group
         )
     return eps
+
+
+def check_service_availability(url: str, timeout=5, interval=1) -> bool:
+    """Check whether the service with given URL is available.
+
+    Arguments:
+        url: URL of the service to check.
+        timeout: Total time in seconds to wait for a respond.
+        interval: Interval for checking response.
+
+    Returns:
+        Returns true if the service responds with code 200,
+        otherwise false is returned.
+    """
+    import time  # pylint: disable=import-outside-toplevel
+
+    import requests  # pylint: disable=import-outside-toplevel
+
+    start_time = time.time()
+    while True:
+        try:
+            response = requests.get(url, timeout=timeout)
+            if response.status_code == 200:
+                return True
+        except requests.exceptions.RequestException:
+            pass
+
+        if time.time() - start_time >= timeout:
+            return False
+        time.sleep(interval)

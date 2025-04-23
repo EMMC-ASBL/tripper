@@ -1,6 +1,6 @@
 <!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
 
-# Keywords for default
+# Keywords for domain: default
 The tables below lists the keywords the domain default.
 
 The meaning of the columns are as follows:
@@ -55,7 +55,7 @@ Resource published or curated by an agent.
 ## Properties on [Dataset]
 A collection of data, published or curated by an agent, and available for access or download in one or more representations.
 
-- subClassOf: [dcat:Resource]
+- subClassOf: [dcat:Resource], [emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]
 
 | Keyword                | Range                                            | Conformance | Definition                                                                                                                 | Usage note                                                                                                    |
 | ---------------------- | ------------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -125,6 +125,8 @@ A generator that can serialise an instance of a datamodel into a distribution.
 ## Properties on [Agent]
 Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
 
+- subClassOf: [emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]
+
 | Keyword      | Range                          | Conformance | Definition                                          | Usage note                                                                                                                                    |
 | ------------ | ------------------------------ | ----------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | [name]       | [rdfs:Literal]<br>(xsd:string) | mandatory   | A name of the agent.                                |                                                                                                                                               |
@@ -169,6 +171,7 @@ A collection of operations that provides access to one or more datasets or data 
 | [endpointURL]         | [rdfs:Literal]<br>(xsd:anyURI) | mandatory   | The root location or primary endpoint of the service (an IRI).                                          |            |
 | [endpointDescription] | [rdfs:Resource]                | recommended | A description of the services available via the end-points, including their operations, parameters etc. |            |
 | [servesDataset]       | [dcat:Dataset]                 | recommended | This property refers to a collection of data that this data service can distribute.                     |            |
+| [parser]              | [oteio:Parser]                 |             | A parser that can parse the distribution.                                                               |            |
 
 
 ## Properties on [DatasetSeries]
@@ -257,6 +260,10 @@ A standard or other specification to which a resource conforms.
 A media type, e.g. the format of a computer file.
 
 
+## Properties on [GenericResource]
+A generic resource.
+
+
 
 
 [Resource]: http://www.w3.org/ns/dcat#Resource
@@ -327,6 +334,7 @@ A media type, e.g. the format of a computer file.
 [statements]: https://w3id.org/emmo/domain/oteio#statement
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [dcat:Resource]: http://www.w3.org/ns/dcat#Resource
+[emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [Dataset]: http://www.w3.org/ns/dcat#Dataset
 [distribution]: http://www.w3.org/ns/dcat#distribution
 [dcat:Distribution]: http://www.w3.org/ns/dcat#Distribution
@@ -405,6 +413,7 @@ A media type, e.g. the format of a computer file.
 [Generator]: https://w3id.org/emmo/domain/oteio#Generator
 [generatorType]: https://w3id.org/emmo/domain/oteio#generatorType
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]: https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
 [Agent]: http://xmlns.com/foaf/0.1/Agent
 [name]: http://xmlns.com/foaf/0.1/name
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
@@ -431,6 +440,8 @@ A media type, e.g. the format of a computer file.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [servesDataset]: http://www.w3.org/ns/dcat#servesDataset
 [dcat:Dataset]: http://www.w3.org/ns/dcat#Dataset
+[parser]: https://w3id.org/emmo/domain/oteio#parser
+[oteio:Parser]: https://w3id.org/emmo/domain/oteio#Parser
 [dcat:Dataset]: http://www.w3.org/ns/dcat#Dataset
 [DatasetSeries]: http://www.w3.org/ns/dcat#DatasetSeries
 [Geometry]: http://www.w3.org/ns/locn#Geometry
@@ -506,3 +517,4 @@ A media type, e.g. the format of a computer file.
 [LegalResource]: http://data.europa.eu/eli/ontology#LegalResource
 [Standard]: http://purl.org/dc/terms/Standard
 [MediaType]: http://purl.org/dc/terms/MediaType
+[GenericResource]: http://www.w3.org/2000/01/rdf-schema#Resource

@@ -11,13 +11,14 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | dctype  | http://purl.org/dc/dcmitype/                                      |
 | eli     | http://data.europa.eu/eli/ontology#                               |
 | foaf    | http://xmlns.com/foaf/0.1/                                        |
+| iana    | https://www.iana.org/assignments/media-types/                     |
 | locn    | http://www.w3.org/ns/locn#                                        |
 | odrl    | http://www.w3.org/ns/odrl/2/                                      |
 | owl     | http://www.w3.org/2002/07/owl#                                    |
 | prov    | http://www.w3.org/ns/prov#                                        |
 | rdf     | http://www.w3.org/1999/02/22-rdf-syntax-ns#                       |
 | rdfs    | http://www.w3.org/2000/01/rdf-schema#                             |
-| schema  | http://schema.org/                                                |
+| schema  | https://schema.org/                                               |
 | skos    | http://www.w3.org/2004/02/skos/core#                              |
 | spdx    | http://spdx.org/rdf/terms#                                        |
 | vcard   | http://www.w3.org/2006/vcard/ns#                                  |
