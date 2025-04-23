@@ -385,6 +385,7 @@ def test_get_quantity():
     """Test ureg.get_quantity() method."""
     from tripper import EMMO
     from tripper.units import get_ureg
+    from tripper.units.units import MissingQuantityError
 
     ureg = get_ureg()
     assert ureg.get_quantity("MagneticPolarisation") == 1 * ureg.Tesla
@@ -398,6 +399,18 @@ def test_get_quantity():
         ureg.get_quantity(iri="https://doi.org/10.1351/goldbook.A00051")
         == ureg["1 m/s²"]
     )  # Acceleration
+
+    with pytest.raises(MissingQuantityError):
+        ureg.get_quantity("non-existing-quantity-name")
+
+    with pytest.raises(MissingQuantityError):
+        ureg.get_quantity(iri="non-existing-quantity-iri")
+
+    with pytest.raises(MissingQuantityError):
+        ureg.get_quantity(iso80000Ref="non-existing-quantity-ref")
+
+    with pytest.raises(ValueError):
+        ureg.get_quantity()
 
 
 @pytest.mark.skip(
