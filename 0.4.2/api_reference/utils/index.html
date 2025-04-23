@@ -1,0 +1,3419 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Tripper package">
+      
+      
+      
+        <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/0.4.2/api_reference/utils/">
+      
+      
+        <link rel="prev" href="../triplestore_extend/">
+      
+      
+        <link rel="next" href="../backends/collection/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+    
+    
+      
+        <title>utils - Tripper</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../css/reference.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#utils" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Tripper" class="md-header__button md-logo" aria-label="Tripper" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 9V1.5h-3V9h-3V1.5h-3V9h-3V1.5H4.65V9H3v1.5h18V9zm0 4.5h-3V21h-3v-7.5h-3V21h-3v-7.5H4.65V21H3v1.5h18V21h-1.5z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Tripper
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              utils
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/EMMC-ASBL/tripper" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tripper
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Tripper" class="md-nav__button md-logo" aria-label="Tripper" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 9V1.5h-3V9h-3V1.5h-3V9h-3V1.5H4.65V9H3v1.5h18V9zm0 4.5h-3V21h-3v-7.5h-3V21h-3v-7.5H4.65V21H3v1.5h18V21h-1.5z"/></svg>
+
+    </a>
+    Tripper
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/EMMC-ASBL/tripper" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tripper
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backend_discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Backend discovery
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/datadoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    datadoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Data documentation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Data documentation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datadoc/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datadoc/documenting-a-resource/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting a resource
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datadoc/customisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Customisation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datadoc/prefixes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Predefined prefixes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datadoc/keywords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Predefined keywords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../units/units/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Units and quantities
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../session/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Session
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    errors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    interface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../literal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    literal
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    namespace
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../session/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    session
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../triplestore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    triplestore
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../triplestore_extend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    triplestore_extend
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    utils
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    utils
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      tripper.utils
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.AttrDict" class="md-nav__link">
+    <span class="md-ellipsis">
+      AttrDict
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.as_python" class="md-nav__link">
+    <span class="md-ellipsis">
+      as_python()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.bnode_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      bnode_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.check_function" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_function()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.check_service_availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_service_availability()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.en" class="md-nav__link">
+    <span class="md-ellipsis">
+      en()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.expand_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      expand_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.extend_namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      extend_namespace()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.function_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      function_id()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.get_entry_points" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_entry_points()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.infer_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      infer_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.openfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      openfile()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.parse_literal" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_literal()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.parse_object" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_object()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      prefix_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.random_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      random_string()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.recursive_update" class="md-nav__link">
+    <span class="md-ellipsis">
+      recursive_update()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.split_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      split_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.tfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      tfilter()
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_9" id="__nav_8_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    backends
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_9">
+            <span class="md-nav__icon md-icon"></span>
+            backends
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/collection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    collection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/ontopy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ontopy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/rdflib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    rdflib
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/sparqlwrapper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sparqlwrapper
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_10" id="__nav_8_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    convert
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_10">
+            <span class="md-nav__icon md-icon"></span>
+            convert
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../convert/convert/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    convert
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_11" id="__nav_8_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    datadoc
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_11">
+            <span class="md-nav__icon md-icon"></span>
+            datadoc
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/clitool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    clitool
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/context/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    context
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/dataaccess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dataaccess
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/dataset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dataset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    errors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/keywords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    keywords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/tabledoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    tabledoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_12" id="__nav_8_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    mappings
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_12">
+            <span class="md-nav__icon md-icon"></span>
+            mappings
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mappings/mappings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mappings
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_13" id="__nav_8_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    units
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_13">
+            <span class="md-nav__icon md-icon"></span>
+            units
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../units/units/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    units
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    For developers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../known-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Known issues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    License
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      tripper.utils
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.AttrDict" class="md-nav__link">
+    <span class="md-ellipsis">
+      AttrDict
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.as_python" class="md-nav__link">
+    <span class="md-ellipsis">
+      as_python()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.bnode_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      bnode_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.check_function" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_function()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.check_service_availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_service_availability()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.en" class="md-nav__link">
+    <span class="md-ellipsis">
+      en()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.expand_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      expand_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.extend_namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      extend_namespace()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.function_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      function_id()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.get_entry_points" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_entry_points()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.infer_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      infer_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.openfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      openfile()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.parse_literal" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_literal()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.parse_object" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_object()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      prefix_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.random_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      random_string()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.recursive_update" class="md-nav__link">
+    <span class="md-ellipsis">
+      recursive_update()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.split_iri" class="md-nav__link">
+    <span class="md-ellipsis">
+      split_iri()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.tfilter" class="md-nav__link">
+    <span class="md-ellipsis">
+      tfilter()
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="utils">utils<a class="headerlink" href="#utils" title="Permanent link">&para;</a></h1>
+
+
+  <div class="doc doc-object doc-module">
+
+<a id="tripper.utils"></a>
+    <div class="doc doc-contents first">
+
+      <p>Utility functions.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.utils.AttrDict" class="doc doc-heading">
+        <code>
+AttrDict            (<span title="dict">dict</span>)
+        </code>
+
+
+
+<a href="#tripper.utils.AttrDict" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Dict with attribute access.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AttrDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dict with attribute access.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;__wrapped__&quot;</span><span class="p">:</span>
+            <span class="c1"># Hack to work around a pytest bug.  During its collection</span>
+            <span class="c1"># phase pytest tries to mock namespace objects with an</span>
+            <span class="c1"># attribute `__wrapped__`.</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AttrDict(</span><span class="si">{</span><span class="nb">dict</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">pass</span>
+</code></pre></div>
+        </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.as_python" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">as_python</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.as_python" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Converts <code>value</code> to a native Python representation.</p>
+<p>If <code>value</code> is a Literal, its Python representation will be returned.
+If <code>value</code> is a string, it will first be converted to a Literal, before
+its Python representation is returned.
+Otherwise, <code>value</code> will be returned as-is.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_python</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts `value` to a native Python representation.</span>
+
+<span class="sd">    If `value` is a Literal, its Python representation will be returned.</span>
+<span class="sd">    If `value` is a string, it will first be converted to a Literal, before</span>
+<span class="sd">    its Python representation is returned.</span>
+<span class="sd">    Otherwise, `value` will be returned as-is.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">to_python</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">to_python</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">value</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.bnode_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">bnode_iri</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.bnode_iri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns a new IRI for a blank node.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>prefix</code></td>
+        <td><code>str</code></td>
+        <td><p>A prefix to insert between "_:" and the hash.</p></td>
+        <td><code>&#39;&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>source</code></td>
+        <td><code>str</code></td>
+        <td><p>An unique string that the returned bnode will be a hash of.
+The default is to generate a random hash.</p></td>
+        <td><code>&#39;&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>length</code></td>
+        <td><code>int</code></td>
+        <td><p>Length is the number of bytes in the hash.  The default
+length of 5 is a compromise between readability (10 characters)
+and safety (corresponding to about 1e12 possibilites).  You can
+change it to 16 to get 128 bits, corresponding to the uniqueness
+of UUIDs).  It makes no sense to go beyond 32, because that is
+the maximum of the underlying shake_128 algorithm.</p></td>
+        <td><code>5</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>A new bnode IRI of the form &#34;_</code></td>
+      <td><p><prefix><hash>", where <code>&lt;prefix&gt;</code>
+is <code>prefix</code> and <code>&lt;hash&gt;</code> is a hex-encoded hash of <code>source</code>.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bnode_iri</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a new IRI for a blank node.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        prefix: A prefix to insert between &quot;_:&quot; and the hash.</span>
+<span class="sd">        source: An unique string that the returned bnode will be a hash of.</span>
+<span class="sd">            The default is to generate a random hash.</span>
+<span class="sd">        length: Length is the number of bytes in the hash.  The default</span>
+<span class="sd">            length of 5 is a compromise between readability (10 characters)</span>
+<span class="sd">            and safety (corresponding to about 1e12 possibilites).  You can</span>
+<span class="sd">            change it to 16 to get 128 bits, corresponding to the uniqueness</span>
+<span class="sd">            of UUIDs).  It makes no sense to go beyond 32, because that is</span>
+<span class="sd">            the maximum of the underlying shake_128 algorithm.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A new bnode IRI of the form &quot;_:&lt;prefix&gt;&lt;hash&gt;&quot;, where `&lt;prefix&gt;`</span>
+<span class="sd">        is `prefix` and `&lt;hash&gt;` is a hex-encoded hash of `source`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">:</span>
+        <span class="nb">hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">shake_128</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># From Python 3.9 we can use random.randbytes(length).hex()</span>
+        <span class="nb">hash</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="nb">hex</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>  <span class="c1"># nosec</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="nb">hash</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.check_function" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">check_function</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.check_function" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Help function returning true if <code>func(s)</code> does not raise an exception.</p>
+<p>False is returned if <code>func(s)</code> raises an exception listed in <code>exceptions</code>.
+Otherwise the exception is propagated.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_function</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning true if `func(s)` does not raise an exception.</span>
+
+<span class="sd">    False is returned if `func(s)` raises an exception listed in `exceptions`.</span>
+<span class="sd">    Otherwise the exception is propagated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Note that the missing type hint on `exceptions` is deliberate, see</span>
+    <span class="c1"># https://peps.python.org/pep-0484/#exceptions</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">exceptions</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.check_service_availability" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">check_service_availability</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.check_service_availability" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Check whether the service with given URL is available.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>url</code></td>
+        <td><code>str</code></td>
+        <td><p>URL of the service to check.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>timeout</code></td>
+        <td></td>
+        <td><p>Total time in seconds to wait for a respond.</p></td>
+        <td><code>5</code></td>
+      </tr>
+      <tr>
+        <td><code>interval</code></td>
+        <td></td>
+        <td><p>Interval for checking response.</p></td>
+        <td><code>1</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>Returns true if the service responds with code 200,
+otherwise false is returned.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_service_availability</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether the service with given URL is available.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        url: URL of the service to check.</span>
+<span class="sd">        timeout: Total time in seconds to wait for a respond.</span>
+<span class="sd">        interval: Interval for checking response.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Returns true if the service responds with code 200,</span>
+<span class="sd">        otherwise false is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.en" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">en</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.en" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Convenience function that returns value as a plain english literal.</p>
+<p>Equivalent to <code>Literal(value, lang="en")</code>.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">en</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Literal&quot;</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience function that returns value as a plain english literal.</span>
+
+<span class="sd">    Equivalent to ``Literal(value, lang=&quot;en&quot;)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.expand_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">expand_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.expand_iri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return the full IRI if <code>iri</code> is prefixed.  Otherwise <code>iri</code> is
+returned.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">expand_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the full IRI if `iri` is prefixed.  Otherwise `iri` is</span>
+<span class="sd">    returned.&quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_PREFIXED_IRI</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">prefix</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Undefined prefix &quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">&quot; in IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># warnings.warn(f&#39;Undefined prefix &quot;{prefix}&quot; in IRI: {iri}&#39;)</span>
+    <span class="k">return</span> <span class="n">iri</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.extend_namespace" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">extend_namespace</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.extend_namespace" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Extend a namespace with additional known names.</p>
+<p>This makes only sense if the namespace was created with
+<code>label_annotations</code> or <code>check</code> set to true.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>namespace</code></td>
+        <td><code>Namespace</code></td>
+        <td><p>The namespace to extend.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>triplestore</code></td>
+        <td><code>Union[Triplestore, str, Path, dict]</code></td>
+        <td><p>Source from which to extend the namespace. It can be
+of one of the following types:
+  - Triplestore: triplestore object to read from
+  - str: URL to a triplestore to read from.  May also be a
+    path to a local file to read from
+  - Path: path to a local file to read from
+  - dict: dict mapping new IRI names to their corresponding IRIs</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>format</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Format to use when loading from a triplestore.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">extend_namespace</span><span class="p">(</span>
+    <span class="n">namespace</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+    <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Union[Triplestore, str, Path, dict]&quot;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend a namespace with additional known names.</span>
+
+<span class="sd">    This makes only sense if the namespace was created with</span>
+<span class="sd">    `label_annotations` or `check` set to true.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        namespace: The namespace to extend.</span>
+<span class="sd">        triplestore: Source from which to extend the namespace. It can be</span>
+<span class="sd">            of one of the following types:</span>
+<span class="sd">              - Triplestore: triplestore object to read from</span>
+<span class="sd">              - str: URL to a triplestore to read from.  May also be a</span>
+<span class="sd">                path to a local file to read from</span>
+<span class="sd">              - Path: path to a local file to read from</span>
+<span class="sd">              - dict: dict mapping new IRI names to their corresponding IRIs</span>
+<span class="sd">        format: Format to use when loading from a triplestore.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">namespace</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=protected-access</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;only namespaces created with `label_annotations` or `check` set &quot;</span>
+            <span class="s2">&quot;to true can be extend&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">namespace</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">triplestore</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span>  <span class="c1"># pylint: disable=protected-access</span>
+            <span class="n">triplestore</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span>
+        <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.function_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">function_id</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.function_id" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a checksum for function <code>func</code>.</p>
+<p>The returned object is a string of hexadecimal digits.</p>
+<p><code>length</code> is the number of bytes in the returned checksum.  Since
+the current implementation is based on the shake_128 algorithm,
+it make no sense to set <code>length</code> larger than 32 bytes.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">function_id</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Callable&quot;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a checksum for function `func`.</span>
+
+<span class="sd">    The returned object is a string of hexadecimal digits.</span>
+
+<span class="sd">    `length` is the number of bytes in the returned checksum.  Since</span>
+<span class="sd">    the current implementation is based on the shake_128 algorithm,</span>
+<span class="sd">    it make no sense to set `length` larger than 32 bytes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">shake_128</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-function-args</span>
+        <span class="p">(</span><span class="n">source</span> <span class="o">+</span> <span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.get_entry_points" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_entry_points</span><span class="p">(</span><span class="n">group</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.get_entry_points" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Consistent interface to entry points for the given group.</p>
+<p>Works for all supported versions of Python.</p>
+
+<p><strong>Examples:</strong></p>
+    
+      <blockquote>
+<blockquote>
+<blockquote>
+<p>get_entry_points("tripper.backends")  # doctest: +SKIP
+[
+    EntryPoint(
+        name='fuseki',
+        value='pybacktrip.backends.fuseki',
+        group='tripper.backends',
+    ),
+    EntryPoint(
+        name='stardog',
+        value='pybacktrip.backends.stardog',
+        group='tripper.backends',
+   ),
+   ...
+]</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_entry_points</span><span class="p">(</span><span class="n">group</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Consistent interface to entry points for the given group.</span>
+
+<span class="sd">    Works for all supported versions of Python.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; get_entry_points(&quot;tripper.backends&quot;)  # doctest: +SKIP</span>
+<span class="sd">    [</span>
+<span class="sd">        EntryPoint(</span>
+<span class="sd">            name=&#39;fuseki&#39;,</span>
+<span class="sd">            value=&#39;pybacktrip.backends.fuseki&#39;,</span>
+<span class="sd">            group=&#39;tripper.backends&#39;,</span>
+<span class="sd">        ),</span>
+<span class="sd">        EntryPoint(</span>
+<span class="sd">            name=&#39;stardog&#39;,</span>
+<span class="sd">            value=&#39;pybacktrip.backends.stardog&#39;,</span>
+<span class="sd">            group=&#39;tripper.backends&#39;,</span>
+<span class="sd">       ),</span>
+<span class="sd">       ...</span>
+<span class="sd">    ]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="c1"># Fallback for Python &lt; 3.10</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">entry_points</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="p">())</span>  <span class="c1"># pylint: disable=no-member</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># New entry_point interface from Python 3.10+</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">entry_points</span><span class="p">(</span>  <span class="c1"># pylint: disable=unexpected-keyword-arg</span>
+            <span class="n">group</span><span class="o">=</span><span class="n">group</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">eps</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.infer_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">infer_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.infer_iri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return IRI of the individual that stands for Python object <code>obj</code>.</p>
+<p>Valid Python objects are <a href="https://github.com/SINTEF/dlite">DLite</a> and <a href="https://docs.pydantic.dev/">Pydantic</a> instances.</p>
+<p>References:</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">infer_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return IRI of the individual that stands for Python object `obj`.</span>
+
+<span class="sd">    Valid Python objects are [DLite] and [Pydantic] instances.</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">    [DLite]: https://github.com/SINTEF/dlite</span>
+<span class="sd">    [Pydantic]: https://docs.pydantic.dev/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Please note that tripper does not depend on neither DLite nor Pydantic.</span>
+    <span class="c1"># Hence neither of these packages are imported.  However, due to duck-</span>
+    <span class="c1"># typing, infer_iri() is still able to recognise DLite and Pydantic</span>
+    <span class="c1"># objects and infer their IRIs.</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;uri&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># dlite.Metadata or dataclass (or instance with uri)</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">uri</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;uuid&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">uuid</span><span class="p">:</span>
+        <span class="c1"># dlite.Instance or dataclass</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">schema</span><span class="p">):</span>
+        <span class="c1"># pydantic.BaseModel</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;identity&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># soft7 pydantic model</span>
+            <span class="n">iri</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">identity</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># pydantic instance</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">schema</span><span class="p">()</span>
+            <span class="n">properties</span> <span class="o">=</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;uri&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">iri</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">&quot;identity&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">],</span> <span class="nb">str</span>
+            <span class="p">):</span>
+                <span class="n">iri</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;identity&quot;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">&quot;uuid&quot;</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">and</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">]:</span>
+                <span class="n">iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;uuid&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;cannot infer IRI from pydantic object: </span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot infer IRI from object: </span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.openfile" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">openfile</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.openfile" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Like open(), but allows opening remote files using HTTP GET requests.</p>
+<p>Should always be used in a with-statement.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>url</code></td>
+        <td><code>Union[str, Path]</code></td>
+        <td><p>File path or URL to open.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>timeout</code></td>
+        <td><code>float</code></td>
+        <td><p>Timeout for accessing the file in seconds.</p></td>
+        <td><code>3</code></td>
+      </tr>
+      <tr>
+        <td><code>kwargs</code></td>
+        <td></td>
+        <td><p>Additional passed to open().</p></td>
+        <td><code>{}</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Generator</code></td>
+      <td><p>A stream object returned by open().</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">openfile</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like open(), but allows opening remote files using HTTP GET requests.</span>
+
+<span class="sd">    Should always be used in a with-statement.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        url: File path or URL to open.</span>
+<span class="sd">        timeout: Timeout for accessing the file in seconds.</span>
+<span class="sd">        kwargs: Additional passed to open().</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A stream object returned by open().</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">tmpfile</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;file:&quot;</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">url</span><span class="p">[</span><span class="mi">7</span><span class="p">:]</span> <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;file://&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">url</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+
+    <span class="k">elif</span> <span class="n">u</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">u</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+
+        <span class="n">tmpfile</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-zA-Z][a-zA-Z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown scheme: </span><span class="si">{</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">url</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># pylint: disable=unspecified-encoding</span>
+        <span class="k">yield</span> <span class="n">f</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tmpfile</span><span class="p">:</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.parse_literal" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.parse_literal" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse Python object <code>literal</code> and return it as an instance of Literal.</p>
+<p>The main difference between this function and the Literal constructor,
+is that this function correctly interprets n3-encoded literal strings.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse Python object `literal` and return it as an instance of Literal.</span>
+
+<span class="sd">    The main difference between this function and the Literal constructor,</span>
+<span class="sd">    is that this function correctly interprets n3-encoded literal strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=invalid-name,too-many-branches,too-many-statements</span>
+    <span class="c1"># pylint: disable=too-many-return-statements</span>
+    <span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">literal</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;lang&quot;</span><span class="p">):</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">literal</span><span class="o">.</span><span class="n">lang</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">):</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="n">literal</span><span class="o">.</span><span class="n">language</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">lang</span>
+        <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;datatype&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">literal</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+
+    <span class="c1"># This should handle rdflib literals correctly (and probably most other</span>
+    <span class="c1"># literal representations as well)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+        <span class="c1"># Note that in rdflib 6.3, the `value` attribute may be None for some</span>
+        <span class="c1"># datatypes (like rdf:JSON) even though a non-empty value exists.</span>
+        <span class="c1"># As a workaround, we use the string representation if the value</span>
+        <span class="c1"># attribute is None.</span>
+        <span class="k">if</span> <span class="n">literal</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">literal</span><span class="p">),</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">literal</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># literal is in instance of a subclass of one of the datatypes</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                        <span class="n">datatype</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;should never be reached&quot;</span>  <span class="c1"># nosec</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported literal type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="s2">&quot;n3&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">n3</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">literal</span><span class="o">.</span><span class="n">n3</span><span class="p">())</span>
+
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)\s*$&#39;</span><span class="p">,</span> <span class="n">literal</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">datatype</span> <span class="o">=</span> <span class="n">v1</span> <span class="k">if</span> <span class="n">v1</span> <span class="k">else</span> <span class="n">v2</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)\^\^(&lt;([^&gt;]+)&gt;|([^&lt;].*))\s*$&#39;</span><span class="p">,</span>
+            <span class="n">literal</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">v1</span> <span class="k">if</span> <span class="n">v1</span> <span class="k">else</span> <span class="n">v2</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">d1</span> <span class="k">if</span> <span class="n">d1</span> <span class="k">else</span> <span class="n">d2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s1">&#39;^\s*(&quot;&quot;&quot;(.*)&quot;&quot;&quot;|&quot;(.*)&quot;)@(.*)\s*$&#39;</span><span class="p">,</span> <span class="n">literal</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">lang</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">v1</span> <span class="k">if</span> <span class="n">v1</span> <span class="k">else</span> <span class="n">v2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">literal</span>
+
+    <span class="k">if</span> <span class="n">lang</span> <span class="ow">or</span> <span class="n">datatype</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
+            <span class="n">types</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">pytype</span><span class="p">,</span> <span class="n">datatypes</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">types</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">t</span><span class="p">:</span> <span class="n">pytype</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">})</span>
+            <span class="n">type_</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">type_</span> <span class="ow">is</span> <span class="nb">bool</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">type_</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">type_</span><span class="p">,</span> <span class="n">datatypes</span> <span class="ow">in</span> <span class="n">Literal</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">type_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span>
+                    <span class="n">type_</span><span class="p">(</span><span class="n">literal</span><span class="p">),</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="k">pass</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;cannot parse literal &quot;</span><span class="si">{</span><span class="n">literal</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.parse_object" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.parse_object" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Applies heuristics to parse RDF object <code>obj</code> to an IRI or literal.</p>
+<p>The following heuristics is performed (in the given order):
+- If <code>obj</code> is a Literal, it is returned.
+- If <code>obj</code> is a string and
+  - starts with "_:", it is assumed to be a blank node and returned.
+  - starts with a scheme, it is asumed to be an IRI and returned.
+  - can be converted to a float, int or datetime, it is returned
+    converted to a literal of the corresponding type.
+  - it is a valid n3 representation, return it as the given type.
+  - otherwise, return it as a xsd:string literal.
+- Otherwise, raise an ValueError.</p>
+<p>Returns
+    A string if <code>obj</code> is considered to be an IRI, otherwise a
+    literal.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Any]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies heuristics to parse RDF object `obj` to an IRI or literal.</span>
+
+<span class="sd">    The following heuristics is performed (in the given order):</span>
+<span class="sd">    - If `obj` is a Literal, it is returned.</span>
+<span class="sd">    - If `obj` is a string and</span>
+<span class="sd">      - starts with &quot;_:&quot;, it is assumed to be a blank node and returned.</span>
+<span class="sd">      - starts with a scheme, it is asumed to be an IRI and returned.</span>
+<span class="sd">      - can be converted to a float, int or datetime, it is returned</span>
+<span class="sd">        converted to a literal of the corresponding type.</span>
+<span class="sd">      - it is a valid n3 representation, return it as the given type.</span>
+<span class="sd">      - otherwise, return it as a xsd:string literal.</span>
+<span class="sd">    - Otherwise, raise an ValueError.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        A string if `obj` is considered to be an IRI, otherwise a</span>
+<span class="sd">        literal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-return-statements</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z]+://&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>  <span class="c1"># IRI</span>
+            <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">):</span>  <span class="c1"># boolean</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\s*[+-]?\d+\s*$&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>  <span class="c1"># integer</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">check_function</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>  <span class="c1">#  float</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">check_function</span><span class="p">(</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="ne">ValueError</span>
+        <span class="p">):</span>  <span class="c1">#  datetime</span>
+            <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`obj` should be a literal or a string.&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.prefix_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.prefix_iri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return prefixed IRI.</p>
+<p>This is the reverse of expand_iri().</p>
+<p>If <code>require_prefixed</code> is true, a NamespaceError exception is raised
+if no prefix can be found.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return prefixed IRI.</span>
+
+<span class="sd">    This is the reverse of expand_iri().</span>
+
+<span class="sd">    If `require_prefixed` is true, a NamespaceError exception is raised</span>
+<span class="sd">    if no prefix can be found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_PREFIXED_IRI</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">require_prefixed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No prefix defined for IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">iri</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.random_string" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">random_string</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.random_string" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a random string of the given length.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">random_string</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a random string of the given length.&quot;&quot;&quot;</span>
+    <span class="n">letters</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">letters</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">))</span>  <span class="c1"># nosec</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.recursive_update" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">recursive_update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.recursive_update" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Recursively update dict <code>d</code> with dict <code>other</code>.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>d</code></td>
+        <td><code>dict</code></td>
+        <td><p>Dict to update.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>other</code></td>
+        <td><code>Union[dict, List[Union[dict, list]]]</code></td>
+        <td><p>The source to update <code>d</code> from.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>append</code></td>
+        <td><code>bool</code></td>
+        <td><p>If <code>append</code> is true and <code>other</code> has a key that also exists
+in <code>d</code>, then the value in <code>d</code> will be converted to a list with
+the value from <code>other</code> appended to it.
+If <code>append</code> is false, the values in <code>d</code> will be replaced by
+corresponding values in <code>other</code>.</p></td>
+        <td><code>True</code></td>
+      </tr>
+      <tr>
+        <td><code>cls</code></td>
+        <td><code>Optional[type]</code></td>
+        <td><p>Dict subclass for new sub-dicts in <code>d</code>. Defaults to the class
+of <code>d</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">recursive_update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span>
+<span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]}</span>
+</code></pre></div>
+    <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">recursive_update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span>
+<span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">recursive_update</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Union[dict, List[Union[dict, list]]]&quot;</span><span class="p">,</span>
+    <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="s2">&quot;Optional[type]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively update dict `d` with dict `other`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        d: Dict to update.</span>
+<span class="sd">        other: The source to update `d` from.</span>
+<span class="sd">        append: If `append` is true and `other` has a key that also exists</span>
+<span class="sd">            in `d`, then the value in `d` will be converted to a list with</span>
+<span class="sd">            the value from `other` appended to it.</span>
+<span class="sd">            If `append` is false, the values in `d` will be replaced by</span>
+<span class="sd">            corresponding values in `other`.</span>
+<span class="sd">        cls: Dict subclass for new sub-dicts in `d`. Defaults to the class</span>
+<span class="sd">            of `d`.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; d = {&quot;a&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; recursive_update(d, {&quot;a&quot;: 2})</span>
+<span class="sd">        &gt;&gt;&gt; d</span>
+<span class="sd">        {&#39;a&#39;: [1, 2]}</span>
+
+<span class="sd">        &gt;&gt;&gt; d = {&quot;a&quot;: 1}</span>
+<span class="sd">        &gt;&gt;&gt; recursive_update(d, {&quot;a&quot;: 2}, append=False)</span>
+<span class="sd">        &gt;&gt;&gt; d</span>
+<span class="sd">        {&#39;a&#39;: 2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="vm">__class__</span>
+
+    <span class="n">new</span> <span class="o">=</span> <span class="n">_rec</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.split_iri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">split_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.split_iri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Split iri into namespace and name parts and return them as a tuple.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>iri</code></td>
+        <td><code>str</code></td>
+        <td><p>The IRI to be split.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Tuple[str, str]</code></td>
+      <td><p>A split IRI. Split into namespace and name.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tuple[str, str]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split iri into namespace and name parts and return them as a tuple.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        iri: The IRI to be split.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A split IRI. Split into namespace and name.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">iri</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">iri</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">#&quot;</span><span class="p">,</span> <span class="n">name</span>
+
+    <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">iri</span><span class="p">:</span>
+        <span class="n">namespace</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">iri</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span> <span class="n">name</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;all IRIs should contain a slash&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.tfilter" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tfilter</span><span class="p">(</span><span class="n">triples</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.tfilter" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Filters out non-matching triples.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>triples</code></td>
+        <td><code>Iterable[Triple]</code></td>
+        <td><p>Triples to filter from.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>subject</code></td>
+        <td><code>Optional[Union[Iterable[str], str]]</code></td>
+        <td><p>If given, only keep triples whos subject matches <code>subject</code>.
+Can be an iterable of subjects.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>predicate</code></td>
+        <td><code>Optional[Union[Iterable[str], str]]</code></td>
+        <td><p>If given, only keep triples whos predicate matches
+<code>predicate</code>.  Can be an iterable of subjects.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>object</code></td>
+        <td><code>Optional[Union[Iterable, str, Literal]]</code></td>
+        <td><p>If given, only keep triples whos subject matches <code>object</code>.
+Can be an iterable of objects.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Generator[Triple, None, None]</code></td>
+      <td><p>A generator over matching triples.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tfilter</span><span class="p">(</span>
+    <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Iterable[Triple]&quot;</span><span class="p">,</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Iterable[str], str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Iterable[str], str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">object</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Iterable, str, Literal]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filters out non-matching triples.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        triples: Triples to filter from.</span>
+<span class="sd">        subject: If given, only keep triples whos subject matches `subject`.</span>
+<span class="sd">            Can be an iterable of subjects.</span>
+<span class="sd">        predicate: If given, only keep triples whos predicate matches</span>
+<span class="sd">            `predicate`.  Can be an iterable of subjects.</span>
+<span class="sd">        object: If given, only keep triples whos subject matches `object`.</span>
+<span class="sd">            Can be an iterable of objects.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A generator over matching triples.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">subject</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">s</span> <span class="o">!=</span> <span class="n">subject</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subject</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">predicate</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">p</span> <span class="o">!=</span> <span class="n">predicate</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">predicate</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="nb">object</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">o</span> <span class="o">!=</span> <span class="nb">object</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Literal</span><span class="p">))</span>
+            <span class="k">else</span> <span class="n">o</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">object</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022-2025 SINTEF
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/EMMC-ASBL" target="_blank" rel="noopener" title="EMMC-ASBL on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M448 96c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64zM265.8 407.7c0-1.8 0-6 .1-11.6.1-11.4.1-28.8.1-43.7 0-15.6-5.2-25.5-11.3-30.7 37-4.1 76-9.2 76-73.1 0-18.2-6.5-27.3-17.1-39 1.7-4.3 7.4-22-1.7-45-13.9-4.3-45.7 17.9-45.7 17.9-13.2-3.7-27.5-5.6-41.6-5.6s-28.4 1.9-41.6 5.6c0 0-31.8-22.2-45.7-17.9-9.1 22.9-3.5 40.6-1.7 45-10.6 11.7-15.6 20.8-15.6 39 0 63.6 37.3 69 74.3 73.1-4.8 4.3-9.1 11.7-10.6 22.3-9.5 4.3-33.8 11.7-48.3-13.9-9.1-15.8-25.5-17.1-25.5-17.1-16.2-.2-1.1 10.2-1.1 10.2 10.8 5 18.4 24.2 18.4 24.2 9.7 29.7 56.1 19.7 56.1 19.7 0 9 .1 21.7.1 30.6 0 4.8.1 8.6.1 10 0 4.3-3 9.5-11.5 8-66-22.1-112.2-84.9-112.2-158.3 0-91.8 70.2-161.5 162-161.5S388 165.6 388 257.4c.1 73.4-44.7 136.3-110.7 158.3-8.4 1.5-11.5-3.7-11.5-8m-90.5-54.8c-.2-1.5 1.1-2.8 3-3.2 1.9-.2 3.7.6 3.9 1.9.3 1.3-1 2.6-3 3-1.9.4-3.7-.4-3.9-1.7m-9.1 3.2c-2.2.2-3.7-.9-3.7-2.4 0-1.3 1.5-2.4 3.5-2.4 1.9-.2 3.7.9 3.7 2.4 0 1.3-1.5 2.4-3.5 2.4m-14.3-2.2c-1.9-.4-3.2-1.9-2.8-3.2s2.4-1.9 4.1-1.5c2 .6 3.3 2.1 2.8 3.4-.4 1.3-2.4 1.9-4.1 1.3m-12.5-7.3c-1.5-1.3-1.9-3.2-.9-4.1.9-1.1 2.8-.9 4.3.6 1.3 1.3 1.8 3.3.9 4.1-.9 1.1-2.8.9-4.3-.6m-8.5-10c-1.1-1.5-1.1-3.2 0-3.9 1.1-.9 2.8-.2 3.7 1.3 1.1 1.5 1.1 3.3 0 4.1-.9.6-2.6 0-3.7-1.5m-6.3-8.8c-1.1-1.3-1.3-2.8-.4-3.5.9-.9 2.4-.4 3.5.6 1.1 1.3 1.3 2.8.4 3.5-.9.9-2.4.4-3.5-.6m-6-6.4c-1.3-.6-1.9-1.7-1.5-2.6.4-.6 1.5-.9 2.8-.4 1.3.7 1.9 1.8 1.5 2.6-.4.9-1.7 1.1-2.8.4"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
