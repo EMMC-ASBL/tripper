@@ -326,7 +326,7 @@ def save_emmo_quantity(
 
 
 class Units:
-    """A class representing all units in an EMMO-based ontology."""
+    """A class representing all units in an ontology."""
 
     # pylint: disable=too-many-instance-attributes
 
@@ -345,8 +345,8 @@ class Units:
         Arguments:
             ts: Triplestore object containing the ontology to load
                 units from.
-            url: URL (or path) to triplestore from where to load the unit
-                definitions if `ts` is not given.
+            url: URL (or path) to the ontology from where unit
+                definitions are loaded if `ts` is not given.
                 Default: "https://w3id.org/emmo/{EMMO_VERSION}"
             format: Optional format of the source referred to by `url`.
             name: A (versioned) name for the triplestore. Used for caching.
@@ -1191,22 +1191,24 @@ class UnitRegistry(pint.UnitRegistry):
         symbol: "Optional[str]" = None,
         iri: "Optional[str]" = None,
         unitCode: "Optional[str]" = None,
-    ) -> "Any":
-        """Return unit matching any of the arguments.
+    ) -> "Unit":
+        """Return Pint unit matching the unit name, symbol, iri or unitCode
+         as defined in the ontology.
 
         Arguments:
-            name: Search for unit by name. May also be an IRI. Ex: "Ampere".
+            name: Search for unit by name (prefLabel). May also be an IRI.
+                Ex: "Ampere".
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
 
         Returns:
-            Return matching unit.
+            Return matching Pint unit.
         """
         info = self.get_unit_info(
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
-        return self[info.name]
+        return self[info.name].u
 
     def get_unit_info(
         self,
@@ -1215,10 +1217,12 @@ class UnitRegistry(pint.UnitRegistry):
         iri: "Optional[str]" = None,
         unitCode: "Optional[str]" = None,
     ) -> AttrDict:
-        """Return information about a unit.
+        """Return information about a unit name, symbol, iri or unitCode
+         as defined in the ontology.
 
         Arguments:
-            name: Search for unit by name. May also be an IRI. Ex: "Ampere"
+            name: Search for unit by name (prefLabel). May also be an IRI.
+                Ex: "Ampere"
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
@@ -1237,8 +1241,9 @@ class UnitRegistry(pint.UnitRegistry):
             - omIRI: IRI of the unit in the OM ontology.
             - ucumCodes: List of UCUM codes for the unit.
             - unitCode: UNECE common code for the unit.
-            - multiplier: Unit multiplier.
-            - offset: Unit offset.
+            - multiplier: Unit multiplier for converting to the
+              corresponding SI unit.
+            - offset: Unit offset for converting to the corresponding SI unit.
 
         """
         units = self._get_tripper_units()
@@ -1253,10 +1258,12 @@ class UnitRegistry(pint.UnitRegistry):
         iso80000Ref: "Optional[str]" = None,
         value: float = 1.0,
     ) -> "Quantity":
-        """Convert quantity name to a Pint quantity object.
+        """Convert quantity name, iri or iso80000ref in the ontology to a Pint
+        quantity object.
 
         Arguments:
-            name: Access quantity its name (preferred label in the ontology).
+            name: Access quantity by its name (skos:prefLabel in the ontology).
+                Ex: "Energy".
             iri: Access quantity by its IRI, which may refer to EMMO, QUDT,
                 OM or IUPAC.
             iso80000Ref: Access quantity by its ISO80000 reference. Ex: 5-20-1
@@ -1296,15 +1303,18 @@ class UnitRegistry(pint.UnitRegistry):
         return q.to_ontology_units()
 
     def load_quantity(self, ts: Triplestore, iri: str) -> Quantity:
-        """Load quantity from triplestore.
+        """Load quantity individual or (sub)class from the triplestore.
 
         Arguments:
             ts: Triplestore to load from.
-            iri: IRI of quantity to load.
+            iri: IRI of quantity individual to load.
 
         Returns:
             Quantity: Pint representation of the quantity.
 
+        Notes:
+            The quantity must have a value, hence EMMO.Energy will return
+            and exception since it is defined without a value in the ontology.
         """
         value, unit = load_emmo_quantity(ts, iri)
         return self.Quantity(
@@ -1321,7 +1331,7 @@ class UnitRegistry(pint.UnitRegistry):
         si_datatype: bool = True,
         annotations: "Optional[dict]" = None,
     ) -> None:
-        """Save quantity to triplestore.
+        """Save a Pint quantity individual to triplestore.
 
         Arguments:
             ts: Triplestore to save to.

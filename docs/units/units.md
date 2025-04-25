@@ -1,9 +1,9 @@
 Units and quantities
 ====================
-The [tripper.units] subpackage provide support for using [Pint] to work with units and quantites defined in ontologies.
+The [tripper.units] subpackage provides support for using [Pint] to work with units and quantites defined in ontologies.
 
 Currently, only [EMMO] and EMMO-based ontologies can be used as a source for units and quantities.
-However, since [EMMO] include references to the [QUDT] and [OM] ontologies, it is also possible to work with IRIs for these ontologies as well.
+However, since [EMMO] includes references to the [QUDT] and [OM] ontologies, it is also possible to work with IRIs for these ontologies.
 
 > [!NOTE]
 > Currently the support for [OM] is weak.  Improvements are planned.
@@ -11,7 +11,7 @@ However, since [EMMO] include references to the [QUDT] and [OM] ontologies, it i
 
 Unit registry
 -------------
-The [UnitRegistry] in [tripper.units] is a subclass the [Pint] unit registry.
+The [UnitRegistry] in [tripper.units] is a subclass of the [Pint] unit registry.
 By default it is populated with units from [EMMO].
 
 ```python
@@ -20,7 +20,7 @@ By default it is populated with units from [EMMO].
 
 ```
 
-The registry provide attribute and item access to units based on their [EMMO] prefLabel or symbol.
+The registry provides attribute and item access to units based on their [EMMO] prefLabel or symbol.
 
 ```python
 >>> ureg.Pascal
@@ -31,8 +31,8 @@ The registry provide attribute and item access to units based on their [EMMO] pr
 
 ```
 
-By convention are [EMMO] units written in "CamelCase".
-However, unit access also work with "snake_case":
+By convention, [EMMO] units are written in "CamelCase".
+However, unit access also works with "snake_case":
 
 ```python
 >>> ureg.pascal
@@ -43,7 +43,7 @@ However, unit access also work with "snake_case":
 
 ```
 
-Item access creates a quantity representation (see [Working with quantities]):
+Item access creates a subclass of a Pint quantity representation (see [Working with quantities]):
 
 ```python
 >>> ureg["Pa"]
@@ -57,9 +57,9 @@ Item access creates a quantity representation (see [Working with quantities]):
 ### Extra unit registry methods
 Tripper adds some extra methods to the unit registry on top of what is already provided by [Pint], including:
 
-- [get_unit()]: Access unit from name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
+- [get_unit()]: Returns a Pint unit object derived from unit name, symbol, IRI (supporting [EMMO], [QUDT] and [OM]), or unit code defined in the ontology.
 - [get_unit_info()]: Returns a dict with attribute access providing additional information about the unit.
-- [get_quantity()]: Get quantity by its name in the ontology.
+- [get_quantity()]: Returns the Pint quantity (i.e. value and unit) of a quantity in the ontology.
 - [load_quantity()]: Loads a quantity from a triplestore.
 - [save_quantity()]: Saves a quantity to a triplestore.
 - [set_as_default()]: Set the current unit registry as the default. This allows to access the registry with the [get_ureg()] method.
