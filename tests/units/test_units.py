@@ -414,7 +414,7 @@ def test_get_quantity():
 
 
 @pytest.mark.skip(
-    reason="makes testing slow, since cache needs to be recreated afterwords"
+    reason="makes testing slow, since cache needs to be recreated afterwards"
 )
 def test_clear_cache():
     """Test clear_cache() method."""
