@@ -57,7 +57,11 @@ you can now do:
 ```python
 >>> from tripper import Literal, Session
 
->>> session = Session()
+# Normally you will call Session with no arguments
+>>> session = Session()  # doctest: +SKIP
+
+# ...but it is also possible to specify the config file explicitly
+>>> session = Session("tests/input/session.yaml")
 >>> ts = session.get_triplestore("FusekiTest")
 >>> EX = ts.bind("ex", "http://example.com#")
 
