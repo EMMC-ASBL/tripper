@@ -1,5 +1,64 @@
 # Changelog
 
+## [v0.4.2](https://github.com/EMMC-ASBL/tripper/tree/v0.4.2) (2025-04-22)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.1...v0.4.2)
+
+**Merged pull requests:**
+
+- Development branch that merges loose ends together [\#380](https://github.com/EMMC-ASBL/tripper/pull/380) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.4.1](https://github.com/EMMC-ASBL/tripper/tree/v0.4.1) (2025-04-19)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.0...v0.4.1)
+
+**Closed issues:**
+
+- ts.remove does not work in sparqlwrapper. [\#350](https://github.com/EMMC-ASBL/tripper/issues/350)
+- exapand\_iri, documentation formatted wrongly. [\#348](https://github.com/EMMC-ASBL/tripper/issues/348)
+- Attrdict return non-expanded iris, is this correct? [\#341](https://github.com/EMMC-ASBL/tripper/issues/341)
+- The CONSTRUCT sparql query in \_load\_sparql used in load\_dict returns all datasets [\#336](https://github.com/EMMC-ASBL/tripper/issues/336)
+- Adding text in graphDB trough save\_datadoc is done incorrectly? [\#333](https://github.com/EMMC-ASBL/tripper/issues/333)
+- datadoc.dataset.\_load\_sparql uses a CONSTRUCT query, which is not implemented in the SPARQLWrapper [\#330](https://github.com/EMMC-ASBL/tripper/issues/330)
+- Include the JSON-LD context in the installed package [\#326](https://github.com/EMMC-ASBL/tripper/issues/326)
+- It is not possible to search for Literals in the graphdb backend [\#320](https://github.com/EMMC-ASBL/tripper/issues/320)
+- Validator for schema [\#294](https://github.com/EMMC-ASBL/tripper/issues/294)
+
+**Merged pull requests:**
+
+- Corrected DataSetvice to DataService [\#374](https://github.com/EMMC-ASBL/tripper/pull/374) ([francescalb](https://github.com/francescalb))
+- Fix typo in keywords documentation [\#373](https://github.com/EMMC-ASBL/tripper/pull/373) ([jesper-friis](https://github.com/jesper-friis))
+- Updated keywords documentation [\#371](https://github.com/EMMC-ASBL/tripper/pull/371) ([jesper-friis](https://github.com/jesper-friis))
+- Adding logos [\#368](https://github.com/EMMC-ASBL/tripper/pull/368) ([jesper-friis](https://github.com/jesper-friis))
+- Add resources \(classes\) to the JSON-LD context. [\#366](https://github.com/EMMC-ASBL/tripper/pull/366) ([jesper-friis](https://github.com/jesper-friis))
+- Added support for ASK and DESCRIBE queries in the sparqlwrapper backend [\#364](https://github.com/EMMC-ASBL/tripper/pull/364) ([jesper-friis](https://github.com/jesper-friis))
+- Improved formatting of keyword documentation table. [\#362](https://github.com/EMMC-ASBL/tripper/pull/362) ([jesper-friis](https://github.com/jesper-friis))
+- Test for the datadoc command-line tool [\#361](https://github.com/EMMC-ASBL/tripper/pull/361) ([jesper-friis](https://github.com/jesper-friis))
+- Fixed CONTEXT\_URL after branch 294-validator-for-schema was merged to master [\#359](https://github.com/EMMC-ASBL/tripper/pull/359) ([jesper-friis](https://github.com/jesper-friis))
+- Fix formatting [\#358](https://github.com/EMMC-ASBL/tripper/pull/358) ([jesper-friis](https://github.com/jesper-friis))
+- Added session [\#357](https://github.com/EMMC-ASBL/tripper/pull/357) ([jesper-friis](https://github.com/jesper-friis))
+- Added update\(\) method to sparqlwrapper backend [\#356](https://github.com/EMMC-ASBL/tripper/pull/356) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#355](https://github.com/EMMC-ASBL/tripper/pull/355) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#353](https://github.com/EMMC-ASBL/tripper/pull/353) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Corrected sparqlquery for removing triples [\#351](https://github.com/EMMC-ASBL/tripper/pull/351) ([francescalb](https://github.com/francescalb))
+- Corrected formatting of example [\#349](https://github.com/EMMC-ASBL/tripper/pull/349) ([francescalb](https://github.com/francescalb))
+- Added test for Fuseki and fixed query to return TURTLE which works for both fuseki and graphdb [\#347](https://github.com/EMMC-ASBL/tripper/pull/347) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#346](https://github.com/EMMC-ASBL/tripper/pull/346) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Correct syntax [\#344](https://github.com/EMMC-ASBL/tripper/pull/344) ([jesper-friis](https://github.com/jesper-friis))
+- Correct syntax [\#343](https://github.com/EMMC-ASBL/tripper/pull/343) ([jesper-friis](https://github.com/jesper-friis))
+- Flb/expand iri in sparql query [\#340](https://github.com/EMMC-ASBL/tripper/pull/340) ([francescalb](https://github.com/francescalb))
+- disable pylint errors on too-many-positional-arguments [\#339](https://github.com/EMMC-ASBL/tripper/pull/339) ([francescalb](https://github.com/francescalb))
+- Fixed CONSTRUCT to return s and not o [\#338](https://github.com/EMMC-ASBL/tripper/pull/338) ([francescalb](https://github.com/francescalb))
+- Corrected literals in SELECT and CONSTRUCT queries in the sparqlwrapper backend [\#335](https://github.com/EMMC-ASBL/tripper/pull/335) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#332](https://github.com/EMMC-ASBL/tripper/pull/332) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added CONSTRUCT query to sparqlwrapper,  [\#331](https://github.com/EMMC-ASBL/tripper/pull/331) ([francescalb](https://github.com/francescalb))
+- Include context files in installation [\#328](https://github.com/EMMC-ASBL/tripper/pull/328) ([jesper-friis](https://github.com/jesper-friis))
+- Added PINK to contributing projects [\#327](https://github.com/EMMC-ASBL/tripper/pull/327) ([jesper-friis](https://github.com/jesper-friis))
+- Update dataset.py [\#325](https://github.com/EMMC-ASBL/tripper/pull/325) ([jesper-friis](https://github.com/jesper-friis))
+- Added units submodule for working with units and quantities defined in ontologies [\#324](https://github.com/EMMC-ASBL/tripper/pull/324) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#321](https://github.com/EMMC-ASBL/tripper/pull/321) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Schema validator [\#296](https://github.com/EMMC-ASBL/tripper/pull/296) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.4.0](https://github.com/EMMC-ASBL/tripper/tree/v0.4.0) (2025-02-10)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.3.4...v0.4.0)
