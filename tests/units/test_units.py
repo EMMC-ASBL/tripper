@@ -287,19 +287,19 @@ def test_unit_registry():
 
     # Test get_unit()
     q = ureg.get_unit("Metre")
-    assert str(q) == "1 Metre"
+    assert str(q) == "Metre"
 
     q = ureg.get_unit("Meter")  # alias
-    assert str(q) == "1 Metre"
+    assert str(q) == "Metre"
 
     q = ureg.get_unit("meter")  # case insensitive alias
-    assert str(q) == "1 Metre"
+    assert str(q) == "Metre"
 
     q = ureg.get_unit(iri="http://qudt.org/vocab/unit/PA")
-    assert str(q) == "1 Pascal"
+    assert str(q) == "Pascal"
 
     q = ureg.get_unit("http://qudt.org/vocab/unit/PA")  # implicit IRI lookup
-    assert str(q) == "1 Pascal"
+    assert str(q) == "Pascal"
 
     # Test get_unit_info()
     info = ureg.get_unit_info(unitCode="DAY")

@@ -72,25 +72,25 @@ For example:
 
 ```python
 >>> ureg.get_unit(name="Metre")  # name
-<Quantity(1, 'Metre')>
+<Unit('Metre')>
 
 >>> ureg.get_unit(symbol="H/Ω")  # EMMO symbol
-<Quantity(1, 'HenryPerOhm')>
+<Unit('HenryPerOhm')>
 
 >>> ureg.get_unit(symbol="H.Ohm-1")  # UCUM symbol
-<Quantity(1, 'HenryPerOhm')>
+<Unit('HenryPerOhm')>
 
 >>> ureg.get_unit(iri="https://w3id.org/emmo#Metre")  # EMMO IRI
-<Quantity(1, 'Metre')>
+<Unit('Metre')>
 
 >>> ureg.get_unit(iri="http://qudt.org/vocab/unit/HR")  # QUDT IRI
-<Quantity(1, 'Hour')>
+<Unit('Hour')>
 
 >>> ureg.get_unit(iri="http://www.ontology-of-units-of-measure.org/resource/om-2/cubicMetre")  # OM IRI
-<Quantity(1, 'CubicMetre')>
+<Unit('CubicMetre')>
 
 >>> ureg.get_unit(unitCode="HUR")
-<Quantity(1, 'Hour')>
+<Unit('Hour')>
 
 ```
 
@@ -239,7 +239,7 @@ Access by "emmoIRI", "qudtIRI", "omIRI", "iupacIRI" or "iso80000Ref" is also pos
 
 ```python
 >>> from tripper import EMMO
->>> ureg.get_quantity(emmoIRI=EMMO.Acceleration)
+>>> ureg.get_quantity(iri=EMMO.Acceleration)
 <Quantity(1.0, 'MetrePerSquareSecond')>
 
 >>> ureg.get_quantity(iso80000Ref="3-9.1")  # also acceleration
