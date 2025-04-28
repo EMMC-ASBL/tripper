@@ -65,6 +65,10 @@ class MissingUnitError(UnitError):
     """Unit not found in ontology."""
 
 
+class MissingQuantityError(UnitError):
+    """Quantity not found in ontology."""
+
+
 class MissingDimensionStringError(UnitError):
     """Unit does not have a dimensional string."""
 
@@ -140,7 +144,7 @@ def get_unit_triplestore(
         if cache and cachefile.exists():
             _unit_ts.parse(cachefile, format="ntriples")
         else:
-            print("* parsing units triplestore... ", end="", flush=True)
+            print("* caching units triplestore... ", end="", flush=True)
             _unit_ts.parse(url, format=format)
             print("done")
             if cache is not None:
@@ -322,7 +326,7 @@ def save_emmo_quantity(
 
 
 class Units:
-    """A class representing all units in an EMMO-based ontology."""
+    """A class representing all units in an ontology."""
 
     # pylint: disable=too-many-instance-attributes
 
@@ -341,8 +345,8 @@ class Units:
         Arguments:
             ts: Triplestore object containing the ontology to load
                 units from.
-            url: URL (or path) to triplestore from where to load the unit
-                definitions if `ts` is not given.
+            url: URL (or path) to the ontology from where unit
+                definitions are loaded if `ts` is not given.
                 Default: "https://w3id.org/emmo/{EMMO_VERSION}"
             format: Optional format of the source referred to by `url`.
             name: A (versioned) name for the triplestore. Used for caching.
@@ -384,11 +388,11 @@ class Units:
                 self.quantities = d["quantities"]
                 self.constants = d["constants"]
         else:
-            print("* parsing units... ", end="", flush=True)
+            print("* caching units... ", end="", flush=True)
             self.units = self._parse_units(include_prefixed=include_prefixed)
-            print("done\n* parsing quantities... ", end="", flush=True)
+            print("done\n* caching quantities... ", end="", flush=True)
             self.quantities = self._parse_quantities(constants=False)
-            print("done\n* parsing constants... ", end="", flush=True)
+            print("done\n* caching constants... ", end="", flush=True)
             self.constants = self._parse_quantities(constants=True)
             print("done")
 
@@ -1066,9 +1070,8 @@ class Quantity(pint.Quantity):
                 try:
                     d = units._parse_unitname(info.name)
                 except MissingUnitError:
-                    pass
-                else:
-                    compatible_units.append((info.name, q.m, d))
+                    d = 1.0, {q.u.name: 1}
+                compatible_units.append((info.name, q.m, d))
 
         def sortkey(x):
             """Returns sort key for `compatible_units`."""
@@ -1082,7 +1085,7 @@ class Quantity(pint.Quantity):
 
         compatible_units.sort(key=sortkey)
         name, mult, _ = compatible_units[0]
-        return mult * ureg[name]
+        return ureg.Quantity(mult, name)
 
     def ito_ontology_units(self) -> None:
         """Inplace rescale to ontology units."""
@@ -1157,6 +1160,8 @@ class UnitRegistry(pint.UnitRegistry):
             'http://qudt.org/vocab/unit/HR'
 
         """
+        url, name = _default_url_name(url, name)
+
         self._tripper_cachedir = get_cachedir(create=cache is not None)
         self._tripper_units = None
         self._tripper_unitsargs = {
@@ -1208,22 +1213,24 @@ class UnitRegistry(pint.UnitRegistry):
         symbol: "Optional[str]" = None,
         iri: "Optional[str]" = None,
         unitCode: "Optional[str]" = None,
-    ) -> "Any":
-        """Return unit matching any of the arguments.
+    ) -> "Unit":
+        """Return Pint unit matching the unit name, symbol, iri or unitCode
+         as defined in the ontology.
 
         Arguments:
-            name: Search for unit by name. May also be an IRI. Ex: "Ampere".
+            name: Search for unit by name (prefLabel). May also be an IRI.
+                Ex: "Ampere".
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
 
         Returns:
-            Return matching unit.
+            Return matching Pint unit.
         """
         info = self.get_unit_info(
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
-        return self[info.name]
+        return self[info.name].u
 
     def get_unit_info(
         self,
@@ -1232,10 +1239,12 @@ class UnitRegistry(pint.UnitRegistry):
         iri: "Optional[str]" = None,
         unitCode: "Optional[str]" = None,
     ) -> AttrDict:
-        """Return information about a unit.
+        """Return information about a unit name, symbol, iri or unitCode
+         as defined in the ontology.
 
         Arguments:
-            name: Search for unit by name. May also be an IRI. Ex: "Ampere"
+            name: Search for unit by name (prefLabel). May also be an IRI.
+                Ex: "Ampere"
             symbol: Search for unit by symbol or UCUM code. Ex: "A", "km"
             iri: Search for unit by IRI.
             unitCode: Search for unit by UNECE common code. Ex: "MTS"
@@ -1254,8 +1263,9 @@ class UnitRegistry(pint.UnitRegistry):
             - omIRI: IRI of the unit in the OM ontology.
             - ucumCodes: List of UCUM codes for the unit.
             - unitCode: UNECE common code for the unit.
-            - multiplier: Unit multiplier.
-            - offset: Unit offset.
+            - multiplier: Unit multiplier for converting to the
+              corresponding SI unit.
+            - offset: Unit offset for converting to the corresponding SI unit.
 
         """
         units = self._get_tripper_units()
@@ -1263,20 +1273,75 @@ class UnitRegistry(pint.UnitRegistry):
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
 
+    def get_quantity(
+        self,
+        name: "Optional[str]" = None,
+        iri: "Optional[str]" = None,
+        iso80000Ref: "Optional[str]" = None,
+        value: float = 1.0,
+    ) -> "Quantity":
+        """Convert quantity name, iri or iso80000ref in the ontology to a Pint
+        quantity object.
+
+        Arguments:
+            name: Access quantity by its name (skos:prefLabel in the ontology).
+                Ex: "Energy".
+            iri: Access quantity by its IRI, which may refer to EMMO, QUDT,
+                OM or IUPAC.
+            iso80000Ref: Access quantity by its ISO80000 reference. Ex: 5-20-1
+            value: Value of the quantity value in units of SI base units.
+
+        """
+        # pylint: disable=too-many-branches
+        units = self._get_tripper_units()
+        if name:
+            if name not in units.quantities:
+                raise MissingQuantityError(name)
+            info = units.quantities[name]
+        elif iri:
+            iri_attr = "emmoIRI", "qudtIRI", "omIRI", "iupacIRI"
+            found = False
+            for info in units.quantities.values():
+                for attr in iri_attr:
+                    if info[attr] == iri:
+                        found = True
+                        break
+                if found:
+                    break
+            else:
+                raise MissingQuantityError(f"iri={iri}")
+        elif iso80000Ref:
+            for info in units.quantities.values():
+                if info.iso80000Ref == iso80000Ref:
+                    break
+            else:
+                raise MissingQuantityError(f"iso80000Ref={iso80000Ref}")
+        else:
+            raise ValueError(
+                "Missing argument to get_quantity(). Either `name`, "
+                "`iri` or `iso80000Ref` must be provided"
+            )
+        q = self.Quantity(value, base_unit_expression(info.dimension))
+        return q.to_ontology_units()
+
     def load_quantity(self, ts: Triplestore, iri: str) -> Quantity:
-        """Load quantity from triplestore.
+        """Load quantity individual or (sub)class from the triplestore.
 
         Arguments:
             ts: Triplestore to load from.
-            iri: IRI of quantity to load.
+            iri: IRI of quantity individual to load.
 
         Returns:
             Quantity: Pint representation of the quantity.
 
+        Notes:
+            The quantity must have a value, hence EMMO.Energy will return
+            and exception since it is defined without a value in the ontology.
         """
         value, unit = load_emmo_quantity(ts, iri)
-        u = self.get_unit(iri=unit) if ":" in unit else self[unit]
-        return value * u
+        return self.Quantity(
+            value, self.get_unit(iri=unit) if ":" in unit else unit
+        )
 
     def save_quantity(
         self,
@@ -1288,7 +1353,7 @@ class UnitRegistry(pint.UnitRegistry):
         si_datatype: bool = True,
         annotations: "Optional[dict]" = None,
     ) -> None:
-        """Save quantity to triplestore.
+        """Save a Pint quantity individual to triplestore.
 
         Arguments:
             ts: Triplestore to save to.
@@ -1322,7 +1387,7 @@ class UnitRegistry(pint.UnitRegistry):
         include_prefixed = self._tripper_unitsargs["include_prefixed"]
         pf = "-prefixed" if include_prefixed else ""
         cachedir = self._tripper_cachedir
-        ontofile = cachedir / f"{name}.ntriples"
+        ontofile = cachedir / f"units-{name}.ntriples"
         unitsfile = cachedir / f"units{pf}-{name}.pickle"
         if ontofile.exists():
             ontofile.unlink()
