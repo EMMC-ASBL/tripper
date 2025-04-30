@@ -336,6 +336,9 @@ def test_store():
     d3 = acquire(ts, EX.exdata)
     assert isinstance(d3.distribution, list)
 
+    with pytest.raises(ValueError):
+        store(ts, d, type="Dataset", method="invalid_method_name")
+
 
 def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
