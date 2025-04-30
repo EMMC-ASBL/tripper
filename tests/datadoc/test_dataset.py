@@ -298,11 +298,11 @@ def test_get():
     assert get(d, "c", default="x", aslist=False) == "x"
 
 
-# if True:
-def test_save_dict():
+def test_store():
     """Test save_dict()."""
     from tripper import Triplestore
-    from tripper.datadoc import save_dict
+    from tripper.datadoc import acquire, store
+    from tripper.datadoc.errors import IRIExistsError
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -318,8 +318,23 @@ def test_save_dict():
             ),
         },
     }
-    save_dict(ts, d, type="Dataset")
+    store(ts, d, type="Dataset")
     print(ts.serialize())
+
+    with pytest.raises(IRIExistsError):
+        store(ts, d, type="Dataset")
+
+    d1 = acquire(ts, EX.exdata)
+    assert isinstance(d1.distribution, dict)
+
+    store(ts, d, type="Dataset", method="overwrite")
+    d2 = acquire(ts, EX.exdata)
+    assert isinstance(d2.distribution, dict)
+    assert d2.distribution.downloadURL == d1.distribution.downloadURL
+
+    store(ts, d, type="Dataset", method="merge")
+    d3 = acquire(ts, EX.exdata)
+    assert isinstance(d3.distribution, list)
 
 
 def test_datadoc():

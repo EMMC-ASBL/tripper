@@ -19,9 +19,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from tripper import DCAT, Triplestore
-from tripper.datadoc.dataset import add, get
-from tripper.datadoc.dataset import load as load_doc
-from tripper.datadoc.dataset import store
+from tripper.datadoc.dataset import acquire, add, get, store
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -94,7 +92,7 @@ def save(
         dataset = AttrDict({"@id": newiri, "@type": typeiri})
         save_dataset = True
     elif isinstance(dataset, str):
-        dset = load_doc(ts, iri=dataset, use_sparql=use_sparql)
+        dset = acquire(ts, iri=dataset, use_sparql=use_sparql)
         if dset:
             dataset = dset
         else:
@@ -121,7 +119,7 @@ def save(
             triples.append((dataset["@id"], DCAT.distribution, newiri))
             save_distribution = True
     if isinstance(distribution, str):
-        distr = load_doc(ts, iri=distribution, use_sparql=use_sparql)
+        distr = acquire(ts, iri=distribution, use_sparql=use_sparql)
         if distr:
             distribution = distr
         else:
@@ -235,7 +233,7 @@ def load(
     import dlite
     from dlite.protocol import Protocol
 
-    dct = load_doc(ts, iri=iri, use_sparql=use_sparql)
+    dct = acquire(ts, iri=iri, use_sparql=use_sparql)
     if DCAT.Dataset not in get(dct, "@type"):
         raise TypeError(
             f"expected IRI '{iri}' to be a dataset, but got: "

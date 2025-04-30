@@ -11,19 +11,16 @@ High-level function for populating the triplestore from YAML documentation:
 
 Functions for searching the triplestore:
 
-  - `search_iris()`: Get IRIs of matching entries in the triplestore.
+  - `search()`: Get IRIs of matching entries in the triplestore.
 
 Functions for working with the dict-representation:
 
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
   - `store()`: Store documentation to the triplestore.
-  - `load()`: Load documentation from the triplestore.
+  - `acquire()`: Load documentation from the triplestore.
   - `told()`: Extend documention to valid JSON-LD (represented as a Python dict)
-  - `remove()`: Remove documentation of a resource from the triplestore.
-
-Functions for interaction with OTEAPI:
-
-  - `get_partial_pipeline()`: Returns a OTELib partial pipeline.
+  - `delete_iri()`: Remove documentation of resource with given IRI.
+  - `delete()`: Remove documentation of matching resources.
 
 ---
 
@@ -372,11 +369,10 @@ def store(
     )
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
-        print("*** d:", d)
         iri = d["@id"]
         if ts.has(iri):
             if method == "overwrite":
-                remove(ts, iri)
+                delete_iri(ts, iri)
             elif method == "retain":
                 raise IRIExistsError(f"Cannot overwrite existing IRI: {iri}")
             elif method == "merge":
@@ -511,7 +507,7 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
                 ts.add((iri, RDF.type, uri))
 
 
-def load(
+def acquire(
     ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
 ) -> dict:
     """Load description of a resource from the triplestore.
@@ -540,7 +536,7 @@ def load(
                 val = [val]
             for v in val:
                 if key != "@id" and isinstance(v, str) and v.startswith("_:"):
-                    add(d, key, load(ts, iri=v, use_sparql=use_sparql))
+                    add(d, key, acquire(ts, iri=v, use_sparql=use_sparql))
                 else:
                     add(d, key, v)
 
@@ -553,14 +549,14 @@ def load_dict(
     # pylint: disable=missing-function-docstring
     warnings.warn(
         "tripper.datadoc.load_dict() is deprecated. "
-        "Please use tripper.datadoc.load() instead.",
+        "Please use tripper.datadoc.acquire() instead.",
         category=DeprecationWarning,
         stacklevel=2,
     )
-    return load(ts=ts, iri=iri, use_sparql=use_sparql)
+    return acquire(ts=ts, iri=iri, use_sparql=use_sparql)
 
 
-load_dict.__doc__ = load.__doc__
+load_dict.__doc__ = acquire.__doc__
 
 
 def _load_triples(ts: Triplestore, iri: str) -> dict:
@@ -603,7 +599,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
         for prefix, namespace in ts.namespaces.items():
             ts2.bind(prefix, str(namespace))
         ts2.add_triples(triples)  # type: ignore
-        dct = load(ts2, iri, use_sparql=False)
+        dct = acquire(ts2, iri, use_sparql=False)
     return dct
 
 
@@ -1010,7 +1006,7 @@ def get_partial_pipeline(
     # pylint: disable=too-many-branches,too-many-locals
     context = get_context(context=context, domain="default")
 
-    dct = load(ts, iri, use_sparql=use_sparql)
+    dct = acquire(ts, iri, use_sparql=use_sparql)
 
     if isinstance(distribution, str):
         for distr in get(dct, "distribution"):
@@ -1043,7 +1039,7 @@ def get_partial_pipeline(
                     f"dataset '{iri}' has no such parser: {parser}"
                 )
         if isinstance(par, str):
-            par = load(ts, par)
+            par = acquire(ts, par)
         configuration = par.get("configuration")
     else:
         configuration = None
@@ -1105,7 +1101,7 @@ def get_partial_pipeline(
     return pipeline
 
 
-def remove(ts: Triplestore, iri: str) -> None:
+def delete_iri(ts: Triplestore, iri: str) -> None:
     """Remove `iri` from triplestore using SPARQL."""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
@@ -1120,20 +1116,6 @@ def remove(ts: Triplestore, iri: str) -> None:
     ts.update(query)
 
 
-def delete_iri(ts: Triplestore, iri: str) -> None:
-    # pylint: disable=missing-function-docstring
-    warnings.warn(
-        "tripper.datadoc.delete_iri() is deprecated. "
-        "Please use tripper.datadoc.remove() instead.",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return remove(ts=ts, iri=iri)
-
-
-delete_iri.__doc__ = remove.__doc__
-
-
 def make_query(
     ts: Triplestore,
     type=None,
@@ -1145,7 +1127,7 @@ def make_query(
 ) -> "str":
     """Help function for creating a SPARQL query.
 
-    See search_iris() for description of arguments.
+    See search() for description of arguments.
 
     The `query_type` argument is typically one of "SELECT DISTINCT"
     "SELECT", or "DELETE".
@@ -1240,7 +1222,7 @@ def make_query(
     return query
 
 
-def search_iris(
+def search(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,
@@ -1279,20 +1261,20 @@ def search_iris(
     Examples:
         List all data resources IRIs:
 
-            search_iris(ts)
+            search(ts)
 
         List IRIs of all resources with John Doe as `contactPoint`:
 
-            search_iris(ts, criteria={"contactPoint.hasName": "John Doe"})
+            search(ts, criteria={"contactPoint.hasName": "John Doe"})
 
         List IRIs of all samples:
 
-            search_iris(ts, type=CHAMEO.Sample)
+            search(ts, type=CHAMEO.Sample)
 
         List IRIs of all datasets with John Doe as `contactPoint` AND are
         measured on a given sample:
 
-            search_iris(
+            search(
                 ts,
                 type=DCAT.Dataset,
                 criteria={
@@ -1304,7 +1286,7 @@ def search_iris(
         List IRIs of all datasets who's title matches the regular expression
         "[Mm]agnesium":
 
-            search_iris(
+            search(
                 ts, type=DCAT.Dataset, regex={"title": "[Mm]agnesium"},
             )
 
@@ -1327,6 +1309,36 @@ def search_iris(
     return [r[0] for r in ts.query(query)]  # type: ignore
 
 
+def search_iris(
+    ts: Triplestore,
+    type=None,
+    criterias: "Optional[dict]" = None,
+    regex: "Optional[dict]" = None,
+    flags: "Optional[str]" = None,
+    keywords: "Optional[Keywords]" = None,
+    skipblanks: "bool" = True,
+) -> "List[str]":
+    # pylint: disable=missing-function-docstring
+    warnings.warn(
+        "tripper.datadoc.save_dict() is deprecated. "
+        "Please use tripper.datadoc.store() instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return search(
+        ts=ts,
+        type=type,
+        criterias=criterias,
+        regex=regex,
+        flags=flags,
+        keywords=keywords,
+        skipblanks=skipblanks,
+    )
+
+
+search_iris.__doc__ = search.__doc__
+
+
 def delete(
     ts: Triplestore,
     type=None,
@@ -1335,8 +1347,8 @@ def delete(
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
 ) -> None:
-    """Delete matching resources. See `search_iris()` for a description of arguments."""
-    iris = search_iris(
+    """Delete matching resources. See `search()` for a description of arguments."""
+    iris = search(
         ts=ts,
         type=type,
         criterias=criterias,
