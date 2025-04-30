@@ -347,6 +347,18 @@ class Keywords:
             "- **Definition**: The definition of the keyword.",
             "- **Usage note**: Notes about how to use the keyword.",
             "",
+            "## Special keywords (from JSON-LD)",
+            "See the [JSON-LD specification] for more details.",
+            "",
+            # pylint: disable=line-too-long
+            "| Keyword    | Range         | Conformance | Definition                                                   | Usage note |",
+            "|------------|---------------|-------------|--------------------------------------------------------------|------------|",
+            "| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                    |            |",
+            "| [@type]    | IRI           | recommended | Ontological class defining the class of a node.              |            |",
+            "| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords. |            |",
+            "| [@base]    | list          | optional    | Base IRI against which relative IRIs are resolved.           |            |",
+            "| [@graph]   | list          | optional    | Used for documenting multiple resources.                     |            |",
+            "",
         ]
         order = {"mandatory": 1, "recommended": 2, "optional": 3}
         refs = []
@@ -406,6 +418,15 @@ class Keywords:
             out.append("")
 
         # References
+        extra_refs = [
+            # pylint: disable=line-too-long
+            "[@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
+            "[@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
+            "[@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
+            "[@base]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
+            "[@graph]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords",
+        ]
+        refs.extend(extra_refs)
         out.append("")
         out.append("")
         out.append("")
@@ -433,13 +454,12 @@ class Keywords:
         out.extend(self._to_table(["Prefix", "Namespace"], rows))
         out.append("")
         out.append("")
-        out.append(
-            "[default JSON-LD context]: https://raw.githubuser"
-            "content.com/EMMC-ASBL/tripper/refs/heads/master/"
-            "tripper/context/0.2/context.json"
-        )
-        out.append(
-            "[User-defined prefixes]: customisation.md/#user-defined-prefixes"
+        out.extend(
+            [
+                # pylint: disable=line-too-long
+                "[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json",
+                "[User-defined prefixes]: customisation.md/#user-defined-prefixes",
+            ]
         )
         with open(outfile, "wt", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")

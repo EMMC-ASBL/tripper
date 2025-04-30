@@ -28,5 +28,5 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | chameo  | https://w3id.org/emmo/domain/characterisation-methodology/chameo# |
 
 
-[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
+[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json
 [User-defined prefixes]: customisation.md/#user-defined-prefixes

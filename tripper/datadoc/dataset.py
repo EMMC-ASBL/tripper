@@ -16,9 +16,10 @@ Functions for searching the triplestore:
 Functions for working with the dict-representation:
 
   - `read_datadoc()`: Read documentation from YAML file and return it as dict.
-  - `save_dict()`: Save dict documentation to the triplestore.
-  - `load_dict()`: Load dict documentation from the triplestore.
-  - `told()`: Return the dict as JSON-LD (represented as a Python dict)
+  - `store()`: Store documentation to the triplestore.
+  - `load()`: Load documentation from the triplestore.
+  - `told()`: Extend documention to valid JSON-LD (represented as a Python dict)
+  - `remove()`: Remove documentation of a resource from the triplestore.
 
 Functions for interaction with OTEAPI:
 
@@ -53,6 +54,7 @@ from tripper import (
 from tripper.datadoc.context import Context, get_context
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
+    IRIExistsError,
     NoSuchTypeError,
     ValidateError,
 )
@@ -314,6 +316,101 @@ def _told(
     return d
 
 
+def store(
+    ts: Triplestore,
+    source: "Union[dict, list]",
+    type: "Optional[str]" = None,
+    context: "Optional[Context]" = None,
+    keywords: "Optional[Keywords]" = None,
+    prefixes: "Optional[dict]" = None,
+    method: str = "retain",
+) -> dict:
+    # pylint: disable=line-too-long,too-many-branches
+    """Store documentation of a resource to a triplestore.
+
+    Arguments:
+        ts: Triplestore to store to.
+        source: Dict or list with the resource documentation to store.
+        type: Type of documented resource.  Should be one of the resource types
+            defined in `keywords`.
+        context: Context object defining keywords in addition to those defined
+            in the default [JSON-LD context].
+            Complementing the `keywords` argument.
+        keywords: Keywords object with additional keywords definitions.
+            If not provided, only default keywords are considered.
+        prefixes: Dict with prefixes in addition to those included in the
+            JSON-LD context.  Should map namespace prefixes to IRIs.
+        method: How to handle the case where `ts` already contains a document
+            with the same id as `source`. Possible values are:
+            - "overwrite": Remove existing documentation before storing.
+            - "retain": Raise an `IRIAlreadyExistsError` if the IRI of `source`
+              already exits in the triplestore.
+            - "merge": Merge `source` with existing documentation.
+
+    Returns:
+        A copy of `source` updated to valid JSON-LD.
+
+    Notes:
+        The keywords should either be one of the [default keywords] or defined
+        by the `context` or `keywords` arguments.
+
+    References:
+    [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/
+    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
+    """
+    keywords = get_keywords(keywords)
+    context = get_context(
+        keywords=keywords, context=context, prefixes=prefixes
+    )
+
+    doc = told(
+        source,
+        type=type,
+        keywords=keywords,
+        prefixes=prefixes,
+        context=context,
+    )
+    docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
+    for d in docs:
+        print("*** d:", d)
+        iri = d["@id"]
+        if ts.has(iri):
+            if method == "overwrite":
+                remove(ts, iri)
+            elif method == "retain":
+                raise IRIExistsError(f"Cannot overwrite existing IRI: {iri}")
+            elif method == "merge":
+                pass
+            else:
+                raise ValueError(
+                    f"Invalid storage method: '{method}'. "
+                    "Should be one of: 'overwrite', 'retain' or 'merge'"
+                )
+
+    context.sync_prefixes(ts)
+
+    add(doc, "@context", context.get_context_dict())
+    # if "@context" in doc:
+    #     context.add_context(doc["@context"])
+    #     doc = jsonld.compact(doc, context.get_context_dict())
+    # else:
+    #    doc["@context"] = context.get_context_dict()
+
+    # Validate
+    # TODO: reenable validation
+    # validate(doc, type=type, keywords=keywords)
+
+    # Write json-ld data to triplestore (using temporary rdflib triplestore)
+    nt = jsonld.to_rdf(doc, options={"format": "application/n-quads"})
+
+    ts.parse(data=nt, format="ntriples")
+
+    # Add statements and data models to triplestore
+    save_extra_content(ts, doc)  # FIXME: SLOW!!
+
+    return doc
+
+
 def save_dict(
     ts: Triplestore,
     source: "Union[dict, list]",
@@ -321,71 +418,27 @@ def save_dict(
     context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
+    method: str = "merge",
 ) -> dict:
-    # pylint: disable=line-too-long,too-many-branches
-    """Save a dict representation of given type of data to a triplestore.
-
-    Arguments:
-        ts: Triplestore to save to.
-        source: Dict with data to save.
-        type: Type of data to save.  Should be one of the resource types
-            defined in `keywords`.
-        context: Context object providing mapings.
-        keywords: Keywords object with keywords definitions.  If not provided,
-            only default keywords are considered.
-        prefixes: Dict with prefixes in addition to those included in the
-            JSON-LD context.  Should map namespace prefixes to IRIs.
-
-    Returns:
-        An updated copy of `source`.
-
-    Notes:
-        The keys in `source` and `kwargs` may be either properties defined in the
-        [JSON-LD context] or one of the following special keywords:
-
-          - "@id": Dataset IRI.  Must always be given.
-          - "@type": IRI of the ontology class for this type of data.
-            For datasets, it is typically used to refer to a specific subclass
-            of `emmo:Dataset` that provides a semantic description of this
-            dataset.
-
-    References:
-    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json
-    """
-    keywords = get_keywords(keywords)
-    context = get_context(
-        keywords=keywords, context=context, prefixes=prefixes
+    # pylint: disable=missing-function-docstring
+    warnings.warn(
+        "tripper.datadoc.save_dict() is deprecated. "
+        "Please use tripper.datadoc.store() instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
     )
-
-    d = told(
-        source,
+    return store(
+        ts=ts,
+        source=source,
         type=type,
+        context=context,
         keywords=keywords,
         prefixes=prefixes,
-        context=context,
+        method=method,
     )
-    context.sync_prefixes(ts)
 
-    add(d, "@context", context.get_context_dict())
-    # if "@context" in d:
-    #     context.add_context(d["@context"])
-    #     d = jsonld.compact(d, context.get_context_dict())
-    # else:
-    #    d["@context"] = context.get_context_dict()
 
-    # Validate
-    # TODO: reenable validation
-    # validate(d, type=type, keywords=keywords)
-
-    # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    nt = jsonld.to_rdf(d, options={"format": "application/n-quads"})
-
-    ts.parse(data=nt, format="ntriples")
-
-    # Add statements and data models to triplestore
-    save_extra_content(ts, d)  # FIXME: SLOW!!
-
-    return d
+save_dict.__doc__ = store.__doc__
 
 
 def save_extra_content(ts: Triplestore, source: dict) -> None:
@@ -458,19 +511,19 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
                 ts.add((iri, RDF.type, uri))
 
 
-def load_dict(
+def load(
     ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
 ) -> dict:
-    """Load dict representation of data with given IRI from the triplestore.
+    """Load description of a resource from the triplestore.
 
     Arguments:
-        ts: Triplestore to load data from.
-        iri: IRI of the data to load.
+        ts: Triplestore to load description from.
+        iri: IRI of the to resource.
         use_sparql: Whether to access the triplestore with SPARQL.
-            Defaults to `ts.prefer_sparql`.
+            Defaults to the value of `ts.prefer_sparql`.
 
     Returns:
-        Dict-representation of the loaded data.
+        Dict describing the resource identified by `iri`.
     """
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
@@ -487,11 +540,27 @@ def load_dict(
                 val = [val]
             for v in val:
                 if key != "@id" and isinstance(v, str) and v.startswith("_:"):
-                    add(d, key, load_dict(ts, iri=v, use_sparql=use_sparql))
+                    add(d, key, load(ts, iri=v, use_sparql=use_sparql))
                 else:
                     add(d, key, v)
 
     return d
+
+
+def load_dict(
+    ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
+) -> dict:
+    # pylint: disable=missing-function-docstring
+    warnings.warn(
+        "tripper.datadoc.load_dict() is deprecated. "
+        "Please use tripper.datadoc.load() instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return load(ts=ts, iri=iri, use_sparql=use_sparql)
+
+
+load_dict.__doc__ = load.__doc__
 
 
 def _load_triples(ts: Triplestore, iri: str) -> dict:
@@ -534,7 +603,7 @@ def _load_sparql(ts: Triplestore, iri: str) -> dict:
         for prefix, namespace in ts.namespaces.items():
             ts2.bind(prefix, str(namespace))
         ts2.add_triples(triples)  # type: ignore
-        dct = load_dict(ts2, iri, use_sparql=False)
+        dct = load(ts2, iri, use_sparql=False)
     return dct
 
 
@@ -811,7 +880,7 @@ def save_datadoc(
         with openfile(file_or_dict, mode="rt", encoding="utf-8") as f:
             d = yaml.safe_load(f)
 
-    return save_dict(ts, d, keywords=keywords, context=context)
+    return store(ts, d, keywords=keywords, context=context)
 
 
 def validate(
@@ -941,7 +1010,7 @@ def get_partial_pipeline(
     # pylint: disable=too-many-branches,too-many-locals
     context = get_context(context=context, domain="default")
 
-    dct = load_dict(ts, iri, use_sparql=use_sparql)
+    dct = load(ts, iri, use_sparql=use_sparql)
 
     if isinstance(distribution, str):
         for distr in get(dct, "distribution"):
@@ -974,7 +1043,7 @@ def get_partial_pipeline(
                     f"dataset '{iri}' has no such parser: {parser}"
                 )
         if isinstance(par, str):
-            par = load_dict(ts, par)
+            par = load(ts, par)
         configuration = par.get("configuration")
     else:
         configuration = None
@@ -1036,8 +1105,8 @@ def get_partial_pipeline(
     return pipeline
 
 
-def delete_iri(ts: Triplestore, iri: str) -> None:
-    """Delete `iri` from triplestore by calling `ts.update().`"""
+def remove(ts: Triplestore, iri: str) -> None:
+    """Remove `iri` from triplestore using SPARQL."""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
     # Some backends requires the prefix to be defined...
@@ -1049,6 +1118,20 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
     }}
     """
     ts.update(query)
+
+
+def delete_iri(ts: Triplestore, iri: str) -> None:
+    # pylint: disable=missing-function-docstring
+    warnings.warn(
+        "tripper.datadoc.delete_iri() is deprecated. "
+        "Please use tripper.datadoc.remove() instead.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return remove(ts=ts, iri=iri)
+
+
+delete_iri.__doc__ = remove.__doc__
 
 
 def make_query(

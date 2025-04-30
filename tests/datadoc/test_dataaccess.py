@@ -108,6 +108,7 @@ def test_save_and_load():
             "generator": GEN.sem_hitachi,
             "parser": PARSER.sem_hitachi,
         },
+        method="overwrite",
     )
     assert newfile2.exists()
     assert newfile2.stat().st_size == len(buf)

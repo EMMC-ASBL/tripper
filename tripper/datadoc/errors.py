@@ -27,6 +27,10 @@ class InvalidContextError(TripperError):
     """Context is invalid."""
 
 
+class IRIExistsError(TripperError):
+    """The IRI already exists in the triplestore."""
+
+
 class UnknownKeywordWarning(TripperWarning):
     """Unknown keyword in data documentation."""
 

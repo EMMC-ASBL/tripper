@@ -19,7 +19,9 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from tripper import DCAT, Triplestore
-from tripper.datadoc.dataset import add, get, load_dict, save_dict
+from tripper.datadoc.dataset import add, get
+from tripper.datadoc.dataset import load as load_doc
+from tripper.datadoc.dataset import store
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -35,6 +37,7 @@ def save(
     generator: "Optional[str]" = None,
     prefixes: "Optional[dict]" = None,
     use_sparql: "Optional[bool]" = None,
+    method: str = "retain",
 ) -> str:
     """Saves data to a dataresource and document it in the triplestore.
 
@@ -64,6 +67,12 @@ def save(
             JSON-LD context.  Should map namespace prefixes to IRIs.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
+        method: How to handle the case where `ts` already contains a document
+            with the same id as `data`. Possible values are:
+            - "overwrite": Remove existing documentation before storing.
+            - "retain": Raise an `IRIAlreadyExistsError` if the IRI of `source`
+              already exits in the triplestore.
+            - "merge": Merge `source` with existing documentation.
 
     Returns:
         IRI of the dataset.
@@ -85,7 +94,7 @@ def save(
         dataset = AttrDict({"@id": newiri, "@type": typeiri})
         save_dataset = True
     elif isinstance(dataset, str):
-        dset = load_dict(ts, iri=dataset, use_sparql=use_sparql)
+        dset = load_doc(ts, iri=dataset, use_sparql=use_sparql)
         if dset:
             dataset = dset
         else:
@@ -112,7 +121,7 @@ def save(
             triples.append((dataset["@id"], DCAT.distribution, newiri))
             save_distribution = True
     if isinstance(distribution, str):
-        distr = load_dict(ts, iri=distribution, use_sparql=use_sparql)
+        distr = load_doc(ts, iri=distribution, use_sparql=use_sparql)
         if distr:
             distribution = distr
         else:
@@ -185,9 +194,15 @@ def save(
     # Update triplestore
     ts.add_triples(triples)
     if save_dataset:
-        save_dict(ts, dataset, "Dataset", prefixes=prefixes)
+        store(ts, dataset, type="Dataset", prefixes=prefixes, method=method)
     elif save_distribution:
-        save_dict(ts, distribution, "Distribution", prefixes=prefixes)
+        store(
+            ts,
+            distribution,
+            type="Distribution",
+            prefixes=prefixes,
+            method=method,
+        )
 
     return dataset["@id"]
 
@@ -220,7 +235,7 @@ def load(
     import dlite
     from dlite.protocol import Protocol
 
-    dct = load_dict(ts, iri=iri, use_sparql=use_sparql)
+    dct = load_doc(ts, iri=iri, use_sparql=use_sparql)
     if DCAT.Dataset not in get(dct, "@type"):
         raise TypeError(
             f"expected IRI '{iri}' to be a dataset, but got: "
