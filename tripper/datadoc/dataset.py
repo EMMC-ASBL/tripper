@@ -1102,7 +1102,7 @@ def get_partial_pipeline(
 
 
 def delete_iri(ts: Triplestore, iri: str) -> None:
-    """Remove `iri` from triplestore using SPARQL."""
+    """Delete `iri` from triplestore using SPARQL."""
     subj = iri if iri.startswith("_:") else f"<{ts.expand_iri(iri)}>"
     query = f"""
     # Some backends requires the prefix to be defined...
