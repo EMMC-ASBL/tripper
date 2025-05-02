@@ -1032,7 +1032,7 @@ class Quantity(pint.Quantity):
         dimensionality that exists in the ontology.
 
         Notes:
-            This function tries select the "simplest" unit among all the
+            This function tries to select the "simplest" unit among all the
             units with compatible physical dimensionality in the ontology.
 
             This is done according to the following heuristics:
