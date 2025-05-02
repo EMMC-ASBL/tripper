@@ -68,6 +68,9 @@ __all__ = (
 MATCH_PREFIXED_IRI = re.compile(
     r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
 )
+MATCH_IRI = re.compile(
+    "^([a-z0-9]*)://([a-zA-Z0-9.-]+)((/[a-zA-Z0-9_+-]+)+)[#/]([a-zA-Z0-9_+-]+)$"
+)
 
 
 class AttrDict(dict):

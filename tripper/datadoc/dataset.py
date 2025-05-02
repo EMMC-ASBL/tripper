@@ -43,6 +43,7 @@ from typing import TYPE_CHECKING
 from pyld import jsonld
 
 from tripper import (
+    OWL,
     RDF,
     Literal,
     Namespace,
@@ -66,7 +67,16 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
+    from typing import (
+        Any,
+        Collection,
+        Iterable,
+        List,
+        Mapping,
+        Optional,
+        Sequence,
+        Union,
+    )
 
     from tripper.datadoc.keywords import FileLoc
     from tripper.utils import Triple
@@ -435,6 +445,117 @@ def save_dict(
 
 
 save_dict.__doc__ = store.__doc__
+
+
+def update_classes(
+    source: "Union[dict, list]",
+    context: "Optional[Context]" = None,
+    convert: "Collection" = (),
+) -> "Union[dict, list]":
+    """Update documentation of classes, ensuring that they will be
+    correctly represented in RDF.
+
+    Only resources of type `owl:Class` will be updated.
+
+    By default, only object properties to classes are converted to
+    restrictions. Use the `convert` argument to convert other keywords as well.
+
+    Arguments:
+        source: Input documentation of one or more resources. This dict
+            will be updated in-place. It is typically a dict returned by
+            `told()`.
+        context: Context object defining the keywords.
+        convert: Collection of additional keywords that shuld be converted
+            to value restrictions.
+
+    Returns:
+        The updated version of `source`.
+
+    """
+    print("=== update_classes:", source)
+
+    def addrestriction(source, prop, value):
+        """Add restriction to `source`."""
+        # pylint: disable=no-else-return
+        print("*** addrestriction:", prop, ":", value)
+        if value is None or prop.startswith("@"):
+            return
+        elif convert and context.expand(prop) in convert:
+            restrictionType = "value"
+        elif isinstance(value, dict) and any(
+            context.expand(s) == OWL.Class for s in get(value, "@type")
+        ):
+            restrictionType = value.pop("restrictionType", "some")
+        elif isinstance(value, list):
+            for val in value:
+                addrestriction(source, prop, val)
+            return
+        else:
+            return
+
+        d = {
+            "rdf:type": "owl:Restriction",
+            "owl:onProperty": context.expand(prop, strict=True),
+        }
+        if restrictionType == "value":
+            d["owl:hasValue"] = value
+        elif restrictionType == "some":
+            d["owl:someValuesFrom"] = value
+        elif restrictionType == "only":
+            d["owl:allValuesFrom"] = value
+        else:
+            d["owl:onClass"] = value
+            ctype, n = restrictionType.split()
+            ctypes = {
+                "exactly": "owl:qualifiedCardinality",
+                "min": "owl:minQualifiedCardinality",
+                "max": "owl:maxQualifiedCardinality",
+            }
+            d[ctypes[ctype]] = int(n)
+
+        # Ensure that source is only of type owl:Class
+        # Move all other types to subClassOf
+        types = {context.expand(t): t for t in get(source, "@type")}
+        if OWL.Class in types:
+            for e, t in types.items():
+                if e == OWL.Class:
+                    source["@type"] = t
+                else:
+                    add(source, "subClassOf", e)
+
+        add(source, "subClassOf", d)
+        if prop in source:  # Avoid removing prop more than once
+            del source[prop]
+
+        print("*** restrictionType:", restrictionType)
+        if restrictionType != "value":  # Recursively update related calsses
+            update_classes(value, context, convert)
+
+    # Local context
+    context = get_context(context=context, copy=True)
+    convert = {context.expand(s, strict=True) for s in convert}
+
+
+    # Handle lists and graphs
+    if isinstance(source, list) or "@graph" in source:
+        sources = source if isinstance(source, list) else source["@graph"]
+        if isinstance(sources, dict):
+            sources = [sources]
+        for src in sources:
+            update_classes(src, context)
+        return source
+
+    # Update local context
+    if "@context" in source:
+        context.add_context(source["@context"])
+
+    # Convert relations to restrictions
+    for k, v in source.copy().items():
+        if k.startswith("@") or k in ("subClassOf",):
+            continue
+        addrestriction(source, k, v)
+
+    return source
 
 
 def save_extra_content(ts: Triplestore, source: dict) -> None:

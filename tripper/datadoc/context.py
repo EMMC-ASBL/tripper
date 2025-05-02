@@ -13,7 +13,7 @@ from tripper import Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
-from tripper.utils import MATCH_PREFIXED_IRI
+from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Optional, Sequence, Union
@@ -25,9 +25,11 @@ if TYPE_CHECKING:  # pragma: no cover
 def get_context(
     context: "Optional[ContextType]" = None,
     domain: "Optional[Union[str, Sequence[str]]]" = None,
+    default_domain: "Optional[Union[str, Sequence[str]]]" = "default",
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
+    copy: bool = False,
 ) -> "Context":
     """A convinient function that returns an Context instance.
 
@@ -35,14 +37,19 @@ def get_context(
         context: Input context.  If it is a `Context` instance,
              it will be updated and returned.
         domain: Load initial context for this domain.
+        default_domain: Initialise context for this domain if neither
+            `context` nor `domain` are provided.
         keywords: Initialise from this keywords instance.
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
+        copy: If true, always return a new Context object.
 
     Returns:
         Context object.
     """
     if isinstance(context, Context):
+        if copy:
+            context = context.copy()
         if keywords or domain:
             kw = keywords.copy() if keywords else Keywords()
             if domain:
@@ -51,7 +58,7 @@ def get_context(
     else:
         context = Context(
             keywords=keywords,
-            domain=domain,  # type: ignore
+            domain=domain if context or domain or keywords else default_domain,
             context=context,
             processingMode=processingMode,
         )
@@ -66,16 +73,16 @@ class Context:
     def __init__(
         self,
         context: "Optional[ContextType]" = None,
-        domain: "Union[str, Sequence[str]]" = "default",
+        domain: "Optional[Union[str, Sequence[str]]]" = "default",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
     ) -> None:
         """Initialises context object.
 
         Arguments:
-            keywords: Initialise from this keywords instance.
-            domain: Load initial context for this domain.
             context: Optional context to load.
+            domain: Load initial context for this domain.
+            keywords: Initialise from this keywords instance.
             processingMode: Either "json-ld-1.0" or "json-ld-1.1".
 
         """
@@ -250,7 +257,7 @@ class Context:
             if prefix not in ts.namespaces:
                 ts.bind(prefix, ns)
 
-    def expand(self, name, strict=False) -> str:
+    def expand(self, name: str, strict: bool = False) -> str:
         """Return `name` expanded to a full IRI.
 
         Example:
@@ -260,37 +267,30 @@ class Context:
         'http://www.w3.org/ns/dcat#Dataset'
 
         """
-        # Check cache: _expanded
-        if self._expanded:
-            if name in self._expanded:
-                return self._expanded[name]
-            if re.match(MATCH_PREFIXED_IRI, name):
-                prefix, shortname = name.split(":", 1)
-                prefixes = self.get_prefixes()
-                if prefix in prefixes:
-                    expanded = f"{prefixes[prefix]}{shortname}"
-                    # Save to cache for later use
-                    self._expanded[shortname] = expanded
-                    self._expanded[name] = expanded
-                    self._expanded[expanded] = expanded
-                    self._prefixed[shortname] = name
-                    self._prefixed[name] = name
-                    self._prefixed[expanded] = name
-                    self._shortnamed[shortname] = shortname
-                    self._shortnamed[name] = shortname
-                    self._shortnamed[expanded] = shortname
-                    return expanded
-            if strict:
-                raise NamespaceError(f"cannot expand: {name}")
-            return name
+        # Check cache
+        if self._expanded and name in self._expanded:
+            return self._expanded[name]
         # Check ctx
         if name in self.ctx["mappings"]:
             return self.ctx["mappings"][name]["@id"]
-        # Create cache: _expanded
-        self._create_caches()
-        return self.expand(name, strict=strict)
+        # Check if prefixed
+        if re.match(MATCH_PREFIXED_IRI, name):
+            prefix, shortname = name.split(":", 1)
+            prefixes = self.get_prefixes()
+            if prefix in prefixes:
+                expanded = f"{prefixes[prefix]}{shortname}"
+                self._create_caches()
+                self._update_caches(shortname, name, expanded)
+                return expanded
+        # Check if name is already expanded
+        if re.match(MATCH_IRI, name):
+            return name
+        # Cannot expand
+        if strict:
+            raise NamespaceError(f"cannot expand: {name}")
+        return name
 
-    def prefixed(self, name) -> str:
+    def prefixed(self, name: str) -> str:
         """Return `name` as a prefixed IRI.
 
         Example:
@@ -306,7 +306,7 @@ class Context:
             return self._prefixed[name]
         raise NamespaceError(f"cannot prefix: {name}")
 
-    def shortname(self, name) -> str:
+    def shortname(self, name: str) -> str:
         """Return the short name (keyword) corresponding to `name`.
 
         Example:
@@ -321,6 +321,10 @@ class Context:
         if name in self._shortnamed:
             return self._shortnamed[name]
         raise NamespaceError(f"no short name for: {name}")
+
+    def isref(self, name: str) -> bool:
+        """Return wheter `name` is an object property that refers to a node."""
+        return self.ctx["mappings"][name].get("@id") == "@id"
 
     def expanddoc(self, doc: dict) -> list:
         """Return expanded JSON-LD document `doc`."""
@@ -342,14 +346,19 @@ class Context:
             for prefix, ns in prefixes.items():
                 if expanded.startswith(ns):
                     prefixed = f"{prefix}:{key}"
-                    self._expanded[prefixed] = expanded
-                    self._prefixed[key] = prefixed
-                    self._prefixed[prefixed] = prefixed
-                    self._prefixed[expanded] = prefixed
-                    self._shortnamed[key] = key
-                    self._shortnamed[prefixed] = key
-                    self._shortnamed[expanded] = key
+                    self._update_caches(key, prefixed, expanded)
                     break
+
+    def _update_caches(self, shortname, prefixed, expanded):
+        self._expanded[shortname] = expanded
+        self._expanded[prefixed] = expanded
+        self._expanded[expanded] = expanded
+        self._prefixed[shortname] = prefixed
+        self._prefixed[prefixed] = prefixed
+        self._prefixed[expanded] = prefixed
+        self._shortnamed[shortname] = shortname
+        self._shortnamed[prefixed] = shortname
+        self._shortnamed[expanded] = shortname
 
     base = property(
         fget=lambda self: self.ctx.get("@base"),

@@ -340,6 +340,35 @@ def test_store():
         store(ts, d, type="Dataset", method="invalid_method_name")
 
 
+if 1:
+    # def test_update_classes():
+    """Test update_classes()."""
+    from copy import deepcopy
+    from tripper.datadoc.dataset import update_classes
+
+    d1 = {"title": "About tripper"}
+    r1 = d1.copy()
+    #update_classes(r1)
+    assert r1 == d1
+
+    d2 = {
+        "@type": "owl:Class",
+        "subClassOf": "dcat:Dataset",
+        "title": "About tripper",
+        "distribution": {
+            #"@type": ["owl:Class", "dcat:Distribution"],
+            "@type": "owl:Class",
+            "subClassOf": "dcat:Distribution",
+            "accessService": "ex:service",
+        },
+    }
+    r2 = d2.copy()
+    update_classes(r2)
+
+    #r3 = d2.copy()
+    #update_classes(r3, convert=["dcat:accessService"])
+
+
 def test_datadoc():
     """Test save_datadoc() and load_dict()/save_dict()."""
     # pylint: disable=too-many-statements
