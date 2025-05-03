@@ -14,13 +14,14 @@ The meaning of the columns are as follows:
 ## Special keywords (from JSON-LD)
 See the [JSON-LD specification] for more details.
 
-| Keyword    | Range         | Conformance | Definition                                                   | Usage note |
-|------------|---------------|-------------|--------------------------------------------------------------|------------|
-| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                    |            |
-| [@type]    | IRI           | recommended | Ontological class defining the class of a node.              |            |
-| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords. |            |
-| [@base]    | list          | optional    | Base IRI against which relative IRIs are resolved.           |            |
-| [@graph]   | list          | optional    | Used for documenting multiple resources.                     |            |
+| Keyword    | Range         | Conformance | Definition                                                              | Usage note |
+|------------|---------------|-------------|-------------------------------------------------------------------------|------------|
+| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |
+| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |
+| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |
+| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |
+| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |
+| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |
 
 
 ## Properties on [Resource]
@@ -533,4 +534,5 @@ A generic resource.
 [@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
 [@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
 [@base]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
+[@vocab]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
 [@graph]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
