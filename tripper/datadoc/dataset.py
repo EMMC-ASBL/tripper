@@ -340,9 +340,11 @@ def store(
         method: How to handle the case where `ts` already contains a document
             with the same id as `source`. Possible values are:
             - "overwrite": Remove existing documentation before storing.
-            - "retain": Raise an `IRIAlreadyExistsError` if the IRI of `source`
-              already exits in the triplestore.
-            - "merge": Merge `source` with existing documentation.
+            - "retain": Raise an `IRIExistsError` if the IRI of `source`
+              already exits in the triplestore (default).
+            - "merge": Merge `source` with existing documentation. This will
+              duplicate non-literal properties with no explicit `@id`. If this
+              is unwanted, merge manually and use "overwrite".
 
     Returns:
         A copy of `source` updated to valid JSON-LD.
