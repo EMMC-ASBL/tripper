@@ -40,8 +40,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyld import jsonld
-
 from tripper import (
     OWL,
     RDF,
@@ -331,6 +329,7 @@ def store(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "retain",
+    restrictions: "Collection" = (),
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -355,6 +354,8 @@ def store(
             - "merge": Merge `source` with existing documentation. This will
               duplicate non-literal properties with no explicit `@id`. If this
               is unwanted, merge manually and use "overwrite".
+        restrictions: Collection of additional keywords that shuld be
+            converted to value restrictions.
 
     Returns:
         A copy of `source` updated to valid JSON-LD.
@@ -397,21 +398,30 @@ def store(
 
     context.sync_prefixes(ts)
 
-    add(doc, "@context", context.get_context_dict())
-    # if "@context" in doc:
-    #     context.add_context(doc["@context"])
-    #     doc = jsonld.compact(doc, context.get_context_dict())
-    # else:
-    #    doc["@context"] = context.get_context_dict()
+    update_classes(doc, context=context, restrictions=restrictions)
+    # add(doc, "@context", context.get_context_dict())
 
     # Validate
     # TODO: reenable validation
     # validate(doc, type=type, keywords=keywords)
 
-    # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    nt = jsonld.to_rdf(doc, options={"format": "application/n-quads"})
+    context.to_triplestore(ts, doc)
 
-    ts.parse(data=nt, format="ntriples")
+    # add(doc, "@context", context.get_context_dict())
+    # # if "@context" in doc:
+    # #     context.add_context(doc["@context"])
+    # #     doc = jsonld.compact(doc, context.get_context_dict())
+    # # else:
+    # #    doc["@context"] = context.get_context_dict()
+    #
+    # # Validate
+    # # TODO: reenable validation
+    # # validate(doc, type=type, keywords=keywords)
+    #
+    # # Write json-ld data to triplestore (using temporary rdflib triplestore)
+    # nt = jsonld.to_rdf(doc, options={"format": "application/n-quads"})
+    #
+    # ts.parse(data=nt, format="ntriples")
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
@@ -452,42 +462,47 @@ save_dict.__doc__ = store.__doc__
 def update_classes(
     source: "Union[dict, list]",
     context: "Optional[Context]" = None,
-    convert: "Collection" = (),
+    restrictions: "Collection" = (),
 ) -> "Union[dict, list]":
     """Update documentation of classes, ensuring that they will be
     correctly represented in RDF.
 
     Only resources of type `owl:Class` will be updated.
 
-    By default, only object properties to classes are converted to
-    restrictions. Use the `convert` argument to convert other keywords as well.
+    If a resource has type `owl:Class`, all other types it has will be
+    moved to the `subClassOf` keyword.
+
+    By default, only object properties who's value is either a class
+    or has a `restrictionType` key are converted to restrictions. Use
+    the `restrictions` argument to convert other keywords as well to
+    restrictions.
 
     Arguments:
         source: Input documentation of one or more resources. This dict
             will be updated in-place. It is typically a dict returned by
             `told()`.
         context: Context object defining the keywords.
-        convert: Collection of additional keywords that shuld be converted
-            to value restrictions.
+        restrictions: Collection of additional keywords that shuld be
+            converted to value restrictions.
 
     Returns:
         The updated version of `source`.
 
     """
-    print("=== update_classes:", source)
 
     def addrestriction(source, prop, value):
         """Add restriction to `source`."""
         # pylint: disable=no-else-return
-        print("*** addrestriction:", prop, ":", value)
         if value is None or prop.startswith("@"):
             return
-        elif convert and context.expand(prop) in convert:
+        elif restrictions and context.expand(prop) in restrictions:
             restrictionType = "value"
-        elif isinstance(value, dict) and any(
-            context.expand(s) == OWL.Class for s in get(value, "@type")
+        elif isinstance(value, dict) and (
+            "restrictionType" in value
+            or any(context.expand(s) == OWL.Class for s in get(value, "@type"))
         ):
             restrictionType = value.pop("restrictionType", "some")
+            update_classes(value, context=context, restrictions=restrictions)
         elif isinstance(value, list):
             for val in value:
                 addrestriction(source, prop, val)
@@ -497,6 +512,7 @@ def update_classes(
 
         d = {
             "rdf:type": "owl:Restriction",
+            # We expand here, since JSON-LD doesn't expand values.
             "owl:onProperty": context.expand(prop, strict=True),
         }
         if restrictionType == "value":
@@ -515,28 +531,16 @@ def update_classes(
             }
             d[ctypes[ctype]] = int(n)
 
-        # Ensure that source is only of type owl:Class
-        # Move all other types to subClassOf
-        types = {context.expand(t): t for t in get(source, "@type")}
-        if OWL.Class in types:
-            for e, t in types.items():
-                if e == OWL.Class:
-                    source["@type"] = t
-                else:
-                    add(source, "subClassOf", e)
-
         add(source, "subClassOf", d)
         if prop in source:  # Avoid removing prop more than once
             del source[prop]
 
-        print("*** restrictionType:", restrictionType)
         if restrictionType != "value":  # Recursively update related calsses
-            update_classes(value, context, convert)
+            update_classes(value, context, restrictions)
 
     # Local context
     context = get_context(context=context, copy=True)
-    convert = {context.expand(s, strict=True) for s in convert}
-
+    restrictions = {context.expand(s, strict=True) for s in restrictions}
 
     # Handle lists and graphs
     if isinstance(source, list) or "@graph" in source:
@@ -550,6 +554,16 @@ def update_classes(
     # Update local context
     if "@context" in source:
         context.add_context(source["@context"])
+
+    # Ensure that source is only of type owl:Class
+    # Move all other types to subClassOf
+    types = {context.expand(t): t for t in get(source, "@type")}
+    if OWL.Class in types:
+        for e, t in types.items():
+            if e == OWL.Class:
+                source["@type"] = t
+            else:
+                add(source, "subClassOf", e)
 
     # Convert relations to restrictions
     for k, v in source.copy().items():

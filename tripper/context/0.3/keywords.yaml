@@ -32,6 +32,7 @@ resources:
   Resource:
     iri: dcat:Resource
     description: Resource published or curated by an agent.
+    subClassOf: GenericResource
     keywords:
       accessRights:
         iri: dcterms:accessRights
@@ -748,6 +749,45 @@ resources:
     description: A media type, e.g. the format of a computer file.
     usageNote: Media type instances follow the [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) vocabulary using the <http://www.iana.org/assignments/media-types/> namespace. For example, the IRI of the media type `text/turtle` is <http://www.iana.org/assignments/media-types/text/turtle>.
 
+
+# Generic classes and properties from RDFS and OWL
+
+  OWLClass:
+    iri: owl:Class
+    description: The class of OWL classes.
+    subClassOf: rdfs:Class
+
+  Class:
+    iri: rdfs:Class
+    description: The class of classes.
+    keywords:
+      subClassOf:
+        iri: rdfs:subClassOf
+        range: rdfs:Class
+        description: The subject is a subclass of a class.
+
   GenericResource:
     iri: rdfs:Resource
-    description: A generic resource.
+    description: A generic resource defined by RDFS.
+
+  Restriction:
+    iri: owl:Restriction
+    description: The class of property restrictions.
+    keywords:
+      qualifiedCardinality:
+        iri: owl:qualifiedCardinality
+        description: The property that determines the cardinality of an exact qualified cardinality restriction.
+        range: rdfs:Literal
+        datatype: xsd:nonNegativeInteger
+
+      minQualifiedCardinality:
+        iri: owl:minQualifiedCardinality
+        description: The property that determines the cardinality of a minimum qualified cardinality restriction.
+        range: rdfs:Literal
+        datatype: xsd:nonNegativeInteger
+
+      maxQualifiedCardinality:
+        iri: owl:maxQualifiedCardinality
+        description: The property that determines the cardinality of a maximum qualified cardinality restriction.
+        range: rdfs:Literal
+        datatype: xsd:nonNegativeInteger

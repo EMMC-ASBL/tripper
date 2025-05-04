@@ -135,6 +135,74 @@ def test_expanddoc_compactdoc():
     assert compact == doc
 
 
+def test_to_triplestore():
+    """Test to_triplestore() method."""
+    from tripper import Namespace, Triplestore
+
+    PERS = Namespace("http://example.com/person#")
+    FAM = Namespace("http://example.com/family#")
+    context = {
+        "pers": str(PERS),
+        "fam": str(FAM),
+        "son": {"@id": "fam:son", "@type": "@id"},
+        "daughter": {"@id": "fam:daughter", "@type": "@id"},
+        "Son": "fam:Son",
+        "Daughter": "fam:Daughter",
+    }
+    ctx = get_context(context=context)
+
+    doc1 = {
+        "@id": "pers:ada",
+        "daughter": "pers:britt",
+        "son": "pers:cyril",
+    }
+    ts1 = Triplestore("rdflib")
+    ctx.to_triplestore(ts1, doc1)
+    assert set(ts1.triples()) == {
+        (PERS.ada, FAM.daughter, PERS.britt),
+        (PERS.ada, FAM.son, PERS.cyril),
+    }
+
+    doc2 = {
+        "@context": {"father": {"@id": "fam:father", "@type": "@id"}},
+        "@id": "pers:ada",
+        "daughter": "pers:britt",
+        "son": "pers:cyril",
+        "father": "pers:daniel",
+    }
+    ts2 = Triplestore("rdflib")
+    ctx.to_triplestore(ts2, doc2)
+    assert set(ts2.triples()) == {
+        (PERS.ada, FAM.daughter, PERS.britt),
+        (PERS.ada, FAM.son, PERS.cyril),
+        (PERS.ada, FAM.father, PERS.daniel),
+    }
+
+    doc3 = [
+        {
+            "@context": {"father": {"@id": "fam:father", "@type": "@id"}},
+            "@id": "pers:ada",
+            "daughter": "pers:britt",
+            "son": "pers:cyril",
+            "father": "pers:daniel",
+        },
+        {
+            "@id": "pers:cyril",
+            "daughter": "pers:ewa",
+            "son": "pers:fredrik",
+        },
+    ]
+    ts3 = Triplestore("rdflib")
+    ctx.to_triplestore(ts3, doc3)
+    assert set(ts3.triples()) == {
+        (PERS.ada, FAM.daughter, PERS.britt),
+        (PERS.ada, FAM.son, PERS.cyril),
+        (PERS.ada, FAM.father, PERS.daniel),
+        (PERS.cyril, FAM.daughter, PERS.ewa),
+        (PERS.cyril, FAM.son, PERS.fredrik),
+    }
+
+
 def test_base():
     """Test base property."""
     assert ctx.base is None

@@ -326,13 +326,48 @@ class Context:
         """Return wheter `name` is an object property that refers to a node."""
         return self.ctx["mappings"][name].get("@id") == "@id"
 
-    def expanddoc(self, doc: dict) -> list:
+    def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
-        return self.ld.expand(doc, options={})
+        return self.ld.expand(self._todict(doc), options={})
 
     def compactdoc(self, doc: dict) -> dict:
         """Return compacted JSON-LD document `doc`."""
         return self.ld.compact(doc, self.get_context_dict(), options={})
+
+    def to_triplestore(self, ts, doc: "Union[dict, list]"):
+        """Store JSON-LD document `doc` to triplestore `ts`."""
+        nt = jsonld.to_rdf(
+            self._todict(doc), options={"format": "application/n-quads"}
+        )
+        ts.parse(data=nt, format="ntriples")
+
+        if isinstance(doc, dict) and "@context" in doc:
+            ctx = self.copy()
+            ctx.add_context(doc)
+        else:
+            ctx = self
+        for prefix, ns in ctx.get_prefixes().items():
+            if prefix not in ts.namespaces:
+                ts.bind(prefix, ns)
+
+    def _todict(self, doc: "Union[dict, list]") -> dict:
+        """Returns a shallow copy of doc as a dict with current
+        context added."""
+        if isinstance(doc, list):
+            return {
+                "@context": self.get_context_dict(),
+                "@graph": doc,
+            }
+
+        if "@context" in doc:
+            ctx = self.copy()
+            ctx.add_context(doc["@context"])
+            new = doc.copy()
+            new["@context"] = ctx.get_context_dict()
+        else:
+            new = {"@context": self.get_context_dict()}
+            new.update(doc)
+        return new
 
     def _create_caches(self) -> None:
         """Create _expanded dict cached."""

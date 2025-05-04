@@ -340,33 +340,60 @@ def test_store():
         store(ts, d, type="Dataset", method="invalid_method_name")
 
 
-if 1:
-    # def test_update_classes():
+def test_update_classes():
     """Test update_classes()."""
     from copy import deepcopy
+
+    from tripper import DCAT
     from tripper.datadoc.dataset import update_classes
 
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
-    #update_classes(r1)
+    update_classes(r1)
     assert r1 == d1
 
     d2 = {
+        "@context": {"ex": "http://example.com/ex#"},
+        "@id": "ex:myclass",
         "@type": "owl:Class",
         "subClassOf": "dcat:Dataset",
         "title": "About tripper",
         "distribution": {
-            #"@type": ["owl:Class", "dcat:Distribution"],
-            "@type": "owl:Class",
-            "subClassOf": "dcat:Distribution",
+            "@type": ["owl:Class", "dcat:Distribution"],
             "accessService": "ex:service",
         },
     }
-    r2 = d2.copy()
+    r2 = deepcopy(d2)
     update_classes(r2)
+    assert "dcat:Dataset" in r2["subClassOf"]
+    assert {
+        "rdf:type": "owl:Restriction",
+        "owl:onProperty": DCAT.distribution,
+        "owl:someValuesFrom": {
+            "@type": "owl:Class",
+            "accessService": "ex:service",
+            "subClassOf": DCAT.Distribution,
+        },
+    } in r2["subClassOf"]
 
-    #r3 = d2.copy()
-    #update_classes(r3, convert=["dcat:accessService"])
+    r3 = deepcopy(d2)
+    update_classes(r3, restrictions=("accessService",))
+    assert "dcat:Dataset" in r3["subClassOf"]
+    assert {
+        "rdf:type": "owl:Restriction",
+        "owl:onProperty": DCAT.distribution,
+        "owl:someValuesFrom": {
+            "@type": "owl:Class",
+            "subClassOf": [
+                DCAT.Distribution,
+                {
+                    "rdf:type": "owl:Restriction",
+                    "owl:onProperty": DCAT.accessService,
+                    "owl:hasValue": "ex:service",
+                },
+            ],
+        },
+    } in r3["subClassOf"]
 
 
 def test_datadoc():
@@ -387,7 +414,7 @@ def test_datadoc():
     # Load data documentation into triplestore
     datadoc = save_datadoc(ts, indir / "semdata.yaml")
     assert isinstance(datadoc, dict)
-    assert "@context" in datadoc
+    # assert "@context" in datadoc
 
     # Test load dict-representation of a dataset from the triplestore
     SEM = ts.namespaces["sem"]

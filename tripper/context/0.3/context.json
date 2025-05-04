@@ -334,6 +334,22 @@
       "@id": "dcterms:relation",
       "@type": "@id"
     },
+    "subClassOf": {
+      "@id": "rdfs:subClassOf",
+      "@type": "@id"
+    },
+    "qualifiedCardinality": {
+      "@id": "owl:qualifiedCardinality",
+      "@type": "xsd:nonNegativeInteger"
+    },
+    "minQualifiedCardinality": {
+      "@id": "owl:minQualifiedCardinality",
+      "@type": "xsd:nonNegativeInteger"
+    },
+    "maxQualifiedCardinality": {
+      "@id": "owl:maxQualifiedCardinality",
+      "@type": "xsd:nonNegativeInteger"
+    },
     "Resource": "dcat:Resource",
     "Dataset": "dcat:Dataset",
     "Distribution": "dcat:Distribution",
@@ -355,6 +371,9 @@
     "LegalResource": "eli:LegalResource",
     "Standard": "dcterms:Standard",
     "MediaType": "dcterms:MediaType",
-    "GenericResource": "rdfs:Resource"
+    "OWLClass": "owl:Class",
+    "Class": "rdfs:Class",
+    "GenericResource": "rdfs:Resource",
+    "Restriction": "owl:Restriction"
   }
 }

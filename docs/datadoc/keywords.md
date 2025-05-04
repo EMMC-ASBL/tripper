@@ -27,6 +27,8 @@ See the [JSON-LD specification] for more details.
 ## Properties on [Resource]
 Resource published or curated by an agent.
 
+- subClassOf: [GenericResource]
+
 | Keyword                 | Range                                          | Conformance | Definition                                                                                                                                   | Usage note                                                                                                                                                                                            |
 | ----------------------- | ---------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [description]           | [rdfs:Literal]<br>(rdf:langString)             | mandatory   | A free-text account of the resource.                                                                                                         | This property can be repeated for parallel language versions of the description.                                                                                                                      |
@@ -272,12 +274,37 @@ A standard or other specification to which a resource conforms.
 A media type, e.g. the format of a computer file.
 
 
+## Properties on [OWLClass]
+The class of OWL classes.
+
+- subClassOf: [rdfs:Class]
+
+
+## Properties on [Class]
+The class of classes.
+
+| Keyword      | Range        | Conformance | Definition                            | Usage note |
+| ------------ | ------------ | ----------- | ------------------------------------- | ---------- |
+| [subClassOf] | [rdfs:Class] |             | The subject is a subclass of a class. |            |
+
+
 ## Properties on [GenericResource]
-A generic resource.
+A generic resource defined by RDFS.
+
+
+## Properties on [Restriction]
+The class of property restrictions.
+
+| Keyword                   | Range                                      | Conformance | Definition                                                                                   | Usage note |
+| ------------------------- | ------------------------------------------ | ----------- | -------------------------------------------------------------------------------------------- | ---------- |
+| [qualifiedCardinality]    | [rdfs:Literal]<br>(xsd:nonNegativeInteger) |             | The property that determines the cardinality of an exact qualified cardinality restriction.  |            |
+| [minQualifiedCardinality] | [rdfs:Literal]<br>(xsd:nonNegativeInteger) |             | The property that determines the cardinality of a minimum qualified cardinality restriction. |            |
+| [maxQualifiedCardinality] | [rdfs:Literal]<br>(xsd:nonNegativeInteger) |             | The property that determines the cardinality of a maximum qualified cardinality restriction. |            |
 
 
 
 
+[GenericResource]: GenericResource
 [Resource]: http://www.w3.org/ns/dcat#Resource
 [accessRights]: http://purl.org/dc/terms/accessRights
 [dcterms:RightsStatement]: http://purl.org/dc/terms/RightsStatement
@@ -529,7 +556,19 @@ A generic resource.
 [LegalResource]: http://data.europa.eu/eli/ontology#LegalResource
 [Standard]: http://purl.org/dc/terms/Standard
 [MediaType]: http://purl.org/dc/terms/MediaType
+[rdfs:Class]: http://www.w3.org/2000/01/rdf-schema#Class
+[OWLClass]: http://www.w3.org/2002/07/owl#Class
+[Class]: http://www.w3.org/2000/01/rdf-schema#Class
+[subClassOf]: http://www.w3.org/2000/01/rdf-schema#subClassOf
+[rdfs:Class]: http://www.w3.org/2000/01/rdf-schema#Class
 [GenericResource]: http://www.w3.org/2000/01/rdf-schema#Resource
+[Restriction]: http://www.w3.org/2002/07/owl#Restriction
+[qualifiedCardinality]: http://www.w3.org/2002/07/owl#qualifiedCardinality
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[minQualifiedCardinality]: http://www.w3.org/2002/07/owl#minQualifiedCardinality
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[maxQualifiedCardinality]: http://www.w3.org/2002/07/owl#maxQualifiedCardinality
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
 [@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
 [@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
