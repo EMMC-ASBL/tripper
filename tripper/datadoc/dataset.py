@@ -437,6 +437,10 @@ def save_dict(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "merge",
+    # The strictness of the "build documentation" CI enforces us to add
+    # a `restrictions` argument to save_dict(), although this argument
+    # came after that save_dict() was renamed.
+    restrictions: "Collection" = (),
 ) -> dict:
     # pylint: disable=missing-function-docstring
     warnings.warn(
@@ -453,6 +457,7 @@ def save_dict(
         keywords=keywords,
         prefixes=prefixes,
         method=method,
+        restrictions=restrictions,
     )
 
 
