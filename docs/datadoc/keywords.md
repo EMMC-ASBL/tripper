@@ -27,7 +27,7 @@ See the [JSON-LD specification] for more details.
 ## Properties on [Resource]
 Resource published or curated by an agent.
 
-- subClassOf: [GenericResource]
+- subClassOf: [rdfs:Resource]
 
 | Keyword                 | Range                                          | Conformance | Definition                                                                                                                                   | Usage note                                                                                                                                                                                            |
 | ----------------------- | ---------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -283,9 +283,14 @@ The class of OWL classes.
 ## Properties on [Class]
 The class of classes.
 
-| Keyword      | Range        | Conformance | Definition                            | Usage note |
-| ------------ | ------------ | ----------- | ------------------------------------- | ---------- |
-| [subClassOf] | [rdfs:Class] |             | The subject is a subclass of a class. |            |
+| Keyword             | Range                              | Conformance | Definition                                                                                                                                                                                                                                                                       | Usage note |
+| ------------------- | ---------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| [altLabel]          | [rdfs:Literal]<br>(rdf:langString) |             | An alternative lexical label for a resource.                                                                                                                                                                                                                                     |            |
+| [conceptualisation] | [rdfs:Literal]<br>(rdf:langString) |             | A comment that helps the reader to understand how the world has been conceptualised by the ontology authors.                                                                                                                                                                     |            |
+| [elucidation]       | [rdfs:Literal]<br>(rdf:langString) |             | Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation. |            |
+| [hiddenLabel]       | [rdfs:Literal]<br>(rdf:langString) |             | A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.                                                                                                             |            |
+| [prefLabel]         | [rdfs:Literal]<br>(rdf:langString) |             | Preferred label.                                                                                                                                                                                                                                                                 |            |
+| [subClassOf]        | [rdfs:Class]                       |             | The subject is a subclass of a class.                                                                                                                                                                                                                                            |            |
 
 
 ## Properties on [GenericResource]
@@ -304,7 +309,7 @@ The class of property restrictions.
 
 
 
-[GenericResource]: GenericResource
+[rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [Resource]: http://www.w3.org/ns/dcat#Resource
 [accessRights]: http://purl.org/dc/terms/accessRights
 [dcterms:RightsStatement]: http://purl.org/dc/terms/RightsStatement
@@ -559,6 +564,16 @@ The class of property restrictions.
 [rdfs:Class]: http://www.w3.org/2000/01/rdf-schema#Class
 [OWLClass]: http://www.w3.org/2002/07/owl#Class
 [Class]: http://www.w3.org/2000/01/rdf-schema#Class
+[altLabel]: http://www.w3.org/2004/02/skos/core#altLabel
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[conceptualisation]: https://w3id.org/emmo#EMMO_31252f35_c767_4b97_a877_1235076c3e13
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[elucidation]: https://w3id.org/emmo#EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[hiddenLabel]: http://www.w3.org/2004/02/skos/core#hiddenLabel
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[prefLabel]: http://www.w3.org/2004/02/skos/core#prefLabel
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [subClassOf]: http://www.w3.org/2000/01/rdf-schema#subClassOf
 [rdfs:Class]: http://www.w3.org/2000/01/rdf-schema#Class
 [GenericResource]: http://www.w3.org/2000/01/rdf-schema#Resource

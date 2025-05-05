@@ -281,7 +281,10 @@
       "@id": "spdx:checksumValue",
       "@type": "xsd:hexBinary"
     },
-    "prefLabel": "skos:prefLabel",
+    "prefLabel": {
+      "@id": "skos:prefLabel",
+      "@language": "en"
+    },
     "endpointDescription": {
       "@id": "dcat:endpointDescription",
       "@type": "@id"
@@ -333,6 +336,22 @@
     "relation": {
       "@id": "dcterms:relation",
       "@type": "@id"
+    },
+    "altLabel": {
+      "@id": "skos:altLabel",
+      "@language": "en"
+    },
+    "conceptualisation": {
+      "@id": "emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13",
+      "@language": "en"
+    },
+    "elucidation": {
+      "@id": "emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9",
+      "@language": "en"
+    },
+    "hiddenLabel": {
+      "@id": "skos:hiddenLabel",
+      "@language": "en"
     },
     "subClassOf": {
       "@id": "rdfs:subClassOf",

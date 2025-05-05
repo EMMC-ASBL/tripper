@@ -32,7 +32,7 @@ resources:
   Resource:
     iri: dcat:Resource
     description: Resource published or curated by an agent.
-    subClassOf: GenericResource
+    subClassOf: rdfs:Resource
     keywords:
       accessRights:
         iri: dcterms:accessRights
@@ -750,7 +750,7 @@ resources:
     usageNote: Media type instances follow the [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) vocabulary using the <http://www.iana.org/assignments/media-types/> namespace. For example, the IRI of the media type `text/turtle` is <http://www.iana.org/assignments/media-types/text/turtle>.
 
 
-# Generic classes and properties from RDFS and OWL
+# Generic classes and properties
 
   OWLClass:
     iri: owl:Class
@@ -761,6 +761,36 @@ resources:
     iri: rdfs:Class
     description: The class of classes.
     keywords:
+      altLabel:
+        iri: skos:altLabel
+        description: An alternative lexical label for a resource.
+        range: rdfs:Literal
+        datatype: rdf:langString
+
+      conceptualisation:
+        iri: emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13
+        description: A comment that helps the reader to understand how the world has been conceptualised by the ontology authors.
+        range: rdfs:Literal
+        datatype: rdf:langString
+
+      elucidation:
+        iri: emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9
+        description: Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation.
+        range: rdfs:Literal
+        datatype: rdf:langString
+
+      hiddenLabel:
+        iri: skos:hiddenLabel
+        description: A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.
+        range: rdfs:Literal
+        datatype: rdf:langString
+
+      prefLabel:
+        iri: skos:prefLabel
+        description: Preferred label.
+        range: rdfs:Literal
+        datatype: rdf:langString
+
       subClassOf:
         iri: rdfs:subClassOf
         range: rdfs:Class

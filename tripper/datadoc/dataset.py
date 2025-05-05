@@ -180,7 +180,9 @@ def told(
         d = {}
         graph = []
         for k, v in descr.items():  # type: ignore
-            if k == "@context":
+            if k == "domain":
+                pass
+            elif k == "@context":
                 context.add_context(v)
                 d[k] = v
             elif k == "prefixes":
