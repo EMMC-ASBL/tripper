@@ -409,22 +409,6 @@ def store(
 
     context.to_triplestore(ts, doc)
 
-    # add(doc, "@context", context.get_context_dict())
-    # # if "@context" in doc:
-    # #     context.add_context(doc["@context"])
-    # #     doc = jsonld.compact(doc, context.get_context_dict())
-    # # else:
-    # #    doc["@context"] = context.get_context_dict()
-    #
-    # # Validate
-    # # TODO: reenable validation
-    # # validate(doc, type=type, keywords=keywords)
-    #
-    # # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    # nt = jsonld.to_rdf(doc, options={"format": "application/n-quads"})
-    #
-    # ts.parse(data=nt, format="ntriples")
-
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
 
