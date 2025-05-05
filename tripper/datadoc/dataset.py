@@ -236,11 +236,6 @@ def _told(
                 logging.info(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
-                # warnings.warn(
-                #     "No superclass info. Not in keywords file: "
-                #     + ", ".join(missing),
-                #     category=MissingKeywordsClassWarning,
-                # )
 
     if isinstance(descr, str):
         return descr
@@ -276,10 +271,6 @@ def _told(
         if not k.startswith("@") and k not in keywords:
             # pylint: disable=logging-fstring-interpolation
             logging.info(f"Property not in keywords: {k}")
-            # warnings.warn(
-            #     f"No range info. Not in keywords file: {k}",
-            #     UnknownKeywordWarning,
-            # )
         if k in ("@context", "@id", "@type"):
             pass
         elif k == "@graph":
@@ -367,11 +358,6 @@ def save_dict(
     context.sync_prefixes(ts)
 
     add(d, "@context", context.get_context_dict())
-    # if "@context" in d:
-    #     context.add_context(d["@context"])
-    #     d = jsonld.compact(d, context.get_context_dict())
-    # else:
-    #    d["@context"] = context.get_context_dict()
 
     # Validate
     # TODO: reenable validation
@@ -1252,7 +1238,7 @@ def delete(
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
 ) -> None:
-    """Delete matching resources. See `search_iris()` for a description of arguments."""
+    """Delete matching resources. See `search()` for argument descriptions."""
     iris = search_iris(
         ts=ts,
         type=type,
