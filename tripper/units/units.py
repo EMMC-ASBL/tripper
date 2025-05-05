@@ -1037,7 +1037,8 @@ class Quantity(pint.Quantity):
 
             This is done according to the following heuristics:
 
-            1. Find units with compatible physical dimensionality in the ontology.
+            1. Find units with compatible physical dimensionality in the
+               ontology.
             2. Among these units, select the unit that minimises the absolute
                value of the sum of the powers of each unit component.
 
