@@ -24,7 +24,7 @@ def test_told():
     from pathlib import Path
 
     from tripper import DCAT, DCTERMS, OWL, RDF, Literal, Triplestore
-    from tripper.datadoc.dataset import save_dict, told
+    from tripper.datadoc.dataset import store, told
 
     indir = Path(__file__).resolve().parent.parent / "input"
     prefixes = {"ex": "http://example.com/ex#"}
@@ -62,9 +62,9 @@ def test_told():
         ),
     }
 
-    # Test save_dict()on descrA
-    save_dict(ts, descrA, prefixes=prefixes)
-    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    # Test store() on descrA
+    store(ts, descrA, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, RDF.type, EX.A)
     # assert ts.has(EX.a, RDF.type, EX.TechnicalDataset)
 
@@ -123,10 +123,10 @@ def test_told():
     ]
     assert d4["@graph"][1]["@type"] == "owl:NamedIndividual"
 
-    # Test save_dict()on descrB
+    # Test store() on descrB
     ts.remove()
-    save_dict(ts, descrB, prefixes=prefixes)
-    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    store(ts, descrB, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
     assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
 
@@ -148,10 +148,10 @@ def test_told():
     d5 = told(descrC)
     assert d5 == d4
 
-    # Test save_dict() on descrC
+    # Test store() on descrC
     ts.remove()
-    save_dict(ts, descrB, prefixes=prefixes)
-    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    store(ts, descrB, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
     assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
 
@@ -187,10 +187,10 @@ def test_told():
         "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     ]
 
-    # Test save_dict() on descrC
+    # Test store() on descrC
     ts.remove()
-    save_dict(ts, descrB, prefixes=prefixes)
-    EX = ts.namespaces["ex"]  # save_dict() adds the namespace to `ts`
+    store(ts, descrB, prefixes=prefixes)
+    EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
     assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
@@ -299,10 +299,10 @@ def test_get():
 
 
 def test_store():
-    """Test save_dict()."""
+    """Test store()."""
     from tripper import Triplestore
     from tripper.datadoc import acquire, store
-    from tripper.datadoc.errors import IRIExistsError
+    from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -332,22 +332,28 @@ def test_store():
     assert isinstance(d2.distribution, dict)
     assert d2.distribution.downloadURL == d1.distribution.downloadURL
 
-    store(ts, d, type="Dataset", method="merge")
+    with pytest.warns(IRIExistsWarning):
+        store(ts, d, type="Dataset", method="ignore")
     d3 = acquire(ts, EX.exdata)
-    assert isinstance(d3.distribution, list)
+    assert isinstance(d3.distribution, dict)
+    assert d3.distribution.downloadURL == d1.distribution.downloadURL
+
+    store(ts, d, type="Dataset", method="merge")
+    d4 = acquire(ts, EX.exdata)
+    assert isinstance(d4.distribution, list)
 
     with pytest.raises(ValueError):
         store(ts, d, type="Dataset", method="invalid_method_name")
 
 
 def test_datadoc():
-    """Test save_datadoc() and load_dict()/save_dict()."""
+    """Test save_datadoc() and acquire()/store()."""
     # pylint: disable=too-many-statements
 
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
-    from tripper.datadoc import load_dict, save_datadoc, save_dict, search_iris
+    from tripper.datadoc import acquire, save_datadoc, search_iris, store
     from tripper.datadoc.errors import NoSuchTypeError
 
     pytest.importorskip("dlite")
@@ -364,7 +370,7 @@ def test_datadoc():
     SEM = ts.namespaces["sem"]
     SEMDATA = ts.namespaces["semdata"]
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
-    d = load_dict(ts, iri, use_sparql=False)
+    d = acquire(ts, iri, use_sparql=False)
     assert d["@id"] == iri
     assert set(d["@type"]) == {
         DCAT.Dataset,
@@ -378,16 +384,16 @@ def test_datadoc():
         "http://www.iana.org/assignments/media-types/image/tiff"
     )
 
-    assert not load_dict(ts, "non-existing")
-    assert not load_dict(ts, "non-existing", use_sparql=True)
+    assert not acquire(ts, "non-existing")
+    assert not acquire(ts, "non-existing", use_sparql=True)
 
     # Test load using SPARQL - this should give the same result as above
-    d2 = load_dict(ts, iri, use_sparql=True)
+    d2 = acquire(ts, iri, use_sparql=True)
     assert d2 == d
 
     # Test loading a parser
     PAR = ts.namespaces["par"]
-    parser = load_dict(ts, PAR.sem_hitachi)
+    parser = acquire(ts, PAR.sem_hitachi)
     assert parser["@id"] == PAR.sem_hitachi
     assert parser["@type"] == OTEIO.Parser
     assert parser.configuration == {"driver": "hitachi"}
@@ -399,16 +405,16 @@ def test_datadoc():
     ts.add((d.distribution["@id"], OTEIO.generator, GEN.sem_hitachi))
 
     # Test saving a generator and add it to the distribution
-    dist = load_dict(ts, d.distribution["@id"])
+    dist = acquire(ts, d.distribution["@id"])
     assert dist.generator == GEN.sem_hitachi
 
-    gen = load_dict(ts, dist.generator)
+    gen = acquire(ts, dist.generator)
     assert gen["@id"] == GEN.sem_hitachi
     assert gen["@type"] == [OTEIO.Generator, OTEIO.Parser]
     assert gen.generatorType == "application/vnd.dlite-generate"
 
     # Test save dict
-    save_dict(
+    store(
         ts,
         source={
             "@id": SEMDATA.newdistr,
@@ -419,7 +425,7 @@ def test_datadoc():
         type="Distribution",
         prefixes={"echem": "https://w3id.org/emmo/domain/electrochemistry"},
     )
-    newdistr = load_dict(ts, SEMDATA.newdistr)
+    newdistr = acquire(ts, SEMDATA.newdistr)
     assert newdistr["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert (
         newdistr.mediaType
@@ -427,7 +433,7 @@ def test_datadoc():
     )
 
     # Test load updated distribution
-    dd = load_dict(ts, iri)
+    dd = acquire(ts, iri)
     assert dd.distribution.generator == GEN.sem_hitachi
     del dd.distribution["generator"]
     assert dd == d

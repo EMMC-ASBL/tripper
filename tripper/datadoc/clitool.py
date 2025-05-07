@@ -11,13 +11,13 @@ from pathlib import Path
 from tripper import Session, Triplestore
 from tripper.datadoc import (
     TableDoc,
+    acquire,
     delete,
     get_jsonld_context,
     load,
-    load_dict,
     save_datadoc,
-    save_dict,
     search_iris,
+    store,
 )
 
 
@@ -89,17 +89,17 @@ def subcommand_find(ts, args):
         s = "\n".join(iris)
     elif fmt == "json":
         s = json.dumps(
-            [load_dict(ts, iri) for iri in iris if not iri.startswith("_:")],
+            [acquire(ts, iri) for iri in iris if not iri.startswith("_:")],
             indent=2,
         )
     elif fmt in ("turtle", "ttl"):
         ts2 = Triplestore("rdflib")
         for iri in iris:
-            d = load_dict(ts, iri)
-            save_dict(ts2, d)
+            d = acquire(ts, iri)
+            store(ts2, d)
         s = ts2.serialize()
     elif fmt == "csv":
-        dicts = [load_dict(ts, iri) for iri in iris]
+        dicts = [acquire(ts, iri) for iri in iris]
         td = TableDoc.fromdicts(dicts)
         with io.StringIO() as f:
             td.write_csv(f, prefixes=ts.namespaces)

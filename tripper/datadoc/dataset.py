@@ -424,6 +424,7 @@ def save_dict(
     prefixes: "Optional[dict]" = None,
     method: str = "merge",
 ) -> dict:
+    """This function is deprecated. Use store() instead."""
     # pylint: disable=missing-function-docstring
     warnings.warn(
         "tripper.datadoc.save_dict() is deprecated. "
@@ -440,9 +441,6 @@ def save_dict(
         prefixes=prefixes,
         method=method,
     )
-
-
-save_dict.__doc__ = store.__doc__
 
 
 def save_extra_content(ts: Triplestore, source: dict) -> None:
@@ -554,7 +552,7 @@ def acquire(
 def load_dict(
     ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
 ) -> dict:
-    # pylint: disable=missing-function-docstring
+    """This function is deprecated. Use acquire() instead."""
     warnings.warn(
         "tripper.datadoc.load_dict() is deprecated. "
         "Please use tripper.datadoc.acquire() instead.",
@@ -562,9 +560,6 @@ def load_dict(
         stacklevel=2,
     )
     return acquire(ts=ts, iri=iri, use_sparql=use_sparql)
-
-
-load_dict.__doc__ = acquire.__doc__
 
 
 def _load_triples(ts: Triplestore, iri: str) -> dict:
@@ -1326,10 +1321,10 @@ def search_iris(
     keywords: "Optional[Keywords]" = None,
     skipblanks: "bool" = True,
 ) -> "List[str]":
-    # pylint: disable=missing-function-docstring
+    """This function is deprecated. Use search() instead."""
     warnings.warn(
         "tripper.datadoc.save_dict() is deprecated. "
-        "Please use tripper.datadoc.store() instead.",
+        "Please use tripper.datadoc.search() instead.",
         category=DeprecationWarning,
         stacklevel=2,
     )
@@ -1342,9 +1337,6 @@ def search_iris(
         keywords=keywords,
         skipblanks=skipblanks,
     )
-
-
-search_iris.__doc__ = search.__doc__
 
 
 def delete(
