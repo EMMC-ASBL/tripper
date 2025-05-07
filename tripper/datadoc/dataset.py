@@ -52,6 +52,7 @@ from tripper.datadoc.context import Context, get_context
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     IRIExistsError,
+    IRIExistsWarning,
     NoSuchTypeError,
     ValidateError,
 )
@@ -320,7 +321,7 @@ def store(
     context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
-    method: str = "retain",
+    method: str = "raise",
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -340,11 +341,13 @@ def store(
         method: How to handle the case where `ts` already contains a document
             with the same id as `source`. Possible values are:
             - "overwrite": Remove existing documentation before storing.
-            - "retain": Raise an `IRIExistsError` if the IRI of `source`
+            - "raise": Raise an `IRIExistsError` if the IRI of `source`
               already exits in the triplestore (default).
             - "merge": Merge `source` with existing documentation. This will
               duplicate non-literal properties with no explicit `@id`. If this
               is unwanted, merge manually and use "overwrite".
+            - "ignore": If the IRI of `source` already exists, do nothing but
+              issueing an `IRIExistsWarning`.
 
     Returns:
         A copy of `source` updated to valid JSON-LD.
@@ -375,10 +378,13 @@ def store(
         if ts.has(iri):
             if method == "overwrite":
                 delete_iri(ts, iri)
-            elif method == "retain":
+            elif method == "raise":
                 raise IRIExistsError(f"Cannot overwrite existing IRI: {iri}")
             elif method == "merge":
                 pass
+            elif method == "ignore":
+                warnings.warn(iri, category=IRIExistsWarning)
+                return doc
             else:
                 raise ValueError(
                     f"Invalid storage method: '{method}'. "

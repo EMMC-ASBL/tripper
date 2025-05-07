@@ -35,7 +35,7 @@ def save(
     generator: "Optional[str]" = None,
     prefixes: "Optional[dict]" = None,
     use_sparql: "Optional[bool]" = None,
-    method: str = "retain",
+    method: str = "raise",
 ) -> str:
     """Saves data to a dataresource and document it in the triplestore.
 
@@ -66,11 +66,15 @@ def save(
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
         method: How to handle the case where `ts` already contains a document
-            with the same id as `data`. Possible values are:
+            with the same id as `source`. Possible values are:
             - "overwrite": Remove existing documentation before storing.
-            - "retain": Raise an `IRIAlExistsError` if the IRI of `source`
+            - "raise": Raise an `IRIExistsError` if the IRI of `source`
               already exits in the triplestore (default).
-            - "merge": Merge `source` with existing documentation.
+            - "merge": Merge `source` with existing documentation. This will
+              duplicate non-literal properties with no explicit `@id`. If this
+              is unwanted, merge manually and use "overwrite".
+            - "ignore": If the IRI of `source` already exists, do nothing but
+              issueing an `IRIExistsWarning`.
 
     Returns:
         IRI of the dataset.

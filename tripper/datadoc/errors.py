@@ -37,3 +37,7 @@ class UnknownKeywordWarning(TripperWarning):
 
 class MissingKeywordsClassWarning(UnknownKeywordWarning):
     """A class is referred to that is not defined in a keywords file."""
+
+
+class IRIExistsWarning(TripperWarning):
+    """The IRI already exists in the triplestore."""
