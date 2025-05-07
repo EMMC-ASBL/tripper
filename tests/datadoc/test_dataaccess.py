@@ -14,7 +14,7 @@ def test_save_and_load():
 
     from dataset_paths import outdir  # pylint: disable=import-error
 
-    from tripper import DCAT, DCTERMS, EMMO, Triplestore
+    from tripper import DCAT, DCTERMS, EMMO, IANA, Triplestore
     from tripper.datadoc import acquire, load, save, store
 
     pytest.importorskip("dlite")
@@ -67,6 +67,10 @@ def test_save_and_load():
     # Test load dataset (this downloads an actual image from github)
     data = load(ts, iri, retries=3)
     assert len(data) == 53502
+
+    # Test load non-existing IRI
+    with pytest.raises(TypeError):
+        load(ts, "<nonexisting>", retries=2)
 
     # Test save dataset with anonymous distribution
     newfile = outdir / "newimage.tiff"
@@ -149,6 +153,18 @@ def test_save_and_load():
     assert newfile2.exists()
     assert newfile2.stat().st_size == len(buf)
 
-    # Test load failure
-    with pytest.raises(TypeError):
-        load(ts, "<nonexisting>", retries=2)
+    # Test save dataset with invalid downloadURL
+    store(
+        ts,
+        source={
+            "@id": "ex:mydata",
+            "@type": "dcat:Dataset",
+            "distribution": {
+                "downloadURL": "file:///non-existing.txt",
+                "mediaType": IANA["text/plain"],
+            },
+        },
+        prefixes={"ex": "http://example.com/"},
+    )
+    with pytest.raises(IOError):
+        load(ts, "ex:mydata", retries=2)
