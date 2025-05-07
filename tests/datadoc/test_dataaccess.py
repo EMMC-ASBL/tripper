@@ -153,7 +153,7 @@ def test_save_and_load():
     assert newfile2.exists()
     assert newfile2.stat().st_size == len(buf)
 
-    # Test save dataset with invalid downloadURL
+    # Test save and load dataset with invalid downloadURL
     store(
         ts,
         source={

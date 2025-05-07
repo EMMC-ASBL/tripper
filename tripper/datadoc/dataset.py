@@ -1253,7 +1253,7 @@ def search(
 
         List IRIs of all resources with John Doe as `contactPoint`:
 
-            search(ts, criteria={"contactPoint.hasName": "John Doe"})
+            search(ts, criterias={"contactPoint.hasName": "John Doe"})
 
         List IRIs of all samples:
 
@@ -1265,7 +1265,7 @@ def search(
             search(
                 ts,
                 type=DCAT.Dataset,
-                criteria={
+                criterias={
                     "contactPoint.hasName": "John Doe",
                     "fromSample": SAMPLE.batch2/sample3,
                 },

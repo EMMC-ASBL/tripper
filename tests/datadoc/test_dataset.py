@@ -587,3 +587,37 @@ def test_fuseki():
     except ModuleNotFoundError:
         pytest.skip("Cannot connect to Fuseki server")
     ts.remove_database(**fuseki_args)
+
+
+def test_deprecated():
+    """Test deprecated save_dict(), load_dict() and search_iris()."""
+    from tripper import Triplestore
+    from tripper.datadoc import load_dict, save_dict, search_iris
+
+    ts = Triplestore("rdflib")
+    EX = ts.bind("ex", "http://example.com/ex#")
+    d = {
+        "@id": EX.exdata,
+        "@type": EX.ExData,
+        "creator": {"name": "John Doe"},
+        "inSeries": EX.series,
+        "distribution": {
+            "downloadURL": "http://example.com/downloads/exdata.csv",
+            "mediaType": (
+                "http://www.iana.org/assignments/media-types/text/csv"
+            ),
+        },
+    }
+    with pytest.warns(DeprecationWarning):
+        save_dict(ts, d, type="Dataset")
+    print(ts.serialize())
+
+    with pytest.warns(DeprecationWarning):
+        d2 = load_dict(ts, EX.exdata)
+    assert d2["@id"] == d["@id"]
+    assert d2.creator.name == d["creator"]["name"]
+    assert d2.distribution.downloadURL == d["distribution"]["downloadURL"]
+
+    with pytest.warns(DeprecationWarning):
+        iris = search_iris(ts, criterias={"creator.name": "John Doe"})
+    assert iris == [EX.exdata]
