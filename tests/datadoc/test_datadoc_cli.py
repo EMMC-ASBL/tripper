@@ -157,6 +157,42 @@ def test_find_json():
     assert len(resources) == 3
 
 
+def test_find_turtle():
+    """Test `datadoc find` with Fuseki."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    cmd = [
+        "--debug",
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "find",
+        "--criteria=creator.name=Sigurd Wenner",
+        "--format=turtle",
+    ]
+    r = maincommand(cmd)
+    assert "<https://he-matchmaker.eu/data/sem/SEM_cement_batch2>" in r
+
+
+def test_find_csv():
+    """Test `datadoc find` with Fuseki."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    cmd = [
+        "--debug",
+        "--triplestore=FusekiTest",
+        f"--config={indir/'session.yaml'}",
+        "find",
+        "--criteria=creator.name=Sigurd Wenner",
+        "--format=csv",
+    ]
+    r = maincommand(cmd)
+    lines = r.split("\n")
+    assert "@id" in lines[0]
+    assert "@type" in lines[0]
+    assert "description" in lines[0]
+    assert len(lines) == 5
+
+
 def test_fetch():
     """Test `datadoc fetch` with Fuseki."""
     from dataset_paths import indir, outdir  # pylint: disable=import-error

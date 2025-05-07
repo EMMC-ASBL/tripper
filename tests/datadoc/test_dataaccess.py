@@ -148,3 +148,7 @@ def test_save_and_load():
     )
     assert newfile2.exists()
     assert newfile2.stat().st_size == len(buf)
+
+    # Test load failure
+    with pytest.raises(TypeError):
+        load(ts, "<nonexisting>", retries=2)
