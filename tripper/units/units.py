@@ -1050,8 +1050,8 @@ class Quantity(pint.Quantity):
 
                Pa will be selected.
             3. If two units have the same sum, the unit that minimises
-               `log10(magnitude/5)` is selected, where magnitude of this
-               quantity when expressed in SI base units.
+               `log10(magnitude/5)` is selected, where `magnitude` is the
+               magnitude of the quantity when expressed in SI base units.
 
         """
         # pylint: disable=protected-access
