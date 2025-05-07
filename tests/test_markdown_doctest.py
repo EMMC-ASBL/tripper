@@ -30,4 +30,10 @@ def test_markdown_doctest():
             path = os.path.join(dirpath, filename)
             relpath = os.path.relpath(dirpath, str(rootdir))
             print(f"-- doctest {relpath}/{filename}")
-            doctest.testfile(str(path), module_relative=False)
+            result = doctest.testfile(str(path), module_relative=False)
+            if result.failed:
+                raise RuntimeError(
+                    f"failing doctest: {relpath}/{filename}\n"
+                    "To debug, please run:\n\n"
+                    f"    python -m doctest {relpath}/{filename}\n"
+                )

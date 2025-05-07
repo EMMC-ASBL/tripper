@@ -137,8 +137,7 @@ The `check=True` enables checking for existing IRIs.
 >>> EMMO.invalid_name  # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
-tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name
-Maybe you have to remove the cache file: ...
+tripper.errors.NoSuchIRIError: https://w3id.org/emmo#invalid_name...
 
 ```
 
@@ -167,8 +166,7 @@ For example:
 >>> FOOD.Hamburger  # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
-tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Hamburger
-...
+tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Hamburger...
 
 # Add Hamburger to known labels
 >>> extend_namespace(FOOD, {"Hamburger": FOOD + "Hamburger"})
@@ -179,8 +177,7 @@ True
 >>> FOOD.Fish  # doctest: +ELLIPSIS
 Traceback (most recent call last):
     ...
-tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Fish
-...
+tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Fish...
 
 # Extend FOOD from an online turtle file
 >>> extend_namespace(
