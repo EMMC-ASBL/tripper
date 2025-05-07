@@ -68,8 +68,8 @@ def save(
         method: How to handle the case where `ts` already contains a document
             with the same id as `data`. Possible values are:
             - "overwrite": Remove existing documentation before storing.
-            - "retain": Raise an `IRIAlreadyExistsError` if the IRI of `source`
-              already exits in the triplestore.
+            - "retain": Raise an `IRIAlExistsError` if the IRI of `source`
+              already exits in the triplestore (default).
             - "merge": Merge `source` with existing documentation.
 
     Returns:
