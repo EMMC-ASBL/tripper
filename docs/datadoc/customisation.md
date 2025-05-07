@@ -177,9 +177,9 @@ You can save this context to a triplestore with
 >>> ts = Triplestore("rdflib")
 >>> save_datadoc(  # doctest: +ELLIPSIS
 ...     ts,
-...      "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml",
+...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml",
 ... )
-AttrDict(...)
+{'@context': [...]}
 
 ```
 

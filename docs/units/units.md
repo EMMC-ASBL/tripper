@@ -49,8 +49,8 @@ Item access creates a subclass of a Pint quantity representation (see [Working w
 >>> ureg["Pa"]
 <Quantity(1, 'Pascal')>
 
->>> ureg["N⋅m²"]
-<Quantity(1, 'Newton * Metre ** 2')>
+>>> ureg["A/m²"]
+<Quantity(1.0, 'Ampere / Metre ** 2')>
 
 ```
 
