@@ -732,7 +732,7 @@ def check_service_availability(url: str, timeout=5, interval=1) -> bool:
             response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
                 return True
-        except requests.exceptions.RequestException:
+        except (requests.exceptions.RequestException, IOError):
             pass
 
         if time.time() - start_time >= timeout:

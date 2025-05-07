@@ -47,7 +47,7 @@ def populate_and_search(tsname):  # pylint: disable=too-many-statements
     from pathlib import Path
 
     from tripper import Literal
-    from tripper.datadoc import load_dict, save_datadoc, search_iris
+    from tripper.datadoc import load_dict, save_datadoc, search
 
     thisdir = Path(__file__).resolve().parent
     datasetinput = thisdir / "datadocumentation_sample.yaml"
@@ -135,7 +135,7 @@ ASK {
     save_datadoc(ts, datasetinput2)
 
     # search for datasets in triplestore
-    datasets = search_iris(ts, type="Dataset")
+    datasets = search(ts, type="Dataset")
 
     print("Found datasets:")
     print(datasets)
@@ -168,7 +168,7 @@ ASK {
 
     ts.remove(subject="https://onto-ns.com/datasets#our_nice_dataset2")
 
-    datasets3 = search_iris(ts, type="Dataset")
+    datasets3 = search(ts, type="Dataset")
 
     print("Found datasets after deletion:")
     print(datasets3)
