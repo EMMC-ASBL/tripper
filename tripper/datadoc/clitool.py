@@ -16,7 +16,7 @@ from tripper.datadoc import (
     get_jsonld_context,
     load,
     save_datadoc,
-    search_iris,
+    search,
     store,
 )
 
@@ -74,7 +74,7 @@ def subcommand_find(ts, args):
                 key, value = crit.split("=", 1)
                 criterias[key] = value
 
-    iris = search_iris(ts, type=args.type, criterias=criterias, regex=regex)
+    iris = search(ts, type=args.type, criterias=criterias, regex=regex)
 
     # Infer format
     if args.format:

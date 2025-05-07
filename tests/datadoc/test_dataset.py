@@ -353,7 +353,7 @@ def test_datadoc():
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
-    from tripper.datadoc import acquire, save_datadoc, search_iris, store
+    from tripper.datadoc import acquire, save_datadoc, search, store
     from tripper.datadoc.errors import NoSuchTypeError
 
     pytest.importorskip("dlite")
@@ -440,8 +440,8 @@ def test_datadoc():
 
     # Test searching the triplestore
     SAMPLE = ts.namespaces["sample"]
-    datasets = search_iris(ts, type="Dataset")
-    assert search_iris(ts, type="dcat:Dataset") == datasets
+    datasets = search(ts, type="Dataset")
+    assert search(ts, type="dcat:Dataset") == datasets
     named_datasets = {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
@@ -449,32 +449,30 @@ def test_datadoc():
     }
     assert not named_datasets.difference(datasets)
 
-    assert set(
-        search_iris(ts, criterias={"creator.name": "Sigurd Wenner"})
-    ) == {
+    assert set(search(ts, criterias={"creator.name": "Sigurd Wenner"})) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
     }
-    assert set(search_iris(ts, type=CHAMEO.Sample)) == {
+    assert set(search(ts, type=CHAMEO.Sample)) == {
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
 
     with pytest.raises(NoSuchTypeError):
-        search_iris(ts, type="invalid-type")
+        search(ts, type="invalid-type")
 
     # Find all individuals that has "SEM images"in the title
-    assert set(search_iris(ts, regex={"dcterms:title": "SEM images"})) == {
+    assert set(search(ts, regex={"dcterms:title": "SEM images"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
-    assert set(search_iris(ts, regex={"dcterms:title": "SEM i[^ ]*s"})) == {
+    assert set(search(ts, regex={"dcterms:title": "SEM i[^ ]*s"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
 
     # Get individual with given IRI
-    assert search_iris(ts, criterias={"@id": SEMDATA.SEM_cement_batch2}) == [
+    assert search(ts, criterias={"@id": SEMDATA.SEM_cement_batch2}) == [
         SEMDATA.SEM_cement_batch2,
     ]
 

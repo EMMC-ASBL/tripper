@@ -1323,7 +1323,7 @@ def search_iris(
 ) -> "List[str]":
     """This function is deprecated. Use search() instead."""
     warnings.warn(
-        "tripper.datadoc.save_dict() is deprecated. "
+        "tripper.datadoc.search_iris() is deprecated. "
         "Please use tripper.datadoc.search() instead.",
         category=DeprecationWarning,
         stacklevel=2,

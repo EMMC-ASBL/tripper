@@ -77,14 +77,14 @@ We therefore have to define them explicitly
     }
     ```
 
-You can use [save_dict()] to save this documentation to a triplestore.
+You can use [store()] to save this documentation to a triplestore.
 Since the prefixes "sem" and "kb" are not included in the [Predefined prefixes], they are have to be provided explicitly.
 
 ```python
 >>> from tripper import Triplestore
->>> from tripper.datadoc import save_dict
+>>> from tripper.datadoc import store
 >>> ts = Triplestore(backend="rdflib")
->>> d = save_dict(ts, dataset, prefixes=prefixes)
+>>> d = store(ts, dataset, prefixes=prefixes)
 
 ```
 
@@ -119,7 +119,7 @@ kb:image1 a sem:SEMImage ;
 ```
 
 Note that the image implicitly has been declared to be an individual of the classes `dcat:Dataset` and `emmo:Dataset`.
-This is because the `type` argument of [save_dict()] defaults to "dataset".
+This is because the `type` argument of [store()] defaults to "dataset".
 
 
 ### Multi-resource dict
@@ -215,7 +215,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [emmo:Dataset]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
-[save_dict()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_dict
+[store()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.store
 [told()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.told
 [save_datadoc()]:
 ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_datadoc
