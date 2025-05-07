@@ -388,7 +388,7 @@ def store(
             else:
                 raise ValueError(
                     f"Invalid storage method: '{method}'. "
-                    "Should be one of: 'overwrite', 'retain' or 'merge'"
+                    "Should be one of: 'overwrite', 'raise', 'ignore' or 'merge'"
                 )
 
     context.sync_prefixes(ts)
