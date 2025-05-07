@@ -65,7 +65,7 @@ def test_save_and_load():
     )
 
     # Test load dataset (this downloads an actual image from github)
-    data = load(ts, iri)
+    data = load(ts, iri, retries=3)
     assert len(data) == 53502
 
     # Test save dataset with anonymous distribution

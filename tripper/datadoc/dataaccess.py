@@ -14,7 +14,8 @@ Note:
 """
 from __future__ import annotations
 
-import secrets  # From Python 3.9 we could use random.randbytes(16).hex()
+import secrets  # From Python 3.9+ we could use random.randbytes(16).hex()
+import time
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
@@ -214,6 +215,7 @@ def load(
     iri: str,
     distributions: "Optional[Union[str, Sequence[str]]]" = None,
     use_sparql: "Optional[bool]" = None,
+    retries: int = 1,
 ) -> bytes:
     """Load dataset with given IRI from its source.
 
@@ -225,6 +227,9 @@ def load(
             default is to try all documented distributions.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to `ts.prefer_sparql`.
+        retries: Number of times to try accessing the dataset. After each
+            failed access, it will sleep for 1 second before trying again.
+            The default is to only make one attempt to access the dataset.
 
     Returns:
         Bytes object with the underlying data.
@@ -267,16 +272,22 @@ def load(
                 if "accessService" in dist
                 else None
             )
-            try:
-                with Protocol(scheme, location, options=p.query) as pr:
-                    return pr.load(id)
-                # pylint: disable=no-member
-            except (dlite.DLiteProtocolError, dlite.DLiteIOError):
-                pass
-            except Exception as exc:
-                raise IOError(
-                    f"cannot access dataset '{iri}' using scheme={scheme}, "
-                    f"location={location} and options={p.query}"
-                ) from exc
+            for n in range(retries):
+                try:
+                    with Protocol(scheme, location, options=p.query) as pr:
+                        return pr.load(id)
+                    # pylint: disable=no-member
+                except (dlite.DLiteProtocolError, dlite.DLiteIOError):
+                    pass
+                # pylint: disable=broad-exception-caught
+                except Exception as exc:
+                    if n < retries - 1:
+                        time.sleep(1)
+                    else:
+                        raise IOError(
+                            f"cannot access dataset '{iri}' using "
+                            f"scheme={scheme}, location={location} "
+                            f"and options='{p.query}'"
+                        ) from exc
 
     raise IOError(f"Cannot access dataset: {iri}")
