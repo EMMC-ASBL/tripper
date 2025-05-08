@@ -11,7 +11,7 @@ from tripper import Triplestore
 from tripper.datadoc.context import Context
 from tripper.datadoc.dataset import (
     addnested,
-    save_dict,
+    store,
     told,
 )
 from tripper.utils import AttrDict, openfile
@@ -86,7 +86,7 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        save_dict(ts, self.asdicts(), type=self.type, context=self.context)
+        store(ts, self.asdicts(), type=self.type, context=self.context)
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""

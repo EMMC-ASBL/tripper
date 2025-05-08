@@ -58,7 +58,7 @@ Future releases will support adding custom resource types.
 [emmo:Dataset]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
-[save_dict()]: ../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.save_dict
+[store()]: ../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.store
 [as_jsonld()]: ../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.as_jsonld
 [save_datadoc()]:
 ../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.save_datadoc
