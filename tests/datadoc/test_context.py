@@ -82,25 +82,43 @@ def test_sync_prefixes():
 
 def test_expand():
     """Test expand() method."""
-    expanded = "http://www.w3.org/ns/dcat#mediaType"
-    assert ctx.expand("mediaType") == expanded
-    assert ctx.expand("dcat:mediaType") == expanded
-    assert ctx.expand(expanded) == expanded
+    from tripper import DCAT, DCTERMS
+    from tripper.errors import NamespaceError
+
+    assert ctx.expand("mediaType") == DCAT.mediaType
+    assert ctx.expand("dcat:mediaType") == DCAT.mediaType
+    assert ctx.expand("dcterms:title") == DCTERMS.title
+    assert ctx.expand(DCAT.mediaType) == DCAT.mediaType
+    assert ctx.expand(DCAT.distribution) == DCAT.distribution
+    assert ctx.expand("non-existing") == "non-existing"
+
+    with pytest.raises(NamespaceError):
+        ctx.expand("non-existing", strict=True)
 
 
 def test_prefixed():
     """Test prefixed() method."""
+    from tripper.errors import NamespaceError
+
     prefixed = "dcat:mediaType"
     assert ctx.prefixed("mediaType") == prefixed
     assert ctx.prefixed(prefixed) == prefixed
     assert ctx.prefixed("http://www.w3.org/ns/dcat#mediaType") == prefixed
 
+    with pytest.raises(NamespaceError):
+        ctx.prefixed("non-existing")
+
 
 def test_shortname():
     """Test shortname() method."""
+    from tripper.errors import NamespaceError
+
     assert ctx.shortname("mediaType") == "mediaType"
     assert ctx.shortname("dcat:mediaType") == "mediaType"
     assert ctx.shortname("http://www.w3.org/ns/dcat#mediaType") == "mediaType"
+
+    with pytest.raises(NamespaceError):
+        ctx.prefixed("non-existing")
 
 
 def test_expanddoc_compactdoc():
@@ -133,6 +151,12 @@ def test_expanddoc_compactdoc():
     ]
     compact = context.compactdoc(exp)
     assert compact == doc
+
+
+def test_isref():
+    """Test isref() method."""
+    assert ctx.isref("dcat:distribution") is True
+    assert ctx.isref("dcterms:title") is False
 
 
 def test_to_triplestore():

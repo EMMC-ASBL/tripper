@@ -324,7 +324,8 @@ class Context:
 
     def isref(self, name: str) -> bool:
         """Return wheter `name` is an object property that refers to a node."""
-        return self.ctx["mappings"][name].get("@id") == "@id"
+        shortname = self.shortname(name)
+        return self.ctx["mappings"][shortname].get("@type") == "@id"
 
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
