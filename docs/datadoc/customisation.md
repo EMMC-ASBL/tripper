@@ -179,7 +179,7 @@ You can save this context to a triplestore with
 ...     ts,
 ...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml",
 ... )
-{'@context': [...]}
+{'@context': ...}
 
 ```
 
