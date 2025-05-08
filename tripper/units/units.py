@@ -1030,6 +1030,29 @@ class Quantity(pint.Quantity):
     def to_ontology_units(self) -> "Quantity":
         """Return new quantity rescale to a unit with the same
         dimensionality that exists in the ontology.
+
+        Notes:
+            This function tries to select the "simplest" unit among all the
+            units with compatible physical dimensionality in the ontology.
+
+            This is done according to the following heuristics:
+
+            1. Find units with compatible physical dimensionality in the
+               ontology.
+            2. Among these units, select the unit that minimises the absolute
+               value of the sum of the powers of each unit component.
+
+               Example: among the units
+
+                   Pa = Pa^1       -> sum=1
+                   J/m^3 = J^1/m^3 -> sum=1+3=4
+                   N/m^2 = N^1/m^2 -> sum=1+2=3
+
+               Pa will be selected.
+            3. If two units have the same sum, the unit that minimises
+               `log10(magnitude/5)` is selected, where `magnitude` is the
+               magnitude of the quantity when expressed in SI base units.
+
         """
         # pylint: disable=protected-access
         ureg = self._REGISTRY

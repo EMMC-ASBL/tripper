@@ -37,7 +37,7 @@ We therefore have to define them explicitly
 
 ```python
 >>> prefixes = {
-...     "sem": "https://w3id.com/emmo/domain/sem/0.1#",
+...     "sem": "https://w3id.org/emmo/domain/sem/0.1#",
 ...     "kb": "http://example.com/kb/"
 ... }
 
@@ -60,7 +60,7 @@ We therefore have to define them explicitly
     {
         "@context": "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json",
         "@id": "http://example.com/kb/image1",
-        "@type": "https://w3id.com/emmo/domain/sem/0.1#SEMImage",
+        "@type": "https://w3id.org/emmo/domain/sem/0.1#SEMImage",
         "creator": {
             "@type": [
                 "http://xmlns.com/foaf/0.1/Agent",
@@ -77,14 +77,14 @@ We therefore have to define them explicitly
     }
     ```
 
-You can use [save_dict()] to save this documentation to a triplestore.
+You can use [store()] to save this documentation to a triplestore.
 Since the prefixes "sem" and "kb" are not included in the [Predefined prefixes], they are have to be provided explicitly.
 
 ```python
 >>> from tripper import Triplestore
->>> from tripper.datadoc import save_dict
+>>> from tripper.datadoc import store
 >>> ts = Triplestore(backend="rdflib")
->>> d = save_dict(ts, dataset, prefixes=prefixes)
+>>> d = store(ts, dataset, prefixes=prefixes)
 
 ```
 
@@ -104,7 +104,7 @@ You can use `ts.serialize()` to list the content of the triplestore (defaults to
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix kb: <http://example.com/kb/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix sem: <https://w3id.com/emmo/domain/sem/0.1#> .
+@prefix sem: <https://w3id.org/emmo/domain/sem/0.1#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 kb:image1 a sem:SEMImage ;
@@ -119,7 +119,7 @@ kb:image1 a sem:SEMImage ;
 ```
 
 Note that the image implicitly has been declared to be an individual of the classes `dcat:Dataset` and `emmo:Dataset`.
-This is because the `type` argument of [save_dict()] defaults to "dataset".
+This is because the `type` argument of [store()] defaults to "dataset".
 
 
 ### Multi-resource dict
@@ -145,11 +145,11 @@ Saving [semdata.yaml] to a triplestore can e.g. be done with
 
 ```python
 >>> from tripper.datadoc import save_datadoc
->>> save_datadoc(  # doctest: +ELLIPSIS
+>>> save_datadoc(  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 ...    ts,
 ...    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml"
 ... )
-AttrDict(...)
+{'@graph': [...], ...}
 
 ```
 
@@ -186,7 +186,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 >>> td = TableDoc.parse_csv(
 ...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv",
 ...     prefixes={
-...         "sem": "https://w3id.com/emmo/domain/sem/0.1#",
+...         "sem": "https://w3id.org/emmo/domain/sem/0.1#",
 ...         "semdata": "https://he-matchmaker.eu/data/sem/",
 ...         "sample": "https://he-matchmaker.eu/sample/",
 ...         "mat": "https://he-matchmaker.eu/material/",
@@ -215,7 +215,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [emmo:Dataset]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
 [oteio:Generator]: https://w3id.org/emmo/domain/oteio/Generator
 [oteio:Parser]: https://w3id.org/emmo/domain/oteio/Parser
-[save_dict()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_dict
+[store()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.store
 [told()]: ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.told
 [save_datadoc()]:
 ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_datadoc

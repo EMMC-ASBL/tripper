@@ -13,7 +13,7 @@ Tripper already include a default list of [predefined prefixes].
 Additional prefixed can be provided in two ways.
 
 ### With the `prefixes` argument
-Several functions in the API (like [save_dict()], [told()] and [TableDoc.parse_csv()]) takes a `prefixes` argument with which additional namespace prefixes can provided.
+Several functions in the API (like [store()], [told()] and [TableDoc.parse_csv()]) takes a `prefixes` argument with which additional namespace prefixes can provided.
 
 This may be handy when used from the Python API.
 
@@ -177,9 +177,9 @@ You can save this context to a triplestore with
 >>> ts = Triplestore("rdflib")
 >>> save_datadoc(  # doctest: +ELLIPSIS
 ...     ts,
-...      "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml",
+...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml",
 ... )
-AttrDict(...)
+{'@context': [...]}
 
 ```
 
@@ -242,7 +242,7 @@ Instead, the list of available resource types should be stored and retrieved fro
 [predefined prefixes]: prefixes.md
 [predefined keywords]: keywords.md
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
-[save_dict()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.save_dict
+[store()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.store
 [told()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.told
 [save_datadoc()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.save_datadoc
 [TableDoc]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc

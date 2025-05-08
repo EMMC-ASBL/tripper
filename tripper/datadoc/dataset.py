@@ -51,6 +51,7 @@ from tripper.datadoc.context import Context, get_context
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     IRIExistsError,
+    IRIExistsWarning,
     NoSuchTypeError,
     ValidateError,
 )
@@ -245,11 +246,6 @@ def _told(
                 logging.info(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
-                # warnings.warn(
-                #     "No superclass info. Not in keywords file: "
-                #     + ", ".join(missing),
-                #     category=MissingKeywordsClassWarning,
-                # )
 
     if isinstance(descr, str):
         return descr
@@ -285,10 +281,6 @@ def _told(
         if not k.startswith("@") and k not in keywords:
             # pylint: disable=logging-fstring-interpolation
             logging.info(f"Property not in keywords: {k}")
-            # warnings.warn(
-            #     f"No range info. Not in keywords file: {k}",
-            #     UnknownKeywordWarning,
-            # )
         if k in ("@context", "@id", "@type"):
             pass
         elif k == "@graph":
@@ -330,7 +322,7 @@ def store(
     context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
-    method: str = "retain",
+    method: str = "raise",
     restrictions: "Collection" = (),
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
@@ -351,11 +343,13 @@ def store(
         method: How to handle the case where `ts` already contains a document
             with the same id as `source`. Possible values are:
             - "overwrite": Remove existing documentation before storing.
-            - "retain": Raise an `IRIExistsError` if the IRI of `source`
+            - "raise": Raise an `IRIExistsError` if the IRI of `source`
               already exits in the triplestore (default).
             - "merge": Merge `source` with existing documentation. This will
               duplicate non-literal properties with no explicit `@id`. If this
               is unwanted, merge manually and use "overwrite".
+            - "ignore": If the IRI of `source` already exists, do nothing but
+              issueing an `IRIExistsWarning`.
         restrictions: Collection of additional keywords that shuld be
             converted to value restrictions.
 
@@ -388,18 +382,21 @@ def store(
         if ts.has(iri):
             if method == "overwrite":
                 delete_iri(ts, iri)
-            elif method == "retain":
+            elif method == "raise":
                 raise IRIExistsError(f"Cannot overwrite existing IRI: {iri}")
             elif method == "merge":
                 pass
+            elif method == "ignore":
+                warnings.warn(iri, category=IRIExistsWarning)
+                return doc
             else:
                 raise ValueError(
                     f"Invalid storage method: '{method}'. "
-                    "Should be one of: 'overwrite', 'retain' or 'merge'"
+                    "Should be one of: 'overwrite', 'raise', 'ignore' or "
+                    "'merge'"
                 )
 
     context.sync_prefixes(ts)
-
     update_classes(doc, context=context, restrictions=restrictions)
     # add(doc, "@context", context.get_context_dict())
 
@@ -423,12 +420,12 @@ def save_dict(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "merge",
-    # The strictness of the "build documentation" CI enforces us to add
-    # a `restrictions` argument to save_dict(), although this argument
+    # The unnecessary strictness of the "build documentation" CI enforces us
+    # to add a `restrictions` argument to save_dict(), although this argument
     # came after that save_dict() was renamed.
     restrictions: "Collection" = (),
 ) -> dict:
-    # pylint: disable=missing-function-docstring
+    """This function is deprecated. Use store() instead."""
     warnings.warn(
         "tripper.datadoc.save_dict() is deprecated. "
         "Please use tripper.datadoc.store() instead.",
@@ -445,9 +442,6 @@ def save_dict(
         method=method,
         restrictions=restrictions,
     )
-
-
-save_dict.__doc__ = store.__doc__
 
 
 def update_classes(
@@ -674,7 +668,7 @@ def acquire(
 def load_dict(
     ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
 ) -> dict:
-    # pylint: disable=missing-function-docstring
+    """This function is deprecated. Use acquire() instead."""
     warnings.warn(
         "tripper.datadoc.load_dict() is deprecated. "
         "Please use tripper.datadoc.acquire() instead.",
@@ -682,9 +676,6 @@ def load_dict(
         stacklevel=2,
     )
     return acquire(ts=ts, iri=iri, use_sparql=use_sparql)
-
-
-load_dict.__doc__ = acquire.__doc__
 
 
 def _load_triples(ts: Triplestore, iri: str) -> dict:
@@ -1393,7 +1384,7 @@ def search(
 
         List IRIs of all resources with John Doe as `contactPoint`:
 
-            search(ts, criteria={"contactPoint.hasName": "John Doe"})
+            search(ts, criterias={"contactPoint.hasName": "John Doe"})
 
         List IRIs of all samples:
 
@@ -1405,7 +1396,7 @@ def search(
             search(
                 ts,
                 type=DCAT.Dataset,
-                criteria={
+                criterias={
                     "contactPoint.hasName": "John Doe",
                     "fromSample": SAMPLE.batch2/sample3,
                 },
@@ -1446,10 +1437,10 @@ def search_iris(
     keywords: "Optional[Keywords]" = None,
     skipblanks: "bool" = True,
 ) -> "List[str]":
-    # pylint: disable=missing-function-docstring
+    """This function is deprecated. Use search() instead."""
     warnings.warn(
-        "tripper.datadoc.save_dict() is deprecated. "
-        "Please use tripper.datadoc.store() instead.",
+        "tripper.datadoc.search_iris() is deprecated. "
+        "Please use tripper.datadoc.search() instead.",
         category=DeprecationWarning,
         stacklevel=2,
     )
@@ -1462,9 +1453,6 @@ def search_iris(
         keywords=keywords,
         skipblanks=skipblanks,
     )
-
-
-search_iris.__doc__ = search.__doc__
 
 
 def delete(
