@@ -191,25 +191,31 @@ The content of the triplestore should now be
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix kb: <http://example.com/kb#> .
 @prefix myonto: <http://example.com/myonto#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 <BLANKLINE>
-kb:sampleA a dcat:Resource,
+kb:sampleA a rdfs:Resource,
+        dcat:Resource,
         chameo:Sample ;
     myonto:fromBatch kb:batch1 .
 <BLANKLINE>
-kb:sampleB a dcat:Resource,
+kb:sampleB a rdfs:Resource,
+        dcat:Resource,
         chameo:Sample ;
     myonto:fromBatch kb:batch1 .
 <BLANKLINE>
-kb:sampleC a dcat:Resource,
+kb:sampleC a rdfs:Resource,
+        dcat:Resource,
         chameo:Sample ;
     myonto:fromBatch kb:batch2 .
 <BLANKLINE>
 kb:batch2 a myonto:Batch,
+        rdfs:Resource,
         dcat:Resource ;
     myonto:batchNumber 2 .
 <BLANKLINE>
 kb:batch1 a myonto:Batch,
+        rdfs:Resource,
         dcat:Resource ;
     myonto:batchNumber 1 .
 <BLANKLINE>
