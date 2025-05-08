@@ -82,25 +82,43 @@ def test_sync_prefixes():
 
 def test_expand():
     """Test expand() method."""
-    expanded = "http://www.w3.org/ns/dcat#mediaType"
-    assert ctx.expand("mediaType") == expanded
-    assert ctx.expand("dcat:mediaType") == expanded
-    assert ctx.expand(expanded) == expanded
+    from tripper import DCAT, DCTERMS
+    from tripper.errors import NamespaceError
+
+    assert ctx.expand("mediaType") == DCAT.mediaType
+    assert ctx.expand("dcat:mediaType") == DCAT.mediaType
+    assert ctx.expand("dcterms:title") == DCTERMS.title
+    assert ctx.expand(DCAT.mediaType) == DCAT.mediaType
+    assert ctx.expand(DCAT.distribution) == DCAT.distribution
+    assert ctx.expand("non-existing") == "non-existing"
+
+    with pytest.raises(NamespaceError):
+        ctx.expand("non-existing", strict=True)
 
 
 def test_prefixed():
     """Test prefixed() method."""
+    from tripper.errors import NamespaceError
+
     prefixed = "dcat:mediaType"
     assert ctx.prefixed("mediaType") == prefixed
     assert ctx.prefixed(prefixed) == prefixed
     assert ctx.prefixed("http://www.w3.org/ns/dcat#mediaType") == prefixed
 
+    with pytest.raises(NamespaceError):
+        ctx.prefixed("non-existing")
+
 
 def test_shortname():
     """Test shortname() method."""
+    from tripper.errors import NamespaceError
+
     assert ctx.shortname("mediaType") == "mediaType"
     assert ctx.shortname("dcat:mediaType") == "mediaType"
     assert ctx.shortname("http://www.w3.org/ns/dcat#mediaType") == "mediaType"
+
+    with pytest.raises(NamespaceError):
+        ctx.prefixed("non-existing")
 
 
 def test_expanddoc_compactdoc():
@@ -133,6 +151,80 @@ def test_expanddoc_compactdoc():
     ]
     compact = context.compactdoc(exp)
     assert compact == doc
+
+
+def test_isref():
+    """Test isref() method."""
+    assert ctx.isref("dcat:distribution") is True
+    assert ctx.isref("dcterms:title") is False
+
+
+def test_to_triplestore():
+    """Test to_triplestore() method."""
+    from tripper import Namespace, Triplestore
+
+    PERS = Namespace("http://example.com/person#")
+    FAM = Namespace("http://example.com/family#")
+    context = {
+        "pers": str(PERS),
+        "fam": str(FAM),
+        "son": {"@id": "fam:son", "@type": "@id"},
+        "daughter": {"@id": "fam:daughter", "@type": "@id"},
+        "Son": "fam:Son",
+        "Daughter": "fam:Daughter",
+    }
+    ctx = get_context(context=context)
+
+    doc1 = {
+        "@id": "pers:ada",
+        "daughter": "pers:britt",
+        "son": "pers:cyril",
+    }
+    ts1 = Triplestore("rdflib")
+    ctx.to_triplestore(ts1, doc1)
+    assert set(ts1.triples()) == {
+        (PERS.ada, FAM.daughter, PERS.britt),
+        (PERS.ada, FAM.son, PERS.cyril),
+    }
+
+    doc2 = {
+        "@context": {"father": {"@id": "fam:father", "@type": "@id"}},
+        "@id": "pers:ada",
+        "daughter": "pers:britt",
+        "son": "pers:cyril",
+        "father": "pers:daniel",
+    }
+    ts2 = Triplestore("rdflib")
+    ctx.to_triplestore(ts2, doc2)
+    assert set(ts2.triples()) == {
+        (PERS.ada, FAM.daughter, PERS.britt),
+        (PERS.ada, FAM.son, PERS.cyril),
+        (PERS.ada, FAM.father, PERS.daniel),
+    }
+
+    doc3 = [
+        {
+            "@context": {"father": {"@id": "fam:father", "@type": "@id"}},
+            "@id": "pers:ada",
+            "daughter": "pers:britt",
+            "son": "pers:cyril",
+            "father": "pers:daniel",
+        },
+        {
+            "@id": "pers:cyril",
+            "daughter": "pers:ewa",
+            "son": "pers:fredrik",
+        },
+    ]
+    ts3 = Triplestore("rdflib")
+    ctx.to_triplestore(ts3, doc3)
+    assert set(ts3.triples()) == {
+        (PERS.ada, FAM.daughter, PERS.britt),
+        (PERS.ada, FAM.son, PERS.cyril),
+        (PERS.ada, FAM.father, PERS.daniel),
+        (PERS.cyril, FAM.daughter, PERS.ewa),
+        (PERS.cyril, FAM.son, PERS.fredrik),
+    }
 
 
 def test_base():

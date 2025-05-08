@@ -112,7 +112,9 @@ class Keywords:
         new.domain = self.domain
         return new
 
-    def add_domain(self, domain: "Union[str, Sequence[str]]") -> None:
+    def add_domain(
+        self, domain: "Union[str, Sequence[str]]", timeout: float = 3
+    ) -> None:
         """Add keywords for `domain`, where `domain` is the name of a
         scientific domain or a list of scientific domain names."""
         if isinstance(domain, str):
@@ -123,7 +125,10 @@ class Keywords:
                 self.domain = name  # type: ignore
             for ep in get_entry_points("tripper.keywords"):
                 if ep.value == name:
-                    self.parse(self.rootdir / ep.name / "keywords.yaml")
+                    self.parse(
+                        self.rootdir / ep.name / "keywords.yaml",
+                        timeout=timeout,
+                    )
                     break
             else:
                 if name == "default":
@@ -133,7 +138,8 @@ class Keywords:
                         / "tripper"
                         / "context"
                         / "0.3"
-                        / "keywords.yaml"
+                        / "keywords.yaml",
+                        timeout=timeout,
                     )
                 else:
                     raise TypeError(f"Unknown domain name: {name}")
@@ -145,7 +151,7 @@ class Keywords:
 
         if "basedOn" in d:
             if isinstance(d["basedOn"], str):
-                self.parse(d["basedOn"], timeout=timeout)
+                self.add_domain(d["basedOn"], timeout=timeout)
             elif isinstance(d["basedOn"], list):
                 for dct in d["basedOn"]:
                     self.parse(dct, timeout=timeout)

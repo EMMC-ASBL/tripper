@@ -40,9 +40,8 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyld import jsonld
-
 from tripper import (
+    OWL,
     RDF,
     Literal,
     Namespace,
@@ -67,7 +66,16 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
+    from typing import (
+        Any,
+        Collection,
+        Iterable,
+        List,
+        Mapping,
+        Optional,
+        Sequence,
+        Union,
+    )
 
     from tripper.datadoc.keywords import FileLoc
     from tripper.utils import Triple
@@ -173,7 +181,9 @@ def told(
         d = {}
         graph = []
         for k, v in descr.items():  # type: ignore
-            if k == "@context":
+            if k == "domain":
+                pass
+            elif k == "@context":
                 context.add_context(v)
                 d[k] = v
             elif k == "prefixes":
@@ -313,6 +323,7 @@ def store(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
+    restrictions: "Collection" = (),
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -339,6 +350,8 @@ def store(
               is unwanted, merge manually and use "overwrite".
             - "ignore": If the IRI of `source` already exists, do nothing but
               issueing an `IRIExistsWarning`.
+        restrictions: Collection of additional keywords that shuld be
+            converted to value restrictions.
 
     Returns:
         A copy of `source` updated to valid JSON-LD.
@@ -379,20 +392,19 @@ def store(
             else:
                 raise ValueError(
                     f"Invalid storage method: '{method}'. "
-                    "Should be one of: 'overwrite', 'raise', 'ignore' or 'merge'"
+                    "Should be one of: 'overwrite', 'raise', 'ignore' or "
+                    "'merge'"
                 )
 
     context.sync_prefixes(ts)
-    add(doc, "@context", context.get_context_dict())
+    update_classes(doc, context=context, restrictions=restrictions)
+    # add(doc, "@context", context.get_context_dict())
 
     # Validate
     # TODO: reenable validation
     # validate(doc, type=type, keywords=keywords)
 
-    # Write json-ld data to triplestore (using temporary rdflib triplestore)
-    nt = jsonld.to_rdf(doc, options={"format": "application/n-quads"})
-
-    ts.parse(data=nt, format="ntriples")
+    context.to_triplestore(ts, doc)
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
@@ -408,9 +420,12 @@ def save_dict(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "merge",
+    # The unnecessary strictness of the "build documentation" CI enforces us
+    # to add a `restrictions` argument to save_dict(), although this argument
+    # came after that save_dict() was renamed.
+    restrictions: "Collection" = (),
 ) -> dict:
     """This function is deprecated. Use store() instead."""
-    # pylint: disable=missing-function-docstring
     warnings.warn(
         "tripper.datadoc.save_dict() is deprecated. "
         "Please use tripper.datadoc.store() instead.",
@@ -425,7 +440,123 @@ def save_dict(
         keywords=keywords,
         prefixes=prefixes,
         method=method,
+        restrictions=restrictions,
     )
+
+
+def update_classes(
+    source: "Union[dict, list]",
+    context: "Optional[Context]" = None,
+    restrictions: "Collection" = (),
+) -> "Union[dict, list]":
+    """Update documentation of classes, ensuring that they will be
+    correctly represented in RDF.
+
+    Only resources of type `owl:Class` will be updated.
+
+    If a resource has type `owl:Class`, all other types it has will be
+    moved to the `subClassOf` keyword.
+
+    By default, only object properties who's value is either a class
+    or has a `restrictionType` key are converted to restrictions. Use
+    the `restrictions` argument to convert other keywords as well to
+    restrictions.
+
+    Arguments:
+        source: Input documentation of one or more resources. This dict
+            will be updated in-place. It is typically a dict returned by
+            `told()`.
+        context: Context object defining the keywords.
+        restrictions: Collection of additional keywords that shuld be
+            converted to value restrictions.
+
+    Returns:
+        The updated version of `source`.
+
+    """
+
+    def addrestriction(source, prop, value):
+        """Add restriction to `source`."""
+        # pylint: disable=no-else-return
+        if value is None or prop.startswith("@"):
+            return
+        elif restrictions and context.expand(prop) in restrictions:
+            restrictionType = "value"
+        elif isinstance(value, dict) and (
+            "restrictionType" in value
+            or any(context.expand(s) == OWL.Class for s in get(value, "@type"))
+        ):
+            restrictionType = value.pop("restrictionType", "some")
+            update_classes(value, context=context, restrictions=restrictions)
+        elif isinstance(value, list):
+            for val in value:
+                addrestriction(source, prop, val)
+            return
+        else:
+            return
+
+        d = {
+            "rdf:type": "owl:Restriction",
+            # We expand here, since JSON-LD doesn't expand values.
+            "owl:onProperty": context.expand(prop, strict=True),
+        }
+        if restrictionType == "value":
+            d["owl:hasValue"] = value
+        elif restrictionType == "some":
+            d["owl:someValuesFrom"] = value
+        elif restrictionType == "only":
+            d["owl:allValuesFrom"] = value
+        else:
+            d["owl:onClass"] = value
+            ctype, n = restrictionType.split()
+            ctypes = {
+                "exactly": "owl:qualifiedCardinality",
+                "min": "owl:minQualifiedCardinality",
+                "max": "owl:maxQualifiedCardinality",
+            }
+            d[ctypes[ctype]] = int(n)
+
+        add(source, "subClassOf", d)
+        if prop in source:  # Avoid removing prop more than once
+            del source[prop]
+
+        if restrictionType != "value":  # Recursively update related calsses
+            update_classes(value, context, restrictions)
+
+    # Local context
+    context = get_context(context=context, copy=True)
+    restrictions = {context.expand(s, strict=True) for s in restrictions}
+
+    # Handle lists and graphs
+    if isinstance(source, list) or "@graph" in source:
+        sources = source if isinstance(source, list) else source["@graph"]
+        if isinstance(sources, dict):
+            sources = [sources]
+        for src in sources:
+            update_classes(src, context)
+        return source
+
+    # Update local context
+    if "@context" in source:
+        context.add_context(source["@context"])
+
+    # Ensure that source is only of type owl:Class
+    # Move all other types to subClassOf
+    types = {context.expand(t): t for t in get(source, "@type")}
+    if OWL.Class in types:
+        for e, t in types.items():
+            if e == OWL.Class:
+                source["@type"] = t
+            else:
+                add(source, "subClassOf", e)
+
+    # Convert relations to restrictions
+    for k, v in source.copy().items():
+        if k.startswith("@") or k in ("subClassOf",):
+            continue
+        addrestriction(source, k, v)
+
+    return source
 
 
 def save_extra_content(ts: Triplestore, source: dict) -> None:
