@@ -1,7 +1,7 @@
 Documenting abstract resources
 ------------------------------
-Resources that doesn't exists are called *abstract resources*.
-A typical example of an abstract resource is a procedure that haven't been performed (yet), like a general description of a task in a workflow.
+Resources that do not exist are called *abstract resources*.
+A typical example of an abstract resource is a procedure that has not been performed (yet), like a general description of a task in a workflow.
 
 It is highly desirable to document such a resource as a class (i.e. in the TBox).
 It is consistent with the physicalistic/nominalistic approach taken by major ontological frameworks for applied sciences and makes it easy to document actual executions of such a workflow task as an individual of this class.
