@@ -10,5 +10,11 @@ python tripper/datadoc/keywords.py \
     --keywords=docs/datadoc/keywords.md \
     --prefixes=docs/datadoc/prefixes.md
 
+python tripper/datadoc/keywords.py \
+    --context=tripper/context/process/0.1/context.json \
+    --keywords=docs/datadoc/keywords-process.md \
+    --prefixes=docs/datadoc/prefixes-process.md
+
+
 # Don't crash pre-commit in case the above fails on GitHub
 exit 0

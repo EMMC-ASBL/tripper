@@ -1,0 +1,54 @@
+---
+basedOn: default
+
+resources:
+  Process:
+    iri: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
+    subClassOf: prov:Activity
+    description: An entity made of two or more temporally related entities (of different type from the entity itself). Hence, a process occurs over a period of time.  It acts upon or with entities and may include consuming, processing, transforming, modifying, relocating, using, or generating entities.
+    keywords:
+      hasInput:
+        iri: emmo:EMMO_36e69413_8c59_4799_946c_10b05d266e22
+        range: dcat:Resource
+        description: A resource that is input to the process.
+
+      hasOutput:
+        iri: emmo:EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840
+        range: dcat:Resource
+        description: A resource that is output to the process.
+
+      isParticipatedBy:
+        iri: emmo:EMMO_35c29eb6_f57e_48d8_85af_854f9e926e77
+        range: dcat:Resource
+        description: A resource participating to a process. (Or more formally, a resource who's intersection with the process is a participant to the process.)
+
+  Procedure:
+    iri: emmo:EMMO_472a0ca2_58bf_4618_b561_6fe68bd9fd49
+    subClassOf: Process
+    description: An intentional process in which an agent works with some entities according to some existing formalised operative rules.
+
+  Computation:
+    iri: emmo:EMMO_eff42cb3_208e_4768_9a39_f8b6b3c3d7a2
+    subClassOf: Procedure
+    description: A procedure that deals with quantitative symbols (i.e. symbols associated with a quantitative oriented language).
+    keywords:
+      command:
+        iri: oteio:command
+        range: rdfs:Literal
+        description: Shell command to start the computation.
+
+      environment:
+        iri: oteio:environment
+        range: rdfs:Literal
+        datatype: rdf:JSON
+        description: A JSON object with environment variable name and value pairs that should be set when `oteio:command` is executed.
+
+      install_command:
+        iri: oteio:install_command
+        range: rdfs:Literal
+        description: Shell command to run for installing the computation.
+
+      workdir:
+        iri: oteio:workdir
+        range: rdfs:Literal
+        description: Working directory when executing the command. A relative path is interpreted as relative to the (typically temporary) root directory for the computation.
