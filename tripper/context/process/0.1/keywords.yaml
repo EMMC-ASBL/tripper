@@ -3,8 +3,8 @@ basedOn: default
 
 resources:
   Process:
-    iri: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
-    subClassOf: prov:Activity
+    iri: prov:Activity
+    subClassOf: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
     description: An entity made of two or more temporally related entities (of different type from the entity itself). Hence, a process occurs over a period of time.  It acts upon or with entities and may include consuming, processing, transforming, modifying, relocating, using, or generating entities.
     keywords:
       hasInput:
@@ -21,6 +21,18 @@ resources:
         iri: emmo:EMMO_35c29eb6_f57e_48d8_85af_854f9e926e77
         range: dcat:Resource
         description: A resource participating to a process. (Or more formally, a resource who's intersection with the process is a participant to the process.)
+
+      # FIXME: replace with previousTask when it has been added to EMMO
+      isAfter:
+        iri: emmo:EMMO_2a28c0dd_89b1_47ac_b81f_fccc56f39617
+        range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
+        description: A process that comes before this process.
+
+      # FIXME: replace with nextTask when it has been added to EMMO
+      isBefore:
+        iri: emmo:EMMO_ebc9e62c_5dc4_44db_9060_7923740bdf78
+        range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
+        description: A process that comes after this process.
 
   Procedure:
     iri: emmo:EMMO_472a0ca2_58bf_4618_b561_6fe68bd9fd49
@@ -52,3 +64,55 @@ resources:
         iri: oteio:workdir
         range: rdfs:Literal
         description: Working directory when executing the command. A relative path is interpreted as relative to the (typically temporary) root directory for the computation.
+
+  Sample:
+    iri:
+    subClassOf: ManufacturedProduct
+    description: A representative portion of a material selected for measurement or characterisation.
+
+  ManufacturedProduct:
+    iri: emmo:EMMO_86ca9b93_1183_4b65_81b8_c0fcd3bba5ad
+    subClassOf: emmo:EMMO_4207e895_8b83_4318_996a_72cfb32acd94
+    description: An object that has been designed and manufactured for a particular purpose.
+    keywords:
+      hasManufacturer:
+        iri: emmo:EMMO_e27901a3_df06_4e81_b234_f1af1976014b
+        range: emmo:EMMO_c0afb341_7d31_4883_a307_ae4606df2a1b
+        description: Relates a manufactured product to its manufacturer.
+
+  Material:
+    iri: emmo:EMMO_4207e895_8b83_4318_996a_72cfb32acd94
+    subclassOf: https://w3id.org/emmo:EMMO_bc37743c_37c4_4ec7_9d58_d1aae5567352
+    description: The class of individuals standing for an amount of ordinary matter substance (or mixture of substances) in different states of matter or phases.
+
+  Substance:
+    iri: https://w3id.org/emmo:EMMO_bc37743c_37c4_4ec7_9d58_d1aae5567352
+    description: A composite physical object made of fermions (i.e. having mass and occupying space).
+    keywords:
+      hasSingleComponentComposition:
+        iri: emmo:EMMO_51f426a6_af4a_4e91_a392_2b0bb635e2d5
+        range: emmo:EMMO_172e2c96_180b_40f8_a3e7_b624471f40c2
+        description: Relates a substance to one of its single-component compositions.
+  SingleComponentComposition:
+    iri: emmo:EMMO_172e2c96_180b_40f8_a3e7_b624471f40c2
+    description: A language construct that represents the fraction or amount of a single constituent of a substance.
+    keywords:
+      hasChemicalSpecies:
+        iri: emmo:EMMO_18fdd2cd_4b0a_43a5_a938_66d8290a066c
+        range: emmo:EMMO_cbcf8fe6_6da6_49e0_ab4d_00f737ea9689
+        description: Relates a single-component composition to its corresponding species.
+
+      hasSIQuantityValue:
+        iri: emmo:EMMO_42806efc_581b_4ff8_81b0_b4d62153458b
+        range: rdfs:Literal
+        datatype: emmo:EMMO_799c067b_083f_4365_9452_1f1433b03676
+        description: Relates a physical quantity to its value specified as a string consisting of a numerical, a separator and a unit.
+
+  ChemicalSpecies:
+    iri: emmo:EMMO_cbcf8fe6_6da6_49e0_ab4d_00f737ea9689
+    description: Specific form of an element defined as to isotopic composition, electronic or oxidation state, and/or complex or molecular structure. Chemical species is the macroscopic equivalent of molecular entity and refers to sets or ensembles of molecular entities.
+
+  Manufacturer:
+    iri: emmo:EMMO_c0afb341_7d31_4883_a307_ae4606df2a1b
+    subClassOf: ["foaf:agent", "emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"]
+    description: An intentional agent that partakes in and drives the manufacturing process.
