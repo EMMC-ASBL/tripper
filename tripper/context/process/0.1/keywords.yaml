@@ -93,6 +93,7 @@ resources:
         iri: emmo:EMMO_51f426a6_af4a_4e91_a392_2b0bb635e2d5
         range: emmo:EMMO_172e2c96_180b_40f8_a3e7_b624471f40c2
         description: Relates a substance to one of its single-component compositions.
+
   SingleComponentComposition:
     iri: emmo:EMMO_172e2c96_180b_40f8_a3e7_b624471f40c2
     description: A language construct that represents the fraction or amount of a single constituent of a substance.
