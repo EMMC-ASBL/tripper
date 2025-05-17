@@ -37,10 +37,12 @@ prefixes:
 #
 # Valid keys on keywords:
 #   - iri: IRI of property that the keyword is mapped to
-#   - range: Range of property
+#   - range: Range of property (IRI)
+#   - datatype: Datatype of the property (only for data properties)
 #   - inverse: If true, `iri` refer to the inverse of this property
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
+#   - usageNote: A note about how to use this keyword.
 #   - default: NOT IMPLEMENTED
 #
 resources:
