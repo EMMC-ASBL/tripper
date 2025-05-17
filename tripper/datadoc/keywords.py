@@ -300,7 +300,12 @@ class Keywords:
                     else:
                         dt = [translate.get(t, t) for t in dt]
 
-                    d = {"@id": iri}
+                    d = {}
+                    if v.get("reverse", "").lower() == "true":
+                        d["@reverse"] = iri
+                    else:
+                        d["@id"] = iri
+
                     if dt == "rdf:langString" or "language" in v:
                         d["@language"] = v.get("language", "en")
                     else:
