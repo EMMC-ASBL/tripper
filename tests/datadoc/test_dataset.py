@@ -505,7 +505,7 @@ def test_datadoc():
     }
     assert not named_datasets.difference(datasets)
 
-    assert set(search(ts, criterias={"creator.name": "Sigurd Wenner"})) == {
+    assert set(search(ts, criteria={"creator.name": "Sigurd Wenner"})) == {
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
         SEMDATA["SEM_cement_batch2/77600-23-001"],
         SEMDATA["SEM_cement_batch2"],
@@ -528,7 +528,7 @@ def test_datadoc():
     }
 
     # Get individual with given IRI
-    assert search(ts, criterias={"@id": SEMDATA.SEM_cement_batch2}) == [
+    assert search(ts, criteria={"@id": SEMDATA.SEM_cement_batch2}) == [
         SEMDATA.SEM_cement_batch2,
     ]
 

@@ -48,7 +48,7 @@ def subcommand_add(ts, args):
 
 def subcommand_delete(ts, args):
     """Subcommand for removing matching entries in the triplestore."""
-    criterias = {}
+    criteria = {}
     regex = {}
     if args.criteria:
         for crit in args.criteria:
@@ -57,13 +57,13 @@ def subcommand_delete(ts, args):
                 regex[key] = value
             else:
                 key, value = crit.split("=", 1)
-                criterias[key] = value
-    delete(ts, type=args.type, criterias=criterias, regex=regex)
+                criteria[key] = value
+    delete(ts, type=args.type, criteria=criteria, regex=regex)
 
 
 def subcommand_find(ts, args):
     """Subcommand for finding IRIs in the triplestore."""
-    criterias = {}
+    criteria = {}
     regex = {}
     if args.criteria:
         for crit in args.criteria:
@@ -72,9 +72,9 @@ def subcommand_find(ts, args):
                 regex[key] = value
             else:
                 key, value = crit.split("=", 1)
-                criterias[key] = value
+                criteria[key] = value
 
-    iris = search(ts, type=args.type, criterias=criterias, regex=regex)
+    iris = search(ts, type=args.type, criteria=criteria, regex=regex)
 
     # Infer format
     if args.format:
