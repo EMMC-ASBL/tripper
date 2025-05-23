@@ -72,8 +72,8 @@ The same criteria as shown above can be used e.g.:
 
 ```python
 >>> from tripper.datadoc import delete
->>> delete(ts, criteria={"@id": KB.image1})
->>> delete(ts, criteria={"creator.name": "Sigurd Wenner"})
+>>> delete(ts, criteria={"@id": KB.image1}) # doctest: +SKIP
+>>> delete(ts, criteria={"creator.name": "Sigurd Wenner"}) # doctest: +SKIP
 ```
 It is also possible to remove everything in the triplestore with `delete(ts)`, but this is strongly discouraged.
 
