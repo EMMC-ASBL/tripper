@@ -8,7 +8,7 @@ For these examples there must be a triplestore instance available, poplated with
 >>> from tripper import Triplestore
 >>> from tripper.datadoc import save_datadoc
 >>> ts = Triplestore(backend="rdflib")
->>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml") # doctest: +SKIP
+>>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml") # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
 ```
 
 Searching the knowledge base
