@@ -24,7 +24,7 @@ jobs:
       update_python_api_ref: true
       package_dirs: tripper
       update_docs_landing_page: true
-      python_version: "3.9"
+      python_version: "3.13"
       doc_extras: "[docs]"
       changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
       docs_framework: mkdocs
