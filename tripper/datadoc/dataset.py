@@ -1238,7 +1238,8 @@ def delete_iri(ts: Triplestore, iri: str) -> None:
 def make_query(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,
+    criterias: "Optional[dict]" = None,  # deprecated
+    criteria: "Optional[dict]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -1253,10 +1254,19 @@ def make_query(
     """
     # pylint: disable=too-many-statements,too-many-branches,too-many-locals
 
-    if criterias is None:
-        criterias = {}
-    if regex is None:
-        regex = {}
+    if criterias is not None:
+        warnings.warn(
+            "`criterias` is deprecated, use `criteria` instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        # if caller didn’t supply the new name, adopt the old one
+        if criteria is None:
+            criteria = criterias
+
+    # normalize defaults
+    criteria = criteria or {}
+    regex = regex or {}
 
     expanded = {v: k for k, v in get_shortnames().items()}
     crit = []
@@ -1265,7 +1275,7 @@ def make_query(
     flags_arg = f", {flags}" if flags else ""
 
     # Special handling of @id
-    cid = criterias.pop("@id", criterias.pop("_id", None))
+    cid = criteria.pop("@id", criteria.pop("_id", None))
     rid = regex.pop("@id", regex.pop("_id", None))
     if cid:
         filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')
@@ -1321,7 +1331,7 @@ def make_query(
             else:
                 filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
-    for k, v in criterias.items():
+    for k, v in criteria.items():
         add_crit(k, v)
 
     if not crit:
@@ -1344,7 +1354,8 @@ def make_query(
 def search(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,
+    criterias: "Optional[dict]" = None,  # deprecated
+    criteria: "Optional[dict]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -1356,12 +1367,12 @@ def search(
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
             or the IRI of a class to limit the search to.
-        criterias: Exact match criterias. A dict of IRI, value pairs, where the
+        criteria: Exact match criteria. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. The IRIs
             may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
-        regex: Like `criterias` but the values in the provided dict are regular
+        regex: Like `criteria` but the values in the provided dict are regular
             expressions used for the matching.
         flags: Flags passed to regular expressions.
             - `s`: Dot-all mode. The . matches any character.  The default
@@ -1384,7 +1395,7 @@ def search(
 
         List IRIs of all resources with John Doe as `contactPoint`:
 
-            search(ts, criterias={"contactPoint.hasName": "John Doe"})
+            search(ts, criteria={"contactPoint.hasName": "John Doe"})
 
         List IRIs of all samples:
 
@@ -1396,7 +1407,7 @@ def search(
             search(
                 ts,
                 type=DCAT.Dataset,
-                criterias={
+                criteria={
                     "contactPoint.hasName": "John Doe",
                     "fromSample": SAMPLE.batch2/sample3,
                 },
@@ -1412,10 +1423,25 @@ def search(
     SeeAlso:
         [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types
     """
+
+    if criterias is not None:
+        warnings.warn(
+            "`criterias` is deprecated, use `criteria` instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        # if caller didn’t supply the new name, adopt the old one
+        if criteria is None:
+            criteria = criterias
+
+    # normalize defaults
+    criteria = criteria or {}
+    regex = regex or {}
+
     query = make_query(
         ts=ts,
         type=type,
-        criterias=criterias,
+        criteria=criteria,
         regex=regex,
         flags=flags,
         keywords=keywords,
@@ -1458,16 +1484,32 @@ def search_iris(
 def delete(
     ts: Triplestore,
     type=None,
-    criterias: "Optional[dict]" = None,
+    criterias: "Optional[dict]" = None,  # deprecated
+    criteria: "Optional[dict]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
 ) -> None:
     """Delete matching resources. See `search()` for a description of arguments."""
+
+    if criterias is not None:
+        warnings.warn(
+            "`criterias` is deprecated, use `criteria` instead",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        # if caller didn’t supply the new name, adopt the old one
+        if criteria is None:
+            criteria = criterias
+
+    # normalize defaults
+    criteria = criteria or {}
+    regex = regex or {}
+
     iris = search(
         ts=ts,
         type=type,
-        criterias=criterias,
+        criteria=criteria,
         regex=regex,
         flags=flags,
         keywords=keywords,

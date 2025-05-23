@@ -1,7 +1,7 @@
 Documenting a resource
 ======================
-In the [tripper.datadoc] sub-package are the documents documenting the resources internally represented as [JSON-LD] documents stored as Python dicts.
-However, the API tries to hide away the complexities of JSON-LD behind simple interfaces.
+In the [tripper.datadoc] sub-package, the documents documenting the resources internally represented as [JSON-LD] documents are stored as Python dicts.
+However, the API tries to hide the complexities of JSON-LD behind simple interfaces.
 To support different use cases, the sub-package provide several interfaces for data documentation, including Python dicts, YAML files and tables.
 These are further described below.
 
