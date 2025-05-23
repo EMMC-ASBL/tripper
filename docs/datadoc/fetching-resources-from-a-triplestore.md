@@ -3,17 +3,25 @@ Working with already documented resources
 
 The [tripper.datadoc] module also includes functionality for easy searching of the documented reseources.
 
+For these examples there must be a triplestore instance available, poplated with some data.
+```python
+from tripper import Triplestore
+from tripper.datadoc import save_datadoc
+ts = Triplestore(backend="rdflib")
+save_datadoc(
+    ts,
+    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml",
+)
+```
 
 Searching the knowledge base
 ----------------------------
-
 
 ### Get all IRIs of all datasets in the kb
 
 ```python
 >>> from tripper.datadoc import search
 >>> search(ts)
-
 ```
 
 This will return a list of all datasets in the knowledge base.
@@ -39,17 +47,18 @@ The first shortened version is only possible for keywords that are specifically 
 Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) cannot be used currently.
 
 
-You can then search for documented resources of other types, but it is not possible to filter based on
-more types at once:
+You can then search for documented resources of other types or include more than one type in the search.
 ```python
 >>> ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#")
 >>> search(ts, type="sem:SEMImage")
+>>> search(ts, type=["sem:SEMImage", "dcat:Dataset"])
 ```
 
 
 It is also possible to filter through other criteria:
 ```python
 >>> search(ts, criteria={"creator.name": "Sigurd Wenner"})
+>>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]})
 >>> KB = ts.bind('kb', 'http://example.com/kb/')
 >>> search(ts, criteria={"@id": KB.image1}
 ```
