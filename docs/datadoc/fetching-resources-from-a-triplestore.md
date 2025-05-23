@@ -8,7 +8,9 @@ For these examples there must be a triplestore instance available, poplated with
 >>> from tripper import Triplestore
 >>> from tripper.datadoc import save_datadoc
 >>> ts = Triplestore(backend="rdflib")
->>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml") # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+>>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml") # doctest: +ELLIPSIS
+{'@graph': [...], ...}
+
 ```
 
 Searching the knowledge base
@@ -18,7 +20,9 @@ Searching the knowledge base
 
 ```python
 >>> from tripper.datadoc import search
->>> search(ts) # doctest: +SKIP
+>>> search(ts) # doctest: +ELLIPSIS
+...
+
 ```
 
 This will return a list of all datasets in the knowledge base.
@@ -29,15 +33,19 @@ This will return a list of all datasets in the knowledge base.
 Before adding specific filtering criteria it is importa to bind prefixes to the triplestore instance:
 
 ```python
->>> ts.bind("dcat", "http://www.w3.org/ns/dcat#") # doctest: +SKIP
->>> ts.bind("dcterms", "http://purl.org/dc/terms/")  # doctest: +SKIP
+>>> DCAT = ts.bind("dcat", "http://www.w3.org/ns/dcat#")
+>>> DCTERMS = ts.bind("dcterms", "http://purl.org/dc/terms/")  
 ```
 
 It is possible to search for instances of type `dcat:Dataset` in two ways:
 
 ```python
->>> search(ts, type="Dataset") # doctest: +SKIP
->>> search(ts, type="dcat:Dataset") # doctest: +SKIP
+>>> search(ts, type="Dataset")  # doctest: +ELLIPSIS
+[...]
+
+>>> search(ts, type="dcat:Dataset")  # doctest: +ELLIPSIS
+[...]
+
 ```
 The first shortened version is only possible for [predefined keywords] that are specifically added in tripper.
 The binding of the `dcat` namespace is required first for both cases.
@@ -47,18 +55,28 @@ Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) cannot be used cu
 
 You can then search for documented resources of other types or include more than one type in the search.
 ```python
->>> ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#") # doctest: +SKIP
->>> search(ts, type="sem:SEMImage") # doctest: +SKIP
->>> search(ts, type=["sem:SEMImage", "dcat:Dataset"]) # doctest: +SKIP
+>>> SEM = ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#")
+>>> search(ts, type="sem:SEMImage")  # doctest: +ELLIPSIS
+[...]
+
+>>> search(ts, type=["sem:SEMImage", "dcat:Dataset"])  # doctest: +ELLIPSIS
+[...]
+
 ```
 
 
 It is also possible to filter through other criteria:
 ```python
->>> search(ts, criteria={"creator.name": "Sigurd Wenner"}) # doctest: +SKIP
->>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]}) # doctest: +SKIP
->>> KB = ts.bind('kb', 'http://example.com/kb/' ) # doctest: +SKIP
->>> search(ts, criteria={"@id": KB.image1}) # doctest: +SKIP
+>>> search(ts, criteria={"creator.name": "Sigurd Wenner"})  # doctest: +ELLIPSIS
+[...]
+
+>>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]})  # doctest: +ELLIPSIS
+[...]
+
+>>> KB = ts.bind('kb', 'http://example.com/kb/' )
+>>> search(ts, criteria={"@id": KB.image1}) # doctest: +ELLIPSIS
+[...]
+
 ```
 
 Note that here the object created when binding the `kb` prefixs is a tripper.namespace.Namespace, and can be used directly as the second example above.
@@ -72,8 +90,8 @@ The same criteria as shown above can be used e.g.:
 
 ```python
 >>> from tripper.datadoc import delete
->>> delete(ts, criteria={"@id": KB.image1}) # doctest: +SKIP
->>> delete(ts, criteria={"creator.name": "Sigurd Wenner"}) # doctest: +SKIP
+>>> delete(ts, criteria={"@id": KB.image1})
+>>> delete(ts, criteria={"creator.name": "Sigurd Wenner"})
 ```
 It is also possible to remove everything in the triplestore with `delete(ts)`, but this is strongly discouraged.
 
