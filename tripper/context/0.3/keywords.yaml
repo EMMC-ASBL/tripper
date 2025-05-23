@@ -28,6 +28,23 @@ prefixes:
   chameo: "https://w3id.org/emmo/domain/characterisation-methodology/chameo#"
 
 
+#
+# Valid keys on resources:
+#   - iri: IRI of the resource
+#   - subClassOf: The IRI of class this resource is a subclass of
+#   - description: Description of the resource
+#   - keywords: List of keywords (properties) of this resource
+#
+# Valid keys on keywords:
+#   - iri: IRI of property that the keyword is mapped to
+#   - range: Range of property (IRI)
+#   - datatype: Datatype of the property (only for data properties)
+#   - inverse: If true, `iri` refer to the inverse of this property
+#   - conformance: One of "mandatory", "recommended", "optional" or not included
+#   - description: Description of keyword
+#   - usageNote: A note about how to use this keyword.
+#   - default: NOT IMPLEMENTED
+#
 resources:
   Resource:
     iri: dcat:Resource
