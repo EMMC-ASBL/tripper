@@ -66,7 +66,7 @@ resources:
         description: Working directory when executing the command. A relative path is interpreted as relative to the (typically temporary) root directory for the computation.
 
   Sample:
-    iri:
+    iri: https://w3id.org/emmo/domain/characterisation-methodology/chameo#Sample
     subClassOf: ManufacturedProduct
     description: A representative portion of a material selected for measurement or characterisation.
 
