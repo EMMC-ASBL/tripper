@@ -8,7 +8,7 @@ For these examples there must be a triplestore instance available, poplated with
 >>> from tripper import Triplestore
 >>> from tripper.datadoc import save_datadoc
 >>> ts = Triplestore(backend="rdflib")
->>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml")
+>>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml") # doctest: +SKIP
 ```
 
 Searching the knowledge base
@@ -29,8 +29,8 @@ This will return a list of all datasets in the knowledge base.
 Before adding specific filtering criteria it is importa to bind prefixes to the triplestore instance:
 
 ```python
->>> ts.bind("dcat", "http://www.w3.org/ns/dcat#")
->>> ts.bind("dcterms", "http://purl.org/dc/terms/")  
+>>> ts.bind("dcat", "http://www.w3.org/ns/dcat#") # doctest: +SKIP
+>>> ts.bind("dcterms", "http://purl.org/dc/terms/")  # doctest: +SKIP
 ```
 
 It is possible to search for instances of type `dcat:Dataset` in two ways:
@@ -47,7 +47,7 @@ Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) cannot be used cu
 
 You can then search for documented resources of other types or include more than one type in the search.
 ```python
->>> ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#")
+>>> ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#") # doctest: +SKIP
 >>> search(ts, type="sem:SEMImage") # doctest: +SKIP
 >>> search(ts, type=["sem:SEMImage", "dcat:Dataset"]) # doctest: +SKIP
 ```
@@ -57,7 +57,7 @@ It is also possible to filter through other criteria:
 ```python
 >>> search(ts, criteria={"creator.name": "Sigurd Wenner"}) # doctest: +SKIP
 >>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]}) # doctest: +SKIP
->>> KB = ts.bind('kb', 'http://example.com/kb/')
+>>> KB = ts.bind('kb', 'http://example.com/kb/' ) # doctest: +SKIP
 >>> search(ts, criteria={"@id": KB.image1}) # doctest: +SKIP
 ```
 
