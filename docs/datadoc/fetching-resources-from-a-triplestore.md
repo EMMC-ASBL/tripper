@@ -73,6 +73,7 @@ Be very careful when using this, as there is a high risk that you delete data fr
 The same criteria as shown above can be used e.g.:
 
 ```python
+>>> from tripper.datadoc import delete
 >>> delete(ts, criteria={"@id": KB.image1})
 >>> delete(ts, criteria={"creator.name": "Sigurd Wenner"})
 ```
