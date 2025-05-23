@@ -5,13 +5,13 @@ The [tripper.datadoc] module also includes functionality for easy searching of t
 
 For these examples there must be a triplestore instance available, poplated with some data.
 ```python
-from tripper import Triplestore
-from tripper.datadoc import save_datadoc
-ts = Triplestore(backend="rdflib")
-save_datadoc(
-    ts,
-    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml",
-)
+>>> from tripper import Triplestore
+>>> from tripper.datadoc import save_datadoc
+>>> ts = Triplestore(backend="rdflib")
+>>> save_datadoc(
+>>>     ts,
+>>>     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml",
+>>> )
 ```
 
 Searching the knowledge base
@@ -60,7 +60,7 @@ It is also possible to filter through other criteria:
 >>> search(ts, criteria={"creator.name": "Sigurd Wenner"})
 >>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]})
 >>> KB = ts.bind('kb', 'http://example.com/kb/')
->>> search(ts, criteria={"@id": KB.image1}
+>>> search(ts, criteria={"@id": KB.image1})
 ```
 
 Note that here the object created when binding the `kb` prefixs is a tripper.namespace.Namespace, and can be used directly as the second example above.
