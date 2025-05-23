@@ -18,7 +18,7 @@ Searching the knowledge base
 
 ```python
 >>> from tripper.datadoc import search
->>> search(ts)
+>>> search(ts) # doctest: +SKIP
 ```
 
 This will return a list of all datasets in the knowledge base.
@@ -36,10 +36,11 @@ Before adding specific filtering criteria it is importa to bind prefixes to the 
 It is possible to search for instances of type `dcat:Dataset` in two ways:
 
 ```python
->>> search(ts, type="Dataset")
->>> search(ts, type="dcat:Dataset")
+>>> search(ts, type="Dataset") # doctest: +SKIP
+>>> search(ts, type="dcat:Dataset") # doctest: +SKIP
 ```
-The first shortened version is only possible for keywords that are specifically added in tripper. A list of these can be found here [TODO]. Also, the binding of the `dcat` namespace is required first for both cases.
+The first shortened version is only possible for [predefined keywords] that are specifically added in tripper.
+The binding of the `dcat` namespace is required first for both cases.
 
 Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) cannot be used currently.
 
@@ -47,17 +48,17 @@ Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) cannot be used cu
 You can then search for documented resources of other types or include more than one type in the search.
 ```python
 >>> ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#")
->>> search(ts, type="sem:SEMImage")
->>> search(ts, type=["sem:SEMImage", "dcat:Dataset"])
+>>> search(ts, type="sem:SEMImage") # doctest: +SKIP
+>>> search(ts, type=["sem:SEMImage", "dcat:Dataset"]) # doctest: +SKIP
 ```
 
 
 It is also possible to filter through other criteria:
 ```python
->>> search(ts, criteria={"creator.name": "Sigurd Wenner"})
->>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]})
+>>> search(ts, criteria={"creator.name": "Sigurd Wenner"}) # doctest: +SKIP
+>>> search(ts, criteria={"creator.name": ["Sigurd Wenner", "Named Lab Assistant"]}) # doctest: +SKIP
 >>> KB = ts.bind('kb', 'http://example.com/kb/')
->>> search(ts, criteria={"@id": KB.image1})
+>>> search(ts, criteria={"@id": KB.image1}) # doctest: +SKIP
 ```
 
 Note that here the object created when binding the `kb` prefixs is a tripper.namespace.Namespace, and can be used directly as the second example above.
@@ -78,5 +79,5 @@ It is also possible to remove everything in the triplestore with `delete(ts)`, b
 
 
 
-
+[predefined keywords]: keywords.md
 [tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction
