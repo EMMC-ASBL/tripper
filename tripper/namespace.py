@@ -265,6 +265,9 @@ class Namespace:
     def __add__(self, other):
         return self._iri + str(other)
 
+    def __contains__(self, name):
+        return name in self._iri
+
     def __hash__(self):
         return hash(self._iri)
 
