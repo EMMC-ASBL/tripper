@@ -82,6 +82,21 @@ It is also possible to filter through other criteria:
 
 Note that here the object created when binding the `kb` prefixs is a tripper.namespace.Namespace, and can be used directly as the second example above.
 
+Fetching metadata and data
+--------------------------
+
+The `acquire`function can be used to fetch metadata from the triplestore.
+```python
+>>> from tripper.datadoc import acquire
+>>> acquire(ts, 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001')  # doctest: +ELLIPSIS
+{'@id': 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001', ...}
+
+```
+
+Similarly the load function can be used to fetch the data using the information about the dowload URL in the metadata.
+
+
+
 Removing instances in the knowledge base
 ----------------------------------------
 
