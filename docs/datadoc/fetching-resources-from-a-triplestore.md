@@ -21,7 +21,7 @@ Searching the knowledge base
 ```python
 >>> from tripper.datadoc import search
 >>> search(ts) # doctest: +ELLIPSIS
-...
+[...]
 
 ```
 
@@ -35,6 +35,7 @@ Before adding specific filtering criteria it is importa to bind prefixes to the 
 ```python
 >>> DCAT = ts.bind("dcat", "http://www.w3.org/ns/dcat#")
 >>> DCTERMS = ts.bind("dcterms", "http://purl.org/dc/terms/")  
+
 ```
 
 It is possible to search for instances of type `dcat:Dataset` in two ways:
@@ -92,6 +93,7 @@ The same criteria as shown above can be used e.g.:
 >>> from tripper.datadoc import delete
 >>> delete(ts, criteria={"@id": KB.image1})
 >>> delete(ts, criteria={"creator.name": "Sigurd Wenner"})
+
 ```
 It is also possible to remove everything in the triplestore with `delete(ts)`, but this is strongly discouraged.
 
