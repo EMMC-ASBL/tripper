@@ -30,11 +30,11 @@ This will return a list of all datasets in the knowledge base.
 
 ### Search with filtering criteria
 
-Before adding specific filtering criteria it is importa to bind prefixes to the triplestore instance:
+Before adding specific filtering criteria it is important to bind non-standard prefixes to corresponding namespaces (standard prefixes defined in the keywords file, like dcterms, dcat, etc does not need to be defined again):
 
 ```python
->>> DCAT = ts.bind("dcat", "http://www.w3.org/ns/dcat#")
->>> DCTERMS = ts.bind("dcterms", "http://purl.org/dc/terms/")  
+>>> DATA = ts.bind("data", "http://example.com/data#")
+>>> MAT = ts.bind("mat", "http://example.com/materials#")
 
 ```
 
@@ -51,10 +51,10 @@ It is possible to search for instances of type `dcat:Dataset` in two ways:
 The first shortened version is only possible for [predefined keywords] that are specifically added in tripper.
 The binding of the `dcat` namespace is required first for both cases.
 
-Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) cannot be used currently.
+Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) is currently not supported.
 
 
-You can then search for documented resources of other types or include more than one type in the search.
+You can also search for documented resources of other types or include more than one type in the search.
 ```python
 >>> SEM = ts.bind("sem", "https://w3id.com/emmo/domain/sem/0.1#")
 >>> search(ts, type="sem:SEMImage")  # doctest: +ELLIPSIS
@@ -80,12 +80,12 @@ It is also possible to filter through other criteria:
 
 ```
 
-Note that here the object created when binding the `kb` prefixs is a tripper.namespace.Namespace, and can be used directly as the second example above.
+Note that here the object created when binding the `kb` prefixs is a tripper.Namespace, and can be used directly as the second example above.
 
 Fetching metadata and data
 --------------------------
 
-The `acquire`function can be used to fetch metadata from the triplestore.
+The `acquire` function can be used to fetch metadata from the triplestore.
 ```python
 >>> from tripper.datadoc import acquire
 >>> acquire(ts, 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001')  # doctest: +ELLIPSIS
