@@ -1,6 +1,7 @@
 """Run doctest on all markdown files in the docs/ folder."""
 
 import sys
+import warnings
 
 import pytest
 
@@ -16,9 +17,17 @@ def test_markdown_doctest():
     import os
     from pathlib import Path
 
+    from tripper.utils import check_service_availability
+
     rootdir = Path(__file__).resolve().parent.parent
     skipfiles = {"CHANGELOG.md", "LICENSE.md"}
 
+    # Skip doctests conditionally
+    if not check_service_availability("http://localhost:3030", timeout=1):
+        skipfiles.add("session.md")
+        warnings.warn("Fuseki is down, skipping running doctest on session.md")
+
+    # Run doctest on all modules
     for dirpath, _, filenames in os.walk(rootdir / "docs"):
         for filename in filenames:
             if (
