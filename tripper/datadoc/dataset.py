@@ -1285,21 +1285,27 @@ def make_query(
         )
 
     if type:
-        if ":" in type:
-            expanded_iri = ts.expand_iri(type)
-            crit.append(f"?iri rdf:type <{expanded_iri}> .")
-        else:
-            if keywords is None:
-                keywords = Keywords()
-            typ = keywords.superclasses(type)
-            if not isinstance(typ, str):
-                typ = typ[0]
-            crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
+        types = [type] if not isinstance(type, list) else type
+        for t in types:
+            if ":" in t:
+                expanded_iri = ts.expand_iri(t)
+                crit.append(f"?iri rdf:type <{expanded_iri}> .")
+            else:
+                if keywords is None:
+                    keywords = Keywords()
+                typ = keywords.superclasses(t)
+                if not isinstance(typ, str):
+                    typ = typ[0]
+                crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
 
     def add_crit(k, v, regex=False, s="iri"):
         """Add criteria to SPARQL query."""
         nonlocal n
         key = f"@{k[1:]}" if k.startswith("_") else k
+        if isinstance(v, list):
+            for ele in v:
+                add_crit(key, ele, regex=regex, s=s)
+            return
         if "." in key:
             newkey, restkey = key.split(".", 1)
             if newkey in expanded:

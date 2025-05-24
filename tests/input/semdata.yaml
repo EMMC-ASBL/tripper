@@ -18,7 +18,8 @@ Dataset:
     title: SEM image of cement
     description: Back-scattered SEM image of cement sample 77600 from Heidelberg, polished with 1 µm diamond compound.
     creator:
-      name: Sigurd Wenner
+      - name: Sigurd Wenner
+      - name: Named Lab Assistant
     contactPoint:
       hasName: Sigurd Wenner
       hasEmail: <Sigurd.Wenner@sintef.no>
