@@ -104,6 +104,7 @@ def test_prefixed():
     assert ctx.prefixed("mediaType") == prefixed
     assert ctx.prefixed(prefixed) == prefixed
     assert ctx.prefixed("http://www.w3.org/ns/dcat#mediaType") == prefixed
+    assert ctx.prefixed("non-existing", strict=False) == "non-existing"
 
     with pytest.raises(NamespaceError):
         ctx.prefixed("non-existing")
@@ -116,6 +117,7 @@ def test_shortname():
     assert ctx.shortname("mediaType") == "mediaType"
     assert ctx.shortname("dcat:mediaType") == "mediaType"
     assert ctx.shortname("http://www.w3.org/ns/dcat#mediaType") == "mediaType"
+    assert ctx.prefixed("non-existing", strict=False) == "non-existing"
 
     with pytest.raises(NamespaceError):
         ctx.prefixed("non-existing")

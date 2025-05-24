@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from pyld import jsonld
 
-from tripper import Triplestore
+from tripper import RDF, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
@@ -260,6 +260,10 @@ class Context:
     def expand(self, name: str, strict: bool = False) -> str:
         """Return `name` expanded to a full IRI.
 
+        If `name` is not defined in the context, a `NameSpaceError` will
+        be raised if `strict` is true. Otherwise `name` will be returned
+        unchanged.
+
         Example:
 
         >>> context = Context()
@@ -290,8 +294,12 @@ class Context:
             raise NamespaceError(f"cannot expand: {name}")
         return name
 
-    def prefixed(self, name: str) -> str:
+    def prefixed(self, name: str, strict: bool = True) -> str:
         """Return `name` as a prefixed IRI.
+
+        If `name` is not defined in the context, a `NameSpaceError` will
+        be raised if `strict` is true. Otherwise `name` will be returned
+        unchanged.
 
         Example:
 
@@ -304,10 +312,16 @@ class Context:
             self._create_caches()
         if name in self._prefixed:
             return self._prefixed[name]
-        raise NamespaceError(f"cannot prefix: {name}")
+        if strict:
+            raise NamespaceError(f"cannot prefix: {name}")
+        return name
 
-    def shortname(self, name: str) -> str:
+    def shortname(self, name: str, strict: bool = True) -> str:
         """Return the short name (keyword) corresponding to `name`.
+
+        If `name` is not defined in the context, a `NameSpaceError` will
+        be raised if `strict` is true. Otherwise `name` will be returned
+        unchanged.
 
         Example:
 
@@ -320,7 +334,9 @@ class Context:
             self._create_caches()
         if name in self._shortnamed:
             return self._shortnamed[name]
-        raise NamespaceError(f"no short name for: {name}")
+        if strict:
+            raise NamespaceError(f"no short name for: {name}")
+        return name
 
     def isref(self, name: str) -> bool:
         """Return wheter `name` is an object property that refers to a node."""
@@ -376,6 +392,15 @@ class Context:
             return
         prefixes = self.get_prefixes()
         mappings = self.get_mappings()
+        self._expanded["@type"] = RDF.type
+        self._expanded["rdf:type"] = RDF.type
+        self._expanded[RDF.type] = RDF.type
+        self._prefixed[RDF.type] = "rdf:type"
+        self._prefixed["rdf:type"] = "rdf:type"
+        self._prefixed["@type"] = "rdf:type"
+        self._shortnamed[RDF.type] = "@type"
+        self._shortnamed["rdf:type"] = "@type"
+        self._shortnamed["@type"] = "@type"
         self._expanded.update(mappings)
         self._expanded.update((v, v) for v in mappings.values())
         for key, expanded in mappings.items():

@@ -25,7 +25,7 @@ def test_AttrDict():
     d2 = AttrDict({"a": "A"})
     assert d2.a == "A"
     assert d2 == {"a": "A"}
-    assert repr(d2) == "AttrDict({'a': 'A'})"
+    assert repr(d2) == "AttrDict({\n  'a': 'A',\n})"
     assert "a" in dir(d2)
 
 
