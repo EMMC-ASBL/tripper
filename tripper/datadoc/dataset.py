@@ -630,7 +630,10 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
 
 
 def acquire(
-    ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
+    ts: Triplestore,
+    iri: str,
+    use_sparql: "Optional[bool]" = None,
+    context: "Optional[Context]" = None,
 ) -> dict:
     """Load description of a resource from the triplestore.
 
@@ -639,6 +642,8 @@ def acquire(
         iri: IRI of the to resource.
         use_sparql: Whether to access the triplestore with SPARQL.
             Defaults to the value of `ts.prefer_sparql`.
+        context: Context object defining keywords in addition to those defined
+            in the default [JSON-LD context].
 
     Returns:
         Dict describing the resource identified by `iri`.
@@ -649,7 +654,7 @@ def acquire(
         return _load_sparql(ts, iri)
 
     d = AttrDict()
-    dct = _load_triples(ts, iri)
+    dct = _load_triples(ts, iri, context=context)
     for key, val in dct.items():
         if key in ("mappings", "statements"):
             add(d, key, val)
@@ -666,7 +671,9 @@ def acquire(
 
 
 def load_dict(
-    ts: Triplestore, iri: str, use_sparql: "Optional[bool]" = None
+    ts: Triplestore,
+    iri: str,
+    use_sparql: "Optional[bool]" = None,
 ) -> dict:
     """This function is deprecated. Use acquire() instead."""
     warnings.warn(
@@ -678,12 +685,17 @@ def load_dict(
     return acquire(ts=ts, iri=iri, use_sparql=use_sparql)
 
 
-def _load_triples(ts: Triplestore, iri: str) -> dict:
+def _load_triples(
+    ts: Triplestore,
+    iri: str,
+    context: "Optional[Context]" = None,
+) -> dict:
     """Load `iri` from triplestore by calling `ts.triples()`."""
-    shortnames = get_shortnames()
+    if context is None:
+        context = get_context()
     dct: dict = {}
     for p, o in ts.predicate_objects(ts.expand_iri(iri)):
-        add(dct, shortnames.get(p, p), as_python(o))
+        add(dct, context.shortname(p, strict=False), as_python(o))
     if dct:
         d = {"@id": iri}
         d.update(dct)
@@ -1264,11 +1276,15 @@ def make_query(
         if criteria is None:
             criteria = criterias
 
+    keywords = get_keywords(keywords=keywords)
+    context = get_context(keywords=keywords)
+    context._create_caches()  # pylint: disable=protected-access
+    expanded = context._expanded  # pylint: disable=protected-access
+
     # normalize defaults
     criteria = criteria or {}
     regex = regex or {}
 
-    expanded = {v: k for k, v in get_shortnames().items()}
     crit = []
     filters = []
     n = 0  # counter for creating new unique sparql variables
@@ -1300,7 +1316,7 @@ def make_query(
         """Add criteria to SPARQL query."""
         nonlocal n
         key = f"@{k[1:]}" if k.startswith("_") else k
-        if "." in key:
+        if re.match(r"^[_a-zA-Z0.9]+\.", key):
             newkey, restkey = key.split(".", 1)
             if newkey in expanded:
                 newkey = expanded[newkey]

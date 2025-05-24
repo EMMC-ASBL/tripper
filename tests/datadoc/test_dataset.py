@@ -408,7 +408,7 @@ def test_datadoc():
 
     from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper import CHAMEO, DCAT, EMMO, OTEIO, Triplestore
+    from tripper import CHAMEO, DCAT, DCTERMS, EMMO, OTEIO, Triplestore
     from tripper.datadoc import acquire, save_datadoc, search, store
     from tripper.datadoc.errors import NoSuchTypeError
 
@@ -531,6 +531,13 @@ def test_datadoc():
     assert search(ts, criteria={"@id": SEMDATA.SEM_cement_batch2}) == [
         SEMDATA.SEM_cement_batch2,
     ]
+
+    # Search with full IRIs
+    title = "Nested series of SEM images of cement batch2"
+    dset = [SEMDATA.SEM_cement_batch2]
+    assert search(ts, criteria={"title": title}) == dset
+    assert search(ts, criteria={"dcterms:title": title}) == dset
+    assert search(ts, criteria={DCTERMS.title: title}) == dset
 
 
 def test_custom_context():

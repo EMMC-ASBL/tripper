@@ -90,7 +90,7 @@ class AttrDict(dict):
         self[name] = value
 
     def __repr__(self):
-        return f"AttrDict({dict.__repr__(self)})"
+        return self._pprint()
 
     def __dir__(self):
         return dict.__dir__(self) + list(self.keys())
@@ -100,6 +100,18 @@ class AttrDict(dict):
 
     def __setstate__(self, state):
         pass
+
+    def _pprint(self, obj=None, indent=0):
+        """Help method for pretty printing."""
+        if obj is None:
+            obj = self
+        n = indent + 2
+        s = ["AttrDict({"]
+        for k, v in obj.items():
+            val = self._pprint(v, n) if isinstance(v, AttrDict) else repr(v)
+            s.append(f"{' '*n}{k!r}: {val},")
+        s.append(" " * indent + "})")
+        return "\n".join(s)
 
 
 def _rec(d, other, append, cls):
