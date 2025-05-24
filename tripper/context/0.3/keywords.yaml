@@ -96,6 +96,18 @@ resources:
         conformance: optional
         description: A page or document about this resource.
 
+      hasCurationDate:
+        iri: oteio:hasCurationDate
+        range: rdfs:Literal
+        datatype: xsd:date
+        description: The date the resource was curated.
+        usageNote: Should be used with `hasCurator`.
+
+      hasCurator:
+        iri: oteio:hasCurator
+        range: foaf:Agent
+        description: The agent that curated the resource.
+
       hasVersion:
         iri: dcat:hasVersion
         range: rdfs:Resource
