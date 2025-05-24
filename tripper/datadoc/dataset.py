@@ -784,6 +784,13 @@ def get_jsonld_context(
     """
     import requests
 
+    warnings.warn(
+        "`dataset.get_jsonld_context()` is deprecated, use `get_context()` "
+        "instead",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     if fromfile:
         with open(CONTEXT_PATH, "r", encoding="utf-8") as f:
             ctx = json.load(f)["@context"]
@@ -821,6 +828,13 @@ def get_prefixes(
 
     Arguments are passed to `get_jsonld_context()`.
     """
+    warnings.warn(
+        "`dataset.get_prefixes()` is deprecated, use `Context.prefixes()` "
+        "instead",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     if isinstance(context, Context):
         return context.get_prefixes()
 
@@ -845,6 +859,13 @@ def get_shortnames(
 
     Arguments are passed to `get_jsonld_context()`.
     """
+    warnings.warn(
+        "`dataset.get_shortnames()` is deprecated, use `Context.shortname()` "
+        "instead",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+
     ctx = get_jsonld_context(
         context=context, timeout=timeout, fromfile=fromfile
     )
