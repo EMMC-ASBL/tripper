@@ -123,23 +123,59 @@ def test_hexbinary() -> None:
     assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
 
-def test_date() -> None:
-    """Test creating date and datetime literals."""
-    from datetime import datetime
+def test_datetime() -> None:
+    """Test creating datetime, date, time and duration literals."""
+    import datetime
 
     from tripper import XSD, Literal
+
+    literal = Literal("2025-05-24 10:30", datatype=XSD.dateTime)
+    assert literal.lang is None
+    assert literal.datatype == XSD.dateTime
+    assert literal.value == datetime.datetime(2025, 5, 24, 10, 30)
+    assert literal.n3() == f'"2025-05-24T10:30:00"^^<{XSD.dateTime}>'
 
     literal = Literal("2025-05-24", datatype=XSD.date)
     assert literal.lang is None
     assert literal.datatype == XSD.date
-    assert literal.value == datetime(2025, 5, 24)
+    assert literal.value == datetime.date(2025, 5, 24)
     assert literal.n3() == f'"2025-05-24"^^<{XSD.date}>'
 
-    literal = Literal(datetime(2025, 5, 24, 10, 30))
+    literal = Literal("10:30", datatype=XSD.time)
+    assert literal.lang is None
+    assert literal.datatype == XSD.time
+    assert literal.value == datetime.time(10, 30)
+    assert literal.n3() == f'"10:30:00"^^<{XSD.time}>'
+
+    literal = Literal("PT1H", datatype=XSD.duration)
+    assert literal.lang is None
+    assert literal.datatype == XSD.duration
+    assert literal.value == datetime.timedelta(hours=1)
+    assert literal.n3() == f'"PT1H"^^<{XSD.duration}>'
+
+    literal = Literal(datetime.datetime(2025, 5, 24, 10, 30))
     assert literal.lang is None
     assert literal.datatype == XSD.dateTime
-    assert literal.value == datetime(2025, 5, 24, 10, 30)
-    assert literal.n3() == f'"2025-05-24 10:30:00"^^<{XSD.dateTime}>'
+    assert literal.value == datetime.datetime(2025, 5, 24, 10, 30)
+    assert literal.n3() == f'"2025-05-24T10:30:00"^^<{XSD.dateTime}>'
+
+    literal = Literal(datetime.date(2025, 5, 24))
+    assert literal.lang is None
+    assert literal.datatype == XSD.date
+    assert literal.value == datetime.date(2025, 5, 24)
+    assert literal.n3() == f'"2025-05-24"^^<{XSD.date}>'
+
+    literal = Literal(datetime.time(10, 30))
+    assert literal.lang is None
+    assert literal.datatype == XSD.time
+    assert literal.value == datetime.time(10, 30)
+    assert literal.n3() == f'"10:30:00"^^<{XSD.time}>'
+
+    literal = Literal(datetime.timedelta(hours=-1, seconds=2))
+    assert literal.lang is None
+    assert literal.datatype == XSD.duration
+    assert literal.value == datetime.timedelta(hours=-1, seconds=2)
+    assert literal.n3() == f'"-PT59M58S"^^<{XSD.duration}>'
 
 
 def test_json() -> None:
