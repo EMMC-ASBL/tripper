@@ -1281,10 +1281,12 @@ def make_query(
     context._create_caches()  # pylint: disable=protected-access
     expanded = context._expanded  # pylint: disable=protected-access
 
-    # normalize defaults
+    # Add prefixes to triplestore
+    ts.namespaces.update(keywords.get_prefixes())
+
+    # Initiate variables
     criteria = criteria or {}
     regex = regex or {}
-
     crit = []
     filters = []
     n = 0  # counter for creating new unique sparql variables
