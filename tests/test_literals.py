@@ -123,6 +123,25 @@ def test_hexbinary() -> None:
     assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
 
+def test_date() -> None:
+    """Test creating date and datetime literals."""
+    from datetime import datetime
+
+    from tripper import XSD, Literal
+
+    literal = Literal("2025-05-24", datatype=XSD.date)
+    assert literal.lang is None
+    assert literal.datatype == XSD.date
+    assert literal.value == datetime(2025, 5, 24)
+    assert literal.n3() == f'"2025-05-24"^^<{XSD.date}>'
+
+    literal = Literal(datetime(2025, 5, 24, 10, 30))
+    assert literal.lang is None
+    assert literal.datatype == XSD.dateTime
+    assert literal.value == datetime(2025, 5, 24, 10, 30)
+    assert literal.n3() == f'"2025-05-24 10:30:00"^^<{XSD.dateTime}>'
+
+
 def test_json() -> None:
     """Test creating JSON literal."""
     import json

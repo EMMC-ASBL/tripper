@@ -101,7 +101,7 @@ class Literal(str):
     # Note that the order of datatypes matters - it is used by
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
-        datetime: (XSD.dateTime,),
+        datetime: (XSD.dateTime, XSD.date),
         bytes: (XSD.hexBinary, XSD.base64Binary),
         bytearray: (XSD.hexBinary, XSD.base64Binary),
         bool: (XSD.boolean,),
@@ -327,7 +327,7 @@ class Literal(str):
             value = int(self)
         elif self.datatype in self.datatypes[float]:
             value = float(self)
-        elif self.datatype == XSD.dateTime:
+        elif self.datatype in (XSD.dateTime, XSD.date):
             value = datetime.fromisoformat(self)
         elif self.datatype == RDF.JSON:
             value = json.loads(str(self))
