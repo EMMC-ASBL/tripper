@@ -456,6 +456,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1584,7 +1607,11 @@ value is replaced with the password looked up using the <a href="https://pypi.or
 you can now do:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Session</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="c1"># Normally you will call Session with no arguments</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+
+<span class="c1"># ...but it is also possible to specify the config file explicitly</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="s2">&quot;tests/input/session.yaml&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_triplestore</span><span class="p">(</span><span class="s2">&quot;FusekiTest&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">EX</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;http://example.com#&quot;</span><span class="p">)</span>
 

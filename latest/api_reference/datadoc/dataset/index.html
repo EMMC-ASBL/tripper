@@ -456,6 +456,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1175,6 +1198,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.acquire" class="md-nav__link">
+    <span class="md-ellipsis">
+      acquire()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.add" class="md-nav__link">
     <span class="md-ellipsis">
       add()
@@ -1328,6 +1360,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.search" class="md-nav__link">
+    <span class="md-ellipsis">
+      search()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.search_iris" class="md-nav__link">
     <span class="md-ellipsis">
       search_iris()
@@ -1346,9 +1387,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.store" class="md-nav__link">
+    <span class="md-ellipsis">
+      store()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.told" class="md-nav__link">
     <span class="md-ellipsis">
       told()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.update_classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_classes()
     </span>
   </a>
   
@@ -1718,6 +1777,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.acquire" class="md-nav__link">
+    <span class="md-ellipsis">
+      acquire()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.add" class="md-nav__link">
     <span class="md-ellipsis">
       add()
@@ -1871,6 +1939,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.search" class="md-nav__link">
+    <span class="md-ellipsis">
+      search()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.search_iris" class="md-nav__link">
     <span class="md-ellipsis">
       search_iris()
@@ -1889,9 +1966,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.store" class="md-nav__link">
+    <span class="md-ellipsis">
+      store()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.told" class="md-nav__link">
     <span class="md-ellipsis">
       told()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.update_classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_classes()
     </span>
   </a>
   
@@ -1940,18 +2035,16 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 </ul>
 <p>Functions for searching the triplestore:</p>
 <ul>
-<li><code>search_iris()</code>: Get IRIs of matching entries in the triplestore.</li>
+<li><code>search()</code>: Get IRIs of matching entries in the triplestore.</li>
 </ul>
 <p>Functions for working with the dict-representation:</p>
 <ul>
 <li><code>read_datadoc()</code>: Read documentation from YAML file and return it as dict.</li>
-<li><code>save_dict()</code>: Save dict documentation to the triplestore.</li>
-<li><code>load_dict()</code>: Load dict documentation from the triplestore.</li>
-<li><code>told()</code>: Return the dict as JSON-LD (represented as a Python dict)</li>
-</ul>
-<p>Functions for interaction with OTEAPI:</p>
-<ul>
-<li><code>get_partial_pipeline()</code>: Returns a OTELib partial pipeline.</li>
+<li><code>store()</code>: Store documentation to the triplestore.</li>
+<li><code>acquire()</code>: Load documentation from the triplestore.</li>
+<li><code>told()</code>: Extend documention to valid JSON-LD (represented as a Python dict)</li>
+<li><code>delete_iri()</code>: Remove documentation of resource with given IRI.</li>
+<li><code>delete()</code>: Remove documentation of matching resources.</li>
 </ul>
 <hr />
 
@@ -1967,6 +2060,111 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 
 
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.dataset.acquire" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.acquire" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Load description of a resource from the triplestore.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore to load description from.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>iri</code></td>
+        <td><code>str</code></td>
+        <td><p>IRI of the to resource.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>use_sparql</code></td>
+        <td><code>&#39;Optional[bool]&#39;</code></td>
+        <td><p>Whether to access the triplestore with SPARQL.
+Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>dict</code></td>
+      <td><p>Dict describing the resource identified by <code>iri</code>.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load description of a resource from the triplestore.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore to load description from.</span>
+<span class="sd">        iri: IRI of the to resource.</span>
+<span class="sd">        use_sparql: Whether to access the triplestore with SPARQL.</span>
+<span class="sd">            Defaults to the value of `ts.prefer_sparql`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict describing the resource identified by `iri`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">use_sparql</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">use_sparql</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">prefer_sparql</span>
+    <span class="k">if</span> <span class="n">use_sparql</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_load_sparql</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">_load_triples</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mappings&quot;</span><span class="p">,</span> <span class="s2">&quot;statements&quot;</span><span class="p">):</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
+                    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">d</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
@@ -2102,30 +2300,46 @@ Returns the updated <code>d</code>.</p>
 
 
 <h2 id="tripper.datadoc.dataset.delete" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.delete" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Delete matching resources. See <code>search_iris()</code> for a description of arguments.</p>
+      <p>Delete matching resources. See <code>search()</code> for a description of arguments.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
     <span class="n">regex</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">flags</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete matching resources. See `search_iris()` for a description of arguments.&quot;&quot;&quot;</span>
-    <span class="n">iris</span> <span class="o">=</span> <span class="n">search_iris</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete matching resources. See `search()` for a description of arguments.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;`criterias` is deprecated, use `criteria` instead&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># if caller didn’t supply the new name, adopt the old one</span>
+        <span class="k">if</span> <span class="n">criteria</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">criteria</span> <span class="o">=</span> <span class="n">criterias</span>
+
+    <span class="c1"># normalize defaults</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span>
         <span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
-        <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span>
+        <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span>
         <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span>
         <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
@@ -2152,12 +2366,12 @@ Returns the updated <code>d</code>.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Delete <code>iri</code> from triplestore by calling <code>ts.update().</code></p>
+      <p>Delete <code>iri</code> from triplestore using SPARQL.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete `iri` from triplestore by calling `ts.update().`&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete `iri` from triplestore using SPARQL.&quot;&quot;&quot;</span>
     <span class="n">subj</span> <span class="o">=</span> <span class="n">iri</span> <span class="k">if</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
     <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    # Some backends requires the prefix to be defined...</span>
@@ -2468,7 +2682,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="c1"># pylint: disable=too-many-branches,too-many-locals</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
 
-    <span class="n">dct</span> <span class="o">=</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">distr</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">):</span>
@@ -2501,7 +2715,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
                     <span class="sa">f</span><span class="s2">&quot;dataset &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; has no such parser: </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">par</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">par</span> <span class="o">=</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">par</span><span class="p">)</span>
+            <span class="n">par</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">par</span><span class="p">)</span>
         <span class="n">configuration</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;configuration&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">configuration</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2733,91 +2947,21 @@ nested manner.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Load dict representation of data with given IRI from the triplestore.</p>
+      <p>This function is deprecated. Use acquire() instead.</p>
 
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>ts</code></td>
-        <td><code>Triplestore</code></td>
-        <td><p>Triplestore to load data from.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>iri</code></td>
-        <td><code>str</code></td>
-        <td><p>IRI of the data to load.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>use_sparql</code></td>
-        <td><code>&#39;Optional[bool]&#39;</code></td>
-        <td><p>Whether to access the triplestore with SPARQL.
-Defaults to <code>ts.prefer_sparql</code>.</p></td>
-        <td><code>None</code></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>dict</code></td>
-      <td><p>Dict-representation of the loaded data.</p></td>
-    </tr>
-  </tbody>
-</table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_dict</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load dict representation of data with given IRI from the triplestore.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        ts: Triplestore to load data from.</span>
-<span class="sd">        iri: IRI of the data to load.</span>
-<span class="sd">        use_sparql: Whether to access the triplestore with SPARQL.</span>
-<span class="sd">            Defaults to `ts.prefer_sparql`.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Dict-representation of the loaded data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">use_sparql</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">use_sparql</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">prefer_sparql</span>
-    <span class="k">if</span> <span class="n">use_sparql</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_load_sparql</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-
-    <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
-    <span class="n">dct</span> <span class="o">=</span> <span class="n">_load_triples</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mappings&quot;</span><span class="p">,</span> <span class="s2">&quot;statements&quot;</span><span class="p">):</span>
-            <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
-                    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">d</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function is deprecated. Use acquire() instead.&quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;tripper.datadoc.load_dict() is deprecated. &quot;</span>
+        <span class="s2">&quot;Please use tripper.datadoc.acquire() instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2864,7 +3008,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 <h2 id="tripper.datadoc.dataset.make_query" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">make_query</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query_type</span><span class="o">=</span><span class="s1">&#39;SELECT DISTINCT&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">make_query</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query_type</span><span class="o">=</span><span class="s1">&#39;SELECT DISTINCT&#39;</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.make_query" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2872,7 +3016,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <div class="doc doc-contents ">
 
       <p>Help function for creating a SPARQL query.</p>
-<p>See search_iris() for description of arguments.</p>
+<p>See search() for description of arguments.</p>
 <p>The <code>query_type</code> argument is typically one of "SELECT DISTINCT"
 "SELECT", or "DELETE".</p>
 
@@ -2881,7 +3025,8 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_query</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
     <span class="n">regex</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">flags</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2889,17 +3034,26 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function for creating a SPARQL query.</span>
 
-<span class="sd">    See search_iris() for description of arguments.</span>
+<span class="sd">    See search() for description of arguments.</span>
 
 <span class="sd">    The `query_type` argument is typically one of &quot;SELECT DISTINCT&quot;</span>
 <span class="sd">    &quot;SELECT&quot;, or &quot;DELETE&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=too-many-statements,too-many-branches,too-many-locals</span>
 
-    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">criterias</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">regex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">regex</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;`criterias` is deprecated, use `criteria` instead&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># if caller didn’t supply the new name, adopt the old one</span>
+        <span class="k">if</span> <span class="n">criteria</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">criteria</span> <span class="o">=</span> <span class="n">criterias</span>
+
+    <span class="c1"># normalize defaults</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span> <span class="ow">or</span> <span class="p">{}</span>
 
     <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2908,7 +3062,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="n">flags_arg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, </span><span class="si">{</span><span class="n">flags</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">flags</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># Special handling of @id</span>
-    <span class="n">cid</span> <span class="o">=</span> <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="n">criterias</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">cid</span> <span class="o">=</span> <span class="n">criteria</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="n">rid</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="n">regex</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">cid</span><span class="p">:</span>
         <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;FILTER(STR(?iri) = &quot;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;) .&#39;</span><span class="p">)</span>
@@ -2918,21 +3072,27 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">:</span>
-            <span class="n">expanded_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">expanded_iri</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">()</span>
-            <span class="n">typ</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">superclasses</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="nb">type</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+                <span class="n">expanded_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">expanded_iri</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">()</span>
+                <span class="n">typ</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">superclasses</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">crit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;?iri rdf:type &lt;</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt; .&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;iri&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add criteria to SPARQL query.&quot;&quot;&quot;</span>
         <span class="k">nonlocal</span> <span class="n">n</span>
         <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">add_crit</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ele</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">return</span>
         <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
             <span class="n">newkey</span><span class="p">,</span> <span class="n">restkey</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">newkey</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
@@ -2964,7 +3124,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILTER(STR(?</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">) .&quot;</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">criterias</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">criteria</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">add_crit</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">crit</span><span class="p">:</span>
@@ -3129,7 +3289,7 @@ inferred from <code>keywords</code>.</p></td>
         <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">file_or_dict</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3143,94 +3303,14 @@ inferred from <code>keywords</code>.</p></td>
 
 
 <h2 id="tripper.datadoc.dataset.save_dict" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
 
 
 <a href="#tripper.datadoc.dataset.save_dict" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Save a dict representation of given type of data to a triplestore.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>ts</code></td>
-        <td><code>Triplestore</code></td>
-        <td><p>Triplestore to save to.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>source</code></td>
-        <td><code>&#39;Union[dict, list]&#39;</code></td>
-        <td><p>Dict with data to save.</p></td>
-        <td><em>required</em></td>
-      </tr>
-      <tr>
-        <td><code>type</code></td>
-        <td><code>&#39;Optional[str]&#39;</code></td>
-        <td><p>Type of data to save.  Should be one of the resource types
-defined in <code>keywords</code>.</p></td>
-        <td><code>None</code></td>
-      </tr>
-      <tr>
-        <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
-        <td><p>Context object providing mapings.</p></td>
-        <td><code>None</code></td>
-      </tr>
-      <tr>
-        <td><code>keywords</code></td>
-        <td><code>&#39;Optional[Keywords]&#39;</code></td>
-        <td><p>Keywords object with keywords definitions.  If not provided,
-only default keywords are considered.</p></td>
-        <td><code>None</code></td>
-      </tr>
-      <tr>
-        <td><code>prefixes</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
-        <td><p>Dict with prefixes in addition to those included in the
-JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
-        <td><code>None</code></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>dict</code></td>
-      <td><p>An updated copy of <code>source</code>.</p></td>
-    </tr>
-  </tbody>
-</table>      <div class="admonition notes">
-<p class="admonition-title">Notes</p>
-<p>The keys in <code>source</code> and <code>kwargs</code> may be either properties defined in the
-<a href="https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json">JSON-LD context</a> or one of the following special keywords:</p>
-<ul>
-<li>"@id": Dataset IRI.  Must always be given.</li>
-<li>"@type": IRI of the ontology class for this type of data.
-    For datasets, it is typically used to refer to a specific subclass
-    of <code>emmo:Dataset</code> that provides a semantic description of this
-    dataset.</li>
-</ul>
-</div>
-<p>References:</p>
+      <p>This function is deprecated. Use store() instead.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
@@ -3241,71 +3321,29 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;merge&quot;</span><span class="p">,</span>
+    <span class="c1"># The unnecessary strictness of the &quot;build documentation&quot; CI enforces us</span>
+    <span class="c1"># to add a `restrictions` argument to save_dict(), although this argument</span>
+    <span class="c1"># came after that save_dict() was renamed.</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a dict representation of given type of data to a triplestore.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        ts: Triplestore to save to.</span>
-<span class="sd">        source: Dict with data to save.</span>
-<span class="sd">        type: Type of data to save.  Should be one of the resource types</span>
-<span class="sd">            defined in `keywords`.</span>
-<span class="sd">        context: Context object providing mapings.</span>
-<span class="sd">        keywords: Keywords object with keywords definitions.  If not provided,</span>
-<span class="sd">            only default keywords are considered.</span>
-<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
-<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        An updated copy of `source`.</span>
-
-<span class="sd">    Notes:</span>
-<span class="sd">        The keys in `source` and `kwargs` may be either properties defined in the</span>
-<span class="sd">        [JSON-LD context] or one of the following special keywords:</span>
-
-<span class="sd">          - &quot;@id&quot;: Dataset IRI.  Must always be given.</span>
-<span class="sd">          - &quot;@type&quot;: IRI of the ontology class for this type of data.</span>
-<span class="sd">            For datasets, it is typically used to refer to a specific subclass</span>
-<span class="sd">            of `emmo:Dataset` that provides a semantic description of this</span>
-<span class="sd">            dataset.</span>
-
-<span class="sd">    References:</span>
-<span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.2/context.json</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
-        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function is deprecated. Use store() instead.&quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;tripper.datadoc.save_dict() is deprecated. &quot;</span>
+        <span class="s2">&quot;Please use tripper.datadoc.store() instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
-
-    <span class="n">d</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
-        <span class="n">source</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">store</span><span class="p">(</span>
+        <span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
-        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">context</span><span class="o">.</span><span class="n">sync_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
-
-    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;@context&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">())</span>
-    <span class="c1"># if &quot;@context&quot; in d:</span>
-    <span class="c1">#     context.add_context(d[&quot;@context&quot;])</span>
-    <span class="c1">#     d = jsonld.compact(d, context.get_context_dict())</span>
-    <span class="c1"># else:</span>
-    <span class="c1">#    d[&quot;@context&quot;] = context.get_context_dict()</span>
-
-    <span class="c1"># Validate</span>
-    <span class="c1"># TODO: reenable validation</span>
-    <span class="c1"># validate(d, type=type, keywords=keywords)</span>
-
-    <span class="c1"># Write json-ld data to triplestore (using temporary rdflib triplestore)</span>
-    <span class="n">nt</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">to_rdf</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;application/n-quads&quot;</span><span class="p">})</span>
-
-    <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nt</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Add statements and data models to triplestore</span>
-    <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>
-
-    <span class="k">return</span> <span class="n">d</span>
 </code></pre></div>
         </details>
     </div>
@@ -3438,11 +3476,11 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 
 
 
-<h2 id="tripper.datadoc.dataset.search_iris" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skipblanks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+<h2 id="tripper.datadoc.dataset.search" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">search</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skipblanks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
-<a href="#tripper.datadoc.dataset.search_iris" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.datadoc.dataset.search" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
@@ -3473,9 +3511,9 @@ or the IRI of a class to limit the search to.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>criterias</code></td>
+        <td><code>criteria</code></td>
         <td><code>&#39;Optional[dict]&#39;</code></td>
-        <td><p>Exact match criterias. A dict of IRI, value pairs, where the
+        <td><p>Exact match criteria. A dict of IRI, value pairs, where the
 IRIs refer to data properties on the resource match. The IRIs
 may use any prefix defined in <code>ts</code>. E.g. if the prefix <code>dcterms</code>
 is in <code>ts</code>, it is expanded and the match criteria <code>dcterms:title</code>
@@ -3485,7 +3523,7 @@ is correctly parsed.</p></td>
       <tr>
         <td><code>regex</code></td>
         <td><code>&#39;Optional[dict]&#39;</code></td>
-        <td><p>Like <code>criterias</code> but the values in the provided dict are regular
+        <td><p>Like <code>criteria</code> but the values in the provided dict are regular
 expressions used for the matching.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -3533,17 +3571,17 @@ the <code>type</code> argument.</p></td>
 </table>
 <p><strong>Examples:</strong></p>
     <p>List all data resources IRIs:</p>
-<div class="language-text highlight"><pre><span></span><code>search_iris(ts)
+<div class="language-text highlight"><pre><span></span><code>search(ts)
 </code></pre></div>
 <p>List IRIs of all resources with John Doe as <code>contactPoint</code>:</p>
-<div class="language-text highlight"><pre><span></span><code>search_iris(ts, criteria={&quot;contactPoint.hasName&quot;: &quot;John Doe&quot;})
+<div class="language-text highlight"><pre><span></span><code>search(ts, criteria={&quot;contactPoint.hasName&quot;: &quot;John Doe&quot;})
 </code></pre></div>
 <p>List IRIs of all samples:</p>
-<div class="language-text highlight"><pre><span></span><code>search_iris(ts, type=CHAMEO.Sample)
+<div class="language-text highlight"><pre><span></span><code>search(ts, type=CHAMEO.Sample)
 </code></pre></div>
 <p>List IRIs of all datasets with John Doe as <code>contactPoint</code> AND are
 measured on a given sample:</p>
-<div class="language-text highlight"><pre><span></span><code>search_iris(
+<div class="language-text highlight"><pre><span></span><code>search(
     ts,
     type=DCAT.Dataset,
     criteria={
@@ -3554,7 +3592,7 @@ measured on a given sample:</p>
 </code></pre></div>
 <p>List IRIs of all datasets who's title matches the regular expression
 "[Mm]agnesium":</p>
-<div class="language-text highlight"><pre><span></span><code>search_iris(
+<div class="language-text highlight"><pre><span></span><code>search(
     ts, type=DCAT.Dataset, regex={&quot;title&quot;: &quot;[Mm]agnesium&quot;},
 )
 </code></pre></div>
@@ -3564,10 +3602,11 @@ measured on a given sample:</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_iris</span><span class="p">(</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># deprecated</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># new preferred name</span>
     <span class="n">regex</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">flags</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3579,12 +3618,12 @@ measured on a given sample:</p>
 <span class="sd">        ts: Triplestore to search.</span>
 <span class="sd">        type: Either a [resource type] (ex: &quot;Dataset&quot;, &quot;Distribution&quot;, ...)</span>
 <span class="sd">            or the IRI of a class to limit the search to.</span>
-<span class="sd">        criterias: Exact match criterias. A dict of IRI, value pairs, where the</span>
+<span class="sd">        criteria: Exact match criteria. A dict of IRI, value pairs, where the</span>
 <span class="sd">            IRIs refer to data properties on the resource match. The IRIs</span>
 <span class="sd">            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`</span>
 <span class="sd">            is in `ts`, it is expanded and the match criteria `dcterms:title`</span>
 <span class="sd">            is correctly parsed.</span>
-<span class="sd">        regex: Like `criterias` but the values in the provided dict are regular</span>
+<span class="sd">        regex: Like `criteria` but the values in the provided dict are regular</span>
 <span class="sd">            expressions used for the matching.</span>
 <span class="sd">        flags: Flags passed to regular expressions.</span>
 <span class="sd">            - `s`: Dot-all mode. The . matches any character.  The default</span>
@@ -3603,20 +3642,20 @@ measured on a given sample:</p>
 <span class="sd">    Examples:</span>
 <span class="sd">        List all data resources IRIs:</span>
 
-<span class="sd">            search_iris(ts)</span>
+<span class="sd">            search(ts)</span>
 
 <span class="sd">        List IRIs of all resources with John Doe as `contactPoint`:</span>
 
-<span class="sd">            search_iris(ts, criteria={&quot;contactPoint.hasName&quot;: &quot;John Doe&quot;})</span>
+<span class="sd">            search(ts, criteria={&quot;contactPoint.hasName&quot;: &quot;John Doe&quot;})</span>
 
 <span class="sd">        List IRIs of all samples:</span>
 
-<span class="sd">            search_iris(ts, type=CHAMEO.Sample)</span>
+<span class="sd">            search(ts, type=CHAMEO.Sample)</span>
 
 <span class="sd">        List IRIs of all datasets with John Doe as `contactPoint` AND are</span>
 <span class="sd">        measured on a given sample:</span>
 
-<span class="sd">            search_iris(</span>
+<span class="sd">            search(</span>
 <span class="sd">                ts,</span>
 <span class="sd">                type=DCAT.Dataset,</span>
 <span class="sd">                criteria={</span>
@@ -3628,17 +3667,32 @@ measured on a given sample:</p>
 <span class="sd">        List IRIs of all datasets who&#39;s title matches the regular expression</span>
 <span class="sd">        &quot;[Mm]agnesium&quot;:</span>
 
-<span class="sd">            search_iris(</span>
+<span class="sd">            search(</span>
 <span class="sd">                ts, type=DCAT.Dataset, regex={&quot;title&quot;: &quot;[Mm]agnesium&quot;},</span>
 <span class="sd">            )</span>
 
 <span class="sd">    SeeAlso:</span>
 <span class="sd">        [resource type]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction/#resource-types</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">criterias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;`criterias` is deprecated, use `criteria` instead&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># if caller didn’t supply the new name, adopt the old one</span>
+        <span class="k">if</span> <span class="n">criteria</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">criteria</span> <span class="o">=</span> <span class="n">criterias</span>
+
+    <span class="c1"># normalize defaults</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span> <span class="ow">or</span> <span class="p">{}</span>
+
     <span class="n">query</span> <span class="o">=</span> <span class="n">make_query</span><span class="p">(</span>
         <span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
-        <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span>
+        <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span>
         <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span>
         <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
@@ -3649,6 +3703,55 @@ measured on a given sample:</p>
             <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.dataset.search_iris" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">search_iris</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skipblanks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.search_iris" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>This function is deprecated. Use search() instead.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_iris</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">criterias</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">regex</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skipblanks</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[str]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function is deprecated. Use search() instead.&quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;tripper.datadoc.search_iris() is deprecated. &quot;</span>
+        <span class="s2">&quot;Please use tripper.datadoc.search() instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">search</span><span class="p">(</span>
+        <span class="n">ts</span><span class="o">=</span><span class="n">ts</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">criterias</span><span class="o">=</span><span class="n">criterias</span><span class="p">,</span>
+        <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
+        <span class="n">skipblanks</span><span class="o">=</span><span class="n">skipblanks</span><span class="p">,</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3684,6 +3787,222 @@ measured on a given sample:</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">obj</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">))</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.dataset.store" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+
+
+<a href="#tripper.datadoc.dataset.store" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Store documentation of a resource to a triplestore.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore to store to.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>source</code></td>
+        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><p>Dict or list with the resource documentation to store.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>type</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>Type of documented resource.  Should be one of the resource types
+defined in <code>keywords</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>context</code></td>
+        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><p>Context object defining keywords in addition to those defined
+in the default [JSON-LD context].
+Complementing the <code>keywords</code> argument.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>keywords</code></td>
+        <td><code>&#39;Optional[Keywords]&#39;</code></td>
+        <td><p>Keywords object with additional keywords definitions.
+If not provided, only default keywords are considered.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><p>Dict with prefixes in addition to those included in the
+JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>method</code></td>
+        <td><code>str</code></td>
+        <td><p>How to handle the case where <code>ts</code> already contains a document
+with the same id as <code>source</code>. Possible values are:
+- "overwrite": Remove existing documentation before storing.
+- "raise": Raise an <code>IRIExistsError</code> if the IRI of <code>source</code>
+  already exits in the triplestore (default).
+- "merge": Merge <code>source</code> with existing documentation. This will
+  duplicate non-literal properties with no explicit <code>@id</code>. If this
+  is unwanted, merge manually and use "overwrite".
+- "ignore": If the IRI of <code>source</code> already exists, do nothing but
+  issueing an <code>IRIExistsWarning</code>.</p></td>
+        <td><code>&#39;raise&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>restrictions</code></td>
+        <td><code>&#39;Collection&#39;</code></td>
+        <td><p>Collection of additional keywords that shuld be
+converted to value restrictions.</p></td>
+        <td><code>()</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>dict</code></td>
+      <td><p>A copy of <code>source</code> updated to valid JSON-LD.</p></td>
+    </tr>
+  </tbody>
+</table>      <div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<p>The keywords should either be one of the <a href="https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/">default keywords</a> or defined
+by the <code>context</code> or <code>keywords</code> arguments.</p>
+</div>
+<p>References:</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">store</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store documentation of a resource to a triplestore.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore to store to.</span>
+<span class="sd">        source: Dict or list with the resource documentation to store.</span>
+<span class="sd">        type: Type of documented resource.  Should be one of the resource types</span>
+<span class="sd">            defined in `keywords`.</span>
+<span class="sd">        context: Context object defining keywords in addition to those defined</span>
+<span class="sd">            in the default [JSON-LD context].</span>
+<span class="sd">            Complementing the `keywords` argument.</span>
+<span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">            If not provided, only default keywords are considered.</span>
+<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
+<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
+<span class="sd">        method: How to handle the case where `ts` already contains a document</span>
+<span class="sd">            with the same id as `source`. Possible values are:</span>
+<span class="sd">            - &quot;overwrite&quot;: Remove existing documentation before storing.</span>
+<span class="sd">            - &quot;raise&quot;: Raise an `IRIExistsError` if the IRI of `source`</span>
+<span class="sd">              already exits in the triplestore (default).</span>
+<span class="sd">            - &quot;merge&quot;: Merge `source` with existing documentation. This will</span>
+<span class="sd">              duplicate non-literal properties with no explicit `@id`. If this</span>
+<span class="sd">              is unwanted, merge manually and use &quot;overwrite&quot;.</span>
+<span class="sd">            - &quot;ignore&quot;: If the IRI of `source` already exists, do nothing but</span>
+<span class="sd">              issueing an `IRIExistsWarning`.</span>
+<span class="sd">        restrictions: Collection of additional keywords that shuld be</span>
+<span class="sd">            converted to value restrictions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A copy of `source` updated to valid JSON-LD.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        The keywords should either be one of the [default keywords] or defined</span>
+<span class="sd">        by the `context` or `keywords` arguments.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">    [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/</span>
+<span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+    <span class="p">)</span>
+
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
+        <span class="n">source</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@graph&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">doc</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span>
+                <span class="n">delete_iri</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">IRIExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot overwrite existing IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;merge&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">IRIExistsWarning</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">doc</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Invalid storage method: &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                    <span class="s2">&quot;Should be one of: &#39;overwrite&#39;, &#39;raise&#39;, &#39;ignore&#39; or &quot;</span>
+                    <span class="s2">&quot;&#39;merge&#39;&quot;</span>
+                <span class="p">)</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">sync_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+    <span class="n">update_classes</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
+    <span class="c1"># add(doc, &quot;@context&quot;, context.get_context_dict())</span>
+
+    <span class="c1"># Validate</span>
+    <span class="c1"># TODO: reenable validation</span>
+    <span class="c1"># validate(doc, type=type, keywords=keywords)</span>
+
+    <span class="n">context</span><span class="o">.</span><span class="n">to_triplestore</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+
+    <span class="c1"># Add statements and data models to triplestore</span>
+    <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>
+
+    <span class="k">return</span> <span class="n">doc</span>
 </code></pre></div>
         </details>
     </div>
@@ -3838,7 +4157,9 @@ data documentation <code>descr</code>.</p></td>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">descr</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@context&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@context&quot;</span><span class="p">:</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
             <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;prefixes&quot;</span><span class="p">:</span>
@@ -3866,6 +4187,200 @@ data documentation <code>descr</code>.</p></td>
         <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">hasid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.dataset.update_classes" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_classes</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+
+
+<a href="#tripper.datadoc.dataset.update_classes" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Update documentation of classes, ensuring that they will be
+correctly represented in RDF.</p>
+<p>Only resources of type <code>owl:Class</code> will be updated.</p>
+<p>If a resource has type <code>owl:Class</code>, all other types it has will be
+moved to the <code>subClassOf</code> keyword.</p>
+<p>By default, only object properties who's value is either a class
+or has a <code>restrictionType</code> key are converted to restrictions. Use
+the <code>restrictions</code> argument to convert other keywords as well to
+restrictions.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>source</code></td>
+        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><p>Input documentation of one or more resources. This dict
+will be updated in-place. It is typically a dict returned by
+<code>told()</code>.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>context</code></td>
+        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><p>Context object defining the keywords.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>restrictions</code></td>
+        <td><code>&#39;Collection&#39;</code></td>
+        <td><p>Collection of additional keywords that shuld be
+converted to value restrictions.</p></td>
+        <td><code>()</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&#39;Union[dict, list]&#39;</code></td>
+      <td><p>The updated version of <code>source</code>.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_classes</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update documentation of classes, ensuring that they will be</span>
+<span class="sd">    correctly represented in RDF.</span>
+
+<span class="sd">    Only resources of type `owl:Class` will be updated.</span>
+
+<span class="sd">    If a resource has type `owl:Class`, all other types it has will be</span>
+<span class="sd">    moved to the `subClassOf` keyword.</span>
+
+<span class="sd">    By default, only object properties who&#39;s value is either a class</span>
+<span class="sd">    or has a `restrictionType` key are converted to restrictions. Use</span>
+<span class="sd">    the `restrictions` argument to convert other keywords as well to</span>
+<span class="sd">    restrictions.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        source: Input documentation of one or more resources. This dict</span>
+<span class="sd">            will be updated in-place. It is typically a dict returned by</span>
+<span class="sd">            `told()`.</span>
+<span class="sd">        context: Context object defining the keywords.</span>
+<span class="sd">        restrictions: Collection of additional keywords that shuld be</span>
+<span class="sd">            converted to value restrictions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The updated version of `source`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add restriction to `source`.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=no-else-return</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prop</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">restrictions</span> <span class="ow">and</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="p">:</span>
+            <span class="n">restrictionType</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="s2">&quot;restrictionType&quot;</span> <span class="ow">in</span> <span class="n">value</span>
+            <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">))</span>
+        <span class="p">):</span>
+            <span class="n">restrictionType</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;restrictionType&quot;</span><span class="p">,</span> <span class="s2">&quot;some&quot;</span><span class="p">)</span>
+            <span class="n">update_classes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;rdf:type&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:Restriction&quot;</span><span class="p">,</span>
+            <span class="c1"># We expand here, since JSON-LD doesn&#39;t expand values.</span>
+            <span class="s2">&quot;owl:onProperty&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:hasValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;some&quot;</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:someValuesFrom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:allValuesFrom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:onClass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">ctype</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">restrictionType</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">ctypes</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;exactly&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:qualifiedCardinality&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:minQualifiedCardinality&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:maxQualifiedCardinality&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">ctypes</span><span class="p">[</span><span class="n">ctype</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>  <span class="c1"># Avoid removing prop more than once</span>
+            <span class="k">del</span> <span class="n">source</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">!=</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span>  <span class="c1"># Recursively update related calsses</span>
+            <span class="n">update_classes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="p">)</span>
+
+    <span class="c1"># Local context</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">restrictions</span> <span class="o">=</span> <span class="p">{</span><span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="p">}</span>
+
+    <span class="c1"># Handle lists and graphs</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">source</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;@graph&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">sources</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+            <span class="n">update_classes</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">source</span>
+
+    <span class="c1"># Update local context</span>
+    <span class="k">if</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Ensure that source is only of type owl:Class</span>
+    <span class="c1"># Move all other types to subClassOf</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="p">{</span><span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">t</span><span class="p">):</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">)}</span>
+    <span class="k">if</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">:</span>
+                <span class="n">source</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="c1"># Convert relations to restrictions</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">,):</span>
+            <span class="k">continue</span>
+        <span class="n">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">source</span>
 </code></pre></div>
         </details>
     </div>

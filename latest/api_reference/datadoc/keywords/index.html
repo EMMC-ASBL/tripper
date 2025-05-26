@@ -456,6 +456,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1977,7 +2000,9 @@ Keywords        </code>
         <span class="n">new</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span>
         <span class="k">return</span> <span class="n">new</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[str]]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_domain</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[str]]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add keywords for `domain`, where `domain` is the name of a</span>
 <span class="sd">        scientific domain or a list of scientific domain names.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1988,7 +2013,10 @@ Keywords        </code>
                 <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">name</span>  <span class="c1"># type: ignore</span>
             <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">get_entry_points</span><span class="p">(</span><span class="s2">&quot;tripper.keywords&quot;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">ep</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rootdir</span> <span class="o">/</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span> <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rootdir</span> <span class="o">/</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span> <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                    <span class="p">)</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
@@ -1998,7 +2026,8 @@ Keywords        </code>
                         <span class="o">/</span> <span class="s2">&quot;tripper&quot;</span>
                         <span class="o">/</span> <span class="s2">&quot;context&quot;</span>
                         <span class="o">/</span> <span class="s2">&quot;0.3&quot;</span>
-                        <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span>
+                        <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown domain name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2010,7 +2039,7 @@ Keywords        </code>
 
         <span class="k">if</span> <span class="s2">&quot;basedOn&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -2159,7 +2188,12 @@ Keywords        </code>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">dt</span> <span class="o">=</span> <span class="p">[</span><span class="n">translate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dt</span><span class="p">]</span>
 
-                    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">}</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@reverse&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iri</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iri</span>
+
                     <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;rdf:langString&quot;</span> <span class="ow">or</span> <span class="s2">&quot;language&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                         <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -2211,6 +2245,19 @@ Keywords        </code>
             <span class="s2">&quot;or optional when documenting the given type of resources.&quot;</span><span class="p">,</span>
             <span class="s2">&quot;- **Definition**: The definition of the keyword.&quot;</span><span class="p">,</span>
             <span class="s2">&quot;- **Usage note**: Notes about how to use the keyword.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;## Special keywords (from JSON-LD)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;See the [JSON-LD specification] for more details.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="c1"># pylint: disable=line-too-long</span>
+            <span class="s2">&quot;| Keyword    | Range         | Conformance | Definition                                                              | Usage note |&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;|------------|---------------|-------------|-------------------------------------------------------------------------|------------|&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;| [@context] | dict&amp;#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |&quot;</span><span class="p">,</span>
             <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">order</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mandatory&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
@@ -2271,6 +2318,16 @@ Keywords        </code>
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># References</span>
+        <span class="n">extra_refs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># pylint: disable=line-too-long</span>
+            <span class="s2">&quot;[@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[@base]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[@vocab]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[@graph]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">refs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extra_refs</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -2298,13 +2355,12 @@ Keywords        </code>
         <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_table</span><span class="p">([</span><span class="s2">&quot;Prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;Namespace&quot;</span><span class="p">],</span> <span class="n">rows</span><span class="p">))</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="s2">&quot;[default JSON-LD context]: https://raw.githubuser&quot;</span>
-            <span class="s2">&quot;content.com/EMMC-ASBL/tripper/refs/heads/master/&quot;</span>
-            <span class="s2">&quot;tripper/context/0.2/context.json&quot;</span>
-        <span class="p">)</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="s2">&quot;[User-defined prefixes]: customisation.md/#user-defined-prefixes&quot;</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="c1"># pylint: disable=line-too-long</span>
+                <span class="s2">&quot;[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;[User-defined prefixes]: customisation.md/#user-defined-prefixes&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2492,7 +2548,7 @@ describing the keywords.</p></td>
 
 
 <h3 id="tripper.datadoc.keywords.Keywords.add_domain" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">add_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">add_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.keywords.Keywords.add_domain" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -2504,7 +2560,9 @@ scientific domain or a list of scientific domain names.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[str]]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_domain</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[str]]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add keywords for `domain`, where `domain` is the name of a</span>
 <span class="sd">    scientific domain or a list of scientific domain names.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -2515,7 +2573,10 @@ scientific domain or a list of scientific domain names.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">name</span>  <span class="c1"># type: ignore</span>
         <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">get_entry_points</span><span class="p">(</span><span class="s2">&quot;tripper.keywords&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">ep</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rootdir</span> <span class="o">/</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span> <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rootdir</span> <span class="o">/</span> <span class="n">ep</span><span class="o">.</span><span class="n">name</span> <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
@@ -2525,7 +2586,8 @@ scientific domain or a list of scientific domain names.</p>
                     <span class="o">/</span> <span class="s2">&quot;tripper&quot;</span>
                     <span class="o">/</span> <span class="s2">&quot;context&quot;</span>
                     <span class="o">/</span> <span class="s2">&quot;0.3&quot;</span>
-                    <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span>
+                    <span class="o">/</span> <span class="s2">&quot;keywords.yaml&quot;</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown domain name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2651,7 +2713,12 @@ keyword in a JSON-LD document.</p>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">dt</span> <span class="o">=</span> <span class="p">[</span><span class="n">translate</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dt</span><span class="p">]</span>
 
-                <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">}</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@reverse&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iri</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iri</span>
+
                 <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s2">&quot;rdf:langString&quot;</span> <span class="ow">or</span> <span class="s2">&quot;language&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                     <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="s2">&quot;en&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -2808,7 +2875,7 @@ keywords.keywordname("dcterms:title")
 
     <span class="k">if</span> <span class="s2">&quot;basedOn&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -3069,6 +3136,19 @@ keywords.typename("dcat:Dataset")
         <span class="s2">&quot;- **Definition**: The definition of the keyword.&quot;</span><span class="p">,</span>
         <span class="s2">&quot;- **Usage note**: Notes about how to use the keyword.&quot;</span><span class="p">,</span>
         <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;## Special keywords (from JSON-LD)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;See the [JSON-LD specification] for more details.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="c1"># pylint: disable=line-too-long</span>
+        <span class="s2">&quot;| Keyword    | Range         | Conformance | Definition                                                              | Usage note |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;|------------|---------------|-------------|-------------------------------------------------------------------------|------------|&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;| [@context] | dict&amp;#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">order</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mandatory&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
     <span class="n">refs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3128,6 +3208,16 @@ keywords.typename("dcat:Dataset")
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="c1"># References</span>
+    <span class="n">extra_refs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="c1"># pylint: disable=line-too-long</span>
+        <span class="s2">&quot;[@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;[@type]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;[@context]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;[@base]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;[@vocab]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;[@graph]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">refs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extra_refs</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -3178,13 +3268,12 @@ keywords.typename("dcat:Dataset")
     <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_table</span><span class="p">([</span><span class="s2">&quot;Prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;Namespace&quot;</span><span class="p">],</span> <span class="n">rows</span><span class="p">))</span>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="s2">&quot;[default JSON-LD context]: https://raw.githubuser&quot;</span>
-        <span class="s2">&quot;content.com/EMMC-ASBL/tripper/refs/heads/master/&quot;</span>
-        <span class="s2">&quot;tripper/context/0.2/context.json&quot;</span>
-    <span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="s2">&quot;[User-defined prefixes]: customisation.md/#user-defined-prefixes&quot;</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="c1"># pylint: disable=line-too-long</span>
+            <span class="s2">&quot;[default JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;[User-defined prefixes]: customisation.md/#user-defined-prefixes&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
     <span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>

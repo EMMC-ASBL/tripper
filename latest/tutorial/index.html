@@ -600,6 +600,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1823,8 +1846,7 @@ The <code>check=True</code> enables checking for existing IRIs.</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">invalid_name</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
     <span class="o">...</span>
-<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">w3id</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">emmo</span><span class="c1">#invalid_name</span>
-<span class="n">Maybe</span> <span class="n">you</span> <span class="n">have</span> <span class="n">to</span> <span class="n">remove</span> <span class="n">the</span> <span class="n">cache</span> <span class="n">file</span><span class="p">:</span> <span class="o">...</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">w3id</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">emmo</span><span class="c1">#invalid_name...</span>
 </code></pre></div>
 <p>The above example works, since the <code>namespace="https://w3id.org/emmo#"</code> is resolvable.
 When the IRI in the <code>namespace</code> argument is not resolvable, it is possible to supply a resolvable IRI or a reference to a populated <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> instance via the <code>triplestore</code> keyword argument.</p>
@@ -1847,8 +1869,7 @@ For example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Hamburger</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
     <span class="o">...</span>
-<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Hamburger</span>
-<span class="o">...</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Hamburger...</span>
 
 <span class="c1"># Add Hamburger to known labels</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span><span class="n">FOOD</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;Hamburger&quot;</span><span class="p">:</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">&quot;Hamburger&quot;</span><span class="p">})</span>
@@ -1859,8 +1880,7 @@ For example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Fish</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
     <span class="o">...</span>
-<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Fish</span>
-<span class="o">...</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Fish...</span>
 
 <span class="c1"># Extend FOOD from an online turtle file</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span>

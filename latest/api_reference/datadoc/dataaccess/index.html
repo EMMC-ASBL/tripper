@@ -456,6 +456,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1617,7 +1640,7 @@ package.</p>
 
 
 <h2 id="tripper.datadoc.dataaccess.load" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">load</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">distributions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">load</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">distributions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataaccess.load" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1664,6 +1687,14 @@ default is to try all documented distributions.</p></td>
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>retries</code></td>
+        <td><code>int</code></td>
+        <td><p>Number of times to try accessing the dataset. After each
+failed access, it will sleep for 1 second before trying again.
+The default is to only make one attempt to access the dataset.</p></td>
+        <td><code>1</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -1692,6 +1723,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">distributions</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load dataset with given IRI from its source.</span>
 
@@ -1703,6 +1735,9 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">            default is to try all documented distributions.</span>
 <span class="sd">        use_sparql: Whether to access the triplestore with SPARQL.</span>
 <span class="sd">            Defaults to `ts.prefer_sparql`.</span>
+<span class="sd">        retries: Number of times to try accessing the dataset. After each</span>
+<span class="sd">            failed access, it will sleep for 1 second before trying again.</span>
+<span class="sd">            The default is to only make one attempt to access the dataset.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Bytes object with the underlying data.</span>
@@ -1715,7 +1750,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
 
-    <span class="n">dct</span> <span class="o">=</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;expected IRI &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; to be a dataset, but got: &quot;</span>
@@ -1745,17 +1780,23 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
                 <span class="k">if</span> <span class="s2">&quot;accessService&quot;</span> <span class="ow">in</span> <span class="n">dist</span>
                 <span class="k">else</span> <span class="kc">None</span>
             <span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="p">)</span> <span class="k">as</span> <span class="n">pr</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">pr</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-                <span class="c1"># pylint: disable=no-member</span>
-            <span class="k">except</span> <span class="p">(</span><span class="n">dlite</span><span class="o">.</span><span class="n">DLiteProtocolError</span><span class="p">,</span> <span class="n">dlite</span><span class="o">.</span><span class="n">DLiteIOError</span><span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;cannot access dataset &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; using scheme=</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> and options=</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="p">)</span> <span class="k">as</span> <span class="n">pr</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">pr</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                    <span class="c1"># pylint: disable=no-member</span>
+                <span class="k">except</span> <span class="p">(</span><span class="n">dlite</span><span class="o">.</span><span class="n">DLiteProtocolError</span><span class="p">,</span> <span class="n">dlite</span><span class="o">.</span><span class="n">DLiteIOError</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="c1"># pylint: disable=broad-exception-caught</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;cannot access dataset &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; using &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;scheme=</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">, location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;and options=&#39;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access dataset: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -1771,7 +1812,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
 
 <h2 id="tripper.datadoc.dataaccess.save" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">class_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">class_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataaccess.save" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1856,6 +1897,21 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>method</code></td>
+        <td><code>str</code></td>
+        <td><p>How to handle the case where <code>ts</code> already contains a document
+with the same id as <code>source</code>. Possible values are:
+- "overwrite": Remove existing documentation before storing.
+- "raise": Raise an <code>IRIExistsError</code> if the IRI of <code>source</code>
+  already exits in the triplestore (default).
+- "merge": Merge <code>source</code> with existing documentation. This will
+  duplicate non-literal properties with no explicit <code>@id</code>. If this
+  is unwanted, merge manually and use "overwrite".
+- "ignore": If the IRI of <code>source</code> already exists, do nothing but
+  issueing an <code>IRIExistsWarning</code>.</p></td>
+        <td><code>&#39;raise&#39;</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -1884,6 +1940,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="n">generator</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Saves data to a dataresource and document it in the triplestore.</span>
 
@@ -1913,6 +1970,16 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        use_sparql: Whether to access the triplestore with SPARQL.</span>
 <span class="sd">            Defaults to `ts.prefer_sparql`.</span>
+<span class="sd">        method: How to handle the case where `ts` already contains a document</span>
+<span class="sd">            with the same id as `source`. Possible values are:</span>
+<span class="sd">            - &quot;overwrite&quot;: Remove existing documentation before storing.</span>
+<span class="sd">            - &quot;raise&quot;: Raise an `IRIExistsError` if the IRI of `source`</span>
+<span class="sd">              already exits in the triplestore (default).</span>
+<span class="sd">            - &quot;merge&quot;: Merge `source` with existing documentation. This will</span>
+<span class="sd">              duplicate non-literal properties with no explicit `@id`. If this</span>
+<span class="sd">              is unwanted, merge manually and use &quot;overwrite&quot;.</span>
+<span class="sd">            - &quot;ignore&quot;: If the IRI of `source` already exists, do nothing but</span>
+<span class="sd">              issueing an `IRIExistsWarning`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        IRI of the dataset.</span>
@@ -1934,7 +2001,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
         <span class="n">dataset</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">({</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">newiri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">typeiri</span><span class="p">})</span>
         <span class="n">save_dataset</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">dset</span> <span class="o">=</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
+        <span class="n">dset</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dset</span><span class="p">:</span>
             <span class="n">dataset</span> <span class="o">=</span> <span class="n">dset</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1961,7 +2028,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
             <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">newiri</span><span class="p">))</span>
             <span class="n">save_distribution</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">distr</span> <span class="o">=</span> <span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">distribution</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
+        <span class="n">distr</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">distribution</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">distr</span><span class="p">:</span>
             <span class="n">distribution</span> <span class="o">=</span> <span class="n">distr</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2034,9 +2101,15 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="c1"># Update triplestore</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">save_dataset</span><span class="p">:</span>
-        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;Dataset&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_distribution</span><span class="p">:</span>
-        <span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;Distribution&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">store</span><span class="p">(</span>
+            <span class="n">ts</span><span class="p">,</span>
+            <span class="n">distribution</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;Distribution&quot;</span><span class="p">,</span>
+            <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
 </code></pre></div>

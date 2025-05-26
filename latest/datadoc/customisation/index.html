@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/datadoc/customisation/">
       
       
-        <link rel="prev" href="../documenting-a-resource/">
+        <link rel="prev" href="../classdoc/">
       
       
         <link rel="next" href="../prefixes/">
@@ -441,6 +441,29 @@
   
   <span class="md-ellipsis">
     Documenting a resource
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
     
   </span>
   
@@ -1785,7 +1808,7 @@ For example</p>
 <p>Tripper already include a default list of <a href="../prefixes/">predefined prefixes</a>.
 Additional prefixed can be provided in two ways.</p>
 <h3 id="with-the-prefixes-argument">With the <code>prefixes</code> argument<a class="headerlink" href="#with-the-prefixes-argument" title="Permanent link">&para;</a></h3>
-<p>Several functions in the API (like <a href="../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.save_dict">save_dict()</a>, <a href="../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.told">told()</a> and <a href="../../api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc.parse_csv">TableDoc.parse_csv()</a>) takes a <code>prefixes</code> argument with which additional namespace prefixes can provided.</p>
+<p>Several functions in the API (like <a href="../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.store">store()</a>, <a href="../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.told">told()</a> and <a href="../../api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc.parse_csv">TableDoc.parse_csv()</a>) takes a <code>prefixes</code> argument with which additional namespace prefixes can provided.</p>
 <p>This may be handy when used from the Python API.</p>
 <h3 id="with-custom-context">With custom context<a class="headerlink" href="#with-custom-context" title="Permanent link">&para;</a></h3>
 <p>Additional prefixes can also be provided via a custom JSON-LD context as a <code>"prefix": "namespace URL"</code> mapping.</p>
@@ -1908,9 +1931,9 @@ An additional "kb" prefix (used for documented resources) is defined with the <c
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">save_datadoc</span><span class="p">(</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="o">...</span>     <span class="n">ts</span><span class="p">,</span>
-<span class="o">...</span>      <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml&quot;</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="n">AttrDict</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;@context&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">}</span>
 </code></pre></div>
 <p>The content of the triplestore should now be</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
@@ -1918,25 +1941,31 @@ An additional "kb" prefix (used for documented resources) is defined with the <c
 <span class="nd">@prefix</span> <span class="n">dcat</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">ns</span><span class="o">/</span><span class="n">dcat</span><span class="c1">#&gt; .</span>
 <span class="nd">@prefix</span> <span class="n">kb</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kb</span><span class="c1">#&gt; .</span>
 <span class="nd">@prefix</span> <span class="n">myonto</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">myonto</span><span class="c1">#&gt; .</span>
+<span class="nd">@prefix</span> <span class="n">rdfs</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2000</span><span class="o">/</span><span class="mi">01</span><span class="o">/</span><span class="n">rdf</span><span class="o">-</span><span class="n">schema</span><span class="c1">#&gt; .</span>
 <span class="nd">@prefix</span> <span class="n">xsd</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">w3</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mi">2001</span><span class="o">/</span><span class="n">XMLSchema</span><span class="c1">#&gt; .</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-<span class="n">kb</span><span class="p">:</span><span class="n">sampleA</span> <span class="n">a</span> <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
+<span class="n">kb</span><span class="p">:</span><span class="n">sampleA</span> <span class="n">a</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
+        <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
         <span class="n">chameo</span><span class="p">:</span><span class="n">Sample</span> <span class="p">;</span>
     <span class="n">myonto</span><span class="p">:</span><span class="n">fromBatch</span> <span class="n">kb</span><span class="p">:</span><span class="n">batch1</span> <span class="o">.</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-<span class="n">kb</span><span class="p">:</span><span class="n">sampleB</span> <span class="n">a</span> <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
+<span class="n">kb</span><span class="p">:</span><span class="n">sampleB</span> <span class="n">a</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
+        <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
         <span class="n">chameo</span><span class="p">:</span><span class="n">Sample</span> <span class="p">;</span>
     <span class="n">myonto</span><span class="p">:</span><span class="n">fromBatch</span> <span class="n">kb</span><span class="p">:</span><span class="n">batch1</span> <span class="o">.</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
-<span class="n">kb</span><span class="p">:</span><span class="n">sampleC</span> <span class="n">a</span> <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
+<span class="n">kb</span><span class="p">:</span><span class="n">sampleC</span> <span class="n">a</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
+        <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
         <span class="n">chameo</span><span class="p">:</span><span class="n">Sample</span> <span class="p">;</span>
     <span class="n">myonto</span><span class="p">:</span><span class="n">fromBatch</span> <span class="n">kb</span><span class="p">:</span><span class="n">batch2</span> <span class="o">.</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
 <span class="n">kb</span><span class="p">:</span><span class="n">batch2</span> <span class="n">a</span> <span class="n">myonto</span><span class="p">:</span><span class="n">Batch</span><span class="p">,</span>
+        <span class="n">rdfs</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
         <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span> <span class="p">;</span>
     <span class="n">myonto</span><span class="p">:</span><span class="n">batchNumber</span> <span class="mi">2</span> <span class="o">.</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>
 <span class="n">kb</span><span class="p">:</span><span class="n">batch1</span> <span class="n">a</span> <span class="n">myonto</span><span class="p">:</span><span class="n">Batch</span><span class="p">,</span>
+        <span class="n">rdfs</span><span class="p">:</span><span class="n">Resource</span><span class="p">,</span>
         <span class="n">dcat</span><span class="p">:</span><span class="n">Resource</span> <span class="p">;</span>
     <span class="n">myonto</span><span class="p">:</span><span class="n">batchNumber</span> <span class="mi">1</span> <span class="o">.</span>
 <span class="o">&lt;</span><span class="n">BLANKLINE</span><span class="o">&gt;</span>

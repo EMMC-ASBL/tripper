@@ -458,6 +458,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../customisation/" class="md-nav__link">
         
   
@@ -552,6 +575,15 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#special-keywords-from-json-ld" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special keywords (from JSON-LD)
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#properties-on-resource" class="md-nav__link">
@@ -743,9 +775,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#properties-on-owlclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties on OWLClass
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties-on-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties on Class
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#properties-on-genericresource" class="md-nav__link">
     <span class="md-ellipsis">
       Properties on GenericResource
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties-on-restriction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties on Restriction
     </span>
   </a>
   
@@ -1707,6 +1766,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#special-keywords-from-json-ld" class="md-nav__link">
+    <span class="md-ellipsis">
+      Special keywords (from JSON-LD)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#properties-on-resource" class="md-nav__link">
     <span class="md-ellipsis">
       Properties on Resource
@@ -1896,9 +1964,36 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#properties-on-owlclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties on OWLClass
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties-on-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties on Class
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#properties-on-genericresource" class="md-nav__link">
     <span class="md-ellipsis">
       Properties on GenericResource
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties-on-restriction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Properties on Restriction
     </span>
   </a>
   
@@ -1932,8 +2027,68 @@
 <li><strong>Definition</strong>: The definition of the keyword.</li>
 <li><strong>Usage note</strong>: Notes about how to use the keyword.</li>
 </ul>
+<h2 id="special-keywords-from-json-ld">Special keywords (from JSON-LD)<a class="headerlink" href="#special-keywords-from-json-ld" title="Permanent link">&para;</a></h2>
+<p>See the [JSON-LD specification] for more details.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Range</th>
+<th>Conformance</th>
+<th>Definition</th>
+<th>Usage note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords">@id</a></td>
+<td>IRI</td>
+<td>mandatory</td>
+<td>IRI identifying the resource to document.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords">@type</a></td>
+<td>IRI</td>
+<td>recommended</td>
+<td>Ontological class defining the class of a node.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords">@context</a></td>
+<td>dict&#124;list</td>
+<td>optional</td>
+<td>Context defining namespace prefixes and additional keywords.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords">@base</a></td>
+<td>namespace</td>
+<td>optional</td>
+<td>Base IRI against which relative IRIs are resolved.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords">@vocab</a></td>
+<td>namespace</td>
+<td>optional</td>
+<td>Used to expand properties and values in @type with a common prefix IRI.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords">@graph</a></td>
+<td>list</td>
+<td>optional</td>
+<td>Used for documenting multiple resources.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h2 id="properties-on-resource">Properties on <a href="http://www.w3.org/ns/dcat#Resource">Resource</a><a class="headerlink" href="#properties-on-resource" title="Permanent link">&para;</a></h2>
 <p>Resource published or curated by an agent.</p>
+<ul>
+<li>subClassOf: <a href="http://www.w3.org/2000/01/rdf-schema#Resource">rdfs:Resource</a></li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -2941,8 +3096,106 @@
 <p>A standard or other specification to which a resource conforms.</p>
 <h2 id="properties-on-mediatype">Properties on <a href="http://purl.org/dc/terms/MediaType">MediaType</a><a class="headerlink" href="#properties-on-mediatype" title="Permanent link">&para;</a></h2>
 <p>A media type, e.g. the format of a computer file.</p>
+<h2 id="properties-on-owlclass">Properties on <a href="http://www.w3.org/2002/07/owl#Class">OWLClass</a><a class="headerlink" href="#properties-on-owlclass" title="Permanent link">&para;</a></h2>
+<p>The class of OWL classes.</p>
+<ul>
+<li>subClassOf: <a href="http://www.w3.org/2000/01/rdf-schema#Class">rdfs:Class</a></li>
+</ul>
+<h2 id="properties-on-class">Properties on <a href="http://www.w3.org/2000/01/rdf-schema#Class">Class</a><a class="headerlink" href="#properties-on-class" title="Permanent link">&para;</a></h2>
+<p>The class of classes.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Range</th>
+<th>Conformance</th>
+<th>Definition</th>
+<th>Usage note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://www.w3.org/2004/02/skos/core#altLabel">altLabel</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
+<td></td>
+<td>An alternative lexical label for a resource.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://w3id.org/emmo#EMMO_31252f35_c767_4b97_a877_1235076c3e13">conceptualisation</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
+<td></td>
+<td>A comment that helps the reader to understand how the world has been conceptualised by the ontology authors.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://w3id.org/emmo#EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9">elucidation</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
+<td></td>
+<td>Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://www.w3.org/2004/02/skos/core#hiddenLabel">hiddenLabel</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
+<td></td>
+<td>A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://www.w3.org/2004/02/skos/core#prefLabel">prefLabel</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
+<td></td>
+<td>Preferred label.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#subClassOf">subClassOf</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Class">rdfs:Class</a></td>
+<td></td>
+<td>The subject is a subclass of a class.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h2 id="properties-on-genericresource">Properties on <a href="http://www.w3.org/2000/01/rdf-schema#Resource">GenericResource</a><a class="headerlink" href="#properties-on-genericresource" title="Permanent link">&para;</a></h2>
-<p>A generic resource.</p>
+<p>A generic resource defined by RDFS.</p>
+<h2 id="properties-on-restriction">Properties on <a href="http://www.w3.org/2002/07/owl#Restriction">Restriction</a><a class="headerlink" href="#properties-on-restriction" title="Permanent link">&para;</a></h2>
+<p>The class of property restrictions.</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Range</th>
+<th>Conformance</th>
+<th>Definition</th>
+<th>Usage note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://www.w3.org/2002/07/owl#qualifiedCardinality">qualifiedCardinality</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:nonNegativeInteger)</td>
+<td></td>
+<td>The property that determines the cardinality of an exact qualified cardinality restriction.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://www.w3.org/2002/07/owl#minQualifiedCardinality">minQualifiedCardinality</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:nonNegativeInteger)</td>
+<td></td>
+<td>The property that determines the cardinality of a minimum qualified cardinality restriction.</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://www.w3.org/2002/07/owl#maxQualifiedCardinality">maxQualifiedCardinality</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(xsd:nonNegativeInteger)</td>
+<td></td>
+<td>The property that determines the cardinality of a maximum qualified cardinality restriction.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 
 

@@ -456,6 +456,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1673,74 +1696,75 @@
 
 
 <h1 id="units-and-quantities">Units and quantities<a class="headerlink" href="#units-and-quantities" title="Permanent link">&para;</a></h1>
-<p>The <a href="../../api_reference/units/units/">tripper.units</a> subpackage provide support for using <a href="https://pint.readthedocs.io/en/">Pint</a> to work with units and quantites defined in ontologies.</p>
+<p>The <a href="../../api_reference/units/units/">tripper.units</a> subpackage provides support for using <a href="https://pint.readthedocs.io/en/">Pint</a> to work with units and quantites defined in ontologies.</p>
 <p>Currently, only <a href="https://github.com/emmo-repo/EMMO">EMMO</a> and EMMO-based ontologies can be used as a source for units and quantities.
-However, since <a href="https://github.com/emmo-repo/EMMO">EMMO</a> include references to the <a href="https://qudt.org/">QUDT</a> and <a href="https://github.com/HajoRijgersberg/OM">OM</a> ontologies, it is also possible to work with IRIs for these ontologies as well.</p>
+However, since <a href="https://github.com/emmo-repo/EMMO">EMMO</a> includes references to the <a href="https://qudt.org/">QUDT</a> and <a href="https://github.com/HajoRijgersberg/OM">OM</a> ontologies, it is also possible to work with IRIs for these ontologies.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently the support for <a href="https://github.com/HajoRijgersberg/OM">OM</a> is weak.  Improvements are planned.</p>
 </div>
 <h2 id="unit-registry">Unit registry<a class="headerlink" href="#unit-registry" title="Permanent link">&para;</a></h2>
-<p>The <a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry">UnitRegistry</a> in <a href="../../api_reference/units/units/">tripper.units</a> is a subclass the <a href="https://pint.readthedocs.io/en/">Pint</a> unit registry.
+<p>The <a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry">UnitRegistry</a> in <a href="../../api_reference/units/units/">tripper.units</a> is a subclass of the <a href="https://pint.readthedocs.io/en/">Pint</a> unit registry.
 By default it is populated with units from <a href="https://github.com/emmo-repo/EMMO">EMMO</a>.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnitRegistry</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span> <span class="o">=</span> <span class="n">UnitRegistry</span><span class="p">()</span>
 </code></pre></div>
-<p>The registry provide attribute and item access to units based on their <a href="https://github.com/emmo-repo/EMMO">EMMO</a> prefLabel or symbol.</p>
+<p>The registry provides attribute and item access to units based on their <a href="https://github.com/emmo-repo/EMMO">EMMO</a> prefLabel or symbol.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Pascal</span>
 <span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Pascal&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Pa</span>
 <span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Pascal&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
-<p>By convention are <a href="https://github.com/emmo-repo/EMMO">EMMO</a> units written in "CamelCase".
-However, unit access also work with "snake_case":</p>
+<p>By convention, <a href="https://github.com/emmo-repo/EMMO">EMMO</a> units are written in "CamelCase".
+However, unit access also works with "snake_case":</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">pascal</span>
 <span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Pascal&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">newton_square_metre</span>
 <span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;NewtonSquareMetre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
-<p>Item access creates a quantity representation (see <a href="#working-with-quantities">Working with quantities</a>):</p>
+<p>Item access creates a subclass of a Pint quantity representation (see <a href="#working-with-quantities">Working with quantities</a>):</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="p">[</span><span class="s2">&quot;Pa&quot;</span><span class="p">]</span>
 <span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Pascal&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="p">[</span><span class="s2">&quot;N⋅m²&quot;</span><span class="p">]</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Newton * Metre ** 2&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="p">[</span><span class="s2">&quot;A/m²&quot;</span><span class="p">]</span>
+<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Ampere / Metre ** 2&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
 <h3 id="extra-unit-registry-methods">Extra unit registry methods<a class="headerlink" href="#extra-unit-registry-methods" title="Permanent link">&para;</a></h3>
 <p>Tripper adds some extra methods to the unit registry on top of what is already provided by <a href="https://pint.readthedocs.io/en/">Pint</a>, including:</p>
 <ul>
-<li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit">get_unit()</a>: Access unit from name, symbol, IRI (supporting <a href="https://github.com/emmo-repo/EMMO">EMMO</a>, <a href="https://qudt.org/">QUDT</a> and <a href="https://github.com/HajoRijgersberg/OM">OM</a>), or unit code defined in the ontology.</li>
+<li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit">get_unit()</a>: Returns a Pint unit object derived from unit name, symbol, IRI (supporting <a href="https://github.com/emmo-repo/EMMO">EMMO</a>, <a href="https://qudt.org/">QUDT</a> and <a href="https://github.com/HajoRijgersberg/OM">OM</a>), or unit code defined in the ontology.</li>
 <li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit_info">get_unit_info()</a>: Returns a dict with attribute access providing additional information about the unit.</li>
+<li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_quantity">get_quantity()</a>: Returns the Pint quantity (i.e. value and unit) of a quantity in the ontology.</li>
 <li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.load_quantity">load_quantity()</a>: Loads a quantity from a triplestore.</li>
 <li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.save_quantity">save_quantity()</a>: Saves a quantity to a triplestore.</li>
-<li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.clear_cache">clear_cache()</a>: Clear caches.</li>
 <li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.set_as_default">set_as_default()</a>: Set the current unit registry as the default. This allows to access the registry with the <a href="../../api_reference/units/units/#tripper.units.units.get_ureg">get_ureg()</a> method.</li>
+<li><a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.clear_cache">clear_cache()</a>: Clear caches.</li>
 </ul>
 <p>Here we will only discuss <a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit">get_unit()</a> and <a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_unit_info">get_unit_info()</a> methods.
 See <a href="#accessing-quantities-in-a-triplestore">Accessing quantities in a triplestore</a> and <a href="#setting-up-custom-unit-registry">Setting up custom unit registry</a> for the rest.</p>
 <p>For example:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Metre&quot;</span><span class="p">)</span>  <span class="c1"># name</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Metre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Metre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;H/Ω&quot;</span><span class="p">)</span>  <span class="c1"># EMMO symbol</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;HenryPerOhm&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;HenryPerOhm&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;H.Ohm-1&quot;</span><span class="p">)</span>  <span class="c1"># UCUM symbol</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;HenryPerOhm&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;HenryPerOhm&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="s2">&quot;https://w3id.org/emmo#Metre&quot;</span><span class="p">)</span>  <span class="c1"># EMMO IRI</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Metre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Metre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="s2">&quot;http://qudt.org/vocab/unit/HR&quot;</span><span class="p">)</span>  <span class="c1"># QUDT IRI</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Hour&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="s2">&quot;http://www.ontology-of-units-of-measure.org/resource/om-2/cubicMetre&quot;</span><span class="p">)</span>  <span class="c1"># OM IRI</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;CubicMetre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;CubicMetre&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">unitCode</span><span class="o">=</span><span class="s2">&quot;HUR&quot;</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">Unit</span><span class="p">(</span><span class="s1">&#39;Hour&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
 <p>When you have a unit, you can also ask it for its IRI using its <code>emmoIRI</code>, <code>qudtIRI</code> and <code>omIRI</code> properties:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">CubicMetre</span><span class="o">.</span><span class="n">emmoIRI</span>
@@ -1827,6 +1851,26 @@ For example:</p>
 <span class="c1"># The unit now has a `info` property</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">duration</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">qudtIRI</span>
 <span class="s1">&#39;http://qudt.org/vocab/unit/DAY&#39;</span>
+</code></pre></div>
+<p>The <a href="../../api_reference/units/units/#tripper.units.units.UnitRegistry.get_quantity">get_quantity()</a> method allows to represent a physical quantity in the ontology as a Pint quantity. By default access is by name (prefLabel):</p>
+<div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Energy&quot;</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;Joule&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="c1"># A value can also be provided (in units of the base SI units)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Energy&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;Joule&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">q</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Energy&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1e-19</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="si">:</span><span class="s2">.4~P</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="s1">&#39;0.6242 eV&#39;</span>
+</code></pre></div>
+<p>Access by "emmoIRI", "qudtIRI", "omIRI", "iupacIRI" or "iso80000Ref" is also possible:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">EMMO</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">Acceleration</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;MetrePerSquareSecond&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ureg</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">iso80000Ref</span><span class="o">=</span><span class="s2">&quot;3-9.1&quot;</span><span class="p">)</span>  <span class="c1"># also acceleration</span>
+<span class="o">&lt;</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;MetrePerSquareSecond&#39;</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre></div>
 <h3 id="quantities-as-literals">Quantities as literals<a class="headerlink" href="#quantities-as-literals" title="Permanent link">&para;</a></h3>
 <p>Quantities are also understood by the <a href="../../api_reference/literal/#tripper.literal.Literal">Literal</a> constructor</p>

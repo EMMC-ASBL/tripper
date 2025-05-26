@@ -456,6 +456,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../datadoc/classdoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documenting abstract resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -1442,6 +1465,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.units.units.MissingQuantityError" class="md-nav__link">
+    <span class="md-ellipsis">
+      MissingQuantityError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.units.units.MissingUnitError" class="md-nav__link">
     <span class="md-ellipsis">
       MissingUnitError
@@ -1695,6 +1727,15 @@
   <a href="#tripper.units.units.UnitRegistry.clear_cache" class="md-nav__link">
     <span class="md-ellipsis">
       clear_cache()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.units.units.UnitRegistry.get_quantity" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_quantity()
     </span>
   </a>
   
@@ -2087,6 +2128,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.units.units.MissingQuantityError" class="md-nav__link">
+    <span class="md-ellipsis">
+      MissingQuantityError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.units.units.MissingUnitError" class="md-nav__link">
     <span class="md-ellipsis">
       MissingUnitError
@@ -2340,6 +2390,15 @@
   <a href="#tripper.units.units.UnitRegistry.clear_cache" class="md-nav__link">
     <span class="md-ellipsis">
       clear_cache()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.units.units.UnitRegistry.get_quantity" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_quantity()
     </span>
   </a>
   
@@ -2752,6 +2811,37 @@ MissingDimensionStringError            (<a class="autorefs autorefs-internal" ti
 
 
 
+<h2 id="tripper.units.units.MissingQuantityError" class="doc doc-heading">
+        <code>
+MissingQuantityError            (<a class="autorefs autorefs-internal" title="tripper.units.units.UnitError" href="#tripper.units.units.UnitError">UnitError</a>)
+        </code>
+
+
+
+<a href="#tripper.units.units.MissingQuantityError" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Quantity not found in ontology.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/units/units.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingQuantityError</span><span class="p">(</span><span class="n">UnitError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quantity not found in ontology.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h2 id="tripper.units.units.MissingUnitError" class="doc doc-heading">
         <code>
 MissingUnitError            (<a class="autorefs autorefs-internal" title="tripper.units.units.UnitError" href="#tripper.units.units.UnitError">UnitError</a>)
@@ -2856,6 +2946,29 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ontology_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Quantity&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return new quantity rescale to a unit with the same</span>
 <span class="sd">        dimensionality that exists in the ontology.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This function tries to select the &quot;simplest&quot; unit among all the</span>
+<span class="sd">            units with compatible physical dimensionality in the ontology.</span>
+
+<span class="sd">            This is done according to the following heuristics:</span>
+
+<span class="sd">            1. Find units with compatible physical dimensionality in the</span>
+<span class="sd">               ontology.</span>
+<span class="sd">            2. Among these units, select the unit that minimises the absolute</span>
+<span class="sd">               value of the sum of the powers of each unit component.</span>
+
+<span class="sd">               Example: among the units</span>
+
+<span class="sd">                   Pa = Pa^1       -&gt; sum=1</span>
+<span class="sd">                   J/m^3 = J^1/m^3 -&gt; sum=1+3=4</span>
+<span class="sd">                   N/m^2 = N^1/m^2 -&gt; sum=1+2=3</span>
+
+<span class="sd">               Pa will be selected.</span>
+<span class="sd">            3. If two units have the same sum, the unit that minimises</span>
+<span class="sd">               `log10(magnitude/5)` is selected, where `magnitude` is the</span>
+<span class="sd">               magnitude of the quantity when expressed in SI base units.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
@@ -2874,9 +2987,8 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">_parse_unitname</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">MissingUnitError</span><span class="p">:</span>
-                    <span class="k">pass</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">{</span><span class="n">q</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+                <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">sortkey</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Returns sort key for `compatible_units`.&quot;&quot;&quot;</span>
@@ -2890,7 +3002,7 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
 
         <span class="n">compatible_units</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compatible_units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">mult</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mult</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">ito_ontology_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inplace rescale to ontology units.&quot;&quot;&quot;</span>
@@ -2981,12 +3093,56 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
 
       <p>Return new quantity rescale to a unit with the same
 dimensionality that exists in the ontology.</p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<p>This function tries to select the "simplest" unit among all the
+units with compatible physical dimensionality in the ontology.</p>
+<p>This is done according to the following heuristics:</p>
+<ol>
+<li>Find units with compatible physical dimensionality in the
+   ontology.</li>
+<li>Among these units, select the unit that minimises the absolute
+   value of the sum of the powers of each unit component.</li>
+</ol>
+<p>Example: among the units</p>
+<div class="language-text highlight"><pre><span></span><code>   Pa = Pa^1       -&gt; sum=1
+   J/m^3 = J^1/m^3 -&gt; sum=1+3=4
+   N/m^2 = N^1/m^2 -&gt; sum=1+2=3
+</code></pre></div>
+<p>Pa will be selected.
+3. If two units have the same sum, the unit that minimises
+   <code>log10(magnitude/5)</code> is selected, where <code>magnitude</code> is the
+   magnitude of the quantity when expressed in SI base units.</p>
+</div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_ontology_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Quantity&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return new quantity rescale to a unit with the same</span>
 <span class="sd">    dimensionality that exists in the ontology.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function tries to select the &quot;simplest&quot; unit among all the</span>
+<span class="sd">        units with compatible physical dimensionality in the ontology.</span>
+
+<span class="sd">        This is done according to the following heuristics:</span>
+
+<span class="sd">        1. Find units with compatible physical dimensionality in the</span>
+<span class="sd">           ontology.</span>
+<span class="sd">        2. Among these units, select the unit that minimises the absolute</span>
+<span class="sd">           value of the sum of the powers of each unit component.</span>
+
+<span class="sd">           Example: among the units</span>
+
+<span class="sd">               Pa = Pa^1       -&gt; sum=1</span>
+<span class="sd">               J/m^3 = J^1/m^3 -&gt; sum=1+3=4</span>
+<span class="sd">               N/m^2 = N^1/m^2 -&gt; sum=1+2=3</span>
+
+<span class="sd">           Pa will be selected.</span>
+<span class="sd">        3. If two units have the same sum, the unit that minimises</span>
+<span class="sd">           `log10(magnitude/5)` is selected, where `magnitude` is the</span>
+<span class="sd">           magnitude of the quantity when expressed in SI base units.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
@@ -3005,9 +3161,8 @@ dimensionality that exists in the ontology.</p>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">_parse_unitname</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">MissingUnitError</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">{</span><span class="n">q</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+            <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">sortkey</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns sort key for `compatible_units`.&quot;&quot;&quot;</span>
@@ -3021,7 +3176,7 @@ dimensionality that exists in the ontology.</p>
 
     <span class="n">compatible_units</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
     <span class="n">name</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compatible_units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">mult</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mult</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3344,6 +3499,8 @@ from ontologies.</p>
 <span class="sd">            &#39;http://qudt.org/vocab/unit/HR&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">_default_url_name</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_cachedir</span> <span class="o">=</span> <span class="n">get_cachedir</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_units</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_unitsargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -3395,22 +3552,24 @@ from ontologies.</p>
         <span class="n">symbol</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">unitCode</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return unit matching any of the arguments.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Unit&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Pint unit matching the unit name, symbol, iri or unitCode</span>
+<span class="sd">         as defined in the ontology.</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">            name: Search for unit by name. May also be an IRI. Ex: &quot;Ampere&quot;.</span>
+<span class="sd">            name: Search for unit by name (prefLabel). May also be an IRI.</span>
+<span class="sd">                Ex: &quot;Ampere&quot;.</span>
 <span class="sd">            symbol: Search for unit by symbol or UCUM code. Ex: &quot;A&quot;, &quot;km&quot;</span>
 <span class="sd">            iri: Search for unit by IRI.</span>
 <span class="sd">            unitCode: Search for unit by UNECE common code. Ex: &quot;MTS&quot;</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Return matching unit.</span>
+<span class="sd">            Return matching Pint unit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit_info</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">unitCode</span><span class="o">=</span><span class="n">unitCode</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">u</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_unit_info</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3419,10 +3578,12 @@ from ontologies.</p>
         <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">unitCode</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AttrDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return information about a unit.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return information about a unit name, symbol, iri or unitCode</span>
+<span class="sd">         as defined in the ontology.</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">            name: Search for unit by name. May also be an IRI. Ex: &quot;Ampere&quot;</span>
+<span class="sd">            name: Search for unit by name (prefLabel). May also be an IRI.</span>
+<span class="sd">                Ex: &quot;Ampere&quot;</span>
 <span class="sd">            symbol: Search for unit by symbol or UCUM code. Ex: &quot;A&quot;, &quot;km&quot;</span>
 <span class="sd">            iri: Search for unit by IRI.</span>
 <span class="sd">            unitCode: Search for unit by UNECE common code. Ex: &quot;MTS&quot;</span>
@@ -3441,8 +3602,9 @@ from ontologies.</p>
 <span class="sd">            - omIRI: IRI of the unit in the OM ontology.</span>
 <span class="sd">            - ucumCodes: List of UCUM codes for the unit.</span>
 <span class="sd">            - unitCode: UNECE common code for the unit.</span>
-<span class="sd">            - multiplier: Unit multiplier.</span>
-<span class="sd">            - offset: Unit offset.</span>
+<span class="sd">            - multiplier: Unit multiplier for converting to the</span>
+<span class="sd">              corresponding SI unit.</span>
+<span class="sd">            - offset: Unit offset for converting to the corresponding SI unit.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
@@ -3450,20 +3612,75 @@ from ontologies.</p>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">unitCode</span><span class="o">=</span><span class="n">unitCode</span>
         <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_quantity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">iso80000Ref</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Quantity&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert quantity name, iri or iso80000ref in the ontology to a Pint</span>
+<span class="sd">        quantity object.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            name: Access quantity by its name (skos:prefLabel in the ontology).</span>
+<span class="sd">                Ex: &quot;Energy&quot;.</span>
+<span class="sd">            iri: Access quantity by its IRI, which may refer to EMMO, QUDT,</span>
+<span class="sd">                OM or IUPAC.</span>
+<span class="sd">            iso80000Ref: Access quantity by its ISO80000 reference. Ex: 5-20-1</span>
+<span class="sd">            value: Value of the quantity value in units of SI base units.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=too-many-branches</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingQuantityError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">iri</span><span class="p">:</span>
+            <span class="n">iri_attr</span> <span class="o">=</span> <span class="s2">&quot;emmoIRI&quot;</span><span class="p">,</span> <span class="s2">&quot;qudtIRI&quot;</span><span class="p">,</span> <span class="s2">&quot;omIRI&quot;</span><span class="p">,</span> <span class="s2">&quot;iupacIRI&quot;</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">iri_attr</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">==</span> <span class="n">iri</span><span class="p">:</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingQuantityError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;iri=</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">iso80000Ref</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">iso80000Ref</span> <span class="o">==</span> <span class="n">iso80000Ref</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingQuantityError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;iso80000Ref=</span><span class="si">{</span><span class="n">iso80000Ref</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Missing argument to get_quantity(). Either `name`, &quot;</span>
+                <span class="s2">&quot;`iri` or `iso80000Ref` must be provided&quot;</span>
+            <span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">base_unit_expression</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">dimension</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="n">to_ontology_units</span><span class="p">()</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">load_quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load quantity from triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load quantity individual or (sub)class from the triplestore.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            ts: Triplestore to load from.</span>
-<span class="sd">            iri: IRI of quantity to load.</span>
+<span class="sd">            iri: IRI of quantity individual to load.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Quantity: Pint representation of the quantity.</span>
 
+<span class="sd">        Notes:</span>
+<span class="sd">            The quantity must have a value, hence EMMO.Energy will return</span>
+<span class="sd">            and exception since it is defined without a value in the ontology.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">load_emmo_quantity</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">unit</span> <span class="k">else</span> <span class="bp">self</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">value</span> <span class="o">*</span> <span class="n">u</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">unit</span> <span class="k">else</span> <span class="n">unit</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save_quantity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3475,7 +3692,7 @@ from ontologies.</p>
         <span class="n">si_datatype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save quantity to triplestore.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a Pint quantity individual to triplestore.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            ts: Triplestore to save to.</span>
@@ -3509,7 +3726,7 @@ from ontologies.</p>
         <span class="n">include_prefixed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_unitsargs</span><span class="p">[</span><span class="s2">&quot;include_prefixed&quot;</span><span class="p">]</span>
         <span class="n">pf</span> <span class="o">=</span> <span class="s2">&quot;-prefixed&quot;</span> <span class="k">if</span> <span class="n">include_prefixed</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">cachedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_cachedir</span>
-        <span class="n">ontofile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.ntriples&quot;</span>
+        <span class="n">ontofile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;units-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.ntriples&quot;</span>
         <span class="n">unitsfile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;units</span><span class="si">{</span><span class="n">pf</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pickle&quot;</span>
         <span class="k">if</span> <span class="n">ontofile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">ontofile</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
@@ -3585,6 +3802,29 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ontology_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Quantity&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return new quantity rescale to a unit with the same</span>
 <span class="sd">        dimensionality that exists in the ontology.</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            This function tries to select the &quot;simplest&quot; unit among all the</span>
+<span class="sd">            units with compatible physical dimensionality in the ontology.</span>
+
+<span class="sd">            This is done according to the following heuristics:</span>
+
+<span class="sd">            1. Find units with compatible physical dimensionality in the</span>
+<span class="sd">               ontology.</span>
+<span class="sd">            2. Among these units, select the unit that minimises the absolute</span>
+<span class="sd">               value of the sum of the powers of each unit component.</span>
+
+<span class="sd">               Example: among the units</span>
+
+<span class="sd">                   Pa = Pa^1       -&gt; sum=1</span>
+<span class="sd">                   J/m^3 = J^1/m^3 -&gt; sum=1+3=4</span>
+<span class="sd">                   N/m^2 = N^1/m^2 -&gt; sum=1+2=3</span>
+
+<span class="sd">               Pa will be selected.</span>
+<span class="sd">            3. If two units have the same sum, the unit that minimises</span>
+<span class="sd">               `log10(magnitude/5)` is selected, where `magnitude` is the</span>
+<span class="sd">               magnitude of the quantity when expressed in SI base units.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
@@ -3603,9 +3843,8 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">_parse_unitname</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">MissingUnitError</span><span class="p">:</span>
-                    <span class="k">pass</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">{</span><span class="n">q</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+                <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">sortkey</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Returns sort key for `compatible_units`.&quot;&quot;&quot;</span>
@@ -3619,7 +3858,7 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
 
         <span class="n">compatible_units</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compatible_units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">mult</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mult</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">ito_ontology_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inplace rescale to ontology units.&quot;&quot;&quot;</span>
@@ -3710,12 +3949,56 @@ Quantity            (<span title="pint.registry.Quantity">Quantity</span>)
 
       <p>Return new quantity rescale to a unit with the same
 dimensionality that exists in the ontology.</p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<p>This function tries to select the "simplest" unit among all the
+units with compatible physical dimensionality in the ontology.</p>
+<p>This is done according to the following heuristics:</p>
+<ol>
+<li>Find units with compatible physical dimensionality in the
+   ontology.</li>
+<li>Among these units, select the unit that minimises the absolute
+   value of the sum of the powers of each unit component.</li>
+</ol>
+<p>Example: among the units</p>
+<div class="language-text highlight"><pre><span></span><code>   Pa = Pa^1       -&gt; sum=1
+   J/m^3 = J^1/m^3 -&gt; sum=1+3=4
+   N/m^2 = N^1/m^2 -&gt; sum=1+2=3
+</code></pre></div>
+<p>Pa will be selected.
+3. If two units have the same sum, the unit that minimises
+   <code>log10(magnitude/5)</code> is selected, where <code>magnitude</code> is the
+   magnitude of the quantity when expressed in SI base units.</p>
+</div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_ontology_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Quantity&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return new quantity rescale to a unit with the same</span>
 <span class="sd">    dimensionality that exists in the ontology.</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        This function tries to select the &quot;simplest&quot; unit among all the</span>
+<span class="sd">        units with compatible physical dimensionality in the ontology.</span>
+
+<span class="sd">        This is done according to the following heuristics:</span>
+
+<span class="sd">        1. Find units with compatible physical dimensionality in the</span>
+<span class="sd">           ontology.</span>
+<span class="sd">        2. Among these units, select the unit that minimises the absolute</span>
+<span class="sd">           value of the sum of the powers of each unit component.</span>
+
+<span class="sd">           Example: among the units</span>
+
+<span class="sd">               Pa = Pa^1       -&gt; sum=1</span>
+<span class="sd">               J/m^3 = J^1/m^3 -&gt; sum=1+3=4</span>
+<span class="sd">               N/m^2 = N^1/m^2 -&gt; sum=1+2=3</span>
+
+<span class="sd">           Pa will be selected.</span>
+<span class="sd">        3. If two units have the same sum, the unit that minimises</span>
+<span class="sd">           `log10(magnitude/5)` is selected, where `magnitude` is the</span>
+<span class="sd">           magnitude of the quantity when expressed in SI base units.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=protected-access</span>
     <span class="n">ureg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_REGISTRY</span>
@@ -3734,9 +4017,8 @@ dimensionality that exists in the ontology.</p>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">_parse_unitname</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">MissingUnitError</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">{</span><span class="n">q</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+            <span class="n">compatible_units</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">sortkey</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns sort key for `compatible_units`.&quot;&quot;&quot;</span>
@@ -3750,7 +4032,7 @@ dimensionality that exists in the ontology.</p>
 
     <span class="n">compatible_units</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sortkey</span><span class="p">)</span>
     <span class="n">name</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compatible_units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">mult</span> <span class="o">*</span> <span class="n">ureg</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mult</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4129,6 +4411,8 @@ supported.</p></td>
 <span class="sd">        &#39;http://qudt.org/vocab/unit/HR&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">_default_url_name</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
     <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_cachedir</span> <span class="o">=</span> <span class="n">get_cachedir</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_units</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_unitsargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -4188,12 +4472,126 @@ supported.</p></td>
     <span class="n">include_prefixed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_unitsargs</span><span class="p">[</span><span class="s2">&quot;include_prefixed&quot;</span><span class="p">]</span>
     <span class="n">pf</span> <span class="o">=</span> <span class="s2">&quot;-prefixed&quot;</span> <span class="k">if</span> <span class="n">include_prefixed</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="n">cachedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_cachedir</span>
-    <span class="n">ontofile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.ntriples&quot;</span>
+    <span class="n">ontofile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;units-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.ntriples&quot;</span>
     <span class="n">unitsfile</span> <span class="o">=</span> <span class="n">cachedir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;units</span><span class="si">{</span><span class="n">pf</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pickle&quot;</span>
     <span class="k">if</span> <span class="n">ontofile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">ontofile</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">unitsfile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">unitsfile</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.units.units.UnitRegistry.get_quantity" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iso80000Ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+
+<a href="#tripper.units.units.UnitRegistry.get_quantity" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Convert quantity name, iri or iso80000ref in the ontology to a Pint
+quantity object.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Access quantity by its name (skos:prefLabel in the ontology).
+Ex: "Energy".</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>iri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Access quantity by its IRI, which may refer to EMMO, QUDT,
+OM or IUPAC.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>iso80000Ref</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Access quantity by its ISO80000 reference. Ex: 5-20-1</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>value</code></td>
+        <td><code>float</code></td>
+        <td><p>Value of the quantity value in units of SI base units.</p></td>
+        <td><code>1.0</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/units/units.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_quantity</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">iso80000Ref</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Quantity&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert quantity name, iri or iso80000ref in the ontology to a Pint</span>
+<span class="sd">    quantity object.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name: Access quantity by its name (skos:prefLabel in the ontology).</span>
+<span class="sd">            Ex: &quot;Energy&quot;.</span>
+<span class="sd">        iri: Access quantity by its IRI, which may refer to EMMO, QUDT,</span>
+<span class="sd">            OM or IUPAC.</span>
+<span class="sd">        iso80000Ref: Access quantity by its ISO80000 reference. Ex: 5-20-1</span>
+<span class="sd">        value: Value of the quantity value in units of SI base units.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingQuantityError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">iri</span><span class="p">:</span>
+        <span class="n">iri_attr</span> <span class="o">=</span> <span class="s2">&quot;emmoIRI&quot;</span><span class="p">,</span> <span class="s2">&quot;qudtIRI&quot;</span><span class="p">,</span> <span class="s2">&quot;omIRI&quot;</span><span class="p">,</span> <span class="s2">&quot;iupacIRI&quot;</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">iri_attr</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">==</span> <span class="n">iri</span><span class="p">:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingQuantityError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;iri=</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">iso80000Ref</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">quantities</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">iso80000Ref</span> <span class="o">==</span> <span class="n">iso80000Ref</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingQuantityError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;iso80000Ref=</span><span class="si">{</span><span class="n">iso80000Ref</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Missing argument to get_quantity(). Either `name`, &quot;</span>
+            <span class="s2">&quot;`iri` or `iso80000Ref` must be provided&quot;</span>
+        <span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">base_unit_expression</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">dimension</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">q</span><span class="o">.</span><span class="n">to_ontology_units</span><span class="p">()</span>
 </code></pre></div>
         </details>
     </div>
@@ -4214,7 +4612,8 @@ supported.</p></td>
 
     <div class="doc doc-contents ">
 
-      <p>Return unit matching any of the arguments.</p>
+      <p>Return Pint unit matching the unit name, symbol, iri or unitCode
+ as defined in the ontology.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -4230,7 +4629,8 @@ supported.</p></td>
       <tr>
         <td><code>name</code></td>
         <td><code>Optional[str]</code></td>
-        <td><p>Search for unit by name. May also be an IRI. Ex: "Ampere".</p></td>
+        <td><p>Search for unit by name (prefLabel). May also be an IRI.
+Ex: "Ampere".</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -4263,8 +4663,8 @@ supported.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>Any</code></td>
-      <td><p>Return matching unit.</p></td>
+      <td><code>Unit</code></td>
+      <td><p>Return matching Pint unit.</p></td>
     </tr>
   </tbody>
 </table>
@@ -4276,22 +4676,24 @@ supported.</p></td>
     <span class="n">symbol</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">unitCode</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return unit matching any of the arguments.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Unit&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Pint unit matching the unit name, symbol, iri or unitCode</span>
+<span class="sd">     as defined in the ontology.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        name: Search for unit by name. May also be an IRI. Ex: &quot;Ampere&quot;.</span>
+<span class="sd">        name: Search for unit by name (prefLabel). May also be an IRI.</span>
+<span class="sd">            Ex: &quot;Ampere&quot;.</span>
 <span class="sd">        symbol: Search for unit by symbol or UCUM code. Ex: &quot;A&quot;, &quot;km&quot;</span>
 <span class="sd">        iri: Search for unit by IRI.</span>
 <span class="sd">        unitCode: Search for unit by UNECE common code. Ex: &quot;MTS&quot;</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Return matching unit.</span>
+<span class="sd">        Return matching Pint unit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit_info</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">unitCode</span><span class="o">=</span><span class="n">unitCode</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">u</span>
 </code></pre></div>
         </details>
     </div>
@@ -4312,7 +4714,8 @@ supported.</p></td>
 
     <div class="doc doc-contents ">
 
-      <p>Return information about a unit.</p>
+      <p>Return information about a unit name, symbol, iri or unitCode
+ as defined in the ontology.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -4328,7 +4731,8 @@ supported.</p></td>
       <tr>
         <td><code>name</code></td>
         <td><code>Optional[str]</code></td>
-        <td><p>Search for unit by name. May also be an IRI. Ex: "Ampere"</p></td>
+        <td><p>Search for unit by name (prefLabel). May also be an IRI.
+Ex: "Ampere"</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -4375,8 +4779,9 @@ The dict has the following keys:</p>
 <li>omIRI: IRI of the unit in the OM ontology.</li>
 <li>ucumCodes: List of UCUM codes for the unit.</li>
 <li>unitCode: UNECE common code for the unit.</li>
-<li>multiplier: Unit multiplier.</li>
-<li>offset: Unit offset.</li>
+<li>multiplier: Unit multiplier for converting to the
+  corresponding SI unit.</li>
+<li>offset: Unit offset for converting to the corresponding SI unit.</li>
 </ul></td>
     </tr>
   </tbody>
@@ -4390,10 +4795,12 @@ The dict has the following keys:</p>
     <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">unitCode</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AttrDict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return information about a unit.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return information about a unit name, symbol, iri or unitCode</span>
+<span class="sd">     as defined in the ontology.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        name: Search for unit by name. May also be an IRI. Ex: &quot;Ampere&quot;</span>
+<span class="sd">        name: Search for unit by name (prefLabel). May also be an IRI.</span>
+<span class="sd">            Ex: &quot;Ampere&quot;</span>
 <span class="sd">        symbol: Search for unit by symbol or UCUM code. Ex: &quot;A&quot;, &quot;km&quot;</span>
 <span class="sd">        iri: Search for unit by IRI.</span>
 <span class="sd">        unitCode: Search for unit by UNECE common code. Ex: &quot;MTS&quot;</span>
@@ -4412,8 +4819,9 @@ The dict has the following keys:</p>
 <span class="sd">        - omIRI: IRI of the unit in the OM ontology.</span>
 <span class="sd">        - ucumCodes: List of UCUM codes for the unit.</span>
 <span class="sd">        - unitCode: UNECE common code for the unit.</span>
-<span class="sd">        - multiplier: Unit multiplier.</span>
-<span class="sd">        - offset: Unit offset.</span>
+<span class="sd">        - multiplier: Unit multiplier for converting to the</span>
+<span class="sd">          corresponding SI unit.</span>
+<span class="sd">        - offset: Unit offset for converting to the corresponding SI unit.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
@@ -4440,7 +4848,7 @@ The dict has the following keys:</p>
 
     <div class="doc doc-contents ">
 
-      <p>Load quantity from triplestore.</p>
+      <p>Load quantity individual or (sub)class from the triplestore.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -4462,7 +4870,7 @@ The dict has the following keys:</p>
       <tr>
         <td><code>iri</code></td>
         <td><code>str</code></td>
-        <td><p>IRI of quantity to load.</p></td>
+        <td><p>IRI of quantity individual to load.</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
@@ -4481,23 +4889,32 @@ The dict has the following keys:</p>
       <td><p>Pint representation of the quantity.</p></td>
     </tr>
   </tbody>
-</table>
+</table>      <div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<p>The quantity must have a value, hence EMMO.Energy will return
+and exception since it is defined without a value in the ontology.</p>
+</div>
+
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load quantity from triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load quantity individual or (sub)class from the triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to load from.</span>
-<span class="sd">        iri: IRI of quantity to load.</span>
+<span class="sd">        iri: IRI of quantity individual to load.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Quantity: Pint representation of the quantity.</span>
 
+<span class="sd">    Notes:</span>
+<span class="sd">        The quantity must have a value, hence EMMO.Energy will return</span>
+<span class="sd">        and exception since it is defined without a value in the ontology.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">value</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="n">load_emmo_quantity</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">unit</span> <span class="k">else</span> <span class="bp">self</span><span class="p">[</span><span class="n">unit</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">value</span> <span class="o">*</span> <span class="n">u</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+        <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">unit</span> <span class="k">else</span> <span class="n">unit</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4564,7 +4981,7 @@ case_sensitive : bool or None
 
     <div class="doc doc-contents ">
 
-      <p>Save quantity to triplestore.</p>
+      <p>Save a Pint quantity individual to triplestore.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -4636,7 +5053,7 @@ Use Literal() for literal annotations.</p></td>
     <span class="n">si_datatype</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save quantity to triplestore.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a Pint quantity individual to triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to save to.</span>
@@ -4728,12 +5145,12 @@ Units        </code>
 
     <div class="doc doc-contents ">
 
-      <p>A class representing all units in an EMMO-based ontology.</p>
+      <p>A class representing all units in an ontology.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Units</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class representing all units in an EMMO-based ontology.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class representing all units in an ontology.&quot;&quot;&quot;</span>
 
     <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 
@@ -4752,8 +5169,8 @@ Units        </code>
 <span class="sd">        Arguments:</span>
 <span class="sd">            ts: Triplestore object containing the ontology to load</span>
 <span class="sd">                units from.</span>
-<span class="sd">            url: URL (or path) to triplestore from where to load the unit</span>
-<span class="sd">                definitions if `ts` is not given.</span>
+<span class="sd">            url: URL (or path) to the ontology from where unit</span>
+<span class="sd">                definitions are loaded if `ts` is not given.</span>
 <span class="sd">                Default: &quot;https://w3id.org/emmo/{EMMO_VERSION}&quot;</span>
 <span class="sd">            format: Optional format of the source referred to by `url`.</span>
 <span class="sd">            name: A (versioned) name for the triplestore. Used for caching.</span>
@@ -4795,11 +5212,11 @@ Units        </code>
                 <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;quantities&quot;</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;constants&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;* parsing units... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;* caching units... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">include_prefixed</span><span class="o">=</span><span class="n">include_prefixed</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* parsing quantities... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* caching quantities... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* parsing constants... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* caching constants... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
 
@@ -5426,8 +5843,8 @@ units from.</p></td>
       <tr>
         <td><code>url</code></td>
         <td><code>Optional[Union[str, Path]]</code></td>
-        <td><p>URL (or path) to triplestore from where to load the unit
-definitions if <code>ts</code> is not given.
+        <td><p>URL (or path) to the ontology from where unit
+definitions are loaded if <code>ts</code> is not given.
 Default: "https://w3id.org/emmo/{EMMO_VERSION}"</p></td>
         <td><code>None</code></td>
       </tr>
@@ -5486,8 +5903,8 @@ supported.</p></td>
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore object containing the ontology to load</span>
 <span class="sd">            units from.</span>
-<span class="sd">        url: URL (or path) to triplestore from where to load the unit</span>
-<span class="sd">            definitions if `ts` is not given.</span>
+<span class="sd">        url: URL (or path) to the ontology from where unit</span>
+<span class="sd">            definitions are loaded if `ts` is not given.</span>
 <span class="sd">            Default: &quot;https://w3id.org/emmo/{EMMO_VERSION}&quot;</span>
 <span class="sd">        format: Optional format of the source referred to by `url`.</span>
 <span class="sd">        name: A (versioned) name for the triplestore. Used for caching.</span>
@@ -5529,11 +5946,11 @@ supported.</p></td>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;quantities&quot;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;constants&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;* parsing units... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;* caching units... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">include_prefixed</span><span class="o">=</span><span class="n">include_prefixed</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* parsing quantities... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* caching quantities... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* parsing constants... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done</span><span class="se">\n</span><span class="s2">* caching constants... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
 
@@ -6098,7 +6515,7 @@ Ex: "emmo-1.0.0".</p></td>
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">_unit_ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;* parsing units triplestore... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;* caching units triplestore... &quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">_unit_ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
