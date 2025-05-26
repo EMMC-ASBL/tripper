@@ -538,6 +538,8 @@ def test_datadoc():
     assert search(ts, criteria={"title": title}) == dset
     assert search(ts, criteria={"dcterms:title": title}) == dset
     assert search(ts, criteria={DCTERMS.title: title}) == dset
+    # Search with full IRI
+    assert search(ts, criteria={'http://purl.org/dc/terms/title': title}) == dset
 
 
 def test_custom_context():
