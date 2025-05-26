@@ -43,8 +43,8 @@
       "@id": "dcterms:creator",
       "@type": "@id"
     },
-    "curatedBy": {
-      "@id": "oteio:curatedBy",
+    "curator": {
+      "@id": "oteio:curator",
       "@type": "@id"
     },
     "description": {

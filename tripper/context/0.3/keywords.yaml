@@ -81,8 +81,8 @@ resources:
         conformance: optional
         description: An entity responsible for producing the resource.
 
-      curatedBy:
-        iri: oteio:curatedBy
+      curator:
+        iri: oteio:curator
         range: foaf:Agent
         description: The agent that curated the resource.
         usageNote: Use `issued` to refer to the date of curation.
