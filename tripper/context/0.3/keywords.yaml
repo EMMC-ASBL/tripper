@@ -81,6 +81,18 @@ resources:
         conformance: optional
         description: An entity responsible for producing the resource.
 
+      curatedBy:
+        iri: oteio:curatedBy
+        range: foaf:Agent
+        description: The agent that curated the resource.
+
+      curationDate:
+        iri: oteio:curationDate
+        range: rdfs:Literal
+        datatype: xsd:date
+        description: The date the resource was curated.
+        usageNote: Should be used with `curatedBy`.
+
       description:
         iri: dcterms:description
         range: rdfs:Literal
@@ -95,18 +107,6 @@ resources:
         datatype: xsd:anyURI
         conformance: optional
         description: A page or document about this resource.
-
-      hasCurationDate:
-        iri: oteio:hasCurationDate
-        range: rdfs:Literal
-        datatype: xsd:date
-        description: The date the resource was curated.
-        usageNote: Should be used with `hasCurator`.
-
-      hasCurator:
-        iri: oteio:hasCurator
-        range: foaf:Agent
-        description: The agent that curated the resource.
 
       hasVersion:
         iri: dcat:hasVersion

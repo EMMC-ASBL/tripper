@@ -43,6 +43,14 @@
       "@id": "dcterms:creator",
       "@type": "@id"
     },
+    "curatedBy": {
+      "@id": "oteio:curatedBy",
+      "@type": "@id"
+    },
+    "curationDate": {
+      "@id": "oteio:curationDate",
+      "@type": "xsd:date"
+    },
     "description": {
       "@id": "dcterms:description",
       "@language": "en"
@@ -50,14 +58,6 @@
     "documentation": {
       "@id": "foaf:documentation",
       "@type": "xsd:anyURI"
-    },
-    "hasCurationDate": {
-      "@id": "oteio:hasCurationDate",
-      "@type": "xsd:date"
-    },
-    "hasCurator": {
-      "@id": "oteio:hasCurator",
-      "@type": "@id"
     },
     "hasVersion": {
       "@id": "dcat:hasVersion",
