@@ -1,7 +1,7 @@
 Working with already documented resources
 =========================================
 
-The [tripper.datadoc] module also includes functionality for easy searching of the documented reseources.
+The [tripper.datadoc] module also includes functionality for easy searching of the documented resources.
 
 For these examples there must be a triplestore instance available, poplated with some data.
 ```python
@@ -30,7 +30,7 @@ This will return a list of all datasets in the knowledge base.
 
 ### Search with filtering criteria
 
-Before adding specific filtering criteria it is important to bind non-standard prefixes to corresponding namespaces (standard prefixes defined in the keywords file, like dcterms, dcat, etc does not need to be defined again):
+Before adding specific filtering criteria it is important to bind non-standard prefixes to corresponding namespaces (standard prefixes defined in the keywords file, like dcterms, dcat, etc do not need to be defined again):
 
 ```python
 >>> DATA = ts.bind("data", "http://example.com/data#")
@@ -49,9 +49,8 @@ It is possible to search for instances of type `dcat:Dataset` in two ways:
 
 ```
 The first shortened version is only possible for [predefined keywords] that are specifically added in tripper.
-The binding of the `dcat` namespace is required first for both cases.
 
-Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) is currently not supported.
+Note that full iris (e.g. `http://www.w3.org/ns/dcat#Dataset`) are currently not supported.
 
 
 You can also search for documented resources of other types or include more than one type in the search.
@@ -80,7 +79,7 @@ It is also possible to filter through other criteria:
 
 ```
 
-Note that here the object created when binding the `kb` prefixs is a tripper.Namespace, and can be used directly as the second example above.
+Note that here the object created when binding the `kb` prefix is a tripper.Namespace, and can be used directly as the second example above.
 
 Fetching metadata and data
 --------------------------
@@ -88,20 +87,21 @@ Fetching metadata and data
 The `acquire` function can be used to fetch metadata from the triplestore.
 ```python
 >>> from tripper.datadoc import acquire
->>> acquire(ts, 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001')  # doctest: +ELLIPSIS
-AttrDict('@id': 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001', ...)
+>>> acquire(ts, 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001')  # doctest: +ELLIPSIS  +NORMALIZE_WHITESPACE
+AttrDict({'@id': 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001', ...})
 
 
 ```
 
 Similarly the load function can be used to fetch the data using the information about the dowload URL in the metadata.
-
+The syntax is the same as above. Note though that for this specific example you would need access to a server that
+is not available to the general public.
 
 
 Removing instances in the knowledge base
 ----------------------------------------
 
-Be very careful when using this, as there is a high risk that you delete data from others if you have access to delete a shared knowledge base.
+Be very careful when using this, as there is a high risk that you delete data from others if you have access to delete on a shared knowledge base.
 
 The same criteria as shown above can be used e.g.:
 
