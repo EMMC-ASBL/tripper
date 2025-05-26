@@ -47,10 +47,6 @@
       "@id": "oteio:curatedBy",
       "@type": "@id"
     },
-    "curationDate": {
-      "@id": "oteio:curationDate",
-      "@type": "xsd:date"
-    },
     "description": {
       "@id": "dcterms:description",
       "@language": "en"

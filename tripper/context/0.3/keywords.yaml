@@ -85,13 +85,7 @@ resources:
         iri: oteio:curatedBy
         range: foaf:Agent
         description: The agent that curated the resource.
-
-      curationDate:
-        iri: oteio:curationDate
-        range: rdfs:Literal
-        datatype: xsd:date
-        description: The date the resource was curated.
-        usageNote: Should be used with `curatedBy`.
+        usageNote: Use `issued` to refer to the date of curation.
 
       description:
         iri: dcterms:description
