@@ -89,7 +89,8 @@ The `acquire` function can be used to fetch metadata from the triplestore.
 ```python
 >>> from tripper.datadoc import acquire
 >>> acquire(ts, 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001')  # doctest: +ELLIPSIS
-{'@id': 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001', ...}
+AttrDict('@id': 'https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001', ...)
+
 
 ```
 
