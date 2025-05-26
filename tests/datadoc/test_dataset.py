@@ -514,6 +514,30 @@ def test_datadoc():
         SAMPLE["SEM_cement_batch2/77600-23-001"],
     }
 
+    # Filter on more than one type in the search
+    assert search(ts, type=["dcat:Dataset", SEM.SEMImage]) == [
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
+    ]
+
+    # Filter on one criterion, but add it as a list
+    assert set(search(ts, criteria={"creator.name": ["Sigurd Wenner"]})) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    # Filter on more than one value for a criterion
+    assert set(
+        search(
+            ts,
+            criteria={
+                "creator.name": ["Sigurd Wenner", "Named Lab Assistant"]
+            },
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+    }
+
     with pytest.raises(NoSuchTypeError):
         search(ts, type="invalid-type")
 

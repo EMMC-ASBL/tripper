@@ -72,6 +72,10 @@ def test_namespaces() -> None:
     assert "Age" in dir(FAM)
     assert "Child" in dir(FAM)
 
+    # Test __contains__() method
+    assert "family#" in FAM
+    assert "foot" not in FAM
+
 
 # if True:
 def test_triplestore_arg() -> None:
