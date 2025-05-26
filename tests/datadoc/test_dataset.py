@@ -532,10 +532,11 @@ def test_datadoc():
         SEMDATA.SEM_cement_batch2,
     ]
 
-    # Search with full IRIs
     title = "Nested series of SEM images of cement batch2"
     dset = [SEMDATA.SEM_cement_batch2]
+    # Search with predefined keyword
     assert search(ts, criteria={"title": title}) == dset
+    # Search with prefixed IRIs
     assert search(ts, criteria={"dcterms:title": title}) == dset
     assert search(ts, criteria={DCTERMS.title: title}) == dset
     # Search with full IRI
