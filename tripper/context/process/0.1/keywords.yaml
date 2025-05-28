@@ -22,7 +22,6 @@ resources:
         range: dcat:Resource
         description: A resource participating to a process. (Or more formally, a resource who's intersection with the process is a participant to the process.)
 
-      # FIXME: replace with previousTask when it has been added to EMMO
       isAfter:
         iri: emmo:EMMO_2a28c0dd_89b1_47ac_b81f_fccc56f39617
         range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
