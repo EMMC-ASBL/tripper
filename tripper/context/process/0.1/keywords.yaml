@@ -111,7 +111,7 @@ resources:
 
   ChemicalSpecies:
     iri: emmo:EMMO_cbcf8fe6_6da6_49e0_ab4d_00f737ea9689
-    description: Specific form of an element defined as to isotopic composition, electronic or oxidation state, and/or complex or molecular structure. Chemical species is the macroscopic equivalent of molecular entity and refers to sets or ensembles of molecular entities.
+    description: A symbolic construct that stands for a molecular entity.
 
   Manufacturer:
     iri: emmo:EMMO_c0afb341_7d31_4883_a307_ae4606df2a1b
