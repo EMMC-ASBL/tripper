@@ -27,7 +27,6 @@ resources:
         range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
         description: A process that comes before this process.
 
-      # FIXME: replace with nextTask when it has been added to EMMO
       isBefore:
         iri: emmo:EMMO_ebc9e62c_5dc4_44db_9060_7923740bdf78
         range: emmo:EMMO_43e9a05d_98af_41b4_92f6_00f79a09bfce
