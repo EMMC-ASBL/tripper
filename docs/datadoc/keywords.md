@@ -328,10 +328,6 @@ The class of property restrictions.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [documentation]: http://xmlns.com/foaf/0.1/documentation
 [foaf:Document]: http://xmlns.com/foaf/0.1/Document
-[hasCurationDate]: https://w3id.org/emmo/domain/oteio#hasCurationDate
-[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
-[hasCurator]: https://w3id.org/emmo/domain/oteio#hasCurator
-[foaf:Agent]: http://xmlns.com/foaf/0.1/Agent
 [hasVersion]: http://www.w3.org/ns/dcat#hasVersion
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [identifier]: http://purl.org/dc/terms/identifier
