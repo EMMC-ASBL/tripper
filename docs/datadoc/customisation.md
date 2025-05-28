@@ -245,6 +245,7 @@ Instead, the list of available resource types should be stored and retrieved fro
 [Python dict]: #python-dict
 [resource types]: introduction.md#resource-types
 [Documenting a resource]: documenting-a-resource.md
+[Search for and fetching resources]: fetching-resources-from-a-triplestore.md
 [predefined prefixes]: prefixes.md
 [predefined keywords]: keywords.md
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
