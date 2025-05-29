@@ -817,6 +817,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.literal.format_duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      format_duration()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.literal.parse_duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_duration()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1674,6 +1692,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.literal.format_duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      format_duration()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.literal.parse_duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_duration()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1706,6 +1742,7 @@ resource.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1891,10 +1928,15 @@ inferred from <code>value</code>.  Should not be combined with
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># pylint: disable=too-many-nested-blocks</span>
+
     <span class="c1"># Note that the order of datatypes matters - it is used by</span>
     <span class="c1"># utils.parse_literal() when inferring the datatype of a literal.</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">datetime</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span><span class="p">),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">,),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">date</span><span class="p">,),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">time</span><span class="p">,),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">duration</span><span class="p">,),</span>
         <span class="nb">bytes</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">base64Binary</span><span class="p">),</span>
         <span class="nb">bytearray</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">base64Binary</span><span class="p">),</span>
         <span class="nb">bool</span><span class="p">:</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">,),</span>
@@ -1948,8 +1990,9 @@ inferred from <code>value</code>.  Should not be combined with
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">value</span><span class="p">:</span> <span class="p">(</span>
-            <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot;</span>
-            <span class="s2">&quot;dict, list]&quot;</span>
+            <span class="s2">&quot;Union[datetime.datetime, datetime.date, datetime.time, &quot;</span>
+            <span class="s2">&quot;datetime.timedelta, bytes, bytearray, bool, int, float, str, &quot;</span>
+            <span class="s2">&quot;None, dict, list]&quot;</span>
         <span class="p">),</span>
         <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, type]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1987,14 +2030,16 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
         <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
-            <span class="c1"># Create canonical representation of value for</span>
-            <span class="c1"># given datatype</span>
+            <span class="c1"># Create canonical representation of value for given datatype</span>
             <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
-                            <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;fromisoformat&quot;</span><span class="p">):</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                             <span class="k">break</span>
                         <span class="k">except</span><span class="p">:</span>  <span class="c1"># pylint: disable=bare-except</span>
                             <span class="k">pass</span>  <span class="c1"># nosec</span>
@@ -2026,8 +2071,22 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">time</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">format_duration</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">duration</span>
         <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2120,8 +2179,14 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">parse_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">SIQuantityDatatype</span><span class="p">:</span>
@@ -2217,8 +2282,9 @@ inferred from <code>value</code>.  Should not be combined with
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="p">(</span>
-        <span class="s2">&quot;Union[datetime, bytes, bytearray, bool, int, float, str, None, &quot;</span>
-        <span class="s2">&quot;dict, list]&quot;</span>
+        <span class="s2">&quot;Union[datetime.datetime, datetime.date, datetime.time, &quot;</span>
+        <span class="s2">&quot;datetime.timedelta, bytes, bytearray, bool, int, float, str, &quot;</span>
+        <span class="s2">&quot;None, dict, list]&quot;</span>
     <span class="p">),</span>
     <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, type]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2256,14 +2322,16 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
     <span class="k">elif</span> <span class="n">datatype</span><span class="p">:</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
-        <span class="c1"># Create canonical representation of value for</span>
-        <span class="c1"># given datatype</span>
+        <span class="c1"># Create canonical representation of value for given datatype</span>
         <span class="n">val</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">names</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;fromisoformat&quot;</span><span class="p">):</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                         <span class="k">break</span>
                     <span class="k">except</span><span class="p">:</span>  <span class="c1"># pylint: disable=bare-except</span>
                         <span class="k">pass</span>  <span class="c1"># nosec</span>
@@ -2295,8 +2363,22 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">hexBinary</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">time</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">format_duration</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">XSD</span><span class="o">.</span><span class="n">duration</span>
     <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2408,8 +2490,14 @@ literal.</p>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">,</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">dateTime</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">date</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">duration</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">parse_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">SIQuantityDatatype</span><span class="p">:</span>
@@ -2445,6 +2533,113 @@ literal.</p>
 
   </div>
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.literal.format_duration" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_duration</span><span class="p">(</span><span class="n">td</span><span class="p">)</span></code>
+
+
+<a href="#tripper.literal.format_duration" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Format a timedelta object as a ISO 8601 string.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/literal.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_duration</span><span class="p">(</span><span class="n">td</span><span class="p">:</span> <span class="s2">&quot;datetime.timedelta&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a timedelta object as a ISO 8601 string.&quot;&quot;&quot;</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="mi">60</span>
+    <span class="n">dh</span> <span class="o">=</span> <span class="n">dm</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="n">dD</span> <span class="o">=</span> <span class="n">dh</span> <span class="o">*</span> <span class="mi">24</span>
+    <span class="n">dM</span> <span class="o">=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">dD</span>
+    <span class="n">dY</span> <span class="o">=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">*</span> <span class="n">dD</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dY</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">Y&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dY</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">%=</span> <span class="n">dY</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dM</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">M&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dM</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">%=</span> <span class="n">dM</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dD</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">D&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dD</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">%=</span> <span class="n">dD</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dh</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">H&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dh</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">%=</span> <span class="n">dh</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dm</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">M&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dm</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">%=</span> <span class="n">dm</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">S&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">or</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">s</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sign</span><span class="si">}</span><span class="s2">P</span><span class="si">{</span><span class="n">Y</span><span class="si">}{</span><span class="n">M</span><span class="si">}{</span><span class="n">D</span><span class="si">}{</span><span class="n">T</span><span class="si">}{</span><span class="n">h</span><span class="si">}{</span><span class="n">m</span><span class="si">}{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.literal.parse_duration" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span></code>
+
+
+<a href="#tripper.literal.parse_duration" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse an ISO 8601 duration string to a timedelta object.</p>
+<p>The duration should be a string of the form "PnYnMnDTnHnMnS",
+where <code>n</code> is a number. A negative duration can be prefixed
+with "-".</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/literal.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;datetime.timedelta&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse an ISO 8601 duration string to a timedelta object.</span>
+
+<span class="sd">    The duration should be a string of the form &quot;PnYnMnDTnHnMnS&quot;,</span>
+<span class="sd">    where `n` is a number. A negative duration can be prefixed</span>
+<span class="sd">    with &quot;-&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+        <span class="s2">&quot;(-)?P([0-9.]+Y)?([0-9.]+M)?([0-9.]+D)?&quot;</span>
+        <span class="s2">&quot;(T([0-9.]+H)?([0-9.]+M)?([0-9.eE+-]+S)?)?&quot;</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid duration literal &#39;</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="s2">&quot;Should be of the form &#39;PnYnMnDTnHnMnS&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="n">sign</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+    <span class="n">sn</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="n">seconds</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="n">Y</span><span class="p">:</span>
+        <span class="n">days</span> <span class="o">+=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">M</span><span class="p">:</span>
+        <span class="n">days</span> <span class="o">+=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">M</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">D</span><span class="p">:</span>
+        <span class="n">days</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">D</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">h</span><span class="p">:</span>
+        <span class="n">seconds</span> <span class="o">+=</span> <span class="mi">3600</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">h</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">seconds</span> <span class="o">+=</span> <span class="mi">60</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">s</span><span class="p">:</span>
+        <span class="n">seconds</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">sn</span> <span class="o">*</span> <span class="n">days</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">sn</span> <span class="o">*</span> <span class="n">seconds</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
