@@ -479,6 +479,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../datadoc/fetching-resources-from-a-triplestore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Searching for and fetching resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -2134,6 +2157,10 @@ Context        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return `name` expanded to a full IRI.</span>
 
+<span class="sd">        If `name` is not defined in the context, a `NameSpaceError` will</span>
+<span class="sd">        be raised if `strict` is true. Otherwise `name` will be returned</span>
+<span class="sd">        unchanged.</span>
+
 <span class="sd">        Example:</span>
 
 <span class="sd">        &gt;&gt;&gt; context = Context()</span>
@@ -2164,8 +2191,12 @@ Context        </code>
             <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot expand: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">name</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return `name` as a prefixed IRI.</span>
+
+<span class="sd">        If `name` is not defined in the context, a `NameSpaceError` will</span>
+<span class="sd">        be raised if `strict` is true. Otherwise `name` will be returned</span>
+<span class="sd">        unchanged.</span>
 
 <span class="sd">        Example:</span>
 
@@ -2178,10 +2209,16 @@ Context        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot prefix: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot prefix: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the short name (keyword) corresponding to `name`.</span>
+
+<span class="sd">        If `name` is not defined in the context, a `NameSpaceError` will</span>
+<span class="sd">        be raised if `strict` is true. Otherwise `name` will be returned</span>
+<span class="sd">        unchanged.</span>
 
 <span class="sd">        Example:</span>
 
@@ -2194,7 +2231,9 @@ Context        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no short name for: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no short name for: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">isref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return wheter `name` is an object property that refers to a node.&quot;&quot;&quot;</span>
@@ -2250,6 +2289,15 @@ Context        </code>
             <span class="k">return</span>
         <span class="n">prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
         <span class="n">mappings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mappings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">[</span><span class="s2">&quot;rdf:type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">[</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rdf:type&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="s2">&quot;rdf:type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rdf:type&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rdf:type&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@type&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="s2">&quot;rdf:type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@type&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@type&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mappings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mappings</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">expanded</span> <span class="ow">in</span> <span class="n">mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2576,6 +2624,9 @@ Context        </code>
     <div class="doc doc-contents ">
 
       <p>Return <code>name</code> expanded to a full IRI.</p>
+<p>If <code>name</code> is not defined in the context, a <code>NameSpaceError</code> will
+be raised if <code>strict</code> is true. Otherwise <code>name</code> will be returned
+unchanged.</p>
 
 <p><strong>Examples:</strong></p>
     
@@ -2593,6 +2644,10 @@ context.expand("Dataset")
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return `name` expanded to a full IRI.</span>
+
+<span class="sd">    If `name` is not defined in the context, a `NameSpaceError` will</span>
+<span class="sd">    be raised if `strict` is true. Otherwise `name` will be returned</span>
+<span class="sd">    unchanged.</span>
 
 <span class="sd">    Example:</span>
 
@@ -2793,7 +2848,7 @@ context.expand("Dataset")
 
 
 <h3 id="tripper.datadoc.context.Context.prefixed" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.context.Context.prefixed" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -2801,6 +2856,9 @@ context.expand("Dataset")
     <div class="doc doc-contents ">
 
       <p>Return <code>name</code> as a prefixed IRI.</p>
+<p>If <code>name</code> is not defined in the context, a <code>NameSpaceError</code> will
+be raised if <code>strict</code> is true. Otherwise <code>name</code> will be returned
+unchanged.</p>
 
 <p><strong>Examples:</strong></p>
     
@@ -2816,8 +2874,12 @@ context.prefixed("Dataset")
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return `name` as a prefixed IRI.</span>
+
+<span class="sd">    If `name` is not defined in the context, a `NameSpaceError` will</span>
+<span class="sd">    be raised if `strict` is true. Otherwise `name` will be returned</span>
+<span class="sd">    unchanged.</span>
 
 <span class="sd">    Example:</span>
 
@@ -2830,7 +2892,9 @@ context.prefixed("Dataset")
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-    <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot prefix: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot prefix: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span>
 </code></pre></div>
         </details>
     </div>
@@ -2844,7 +2908,7 @@ context.prefixed("Dataset")
 
 
 <h3 id="tripper.datadoc.context.Context.shortname" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.context.Context.shortname" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -2852,6 +2916,9 @@ context.prefixed("Dataset")
     <div class="doc doc-contents ">
 
       <p>Return the short name (keyword) corresponding to <code>name</code>.</p>
+<p>If <code>name</code> is not defined in the context, a <code>NameSpaceError</code> will
+be raised if <code>strict</code> is true. Otherwise <code>name</code> will be returned
+unchanged.</p>
 
 <p><strong>Examples:</strong></p>
     
@@ -2867,8 +2934,12 @@ context.shortname("dcat:Dataset")
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the short name (keyword) corresponding to `name`.</span>
+
+<span class="sd">    If `name` is not defined in the context, a `NameSpaceError` will</span>
+<span class="sd">    be raised if `strict` is true. Otherwise `name` will be returned</span>
+<span class="sd">    unchanged.</span>
 
 <span class="sd">    Example:</span>
 
@@ -2881,7 +2952,9 @@ context.shortname("dcat:Dataset")
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-    <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no short name for: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no short name for: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span>
 </code></pre></div>
         </details>
     </div>

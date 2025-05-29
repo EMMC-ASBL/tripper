@@ -479,6 +479,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../datadoc/fetching-resources-from-a-triplestore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Searching for and fetching resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../datadoc/customisation/" class="md-nav__link">
         
   
@@ -2068,7 +2091,7 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 
 
 <h2 id="tripper.datadoc.dataset.acquire" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.acquire" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2107,6 +2130,13 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>context</code></td>
+        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><p>Context object defining keywords in addition to those defined
+in the default [JSON-LD context].</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -2127,7 +2157,10 @@ Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span>
-    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load description of a resource from the triplestore.</span>
 
@@ -2136,6 +2169,8 @@ Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">        iri: IRI of the to resource.</span>
 <span class="sd">        use_sparql: Whether to access the triplestore with SPARQL.</span>
 <span class="sd">            Defaults to the value of `ts.prefer_sparql`.</span>
+<span class="sd">        context: Context object defining keywords in addition to those defined</span>
+<span class="sd">            in the default [JSON-LD context].</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict describing the resource identified by `iri`.</span>
@@ -2146,7 +2181,7 @@ Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
         <span class="k">return</span> <span class="n">_load_sparql</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
 
     <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
-    <span class="n">dct</span> <span class="o">=</span> <span class="n">_load_triples</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="n">_load_triples</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mappings&quot;</span><span class="p">,</span> <span class="s2">&quot;statements&quot;</span><span class="p">):</span>
             <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
@@ -2511,6 +2546,13 @@ or a sequence of strings and dicts.</p></td>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`dataset.get_jsonld_context()` is deprecated, use `get_context()` &quot;</span>
+        <span class="s2">&quot;instead&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">fromfile</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CONTEXT_PATH</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">ctx</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span>
@@ -2811,6 +2853,13 @@ their namespace URL.</p>
 
 <span class="sd">    Arguments are passed to `get_jsonld_context()`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`dataset.get_prefixes()` is deprecated, use `Context.prefixes()` &quot;</span>
+        <span class="s2">&quot;instead&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
 
@@ -2859,6 +2908,13 @@ short names defined in the context.</p>
 
 <span class="sd">    Arguments are passed to `get_jsonld_context()`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`dataset.get_shortnames()` is deprecated, use `Context.shortname()` &quot;</span>
+        <span class="s2">&quot;instead&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">ctx</span> <span class="o">=</span> <span class="n">get_jsonld_context</span><span class="p">(</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">fromfile</span><span class="o">=</span><span class="n">fromfile</span>
     <span class="p">)</span>
@@ -2952,7 +3008,9 @@ nested manner.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_dict</span><span class="p">(</span>
-    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function is deprecated. Use acquire() instead.&quot;&quot;&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -3051,11 +3109,17 @@ nested manner.</p>
         <span class="k">if</span> <span class="n">criteria</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">criteria</span> <span class="o">=</span> <span class="n">criterias</span>
 
-    <span class="c1"># normalize defaults</span>
+    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>  <span class="c1"># pylint: disable=protected-access</span>
+    <span class="n">expanded</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">_expanded</span>  <span class="c1"># pylint: disable=protected-access</span>
+
+    <span class="c1"># Add prefixes to triplestore</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">())</span>
+
+    <span class="c1"># Initiate variables</span>
     <span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span> <span class="ow">or</span> <span class="p">{}</span>
-
-    <span class="n">expanded</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">get_shortnames</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="n">crit</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">filters</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># counter for creating new unique sparql variables</span>
@@ -3093,7 +3157,7 @@ nested manner.</p>
             <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                 <span class="n">add_crit</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ele</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[_a-zA-Z0.9]+\.&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
             <span class="n">newkey</span><span class="p">,</span> <span class="n">restkey</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">newkey</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
                 <span class="n">newkey</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="n">newkey</span><span class="p">]</span>

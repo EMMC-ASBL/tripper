@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/datadoc/fetching-resources-from-a-triplestore/">
       
       
-        <link rel="prev" href="../documenting-a-resource/">
+        <link rel="prev" href="../classdoc/">
       
       
-        <link rel="next" href="../introduction/">
+        <link rel="next" href="../customisation/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Working with already documented resources - Tripper</title>
+        <title>Searching for and fetching resources - Tripper</title>
       
     
     
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Working with already documented resources
+              Searching for and fetching resources
             
           </span>
         </div>
@@ -369,18 +369,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -396,7 +398,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Data documentation
@@ -467,6 +469,122 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Searching for and fetching resources
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Searching for and fetching resources
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#searching-the-knowledge-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      Searching the knowledge base
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Searching the knowledge base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-all-iris-of-all-datasets-in-the-kb" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get all IRIs of all datasets in the kb
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-with-filtering-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Search with filtering criteria
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fetching-metadata-and-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fetching metadata and data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#removing-instances-in-the-knowledge-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      Removing instances in the knowledge base
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1607,8 +1725,11 @@ The first shortened version is only possible for <a href="../keywords/">predefin
 <h2 id="fetching-metadata-and-data">Fetching metadata and data<a class="headerlink" href="#fetching-metadata-and-data" title="Permanent link">&para;</a></h2>
 <p>The <code>acquire</code> function can be used to fetch metadata from the triplestore.
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">acquire</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s1">&#39;https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001&#39;</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS  +NORMALIZE_WHITESPACE</span>
-<span class="n">AttrDict</span><span class="p">({</span><span class="s1">&#39;@id&#39;</span><span class="p">:</span> <span class="s1">&#39;https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s1">&#39;https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001&#39;</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS +NORMALIZE_WHITESPACE</span>
+<span class="n">AttrDict</span><span class="p">({</span>
+    <span class="s1">&#39;@id&#39;</span><span class="p">:</span> <span class="s1">&#39;https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">})</span>
 </code></pre></div></p>
 <p>Similarly the load function can be used to fetch the data using the information about the dowload URL in the metadata.
 The syntax is the same as above. Note though that for this specific example you would need access to a server that
