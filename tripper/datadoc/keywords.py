@@ -74,7 +74,7 @@ class Keywords:
 
         Attributes:
             data: The dict loaded from the keyword yamlfile.
-            keywords: A dict mapping keywords (name/prefixed iri/iri) to dicts
+            keywords: A dict mapping keywords (name/prefixed/iri) to dicts
                 describing the keywords.
             domain: Name of the scientic domain that the keywords belong to.
         """

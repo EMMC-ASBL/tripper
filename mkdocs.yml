@@ -95,6 +95,7 @@ nav:
     - Introduction: datadoc/introduction.md
     - Documenting a resource: datadoc/documenting-a-resource.md
     - Documenting abstract resources: datadoc/classdoc.md
+    - Searching for and fetching resources: datadoc/fetching-resources-from-a-triplestore.md
     - Customisation: datadoc/customisation.md
     - Predefined prefixes: datadoc/prefixes.md
     - Predefined keywords: datadoc/keywords.md
