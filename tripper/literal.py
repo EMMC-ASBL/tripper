@@ -7,9 +7,10 @@ See also https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal
 
 """
 
+import datetime
 import json
+import re
 import warnings
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 from tripper.errors import UnknownDatatypeWarning
@@ -22,6 +23,9 @@ try:
     from pint import Quantity
 except ModuleNotFoundError:
     Quantity = None
+
+
+DAYS_PER_YEAR = 365.2422
 
 SIQuantityDatatype = (
     "https://w3id.org/emmo#EMMO_799c067b_083f_4365_9452_1f1433b03676"
@@ -98,10 +102,15 @@ class Literal(str):
 
     """
 
+    # pylint: disable=too-many-nested-blocks
+
     # Note that the order of datatypes matters - it is used by
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
-        datetime: (XSD.dateTime, XSD.date),
+        datetime.datetime: (XSD.dateTime,),
+        datetime.date: (XSD.date,),
+        datetime.time: (XSD.time,),
+        datetime.timedelta: (XSD.duration,),
         bytes: (XSD.hexBinary, XSD.base64Binary),
         bytearray: (XSD.hexBinary, XSD.base64Binary),
         bool: (XSD.boolean,),
@@ -155,8 +164,9 @@ class Literal(str):
     def __new__(
         cls,
         value: (
-            "Union[datetime, bytes, bytearray, bool, int, float, str, None, "
-            "dict, list]"
+            "Union[datetime.datetime, datetime.date, datetime.time, "
+            "datetime.timedelta, bytes, bytearray, bool, int, float, str, "
+            "None, dict, list]"
         ),
         lang: "Optional[str]" = None,
         datatype: "Optional[Union[str, type]]" = None,
@@ -194,14 +204,16 @@ class Literal(str):
             string.datatype = SIQuantityDatatype
         elif datatype:
             assert isinstance(datatype, str)  # nosec
-            # Create canonical representation of value for
-            # given datatype
+            # Create canonical representation of value for given datatype
             val = None
             for typ, names in cls.datatypes.items():
                 for name in names:
                     if name == datatype:
                         try:
-                            val = typ(value)
+                            if hasattr(typ, "fromisoformat"):
+                                val = typ.fromisoformat(value).isoformat()
+                            else:
+                                val = typ(value)
                             break
                         except:  # pylint: disable=bare-except
                             pass  # nosec
@@ -233,8 +245,22 @@ class Literal(str):
             string = super().__new__(cls, value.hex())
             string.lang = None
             string.datatype = XSD.hexBinary
-        elif isinstance(value, datetime):
+        elif isinstance(value, datetime.datetime):
+            string = super().__new__(cls, value.isoformat())
+            string.lang = None
             string.datatype = XSD.dateTime
+        elif isinstance(value, datetime.date):
+            string = super().__new__(cls, value.isoformat())
+            string.lang = None
+            string.datatype = XSD.date
+        elif isinstance(value, datetime.time):
+            string = super().__new__(cls, value.isoformat())
+            string.lang = None
+            string.datatype = XSD.time
+        elif isinstance(value, datetime.timedelta):
+            string = super().__new__(cls, format_duration(value))
+            string.lang = None
+            string.datatype = XSD.duration
         elif value is None or isinstance(value, (dict, list)):
             string = super().__new__(cls, json.dumps(value))
             string.lang = None
@@ -327,8 +353,14 @@ class Literal(str):
             value = int(self)
         elif self.datatype in self.datatypes[float]:
             value = float(self)
-        elif self.datatype in (XSD.dateTime, XSD.date):
-            value = datetime.fromisoformat(self)
+        elif self.datatype == XSD.dateTime:
+            value = datetime.datetime.fromisoformat(self)
+        elif self.datatype == XSD.date:
+            value = datetime.date.fromisoformat(self)
+        elif self.datatype == XSD.time:
+            value = datetime.time.fromisoformat(self)
+        elif self.datatype == XSD.duration:
+            value = parse_duration(self)
         elif self.datatype == RDF.JSON:
             value = json.loads(str(self))
         elif self.datatype == SIQuantityDatatype:
@@ -359,3 +391,63 @@ class Literal(str):
         if self.datatype:
             return f'"{form}"^^<{self.datatype}>'
         return f'"{form}"'
+
+
+def parse_duration(duration: str) -> "datetime.timedelta":
+    """Parse an ISO 8601 duration string to a timedelta object.
+
+    The duration should be a string of the form "PnYnMnDTnHnMnS",
+    where `n` is a number. A negative duration can be prefixed
+    with "-".
+    """
+    m = re.match(
+        "(-)?P([0-9.]+Y)?([0-9.]+M)?([0-9.]+D)?"
+        "(T([0-9.]+H)?([0-9.]+M)?([0-9.eE+-]+S)?)?",
+        duration,
+    )
+    if not m:
+        raise ValueError(
+            f"Invalid duration literal '{duration}'. "
+            "Should be of the form 'PnYnMnDTnHnMnS'"
+        )
+    sign, Y, M, D, _, h, m, s = m.groups()
+    sn = -1 if sign == "-" else 1
+    days = seconds = 0.0
+    if Y:
+        days += DAYS_PER_YEAR * float(Y[:-1])
+    if M:
+        days += DAYS_PER_YEAR / 12 * float(M[:-1])
+    if D:
+        days += float(D[:-1])
+    if h:
+        seconds += 3600 * float(h[:-1])
+    if m:
+        seconds += 60 * float(m[:-1])
+    if s:
+        seconds += float(s[:-1])
+    return datetime.timedelta(days=sn * days, seconds=sn * seconds)
+
+
+def format_duration(td: "datetime.timedelta") -> str:
+    """Format a timedelta object as a ISO 8601 string."""
+    dm = 60
+    dh = dm * 60
+    dD = dh * 24
+    dM = DAYS_PER_YEAR / 12 * dD
+    dY = DAYS_PER_YEAR * dD
+    seconds = td.total_seconds()
+    sign = "-" if seconds < 0 else ""
+    t = abs(seconds)
+    Y = f"{t // dY:g}Y" if t > dY else ""
+    t %= dY
+    M = f"{t // dM:g}M" if t > dM else ""
+    t %= dM
+    D = f"{t // dD:g}D" if t > dD else ""
+    t %= dD
+    h = f"{t // dh:g}H" if t > dh else ""
+    t %= dh
+    m = f"{t // dm:g}M" if t > dm else ""
+    t %= dm
+    s = f"{t:g}S" if t else ""
+    T = "T" if h or m or s else ""
+    return f"{sign}P{Y}{M}{D}{T}{h}{m}{s}"
