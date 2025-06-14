@@ -46,6 +46,7 @@ datadoc = [
     "PyLD>=2.0.0,<2.0.5",
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
+    "sparqlwrapper>=2.0.0,<2.0.1",    
 ]
 pre-commit = [
     "pre-commit==4.0.1",
@@ -63,7 +64,6 @@ testing = [
     "graphviz>=0.20.1,<0.20.2",
     "numpy<2.1.0; python_version>='3.13'",
     "rdflib>=6.3.0,<7.0.0",
-    "sparqlwrapper>=2.0.0,<2.0.1",
 ]
 docs = [
     "tripper[testing]",
