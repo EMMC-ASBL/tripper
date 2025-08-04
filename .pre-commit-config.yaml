@@ -47,14 +47,14 @@ repos:
       args: [--line-length=79]
 
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.8.3
+    rev: 1.8.6
     hooks:
     - id: bandit
       args: ["-r"]
       files: ^tripper/.*$
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
+    rev: v1.17.1
     hooks:
     - id: mypy
       exclude: ^tests/.*$
