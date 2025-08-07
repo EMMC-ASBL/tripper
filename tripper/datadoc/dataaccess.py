@@ -177,8 +177,10 @@ def save(
 
     # Save data
     url = distribution.get("downloadURL", distribution.get("accessURL"))
-    p = urlparse(url)
-    scheme = schemes.get(p.scheme, p.scheme) if p.scheme else "file"
+    p = urlparse(str(url.decode() if isinstance(url, bytes) else url))
+    scheme = (
+        schemes.get(p.scheme, p.scheme) if p.scheme else "file"  # type: ignore
+    )
     location = (
         f"{scheme}://{p.netloc}{p.path}" if p.netloc else f"{scheme}:{p.path}"
     )
