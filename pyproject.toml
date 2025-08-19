@@ -51,7 +51,7 @@ datadoc = [
 ]
 pre-commit = [
     "pre-commit==4.0.1",
-    "pylint==3.3.4",
+    "pylint==3.3.4; python_version>='3.9'",
 ]
 testing-core = [
     "pytest==8.3.4",
