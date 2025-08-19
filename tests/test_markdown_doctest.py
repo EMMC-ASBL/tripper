@@ -8,6 +8,7 @@ import pytest
 pytest.importorskip("rdflib")
 pytest.importorskip("yaml")
 pytest.importorskip("pint")
+pytest.importorskip("pyld")
 
 
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")

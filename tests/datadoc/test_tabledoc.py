@@ -2,6 +2,8 @@
 
 import pytest
 
+pytest.importorskip("PyLD")
+
 
 def test_asdicts():
     """Test the asdicts() method."""
