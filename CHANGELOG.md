@@ -1,6 +1,52 @@
 # Changelog
 
-## [v0.4.2](https://github.com/EMMC-ASBL/tripper/tree/v0.4.2) (2025-04-22)
+## [v0.4.3](https://github.com/EMMC-ASBL/tripper/tree/v0.4.3) (2025-08-19)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.2...v0.4.3)
+
+**Closed issues:**
+
+- inconsistent usage when filtering searches [\#396](https://github.com/EMMC-ASBL/tripper/issues/396)
+- correct criterias to criteria [\#392](https://github.com/EMMC-ASBL/tripper/issues/392)
+- Add `hasCurator` and `hasCurationDate` properties to resources [\#390](https://github.com/EMMC-ASBL/tripper/issues/390)
+- Support for documenting not \(yet\) existing resources [\#369](https://github.com/EMMC-ASBL/tripper/issues/369)
+- Make the generated keywords documentation look better [\#365](https://github.com/EMMC-ASBL/tripper/issues/365)
+- Speed up tripper.dataset.save\_data\(\) [\#337](https://github.com/EMMC-ASBL/tripper/issues/337)
+- Example in documentation of  search\_iris iw wrong. [\#323](https://github.com/EMMC-ASBL/tripper/issues/323)
+- get\_jsonld\_context does not support PosixPath [\#322](https://github.com/EMMC-ASBL/tripper/issues/322)
+- Set up a triplestore on the PhysMet Portal [\#315](https://github.com/EMMC-ASBL/tripper/issues/315)
+- Make converting a large table of datasets to RDF faster [\#305](https://github.com/EMMC-ASBL/tripper/issues/305)
+- Ensure dataset is TEM schema compliant [\#293](https://github.com/EMMC-ASBL/tripper/issues/293)
+- Define schema for TEM dataset queries [\#292](https://github.com/EMMC-ASBL/tripper/issues/292)
+
+**Merged pull requests:**
+
+- Updated installation instructions on the readme page. [\#415](https://github.com/EMMC-ASBL/tripper/pull/415) ([jesper-friis](https://github.com/jesper-friis))
+- Add support for Python 3.14 [\#414](https://github.com/EMMC-ASBL/tripper/pull/414) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#412](https://github.com/EMMC-ASBL/tripper/pull/412) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Updated dataset figure [\#410](https://github.com/EMMC-ASBL/tripper/pull/410) ([jesper-friis](https://github.com/jesper-friis))
+- Include sparqlwrapper in dependencies for datadoc [\#409](https://github.com/EMMC-ASBL/tripper/pull/409) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#408](https://github.com/EMMC-ASBL/tripper/pull/408) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Updated figures [\#407](https://github.com/EMMC-ASBL/tripper/pull/407) ([jesper-friis](https://github.com/jesper-friis))
+- Date and time literals [\#406](https://github.com/EMMC-ASBL/tripper/pull/406) ([jesper-friis](https://github.com/jesper-friis))
+- Added keywords `hasCurator` and `hasCurationDate` [\#405](https://github.com/EMMC-ASBL/tripper/pull/405) ([jesper-friis](https://github.com/jesper-friis))
+- Build documentation with Python 3.12 [\#404](https://github.com/EMMC-ASBL/tripper/pull/404) ([jesper-friis](https://github.com/jesper-friis))
+- Skip running doctest on session.md if Fuseki is not running [\#403](https://github.com/EMMC-ASBL/tripper/pull/403) ([jesper-friis](https://github.com/jesper-friis))
+- Fix issue \#396 [\#401](https://github.com/EMMC-ASBL/tripper/pull/401) ([jesper-friis](https://github.com/jesper-friis))
+- Updated figure with basic relations [\#400](https://github.com/EMMC-ASBL/tripper/pull/400) ([jesper-friis](https://github.com/jesper-friis))
+- Added \_\_contains\_\_\(\) method to namespace [\#399](https://github.com/EMMC-ASBL/tripper/pull/399) ([jesper-friis](https://github.com/jesper-friis))
+- Run mkdocs with Python 3.13 instead of 3.9 [\#398](https://github.com/EMMC-ASBL/tripper/pull/398) ([jesper-friis](https://github.com/jesper-friis))
+- added a file about how to search and delete resources in the ts [\#397](https://github.com/EMMC-ASBL/tripper/pull/397) ([francescalb](https://github.com/francescalb))
+- Update using criteria in search [\#395](https://github.com/EMMC-ASBL/tripper/pull/395) ([francescalb](https://github.com/francescalb))
+- Keywords inverse [\#394](https://github.com/EMMC-ASBL/tripper/pull/394) ([jesper-friis](https://github.com/jesper-friis))
+- Keywords inverse [\#393](https://github.com/EMMC-ASBL/tripper/pull/393) ([jesper-friis](https://github.com/jesper-friis))
+- Added keywords for documenting characterisation processes [\#391](https://github.com/EMMC-ASBL/tripper/pull/391) ([jesper-friis](https://github.com/jesper-friis))
+- WIP: Update classes [\#388](https://github.com/EMMC-ASBL/tripper/pull/388) ([jesper-friis](https://github.com/jesper-friis))
+- Improved control when storing to the triplestore [\#387](https://github.com/EMMC-ASBL/tripper/pull/387) ([jesper-friis](https://github.com/jesper-friis))
+- Fix test\_markdown\_doctest [\#383](https://github.com/EMMC-ASBL/tripper/pull/383) ([jesper-friis](https://github.com/jesper-friis))
+- Added ureg.get\_quantity\(\) method to units module [\#381](https://github.com/EMMC-ASBL/tripper/pull/381) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.4.2](https://github.com/EMMC-ASBL/tripper/tree/v0.4.2) (2025-04-23)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.1...v0.4.2)
 
