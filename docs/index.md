@@ -26,10 +26,10 @@ It strives for simplicity and is modelled after [rdflib] (with a few simplificat
 In Tripper:
 
 * All IRIs are represented by Python strings.
-  Example: `"https://w3id.org/emmo#Metre"`
+  Example: `https://w3id.org/emmo#Metre`
 
-* Blank nodes are strings starting with "_:".
-  Example: `"_:bnode1"`
+* Blank nodes are strings starting with `_:`.
+  Example: `_:bnode1`
 
 * Literals are constructed with [`tripper.Literal`][Literal].
   Example: `tripper.Literal(3.14, datatype=XSD.float)`
@@ -70,20 +70,40 @@ Installation
 Tripper has by itself no dependencies outside the standard library, but the triplestore backends may have specific dependencies.
 
 
-The package can be installed from [PyPI] using `pip`:
+The package can be installed from [PyPI] using `pip`.
+A minimal installation can be done with
 
 ```shell
 pip install tripper
 ```
 
-In addition you would need to install the requirements for one or more of the backends listed in the table above.
-For mappings you would also need to install [Pint].
-For example:
+but typically, you would also like to install the requirements needed by the backends, the tripper sub-packages and extra features.
+The requirements for the backends are listed in the table above, while sub-packages and extra features are enabled by specifying one or more of the "extras" listed in the table below when installing Tripper.
+
+
+For example, the following command will install Tripper with the [tripper.datadoc] sub-package and the rdflib backend enabled:
 
 ```shell
-pip install rdflib pint
+pip install tripper[datadoc] rdflib
 ```
 
+Developers should install Tripper with the `dev` extras and enable [pre-commit]:
+
+```shell
+pip install tripper[dev]
+pre-commit install  # Enable pre-commit and installing hooks
+```
+
+
+| Extras   | Description of dependencies                                        | Implies          |
+|----------|--------------------------------------------------------------------|------------------|
+| units    | Required by the [tripper.units] sub-package.                       |                  |
+| mappings | Required by the [tripper.mappings] sub-package.                    | units            |
+| datadoc  | Required by the [tripper.datadoc] sub-package.                     | mappings         |
+| backends | Installs dependencies for all backends                             |                  |
+| testing  | For testing.                                                       | datadoc,backends |
+| docs     | For generation of documentation                                    | testing          |
+| dev      | For developers. Installs all dependencies, including [pre-commit]. | dev              |
 
 
 
@@ -133,3 +153,4 @@ We gratefully acknowledge the following projects for supporting the development 
 [StarDog]: https://www.stardog.com/
 [GraphDB]: https://www.ontotext.com/products/graphdb/
 [Pint]: https://pint.readthedocs.io/en/stable/
+[pre-commit]: https://pre-commit.com/
