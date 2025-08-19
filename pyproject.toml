@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Environment :: Plugins",
     "Natural Language :: English",
     "Operating System :: OS Independent",
@@ -43,14 +44,14 @@ mappings = [
 ]
 datadoc = [
     "tripper[mappings]",
-    "PyLD>=2.0.0,<2.0.5",
+    "PyLD>=2.0.0,<2.0.5; python_version<='3.13'",
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
     "sparqlwrapper>=2.0.0,<2.0.1",
 ]
 pre-commit = [
     "pre-commit==4.0.1",
-    "pylint==3.3.4",
+    "pylint==3.3.4; python_version>='3.9'",
 ]
 testing-core = [
     "pytest==8.3.4",
@@ -59,10 +60,10 @@ testing-core = [
 ]
 testing = [
     "tripper[datadoc,mappings,testing-core]",
-    "dlite-python>=0.5.27; python_version>='3.8'",
+    "dlite-python>=0.5.27; python_version<='3.13'",
     "emmontopy>=0.5.0,<0.7.1; python_version<'3.13'",
     "graphviz>=0.20.1,<0.20.2",
-    "numpy<2.1.0; python_version>='3.13'",
+    "numpy<2.1.0; python_version=='3.13'",  # todo: relax versions
     "rdflib>=6.3.0,<7.0.0",
 ]
 docs = [
