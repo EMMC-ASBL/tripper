@@ -7,6 +7,8 @@ https://emmc-asbl.github.io/tripper/latest/developers/.
 
 import pytest
 
+pytest.importorskip("pyld")
+
 # URL to check if GraphDB is running.
 GRAPHDB_CHECK_URL = "http://localhost:7200/repositories"
 FUSEKI_CHECK_URL = "http://localhost:3030"

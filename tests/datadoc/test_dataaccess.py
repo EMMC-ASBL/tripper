@@ -6,6 +6,7 @@ import pytest
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
+pytest.importorskip("pyld")
 
 
 def test_save_and_load():
