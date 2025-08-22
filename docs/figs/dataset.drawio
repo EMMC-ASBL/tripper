@@ -341,7 +341,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="AzkA2m9e-oLYHKsX0SiO" name="Basic relations">
-    <mxGraphModel dx="1426" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="786" dy="562" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -949,7 +949,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="VS_Y51qOFnF-E27_zGg1-2" value="DataSet" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+        <mxCell id="VS_Y51qOFnF-E27_zGg1-2" value="Dataset" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
           <mxGeometry x="180" y="1290" width="65" height="30" as="geometry" />
         </mxCell>
         <mxCell id="VS_Y51qOFnF-E27_zGg1-3" value="&lt;span style=&quot;font-weight: normal;&quot;&gt;Property&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="1" vertex="1">
@@ -978,7 +978,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ex6RalsQpGjjcyKBZHD6-2" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=block;endFill=1;" edge="1" parent="1" source="VS_Y51qOFnF-E27_zGg1-11" target="ex6RalsQpGjjcyKBZHD6-1">
+        <mxCell id="ex6RalsQpGjjcyKBZHD6-2" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=block;endFill=1;" parent="1" source="VS_Y51qOFnF-E27_zGg1-11" target="ex6RalsQpGjjcyKBZHD6-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="VS_Y51qOFnF-E27_zGg1-11" value="" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
@@ -1131,7 +1131,7 @@
         <mxCell id="VS_Y51qOFnF-E27_zGg1-50" value="hasDeterminedProperty" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;rotation=10;" parent="1" vertex="1">
           <mxGeometry x="287.24" y="1391" width="115.76" height="10" as="geometry" />
         </mxCell>
-        <mxCell id="ex6RalsQpGjjcyKBZHD6-1" value="Description" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="ex6RalsQpGjjcyKBZHD6-1" value="Description" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="250" y="1290" width="75" height="30" as="geometry" />
         </mxCell>
       </root>
