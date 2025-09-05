@@ -270,6 +270,20 @@ class Keywords:
         """Return prefixes dict."""
         return self.data.prefixes
 
+    def add_prefix(self, prefix, namespace, replace=False):
+        """Bind `prefix` to `namespace`.
+
+        If `namespace` is None, is the prefix removed.
+
+        If `replace` is true, will existing namespace will be overridden.
+        """
+        if namespace is None:
+            del self.data.prefixes[str(prefix)]
+        elif replace:
+            self.data.prefixes[str(prefix)] = str(namespace)
+        else:
+            self.data.prefixes.setdefault(str(prefix), str(namespace))
+
     def get_context(self) -> dict:
         """Return JSON-LD context as a dict.
 

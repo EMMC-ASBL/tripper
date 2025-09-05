@@ -62,6 +62,21 @@ def test_get_prefixes():
     assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
 
 
+def test_add_prefix():
+    """Test add_prefix()."""
+    prefixes = keywords.get_prefixes()
+    assert "xxx" not in prefixes
+    keywords.add_prefix("xxx", "https://w3id.org/ns/xxx")
+    assert "xxx" in prefixes
+    assert prefixes["xxx"] == "https://w3id.org/ns/xxx"
+    keywords.add_prefix("xxx", "https://w3id.org/ns/xxx2")
+    assert prefixes["xxx"] == "https://w3id.org/ns/xxx"
+    keywords.add_prefix("xxx", "https://w3id.org/ns/xxx2", replace=True)
+    assert prefixes["xxx"] == "https://w3id.org/ns/xxx2"
+    keywords.add_prefix("xxx", None)
+    assert "xxx" not in prefixes
+
+
 def test_get_context():
     """Test get_context()."""
     ctx = keywords.get_context()
