@@ -2,7 +2,7 @@
 
 import pytest
 
-pytest.importorskip("PyLD")
+pytest.importorskip("pyld")
 
 
 def test_asdicts():

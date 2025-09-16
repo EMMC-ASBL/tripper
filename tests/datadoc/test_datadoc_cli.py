@@ -5,7 +5,7 @@ import pytest
 pytest.importorskip("yaml")
 pytest.importorskip("rdflib")
 pytest.importorskip("SPARQLWrapper")
-pytest.importorskip("PyLD")
+pytest.importorskip("pyld")
 
 from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
     maincommand,
