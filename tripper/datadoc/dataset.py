@@ -1336,15 +1336,19 @@ def make_query(
                 if not isinstance(typ, str):
                     typ = typ[0]
                 crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
+    print(filters)
 
     def add_crit(k, v, regex=False, s="iri"):
         """Add criteria to SPARQL query."""
         nonlocal n
+
+        print(k, v)
         key = f"@{k[1:]}" if k.startswith("_") else k
         if isinstance(v, list):
             for ele in v:
                 add_crit(key, ele, regex=regex, s=s)
             return
+        print(key, k, v)
         if re.match(r"^[_a-zA-Z0.9]+\.", key):
             newkey, restkey = key.split(".", 1)
             if newkey in expanded:
@@ -1369,12 +1373,18 @@ def make_query(
             n += 1
             var = f"v{n}"
             crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
-            if regex:
-                filters.append(
-                    f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
-                )
-            else:
-                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+            if value not in ["", None, '""']:
+                print(f"value is: {value}")
+
+                if regex:
+                    filters.append(
+                        f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                    )
+                else:
+                    filters.append(f"FILTER(STR(?{var}) = {value}) .")
+            print("-----------------")
+            print(filters)
+            print("----------------------")
 
     for k, v in criteria.items():
         add_crit(k, v)
@@ -1393,6 +1403,9 @@ def make_query(
       {where_statements}
     }}
     """
+    print("====================")
+    print(query)
+    print("====================")
     return query
 
 
@@ -1411,9 +1424,12 @@ def search(
     Arguments:
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
-            or the IRI of a class to limit the search to.
+            or the IRI of a class to limit the search to. Can also be given
+            as a list of resource types or IRIs.
         criteria: Exact match criteria. A dict of IRI, value pairs, where the
-            IRIs refer to data properties on the resource match. The IRIs
+            IRIs refer to data properties on the resource match. If more than
+            one value is desire for a given criteria, values can be provided
+            in a list. The IRIs
             may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
@@ -1442,9 +1458,16 @@ def search(
 
             search(ts, criteria={"contactPoint.hasName": "John Doe"})
 
+        List IRIs of all resources with John Doe and Jane Doe as `contactPoint`:
+
+            search(ts, criteria={"contactPoint.hasName": ["John Doe", "Jane Doe"]})
+
         List IRIs of all samples:
 
             search(ts, type=CHAMEO.Sample)
+
+        List IRIs of all samples that are liquids:
+            search(ts, type=[CHAMEO.Sample, EMMO.Liquid] )
 
         List IRIs of all datasets with John Doe as `contactPoint` AND are
         measured on a given sample:
