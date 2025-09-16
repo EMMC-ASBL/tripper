@@ -1336,19 +1336,93 @@ def make_query(
                 if not isinstance(typ, str):
                     typ = typ[0]
                 crit.append(f"?iri rdf:type <{ts.expand_iri(typ)}> .")  # type: ignore
-    print(filters)
 
     def add_crit(k, v, regex=False, s="iri"):
         """Add criteria to SPARQL query."""
         nonlocal n
 
-        print(k, v)
-        key = f"@{k[1:]}" if k.startswith("_") else k
+        def _to_value_token(x):
+            # Turn a Python value into a SPARQL term
+            if x in expanded:
+                return f"<{expanded[x]}>"
+            if isinstance(x, str):
+                return (
+                    f"<{x}>"
+                    if re.match("^[a-z][a-z0-9.+-]*://", x)
+                    else f'"{x}"'
+                )
+            return x
+
+        key = None if k is None else (f"@{k[1:]}" if k.startswith("_") else k)
+
+        if key is None:
+            # any predicate on first hop; keep ?s (= ?iri) as the resource
+
+            n += 1
+            pvar = f"p{n}"
+            bn = f"bn{n}"
+            n += 1
+            qvar = f"q{n}"
+            var = f"v{n}"
+
+            # ?s ?p ?bn . ?bn ?q ?var .
+            crit.append(f"?{s} ?{pvar} ?{bn} .")
+            crit.append(f"?{bn} ?{qvar} ?{var} .")
+            # Only return non-blank subjects
+            if s == "iri":
+                filters.append("FILTER(!isBlank(?iri)) .")
+
+            # Support list of values → VALUES (equality) or a single alternation for regex
+            if isinstance(v, list):
+                if regex:
+                    pattern = "(" + "|".join(str(p) for p in v) + ")"
+                    filters.append(
+                        f'FILTER REGEX(STR(?{var}), "{pattern}"{flags_arg}) .'
+                    )
+                else:
+                    vals = []
+                    for ele in v:
+                        if ele in expanded:
+                            vals.append(f"<{expanded[ele]}>")
+                        elif isinstance(ele, str):
+                            vals.append(
+                                f"<{ele}>"
+                                if re.match("^[a-z][a-z0-9.+-]*://", ele)
+                                else f'"{ele}"'
+                            )
+                        elif ele not in ("", None):
+                            vals.append(ele)
+                    if vals:
+                        crit.append(f"VALUES ?{var} {{ {' '.join(vals)} }}")
+            else:
+                # single value
+                if v in expanded:
+                    value = f"<{expanded[v]}>"
+                elif isinstance(v, str):
+                    value = (
+                        f"<{v}>"
+                        if re.match("^[a-z][a-z0-9.+-]*://", v)
+                        else f'"{v}"'
+                    )
+                else:
+                    value = v
+                if value not in ["", None, '""']:
+                    if regex:
+                        filters.append(
+                            f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                        )
+                    else:
+                        # If it's an IRI token, compare directly; otherwise compare STR()
+                        if isinstance(value, str) and value.startswith("<"):
+                            filters.append(f"FILTER(?{var} = {value}) .")
+                        else:
+                            filters.append(f"FILTER(STR(?{var}) = {value}) .")
+            return
+
         if isinstance(v, list):
             for ele in v:
                 add_crit(key, ele, regex=regex, s=s)
             return
-        print(key, k, v)
         if re.match(r"^[_a-zA-Z0.9]+\.", key):
             newkey, restkey = key.split(".", 1)
             if newkey in expanded:
@@ -1373,8 +1447,8 @@ def make_query(
             n += 1
             var = f"v{n}"
             crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
+
             if value not in ["", None, '""']:
-                print(f"value is: {value}")
 
                 if regex:
                     filters.append(
@@ -1382,9 +1456,6 @@ def make_query(
                     )
                 else:
                     filters.append(f"FILTER(STR(?{var}) = {value}) .")
-            print("-----------------")
-            print(filters)
-            print("----------------------")
 
     for k, v in criteria.items():
         add_crit(k, v)
@@ -1395,6 +1466,8 @@ def make_query(
     for k, v in regex.items():
         add_crit(k, v, regex=True)
 
+    # Make sure that iris are iris (not blank nodes)
+    filters.append("FILTER(!isBlank(?iri)) .")
     where_statements = "\n      ".join(crit + filters)
     query = f"""
     PREFIX rdf: <{RDF}>
@@ -1403,9 +1476,6 @@ def make_query(
       {where_statements}
     }}
     """
-    print("====================")
-    print(query)
-    print("====================")
     return query
 
 
@@ -1428,11 +1498,20 @@ def search(
             as a list of resource types or IRIs.
         criteria: Exact match criteria. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. If more than
-            one value is desire for a given criteria, values can be provided
+            one value is desired for a given criterion, values can be provided
             in a list. The IRIs
             may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
+
+            If the object (value) is given as None or "", all matches
+            that have any value for the given criterion are returned.
+
+            If predicate (key) is given as None search on all objects irrespective
+            of predicate is performed.
+
+            Note that more than one value broadens the
+            search, i.e. it is an OR operation.
         regex: Like `criteria` but the values in the provided dict are regular
             expressions used for the matching.
         flags: Flags passed to regular expressions.
@@ -1461,6 +1540,14 @@ def search(
         List IRIs of all resources with John Doe and Jane Doe as `contactPoint`:
 
             search(ts, criteria={"contactPoint.hasName": ["John Doe", "Jane Doe"]})
+
+        List IRIs of all resources that have a `contactPoint`:
+
+            search(ts, criteria={"contactPoint.hasName": None})
+
+        List IRIs of all resources that have Jane Doe or Blue as object (value):
+
+            search(ts, criteria={None: ["Jane Doe", "Blue"]})
 
         List IRIs of all samples:
 

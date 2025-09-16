@@ -562,6 +562,41 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2"],
     }
 
+    # Filter on criterion, but with any predicate
+    assert set(
+        search(
+            ts,
+            criteria={None: ["Named Lab Assistant"]},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+    }
+
+    # Filter on criterion, but with any predicate
+    assert set(
+        search(
+            ts,
+            criteria={None: "Named Lab Assistant"},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+    }
+
+    # Filter on more criteria with any predicate, testlabel tests that
+    # indirect search through inSeries works.
+    assert set(
+        search(
+            ts,
+            criteria={None: ["Named Lab Assistant", "testlabel"]},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+    }
+
     with pytest.raises(NoSuchTypeError):
         search(ts, type="invalid-type")
 
