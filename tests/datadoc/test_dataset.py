@@ -542,18 +542,6 @@ def test_datadoc():
     assert set(
         search(
             ts,
-            criteria={"creator.name": ""},
-        )
-    ) == {
-        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
-        SEMDATA["SEM_cement_batch2/77600-23-001"],
-        SEMDATA["SEM_cement_batch2"],
-    }
-
-    # Filter on criterion, but without required value
-    assert set(
-        search(
-            ts,
             criteria={"creator.name": None},
         )
     ) == {

@@ -1406,7 +1406,7 @@ def make_query(
                     )
                 else:
                     value = v
-                if value not in ["", None, '""']:
+                if value:
                     if regex:
                         filters.append(
                             f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
@@ -1448,7 +1448,7 @@ def make_query(
             var = f"v{n}"
             crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
 
-            if value not in ["", None, '""']:
+            if value:
 
                 if regex:
                     filters.append(
@@ -1504,10 +1504,10 @@ def search(
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
 
-            If the object (value) is given as None or "", all matches
-            that have any value for the given criterion are returned.
+            If the object (value) is given as None, all matches
+            that have any value for the given predicate are returned.
 
-            If predicate (key) is given as None search on all objects irrespective
+            If predicate (key) is given as None, search on all objects irrespective
             of predicate is performed.
 
             Note that more than one value broadens the
