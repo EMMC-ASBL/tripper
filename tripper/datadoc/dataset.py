@@ -31,12 +31,14 @@ Functions for working with the dict-representation:
 
 from __future__ import annotations
 
-# pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
-# pylint: disable=too-many-branches
 import json
 import logging
 import re
 import warnings
+
+# pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
+# pylint: disable=too-many-branches
+from itertools import groupby
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -1272,7 +1274,7 @@ def make_query(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
+    criteria: "Optional[Union[dict, list[tuple]]]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -1297,6 +1299,14 @@ def make_query(
         if criteria is None:
             criteria = criterias
 
+    if isinstance(criteria, list):
+        criteria.sort(key=lambda x: x[0])
+        res = {
+            key: [value for key, value in group]
+            for key, group in groupby(criteria, key=lambda x: x[0])
+        }
+        criteria = res
+
     keywords = get_keywords(keywords=keywords)
     context = get_context(keywords=keywords)
     context._create_caches()  # pylint: disable=protected-access
@@ -1317,7 +1327,7 @@ def make_query(
     cid = criteria.pop("@id", criteria.pop("_id", None))
     rid = regex.pop("@id", regex.pop("_id", None))
     if cid:
-        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')  # type: ignore
     elif rid:
         filters.append(
             f'FILTER REGEX(STR(?iri), "{ts.expand_iri(rid)}"{flags_arg}) .'
@@ -1483,7 +1493,7 @@ def search(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
+    criteria: "Optional[Union[list[tuple], dict]]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -1499,8 +1509,10 @@ def search(
         criteria: Exact match criteria. A dict of IRI, value pairs, where the
             IRIs refer to data properties on the resource match. If more than
             one value is desired for a given criterion, values can be provided
-            in a list. The IRIs
-            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
+            in a list. It can also be given as a list of (key, value) tuples.
+            A combination of tuples and dict is not supported.
+
+            The IRIsmay use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
 
@@ -1510,13 +1522,16 @@ def search(
             If predicate (key) is given as None, search on all objects irrespective
             of predicate is performed.
 
-            Note that more than one value broadens the
+            Note that more than one value for a given key broadens the
             search, i.e. it is an OR operation.
-        regex: Like `criteria` but the values in the provided dict are regular
-            expressions used for the matching.
-        flags: Flags passed to regular expressions.
-            - `s`: Dot-all mode. The . matches any character.  The default
-              doesn't match newline or carriage return.
+
+            The different key-value pairs in the dict are combined with AND.
+
+            regex: Like `criteria` but the values in the provided dict are regular
+                expressions used for the matching.
+            flags: Flags passed to regular expressions.
+                - `s`: Dot-all mode. The . matches any character.  The default
+                doesn't match newline or carriage return.
             - `m`: Multi-line mode. The ^ and $ characters matches beginning
               or end of line instead of beginning or end of string.
             - `i`: Case-insensitive mode.
@@ -1549,12 +1564,23 @@ def search(
 
             search(ts, criteria={None: ["Jane Doe", "Blue"]})
 
+        Search with critera given as list of tuples:
+            search(
+                ts,
+                criteria=[
+                    ("contactPoint.hasName", "John Doe"),
+                    ("fromSample", SAMPLE.batch2/sample3),
+                ],
+            )
+
         List IRIs of all samples:
 
             search(ts, type=CHAMEO.Sample)
 
         List IRIs of all samples that are liquids:
             search(ts, type=[CHAMEO.Sample, EMMO.Liquid] )
+
+
 
         List IRIs of all datasets with John Doe as `contactPoint` AND are
         measured on a given sample:

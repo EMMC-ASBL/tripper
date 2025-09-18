@@ -585,6 +585,29 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2/77600-23-001"],
     }
 
+    # Filter on two different criteria in a dict)
+    assert set(
+        search(
+            ts,
+            criteria={"creator.name": "Sigurd Wenner", "label": "testlabel"},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    # Filter on two different criteria in a list of tuples
+    assert set(
+        search(
+            ts,
+            criteria=[
+                ("creator.name", "Sigurd Wenner"),
+                ("label", "testlabel"),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+    }
+
     with pytest.raises(NoSuchTypeError):
         search(ts, type="invalid-type")
 
