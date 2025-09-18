@@ -1351,18 +1351,6 @@ def make_query(
         """Add criteria to SPARQL query."""
         nonlocal n
 
-        def _to_value_token(x):
-            # Turn a Python value into a SPARQL term
-            if x in expanded:
-                return f"<{expanded[x]}>"
-            if isinstance(x, str):
-                return (
-                    f"<{x}>"
-                    if re.match("^[a-z][a-z0-9.+-]*://", x)
-                    else f'"{x}"'
-                )
-            return x
-
         key = None if k is None else (f"@{k[1:]}" if k.startswith("_") else k)
 
         if key is None:
