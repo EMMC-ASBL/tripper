@@ -538,6 +538,76 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
     }
 
+    # Filter on criterion, but without required value
+    assert set(
+        search(
+            ts,
+            criteria={"creator.name": None},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    # Filter on criterion, but with any predicate
+    assert set(
+        search(
+            ts,
+            criteria={None: ["Named Lab Assistant"]},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+    }
+
+    # Filter on criterion, but with any predicate
+    assert set(
+        search(
+            ts,
+            criteria={None: "Named Lab Assistant"},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+    }
+
+    # Filter on more criteria with any predicate, testlabel tests that
+    # indirect search through inSeries works.
+    assert set(
+        search(
+            ts,
+            criteria={None: ["Named Lab Assistant", "testlabel"]},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+    }
+
+    # Filter on two different criteria in a dict)
+    assert set(
+        search(
+            ts,
+            criteria={"creator.name": "Sigurd Wenner", "label": "testlabel"},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    # Filter on two different criteria in a list of tuples
+    assert set(
+        search(
+            ts,
+            criteria=[
+                ("creator.name", "Sigurd Wenner"),
+                ("label", "testlabel"),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+    }
+
     with pytest.raises(NoSuchTypeError):
         search(ts, type="invalid-type")
 
@@ -545,10 +615,12 @@ def test_datadoc():
     assert set(search(ts, regex={"dcterms:title": "SEM images"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
+        SEMDATA.SEM_cement_missingcreator,
     }
     assert set(search(ts, regex={"dcterms:title": "SEM i[^ ]*s"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
+        SEMDATA.SEM_cement_missingcreator,
     }
 
     # Get individual with given IRI
@@ -627,7 +699,7 @@ def test_validate():
 
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
-    pytest.skip()
+    # pytest.skip()
 
     from tripper import Triplestore
 
