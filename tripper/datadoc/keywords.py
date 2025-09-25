@@ -162,6 +162,7 @@ class Keywords:
                     "The value of `basedOn` should be str, Path or a sequence "
                     f"of those. Got {type(value)}"
                 )
+
         if "basedOn" in d:
             basedOn(d["basedOn"])
 
