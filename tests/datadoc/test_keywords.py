@@ -3,7 +3,7 @@
 import pytest
 
 pytest.importorskip("yaml")
-pytest.importorskip("PyLD")
+pytest.importorskip("pyld")
 
 # pylint: disable=wrong-import-position
 from tripper.datadoc import Keywords
