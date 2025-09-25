@@ -6,12 +6,16 @@ import json
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 import yaml
 
 from tripper import Triplestore
-from tripper.datadoc.errors import InvalidKeywordError, NoSuchTypeError
+from tripper.datadoc.errors import (
+    InvalidKeywordError,
+    NoSuchTypeError,
+    RedefineKeywordError,
+)
 from tripper.utils import (
     AttrDict,
     expand_iri,
@@ -22,7 +26,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Sequence, Union
+    from typing import Optional, Union
 
     FileLoc = Union[Path, str]
 
@@ -162,6 +166,7 @@ class Keywords:
                     "The value of `basedOn` should be str, Path or a sequence "
                     f"of those. Got {type(value)}"
                 )
+
         if "basedOn" in d:
             basedOn(d["basedOn"])
 
