@@ -581,6 +581,7 @@ resources:
       prefLabel:
         iri: skos:prefLabel
         range: rdfs:Literal
+        datatype: rdf:langString
         description: A preferred label of the concept.
 
 

@@ -172,9 +172,9 @@ Algorithm for Checksums.
 ## Properties on [Concept]
 An idea or notion; a unit of thought.
 
-| Keyword     | Range          | Conformance | Definition                        | Usage note |
-| ----------- | -------------- | ----------- | --------------------------------- | ---------- |
-| [prefLabel] | [rdfs:Literal] |             | A preferred label of the concept. |            |
+| Keyword     | Range                              | Conformance | Definition                        | Usage note |
+| ----------- | ---------------------------------- | ----------- | --------------------------------- | ---------- |
+| [prefLabel] | [rdfs:Literal]<br>(rdf:langString) |             | A preferred label of the concept. |            |
 
 
 ## Properties on [DataService]
