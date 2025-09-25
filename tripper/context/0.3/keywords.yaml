@@ -340,6 +340,13 @@ resources:
         conformance: optional
         description: The minimum time period resolvable in the dataset.
 
+      wasDerivedFrom:
+        iri: prov:wasDerivedFrom
+        range: dcat:Resource
+        conformance: optional
+        description: A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.
+        usageNote: Relates a resource to another resource it was derived from.
+
       wasGeneratedBy:
         iri: prov:wasGeneratedBy
         range: prov:Activity

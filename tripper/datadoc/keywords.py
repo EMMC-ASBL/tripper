@@ -149,19 +149,38 @@ class Keywords:
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
 
+        def basedOn(value):
+            if isinstance(value, str):
+                self.add_domain(value, timeout=timeout)
+            elif isinstance(value, Path):
+                self.parse(value, timeout=timeout)
+            elif isinstance(value, Sequence):
+                for e in value:
+                    basedOn(e)
+            else:
+                raise TypeError(
+                    "The value of `basedOn` should be str, Path or a sequence "
+                    f"of those. Got {type(value)}"
+                )
         if "basedOn" in d:
-            if isinstance(d["basedOn"], str):
-                self.add_domain(d["basedOn"], timeout=timeout)
-            elif isinstance(d["basedOn"], list):
-                for dct in d["basedOn"]:
-                    self.parse(dct, timeout=timeout)
+            basedOn(d["basedOn"])
 
         recursive_update(self.data, d)
 
         resources = self.data.get("resources", {})
-        for resource in resources.values():
+        for resource_name, resource in resources.items():
             for keyword, value in resource.get("keywords", {}).items():
                 value["name"] = keyword
+                value["domain"] = resource_name
+                if keyword in self.keywords:
+                    oldiri = self.keywords[keyword]["iri"]
+                    if "iri" in value and value["iri"] != oldiri:
+                        raise RedefineKeywordError(
+                            f"Cannot redefine keyword '{keyword}' from "
+                            f"{oldiri} to {value['iri']}"
+                        )
+                    for k, v in self.keywords[keyword].items():
+                        value.setdefault(k, v)
                 recursive_update(
                     self.keywords,
                     {
