@@ -1300,7 +1300,8 @@ def make_query(
             criteria = criterias
 
     if isinstance(criteria, list):
-        criteria.sort(key=lambda x: x[0])
+        criteria = sorted(criteria, key=lambda x: (x[0] is None, x[0]))
+
         res = {
             key: [value for key, value in group]
             for key, group in groupby(criteria, key=lambda x: x[0])

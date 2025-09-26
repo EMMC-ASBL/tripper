@@ -608,6 +608,20 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2"],
     }
 
+    assert set(
+        search(
+            ts,
+            criteria=[
+                (None, "Sigurd Wenner"),
+                (None, "testlabel"),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+    }
+
     with pytest.raises(NoSuchTypeError):
         search(ts, type="invalid-type")
 
