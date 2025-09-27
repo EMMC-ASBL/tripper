@@ -2,162 +2,162 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/CHANGELOG/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/LICENSE/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/backend_discovery/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/developers/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/known-issues/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/planned-backends/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/session/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/tutorial/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/errors/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/interface/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/literal/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/namespace/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/session/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/triplestore/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/triplestore_extend/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/utils/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/collection/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/ontopy/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/rdflib/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/backends/sparqlwrapper/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/convert/convert/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/clitool/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/context/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/dataaccess/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/dataset/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/errors/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/keywords/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/tabledoc/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/mappings/mappings/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/api_reference/units/units/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/classdoc/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/customisation/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/documenting-a-resource/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/fetching-resources-from-a-triplestore/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/introduction/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/keywords/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/datadoc/prefixes/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/tools/datadoc/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
     <url>
          <loc>https://EMMC-ASBL.github.io/tripper/latest/units/units/</loc>
-         <lastmod>2025-09-25</lastmod>
+         <lastmod>2025-09-27</lastmod>
     </url>
 </urlset>
