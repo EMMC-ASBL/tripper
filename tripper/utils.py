@@ -9,6 +9,7 @@ import re
 import string
 import sys
 import tempfile
+import urllib
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -57,6 +58,7 @@ __all__ = (
     "parse_literal",
     "parse_object",
     "as_python",
+    "is_url",
     "check_function",
     "random_string",
     "extend_namespace",
@@ -105,6 +107,8 @@ class AttrDict(dict):
         """Help method for pretty printing."""
         if obj is None:
             obj = self
+        if not obj:
+            return "AttrDict()"
         n = indent + 2
         s = ["AttrDict({"]
         for k, v in obj.items():
@@ -130,7 +134,14 @@ def _rec(d, other, append, cls):
                     if isinstance(d[k], (dict, list)):
                         new[k] = _rec(d[k], v, append=append, cls=cls)
                     elif v != d[k]:
-                        new[k] = [d[k], v] if append else v
+                        if append:
+                            new[k] = (
+                                [d[k]] + v
+                                if isinstance(v, list)
+                                else [d[k], v]
+                            )
+                        else:
+                            new[k] = v
                 else:
                     new[k] = v
             new = _dicttype(new, cls)
@@ -600,6 +611,36 @@ def as_python(value: "Any") -> "Any":
     if isinstance(value, str):
         return parse_literal(value).to_python()
     return value
+
+
+def is_url(
+    url: str,
+    require_netloc: bool = True,
+    allow_unescaped: bool = False,
+    safe: str = "%:~/?&;=#",
+):
+    """Returns true if `url` is a valid URL, otherwise false.
+
+    Arguments:
+        url: URL to validate.
+        require_netloc: Whether to require `url` to contain a network location.
+            Setting this to false, will exclude URNs, which in are valid URLs.
+            However, in most practical cases, you would expect the URL to
+            contain a network location.
+        allow_unescaped: Whether to allow `url` to contain unescaped special
+            characters. Any character not in `safe` except for letters, digits
+            and '_.-' are considered to be special.
+            Escaping is expected to use standard URL %xx escape codes.
+        safe: Characters in addition to '_.-' that doesn't need to be
+            escaped when `allow_unescaped` is false.
+    """
+    if not allow_unescaped and urllib.parse.quote(url, safe=safe) != url:
+        return False
+    try:
+        result = urllib.parse.urlparse(url)
+    except ValueError:
+        return False
+    return bool(result.scheme) and (not require_netloc or bool(result.netloc))
 
 
 def check_function(func: "Callable", s: str, exceptions) -> bool:

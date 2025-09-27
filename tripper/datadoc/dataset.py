@@ -48,6 +48,7 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
+from tripper.datadoc.dictutils import add, get
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     IRIExistsError,
@@ -125,8 +126,8 @@ def told(
     descr: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
-    prefixes: "Optional[dict]" = None,
     context: "Optional[Context]" = None,
+    prefixes: "Optional[dict]" = None,
 ) -> "AttrDict":
     """Return an updated copy of data description `descr` as valid JSON-LD.
 
@@ -144,10 +145,10 @@ def told(
             defined in `keywords`.
         keywords: Keywords object with keywords definitions.  If not provided,
             only default keywords are considered.
-        prefixes: Dict with prefixes in addition to those known in keywords
-            or included in the JSON-LD context.
         context: Optional context object. It will be updated from the input
             data documentation `descr`.
+        prefixes: Dict with prefixes in addition to those known in keywords
+            or included in the JSON-LD context.
 
     Returns:
         Dict with an updated copy of `descr` as valid JSON-LD.
@@ -319,8 +320,8 @@ def store(
     ts: Triplestore,
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
-    context: "Optional[Context]" = None,
     keywords: "Optional[Keywords]" = None,
+    context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
     restrictions: "Collection" = (),
@@ -333,11 +334,11 @@ def store(
         source: Dict or list with the resource documentation to store.
         type: Type of documented resource.  Should be one of the resource types
             defined in `keywords`.
+        keywords: Keywords object with additional keywords definitions.
+            If not provided, only default keywords are considered.
         context: Context object defining keywords in addition to those defined
             in the default [JSON-LD context].
             Complementing the `keywords` argument.
-        keywords: Keywords object with additional keywords definitions.
-            If not provided, only default keywords are considered.
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         method: How to handle the case where `ts` already contains a document
@@ -364,17 +365,20 @@ def store(
     [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
     """
-    keywords = get_keywords(keywords)
+    if isinstance(source, dict):
+        domain = source.get("domain", "default")
+    else:
+        domain = "default"
+    keywords = get_keywords(keywords, domain=domain)
     context = get_context(
         keywords=keywords, context=context, prefixes=prefixes
     )
-
     doc = told(
         source,
         type=type,
         keywords=keywords,
-        prefixes=prefixes,
         context=context,
+        prefixes=prefixes,
     )
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
@@ -891,98 +895,6 @@ def load_list(ts: Triplestore, iri: str):
         elif p == RDF.rest:
             lst.extend(load_list(ts, o))
     return lst
-
-
-def add(d: dict, key: str, value: "Any") -> None:
-    """Append key-value pair to dict `d`.
-
-    If `key` already exists in `d`, its value is converted to a list
-    and `value` is appended to it.  `value` may also be a list. Values
-    are not duplicated.
-
-    """
-    if key not in d:
-        d[key] = value
-    else:
-        klst = d[key] if isinstance(d[key], list) else [d[key]]
-        if isinstance(value, dict):
-            v = klst if value in klst else klst + [value]
-        else:
-            vlst = value if isinstance(value, list) else [value]
-            try:
-                v = list(set(klst).union(vlst))
-            except TypeError:  # klst contains unhashable dicts
-                v = klst + [x for x in vlst if x not in klst]
-        d[key] = (
-            v[0]
-            if len(v) == 1
-            else sorted(
-                # Sort dicts at end, by representing them with a huge
-                # unicode character
-                v,
-                key=lambda x: "\uffff" if isinstance(x, dict) else str(x),
-            )
-        )
-
-
-def addnested(
-    d: "Union[dict, list]", key: str, value: "Any"
-) -> "Union[dict, list]":
-    """Like add(), but allows `key` to be a dot-separated list of sub-keys.
-    Returns the updated `d`.
-
-    Each sub-key will be added to `d` as a corresponding sub-dict.
-
-    Example:
-
-        >>> d = {}
-        >>> addnested(d, "a.b.c", "val") == {'a': {'b': {'c': 'val'}}}
-        True
-
-    """
-    if "." in key:
-        first, rest = key.split(".", 1)
-        if isinstance(d, list):
-            for ele in d:
-                if isinstance(ele, dict):
-                    addnested(ele, key, value)
-                    break
-            else:
-                d.append(addnested({}, key, value))
-        elif first in d and isinstance(d[first], (dict, list)):
-            addnested(d[first], rest, value)
-        else:
-            addnested(d, first, addnested(AttrDict(), rest, value))
-    elif isinstance(d, list):
-        for ele in d:
-            if isinstance(ele, dict):
-                add(ele, key, value)
-                break
-        else:
-            d.append({key: value})
-    else:
-        add(d, key, value)
-    return d
-
-
-def get(
-    d: dict, key: str, default: "Any" = None, aslist: bool = True
-) -> "Any":
-    """Like `d.get(key, default)` but returns the value as a list if
-    `aslist` is True and value is not already a list.
-
-    An empty list is returned in the special case that `key` is not in
-    `d` and `default` is None.
-
-    """
-    value = d.get(key, default)
-    if aslist:
-        return (
-            value
-            if isinstance(value, list)
-            else [] if value is None else [value]
-        )
-    return value
 
 
 def read_datadoc(filename: "Union[str, Path]") -> dict:

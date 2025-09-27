@@ -1,0 +1,6 @@
+@id,@type,batchNumber,fromBatch
+kb:batch1,myonto:Batch,1,
+kb:batch2,myonto:Batch,2,
+kb:sample1_1,myonto:Sample,,1
+kb:sample1_2,myonto:Sample,,1
+kb:sample2_1,myonto:Sample,,2

@@ -181,6 +181,10 @@
       "@id": "dcat:temporalResolution",
       "@type": "xsd:duration"
     },
+    "wasDerivedFrom": {
+      "@id": "prov:wasDerivedFrom",
+      "@type": "@id"
+    },
     "wasGeneratedBy": {
       "@id": "prov:wasGeneratedBy",
       "@type": "@id"

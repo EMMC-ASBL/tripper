@@ -406,6 +406,23 @@ def test_as_python():
     assert as_python(3.14) == 3.14
 
 
+def test_is_url():
+    """Test is_url()"""
+
+    from tripper.utils import is_url
+
+    assert is_url("http://example.com") is True
+    assert is_url("http://example.com ") is False
+    assert is_url("http://example.com ", allow_unescaped=True) is True
+    assert is_url("http://example.com/") is True
+    assert is_url("http://example.com/a b") is False
+    assert is_url("http://example.c om/") is False
+    assert is_url("http://example.com/path?a=yes;b=no#fragment") is True
+    assert is_url("www.example.com") is False
+    assert is_url("urn:example.com") is False
+    assert is_url("urn:example.com", require_netloc=False) is True
+
+
 def test_random_string():
     """Test random_string()"""
     from tripper.utils import random_string
