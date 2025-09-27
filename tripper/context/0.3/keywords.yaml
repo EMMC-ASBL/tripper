@@ -211,7 +211,7 @@ resources:
         range: skos:Concept
         conformance: optional
         description: A type of the resource.
-        usageNote: A recommended controlled vocabulary data-type is foreseen.
+        usageNote: A recommended controlled vocabulary data-type is foreseen. For agents, the value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
       version:
         iri: dcat:version
@@ -539,13 +539,13 @@ resources:
         iri: dcterms:identifier
         range: rdfs:Literal
         conformance: recommended
-        description: Identifier for the agent. E.g. organisation number.
+        #description: Identifier for the agent. E.g. organisation number.
       type:
         iri: dcterms:type
         range: skos:Concept
         conformance: optional
-        description: The nature of the agent.
-        usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
+        #description: The nature of the agent.
+        #usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
   Attribution:
     iri: prov:Attribution
@@ -720,7 +720,7 @@ resources:
       type:
         iri: dcterms:type
         range: skos:Concept
-        description: A type of licence, e.g. indicating 'public domain' or 'royalties required'.
+        #description: A type of licence, e.g. indicating 'public domain' or 'royalties required'.
 
 
   Location:
@@ -806,21 +806,21 @@ resources:
 
       elucidation:
         iri: emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9
-        description: Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation.
         range: rdfs:Literal
         datatype: rdf:langString
+        description: Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation.
 
       hiddenLabel:
         iri: skos:hiddenLabel
-        description: A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.
         range: rdfs:Literal
         datatype: rdf:langString
+        description: A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.
 
       prefLabel:
         iri: skos:prefLabel
-        description: Preferred label.
         range: rdfs:Literal
         datatype: rdf:langString
+        description: A preferred label of the concept.
 
       subClassOf:
         iri: rdfs:subClassOf

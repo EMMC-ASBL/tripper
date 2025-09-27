@@ -191,7 +191,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 ...         "sample": "https://he-matchmaker.eu/sample/",
 ...         "mat": "https://he-matchmaker.eu/material/",
 ...         "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-...         "parser": "http://sintef.no/dlite/parser#",
+...         "par": "http://sintef.no/dlite/parser#",
 ...         "gen": "http://sintef.no/dlite/generator#",
 ...     },
 ... )

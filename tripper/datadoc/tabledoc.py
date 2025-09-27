@@ -8,18 +8,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
-from tripper.datadoc.context import Context
-from tripper.datadoc.dataset import (
-    addnested,
-    store,
-    told,
-)
+from tripper.datadoc.context import get_context
+from tripper.datadoc.dataset import store, told
+from tripper.datadoc.dictutils import addnested
+from tripper.datadoc.keywords import get_keywords
+from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterable, List, Optional, Protocol, Sequence, Union
 
     from tripper.datadoc.context import ContextType
+    from tripper.datadoc.keywords import Keywords
 
     class Writer(Protocol):
         """Prototype for a class with a write() method."""
@@ -42,13 +42,16 @@ class TableDoc:
             "distribution", "accessService", "parser" and "generator"
             or an IRI to a class in an ontology.  Defaults to
             "dataset".
-        prefixes: Dict with prefixes in addition to those included in the
-            JSON-LD context.  Should map namespace prefixes to IRIs.
+        domain: Name of one of more domains to load keywords for.
+        keywords: Keywords object with additional keywords definitions.
+            If not provided, only default keywords are considered.
         context: Additional user-defined context that should be
             returned on top of the default context.  It may be a
             string with an URL to the user-defined context, a dict
             with the user-defined context or a sequence of strings and
             dicts.
+        prefixes: Dict with prefixes in addition to those included in the
+            JSON-LD context.  Should map namespace prefixes to IRIs.
         strip: Whether to strip leading and trailing whitespaces from cells.
 
     """
@@ -60,6 +63,8 @@ class TableDoc:
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
+        domain: "Optional[Union[str, Sequence[str]]]" = "default",
+        keywords: "Optional[Keywords]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
@@ -67,18 +72,14 @@ class TableDoc:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.context: Context = Context(context=context)
-        ## self.prefixes = get_prefixes(context=context)
-        if prefixes:
-            ## self.prefixes.update(prefixes)
-            self.context.add_context(prefixes)
-        ## self.context = context if context else {}
+        self.keywords = get_keywords(keywords=keywords, domain=domain)
+        self.context = get_context(
+            context=context, keywords=self.keywords, prefixes=prefixes
+        )
         self.strip = strip
 
     def save(self, ts: Triplestore) -> None:
         """Save tabular datadocumentation to triplestore."""
-        ## self.prefixes.update(ts.namespaces)
-
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
         )
@@ -96,6 +97,13 @@ class TableDoc:
             for i, colname in enumerate(self.header):
                 cell = row[i].strip() if row[i] and self.strip else row[i]
                 if cell:
+
+                    # Convert cell value to correct Python type
+                    if not colname.startswith("@"):
+                        df = self.context.getdef(colname.split(".")[-1])
+                        if "@type" in df and df["@type"] != "@id":
+                            cell = Literal(cell, datatype=df["@type"]).value
+
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
                     )
@@ -113,8 +121,9 @@ class TableDoc:
     def fromdicts(
         dicts: "Sequence[dict]",
         type: "Optional[str]" = "Dataset",
+        keywords: "Optional[Keywords]" = None,
+        context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
-        context: "Optional[Union[str, dict, list]]" = None,
         strip: bool = True,
     ) -> "TableDoc":
         """Create new TableDoc instance from a sequence of dicts.
@@ -126,14 +135,16 @@ class TableDoc:
                 "Distribution", "AccessService", "Parser" and
                 "Generator" or an IRI to a class in an ontology.
                 Defaults to "Dataset".
-            prefixes: Dict with prefixes in addition to those included
-                in the JSON-LD context.  Should map namespace prefixes
-                to IRIs.
+            keywords: Keywords object with additional keywords definitions.
+                If not provided, only default keywords are considered.
             context: Additional user-defined context that should be
                 returned on top of the default context.  It may be a
                 string with an URL to the user-defined context, a dict
                 with the user-defined context or a sequence of strings
                 and dicts.
+            prefixes: Dict with prefixes in addition to those included
+                in the JSON-LD context.  Should map namespace prefixes
+                to IRIs.
             strip: Whether to strip leading and trailing whitespaces
                 from cells.
 
@@ -202,8 +213,9 @@ class TableDoc:
             header=header,
             data=data,
             type=type,
-            prefixes=prefixes,
+            keywords=keywords,
             context=context,
+            prefixes=prefixes,
             strip=strip,
         )
 
@@ -211,8 +223,9 @@ class TableDoc:
     def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
         type: "Optional[str]" = "Dataset",
+        keywords: "Optional[Keywords]" = None,
+        context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
-        context: "Optional[Union[dict, list]]" = None,
         encoding: str = "utf-8",
         dialect: "Optional[Union[csv.Dialect, str]]" = None,
         **kwargs,
@@ -227,9 +240,11 @@ class TableDoc:
                 "Distribution", "AccessService", "Parser" and "Generator"
                 or an IRI to a class in an ontology.  Defaults to
                 "Dataset".
+            keywords: Keywords object with additional keywords definitions.
+                If not provided, only default keywords are considered.
+            context: Dict with user-defined JSON-LD context.
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
-            context: Dict with user-defined JSON-LD context.
             encoding: The encoding of the csv file.  Note that Excel may
                 encode as "ISO-8859" (which was commonly used in the 1990th).
             dialect: A subclass of csv.Dialect, or the name of the dialect,
@@ -273,8 +288,9 @@ class TableDoc:
             header=header,
             data=data,
             type=type,
-            prefixes=prefixes,
+            keywords=keywords,
             context=context,
+            prefixes=prefixes,
         )
 
     def write_csv(

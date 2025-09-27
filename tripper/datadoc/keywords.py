@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Sequence
 import yaml
 
 from tripper import Triplestore
+from tripper.datadoc.dictutils import add, merge
 from tripper.datadoc.errors import (
     InvalidKeywordError,
     NoSuchTypeError,
@@ -20,6 +21,7 @@ from tripper.utils import (
     AttrDict,
     expand_iri,
     get_entry_points,
+    is_url,
     openfile,
     prefix_iri,
     recursive_update,
@@ -29,11 +31,12 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Optional, Union
 
     FileLoc = Union[Path, str]
+    KeywordsType = Union["Keywords", Path, str, Sequence]
 
 
 @lru_cache(maxsize=32)
 def get_keywords(
-    keywords: "Optional[Keywords]" = None,
+    keywords: "Optional[KeywordsType]" = None,
     domain: "Optional[Union[str, Sequence[str]]]" = "default",
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
@@ -47,13 +50,9 @@ def get_keywords(
             be an URI in which case it will be accessed via HTTP GET.
         timeout: Timeout in case `yamlfile` is a URI.
     """
-    if not keywords:
-        return Keywords(domain=domain, yamlfile=yamlfile)
-    kw = keywords.copy()
-    if domain:
-        kw.add_domain(domain)
-    if yamlfile:
-        kw.parse(yamlfile, timeout=timeout)
+    kw = Keywords(domain=domain, yamlfile=yamlfile, timeout=timeout)
+    if keywords:
+        kw.add(keywords, timeout=timeout)
     return kw
 
 
@@ -116,6 +115,34 @@ class Keywords:
         new.domain = self.domain
         return new
 
+    def add(self, keywords: "KeywordsType", timeout: float = 3) -> None:
+        """Add `keywords` to current keyword object."""
+
+        def _add(kw):
+            if kw is None:
+                pass
+            elif isinstance(kw, Keywords):
+                self.data.update(kw.data)
+                self.keywords.update(kw.keywords)
+                self.domain = merge(self.domain, kw.domain)
+            elif isinstance(kw, Path):
+                self.parse(kw, timeout=timeout)
+            elif isinstance(kw, str):
+                if kw.startswith("/") or kw.startswith("./") or is_url(kw):
+                    self.parse(kw, timeout=timeout)
+                else:
+                    self.add_domain(kw, timeout=timeout)
+            elif isinstance(kw, Sequence):
+                for e in kw:
+                    _add(e)
+            else:
+                raise TypeError(
+                    "`keywords` must be a Keywords object, a Path object, "
+                    f"a string or a sequence of these.  Got: {type(kw)}"
+                )
+
+        _add(keywords)
+
     def add_domain(
         self, domain: "Union[str, Sequence[str]]", timeout: float = 3
     ) -> None:
@@ -148,53 +175,91 @@ class Keywords:
                 else:
                     raise TypeError(f"Unknown domain name: {name}")
 
-    def parse(self, yamlfile: "Union[Path, str]", timeout: float = 3) -> None:
+    def parse(
+        self,
+        yamlfile: "Union[Path, str]",
+        timeout: float = 3,
+    ) -> None:
         """Parse YAML file with keyword definitions."""
+        # pylint: disable=too-many-nested-blocks
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
 
-        def basedOn(value):
-            if isinstance(value, str):
-                self.add_domain(value, timeout=timeout)
-            elif isinstance(value, Path):
-                self.parse(value, timeout=timeout)
-            elif isinstance(value, Sequence):
-                for e in value:
-                    basedOn(e)
-            else:
-                raise TypeError(
-                    "The value of `basedOn` should be str, Path or a sequence "
-                    f"of those. Got {type(value)}"
-                )
-
-        if "basedOn" in d:
-            basedOn(d["basedOn"])
-
+        self.add(d.get("basedOn"))
         recursive_update(self.data, d)
 
         resources = self.data.get("resources", {})
         for resource_name, resource in resources.items():
             for keyword, value in resource.get("keywords", {}).items():
-                value["name"] = keyword
-                value["domain"] = resource_name
-                if keyword in self.keywords:
-                    oldiri = self.keywords[keyword]["iri"]
-                    if "iri" in value and value["iri"] != oldiri:
-                        raise RedefineKeywordError(
-                            f"Cannot redefine keyword '{keyword}' from "
-                            f"{oldiri} to {value['iri']}"
+
+                # Simple validation
+                valid_keys = [
+                    "name",
+                    "iri",
+                    "domain",
+                    "range",
+                    "datatype",
+                    "conformance",
+                    "description",
+                    "usageNote",
+                    "default",
+                ]
+                for k in value.keys():
+                    if k not in valid_keys:
+                        raise InvalidKeywordError(
+                            f"keyword '{keyword}' has invalid key: {k}"
                         )
+                valid_conformances = ["mandatory", "recommended", "optional"]
+                if "conformance" in value:
+                    if value["conformance"] not in valid_conformances:
+                        raise InvalidKeywordError(
+                            f"keyword '{keyword}' has invalid conformance: "
+                            f"'{value['conformance']}'. Valid values are "
+                            f"{', '.join(valid_conformances)} "
+                            f"when parsing '{yamlfile}'"
+                        )
+
+                if keyword in self.keywords:
+                    # Only allowed changes to existing keywords:
+                    #   - make conformance more strict
+                    #   - extend the domain
+                    #   - change default value
                     for k, v in self.keywords[keyword].items():
-                        value.setdefault(k, v)
-                recursive_update(
-                    self.keywords,
-                    {
-                        keyword: value,
-                        value["iri"]: value,
-                        expand_iri(value["iri"], self.data["prefixes"]): value,
-                    },
-                    append=False,
-                )
+                        if k == "conformance":
+                            if "conformance" in value and (
+                                valid_conformances.index(value.conformance)
+                                > valid_conformances.index(v)
+                            ):
+                                raise InvalidKeywordError(
+                                    f"keyword '{keyword}' reduces strictness "
+                                    "of existing conformance: "
+                                    f"{value.conformance} when parsing "
+                                    f"'{yamlfile}'"
+                                )
+                            value.setdefault(k, v)
+                        elif k == "domain":
+                            add(value, "domain", resource_name)
+                        elif k == "default":
+                            value.setdefault(k, v)
+                        elif k in value and value[k] != v:
+                            raise RedefineKeywordError(
+                                f"Cannot redefine '{k}' in keyword '{keyword}' "
+                                f"when parsing '{yamlfile}'"
+                            )
+                else:
+                    value["name"] = keyword
+                    add(value, "domain", resource_name)
+                    recursive_update(
+                        self.keywords,
+                        {
+                            keyword: value,
+                            value["iri"]: value,
+                            expand_iri(
+                                value["iri"], self.data["prefixes"]
+                            ): value,
+                        },
+                        append=False,
+                    )
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
