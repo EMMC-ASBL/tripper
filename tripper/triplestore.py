@@ -22,7 +22,7 @@ import subprocess  # nosec
 import sys
 import warnings
 from collections.abc import Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from tripper.errors import (
     ArgumentTypeError,
@@ -451,7 +451,23 @@ class Triplestore:
         self._check_method("update")
         return self.backend.update(update_object=update_object, **kwargs)
 
-    def bind(  # pylint: disable=inconsistent-return-statements
+    @overload
+    def bind(
+        self,
+        prefix: str,
+        namespace: "Union[str, Namespace, Triplestore]",
+        **kwargs,
+    ) -> "Namespace": ...
+
+    @overload
+    def bind(
+        self,
+        prefix: str,
+        namespace: None,
+        **kwargs,
+    ) -> None: ...
+
+    def bind(
         self,
         prefix: str,
         namespace: "Union[str, Namespace, Triplestore, None]" = "",
