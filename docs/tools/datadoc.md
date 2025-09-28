@@ -287,7 +287,7 @@ usage: datadoc find [-h] [--type TYPE]
 
 options:
   -h, --help            show this help message and exit
-  --type TYPE, -t TYPE  Either a resource type (ex: "dataset", "distribution",
+  --type TYPE, -t TYPE  Either a resource type (ex: "Dataset", "Distribution",
                         ...) or the IRI of a class to limit the search to.
   --criteria IRI=VALUE, -c IRI=VALUE
                         Matching criteria for resources to find. The IRI may
@@ -305,7 +305,8 @@ options:
 ```
 
 The `--type` and `--criteria` options provide search criteria.
-The `--type` option can be any of the recognised [resource types] to limit the search to.
+The `--type` option can be any of the classes in the domain to limit the search to.
+See [Predefined keywords] for a list of available classes in the "default" domain.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.
 
@@ -426,6 +427,6 @@ The `--output` option allows to write the dataset to a local file.
 
 
 
-
-[resource types]: ../datadoc/introduction.md/#resource-types
+[Predefined prefixes]: ../datadoc/prefixes.md
+[Predefined keywords]: ../datadoc/keywords.md
 [session]: ../session.md
