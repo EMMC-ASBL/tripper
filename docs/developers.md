@@ -4,12 +4,19 @@
 
 See [interface.py], which defines the interface of a backend and may serve as a template for creating new backends.
 
-### Developing the sparqlwrapper
 
+## Setting up local GraphDB and Fuseki services for testing
 Tripper comes with an inbuilt backend to the SPARQLWrapper. In order
 to test this properly a real triplestore is needed. This is not done in the
-automatic workflows on github. However, a local graphDB can be setup as described below and tested with test_sparqlwrapper_graphdb.py.
+automatic workflows on github. However, local graphDB and Fuseki services
+can be setup as described below and tested with
+`tests/backends/test_sparqlwrapper_graphdb_fuseki.py`.
 
+The backend configurations corresponding to the local GraphDB and Fuseki services
+can be found in `[tests/input/session.yaml]`.
+
+
+### Setting up GraphDB service
 To create the local instance of graphdb:
 ```bash
 docker pull ontotext/graphdb:10.8.3 # latest tag 17.02.2025
@@ -30,6 +37,7 @@ You can now run the test test_sparqlwrapper_graphdb_fuseki.py with graphdb.
 Note that if the graphdb instance is not found the test will just be skipped.
 
 
+### Setting up Fuseki service
 Similarly a jena-fuseki instance can be tested locally as follows:
 
 ```bash
@@ -37,7 +45,7 @@ docker pull stain/jena-fuseki
 docker run -d --name fuseki -p 3030:3030 -e ADMIN_PASSWORD=admin0 -e=FUSEKI_DATASET_1=test_repo stain/jena-fuseki
 ```
 
-You can now run the test test_sparqlwrapper_graphdb_fuseki.py with fuseki.
+You can now run the test `test_sparqlwrapper_graphdb_fuseki.py` with fuseki.
 
 Note that if the fuseki instance is not found the test will just be skipped.
 
@@ -75,3 +83,4 @@ Then open http://127.0.0.1:8000/tripper/ in your browser.
 
 [interface.py]: https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py
 [mkdocs]: https://www.mkdocs.org/
+[tests/input/session.yaml]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml)
