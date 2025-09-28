@@ -43,6 +43,14 @@ We therefore have to define them explicitly
 
 ```
 
+!!! Warning
+
+    Prefixes and keywords shares the same namespace and must therefore be distinct.
+
+    This is a concequence of JSON-LD and cannot be changed by Tripper.
+    A good rule of thumb is to write keywords out as full words and use short abberiviations (about 2-5 characters) for prefixes.
+
+
 !!! note "Side note"
 
     This dict is actually a [JSON-LD] document with an implicit context.
@@ -129,11 +137,18 @@ It is also possible to document multiple resources as a Python dict.
 
     Unlike the single-resource dict representation, the multi-resource dict representation is not valid (possible incomplete) JSON-LD.
 
-This dict representation accepts the following keywords:
+The root of this dict representation accepts the following keywords:
 
+- **domain**: Optional name of one of more domains to load keywords for.
+  Defaults to "default".
+- **keywordfile**: Optional YAML file with keyword definitions to parse.
+  May also be an URI in which case it will be accessed via HTTP GET.
 - **@context**: Optional user-defined context to be appended to the documentation of all resources.
+- **base**: Base IRI against which to resolve relative IRIs.
 - **prefixes**: A dict mapping namespace prefixes to their corresponding URLs.
-- **datasets**/**distributions**/**accessServices**/**generators**/**parsers**/**resources**: A list of valid [single-resource](#single-resource-dict) dict of the given [resource type](introduction.md#resource-types).
+- **\<Class\>**: Class name followed by a list of valid [single-resource](#single-resource-dict) dicts for the specified class.
+  The class name must be defined by the **domain**, in a **keywordfile** or in a custom **@context**.
+  The "[default](keywords.md)" **domain** already include many common classes, like *[Resource]*, *[Dataset]*, *[Distribution]*, *[DataService]*, *[Agent]*...
 
 See [semdata.yaml] for an example of a [YAML] representation of a multi-resource dict documentation.
 
@@ -222,3 +237,9 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [TableDoc]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
 [semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv
+
+[Resource]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-resource
+[DataSet]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-dataset
+[Distribution]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-distribution
+[DataService]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-dataservice
+[Agent]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-agent

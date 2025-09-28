@@ -28,19 +28,6 @@ The figure below shows illustrates how a dataset is documented in a triplestore.
 ![Documentation of a dataset](https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/docs/figs/dataset-Dataset.png)
 
 
-Resource types
---------------
-The [tripper.datadoc] module include the following set of predefined resource types:
-
-- **dataset**: Individual of [dcat:Dataset] and [emmo:Dataset].
-- **distribution**: Individual of [dcat:Distribution].
-- **accessService**: Individual of [dcat:AccessService].
-- **generator**: Individual of [oteio:Generator].
-- **parser**: Individual of [oteio:Parser].
-- **resource**: Any other documented resource, with no implicit type.
-
-Future releases will support adding custom resource types.
-
 
 
 [tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction

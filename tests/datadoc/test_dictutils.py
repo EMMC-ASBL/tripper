@@ -1,5 +1,11 @@
 """Test the dictutils module."""
 
+import pytest
+
+# This annoying dependency is injected by pytest.
+# We can only get rid of it by moving the dictutils out of the datadoc folder.
+pytest.importorskip("pyld")
+
 
 def test_merge():
     """Test help-function merge()."""
