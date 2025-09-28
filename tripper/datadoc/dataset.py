@@ -1203,7 +1203,10 @@ def make_query(
 
     if criterias is not None:
         warnings.warn(
-            "`criterias` is deprecated, use `criteria` instead",
+            (
+                "`criterias` argument to make_query() is deprecated, use "
+                "the `criteria` instead"
+            ),
             category=DeprecationWarning,
             stacklevel=2,
         )
