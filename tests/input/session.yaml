@@ -1,3 +1,9 @@
+# Default sessions used for testing
+#
+# See https://emmc-asbl.github.io/tripper/latest/developers/ for how to set
+# up local instances of GraphDB and Fuseki corresponding to the settings below.
+
+
 RdflibTest:
   backend: rdflib
 
