@@ -1075,7 +1075,6 @@ class Triplestore:
         in the `check_url` attribute and checking for the response.
 
         Arguments:
-            url: URL of the service to check.
             timeout: Total time in seconds to wait for a respond.
             interval: Interval for checking response.
 
