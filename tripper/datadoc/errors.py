@@ -11,6 +11,10 @@ class InvalidKeywordError(TripperError, KeyError):
     """Keyword is not defined."""
 
 
+class RedefineKeywordError(TripperError, KeyError):
+    """Trying to map an existing keyword to a new IRI."""
+
+
 class NoSuchTypeError(TripperError, KeyError):
     """There are no pre-defined type defined with the given name."""
 

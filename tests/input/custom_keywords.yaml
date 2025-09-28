@@ -1,0 +1,30 @@
+---
+basedOn: [process, ]
+
+prefixes:
+  kb: "http://example.com/kb#"
+  myonto: "http://example.com/myonto#"
+
+
+resources:
+  Batch:
+    iri: myonto:Batch
+    subClassOf: dcat:Resource
+    description: A batch of a material with roughly the same properties throughout the volume.
+    keywords:
+      batchNumber:
+        iri: myonto:batchNumber
+        range: rdfs:Literal
+        datatype: xsd:integer
+        description: An integer number identifying a batch.
+
+  Sample:
+    iri: chameo:Sample
+    subClassOf: dcat:Resource
+    description: A sample from a given batch
+    keywords:
+      fromBatch:
+        iri: myonto:fromBatch
+        range: rdfs:Literal
+        datatype: xsd:integer
+        description: An integer number referring to the number of a batch that the sample is taken from.
