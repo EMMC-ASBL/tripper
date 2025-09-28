@@ -1276,6 +1276,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/datadoc/dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/datadoc/errors/" class="md-nav__link">
         
   
@@ -1939,7 +1962,7 @@ Running <code>datadoc find --help</code> will show the following help message:</
 
 options:
   -h, --help            show this help message and exit
-  --type TYPE, -t TYPE  Either a resource type (ex: &quot;dataset&quot;, &quot;distribution&quot;,
+  --type TYPE, -t TYPE  Either a resource type (ex: &quot;Dataset&quot;, &quot;Distribution&quot;,
                         ...) or the IRI of a class to limit the search to.
   --criteria IRI=VALUE, -c IRI=VALUE
                         Matching criteria for resources to find. The IRI may
@@ -1956,7 +1979,8 @@ options:
                         --output is given. Otherwise it defaults to &quot;iris&quot;.
 </code></pre></div>
 <p>The <code>--type</code> and <code>--criteria</code> options provide search criteria.
-The <code>--type</code> option can be any of the recognised <a href="../../datadoc/introduction/#resource-types">resource types</a> to limit the search to.
+The <code>--type</code> option can be any of the classes in the domain to limit the search to.
+See <a href="../../datadoc/keywords/">Predefined keywords</a> for a list of available classes in the "default" domain.
 Alternatively, it may be the IRI of a class.
 This limits the search to only resources that are individuals of this class.</p>
 <p>The <code>--output</code> option allows to write the matching output to file instead of standard output.</p>

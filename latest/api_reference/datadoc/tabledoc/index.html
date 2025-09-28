@@ -1185,6 +1185,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../errors/" class="md-nav__link">
         
   
@@ -1800,10 +1823,16 @@ or an IRI to a class in an ontology.  Defaults to
         <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
-        <td><code>prefixes</code></td>
-        <td><code>Optional[dict]</code></td>
-        <td><p>Dict with prefixes in addition to those included in the
-JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
+        <td><code>domain</code></td>
+        <td><code>Optional[Union[str, Sequence[str]]]</code></td>
+        <td><p>Name of one of more domains to load keywords for.</p></td>
+        <td><code>&#39;default&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>keywords</code></td>
+        <td><code>Optional[Keywords]</code></td>
+        <td><p>Keywords object with additional keywords definitions.
+If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -1814,6 +1843,13 @@ returned on top of the default context.  It may be a
 string with an URL to the user-defined context, a dict
 with the user-defined context or a sequence of strings and
 dicts.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>Optional[dict]</code></td>
+        <td><p>Dict with prefixes in addition to those included in the
+JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -1839,13 +1875,16 @@ dicts.</p></td>
 <span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
 <span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
 <span class="sd">            &quot;dataset&quot;.</span>
-<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
-<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
+<span class="sd">        domain: Name of one of more domains to load keywords for.</span>
+<span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Additional user-defined context that should be</span>
 <span class="sd">            returned on top of the default context.  It may be a</span>
 <span class="sd">            string with an URL to the user-defined context, a dict</span>
 <span class="sd">            with the user-defined context or a sequence of strings and</span>
 <span class="sd">            dicts.</span>
+<span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
+<span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        strip: Whether to strip leading and trailing whitespaces from cells.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1857,6 +1896,8 @@ dicts.</p></td>
         <span class="n">header</span><span class="p">:</span> <span class="s2">&quot;Sequence[str]&quot;</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;Sequence[Sequence[str]]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+        <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1864,18 +1905,14 @@ dicts.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">:</span> <span class="n">Context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
-        <span class="c1">## self.prefixes = get_prefixes(context=context)</span>
-        <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
-            <span class="c1">## self.prefixes.update(prefixes)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
-        <span class="c1">## self.context = context if context else {}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
-        <span class="c1">## self.prefixes.update(ts.namespaces)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
             <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="p">)</span>
@@ -1893,6 +1930,13 @@ dicts.</p></td>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">colname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
                 <span class="n">cell</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">cell</span><span class="p">:</span>
+
+                    <span class="c1"># Convert cell value to correct Python type</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">colname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+                        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">colname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
+                            <span class="n">cell</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">value</span>
+
                     <span class="n">addnested</span><span class="p">(</span>
                         <span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span>
                     <span class="p">)</span>
@@ -1910,8 +1954,9 @@ dicts.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
         <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create new TableDoc instance from a sequence of dicts.</span>
@@ -1923,14 +1968,16 @@ dicts.</p></td>
 <span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
 <span class="sd">                &quot;Generator&quot; or an IRI to a class in an ontology.</span>
 <span class="sd">                Defaults to &quot;Dataset&quot;.</span>
-<span class="sd">            prefixes: Dict with prefixes in addition to those included</span>
-<span class="sd">                in the JSON-LD context.  Should map namespace prefixes</span>
-<span class="sd">                to IRIs.</span>
+<span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">                If not provided, only default keywords are considered.</span>
 <span class="sd">            context: Additional user-defined context that should be</span>
 <span class="sd">                returned on top of the default context.  It may be a</span>
 <span class="sd">                string with an URL to the user-defined context, a dict</span>
 <span class="sd">                with the user-defined context or a sequence of strings</span>
 <span class="sd">                and dicts.</span>
+<span class="sd">            prefixes: Dict with prefixes in addition to those included</span>
+<span class="sd">                in the JSON-LD context.  Should map namespace prefixes</span>
+<span class="sd">                to IRIs.</span>
 <span class="sd">            strip: Whether to strip leading and trailing whitespaces</span>
 <span class="sd">                from cells.</span>
 
@@ -1999,8 +2046,9 @@ dicts.</p></td>
             <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
-            <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+            <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
             <span class="n">strip</span><span class="o">=</span><span class="n">strip</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -2008,8 +2056,9 @@ dicts.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
         <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
         <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[csv.Dialect, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -2024,9 +2073,11 @@ dicts.</p></td>
 <span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
 <span class="sd">                or an IRI to a class in an ontology.  Defaults to</span>
 <span class="sd">                &quot;Dataset&quot;.</span>
+<span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">                If not provided, only default keywords are considered.</span>
+<span class="sd">            context: Dict with user-defined JSON-LD context.</span>
 <span class="sd">            prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">                JSON-LD context.  Should map namespace prefixes to IRIs.</span>
-<span class="sd">            context: Dict with user-defined JSON-LD context.</span>
 <span class="sd">            encoding: The encoding of the csv file.  Note that Excel may</span>
 <span class="sd">                encode as &quot;ISO-8859&quot; (which was commonly used in the 1990th).</span>
 <span class="sd">            dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
@@ -2070,8 +2121,9 @@ dicts.</p></td>
             <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
-            <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+            <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_csv</span><span class="p">(</span>
@@ -2165,6 +2217,13 @@ dicts.</p></td>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">colname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">):</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">cell</span><span class="p">:</span>
+
+                <span class="c1"># Convert cell value to correct Python type</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">colname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">colname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
+                        <span class="n">cell</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">value</span>
+
                 <span class="n">addnested</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span>
                 <span class="p">)</span>
@@ -2190,7 +2249,7 @@ dicts.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.fromdicts" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2230,21 +2289,28 @@ Defaults to "Dataset".</p></td>
         <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
-        <td><code>prefixes</code></td>
-        <td><code>Optional[dict]</code></td>
-        <td><p>Dict with prefixes in addition to those included
-in the JSON-LD context.  Should map namespace prefixes
-to IRIs.</p></td>
+        <td><code>keywords</code></td>
+        <td><code>Optional[Keywords]</code></td>
+        <td><p>Keywords object with additional keywords definitions.
+If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>Optional[Union[str, dict, list]]</code></td>
+        <td><code>Optional[ContextType]</code></td>
         <td><p>Additional user-defined context that should be
 returned on top of the default context.  It may be a
 string with an URL to the user-defined context, a dict
 with the user-defined context or a sequence of strings
 and dicts.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>Optional[dict]</code></td>
+        <td><p>Dict with prefixes in addition to those included
+in the JSON-LD context.  Should map namespace prefixes
+to IRIs.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -2277,8 +2343,9 @@ from cells.</p></td>
 <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
     <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create new TableDoc instance from a sequence of dicts.</span>
@@ -2290,14 +2357,16 @@ from cells.</p></td>
 <span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
 <span class="sd">            &quot;Generator&quot; or an IRI to a class in an ontology.</span>
 <span class="sd">            Defaults to &quot;Dataset&quot;.</span>
-<span class="sd">        prefixes: Dict with prefixes in addition to those included</span>
-<span class="sd">            in the JSON-LD context.  Should map namespace prefixes</span>
-<span class="sd">            to IRIs.</span>
+<span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Additional user-defined context that should be</span>
 <span class="sd">            returned on top of the default context.  It may be a</span>
 <span class="sd">            string with an URL to the user-defined context, a dict</span>
 <span class="sd">            with the user-defined context or a sequence of strings</span>
 <span class="sd">            and dicts.</span>
+<span class="sd">        prefixes: Dict with prefixes in addition to those included</span>
+<span class="sd">            in the JSON-LD context.  Should map namespace prefixes</span>
+<span class="sd">            to IRIs.</span>
 <span class="sd">        strip: Whether to strip leading and trailing whitespaces</span>
 <span class="sd">            from cells.</span>
 
@@ -2366,8 +2435,9 @@ from cells.</p></td>
         <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
         <span class="n">strip</span><span class="o">=</span><span class="n">strip</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div>
@@ -2383,7 +2453,7 @@ from cells.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.parse_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2423,16 +2493,23 @@ or an IRI to a class in an ontology.  Defaults to
         <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
-        <td><code>prefixes</code></td>
-        <td><code>Optional[dict]</code></td>
-        <td><p>Dict with prefixes in addition to those included in the
-JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
+        <td><code>keywords</code></td>
+        <td><code>Optional[Keywords]</code></td>
+        <td><p>Keywords object with additional keywords definitions.
+If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>Optional[Union[dict, list]]</code></td>
+        <td><code>Optional[ContextType]</code></td>
         <td><p>Dict with user-defined JSON-LD context.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>Optional[dict]</code></td>
+        <td><p>Dict with prefixes in addition to those included in the
+JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -2482,8 +2559,9 @@ formatting parameters.  For more details, see
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
     <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dict, list]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
     <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[csv.Dialect, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -2498,9 +2576,11 @@ formatting parameters.  For more details, see
 <span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
 <span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
 <span class="sd">            &quot;Dataset&quot;.</span>
+<span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">            If not provided, only default keywords are considered.</span>
+<span class="sd">        context: Dict with user-defined JSON-LD context.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
-<span class="sd">        context: Dict with user-defined JSON-LD context.</span>
 <span class="sd">        encoding: The encoding of the csv file.  Note that Excel may</span>
 <span class="sd">            encode as &quot;ISO-8859&quot; (which was commonly used in the 1990th).</span>
 <span class="sd">        dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
@@ -2544,8 +2624,9 @@ formatting parameters.  For more details, see
         <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2573,8 +2654,6 @@ formatting parameters.  For more details, see
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
-    <span class="c1">## self.prefixes.update(ts.namespaces)</span>
-
     <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
         <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="p">)</span>

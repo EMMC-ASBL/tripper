@@ -16,7 +16,7 @@
         <link rel="prev" href="../dataaccess/">
       
       
-        <link rel="next" href="../errors/">
+        <link rel="next" href="../dictutils/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -1230,24 +1230,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.datadoc.dataset.add" class="md-nav__link">
-    <span class="md-ellipsis">
-      add()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tripper.datadoc.dataset.addnested" class="md-nav__link">
-    <span class="md-ellipsis">
-      addnested()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.delete" class="md-nav__link">
     <span class="md-ellipsis">
       delete()
@@ -1260,15 +1242,6 @@
   <a href="#tripper.datadoc.dataset.delete_iri" class="md-nav__link">
     <span class="md-ellipsis">
       delete_iri()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tripper.datadoc.dataset.get" class="md-nav__link">
-    <span class="md-ellipsis">
-      get()
     </span>
   </a>
   
@@ -1449,6 +1422,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1809,24 +1805,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.datadoc.dataset.add" class="md-nav__link">
-    <span class="md-ellipsis">
-      add()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tripper.datadoc.dataset.addnested" class="md-nav__link">
-    <span class="md-ellipsis">
-      addnested()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.delete" class="md-nav__link">
     <span class="md-ellipsis">
       delete()
@@ -1839,15 +1817,6 @@
   <a href="#tripper.datadoc.dataset.delete_iri" class="md-nav__link">
     <span class="md-ellipsis">
       delete_iri()
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tripper.datadoc.dataset.get" class="md-nav__link">
-    <span class="md-ellipsis">
-      get()
     </span>
   </a>
   
@@ -2207,133 +2176,6 @@ in the default [JSON-LD context].</p></td>
 
 
 
-<h2 id="tripper.datadoc.dataset.add" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
-
-
-<a href="#tripper.datadoc.dataset.add" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents ">
-
-      <p>Append key-value pair to dict <code>d</code>.</p>
-<p>If <code>key</code> already exists in <code>d</code>, its value is converted to a list
-and <code>value</code> is appended to it.  <code>value</code> may also be a list. Values
-are not duplicated.</p>
-
-        <details class="quote">
-          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Append key-value pair to dict `d`.</span>
-
-<span class="sd">    If `key` already exists in `d`, its value is converted to a list</span>
-<span class="sd">    and `value` is appended to it.  `value` may also be a list. Values</span>
-<span class="sd">    are not duplicated.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">klst</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">klst</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">klst</span> <span class="k">else</span> <span class="n">klst</span> <span class="o">+</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">vlst</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">klst</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">vlst</span><span class="p">))</span>
-            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># klst contains unhashable dicts</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="n">klst</span> <span class="o">+</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vlst</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">klst</span><span class="p">]</span>
-        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-            <span class="k">else</span> <span class="nb">sorted</span><span class="p">(</span>
-                <span class="c1"># Sort dicts at end, by representing them with a huge</span>
-                <span class="c1"># unicode character</span>
-                <span class="n">v</span><span class="p">,</span>
-                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uffff</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-function">
-
-
-
-<h2 id="tripper.datadoc.dataset.addnested" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
-
-
-<a href="#tripper.datadoc.dataset.addnested" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents ">
-
-      <p>Like add(), but allows <code>key</code> to be a dot-separated list of sub-keys.
-Returns the updated <code>d</code>.</p>
-<p>Each sub-key will be added to <code>d</code> as a corresponding sub-dict.</p>
-
-<p><strong>Examples:</strong></p>
-    <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;a.b.c&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">}}}</span>
-<span class="kc">True</span>
-</code></pre></div>
-
-        <details class="quote">
-          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addnested</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like add(), but allows `key` to be a dot-separated list of sub-keys.</span>
-<span class="sd">    Returns the updated `d`.</span>
-
-<span class="sd">    Each sub-key will be added to `d` as a corresponding sub-dict.</span>
-
-<span class="sd">    Example:</span>
-
-<span class="sd">        &gt;&gt;&gt; d = {}</span>
-<span class="sd">        &gt;&gt;&gt; addnested(d, &quot;a.b.c&quot;, &quot;val&quot;) == {&#39;a&#39;: {&#39;b&#39;: {&#39;c&#39;: &#39;val&#39;}}}</span>
-<span class="sd">        True</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-        <span class="n">first</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">addnested</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-                    <span class="k">break</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addnested</span><span class="p">({},</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-            <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">addnested</span><span class="p">(</span><span class="n">AttrDict</span><span class="p">(),</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">add</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-                <span class="k">break</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">d</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-function">
-
-
-
 <h2 id="tripper.datadoc.dataset.delete" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criterias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
@@ -2418,51 +2260,6 @@ Returns the updated <code>d</code>.</p>
 <span class="s2">    </span><span class="se">}}</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-function">
-
-
-
-<h2 id="tripper.datadoc.dataset.get" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aslist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
-
-
-<a href="#tripper.datadoc.dataset.get" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents ">
-
-      <p>Like <code>d.get(key, default)</code> but returns the value as a list if
-<code>aslist</code> is True and value is not already a list.</p>
-<p>An empty list is returned in the special case that <code>key</code> is not in
-<code>d</code> and <code>default</code> is None.</p>
-
-        <details class="quote">
-          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">aslist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like `d.get(key, default)` but returns the value as a list if</span>
-<span class="sd">    `aslist` is True and value is not already a list.</span>
-
-<span class="sd">    An empty list is returned in the special case that `key` is not in</span>
-<span class="sd">    `d` and `default` is None.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">aslist</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">value</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-            <span class="k">else</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">value</span>
 </code></pre></div>
         </details>
     </div>
@@ -3864,7 +3661,7 @@ measured on a given sample:</p>
 
 
 <h2 id="tripper.datadoc.dataset.store" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
 
 
 <a href="#tripper.datadoc.dataset.store" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3904,18 +3701,18 @@ defined in <code>keywords</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>keywords</code></td>
+        <td><code>&#39;Optional[Keywords]&#39;</code></td>
+        <td><p>Keywords object with additional keywords definitions.
+If not provided, only default keywords are considered.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>context</code></td>
         <td><code>&#39;Optional[Context]&#39;</code></td>
         <td><p>Context object defining keywords in addition to those defined
 in the default [JSON-LD context].
 Complementing the <code>keywords</code> argument.</p></td>
-        <td><code>None</code></td>
-      </tr>
-      <tr>
-        <td><code>keywords</code></td>
-        <td><code>&#39;Optional[Keywords]&#39;</code></td>
-        <td><p>Keywords object with additional keywords definitions.
-If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -3976,8 +3773,8 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
     <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
@@ -3990,11 +3787,11 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">        source: Dict or list with the resource documentation to store.</span>
 <span class="sd">        type: Type of documented resource.  Should be one of the resource types</span>
 <span class="sd">            defined in `keywords`.</span>
+<span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
+<span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Context object defining keywords in addition to those defined</span>
 <span class="sd">            in the default [JSON-LD context].</span>
 <span class="sd">            Complementing the `keywords` argument.</span>
-<span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
-<span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        method: How to handle the case where `ts` already contains a document</span>
@@ -4021,17 +3818,20 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">    [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/</span>
 <span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
     <span class="p">)</span>
-
     <span class="n">doc</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
         <span class="n">source</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@graph&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">doc</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
@@ -4080,7 +3880,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 
 
 <h2 id="tripper.datadoc.dataset.told" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">told</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">told</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.told" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -4129,17 +3929,17 @@ only default keywords are considered.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>prefixes</code></td>
-        <td><code>&#39;Optional[dict]&#39;</code></td>
-        <td><p>Dict with prefixes in addition to those known in keywords
-or included in the JSON-LD context.</p></td>
-        <td><code>None</code></td>
-      </tr>
-      <tr>
         <td><code>context</code></td>
         <td><code>&#39;Optional[Context]&#39;</code></td>
         <td><p>Optional context object. It will be updated from the input
 data documentation <code>descr</code>.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>prefixes</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><p>Dict with prefixes in addition to those known in keywords
+or included in the JSON-LD context.</p></td>
         <td><code>None</code></td>
       </tr>
   </tbody>
@@ -4165,8 +3965,8 @@ data documentation <code>descr</code>.</p></td>
     <span class="n">descr</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AttrDict&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an updated copy of data description `descr` as valid JSON-LD.</span>
 
@@ -4184,10 +3984,10 @@ data documentation <code>descr</code>.</p></td>
 <span class="sd">            defined in `keywords`.</span>
 <span class="sd">        keywords: Keywords object with keywords definitions.  If not provided,</span>
 <span class="sd">            only default keywords are considered.</span>
-<span class="sd">        prefixes: Dict with prefixes in addition to those known in keywords</span>
-<span class="sd">            or included in the JSON-LD context.</span>
 <span class="sd">        context: Optional context object. It will be updated from the input</span>
 <span class="sd">            data documentation `descr`.</span>
+<span class="sd">        prefixes: Dict with prefixes in addition to those known in keywords</span>
+<span class="sd">            or included in the JSON-LD context.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict with an updated copy of `descr` as valid JSON-LD.</span>

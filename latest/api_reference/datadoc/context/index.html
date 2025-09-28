@@ -1284,6 +1284,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.getdef" class="md-nav__link">
+    <span class="md-ellipsis">
+      getdef()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.context.Context.isref" class="md-nav__link">
     <span class="md-ellipsis">
       isref()
@@ -1387,6 +1396,29 @@
   
   <span class="md-ellipsis">
     dataset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
     
   </span>
   
@@ -1852,6 +1884,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.getdef" class="md-nav__link">
+    <span class="md-ellipsis">
+      getdef()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.context.Context.isref" class="md-nav__link">
     <span class="md-ellipsis">
       isref()
@@ -2235,10 +2276,14 @@ Context        </code>
             <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no short name for: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">name</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">getdef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return JSON-LD definition of `name`.&quot;&quot;&quot;</span>
+        <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortname</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">][</span><span class="n">shortname</span><span class="p">]</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">isref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return wheter `name` is an object property that refers to a node.&quot;&quot;&quot;</span>
-        <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortname</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">][</span><span class="n">shortname</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">expanddoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return expanded JSON-LD document `doc`.&quot;&quot;&quot;</span>
@@ -2819,6 +2864,34 @@ context.expand("Dataset")
 
 
 
+<h3 id="tripper.datadoc.context.Context.getdef" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">getdef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.context.Context.getdef" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return JSON-LD definition of <code>name</code>.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getdef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return JSON-LD definition of `name`.&quot;&quot;&quot;</span>
+    <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortname</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">][</span><span class="n">shortname</span><span class="p">]</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="tripper.datadoc.context.Context.isref" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">isref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></code>
 
@@ -2833,8 +2906,7 @@ context.expand("Dataset")
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">isref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return wheter `name` is an object property that refers to a node.&quot;&quot;&quot;</span>
-    <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortname</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">][</span><span class="n">shortname</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span>
 </code></pre></div>
         </details>
     </div>

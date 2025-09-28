@@ -981,6 +981,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.utils.is_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_url()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.utils.openfile" class="md-nav__link">
     <span class="md-ellipsis">
       openfile()
@@ -1388,6 +1397,29 @@
   
   <span class="md-ellipsis">
     dataset
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
     
   </span>
   
@@ -1843,6 +1875,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.utils.is_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_url()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.utils.openfile" class="md-nav__link">
     <span class="md-ellipsis">
       openfile()
@@ -2004,6 +2045,8 @@ AttrDict            (<span title="dict">dict</span>)
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Help method for pretty printing.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;AttrDict()&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">indent</span> <span class="o">+</span> <span class="mi">2</span>
         <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AttrDict({&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -2676,6 +2719,102 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot infer IRI from object: </span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.is_url" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">require_netloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_unescaped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;%:~/?&amp;;=#&#39;</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.is_url" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns true if <code>url</code> is a valid URL, otherwise false.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>url</code></td>
+        <td><code>str</code></td>
+        <td><p>URL to validate.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>require_netloc</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to require <code>url</code> to contain a network location.
+Setting this to false, will exclude URNs, which in are valid URLs.
+However, in most practical cases, you would expect the URL to
+contain a network location.</p></td>
+        <td><code>True</code></td>
+      </tr>
+      <tr>
+        <td><code>allow_unescaped</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to allow <code>url</code> to contain unescaped special
+characters. Any character not in <code>safe</code> except for letters, digits
+and '_.-' are considered to be special.
+Escaping is expected to use standard URL %xx escape codes.</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
+        <td><code>safe</code></td>
+        <td><code>str</code></td>
+        <td><p>Characters in addition to '_.-' that doesn't need to be
+escaped when <code>allow_unescaped</code> is false.</p></td>
+        <td><code>&#39;%:~/?&amp;;=#&#39;</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_url</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">require_netloc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">allow_unescaped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">safe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;%:~/?&amp;;=#&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns true if `url` is a valid URL, otherwise false.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        url: URL to validate.</span>
+<span class="sd">        require_netloc: Whether to require `url` to contain a network location.</span>
+<span class="sd">            Setting this to false, will exclude URNs, which in are valid URLs.</span>
+<span class="sd">            However, in most practical cases, you would expect the URL to</span>
+<span class="sd">            contain a network location.</span>
+<span class="sd">        allow_unescaped: Whether to allow `url` to contain unescaped special</span>
+<span class="sd">            characters. Any character not in `safe` except for letters, digits</span>
+<span class="sd">            and &#39;_.-&#39; are considered to be special.</span>
+<span class="sd">            Escaping is expected to use standard URL %xx escape codes.</span>
+<span class="sd">        safe: Characters in addition to &#39;_.-&#39; that doesn&#39;t need to be</span>
+<span class="sd">            escaped when `allow_unescaped` is false.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_unescaped</span> <span class="ow">and</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span> <span class="o">!=</span> <span class="n">url</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">require_netloc</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">netloc</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>

@@ -1459,6 +1459,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/datadoc/dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/datadoc/errors/" class="md-nav__link">
         
   
@@ -2282,7 +2305,7 @@
 <td><a href="http://www.w3.org/2004/02/skos/core#Concept">skos:Concept</a></td>
 <td>optional</td>
 <td>A type of the resource.</td>
-<td>A recommended controlled vocabulary data-type is foreseen.</td>
+<td>A recommended controlled vocabulary data-type is foreseen. For agents, the value should be chosen from <a href="https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf">ADMS publisher type</a>.</td>
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/dcat#version">version</a></td>
@@ -2448,6 +2471,13 @@
 <td>optional</td>
 <td>The minimum time period resolvable in the dataset.</td>
 <td></td>
+</tr>
+<tr>
+<td><a href="http://www.w3.org/ns/prov#wasDerivedFrom">wasDerivedFrom</a></td>
+<td><a href="http://www.w3.org/ns/dcat#Resource">dcat:Resource</a></td>
+<td>optional</td>
+<td>A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.</td>
+<td>Relates a resource to another resource it was derived from.</td>
 </tr>
 <tr>
 <td><a href="http://www.w3.org/ns/prov#wasGeneratedBy">wasGeneratedBy</a></td>
@@ -2711,15 +2741,15 @@
 <td><a href="http://purl.org/dc/terms/identifier">identifier</a></td>
 <td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a></td>
 <td>recommended</td>
-<td>Identifier for the agent. E.g. organisation number.</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
 <td><a href="http://purl.org/dc/terms/type">type</a></td>
 <td><a href="http://www.w3.org/2004/02/skos/core#Concept">skos:Concept</a></td>
 <td>optional</td>
-<td>The nature of the agent.</td>
-<td>The value should be chosen from <a href="https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf">ADMS publisher type</a>.</td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -2774,7 +2804,7 @@
 <tbody>
 <tr>
 <td><a href="http://www.w3.org/2004/02/skos/core#prefLabel">prefLabel</a></td>
-<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a></td>
+<td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
 <td></td>
 <td>A preferred label of the concept.</td>
 <td></td>
@@ -3047,8 +3077,8 @@
 <tr>
 <td><a href="http://purl.org/dc/terms/type">type</a></td>
 <td><a href="http://www.w3.org/2004/02/skos/core#Concept">skos:Concept</a></td>
+<td>optional</td>
 <td></td>
-<td>A type of licence, e.g. indicating 'public domain' or 'royalties required'.</td>
 <td></td>
 </tr>
 </tbody>
@@ -3176,7 +3206,7 @@
 <td><a href="http://www.w3.org/2004/02/skos/core#prefLabel">prefLabel</a></td>
 <td><a href="http://www.w3.org/2000/01/rdf-schema#Literal">rdfs:Literal</a><br>(rdf:langString)</td>
 <td></td>
-<td>Preferred label.</td>
+<td>A preferred label of the concept.</td>
 <td></td>
 </tr>
 <tr>

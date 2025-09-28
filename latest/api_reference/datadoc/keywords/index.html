@@ -1185,6 +1185,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../errors/" class="md-nav__link">
         
   
@@ -1280,6 +1303,15 @@
   <a href="#tripper.datadoc.keywords.Keywords.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.datadoc.keywords.Keywords.add" class="md-nav__link">
+    <span class="md-ellipsis">
+      add()
     </span>
   </a>
   
@@ -1771,6 +1803,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.keywords.Keywords.add" class="md-nav__link">
+    <span class="md-ellipsis">
+      add()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.keywords.Keywords.add_domain" class="md-nav__link">
     <span class="md-ellipsis">
       add_domain()
@@ -2041,6 +2082,34 @@ Keywords        </code>
         <span class="n">new</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span>
         <span class="k">return</span> <span class="n">new</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;KeywordsType&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add `keywords` to current keyword object.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_add</span><span class="p">(</span><span class="n">kw</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">kw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">Keywords</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="n">kw</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">kw</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kw</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_url</span><span class="p">(</span><span class="n">kw</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">kw</span><span class="p">:</span>
+                    <span class="n">_add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;`keywords` must be a Keywords object, a Path object, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;a string or a sequence of these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">_add</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">add_domain</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[str]]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2073,33 +2142,91 @@ Keywords        </code>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown domain name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse YAML file with keyword definitions.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=too-many-nested-blocks</span>
         <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;basedOn&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;basedOn&quot;</span><span class="p">))</span>
         <span class="n">recursive_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
         <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">{})</span>
-        <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">resource_name</span><span class="p">,</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">resource</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">value</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyword</span>
-                <span class="n">recursive_update</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
-                    <span class="p">{</span>
-                        <span class="n">keyword</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
-                        <span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">]:</span> <span class="n">value</span><span class="p">,</span>
-                        <span class="n">expand_iri</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;prefixes&quot;</span><span class="p">]):</span> <span class="n">value</span><span class="p">,</span>
-                    <span class="p">},</span>
-                    <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">)</span>
+
+                <span class="c1"># Simple validation</span>
+                <span class="n">valid_keys</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;iri&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;domain&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;range&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;datatype&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;usageNote&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_keys</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; has invalid key: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="n">valid_conformances</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;conformance&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;conformance&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_conformances</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; has invalid conformance: &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;conformance&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;. Valid values are &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_conformances</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;when parsing &#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                        <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span>
+                    <span class="c1"># Only allowed changes to existing keywords:</span>
+                    <span class="c1">#   - make conformance more strict</span>
+                    <span class="c1">#   - extend the domain</span>
+                    <span class="c1">#   - change default value</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;conformance&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="s2">&quot;conformance&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="p">(</span>
+                                <span class="n">valid_conformances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">conformance</span><span class="p">)</span>
+                                <span class="o">&gt;</span> <span class="n">valid_conformances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                            <span class="p">):</span>
+                                <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s2">&quot;keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; reduces strictness &quot;</span>
+                                    <span class="s2">&quot;of existing conformance: &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">conformance</span><span class="si">}</span><span class="s2"> when parsing &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                                <span class="p">)</span>
+                            <span class="n">value</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
+                            <span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+                            <span class="n">value</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">RedefineKeywordError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Cannot redefine &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; in keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;when parsing &#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                            <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyword</span>
+                    <span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span>
+                    <span class="n">recursive_update</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
+                        <span class="p">{</span>
+                            <span class="n">keyword</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                            <span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">]:</span> <span class="n">value</span><span class="p">,</span>
+                            <span class="n">expand_iri</span><span class="p">(</span>
+                                <span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;prefixes&quot;</span><span class="p">]</span>
+                            <span class="p">):</span> <span class="n">value</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">isnested</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns whether the keyword corresponds to an object property.&quot;&quot;&quot;</span>
@@ -2602,6 +2729,57 @@ describing the keywords.</p></td>
 
 
 
+<h3 id="tripper.datadoc.keywords.Keywords.add" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.keywords.Keywords.add" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Add <code>keywords</code> to current keyword object.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;KeywordsType&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add `keywords` to current keyword object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add</span><span class="p">(</span><span class="n">kw</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">kw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">Keywords</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="n">kw</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">kw</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kw</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_url</span><span class="p">(</span><span class="n">kw</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">kw</span><span class="p">:</span>
+                <span class="n">_add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;`keywords` must be a Keywords object, a Path object, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;a string or a sequence of these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">_add</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="tripper.datadoc.keywords.Keywords.add_domain" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">add_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
@@ -2962,33 +3140,91 @@ keywords.keywordname("dcterms:title")
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse YAML file with keyword definitions.&quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-nested-blocks</span>
     <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;basedOn&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">dct</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;basedOn&quot;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-
+    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;basedOn&quot;</span><span class="p">))</span>
     <span class="n">recursive_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
     <span class="n">resources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="p">{})</span>
-    <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">resource_name</span><span class="p">,</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">resource</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">value</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyword</span>
-            <span class="n">recursive_update</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
-                <span class="p">{</span>
-                    <span class="n">keyword</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
-                    <span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">]:</span> <span class="n">value</span><span class="p">,</span>
-                    <span class="n">expand_iri</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;prefixes&quot;</span><span class="p">]):</span> <span class="n">value</span><span class="p">,</span>
-                <span class="p">},</span>
-                <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span>
+
+            <span class="c1"># Simple validation</span>
+            <span class="n">valid_keys</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;iri&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;domain&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;range&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;datatype&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;usageNote&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_keys</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; has invalid key: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="n">valid_conformances</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;recommended&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;conformance&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;conformance&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_conformances</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; has invalid conformance: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;conformance&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;. Valid values are &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valid_conformances</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;when parsing &#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span>
+                <span class="c1"># Only allowed changes to existing keywords:</span>
+                <span class="c1">#   - make conformance more strict</span>
+                <span class="c1">#   - extend the domain</span>
+                <span class="c1">#   - change default value</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;conformance&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;conformance&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="p">(</span>
+                            <span class="n">valid_conformances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">conformance</span><span class="p">)</span>
+                            <span class="o">&gt;</span> <span class="n">valid_conformances</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                        <span class="p">):</span>
+                            <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; reduces strictness &quot;</span>
+                                <span class="s2">&quot;of existing conformance: &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">conformance</span><span class="si">}</span><span class="s2"> when parsing &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                            <span class="p">)</span>
+                        <span class="n">value</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
+                        <span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+                        <span class="n">value</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">RedefineKeywordError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Cannot redefine &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; in keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;when parsing &#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                        <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyword</span>
+                <span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="n">resource_name</span><span class="p">)</span>
+                <span class="n">recursive_update</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="n">keyword</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                        <span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">]:</span> <span class="n">value</span><span class="p">,</span>
+                        <span class="n">expand_iri</span><span class="p">(</span>
+                            <span class="n">value</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;prefixes&quot;</span><span class="p">]</span>
+                        <span class="p">):</span> <span class="n">value</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3417,7 +3653,7 @@ keywords.typename("dcat:Dataset")
   <tbody>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>Optional[Keywords]</code></td>
+        <td><code>Optional[KeywordsType]</code></td>
         <td><p>Optional existing keywords object.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -3446,7 +3682,7 @@ be an URI in which case it will be accessed via HTTP GET.</p></td>
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_keywords</span><span class="p">(</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
     <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[FileLoc, Sequence[FileLoc]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -3460,13 +3696,9 @@ be an URI in which case it will be accessed via HTTP GET.</p></td>
 <span class="sd">            be an URI in which case it will be accessed via HTTP GET.</span>
 <span class="sd">        timeout: Timeout in case `yamlfile` is a URI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">keywords</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">yamlfile</span><span class="o">=</span><span class="n">yamlfile</span><span class="p">)</span>
-    <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">domain</span><span class="p">:</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">yamlfile</span><span class="p">:</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">kw</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">yamlfile</span><span class="o">=</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">kw</span>
 </code></pre></div>
         </details>

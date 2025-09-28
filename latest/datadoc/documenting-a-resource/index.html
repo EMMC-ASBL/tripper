@@ -1276,6 +1276,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api_reference/datadoc/dictutils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    dictutils
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api_reference/datadoc/errors/" class="md-nav__link">
         
   
@@ -1702,6 +1725,12 @@ We therefore have to define them explicitly</p>
 <span class="o">...</span>     <span class="s2">&quot;kb&quot;</span><span class="p">:</span> <span class="s2">&quot;http://example.com/kb/&quot;</span>
 <span class="o">...</span> <span class="p">}</span>
 </code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Prefixes and keywords shares the same namespace and must therefore be distinct.</p>
+<p>This is a concequence of JSON-LD and cannot be changed by Tripper.
+A good rule of thumb is to write keywords out as full words and use short abberiviations (about 2-5 characters) for prefixes.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Side note</p>
 <p>This dict is actually a <a href="https://www.w3.org/TR/json-ld/">JSON-LD</a> document with an implicit context.
@@ -1770,11 +1799,18 @@ This is because the <code>type</code> argument of <a href="../../api_reference/d
 <p class="admonition-title">Note</p>
 <p>Unlike the single-resource dict representation, the multi-resource dict representation is not valid (possible incomplete) JSON-LD.</p>
 </div>
-<p>This dict representation accepts the following keywords:</p>
+<p>The root of this dict representation accepts the following keywords:</p>
 <ul>
+<li><strong>domain</strong>: Optional name of one of more domains to load keywords for.
+  Defaults to "default".</li>
+<li><strong>keywordfile</strong>: Optional YAML file with keyword definitions to parse.
+  May also be an URI in which case it will be accessed via HTTP GET.</li>
 <li><strong>@context</strong>: Optional user-defined context to be appended to the documentation of all resources.</li>
+<li><strong>base</strong>: Base IRI against which to resolve relative IRIs.</li>
 <li><strong>prefixes</strong>: A dict mapping namespace prefixes to their corresponding URLs.</li>
-<li><strong>datasets</strong>/<strong>distributions</strong>/<strong>accessServices</strong>/<strong>generators</strong>/<strong>parsers</strong>/<strong>resources</strong>: A list of valid <a href="#single-resource-dict">single-resource</a> dict of the given <a href="../introduction/#resource-types">resource type</a>.</li>
+<li><strong>\&lt;Class&gt;</strong>: Class name followed by a list of valid <a href="#single-resource-dict">single-resource</a> dicts for the specified class.
+  The class name must be defined by the <strong>domain</strong>, in a <strong>keywordfile</strong> or in a custom <strong>@context</strong>.
+  The "<a href="../keywords/">default</a>" <strong>domain</strong> already include many common classes, like <em><a href="https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-resource">Resource</a></em>, <em><a href="https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-dataset">Dataset</a></em>, <em><a href="https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-distribution">Distribution</a></em>, <em><a href="https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-dataservice">DataService</a></em>, <em><a href="https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/#properties-on-agent">Agent</a></em>...</li>
 </ul>
 <p>See <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml">semdata.yaml</a> for an example of a <a href="https://yaml.org/">YAML</a> representation of a multi-resource dict documentation.</p>
 <h2 id="documenting-as-a-yaml-file">Documenting as a YAML file<a class="headerlink" href="#documenting-as-a-yaml-file" title="Permanent link">&para;</a></h2>
@@ -1829,7 +1865,7 @@ Nested fields may be specified as dot-separated keywords. For example, the table
 <span class="o">...</span>         <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="s2">&quot;https://he-matchmaker.eu/sample/&quot;</span><span class="p">,</span>
 <span class="o">...</span>         <span class="s2">&quot;mat&quot;</span><span class="p">:</span> <span class="s2">&quot;https://he-matchmaker.eu/material/&quot;</span><span class="p">,</span>
 <span class="o">...</span>         <span class="s2">&quot;dm&quot;</span><span class="p">:</span> <span class="s2">&quot;http://onto-ns.com/meta/characterisation/0.1/SEMImage#&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;parser&quot;</span><span class="p">:</span> <span class="s2">&quot;http://sintef.no/dlite/parser#&quot;</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">&quot;par&quot;</span><span class="p">:</span> <span class="s2">&quot;http://sintef.no/dlite/parser#&quot;</span><span class="p">,</span>
 <span class="o">...</span>         <span class="s2">&quot;gen&quot;</span><span class="p">:</span> <span class="s2">&quot;http://sintef.no/dlite/generator#&quot;</span><span class="p">,</span>
 <span class="o">...</span>     <span class="p">},</span>
 <span class="o">...</span> <span class="p">)</span>
