@@ -8,6 +8,9 @@ pytest.importorskip("yaml")
 pytest.importorskip("requests")
 pytest.importorskip("pyld")
 
+GRAPHDB_CHECK_URL = "http://localhost:7200/repositories"
+FUSEKI_CHECK_URL = "http://localhost:3030"
+
 
 def test__get_range():
     """Test _get_default_keywords()."""
@@ -356,20 +359,20 @@ def test_update_classes():
     } in r3["subClassOf"]
 
 
-def test_datadoc():
+def datasettest(name):
     """Test save_datadoc() and acquire()/store()."""
     # pylint: disable=too-many-statements
 
     from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper import CHAMEO, DCAT, DCTERMS, EMMO, OTEIO, Triplestore
+    from tripper import CHAMEO, DCAT, DCTERMS, EMMO, OTEIO
     from tripper.datadoc import acquire, save_datadoc, search, store
     from tripper.datadoc.errors import NoSuchTypeError
 
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")
 
-    ts = Triplestore("rdflib")
+    ts = get_triplestore(name)
 
     # Load data documentation into triplestore
     datadoc = save_datadoc(ts, indir / "semdata.yaml")
@@ -381,6 +384,8 @@ def test_datadoc():
     SEMDATA = ts.namespaces["semdata"]
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = acquire(ts, iri, use_sparql=False)
+    print("----")
+    print(d)
     assert d["@id"] == iri
     assert set(d["@type"]) == {
         DCAT.Dataset,
@@ -492,6 +497,115 @@ def test_datadoc():
         SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
     }
 
+    # Filter on criterion, but without required value
+    assert set(
+        search(
+            ts,
+            criteria={"creator.name": None},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    # Filter on criterion, but with any predicate
+    assert set(
+        search(
+            ts,
+            criteria={None: ["Named Lab Assistant"]},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+    }
+
+    # Filter on criterion, but with any predicate
+    assert set(
+        search(
+            ts,
+            criteria={None: "Named Lab Assistant"},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+    }
+
+    # Filter on more criteria with any predicate, testlabel tests that
+    # indirect search through inSeries works.
+    assert set(
+        search(
+            ts,
+            criteria={None: ["Named Lab Assistant", "testlabel"]},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+        SEMDATA["SEM_cement_missingcreator"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+    }
+
+    # Filter on two different criteria in a dict)
+    assert set(
+        search(
+            ts,
+            criteria={"creator.name": "Sigurd Wenner", "label": "testlabel"},
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    # Filter on two different criteria in a list of tuples
+    assert set(
+        search(
+            ts,
+            criteria=[
+                ("creator.name", "Sigurd Wenner"),
+                ("label", "testlabel"),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+    }
+
+    assert set(
+        search(
+            ts,
+            criteria=[
+                (None, "Sigurd Wenner"),
+                (None, "testlabel"),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2"],
+        SEMDATA["SEM_cement_batch2/77600-23-001"],
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+    }
+
+    assert set(
+        search(
+            ts,
+            criteria=[
+                (None, "http://onto-ns.com/meta/matchmaker/0.2/SEMImage"),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+    }
+
+    assert set(
+        search(
+            ts,
+            criteria=[
+                (
+                    "https://w3id.org/emmo/domain/oteio#hasDatamodel",
+                    "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
+                ),
+            ],
+        )
+    ) == {
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
+    }
+
     with pytest.raises(NoSuchTypeError):
         search(ts, type="invalid-type")
 
@@ -499,10 +613,12 @@ def test_datadoc():
     assert set(search(ts, regex={"dcterms:title": "SEM images"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
+        SEMDATA.SEM_cement_missingcreator,
     }
     assert set(search(ts, regex={"dcterms:title": "SEM i[^ ]*s"})) == {
         SEMDATA.SEM_cement_batch2,
         SAMPLE["SEM_cement_batch2/77600-23-001"],
+        SEMDATA.SEM_cement_missingcreator,
     }
 
     # Get individual with given IRI
@@ -581,7 +697,7 @@ def test_validate():
 
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
-    pytest.skip()
+    # pytest.skip()
 
     from tripper import Triplestore
 
@@ -612,27 +728,6 @@ def test_pipeline():
     pipeline = parse
 
     pipeline.get()
-
-
-def test_fuseki():
-    """Test save and load dataset with Fuseki."""
-    import os
-
-    from tripper import Triplestore
-
-    host = os.getenv("TRIPLESTORE_HOST", "localhost")
-    port = os.getenv("TRIPLESTORE_PORT", "3030")
-    fuseki_args = {
-        "backend": "fusekix",
-        "base_iri": "http://example.com/ontology#",
-        "triplestore_url": f"http://{host}:{port}",
-        "database": "openmodel",
-    }
-    try:
-        ts = Triplestore(**fuseki_args)
-    except ModuleNotFoundError:
-        pytest.skip("Cannot connect to Fuseki server")
-    ts.remove_database(**fuseki_args)
 
 
 def test_deprecated():
@@ -667,3 +762,66 @@ def test_deprecated():
     with pytest.warns(DeprecationWarning):
         iris = search_iris(ts, criterias={"creator.name": "John Doe"})
     assert iris == [EX.exdata]
+
+
+def get_triplestore(tsname: str) -> "Triplestore":
+    """Help function that returns a new triplestore object."""
+    from tripper import Triplestore
+
+    if tsname == "GraphDB":
+        ts = Triplestore(
+            backend="sparqlwrapper",
+            base_iri="http://localhost:7200/repositories/test_repo",
+            update_iri=(
+                "http://localhost:7200/repositories/test_repo/statements"
+            ),
+        )
+    elif tsname == "Fuseki":
+        ts = Triplestore(
+            backend="sparqlwrapper",
+            base_iri=f"{FUSEKI_CHECK_URL}/test_repo",
+            update_iri=f"{FUSEKI_CHECK_URL}/test_repo/update",
+            username="admin",
+            password="admin0",
+        )
+    elif tsname == "rdflib":
+        ts = Triplestore("rdflib")
+    else:
+        raise ValueError(f"Unsupported triplestore name: {tsname}")
+
+    return ts
+
+
+def test_graphdb_datadoc():
+    """
+    Test the dataset module using GraphDB.
+    """
+    # Check if GraphDB is available and write a warning if it is not.
+    from tripper.utils import check_service_availability
+
+    if not check_service_availability(GRAPHDB_CHECK_URL, timeout=1):
+        pytest.skip("GraphDB instance not available locally; skipping tests.")
+
+    print("Testing graphdb")
+    datasettest("GraphDB")
+
+
+def test_fuseki_datadoc():
+    """
+    Test the dataset module using Fuseki.
+    """
+    # Check if Fuseki is available and write a warning if it is not.
+    from tripper.utils import check_service_availability
+
+    if not check_service_availability(FUSEKI_CHECK_URL, timeout=1):
+        pytest.skip("Fuseki instance not available locally; skipping tests.")
+
+    print("Testing fuseki")
+    datasettest("Fuseki")
+
+
+def test_rdflib_datadoc():
+    """
+    Test the dataset module using rdflib.
+    """
+    datasettest("rdflib")
