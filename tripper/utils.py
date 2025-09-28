@@ -64,7 +64,9 @@ __all__ = (
     "extend_namespace",
     "expand_iri",
     "prefix_iri",
+    "substitute_query",
     "get_entry_points",
+    "check_service_availability",
 )
 
 MATCH_PREFIXED_IRI = re.compile(
@@ -730,6 +732,54 @@ def prefix_iri(
         if require_prefixed:
             raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
+
+
+def substitute_query(
+    query: str,
+    iris: "Optional[dict]" = None,
+    literals: "Optional[dict]" = None,
+    prefixes: "Optional[dict]" = None,
+) -> "Any":
+    """Substitute IRI and literal variables in a SPARQL query.
+
+    Arguments:
+        query: String with the SPARQL query.
+        iris: Dict used for query substitutions that maps IRI variables
+            to IRIs. The IRIs may be provided as fully expanded or
+            prefixed with the prefix defined in `prefixes`.
+        literals: Dict used for query substitutions that maps literal
+            variables to literals.  For common datatypes, like strings
+            and numbers, the values can just be normal Python objects.
+            For special cases or more control, provide the values as
+            instances of `tripper.Literal`.
+        prefixes: Dict mapping prefixes to namespace URLs.
+
+    Notes:
+        The `query` argument may contain variables for IRIs and literals,
+        to be substituted using the `iris` and `literals` arguments. These
+        variables are prefixed `$`. This makes them easy to distinguish from
+        query variables, that are typically prefixed with `?`.
+
+        The query substitutions may be useful when the query is constructed
+        from user input, since they are properly escaped and will be inserted
+        in the query as a single token.  This may prevent sparql injection
+        attacks.
+    """
+    mapping = {}
+
+    if iris:
+        if prefixes is None:
+            prefixes = {}
+        for k, v in iris.items():
+            expanded = expand_iri(v, prefixes=prefixes)
+            quoted = urllib.parse.quote(expanded, safe=":~/?&;=#")
+            mapping[k] = f"<{quoted}>"
+
+    if literals:
+        for k, v in literals.items():
+            mapping[k] = Literal(v).n3()
+
+    return string.Template(query).safe_substitute(mapping)
 
 
 def get_entry_points(group: str):
