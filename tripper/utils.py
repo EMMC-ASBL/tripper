@@ -816,7 +816,9 @@ def get_entry_points(group: str):
     return eps
 
 
-def check_service_availability(url: str, timeout=5, interval=1) -> bool:
+def check_service_availability(
+    url: str, timeout: float = 5, interval: float = 1
+) -> bool:
     """Check whether the service with given URL is available.
 
     Arguments:
