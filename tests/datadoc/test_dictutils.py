@@ -23,6 +23,8 @@ def test_merge():
     assert merge(["a", "c"], "b") == ["a", "c", "b"]
     assert merge(["a", "b", "c"], "b") == ["a", "b", "c"]
     assert merge(["a", "c"], ["b", "c"]) == ["a", "c", "b"]
+    with pytest.raises(TypeError):
+        merge({}, "b")
 
 
 def test_add():
@@ -55,6 +57,11 @@ def test_addnested():
     assert d.a[0] == "2"
     assert d.a[1].b[1].c == {"d": "3"}
     assert d == {"a": ["2", {"b": ["1", {"c": {"d": "3"}}]}]}
+
+    l = []
+    assert addnested(l, "a.b", 1) == [{"a": {"b": 1}}]
+    assert addnested(l, "a.b", 1) == [{"a": {"b": 1}}]
+    assert addnested(l, "a.b", 2) == [{"a": {"b": [1, 2]}}]
 
 
 def test_get():

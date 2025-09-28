@@ -11,6 +11,14 @@ def test_AttrDict():
 
     d = AttrDict(a=1, b=2)
     assert d.a == 1
+    assert (
+        repr(d)
+        == """AttrDict({
+  'a': 1,
+  'b': 2,
+})"""
+    )
+    assert repr(AttrDict()) == "AttrDict()"
 
     with pytest.raises(KeyError):
         d.c  # pylint: disable=pointless-statement
@@ -29,7 +37,6 @@ def test_AttrDict():
     assert "a" in dir(d2)
 
 
-# if True:
 def test_recursive_update():
     """Test recursive_update()."""
     from tripper.utils import AttrDict, recursive_update
@@ -417,6 +424,7 @@ def test_is_url():
     assert is_url("http://example.com/") is True
     assert is_url("http://example.com/a b") is False
     assert is_url("http://example.c om/") is False
+    assert is_url("http://example.com[/") is False
     assert is_url("http://example.com/path?a=yes;b=no#fragment") is True
     assert is_url("www.example.com") is False
     assert is_url("urn:example.com") is False
