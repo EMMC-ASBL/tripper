@@ -14,7 +14,7 @@ keywords = Keywords()
 
 def test_get_keywords():
     """Test get_keywords() function."""
-    from dataset_paths import testdir
+    from dataset_paths import testdir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
 
