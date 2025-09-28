@@ -338,10 +338,14 @@ class Context:
             raise NamespaceError(f"no short name for: {name}")
         return name
 
+    def getdef(self, name: str) -> dict:
+        """Return JSON-LD definition of `name`."""
+        shortname = self.shortname(name)
+        return self.ctx["mappings"][shortname]
+
     def isref(self, name: str) -> bool:
         """Return wheter `name` is an object property that refers to a node."""
-        shortname = self.shortname(name)
-        return self.ctx["mappings"][shortname].get("@type") == "@id"
+        return self.getdef(name).get("@type") == "@id"
 
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""

@@ -5,7 +5,7 @@
     "sample": "https://he-matchmaker.eu/sample/",
     "mat": "https://he-matchmaker.eu/material/",
     "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
-    "parser": "http://sintef.no/dlite/parser#",
+    "par": "http://sintef.no/dlite/parser#",
     "gen": "http://sintef.no/dlite/generator#",
     "micro": "https://w3id.org/emmo/domain/microstructure/0.3#"
   },

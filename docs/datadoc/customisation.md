@@ -229,21 +229,11 @@ The `__init__()` method of the [TableDoc] class takes a `context` argument with 
 The value of the `context` argument is the same as for the `@context` key of a [Python dict].
 
 
-User-defined resource types
----------------------------
-TODO
-
-Extending the list of predefined [resource types] it not implemented yet.
-
-Since JSON-LD is not designed for categorisation, new resource types should not be added in a custom JSON-LD context.
-Instead, the list of available resource types should be stored and retrieved from the knowledge base.
-
 
 
 [With custom context]: #with-custom-context
 [User-defined keywords]: #user-defined-keywords
 [Python dict]: #python-dict
-[resource types]: introduction.md#resource-types
 [Documenting a resource]: documenting-a-resource.md
 [Search for and fetching resources]: fetching-resources-from-a-triplestore.md
 [predefined prefixes]: prefixes.md
