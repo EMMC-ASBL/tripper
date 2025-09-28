@@ -31,12 +31,14 @@ Functions for working with the dict-representation:
 
 from __future__ import annotations
 
-# pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
-# pylint: disable=too-many-branches
 import json
 import logging
 import re
 import warnings
+
+# pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
+# pylint: disable=too-many-branches
+from itertools import groupby
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -1184,7 +1186,7 @@ def make_query(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
+    criteria: "Optional[Union[dict, list[tuple]]]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -1209,6 +1211,15 @@ def make_query(
         if criteria is None:
             criteria = criterias
 
+    if isinstance(criteria, list):
+        criteria = sorted(criteria, key=lambda x: (x[0] is None, x[0]))
+
+        res = {
+            key: [value for key, value in group]
+            for key, group in groupby(criteria, key=lambda x: x[0])
+        }
+        criteria = res
+
     keywords = get_keywords(keywords=keywords)
     context = get_context(keywords=keywords)
     context._create_caches()  # pylint: disable=protected-access
@@ -1229,7 +1240,7 @@ def make_query(
     cid = criteria.pop("@id", criteria.pop("_id", None))
     rid = regex.pop("@id", regex.pop("_id", None))
     if cid:
-        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')
+        filters.append(f'FILTER(STR(?iri) = "{ts.expand_iri(cid)}") .')  # type: ignore
     elif rid:
         filters.append(
             f'FILTER REGEX(STR(?iri), "{ts.expand_iri(rid)}"{flags_arg}) .'
@@ -1252,7 +1263,73 @@ def make_query(
     def add_crit(k, v, regex=False, s="iri"):
         """Add criteria to SPARQL query."""
         nonlocal n
-        key = f"@{k[1:]}" if k.startswith("_") else k
+
+        key = None if k is None else (f"@{k[1:]}" if k.startswith("_") else k)
+
+        if key is None:
+            # any predicate on first hop; keep ?s (= ?iri) as the resource
+
+            n += 1
+            pvar = f"p{n}"
+            bn = f"bn{n}"
+            n += 1
+            qvar = f"q{n}"
+            var = f"v{n}"
+
+            # ?s ?p ?bn . ?bn ?q ?var .
+            crit.append(f"?{s} ?{pvar} ?{bn} .")
+            crit.append(f"?{bn} ?{qvar} ?{var} .")
+            # Only return non-blank subjects
+            if s == "iri":
+                filters.append("FILTER(!isBlank(?iri)) .")
+
+            # Support list of values → VALUES (equality) or a single alternation for regex
+            if isinstance(v, list):
+                if regex:
+                    pattern = "(" + "|".join(str(p) for p in v) + ")"
+                    filters.append(
+                        f'FILTER REGEX(STR(?{var}), "{pattern}"{flags_arg}) .'
+                    )
+                else:
+                    vals = []
+                    for ele in v:
+                        if ele in expanded:
+                            vals.append(f"<{expanded[ele]}>")
+                        elif isinstance(ele, str):
+                            vals.append(
+                                f"<{ele}>"
+                                if re.match("^[a-z][a-z0-9.+-]*://", ele)
+                                else f'"{ele}"'
+                            )
+                        elif ele not in ("", None):
+                            vals.append(ele)
+                    if vals:
+                        crit.append(f"VALUES ?{var} {{ {' '.join(vals)} }}")
+            else:
+                # single value
+                if v in expanded:
+                    value = f"<{expanded[v]}>"
+                elif isinstance(v, str):
+                    value = (
+                        f"<{v}>"
+                        if re.match("^[a-z][a-z0-9.+-]*://", v)
+                        else f'"{v}"'
+                    )
+                else:
+                    value = v
+                if value:
+                    if regex:
+                        filters.append(
+                            f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                        )
+                    else:
+                        # If it's an IRI token, compare directly; otherwise compare STR()
+                        if isinstance(value, str) and value.startswith("<"):
+                            filters.append(f"FILTER(?{var} = {value}) .")
+                        else:
+                            filters.append(f"FILTER(STR(?{var}) = {value}) .")
+            return
+
         if isinstance(v, list):
             for ele in v:
                 add_crit(key, ele, regex=regex, s=s)
@@ -1281,12 +1358,15 @@ def make_query(
             n += 1
             var = f"v{n}"
             crit.append(f"?{s} <{ts.expand_iri(key)}> ?{var} .")
-            if regex:
-                filters.append(
-                    f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
-                )
-            else:
-                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+
+            if value:
+
+                if regex:
+                    filters.append(
+                        f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
+                    )
+                else:
+                    filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
     for k, v in criteria.items():
         add_crit(k, v)
@@ -1297,6 +1377,8 @@ def make_query(
     for k, v in regex.items():
         add_crit(k, v, regex=True)
 
+    # Make sure that iris are iris (not blank nodes)
+    filters.append("FILTER(!isBlank(?iri)) .")
     where_statements = "\n      ".join(crit + filters)
     query = f"""
     PREFIX rdf: <{RDF}>
@@ -1312,7 +1394,7 @@ def search(
     ts: Triplestore,
     type=None,
     criterias: "Optional[dict]" = None,  # deprecated
-    criteria: "Optional[dict]" = None,  # new preferred name
+    criteria: "Optional[Union[list[tuple], dict]]" = None,  # new preferred name
     regex: "Optional[dict]" = None,
     flags: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
@@ -1323,17 +1405,34 @@ def search(
     Arguments:
         ts: Triplestore to search.
         type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
-            or the IRI of a class to limit the search to.
+            or the IRI of a class to limit the search to. Can also be given
+            as a list of resource types or IRIs.
         criteria: Exact match criteria. A dict of IRI, value pairs, where the
-            IRIs refer to data properties on the resource match. The IRIs
-            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
+            IRIs refer to data properties on the resource match. If more than
+            one value is desired for a given criterion, values can be provided
+            in a list. It can also be given as a list of (key, value) tuples.
+            A combination of tuples and dict is not supported.
+
+            The IRIsmay use any prefix defined in `ts`. E.g. if the prefix `dcterms`
             is in `ts`, it is expanded and the match criteria `dcterms:title`
             is correctly parsed.
-        regex: Like `criteria` but the values in the provided dict are regular
-            expressions used for the matching.
-        flags: Flags passed to regular expressions.
-            - `s`: Dot-all mode. The . matches any character.  The default
-              doesn't match newline or carriage return.
+
+            If the object (value) is given as None, all matches
+            that have any value for the given predicate are returned.
+
+            If predicate (key) is given as None, search on all objects irrespective
+            of predicate is performed.
+
+            Note that more than one value for a given key broadens the
+            search, i.e. it is an OR operation.
+
+            The different key-value pairs in the dict are combined with AND.
+
+            regex: Like `criteria` but the values in the provided dict are regular
+                expressions used for the matching.
+            flags: Flags passed to regular expressions.
+                - `s`: Dot-all mode. The . matches any character.  The default
+                doesn't match newline or carriage return.
             - `m`: Multi-line mode. The ^ and $ characters matches beginning
               or end of line instead of beginning or end of string.
             - `i`: Case-insensitive mode.
@@ -1354,9 +1453,35 @@ def search(
 
             search(ts, criteria={"contactPoint.hasName": "John Doe"})
 
+        List IRIs of all resources with John Doe and Jane Doe as `contactPoint`:
+
+            search(ts, criteria={"contactPoint.hasName": ["John Doe", "Jane Doe"]})
+
+        List IRIs of all resources that have a `contactPoint`:
+
+            search(ts, criteria={"contactPoint.hasName": None})
+
+        List IRIs of all resources that have Jane Doe or Blue as object (value):
+
+            search(ts, criteria={None: ["Jane Doe", "Blue"]})
+
+        Search with critera given as list of tuples:
+            search(
+                ts,
+                criteria=[
+                    ("contactPoint.hasName", "John Doe"),
+                    ("fromSample", SAMPLE.batch2/sample3),
+                ],
+            )
+
         List IRIs of all samples:
 
             search(ts, type=CHAMEO.Sample)
+
+        List IRIs of all samples that are liquids:
+            search(ts, type=[CHAMEO.Sample, EMMO.Liquid] )
+
+
 
         List IRIs of all datasets with John Doe as `contactPoint` AND are
         measured on a given sample:
