@@ -510,7 +510,7 @@ class Triplestore:
         new_query = substitute_query(
             query, iris=iris, literals=literals, prefixes=self.namespaces
         )
-        return self.backend.update(update_object=new_query, **kwargs)
+        return self.backend.update(new_query, **kwargs)
 
     @overload
     def bind(
