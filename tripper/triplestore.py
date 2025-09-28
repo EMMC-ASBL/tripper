@@ -47,6 +47,7 @@ from tripper.namespace import (
 )
 from tripper.utils import (
     bnode_iri,
+    check_service_availability,
     en,
     expand_iri,
     function_id,
@@ -134,6 +135,7 @@ class Triplestore:
         base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
         package: "Optional[str]" = None,
+        check_url: "Optional[str]" = None,
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
@@ -159,6 +161,7 @@ class Triplestore:
                 supports it).
             package: Required when `backend` is a relative module.  In that
                 case, it is relative to `package`.
+            check_url: A URL to use for checking that the backend is available.
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
@@ -170,6 +173,7 @@ class Triplestore:
             namespaces: Dict mapping namespace prefixes to IRIs.
             package: Name of Python package if the backend is implemented as
                 a relative module. Assigned to the `package` argument.
+            check_url: The value of the `check_url` argument.
 
         Notes:
             If the backend establishes a connection that should be closed
@@ -192,6 +196,7 @@ class Triplestore:
         self.backend_name = backend_name
         self.database = database
         self.package = package
+        self.check_url = check_url
         self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
@@ -1001,6 +1006,30 @@ class Triplestore:
             "cardinality": int(dct[c]) if c else None,
             "value": dct[p],
         }
+
+    def available(self, timeout=5, interval=1) -> bool:
+        """Checks if the backend is available.
+
+        This is done by sending a request is send to the URL specified
+        in the `check_url` attribute and checking for the response.
+
+        Arguments:
+            url: URL of the service to check.
+            timeout: Total time in seconds to wait for a respond.
+            interval: Interval for checking response.
+
+        Returns:
+            Returns true if the service responds with code 200,
+            otherwise false is returned.
+
+        """
+        if self.check_url is None:
+            raise ValueError(
+                "`check_url` must be assigned before calling available()"
+            )
+        return check_service_availability(
+            self.check_url, timeout=timeout, interval=interval
+        )
 
     def map(
         self,

@@ -5,57 +5,36 @@ as described in the for_developers documentation on
 https://emmc-asbl.github.io/tripper/latest/developers/.
 """
 
+from pathlib import Path
+
 import pytest
+
+from tripper import Session
 
 pytest.importorskip("pyld")
 
-# URL to check if GraphDB is running.
-GRAPHDB_CHECK_URL = "http://localhost:7200/repositories"
-FUSEKI_CHECK_URL = "http://localhost:3030"
+thisdir = Path(__file__).resolve().parent
+indir = thisdir.parent / "input"
 
-
-def get_triplestore(tsname: str) -> "Triplestore":
-    """Help function that returns a new triplestore object."""
-    from tripper import Triplestore
-
-    if tsname == "GraphDB":
-        ts = Triplestore(
-            backend="sparqlwrapper",
-            base_iri="http://localhost:7200/repositories/test_repo",
-            update_iri=(
-                "http://localhost:7200/repositories/test_repo/statements"
-            ),
-        )
-    elif tsname == "Fuseki":
-        ts = Triplestore(
-            backend="sparqlwrapper",
-            base_iri=f"{FUSEKI_CHECK_URL}/test_repo",
-            update_iri=f"{FUSEKI_CHECK_URL}/test_repo/update",
-            username="admin",
-            password="admin0",
-        )
-    else:
-        raise ValueError(f"Unsupported triplestore name: {tsname}")
-
-    return ts
+session = Session(config=indir / "session.yaml")
 
 
 # if True:
-#    tsname = "Fuseki"
-def populate_and_search(tsname):  # pylint: disable=too-many-statements
+#    sessionName = "FusekiTest"
+def populate_and_search(sessionName):  # pylint: disable=too-many-statements
     """Do the test on the desried backend."""
     # pylint: disable=too-many-locals
-
-    from pathlib import Path
 
     from tripper import Literal
     from tripper.datadoc import acquire, save_datadoc, search
 
-    thisdir = Path(__file__).resolve().parent
+    ts = session.get_triplestore(sessionName)
+    if not ts.available(timeout=1):
+        pytest.skip(f"{sessionName} service not available; skipping test.")
+
     datasetinput = thisdir / "datadocumentation_sample.yaml"
     datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
 
-    ts = get_triplestore(tsname)
     EX = ts.bind("ex", "http://www.example.org/")
 
     # Test DELETE query - clear the triplestore
@@ -194,28 +173,12 @@ INSERT DATA {
 
 
 def test_graphdb():
-    """
-    Test the sparqlwrapper backend using GraphDB.
-    """
-    # Check if GraphDB is available and write a warning if it is not.
-    from tripper.utils import check_service_availability
-
-    if not check_service_availability(GRAPHDB_CHECK_URL, timeout=1):
-        pytest.skip("GraphDB instance not available locally; skipping tests.")
-
-    print("Testing graphdb")
-    populate_and_search("GraphDB")
+    """Test the sparqlwrapper backend using GraphDB."""
+    # Use service configured in tests/input/session.yaml
+    populate_and_search("GraphDBTest")
 
 
 def test_fuseki():
-    """
-    Test the sparqlwrapper backend using Fuseki.
-    """
-    # Check if Fuseki is available and write a warning if it is not.
-    from tripper.utils import check_service_availability
-
-    if not check_service_availability(FUSEKI_CHECK_URL, timeout=1):
-        pytest.skip("Fuseki instance not available locally; skipping tests.")
-
-    print("Testing fuseki")
-    populate_and_search("Fuseki")
+    """Test the sparqlwrapper backend using Fuseki."""
+    # Use service configured in tests/input/session.yaml
+    populate_and_search("FusekiTest")
