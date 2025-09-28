@@ -1,15 +1,11 @@
 """Test the dataset module."""
 
 # pylint: disable=invalid-name,too-many-locals,duplicate-code
-
 import pytest
 
 pytest.importorskip("yaml")
 pytest.importorskip("requests")
 pytest.importorskip("pyld")
-
-GRAPHDB_CHECK_URL = "http://localhost:7200/repositories"
-FUSEKI_CHECK_URL = "http://localhost:3030"
 
 
 def test__get_range():
@@ -359,11 +355,15 @@ def test_update_classes():
     } in r3["subClassOf"]
 
 
-def datasettest(name):
+
+#sessionName = "FusekiTest"
+sessionName = "RdflibTest"
+if True:
+#def datasettest(sessionName):
     """Test save_datadoc() and acquire()/store()."""
     # pylint: disable=too-many-statements
 
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir, session  # pylint: disable=import-error
 
     from tripper import CHAMEO, DCAT, DCTERMS, EMMO, OTEIO
     from tripper.datadoc import acquire, save_datadoc, search, store
@@ -372,7 +372,9 @@ def datasettest(name):
     pytest.importorskip("dlite")
     pytest.importorskip("rdflib")
 
-    ts = get_triplestore(name)
+    ts = session.get_triplestore(sessionName)
+    if ts.check_url and not ts.available(timeout=1):
+        pytest.skip(f"{sessionName} service not available; skipping test.")
 
     # Load data documentation into triplestore
     datadoc = save_datadoc(ts, indir / "semdata.yaml")
@@ -792,36 +794,18 @@ def get_triplestore(tsname: str) -> "Triplestore":
     return ts
 
 
+# Use service configured in tests/input/session.yaml
+
+def test_rdflib_datadoc():
+    """Test the dataset module using rdflib."""
+    datasettest("RdflibTest")
+
+
 def test_graphdb_datadoc():
-    """
-    Test the dataset module using GraphDB.
-    """
-    # Check if GraphDB is available and write a warning if it is not.
-    from tripper.utils import check_service_availability
-
-    if not check_service_availability(GRAPHDB_CHECK_URL, timeout=1):
-        pytest.skip("GraphDB instance not available locally; skipping tests.")
-
-    print("Testing graphdb")
-    datasettest("GraphDB")
+    """Test the dataset module using GraphDB."""
+    datasettest("GraphDBTest")
 
 
 def test_fuseki_datadoc():
-    """
-    Test the dataset module using Fuseki.
-    """
-    # Check if Fuseki is available and write a warning if it is not.
-    from tripper.utils import check_service_availability
-
-    if not check_service_availability(FUSEKI_CHECK_URL, timeout=1):
-        pytest.skip("Fuseki instance not available locally; skipping tests.")
-
-    print("Testing fuseki")
-    datasettest("Fuseki")
-
-
-def test_rdflib_datadoc():
-    """
-    Test the dataset module using rdflib.
-    """
-    datasettest("rdflib")
+    """Test the dataset module using Fuseki."""
+    datasettest("FusekiTest")

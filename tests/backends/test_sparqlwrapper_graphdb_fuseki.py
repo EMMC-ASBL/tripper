@@ -30,7 +30,7 @@ def populate_and_search(sessionName):  # pylint: disable=too-many-statements
     from tripper.datadoc import acquire, save_datadoc, search
 
     ts = session.get_triplestore(sessionName)
-    if not ts.available(timeout=1):
+    if ts.check_url and not ts.available(timeout=1):
         pytest.skip(f"{sessionName} service not available; skipping test.")
 
     datasetinput = thisdir / "datadocumentation_sample.yaml"
