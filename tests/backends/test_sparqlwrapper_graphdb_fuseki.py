@@ -20,6 +20,7 @@ session = Session(config=indir / "session.yaml")
 
 
 # if True:
+#    sessionName = "GraphDBTest"
 #    sessionName = "FusekiTest"
 def populate_and_search(sessionName):  # pylint: disable=too-many-statements
     """Do the test on the desried backend."""

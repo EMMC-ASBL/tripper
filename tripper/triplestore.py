@@ -1007,7 +1007,7 @@ class Triplestore:
             "value": dct[p],
         }
 
-    def available(self, timeout=5, interval=1) -> bool:
+    def available(self, timeout: float = 5, interval: float = 1) -> bool:
         """Checks if the backend is available.
 
         This is done by sending a request is send to the URL specified
