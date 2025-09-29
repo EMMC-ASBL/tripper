@@ -557,6 +557,11 @@ def test_substitute_query():
         r' "John Dow\" . <something nasty> \"" }'
     )
 
+    assert substitute_query("$x $y", iris={"x": "X"}) == "<X> $y"
+    assert substitute_query("$x", iris={"x": "X"}, iriquote="[]") == "[X]"
+    assert substitute_query("$x", iris={"x": "X"}, iriquote=" ") == " X "
+    assert substitute_query("$x", iris={"x": "X"}, iriquote=None) == "X"
+
 
 def test_get_entry_points():
     """Test get_entry_points()"""

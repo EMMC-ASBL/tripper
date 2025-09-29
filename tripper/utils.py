@@ -10,6 +10,7 @@ import string
 import sys
 import tempfile
 import urllib
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -739,6 +740,7 @@ def substitute_query(
     iris: "Optional[dict]" = None,
     literals: "Optional[dict]" = None,
     prefixes: "Optional[dict]" = None,
+    iriquote: str = "<>",
 ) -> "Any":
     """Substitute IRI and literal variables in a SPARQL query.
 
@@ -753,6 +755,8 @@ def substitute_query(
             For special cases or more control, provide the values as
             instances of `tripper.Literal`.
         prefixes: Dict mapping prefixes to namespace URLs.
+        iriquote: Quote characters to use for IRIs. Should be a string of
+            length 2, with the start and end quote.
 
     Notes:
         The `query` argument may contain variables for IRIs and literals,
@@ -765,15 +769,29 @@ def substitute_query(
         in the query as a single token.  This may prevent sparql injection
         attacks.
     """
+    safe = "-._~:/?#@+&;="  # special IRI characters that are not escaped
     mapping = {}
+
+    if iriquote:
+        if len(iriquote) == 1:
+            iriquote = iriquote[0] * 2
+        elif len(iriquote) > 2:
+            raise ValueError(
+                f"`iriquote` cannot be more than 2 characters: '{iriquote}'"
+            )
+        if iriquote[1].isalnum() or iriquote[1] in safe:
+            warnings.warn(
+                f"End quote '{iriquote[1]}' is alphanumeric or in '{safe}'"
+            )
 
     if iris:
         if prefixes is None:
             prefixes = {}
         for k, v in iris.items():
             expanded = expand_iri(v, prefixes=prefixes)
-            quoted = urllib.parse.quote(expanded, safe=":~/?&;=#")
-            mapping[k] = f"<{quoted}>"
+            quoted = urllib.parse.quote(expanded, safe=safe)
+            q1, q2 = iriquote if iriquote else ("", "")  # type: ignore[misc]
+            mapping[k] = f"{q1}{quoted}{q2}"
 
     if literals:
         for k, v in literals.items():
