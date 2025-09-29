@@ -355,11 +355,10 @@ def test_update_classes():
     } in r3["subClassOf"]
 
 
-
-#sessionName = "FusekiTest"
+# sessionName = "FusekiTest"
 sessionName = "RdflibTest"
 if True:
-#def datasettest(sessionName):
+    # def datasettest(sessionName):
     """Test save_datadoc() and acquire()/store()."""
     # pylint: disable=too-many-statements
 
@@ -795,6 +794,7 @@ def get_triplestore(tsname: str) -> "Triplestore":
 
 
 # Use service configured in tests/input/session.yaml
+
 
 def test_rdflib_datadoc():
     """Test the dataset module using rdflib."""
