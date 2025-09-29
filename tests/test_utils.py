@@ -525,6 +525,44 @@ def test_prefix_iri():
         prefix_iri("xxx", prefixes, require_prefixed=True)
 
 
+def test_substitute_query():
+    """Test substitute_query()."""
+    from tripper import FOAF
+    from tripper.utils import substitute_query
+
+    assert (
+        substitute_query(
+            query="SELECT ?s WHERE { ?s $name $obj }",
+            iris={"name": "foaf:name"},
+            literals={"obj": "John Dow"},
+            prefixes={"foaf": str(FOAF)},
+        )
+        == f'SELECT ?s WHERE {{ ?s <{FOAF.name}> "John Dow" }}'
+    )
+
+    assert (
+        substitute_query(
+            query="SELECT ?s WHERE { ?s $name $obj }",
+            iris={
+                "name": (
+                    'http://xmlns.com/foaf/0.1/name> "x" . '
+                    "<something nasty> <"
+                )
+            },
+            literals={"obj": 'John Dow" . <something nasty> "'},
+        )
+    ) == (
+        "SELECT ?s WHERE { ?s <http://xmlns.com/foaf/0.1/name"
+        "%3E%20%22x%22%20.%20%3Csomething%20nasty%3E%20%3C>"
+        r' "John Dow\" . <something nasty> \"" }'
+    )
+
+    assert substitute_query("$x $y", iris={"x": "X"}) == "<X> $y"
+    assert substitute_query("$x", iris={"x": "X"}, iriquote="[]") == "[X]"
+    assert substitute_query("$x", iris={"x": "X"}, iriquote=" ") == " X "
+    assert substitute_query("$x", iris={"x": "X"}, iriquote=None) == "X"
+
+
 def test_get_entry_points():
     """Test get_entry_points()"""
     from tripper.utils import get_entry_points

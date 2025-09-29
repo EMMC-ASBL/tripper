@@ -6,8 +6,12 @@ with or without conftest.
 
 from pathlib import Path
 
+from tripper import Session
+
 testdir = Path(__file__).absolute().parent.parent.resolve()
 rootdir = testdir.parent.resolve()
 ontodir = testdir / "ontologies"
 indir = testdir / "input"
 outdir = testdir / "output"
+
+session = Session(config=indir / "session.yaml")

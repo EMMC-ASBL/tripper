@@ -47,6 +47,7 @@ from tripper.namespace import (
 )
 from tripper.utils import (
     bnode_iri,
+    check_service_availability,
     en,
     expand_iri,
     function_id,
@@ -54,6 +55,7 @@ from tripper.utils import (
     infer_iri,
     prefix_iri,
     split_iri,
+    substitute_query,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -134,6 +136,7 @@ class Triplestore:
         base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
         package: "Optional[str]" = None,
+        check_url: "Optional[str]" = None,
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
@@ -159,6 +162,7 @@ class Triplestore:
                 supports it).
             package: Required when `backend` is a relative module.  In that
                 case, it is relative to `package`.
+            check_url: A URL to use for checking that the backend is available.
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
@@ -170,6 +174,7 @@ class Triplestore:
             namespaces: Dict mapping namespace prefixes to IRIs.
             package: Name of Python package if the backend is implemented as
                 a relative module. Assigned to the `package` argument.
+            check_url: The value of the `check_url` argument.
 
         Notes:
             If the backend establishes a connection that should be closed
@@ -192,6 +197,7 @@ class Triplestore:
         self.backend_name = backend_name
         self.database = database
         self.package = package
+        self.check_url = check_url
         self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
@@ -412,11 +418,32 @@ class Triplestore:
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "Any":
+    def query(
+        self,
+        query: str,
+        iris: "Optional[dict]" = None,
+        literals: "Optional[dict]" = None,
+        **kwargs,
+    ) -> "Any":
         """SPARQL query.
 
+        The `query` argument may contain variables for IRIs and literals,
+        to be substituted using the `iris` and `literals` arguments. These
+        variables are prefixed `$`. This makes them easy to distinguish from
+        query variables, that are typically prefixed with `?`.
+
+        The query substitutions may be useful when the query is constructed
+        from user input, since they are properly escaped and will be inserted
+        in the query as a single token.  This may prevent sparql injection
+        attacks.
+
         Arguments:
-            query_object: String with the SPARQL query.
+            query: String with the SPARQL query.
+            iris: Dict used for query substitutions that maps IRI variables
+                to IRIs. The IRIs may be provided as fully expanded or
+                prefixed with a prefix registered in the triplestore namespace.
+            literals: Dict used for query substitutions that maps literal
+                variables to literals.
             kwargs: Keyword arguments passed to the backend query() method.
 
         Returns:
@@ -432,24 +459,63 @@ class Triplestore:
 
             Not all backends may support all types of queries.
 
+        Examples:
+            Query for everyone with the name "John Dow":
+
+            >>> from tripper import FOAF, Literal, Triplestore
+            >>> ts = Triplestore(backend="rdflib")
+            >>> ts.bind("foaf", FOAF)
+            Namespace('http://xmlns.com/foaf/0.1/')
+
+            >>> ts.add_triples([
+            ...     (":john", FOAF.name, Literal("John Dow")),
+            ...     (":jack", FOAF.name, Literal("Jack Hudson")),
+            ... ])
+            >>> ts.query(
+            ...     "SELECT ?s WHERE { ?s $name $obj .}",
+            ...     iris={"name": "foaf:name"},
+            ...     literals={"obj": "John Dow"},
+            ... )
+            [(':john',)]
+
         """
         self._check_method("query")
-        return self.backend.query(query_object=query_object, **kwargs)
+        new_query = substitute_query(
+            query, iris=iris, literals=literals, prefixes=self.namespaces
+        )
+        return self.backend.query(new_query, **kwargs)
 
-    def update(self, update_object, **kwargs) -> None:
+    def update(
+        self,
+        query: str,
+        iris: "Optional[dict]" = None,
+        literals: "Optional[dict]" = None,
+        **kwargs,
+    ) -> None:
         """Update triplestore with SPARQL.
 
         Arguments:
-            update_object: String with the SPARQL query.
+            query: String with the SPARQL query.
+            iris: Dict used for query substitutions that maps IRI variables
+                to IRIs. The IRIs may be provided as fully expanded or
+                prefixed with a prefix registered in the triplestore namespace.
+            literals: Dict used for query substitutions that maps literal
+                variables to literals.
             kwargs: Keyword arguments passed to the backend update() method.
 
         Note:
+            See `query()` for how to the query substitution arguments `iris`
+            and `literals`.
+
             This method is intended for INSERT and DELETE queries. Use
             the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.
 
         """
         self._check_method("update")
-        return self.backend.update(update_object=update_object, **kwargs)
+        new_query = substitute_query(
+            query, iris=iris, literals=literals, prefixes=self.namespaces
+        )
+        return self.backend.update(new_query, **kwargs)
 
     @overload
     def bind(
@@ -1001,6 +1067,29 @@ class Triplestore:
             "cardinality": int(dct[c]) if c else None,
             "value": dct[p],
         }
+
+    def available(self, timeout: float = 5, interval: float = 1) -> bool:
+        """Checks if the backend is available.
+
+        This is done by sending a request is send to the URL specified
+        in the `check_url` attribute and checking for the response.
+
+        Arguments:
+            timeout: Total time in seconds to wait for a respond.
+            interval: Interval for checking response.
+
+        Returns:
+            Returns true if the service responds with code 200,
+            otherwise false is returned.
+
+        """
+        if self.check_url is None:
+            raise ValueError(
+                "`check_url` must be assigned before calling available()"
+            )
+        return check_service_availability(
+            self.check_url, timeout=timeout, interval=interval
+        )
 
     def map(
         self,

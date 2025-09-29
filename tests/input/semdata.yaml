@@ -9,6 +9,7 @@ prefixes:
   dm: http://onto-ns.com/meta/characterisation/0.1/SEMImage#
   par: http://sintef.no/dlite/parser#
   gen: http://sintef.no/dlite/generator#
+  chameo: https://w3id.org/emmo/domain/characterisation-methodology/chameo#
 
 
 # List of documented datasets
@@ -68,10 +69,24 @@ Dataset:
     contactPoint:
       hasName: Sigurd Wenner
       hasEmail: <Sigurd.Wenner@sintef.no>
-
+    label: testlabel
     distribution:
       downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2
       mediaType: inode/directory
+
+  - "@id": semdata:SEM_cement_missingcreator
+    "@type": sem:SEMImageSeries
+    title: Nested series of SEM images which is missing a creator
+    description:  ...
+    curator:
+      - name: Named Lab Assistant
+
+    distribution:
+      downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch_missingcreator
+      mediaType: inode/directory
+
+
+
 
 
 Parser:
