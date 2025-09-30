@@ -741,7 +741,7 @@ def substitute_query(
     literals: "Optional[dict]" = None,
     prefixes: "Optional[dict]" = None,
     iriquote: str = "<>",
-) -> "Any":
+) -> str:
     """Substitute IRI and literal variables in a SPARQL query.
 
     Arguments:
