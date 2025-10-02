@@ -1,3 +1,9 @@
+# Default sessions used for testing
+#
+# See https://emmc-asbl.github.io/tripper/latest/developers/ for how to set
+# up local instances of GraphDB and Fuseki corresponding to the settings below.
+
+
 RdflibTest:
   backend: rdflib
 
@@ -5,6 +11,7 @@ FusekiTest:
   backend: sparqlwrapper
   base_iri: http://localhost:3030/test_repo
   update_iri: http://localhost:3030/test_repo/update
+  check_url: http://localhost:3030
   username: admin
   password: admin0
 
@@ -12,3 +19,4 @@ GraphDBTest:
   backend: sparqlwrapper
   base_iri: http://localhost:7200/repositories/test_repo
   update_iri: http://localhost:7200/repositories/test_repo/statements
+  check_url: http://localhost:7200/repositories

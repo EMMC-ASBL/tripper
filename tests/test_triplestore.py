@@ -274,6 +274,18 @@ def test_restriction() -> None:  # pylint: disable=too-many-statements
     ]
 
 
+def test_availability():
+    """Test availability()."""
+    # Already tested in backends/test_sparqlwrapper_graphdb_fuseki.py
+    # Just add test for missing `check_url`
+    pytest.importorskip("rdflib")
+    from tripper.triplestore import Triplestore
+
+    ts = Triplestore("rdflib")
+    with pytest.raises(ValueError):
+        ts.available()
+
+
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
     """Specifically test the rdflib backend Triplestore.
 
