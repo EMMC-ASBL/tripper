@@ -1076,7 +1076,8 @@ class Triplestore:
 
         Arguments:
             timeout: Total time in seconds to wait for a response.
-            interval: Interval for checking response.
+        interval: Internal time interval in seconds between checking if the
+            service has responded.
 
         Returns:
             Returns true if the service responds with code 200,

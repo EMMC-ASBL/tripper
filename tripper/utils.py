@@ -842,7 +842,8 @@ def check_service_availability(
     Arguments:
         url: URL of the service to check.
         timeout: Total time in seconds to wait for a respond.
-        interval: Interval for checking response.
+        interval: Internal time interval in seconds between checking if the
+            service has responded.
 
     Returns:
         Returns true if the service responds with code 200,
