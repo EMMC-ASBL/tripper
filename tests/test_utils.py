@@ -562,6 +562,12 @@ def test_substitute_query():
     assert substitute_query("$x", iris={"x": "X"}, iriquote=" ") == " X "
     assert substitute_query("$x", iris={"x": "X"}, iriquote=None) == "X"
 
+    with pytest.raises(ValueError):
+        substitute_query("$x", iris={"x": "X"}, iriquote="xxx")
+
+    with pytest.warns(UserWarning):
+        substitute_query("$x", iris={"x": "X"}, iriquote="--")
+
 
 def test_get_entry_points():
     """Test get_entry_points()"""
