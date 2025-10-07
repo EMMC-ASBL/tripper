@@ -1071,7 +1071,7 @@ class Triplestore:
     def available(self, timeout: float = 5, interval: float = 1) -> bool:
         """Checks if the backend is available.
 
-        This is done by sending a request is send to the URL specified
+        This is done by sending a request to the URL specified
         in the `check_url` attribute and checking for the response.
 
         Arguments:
