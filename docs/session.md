@@ -11,18 +11,28 @@ The default location of this configuration file depends on the system:
 - Windows: `$HOME/AppData/Local/tripper/Config/session.yaml`
 - Darwin: `$HOME/Library/Config/tripper/session.yaml`
 
-Add some default
+The schema of the YAML file is simple.
+A session should have a name that identifies it and should be followed by keyword arguments accepted by the `Triplestore` constructor.
+
+Here is an example of a possible session file:
 
 ```
+---
+
+RdflibTest:
+  backend: rdflib
+
 GraphDBTest:
   backend: sparqlwrapper
   base_iri: http://localhost:7200/repositories/test_repo
   update_iri: http://localhost:7200/repositories/test_repo/statements
+  check_url: http://localhost:7200/repositories
 
 FusekiTest:
   backend: sparqlwrapper
   base_iri: http://localhost:3030/test_repo
   update_iri: http://localhost:3030/test_repo/update
+  check_url: http://localhost:3030
   username: admin
   password: admin0
 
@@ -30,15 +40,18 @@ MyKB:
   backend: sparqlwrapper
   base_iri: https://graphdb.myproject.eu/repositories/test_repo
   update_iri: https://graphdb.myproject.eu/repositories/test_repo/statements
+  check_url: https://graphdb.myproject.eu/repositories
   username: myname
   password: KEYRING
 ```
 
-The two first entries correspond to the GraphDB and Fuseki services
-that can be started with docker as described in the [developers]
-section.
+The first entry is an in-memory rdflib backend.
 
-The third entry is just a dummy example, showing how to use [keyring].
+The second and third entries correspond to GraphDB and Fuseki services,
+respectively.
+These can be started with docker as described in the [developers] section.
+
+The fourth entry is just a dummy example, showing how to use [keyring].
 
 Each entry starts with the name identifying the configured triplestore.
 The keywords following it, correspond to the keyword arguments passed to the
