@@ -55,6 +55,7 @@ from tripper.utils import (
     infer_iri,
     prefix_iri,
     split_iri,
+    substitute_query,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -417,11 +418,32 @@ class Triplestore:
             ts.bind(prefix, iri)
         return ts.serialize(destination=destination, format=format, **kwargs)
 
-    def query(self, query_object, **kwargs) -> "Any":
+    def query(
+        self,
+        query: str,
+        iris: "Optional[dict]" = None,
+        literals: "Optional[dict]" = None,
+        **kwargs,
+    ) -> "Any":
         """SPARQL query.
 
+        The `query` argument may contain variables for IRIs and literals,
+        to be substituted using the `iris` and `literals` arguments. These
+        variables are prefixed `$`. This makes them easy to distinguish from
+        query variables, that are typically prefixed with `?`.
+
+        The query substitutions may be useful when the query is constructed
+        from user input, since they are properly escaped and will be inserted
+        in the query as a single token.  This may prevent sparql injection
+        attacks.
+
         Arguments:
-            query_object: String with the SPARQL query.
+            query: String with the SPARQL query.
+            iris: Dict used for query substitutions that maps IRI variables
+                to IRIs. The IRIs may be provided as fully expanded or
+                prefixed with a prefix registered in the triplestore namespace.
+            literals: Dict used for query substitutions that maps literal
+                variables to literals.
             kwargs: Keyword arguments passed to the backend query() method.
 
         Returns:
@@ -437,24 +459,63 @@ class Triplestore:
 
             Not all backends may support all types of queries.
 
+        Examples:
+            Query for everyone with the name "John Dow":
+
+            >>> from tripper import FOAF, Literal, Triplestore
+            >>> ts = Triplestore(backend="rdflib")
+            >>> ts.bind("foaf", FOAF)
+            Namespace('http://xmlns.com/foaf/0.1/')
+
+            >>> ts.add_triples([
+            ...     (":john", FOAF.name, Literal("John Dow")),
+            ...     (":jack", FOAF.name, Literal("Jack Hudson")),
+            ... ])
+            >>> ts.query(
+            ...     "SELECT ?s WHERE { ?s $name $obj .}",
+            ...     iris={"name": "foaf:name"},
+            ...     literals={"obj": "John Dow"},
+            ... )
+            [(':john',)]
+
         """
         self._check_method("query")
-        return self.backend.query(query_object=query_object, **kwargs)
+        new_query = substitute_query(
+            query, iris=iris, literals=literals, prefixes=self.namespaces
+        )
+        return self.backend.query(new_query, **kwargs)
 
-    def update(self, update_object, **kwargs) -> None:
+    def update(
+        self,
+        query: str,
+        iris: "Optional[dict]" = None,
+        literals: "Optional[dict]" = None,
+        **kwargs,
+    ) -> None:
         """Update triplestore with SPARQL.
 
         Arguments:
-            update_object: String with the SPARQL query.
+            query: String with the SPARQL query.
+            iris: Dict used for query substitutions that maps IRI variables
+                to IRIs. The IRIs may be provided as fully expanded or
+                prefixed with a prefix registered in the triplestore namespace.
+            literals: Dict used for query substitutions that maps literal
+                variables to literals.
             kwargs: Keyword arguments passed to the backend update() method.
 
         Note:
+            See `query()` for how to the query substitution arguments `iris`
+            and `literals`.
+
             This method is intended for INSERT and DELETE queries. Use
             the query() method for SELECT, ASK, CONSTRUCT and DESCRIBE queries.
 
         """
         self._check_method("update")
-        return self.backend.update(update_object=update_object, **kwargs)
+        new_query = substitute_query(
+            query, iris=iris, literals=literals, prefixes=self.namespaces
+        )
+        return self.backend.update(new_query, **kwargs)
 
     @overload
     def bind(
