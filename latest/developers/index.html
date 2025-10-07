@@ -1482,13 +1482,31 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Adding new backends">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-local-graphdb-and-fuseki-services-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up local GraphDB and Fuseki services for testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting up local GraphDB and Fuseki services for testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#developing-the-sparqlwrapper" class="md-nav__link">
+  <a href="#setting-up-graphdb-service" class="md-nav__link">
     <span class="md-ellipsis">
-      Developing the sparqlwrapper
+      Setting up GraphDB service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-fuseki-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up Fuseki service
     </span>
   </a>
   
@@ -1624,13 +1642,31 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Adding new backends">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-local-graphdb-and-fuseki-services-for-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up local GraphDB and Fuseki services for testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting up local GraphDB and Fuseki services for testing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#developing-the-sparqlwrapper" class="md-nav__link">
+  <a href="#setting-up-graphdb-service" class="md-nav__link">
     <span class="md-ellipsis">
-      Developing the sparqlwrapper
+      Setting up GraphDB service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-fuseki-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up Fuseki service
     </span>
   </a>
   
@@ -1678,10 +1714,15 @@
 <h1 id="for-developers">For developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h1>
 <h2 id="adding-new-backends">Adding new backends<a class="headerlink" href="#adding-new-backends" title="Permanent link">&para;</a></h2>
 <p>See <a href="https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py">interface.py</a>, which defines the interface of a backend and may serve as a template for creating new backends.</p>
-<h3 id="developing-the-sparqlwrapper">Developing the sparqlwrapper<a class="headerlink" href="#developing-the-sparqlwrapper" title="Permanent link">&para;</a></h3>
+<h2 id="setting-up-local-graphdb-and-fuseki-services-for-testing">Setting up local GraphDB and Fuseki services for testing<a class="headerlink" href="#setting-up-local-graphdb-and-fuseki-services-for-testing" title="Permanent link">&para;</a></h2>
 <p>Tripper comes with an inbuilt backend to the SPARQLWrapper. In order
 to test this properly a real triplestore is needed. This is not done in the
-automatic workflows on github. However, a local graphDB can be setup as described below and tested with test_sparqlwrapper_graphdb.py.</p>
+automatic workflows on github. However, local graphDB and Fuseki services
+can be setup as described below and tested with
+<code>tests/backends/test_sparqlwrapper_graphdb_fuseki.py</code>.</p>
+<p>The backend configurations corresponding to the local GraphDB and Fuseki services
+can be found in <code>[tests/input/session.yaml]</code>.</p>
+<h3 id="setting-up-graphdb-service">Setting up GraphDB service<a class="headerlink" href="#setting-up-graphdb-service" title="Permanent link">&para;</a></h3>
 <p>To create the local instance of graphdb:
 <div class="language-bash highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ontotext/graphdb:10.8.3<span class="w"> </span><span class="c1"># latest tag 17.02.2025</span>
 docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">7200</span>:7200<span class="w"> </span>--name<span class="w"> </span>graphdb<span class="w"> </span>ontotext/graphdb:10.8.3
@@ -1695,11 +1736,12 @@ Click <code>Create</code>.</p>
 Activating "test_repo" by clicking the pin icon (Set as default repository) and then the restart icon (Restart repository test_repo).</p>
 <p>You can now run the test test_sparqlwrapper_graphdb_fuseki.py with graphdb.</p>
 <p>Note that if the graphdb instance is not found the test will just be skipped.</p>
+<h3 id="setting-up-fuseki-service">Setting up Fuseki service<a class="headerlink" href="#setting-up-fuseki-service" title="Permanent link">&para;</a></h3>
 <p>Similarly a jena-fuseki instance can be tested locally as follows:</p>
 <div class="language-bash highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>stain/jena-fuseki
 docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>fuseki<span class="w"> </span>-p<span class="w"> </span><span class="m">3030</span>:3030<span class="w"> </span>-e<span class="w"> </span><span class="nv">ADMIN_PASSWORD</span><span class="o">=</span>admin0<span class="w"> </span>-e<span class="o">=</span><span class="nv">FUSEKI_DATASET_1</span><span class="o">=</span>test_repo<span class="w"> </span>stain/jena-fuseki
 </code></pre></div>
-<p>You can now run the test test_sparqlwrapper_graphdb_fuseki.py with fuseki.</p>
+<p>You can now run the test <code>test_sparqlwrapper_graphdb_fuseki.py</code> with fuseki.</p>
 <p>Note that if the fuseki instance is not found the test will just be skipped.</p>
 <h2 id="creating-new-release">Creating new release<a class="headerlink" href="#creating-new-release" title="Permanent link">&para;</a></h2>
 <p>To create a new release, it is good to have a release summary.</p>

@@ -2320,14 +2320,15 @@ Otherwise the exception is propagated.</p>
       </tr>
       <tr>
         <td><code>timeout</code></td>
-        <td></td>
+        <td><code>float</code></td>
         <td><p>Total time in seconds to wait for a respond.</p></td>
         <td><code>5</code></td>
       </tr>
       <tr>
         <td><code>interval</code></td>
-        <td></td>
-        <td><p>Interval for checking response.</p></td>
+        <td><code>float</code></td>
+        <td><p>Internal time interval in seconds between checking if the
+service has responded.</p></td>
         <td><code>1</code></td>
       </tr>
   </tbody>
@@ -2350,13 +2351,16 @@ otherwise false is returned.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_service_availability</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_service_availability</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether the service with given URL is available.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        url: URL of the service to check.</span>
 <span class="sd">        timeout: Total time in seconds to wait for a respond.</span>
-<span class="sd">        interval: Interval for checking response.</span>
+<span class="sd">        interval: Internal time interval in seconds between checking if the</span>
+<span class="sd">            service has responded.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns true if the service responds with code 200,</span>
