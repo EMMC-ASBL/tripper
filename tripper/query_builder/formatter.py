@@ -105,19 +105,39 @@ def is_valid_uri(uri: str) -> bool:
 
 
 def sanitize_variable(var: str) -> str:
-    """Validate variable names
+    """Validate variable names and ensure they have the correct prefix.
 
-    Leading/trailing whitespace is automatically stripped as it's never valid in variable names.
+    Variables in SPARQL must start with '?' or '$'. Leading/trailing whitespace
+    is automatically stripped.
+
+    Args:
+        var (str): Variable name, must include '?' or '$' prefix
+
+    Returns:
+        str: The validated variable name with prefix intact
+
+    Raises:
+        ValueError: If variable is invalid or missing prefix
     """
     if not isinstance(var, str):
         raise ValueError("Variable must be a string")
 
-    # Strip leading/trailing whitespace and variable prefixes
-    var = var.strip().lstrip('?$')
+    # Strip leading/trailing whitespace
+    var = var.strip()
+
+    # Check for variable prefix
+    if not var or var[0] not in ('?', '$'):
+        raise ValueError(f"Variable must start with '?' or '$': {var}")
+
+    # Extract the name part (without prefix)
+    name = var[1:]
 
     # Validate variable name (alphanumeric and underscore)
-    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', var):
-        raise ValueError(f"Invalid variable name: {var}")
+    if not name:
+        raise ValueError(f"Variable name cannot be empty: {var}")
+
+    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name):
+        raise ValueError(f"Invalid variable name: {var}. Variable names must start with a letter or underscore and contain only alphanumeric characters and underscores.")
 
     return var
 
@@ -218,7 +238,7 @@ def format_subject(term: str) -> str:
 
     # Variable
     if term.startswith('?') or term.startswith('$'):
-        return f"?{sanitize_variable(term)}"
+        return sanitize_variable(term)
 
     # Check for simple prefixed name pattern first (most common case)
     if re.match(r'^[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-]+$', term):
@@ -298,7 +318,7 @@ def format_predicate(term: str) -> str:
 
     # Variable
     if term.startswith('?') or term.startswith('$'):
-        return f"?{sanitize_variable(term)}"
+        return sanitize_variable(term)
 
     # Special case: 'a' is shorthand for rdf:type
     if term == 'a':
@@ -402,7 +422,7 @@ def format_object(term: Union[str, int, float, bool],
 
         # Variable - strip whitespace as it's structural
         if stripped_term.startswith('?') or stripped_term.startswith('$'):
-            return f"?{sanitize_variable(stripped_term)}"
+            return sanitize_variable(stripped_term)
 
         # Check for simple prefixed name pattern first (most common case for URIs)
         if re.match(r'^[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-]+$', stripped_term):

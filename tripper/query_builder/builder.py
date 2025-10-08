@@ -72,14 +72,14 @@ class SPARQLQuery:
 
         Args:
             *variables (str): Variable names to select in the SPARQL query. Variables
-                can be provided without the '?' prefix (e.g., 'subject', 'predicate').
+                must include the '?' or '$' prefix (e.g., '?name', '?age').
                 If no variables are provided, the query will select all variables (SELECT *).
 
         Returns:
             SPARQLQuery: Amended query instance to allow method chaining.
 
         Examples:
-            >>> query.select('name', 'age', 'email')
+            >>> query.select('?name', '?age', '?email')
             SELECT ?name ?age ?email
 
             >>> query.select()
@@ -87,7 +87,7 @@ class SPARQLQuery:
         """
         for var in variables:
             sanitized_var = sanitize_variable(var)
-            self._variables.append(f"?{sanitized_var}")
+            self._variables.append(sanitized_var)
         return self
 
     def select_distinct(self, *variables: str) -> 'SPARQLQuery':
@@ -95,7 +95,7 @@ class SPARQLQuery:
 
         Args:
             *variables (str): Variable names to select in the SPARQL query. Variables
-                can be provided without the '?' prefix (e.g., 'subject', 'predicate').
+                must include the '?' or '$' prefix (e.g., '?name', '?age').
                 If no variables are provided, the query will select all variables (SELECT *).
 
         Returns:
@@ -105,7 +105,7 @@ class SPARQLQuery:
             ValueError: If REDUCED is already set (DISTINCT and REDUCED are mutually exclusive).
 
         Examples:
-            >>> query.select_distinct("name", "age")
+            >>> query.select_distinct("?name", "?age")
             SELECT DISTINCT ?name ?age
 
             >>> query.select_distinct()
@@ -124,7 +124,7 @@ class SPARQLQuery:
 
         Args:
             *variables (str): Variable names to select in the SPARQL query. Variables
-                can be provided without the '?' prefix (e.g., 'subject', 'predicate').
+                must include the '?' or '$' prefix (e.g., '?name', '?age').
                 If no variables are provided, the query will select all variables (SELECT *).
 
         Returns:
@@ -134,7 +134,7 @@ class SPARQLQuery:
             ValueError: If DISTINCT is already set (DISTINCT and REDUCED are mutually exclusive).
 
         Examples:
-            >>> query.select_reduced("name", "age")
+            >>> query.select_reduced("?name", "?age")
             SELECT REDUCED ?name ?age
 
             >>> query.select_reduced()
@@ -411,7 +411,7 @@ class SPARQLQuery:
         The value is automatically formatted as a literal.
 
         Args:
-            variable (str): The variable name to filter (without '?' prefix).
+            variable (str): The variable name to filter (must include '?' or '$' prefix).
             value (Any): The value to compare against (string, int, float, or bool).
             datatype (Optional[str]): Optional datatype URI for the literal value.
 
@@ -419,12 +419,12 @@ class SPARQLQuery:
             SPARQLQuery: Amended query instance to allow method chaining.
 
         Example:
-            >>> query.filter_equals('age', 25)
+            >>> query.filter_equals('?age', 25)
             WHERE {
                 FILTER (?age = 25)
             }
         """
-        var = f"?{sanitize_variable(variable)}"
+        var = sanitize_variable(variable)
         val = format_literal(value, datatype)
         return self.filter(f"{var} = {val}")
 
@@ -432,9 +432,10 @@ class SPARQLQuery:
         """Add a FILTER condition for regular expression matching.
 
         This method creates a REGEX filter to match variable values against a pattern.
+        The pattern is automatically escaped for safe use in SPARQL.
 
         Args:
-            variable (str): The variable name to filter.
+            variable (str): The variable name to filter (must include '?' or '$' prefix).
             pattern (str): The regular expression pattern to match.
             flags (Optional[str]): Optional regex flags ('i' for case-insensitive, etc.).
 
@@ -442,12 +443,12 @@ class SPARQLQuery:
             SPARQLQuery: Amended query instance to allow method chaining.
 
         Example:
-            >>> query.filter_regex('name', '^A', 'i')
+            >>> query.filter_regex('?name', '^A', 'i')
             WHERE {
                 FILTER (REGEX(?name, "^A", "i"))
             }
         """
-        var = f"?{sanitize_variable(variable)}"
+        var = sanitize_variable(variable)
         escaped_pattern = escape_string(pattern)
 
         if flags:
@@ -568,7 +569,7 @@ class SPARQLQuery:
         Call this method multiple times to order by multiple variables.
 
         Args:
-            variable (str): The variable name to order by.
+            variable (str): The variable name to order by (must include '?' or '$' prefix).
             descending (bool): If True, sort in descending order; if False (default),
                 sort in ascending order.
 
@@ -576,7 +577,7 @@ class SPARQLQuery:
             SPARQLQuery: Amended query instance to allow method chaining.
 
         Example:
-            >>> query.order_by('name').order_by('age', descending=True)
+            >>> query.order_by('?name').order_by('?age', descending=True)
             ORDER BY ?name DESC(?age)
         """
         var = sanitize_variable(variable)
@@ -590,19 +591,19 @@ class SPARQLQuery:
         aggregate functions like COUNT, SUM, AVG, etc.
 
         Args:
-            *variables (str): Variable names to group by (without '?' prefix).
+            *variables (str): Variable names to group by (must include '?' or '$' prefix).
                 Multiple variables can be provided.
 
         Returns:
             SPARQLQuery: Amended query instance to allow method chaining.
 
         Example:
-            >>> query.group_by('category', 'type')
+            >>> query.group_by('?category', '?type')
             GROUP BY ?category ?type
         """
         for var in variables:
             sanitized_var = sanitize_variable(var)
-            self._group_by.append(f"?{sanitized_var}")
+            self._group_by.append(sanitized_var)
         return self
 
     def having(self, condition: str) -> 'SPARQLQuery':
@@ -753,9 +754,9 @@ class SPARQLQuery:
             order_clauses = []
             for var, desc in self._order_by:
                 if desc:
-                    order_clauses.append(f"DESC(?{var})")
+                    order_clauses.append(f"DESC({var})")
                 else:
-                    order_clauses.append(f"?{var}")
+                    order_clauses.append(var)
             query_parts.append(f"ORDER BY {' '.join(order_clauses)}")
 
         # Add LIMIT and OFFSET
@@ -798,7 +799,7 @@ def select(*variables: str) -> SPARQLQuery:
 
     Args:
         *variables (str): Variable names to select in the SPARQL query. Variables
-            can be provided without the '?' prefix (e.g., 'subject', 'predicate').
+            must include the '?' or '$' prefix (e.g., '?name', '?age').
             If no variables are provided, the query will select all variables (SELECT *).
 
     Returns:
@@ -806,7 +807,7 @@ def select(*variables: str) -> SPARQLQuery:
             containing the specified variables.
 
     Examples:
-        >>> select("name", "age", "email")
+        >>> select("?name", "?age", "?email")
         SELECT ?name ?age ?email
 
         >>> select()
@@ -824,7 +825,7 @@ def select_distinct(*variables: str) -> SPARQLQuery:
 
     Args:
         *variables (str): Variable names to select in the SPARQL query. Variables
-            can be provided without the '?' prefix (e.g., 'subject', 'predicate').
+            must include the '?' or '$' prefix (e.g., '?name', '?age').
             If no variables are provided, the query will select all variables (SELECT *).
 
     Returns:
@@ -832,7 +833,7 @@ def select_distinct(*variables: str) -> SPARQLQuery:
             clause and the specified variables.
 
     Examples:
-        >>> select_distinct('subject', 'object')
+        >>> select_distinct('?subject', '?object')
         SELECT DISTINCT ?subject ?object
 
         >>> select_distinct()
@@ -851,7 +852,7 @@ def select_reduced(*variables: str) -> SPARQLQuery:
 
     Args:
         *variables (str): Variable names to select in the SPARQL query. Variables
-            can be provided without the '?' prefix (e.g., 'subject', 'predicate').
+            must include the '?' or '$' prefix (e.g., '?name', '?age').
             If no variables are provided, the query will select all variables (SELECT *).
 
     Returns:
@@ -859,7 +860,7 @@ def select_reduced(*variables: str) -> SPARQLQuery:
             clause for the specified variables.
 
     Examples:
-        >>> select_reduced("subject", "predicate", "object")
+        >>> select_reduced("?subject", "?predicate", "?object")
         SELECT REDUCED ?subject ?predicate ?object
 
         >>> select_reduced()
