@@ -19,3 +19,5 @@ dist/
 # Test output
 route.svg
 coverage.xml
+
+old

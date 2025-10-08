@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING, Sequence
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Union
+    from typing import Any, Optional, Union
 
-    NoneType = type(None)
-    MergeType = Union[NoneType, str, Sequence]
+    MergeType = Optional[Union[str, Sequence]]
 
 
 def merge(a: "MergeType", b: "MergeType") -> "MergeType":

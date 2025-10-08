@@ -162,8 +162,8 @@ class Keywords:
                     )
                     break
             else:
+                # Fallback in case the entry point is not installed
                 if name == "default":
-                    # Fallback in case the entry point is not installed
                     self.parse(
                         self.rootdir
                         / "tripper"
@@ -185,6 +185,8 @@ class Keywords:
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
 
+        dm = self.domain[-1] if isinstance(self.domain, list) else self.domain
+        domain = d.get("domain", dm)
         self.add(d.get("basedOn"))
         recursive_update(self.data, d)
 

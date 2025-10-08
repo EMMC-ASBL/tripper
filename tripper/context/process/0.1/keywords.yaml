@@ -1,4 +1,5 @@
 ---
+domain: process
 basedOn: default
 
 resources:
