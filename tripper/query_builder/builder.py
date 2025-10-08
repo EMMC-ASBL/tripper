@@ -54,7 +54,7 @@ class SPARQLQuery:
             uri (str): The full URI for the namespace (e.g., 'http://xmlns.com/foaf/0.1/')
 
         Returns:
-            SPARQLQuery: Returns self to allow method chaining
+            SPARQLQuery: Amended query instance to allow method chaining.
 
         Example:
             >>> query.prefix('foaf', 'http://xmlns.com/foaf/0.1/')
@@ -76,7 +76,7 @@ class SPARQLQuery:
                 If no variables are provided, the query will select all variables (SELECT *).
 
         Returns:
-            SPARQLQuery: Returns self to allow method chaining.
+            SPARQLQuery: Amended query instance to allow method chaining.
 
         Examples:
             >>> query.select('name', 'age', 'email')
@@ -99,7 +99,7 @@ class SPARQLQuery:
                 If no variables are provided, the query will select all variables (SELECT *).
 
         Returns:
-            SPARQLQuery: The query builder instance for method chaining.
+            SPARQLQuery: Amended query instance to allow method chaining.
 
         Raises:
             ValueError: If REDUCED is already set (DISTINCT and REDUCED are mutually exclusive).
@@ -128,7 +128,7 @@ class SPARQLQuery:
                 If no variables are provided, the query will select all variables (SELECT *).
 
         Returns:
-            SPARQLQuery: The modified query object with REDUCED clause applied.
+            SPARQLQuery: Amended query instance to allow method chaining.
 
         Raises:
             ValueError: If DISTINCT is already set (DISTINCT and REDUCED are mutually exclusive).
@@ -146,12 +146,52 @@ class SPARQLQuery:
         return self.select(*variables)
 
     def from_graph(self, graph_uri: str) -> 'SPARQLQuery':
-        """Add FROM clause"""
+        """Add FROM clause to the SPARQL query.
+
+        The FROM clause specifies the default graph for the query. Multiple FROM
+        clauses can be added to define a dataset consisting of the merge of the
+        specified graphs.
+
+        See Also:
+            SPARQL 1.1 Query Language specification:
+            https://www.w3.org/TR/sparql11-query/#specifyingDataset
+
+        Args:
+            graph_uri (str): The URI of the graph to add to the FROM clause.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.from_graph("http://example.org/graph1")
+            FROM <http://example.org/graph1>
+        """
         sanitized_uri = sanitize_uri(graph_uri)
         self._from_graphs.append(sanitized_uri)
         return self
 
     def from_named_graph(self, graph_uri: str) -> 'SPARQLQuery':
+        """
+        Add a FROM NAMED clause to the SPARQL query.
+
+        The FROM NAMED clause specifies a named graph that should be available
+        for querying within the dataset. Named graphs can be referenced using
+        the GRAPH keyword in query patterns.
+
+        See Also:
+            SPARQL 1.1 Query Language specification:
+            https://www.w3.org/TR/sparql11-query/#specifyingDataset
+
+        Args:
+            graph_uri (str): The URI of the named graph to include in the dataset.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.from_named_graph("http://example.org/graph1")
+            FROM NAMED <http://example.org/graph1>
+        """
         """Add FROM NAMED clause"""
         sanitized_uri = sanitize_uri(graph_uri)
         self._from_named_graphs.append(sanitized_uri)
@@ -160,43 +200,103 @@ class SPARQLQuery:
     def where(self, subject: Union[str, None], predicate: Union[str, None],
               obj: Union[str, int, float, bool, None],
               datatype: Optional[str] = None, lang: Optional[str] = None) -> 'SPARQLQuery':
-        """Add a triple pattern to current context
+        """
+        Add a WHERE clause pattern to the SPARQL query.
 
         Args:
-            subject: URI string, variable (starting with ?), or None for anonymous variable
-            predicate: URI string, 'a' for rdf:type, variable (starting with ?), or None for anonymous variable
-            obj: URI string, literal value (str/int/float/bool), variable (starting with ?), or None for anonymous variable
-            datatype: Optional datatype URI for literal objects
-            lang: Optional language tag for literal objects
+            subject: The subject of the triple pattern. Can be a variable (string) or None for
+                    anonymous variable.
+            predicate: The predicate of the triple pattern. Can be a variable (string) or None
+                    for anonymous variable.
+            obj: The object of the triple pattern. Can be a variable (string), literal value
+                    (int, float, bool), or None for anonymous variable.
+            datatype: Optional datatype for the object literal (e.g., 'xsd:string', 'xsd:int').
+            lang: Optional language tag for string literals (e.g., 'en', 'fr').
 
-        Variables:
-        - Explicit: Start with '?' (e.g., '?person', '?name') - use when you need to reference the variable
-        - Anonymous: Use None when you don't need to reference the variable elsewhere
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
 
-        URIs should contain '://' or be wrapped in <>
-        Plain strings without '://' are treated as literals
-
-        Examples:
-            .where("?person", "foaf:name", "?name")  # Explicit variables
-            .where("?person", "foaf:age", None)      # Anonymous variable for age (don't care about value)
-            .where(None, "rdf:type", "foaf:Person")  # Anonymous subject
+        Example:
+            >>> query.where('?person', 'foaf:name', '?name')
+            WHERE { ?person foaf:name ?name }
+            >>> query.where('?person', 'foaf:age', 25, datatype='xsd:int')
+            WHERE { ?person foaf:age 25^^xsd:int }
+            >>> query.where('?person', 'rdfs:label', 'John', lang='en')
+            WHERE { ?person rdfs:label 'John'@en }
+            >>> query.where(None, 'rdf:type', 'foaf:Person')
+            WHERE { ?anon rdf:type foaf:Person }
         """
         pattern = TripleElement(subject, predicate, obj, datatype, lang)
         self._context_stack[-1].append(pattern)
         return self
 
     def optional(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
-        """Add an OPTIONAL block using a callback"""
+        """
+        Add an optional block to the SPARQL query.
+
+        This method creates an OPTIONAL block in the SPARQL query by executing the provided
+        callback function within a new context. Any patterns added during the callback
+        execution will be wrapped in an OPTIONAL clause.
+
+        Args:
+            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+                instance and adds patterns to it. These patterns will be made optional.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.optional(lambda q: q.where('?person', 'foaf:mbox', '?email'))
+            WHERE {
+                OPTIONAL {
+                    ?person foaf:mbox ?email .
+                }
+            }
+
+        Note:
+            The callback function should use the passed SPARQLQuery instance to add
+            the desired optional patterns. All patterns added within the callback
+            will be grouped together in a single OPTIONAL block.
+        """
         optional_patterns = []
         self._context_stack.append(optional_patterns)
         callback(self)
         self._context_stack.pop()
-
         self._context_stack[-1].append(OptionalBlock(optional_patterns))
         return self
 
     def union(self, *callbacks: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
-        """Add a UNION block with multiple alternatives"""
+        """
+        Create a UNION block in the SPARQL query.
+
+        A UNION block allows for alternative graph patterns, where the query will match
+        if any of the patterns match. Each callback function defines one alternative
+        pattern within the union.
+
+        Args:
+            *callbacks: Variable number of callback functions that each take a SPARQLQuery
+                       instance and define graph patterns for one branch of the union.
+                       Each callback is executed in its own context to build separate
+                       pattern groups.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.union(
+            ...     lambda q: q.where('?person', 'foaf:name', '?identifier'),
+            ...     lambda q: q.where('?person', 'foaf:mbox', '?identifier')
+            ... )
+            WHERE {
+                {
+                    ?person foaf:name ?identifier .
+                }
+                UNION
+                {
+                    ?person foaf:mbox ?identifier .
+                }
+            }
+        """
         pattern_groups = []
 
         for callback in callbacks:
@@ -210,7 +310,6 @@ class SPARQLQuery:
         return self
 
     def minus(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
-        """Add a MINUS block using a callback"""
         minus_patterns = []
         self._context_stack.append(minus_patterns)
         callback(self)
@@ -220,7 +319,6 @@ class SPARQLQuery:
         return self
 
     def graph(self, graph_uri: Union[str, None], callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
-        """Add a GRAPH block for querying named graphs"""
         graph_patterns = []
         self._context_stack.append(graph_patterns)
         callback(self)
@@ -230,18 +328,15 @@ class SPARQLQuery:
         return self
 
     def filter(self, condition: str) -> 'SPARQLQuery':
-        """Add a FILTER condition"""
         self._context_stack[-1].append(FilterElement(condition))
         return self
 
     def filter_equals(self, variable: str, value: Any, datatype: Optional[str] = None) -> 'SPARQLQuery':
-        """Add a FILTER condition for equality"""
         var = f"?{sanitize_variable(variable)}"
         val = format_literal(value, datatype)
         return self.filter(f"{var} = {val}")
 
     def filter_regex(self, variable: str, pattern: str, flags: Optional[str] = None) -> 'SPARQLQuery':
-        """Add a FILTER REGEX condition"""
         var = f"?{sanitize_variable(variable)}"
         escaped_pattern = escape_string(pattern)
 
@@ -253,7 +348,6 @@ class SPARQLQuery:
         return self.filter(condition)
 
     def filter_exists(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
-        """Add a FILTER EXISTS condition"""
         exists_patterns = []
         self._context_stack.append(exists_patterns)
         callback(self)
@@ -269,7 +363,6 @@ class SPARQLQuery:
         return self.filter(f"EXISTS {exists_str}")
 
     def filter_not_exists(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
-        """Add a FILTER NOT EXISTS condition"""
         not_exists_patterns = []
         self._context_stack.append(not_exists_patterns)
         callback(self)
@@ -298,32 +391,27 @@ class SPARQLQuery:
         return self.where(subject, path, obj)
 
     def order_by(self, variable: str, descending: bool = False) -> 'SPARQLQuery':
-        """Add ORDER BY clause"""
         var = sanitize_variable(variable)
         self._order_by.append((var, descending))
         return self
 
     def group_by(self, *variables: str) -> 'SPARQLQuery':
-        """Add GROUP BY clause"""
         for var in variables:
             sanitized_var = sanitize_variable(var)
             self._group_by.append(f"?{sanitized_var}")
         return self
 
     def having(self, condition: str) -> 'SPARQLQuery':
-        """Add HAVING clause"""
         self._having_conditions.append(condition)
         return self
 
     def limit(self, limit: int) -> 'SPARQLQuery':
-        """Add LIMIT clause"""
         if not isinstance(limit, int) or limit < 0:
             raise ValueError("LIMIT must be a non-negative integer")
         self._limit_value = limit
         return self
 
     def offset(self, offset: int) -> 'SPARQLQuery':
-        """Add OFFSET clause"""
         if not isinstance(offset, int) or offset < 0:
             raise ValueError("OFFSET must be a non-negative integer")
         self._offset_value = offset
