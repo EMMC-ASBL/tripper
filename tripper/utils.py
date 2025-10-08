@@ -10,6 +10,7 @@ import string
 import sys
 import tempfile
 import urllib
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -64,7 +65,9 @@ __all__ = (
     "extend_namespace",
     "expand_iri",
     "prefix_iri",
+    "substitute_query",
     "get_entry_points",
+    "check_service_availability",
 )
 
 MATCH_PREFIXED_IRI = re.compile(
@@ -732,6 +735,71 @@ def prefix_iri(
     return iri
 
 
+def substitute_query(
+    query: str,
+    iris: "Optional[dict]" = None,
+    literals: "Optional[dict]" = None,
+    prefixes: "Optional[dict]" = None,
+    iriquote: str = "<>",
+) -> str:
+    """Substitute IRI and literal variables in a SPARQL query.
+
+    Arguments:
+        query: String with the SPARQL query.
+        iris: Dict used for query substitutions that maps IRI variables
+            to IRIs. The IRIs may be provided as fully expanded or
+            prefixed with the prefix defined in `prefixes`.
+        literals: Dict used for query substitutions that maps literal
+            variables to literals.  For common datatypes, like strings
+            and numbers, the values can just be normal Python objects.
+            For special cases or more control, provide the values as
+            instances of `tripper.Literal`.
+        prefixes: Dict mapping prefixes to namespace URLs.
+        iriquote: Quote characters to use for IRIs. Should be a string of
+            length 2, with the start and end quote.
+
+    Notes:
+        The `query` argument may contain variables for IRIs and literals,
+        to be substituted using the `iris` and `literals` arguments. These
+        variables are prefixed `$`. This makes them easy to distinguish from
+        query variables, that are typically prefixed with `?`.
+
+        The query substitutions may be useful when the query is constructed
+        from user input, since they are properly escaped and will be inserted
+        in the query as a single token.  This may prevent sparql injection
+        attacks.
+    """
+    safe = "-._~:/?#@+&;="  # special IRI characters that are not escaped
+    mapping = {}
+
+    if iriquote:
+        if len(iriquote) == 1:
+            iriquote = iriquote[0] * 2
+        elif len(iriquote) > 2:
+            raise ValueError(
+                f"`iriquote` cannot be more than 2 characters: '{iriquote}'"
+            )
+        if iriquote[1].isalnum() or iriquote[1] in safe:
+            warnings.warn(
+                f"End quote '{iriquote[1]}' is alphanumeric or in '{safe}'"
+            )
+
+    if iris:
+        if prefixes is None:
+            prefixes = {}
+        for k, v in iris.items():
+            expanded = expand_iri(v, prefixes=prefixes)
+            quoted = urllib.parse.quote(expanded, safe=safe)
+            q1, q2 = iriquote if iriquote else ("", "")  # type: ignore[misc]
+            mapping[k] = f"{q1}{quoted}{q2}"
+
+    if literals:
+        for k, v in literals.items():
+            mapping[k] = Literal(v).n3()
+
+    return string.Template(query).safe_substitute(mapping)
+
+
 def get_entry_points(group: str):
     """Consistent interface to entry points for the given group.
 
@@ -766,13 +834,16 @@ def get_entry_points(group: str):
     return eps
 
 
-def check_service_availability(url: str, timeout=5, interval=1) -> bool:
+def check_service_availability(
+    url: str, timeout: float = 5, interval: float = 1
+) -> bool:
     """Check whether the service with given URL is available.
 
     Arguments:
         url: URL of the service to check.
         timeout: Total time in seconds to wait for a respond.
-        interval: Interval for checking response.
+        interval: Internal time interval in seconds between checking if the
+            service has responded.
 
     Returns:
         Returns true if the service responds with code 200,
