@@ -31,6 +31,7 @@ from .namespace import (
     SKOS,
     SPDX,
     TIME,
+    VANN,
     VCARD,
     XML,
     XSD,
@@ -80,6 +81,7 @@ __all__ = (
     "SKOS",  # Simple Knowledge Organization System
     "SPDX",  # open standard for material information
     "TIME",  # Time Ontology
+    "VANN",  # Vocabulary for annotating vocabulary descriptions
     "VCARD",  # vCard Ontology - for describing People and Organizations
     "XML",  # XML namespace
     "XSD",  # XML Schema Datatypes
