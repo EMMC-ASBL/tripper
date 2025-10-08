@@ -310,6 +310,27 @@ class SPARQLQuery:
         return self
 
     def minus(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+        """Add a MINUS block to the SPARQL query.
+
+        The MINUS block removes solutions from the query results. It subtracts matches
+        from the overall result set based on the patterns defined in the callback.
+
+        Args:
+            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+                instance and adds patterns to it. Solutions matching these patterns will
+                be removed from the results.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.minus(lambda q: q.where('?person', 'foaf:status', '"inactive"'))
+            WHERE {
+                MINUS {
+                    ?person foaf:status "inactive" .
+                }
+            }
+        """
         minus_patterns = []
         self._context_stack.append(minus_patterns)
         callback(self)
@@ -319,6 +340,40 @@ class SPARQLQuery:
         return self
 
     def graph(self, graph_uri: Union[str, None], callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+        """Add a GRAPH block to query a specific named graph.
+
+        The GRAPH keyword allows querying patterns within a specific named graph.
+        This is used in conjunction with FROM NAMED to query named graphs within
+        the dataset.
+
+        See Also:
+            SPARQL 1.1 Query Language specification:
+            https://www.w3.org/TR/sparql11-query/#specifyingDataset
+
+        Args:
+            graph_uri (Union[str, None]): The URI of the named graph to query, or a
+                variable (e.g., '?g') to match against any named graph. Can be None
+                for an anonymous graph variable.
+            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+                instance and adds patterns to query within the specified graph.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.from_named_graph('http://example.org/contacts')
+            >>> query.graph('http://example.org/contacts', lambda q: q
+            ...     .where('?person', 'foaf:name', '?name')
+            ...     .where('?person', 'foaf:mbox', '?email')
+            ... )
+            FROM NAMED <http://example.org/contacts>
+            WHERE {
+                GRAPH <http://example.org/contacts> {
+                    ?person foaf:name ?name .
+                    ?person foaf:mbox ?email .
+                }
+            }
+        """
         graph_patterns = []
         self._context_stack.append(graph_patterns)
         callback(self)
@@ -328,15 +383,70 @@ class SPARQLQuery:
         return self
 
     def filter(self, condition: str) -> 'SPARQLQuery':
+        """Add a FILTER condition to constrain query results.
+
+        FILTER expressions are used to restrict the solutions based on boolean
+        conditions. The condition can use SPARQL built-in functions and operators.
+
+        Args:
+            condition (str): A SPARQL filter expression (e.g., '?age > 18',
+                'BOUND(?email)', 'REGEX(?name, "^A")').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.filter('?age > 18')
+            WHERE {
+                FILTER (?age > 18)
+            }
+        """
         self._context_stack[-1].append(FilterElement(condition))
         return self
 
     def filter_equals(self, variable: str, value: Any, datatype: Optional[str] = None) -> 'SPARQLQuery':
+        """Add a FILTER condition for equality comparison.
+
+        This is a convenience method for filtering based on variable equality.
+        The value is automatically formatted as a literal.
+
+        Args:
+            variable (str): The variable name to filter (without '?' prefix).
+            value (Any): The value to compare against (string, int, float, or bool).
+            datatype (Optional[str]): Optional datatype URI for the literal value.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.filter_equals('age', 25)
+            WHERE {
+                FILTER (?age = 25)
+            }
+        """
         var = f"?{sanitize_variable(variable)}"
         val = format_literal(value, datatype)
         return self.filter(f"{var} = {val}")
 
     def filter_regex(self, variable: str, pattern: str, flags: Optional[str] = None) -> 'SPARQLQuery':
+        """Add a FILTER condition for regular expression matching.
+
+        This method creates a REGEX filter to match variable values against a pattern.
+
+        Args:
+            variable (str): The variable name to filter.
+            pattern (str): The regular expression pattern to match.
+            flags (Optional[str]): Optional regex flags ('i' for case-insensitive, etc.).
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.filter_regex('name', '^A', 'i')
+            WHERE {
+                FILTER (REGEX(?name, "^A", "i"))
+            }
+        """
         var = f"?{sanitize_variable(variable)}"
         escaped_pattern = escape_string(pattern)
 
@@ -348,6 +458,28 @@ class SPARQLQuery:
         return self.filter(condition)
 
     def filter_exists(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+        """Add a FILTER EXISTS condition to require pattern matching.
+
+        FILTER EXISTS tests whether a pattern matches in the data. The query only
+        returns results where the EXISTS pattern finds at least one match.
+
+        Args:
+            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+                instance and adds patterns that must exist for the filter to pass.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.filter_exists(lambda q: q
+            ...     .where('?person', 'foaf:interest', '?interest')
+            ... )
+            WHERE {
+                FILTER (EXISTS {
+                    ?person foaf:interest ?interest .
+                })
+            }
+        """
         exists_patterns = []
         self._context_stack.append(exists_patterns)
         callback(self)
@@ -363,6 +495,28 @@ class SPARQLQuery:
         return self.filter(f"EXISTS {exists_str}")
 
     def filter_not_exists(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+        """Add a FILTER NOT EXISTS condition to require pattern absence.
+
+        FILTER NOT EXISTS tests whether a pattern does NOT match in the data. The query
+        only returns results where the NOT EXISTS pattern finds no matches.
+
+        Args:
+            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+                instance and adds patterns that must NOT exist for the filter to pass.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.filter_not_exists(lambda q: q
+            ...     .where('?person', 'foaf:status', '"banned"')
+            ... )
+            WHERE {
+                FILTER (NOT EXISTS {
+                    ?person foaf:status "banned" .
+                })
+            }
+        """
         not_exists_patterns = []
         self._context_stack.append(not_exists_patterns)
         callback(self)
@@ -378,40 +532,143 @@ class SPARQLQuery:
         return self.filter(f"NOT EXISTS {not_exists_str}")
 
     def property_path(self, subject: Union[str, None], path: str, obj: Union[str, None]) -> 'SPARQLQuery':
-        """Add a property path pattern (e.g., foaf:knows+, foaf:knows*, etc.)
+        """Add a property path pattern to the query (e.g., foaf:knows+, etc.).
+
+        Property paths provide a way to match more complex patterns using path expressions.
+        This method is a convenience wrapper around where() for property paths.
 
         Property path operators:
-        - + : one or more
-        - * : zero or more
-        - ? : zero or one
-        - / : sequence
-        - | : alternative
-        - ^ : inverse
+            * : Zero or more occurrences
+            + : One or more occurrences
+            ? : Zero or one occurrence
+            / : Sequence (path concatenation)
+            | : Alternative paths
+            ^ : Inverse property
+
+        Args:
+            subject (Union[str, None]): The subject of the triple pattern (variable, URI, or None).
+            path (str): The property path expression (e.g., 'foaf:knows+', 'foaf:knows/foaf:name').
+            obj (Union[str, None]): The object of the triple pattern (variable, URI, or None).
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.property_path('?person', 'foaf:knows+', '?friend')
+            WHERE {
+                ?person foaf:knows+ ?friend .
+            }
         """
         return self.where(subject, path, obj)
 
     def order_by(self, variable: str, descending: bool = False) -> 'SPARQLQuery':
+        """Add an ORDER BY clause to sort query results.
+
+        Results can be ordered by one or more variables in ascending or descending order.
+        Call this method multiple times to order by multiple variables.
+
+        Args:
+            variable (str): The variable name to order by.
+            descending (bool): If True, sort in descending order; if False (default),
+                sort in ascending order.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.order_by('name').order_by('age', descending=True)
+            ORDER BY ?name DESC(?age)
+        """
         var = sanitize_variable(variable)
         self._order_by.append((var, descending))
         return self
 
     def group_by(self, *variables: str) -> 'SPARQLQuery':
+        """Add a GROUP BY clause for result aggregation.
+
+        GROUP BY groups results by the specified variables, typically used with
+        aggregate functions like COUNT, SUM, AVG, etc.
+
+        Args:
+            *variables (str): Variable names to group by (without '?' prefix).
+                Multiple variables can be provided.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.group_by('category', 'type')
+            GROUP BY ?category ?type
+        """
         for var in variables:
             sanitized_var = sanitize_variable(var)
             self._group_by.append(f"?{sanitized_var}")
         return self
 
     def having(self, condition: str) -> 'SPARQLQuery':
+        """Add a HAVING clause to filter grouped results.
+
+        HAVING is used with GROUP BY to filter groups based on aggregate conditions.
+        Multiple HAVING conditions are combined with AND.
+
+        Args:
+            condition (str): A SPARQL expression to filter groups
+                (e.g., 'COUNT(?item) > 5', 'AVG(?price) < 100').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.group_by('category').having('COUNT(?item) > 10')
+            GROUP BY ?category
+            HAVING (COUNT(?item) > 10)
+        """
         self._having_conditions.append(condition)
         return self
 
     def limit(self, limit: int) -> 'SPARQLQuery':
+        """Add a LIMIT clause to restrict the number of results.
+
+        LIMIT specifies the maximum number of solutions to return from the query.
+
+        Args:
+            limit (int): Maximum number of results to return. Must be a non-negative integer.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Raises:
+            ValueError: If limit is not a non-negative integer.
+
+        Example:
+            >>> query.limit(10)
+            LIMIT 10
+        """
         if not isinstance(limit, int) or limit < 0:
             raise ValueError("LIMIT must be a non-negative integer")
         self._limit_value = limit
         return self
 
     def offset(self, offset: int) -> 'SPARQLQuery':
+        """Add an OFFSET clause to skip a number of results.
+
+        OFFSET specifies how many solutions to skip before returning results.
+        Often used with LIMIT for pagination.
+
+        Args:
+            offset (int): Number of results to skip. Must be a non-negative integer.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Raises:
+            ValueError: If offset is not a non-negative integer.
+
+        Example:
+            >>> query.limit(10).offset(20)
+            LIMIT 10
+            OFFSET 20
+        """
         if not isinstance(offset, int) or offset < 0:
             raise ValueError("OFFSET must be a non-negative integer")
         self._offset_value = offset
@@ -511,6 +768,22 @@ class SPARQLQuery:
         return "\n".join(query_parts)
 
     def __str__(self) -> str:
+        """Return the SPARQL query string representation.
+
+        This method allows the SPARQLQuery instance to be used directly in string
+        contexts (e.g., print(), str()). It's a convenience wrapper around build().
+
+        Returns:
+            str: The complete SPARQL query string.
+
+        Example:
+            >>> query = SPARQLQuery().select('name').where('?person', 'foaf:name', '?name')
+            >>> print(query)
+            SELECT ?name
+            WHERE {
+              ?person foaf:name ?name .
+            }
+        """
         return self.build()
 
 
@@ -518,7 +791,10 @@ class SPARQLQuery:
 # Convenience functions
 
 def select(*variables: str) -> SPARQLQuery:
-    """Create a new SELECT query with the specified variables.
+    """Convenience function to create a new SELECT query with the specified variables.
+
+    This function initializes a new SPARQLQuery instance and applies the SELECT
+    clause with the provided variables.
 
     Args:
         *variables (str): Variable names to select in the SPARQL query. Variables
@@ -540,7 +816,7 @@ def select(*variables: str) -> SPARQLQuery:
 
 
 def select_distinct(*variables: str) -> SPARQLQuery:
-    """Create a new SELECT DISTINCT query with the specified variables.
+    """Convenience function to create a new SELECT DISTINCT query with the specified variables.
 
     This function initializes a new SPARQLQuery instance and applies the SELECT DISTINCT
     clause with the provided variables. SELECT DISTINCT ensures that duplicate result
@@ -566,12 +842,12 @@ def select_distinct(*variables: str) -> SPARQLQuery:
 
 
 def select_reduced(*variables: str) -> SPARQLQuery:
-    """
-    Create a new SELECT REDUCED query with the specified variables.
+    """Convenience function to create a new SELECT REDUCED query with the specified variables.
 
-    The SELECT REDUCED clause returns a solution sequence with duplicate solutions
-    eliminated in an implementation-dependent way. Unlike SELECT DISTINCT, the
-    order and method of duplicate elimination is not specified.
+    This function initializes a new SPARQLQuery instance and applies the SELECT REDUCED
+    clause with the provided variables. SELECT REDUCED clause returns a solution sequence with
+    duplicate solutions eliminated in an implementation-dependent way. Unlike SELECT DISTINCT,
+    the order and method of duplicate elimination is not specified.
 
     Args:
         *variables (str): Variable names to select in the SPARQL query. Variables
