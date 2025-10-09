@@ -55,7 +55,7 @@ def load_prefixes(ts: "Triplestore", prefix=None, namespace=None) -> list:
         namespace: namespace to search for (URI)
 
     Returns:
-        Iterator over `(prefix, namespace)` tuples.
+        List of `(prefix, namespace)` tuples.
     """
     bind = []
     if prefix is not None:
