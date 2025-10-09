@@ -33,8 +33,10 @@ def test_prefixes():
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     }
     prefixes3 = {
-        "dct": "http://purl.org/dc/terms/",  # new prefix for existing namespace
-        "dcat": "http://example.org/ns/dcat/",  # redefine namespace for existing prefix
+        # new prefix for existing namespace
+        "dct": "http://purl.org/dc/terms/",
+        # redefine namespace for existing prefix
+        "dcat": "http://example.org/ns/dcat/",
     }
 
     ts = Triplestore(backend="rdflib")
