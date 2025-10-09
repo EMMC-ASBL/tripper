@@ -1,39 +1,39 @@
-[build-system]  ##
-requires = ["flit_core >=3.4,<4"]  ##
-build-backend = "flit_core.buildapi"  ##
-  ##
-[project]  ##
-name = "tripper"  ##
-authors = [  ##
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "tripper"
+authors = [
     {name = "SINTEF", email = "TEAM4.0@sintef.no"},
-]  ##
-description = "A triplestore wrapper for Python."  ##
-readme = "README.md"  ##
-license = {file = "LICENSE"}  ##
-classifiers = [  ##
+]
+description = "A triplestore wrapper for Python."
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
     "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: MIT License",  ##
-    "Programming Language :: Python :: 3",  ##
-    "Programming Language :: Python :: 3.8",  ##
-    "Programming Language :: Python :: 3.9",  ##
-    "Programming Language :: Python :: 3.10",  ##
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Environment :: Plugins",  ##
-    "Natural Language :: English",  ##
-    "Operating System :: OS Independent",  ##
-]  ##
-keywords = ["triplestore", "ontology", "RDF"]  ##
+    "Environment :: Plugins",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+]
+keywords = ["triplestore", "ontology", "RDF"]
 requires-python = ">=3.8"
-dynamic = ["version"]  ##
-  ##
-dependencies = [  ##
+dynamic = ["version"]
+
+dependencies = [
     "typing-extensions>=4.7.0,<4.13.1; python_version < '3.9'",
-]  ##
-  ##
-[project.optional-dependencies]  ##
+]
+
+[project.optional-dependencies]
 units = [
     "pint>=0.21.1,<0.26; python_version<'3.9'",
     "pint>=0.24.1,<0.26; python_version>='3.9'",
@@ -60,10 +60,10 @@ testing-core = [
     "pytest==8.3.4",
     "pytest-cov==5.0.0; python_version<'3.9'",
     "pytest-cov==6.0.0; python_version>='3.9'",
-]  ##
-testing = [  ##
+]
+testing = [
     "tripper[datadoc,backends,testing-core]",
-]  ##
+]
 docs = [
     "tripper[testing]",
     "mike==2.1.3",
@@ -79,18 +79,18 @@ pre-commit = [
     "pre-commit==4.0.1",
     "pylint==3.3.4; python_version>='3.9'",
 ]
-dev = [  ##
+dev = [
     "tripper[pre-commit,docs]",
-]  ##
-  ##
-[project.urls]  ##
-Home = "https://github.com/EMMC-ASBL/tripper"  ##
-Documentation = "https://EMMC-ASBL.github.io/tripper"  ##
-Source = "https://github.com/EMMC-ASBL/tripper"  ##
-"Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"  ##
+]
+
+[project.urls]
+Home = "https://github.com/EMMC-ASBL/tripper"
+Documentation = "https://EMMC-ASBL.github.io/tripper"
+Source = "https://github.com/EMMC-ASBL/tripper"
+"Issue Tracker" = "https://github.com/EMMC-ASBL/tripper/issues"
 Changelog = "https://github.com/EMMC-ASBL/tripper/blob/master/CHANGELOG.md"
-Package = "https://pypi.org/project/tripper"  ##
-  ##
+Package = "https://pypi.org/project/tripper"
+
 [project.scripts]
 datadoc = "tripper.datadoc.clitool:main"
 keywords = "tripper.datadoc.keywords:main"
@@ -101,46 +101,46 @@ line_length = 79  # PEP8
 [tool.black]
 line-length = 79
 
-[tool.mypy]  ##
+[tool.mypy]
 python_version = "3.11"
-ignore_missing_imports = true  ##
-scripts_are_modules = true  ##
-warn_unused_configs = true  ##
-show_error_codes = true  ##
-allow_redefinition = true  ##
+ignore_missing_imports = true
+scripts_are_modules = true
+warn_unused_configs = true
+show_error_codes = true
+allow_redefinition = true
 #explicit-package-bases = true
 
-  ##
+
 [tool.pylint]
 max-line-length = 80
-max-args = 10  ##
-max-public-methods = 25  ##
-max-locals = 20  ##
-disable = [  ##
-    "fixme",  ##
+max-args = 10
+max-public-methods = 25
+max-locals = 20
+disable = [
+    "fixme",
     "invalid-name",
     "too-many-positional-arguments",
-]  ##
-good-names = [  ##
-    # Default  ##
-    "i", "j", "k", "ex", "Run", "_",  ##
+]
+good-names = [
+    # Default
+    "i", "j", "k", "ex", "Run", "_",
     # Triplestore instance
     "ts",
-    # Triple components: subject, predicate, object  ##
-    "s", "p", "o",  ##
+    # Triple components: subject, predicate, object
+    "s", "p", "o",
     # Namespaces
     "EX",
     # dict, value, file, keyword...
     "d", "v", "f", "kw",
-]  ##
-  ##
-[tool.pytest.ini_options]  ##
-minversion = "7.0"  ##
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
 addopts = "-rs --cov=tripper --cov-report=term --doctest-modules --doctest-ignore-import-errors"
-filterwarnings = [  ##
-    "ignore:.*imp module.*:DeprecationWarning",  ##
+filterwarnings = [
+    "ignore:.*imp module.*:DeprecationWarning",
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
-]  ##
+]
 
 [tool.setuptools.package-data]
 "tripper.context" = ["*.json", "*.yaml"]

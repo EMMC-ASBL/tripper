@@ -1,20 +1,20 @@
-# Python  ##
-*.egg-info  ##
-__pycache__  ##
-*.pyc  ##
-  ##
-# Testing and tools  ##
-.*_cache/  ##
-  ##
-# Coverage  ##
-.coverage  ##
-htmlcov  ##
-  ##
-# Documentation  ##
-site/  ##
-  ##
-# Build  ##
-dist/  ##
+# Python
+*.egg-info
+__pycache__
+*.pyc
+
+# Testing and tools
+.*_cache/
+
+# Coverage
+.coverage
+htmlcov
+
+# Documentation
+site/
+
+# Build
+dist/
 
 # Test output
 route.svg

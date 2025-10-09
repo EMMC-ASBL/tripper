@@ -1,16 +1,16 @@
-"""Test namespaces."""  ##
+"""Test namespaces."""
 
 # pylint: disable=invalid-name,duplicate-code,import-outside-toplevel
 
-from typing import TYPE_CHECKING  ##
-  ##
-import pytest  ##
-  ##
-if TYPE_CHECKING:  ##
-    from pathlib import Path  ##
-    from typing import Callable  ##
-  ##
-  ##
+from typing import TYPE_CHECKING
+
+import pytest
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from typing import Callable
+
+
 def test_namespaces() -> None:
     """Test namespaces."""
     pytest.importorskip("rdflib")
@@ -18,45 +18,45 @@ def test_namespaces() -> None:
 
     from tripper import RDF, Namespace
     from tripper.errors import NoSuchIRIError
-  ##
-    assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"  ##
-    assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"  ##
-  ##
-    FAM = Namespace(  ##
-        "http://onto-ns.com/ontologies/examples/family#",  ##
-        check=True,  ##
+
+    assert str(RDF) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    assert RDF.type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+
+    FAM = Namespace(
+        "http://onto-ns.com/ontologies/examples/family#",
+        check=True,
         triplestore=ontodir / "family.ttl",
-    )  ##
-    FOOD = Namespace(  ##
-        "http://onto-ns.com/ontologies/examples/food#",  ##
-        label_annotations=True,  ##
-        check=True,  ##
+    )
+    FOOD = Namespace(
+        "http://onto-ns.com/ontologies/examples/food#",
+        label_annotations=True,
+        check=True,
         triplestore=ontodir / "food.ttl",
-    )  ##
-    FOOD2 = Namespace(  ##
-        "http://onto-ns.com/ontologies/examples/food#",  ##
-        label_annotations=True,  ##
-        check=False,  ##
+    )
+    FOOD2 = Namespace(
+        "http://onto-ns.com/ontologies/examples/food#",
+        label_annotations=True,
+        check=False,
         triplestore=ontodir / "food.ttl",
-    )  ##
-    assert FAM.Son == "http://onto-ns.com/ontologies/examples/family#Son"  ##
-    assert FAM["Son"] == "http://onto-ns.com/ontologies/examples/family#Son"  ##
-    assert FAM + "Son" == "http://onto-ns.com/ontologies/examples/family#Son"  ##
-  ##
-    name = "FOOD_345ecde3_3cac_41d2_aad6_cb6835a27b41"  ##
-    assert FOOD[name] == FOOD + name  ##
-    assert FOOD.Vegetable == FOOD + name  ##
-  ##
-    assert FOOD2[name] == FOOD2 + name  ##
-    assert FOOD2.Vegetable == FOOD2 + name  ##
-  ##
-    with pytest.raises(NoSuchIRIError):  ##
-        FAM.NonExisting  # pylint: disable=pointless-statement  ##
-  ##
-    with pytest.raises(NoSuchIRIError):  ##
-        FOOD.NonExisting  # pylint: disable=pointless-statement  ##
-  ##
-    assert FOOD2.NonExisting == FOOD2 + "NonExisting"  ##
+    )
+    assert FAM.Son == "http://onto-ns.com/ontologies/examples/family#Son"
+    assert FAM["Son"] == "http://onto-ns.com/ontologies/examples/family#Son"
+    assert FAM + "Son" == "http://onto-ns.com/ontologies/examples/family#Son"
+
+    name = "FOOD_345ecde3_3cac_41d2_aad6_cb6835a27b41"
+    assert FOOD[name] == FOOD + name
+    assert FOOD.Vegetable == FOOD + name
+
+    assert FOOD2[name] == FOOD2 + name
+    assert FOOD2.Vegetable == FOOD2 + name
+
+    with pytest.raises(NoSuchIRIError):
+        FAM.NonExisting  # pylint: disable=pointless-statement
+
+    with pytest.raises(NoSuchIRIError):
+        FOOD.NonExisting  # pylint: disable=pointless-statement
+
+    assert FOOD2.NonExisting == FOOD2 + "NonExisting"
 
     # Save and reuse the cache
     FOOD2._save_cache()  # pylint: disable=protected-access

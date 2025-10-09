@@ -1,3 +1,3 @@
-# rdflib  ##
-  ##
-::: tripper.backends.rdflib  ##
+# rdflib
+
+::: tripper.backends.rdflib

@@ -1,5 +1,5 @@
-# Changelog  ##
-  ##
+# Changelog
+
 ## [v0.4.3](https://github.com/EMMC-ASBL/tripper/tree/v0.4.3) (2025-08-19)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.2...v0.4.3)
@@ -182,7 +182,7 @@
 
 **Merged pull requests:**
 
-- Use Trusted Publishers on PyPI [\#243](https://github.com/EMMC-ASBL/tripper/pull/243) ([CasperWA](https://github.com/CasperWA))  ##
+- Use Trusted Publishers on PyPI [\#243](https://github.com/EMMC-ASBL/tripper/pull/243) ([CasperWA](https://github.com/CasperWA))
 
 ## [v0.3.2](https://github.com/EMMC-ASBL/tripper/tree/v0.3.2) (2024-08-19)
 
@@ -242,7 +242,7 @@
 **Merged pull requests:**
 
 - In tripper.convert, commented out recognised keys for oteapi strategies [\#212](https://github.com/EMMC-ASBL/tripper/pull/212) ([jesper-friis](https://github.com/jesper-friis))
-- Use latest SINTEF/ci-cd version [\#210](https://github.com/EMMC-ASBL/tripper/pull/210) ([CasperWA](https://github.com/CasperWA))  ##
+- Use latest SINTEF/ci-cd version [\#210](https://github.com/EMMC-ASBL/tripper/pull/210) ([CasperWA](https://github.com/CasperWA))
 - Allow prefix with digits [\#209](https://github.com/EMMC-ASBL/tripper/pull/209) ([jesper-friis](https://github.com/jesper-friis))
 - Added test for SPARQL CONSTRUCT query via tripper [\#207](https://github.com/EMMC-ASBL/tripper/pull/207) ([jesper-friis](https://github.com/jesper-friis))
 - Added more recognised keys to tripper.convert [\#206](https://github.com/EMMC-ASBL/tripper/pull/206) ([jesper-friis](https://github.com/jesper-friis))
@@ -271,7 +271,7 @@
 **Merged pull requests:**
 
 - Loosen req on pint to include 0.23 \(newest\) [\#198](https://github.com/EMMC-ASBL/tripper/pull/198) ([francescalb](https://github.com/francescalb))
-- Use Python 3.9 in all CI/CD workflows [\#196](https://github.com/EMMC-ASBL/tripper/pull/196) ([CasperWA](https://github.com/CasperWA))  ##
+- Use Python 3.9 in all CI/CD workflows [\#196](https://github.com/EMMC-ASBL/tripper/pull/196) ([CasperWA](https://github.com/CasperWA))
 - Bump basic CI tests and CD to python 3.9 [\#192](https://github.com/EMMC-ASBL/tripper/pull/192) ([ajeklund](https://github.com/ajeklund))
 - Cleaned up PR template [\#188](https://github.com/EMMC-ASBL/tripper/pull/188) ([jesper-friis](https://github.com/jesper-friis))
 - Bump mkdocs-material version for security [\#186](https://github.com/EMMC-ASBL/tripper/pull/186) ([ajeklund](https://github.com/ajeklund))
@@ -433,7 +433,7 @@
 
 **Merged pull requests:**
 
-- Using isort 5.12.0 for pre-commit [\#76](https://github.com/EMMC-ASBL/tripper/pull/76) ([CasperWA](https://github.com/CasperWA))  ##
+- Using isort 5.12.0 for pre-commit [\#76](https://github.com/EMMC-ASBL/tripper/pull/76) ([CasperWA](https://github.com/CasperWA))
 - Visualise [\#74](https://github.com/EMMC-ASBL/tripper/pull/74) ([jesper-friis](https://github.com/jesper-friis))
 - Generate mapping routes from subclasses of Value and MappingStep [\#73](https://github.com/EMMC-ASBL/tripper/pull/73) ([jesper-friis](https://github.com/jesper-friis))
 - Fix deprecated calls syntax to Triplestore.triples\(\) [\#71](https://github.com/EMMC-ASBL/tripper/pull/71) ([jesper-friis](https://github.com/jesper-friis))
@@ -472,7 +472,7 @@
 
 **Merged pull requests:**
 
-- Update `docs` extra [\#54](https://github.com/EMMC-ASBL/tripper/pull/54) ([CasperWA](https://github.com/CasperWA))  ##
+- Update `docs` extra [\#54](https://github.com/EMMC-ASBL/tripper/pull/54) ([CasperWA](https://github.com/CasperWA))
 - Remove backend packages from requirements [\#52](https://github.com/EMMC-ASBL/tripper/pull/52) ([jesper-friis](https://github.com/jesper-friis))
 - Fix utils.parse\_object\(\) [\#46](https://github.com/EMMC-ASBL/tripper/pull/46) ([jesper-friis](https://github.com/jesper-friis))
 
@@ -498,10 +498,10 @@
 **Merged pull requests:**
 
 - Added collection backend [\#44](https://github.com/EMMC-ASBL/tripper/pull/44) ([jesper-friis](https://github.com/jesper-friis))
-- Fix return types [\#43](https://github.com/EMMC-ASBL/tripper/pull/43) ([CasperWA](https://github.com/CasperWA))  ##
+- Fix return types [\#43](https://github.com/EMMC-ASBL/tripper/pull/43) ([CasperWA](https://github.com/CasperWA))
 - Updated import statements in the tutorial [\#40](https://github.com/EMMC-ASBL/tripper/pull/40) ([jesper-friis](https://github.com/jesper-friis))
 - Added create\_database\(\) and remove\_database\(\) methods. [\#39](https://github.com/EMMC-ASBL/tripper/pull/39) ([jesper-friis](https://github.com/jesper-friis))
-- Use the proper version of SINTEF/ci-cd [\#36](https://github.com/EMMC-ASBL/tripper/pull/36) ([CasperWA](https://github.com/CasperWA))  ##
+- Use the proper version of SINTEF/ci-cd [\#36](https://github.com/EMMC-ASBL/tripper/pull/36) ([CasperWA](https://github.com/CasperWA))
 - bumped ci-cd version to remove --strict mkdocs command [\#32](https://github.com/EMMC-ASBL/tripper/pull/32) ([daniel-sintef](https://github.com/daniel-sintef))
 - 3 refactor triplestorepy triplestore module api [\#31](https://github.com/EMMC-ASBL/tripper/pull/31) ([daniel-sintef](https://github.com/daniel-sintef))
 - 3 refactor triplestore [\#27](https://github.com/EMMC-ASBL/tripper/pull/27) ([jesper-friis](https://github.com/jesper-friis))
@@ -527,8 +527,8 @@
 
 **Merged pull requests:**
 
-- Use the package name `tripper` \(not `tripperpy`\) [\#16](https://github.com/EMMC-ASBL/tripper/pull/16) ([CasperWA](https://github.com/CasperWA))  ##
-- Clean up repository & fix workflows [\#5](https://github.com/EMMC-ASBL/tripper/pull/5) ([CasperWA](https://github.com/CasperWA))  ##
+- Use the package name `tripper` \(not `tripperpy`\) [\#16](https://github.com/EMMC-ASBL/tripper/pull/16) ([CasperWA](https://github.com/CasperWA))
+- Clean up repository & fix workflows [\#5](https://github.com/EMMC-ASBL/tripper/pull/5) ([CasperWA](https://github.com/CasperWA))
 - Added version number in \_\_init\_\_ to enable local pip install [\#4](https://github.com/EMMC-ASBL/tripper/pull/4) ([quaat](https://github.com/quaat))
 
 
