@@ -20,10 +20,10 @@ def test_prefixes():
         "eli": "http://data.europa.eu/eli/ontology#",
     }
     prefixes2 = {
-        "dcat": "http://www.w3.org/ns/dcat#",
-        "dcterms": "http://purl.org/dc/terms/",
-        "dctype": "http://purl.org/dc/dcmitype/",
-        "eli": "http://data.europa.eu/eli/ontology#",
+        "dcat": "http://www.w3.org/ns/dcat#",  # overlap with prefixes1
+        "dcterms": "http://purl.org/dc/terms/",  # overlap with prefixes1
+        "dctype": "http://purl.org/dc/dcmitype/",  # overlap with prefixes1
+        "eli": "http://data.europa.eu/eli/ontology#",  # overlap with prefixes1
         "foaf": "http://xmlns.com/foaf/0.1/",
         "iana": "https://www.iana.org/assignments/media-types/",
         "locn": "http://www.w3.org/ns/locn#",
