@@ -5,48 +5,48 @@ on:  ##
   push:  ##
     branches:  ##
       - 'master'
-      - 'push-action/**'  # Allow pushing to protected branches (using CasperWA/push-protected)  ##
+      - 'push-action/**'  # Allow pushing to protected branches  ##
   ##
 jobs:  ##
-  basic-tests:  ##
-    name: External  ##
-    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.9.2
-    with:  ##
-      ## General settings:  ##
-      install_extras: "[dev]"  ##
-  ##
-      ## pre-commit  ##
-      run_pre-commit: false
-      skip_pre-commit_hooks: "generate-context-and-doc"
-  ##
-      ## pylint & safety  ##
-      python_version_pylint_safety: "3.11"
-  ##
-      # pylint-specific settings  ##
-      run_pylint: true  ##
-      pylint_runs: |  ##
-        --rcfile=pyproject.toml tripper  ##
-        --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests  ##
-  ##
-      # safety-specific settings  ##
-      run_safety: false
-  ##
-      ## Build package  ##
-      run_build_package: true  ##
-      python_version_package: "3.11"
-      build_libs: flit  ##
-      build_cmd: flit build  ##
-  ##
-      ## Build documentation  ##
-      run_build_docs: true  ##
-      python_version_docs: "3.11"
-      warnings_as_errors: true  ##
-      use_mkdocs: true  ##
-  ##
-      # mkdocs-specific settings  ##
-      update_python_api_ref: true  ##
-      update_docs_landing_page: true  ##
-      package_dirs: tripper  ##
+##  basic-tests:  ##
+##    name: External  ##
+##    uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.9.2
+##    with:  ##
+##      ## General settings:  ##
+##      install_extras: "[dev]"  ##
+##  ##
+##      ## pre-commit  ##
+##      run_pre-commit: false
+##      skip_pre-commit_hooks: "generate-context-and-doc"
+##  ##
+##      ## pylint & safety  ##
+##      python_version_pylint_safety: "3.11"
+##  ##
+##      # pylint-specific settings  ##
+##      run_pylint: true  ##
+##      pylint_runs: |  ##
+##        --rcfile=pyproject.toml tripper  ##
+##        --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests  ##
+##  ##
+##      # safety-specific settings  ##
+##      run_safety: false
+##  ##
+##      ## Build package  ##
+##      run_build_package: true  ##
+##      python_version_package: "3.11"
+##      build_libs: flit  ##
+##      build_cmd: flit build  ##
+##  ##
+##      ## Build documentation  ##
+##      run_build_docs: true  ##
+##      python_version_docs: "3.11"
+##      warnings_as_errors: true  ##
+##      use_mkdocs: true  ##
+##  ##
+##      # mkdocs-specific settings  ##
+##      update_python_api_ref: true  ##
+##      update_docs_landing_page: true  ##
+##      package_dirs: tripper  ##
   ##
   safety:
     runs-on: ubuntu-latest
