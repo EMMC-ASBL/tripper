@@ -1,8 +1,8 @@
-"""A package encapsulating different triplestores using the strategy design
-pattern.
-
-See the README.md file for a description for how to use this package.
-"""
+"""A package encapsulating different triplestores using the strategy design  ##
+pattern.  ##
+  ##
+See the README.md file for a description for how to use this package.  ##
+"""  ##
 
 # Import backends here to avoid defining new globals later
 # Needed for pytest+doctest to pass
@@ -10,36 +10,36 @@ from . import backends  # pylint: disable=unused-import
 from .literal import Literal
 from .namespace import (
     ADMS,
-    DC,
+    DC,  ##
     DCAT,
     DCATAP,
-    DCTERMS,
-    DM,
-    DOAP,
+    DCTERMS,  ##
+    DM,  ##
+    DOAP,  ##
     ELI,
     EURIO,
-    FNO,
-    FOAF,
+    FNO,  ##
+    FOAF,  ##
     IANA,
-    MAP,
+    MAP,  ##
     ODRL,
     OTEIO,
-    OWL,
-    RDF,
-    RDFS,
+    OWL,  ##
+    RDF,  ##
+    RDFS,  ##
     SCHEMA,
-    SKOS,
+    SKOS,  ##
     SPDX,
     TIME,
     VCARD,
-    XML,
-    XSD,
-    Namespace,
-)
+    XML,  ##
+    XSD,  ##
+    Namespace,  ##
+)  ##
 from .session import Session
 from .triplestore import Triplestore, backend_packages
 from .triplestore_extend import Tripper
-
+  ##
 __version__ = "0.4.3"
 
 # Pre-defined namespaces
@@ -54,7 +54,7 @@ CHAMEO = Namespace(
     check=True,
 )
 
-__all__ = (
+__all__ = (  ##
     # Namespaces
     "ADMS",  # Asset Description Metadata Schema
     "CHAMEO",  # Characterisation Methodology Domain Ontology
@@ -93,4 +93,4 @@ __all__ = (
     "backend_packages",
     # Other
     "__version__",
-)
+)  ##

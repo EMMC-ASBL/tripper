@@ -1,49 +1,49 @@
-name: CD - Publish
-
-on:
-  release:
-    types:
-    - published
-
-jobs:
-  build:
-    name: External
+name: CD - Publish  ##
+  ##
+on:  ##
+  release:  ##
+    types:  ##
+    - published  ##
+  ##
+jobs:  ##
+  build:  ##
+    name: External  ##
     uses: SINTEF/ci-cd/.github/workflows/cd_release.yml@v2.9.2
-    if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')
-    with:
-      # General
-      git_username: "TEAM 4.0[bot]"
-      git_email: "Team4.0@SINTEF.no"
+    if: github.repository == 'EMMC-ASBL/tripper' && startsWith(github.ref, 'refs/tags/v')  ##
+    with:  ##
+      # General  ##
+      git_username: "TEAM 4.0[bot]"  ##
+      git_email: "Team4.0@SINTEF.no"  ##
       release_branch: master
-      install_extras: "[dev]"
-
-      # Build package
-      python_package: true
-      package_dirs: tripper
+      install_extras: "[dev]"  ##
+  ##
+      # Build package  ##
+      python_package: true  ##
+      package_dirs: tripper  ##
       python_version_build: "3.11"
-      build_libs: "flit"
-      build_cmd: "flit build"
-      build_dir: "dist"
+      build_libs: "flit"  ##
+      build_cmd: "flit build"  ##
+      build_dir: "dist"  ##
       publish_on_pypi: false
       upload_distribution: true
-
-      # Build & publish documentation
-      update_docs: true
+  ##
+      # Build & publish documentation  ##
+      update_docs: true  ##
       python_version_docs: "3.11"
-      doc_extras: "[docs]"
-      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"
-      docs_framework: mkdocs
-    secrets:
-      PAT: ${{ secrets.RELEASE_PAT }}
+      doc_extras: "[docs]"  ##
+      changelog_exclude_labels: "skip_changelog,duplicate,question,invalid,wontfix"  ##
+      docs_framework: mkdocs  ##
+    secrets:  ##
+      PAT: ${{ secrets.RELEASE_PAT }}  ##
 
   publish:
     name: Publish on PyPI
     needs: build
     runs-on: ubuntu-latest
 
-    environment:
-      name: release
-      url: https://pypi.org/project/tripper/
+    environment:  ##
+      name: release  ##
+      url: https://pypi.org/project/tripper/  ##
     permissions:
       id-token: write
 
@@ -51,7 +51,7 @@ jobs:
       - name: Download built distritbution
         uses: actions/download-artifact@v5
         with:
-          name: dist
+          name: dist  ##
           path: dist
 
       - name: Publish on PyPI

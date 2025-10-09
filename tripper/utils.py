@@ -488,7 +488,7 @@ def parse_literal(literal: "Any") -> "Any":
         return Literal(str(literal), lang=lang, datatype=datatype)
 
     if not isinstance(literal, str):
-        if isinstance(literal, tuple(Literal.datatypes)):
+        if isinstance(literal, tuple(Literal.datatypes)):  ##
             if type(literal) in Literal.datatypes:
                 datatype = Literal.datatypes[type(literal)][0]
             else:

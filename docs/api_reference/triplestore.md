@@ -1,3 +1,3 @@
-# triplestore
-
-::: tripper.triplestore
+# triplestore  ##
+  ##
+::: tripper.triplestore  ##
