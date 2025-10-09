@@ -1,3 +1,3 @@
-# ontopy  ##
-  ##
-::: tripper.backends.ontopy  ##
+# ontopy
+
+::: tripper.backends.ontopy

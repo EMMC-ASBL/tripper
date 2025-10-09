@@ -1,5 +1,5 @@
 <img src="figs/tripper_logo.svg" alt="Tripper logo" align="right" width="96" height="96">
-  ##
+
 [![PyPI](https://img.shields.io/pypi/v/tripper?logo=pypi)](https://pypi.org/project/tripper)
 [![Documentation](https://img.shields.io/badge/documentation-informational?logo=github)](https://emmc-asbl.github.io/tripper/latest/)
 [![CI tests](https://github.com/EMMC-ASBL/tripper/workflows/CI%20-%20Tests/badge.svg)](https://github.com/EMMC-ASBL/tripper/actions/workflows/ci_tests.yml?query=branch%3Amaster)
@@ -10,7 +10,7 @@
 
 Tripper
 =======
-  ##
+
 Getting started
 ---------------
 * [Tutorial]
@@ -24,7 +24,7 @@ Tripper provides a simple and consistent interface to a range of triplestore bac
 It strives for simplicity and is modelled after [rdflib] (with a few simplifications).
 
 In Tripper:
-  ##
+
 * All IRIs are represented by Python strings.
   Example: `https://w3id.org/emmo#Metre`
 
@@ -72,11 +72,11 @@ Tripper has by itself no dependencies outside the standard library, but the trip
 
 The package can be installed from [PyPI] using `pip`.
 A minimal installation can be done with
-  ##
-```shell  ##
-pip install tripper  ##
-```  ##
-  ##
+
+```shell
+pip install tripper
+```
+
 but typically, you would also like to install the requirements needed by the backends, the tripper sub-packages and extra features.
 The requirements for the backends are listed in the table above, while sub-packages and extra features are enabled by specifying one or more of the "extras" listed in the table below when installing Tripper.
 
@@ -128,7 +128,7 @@ We gratefully acknowledge the following projects for supporting the development 
   - [PINK](https://pink-project.eu/) (2024-2027) that receives funding from the European Union's Horizon 2020 Research and Innovation Programme, under Grant Agreement n. 101137809.
 
 
-  ##
+
 [Tutorial]: https://emmc-asbl.github.io/tripper/latest/tutorial/
 [Documentation]: https://emmc-asbl.github.io/tripper/latest/
 [Reference manual]: https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/

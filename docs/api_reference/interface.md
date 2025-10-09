@@ -1,3 +1,3 @@
-# interface  ##
-  ##
-::: tripper.interface  ##
+# interface
+
+::: tripper.interface

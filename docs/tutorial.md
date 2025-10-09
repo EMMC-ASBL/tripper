@@ -1,7 +1,7 @@
 Basic tutorial
 ==============
-<!-- markdownlint-disable MD007 -->  ##
-  ##
+<!-- markdownlint-disable MD007 -->
+
 
 Introduction
 ------------
@@ -33,38 +33,38 @@ Getting started
 To interface a triplestore, you create an instance of [Triplestore] providing the name of the triplestore as the `backend` argument.
 
 For example, to create an interface to an in-memory [rdflib] triplestore, you can use the `rdflib` backend:
-  ##
-```python  ##
+
+```python
 >>> from tripper import Triplestore
 >>> ts = Triplestore(backend="rdflib")
 
-```  ##
-  ##
+```
+
 ### Namespace objects
 Namespace objects are a very convenient feature that simplifies writing IRIs.
 Tripper provides a set of standard pre-defined namespaces that can simply be imported.
-For example:  ##
-  ##
-```python  ##
+For example:
+
+```python
 >>> from tripper import OWL, RDFS
 >>> RDFS.subClassOf
 'http://www.w3.org/2000/01/rdf-schema#subClassOf'
 
-```  ##
-  ##
+```
+
 New namespaces can be created using the [Namespace] class, but are usually added with the [`bind()`] method:
-  ##
-```python  ##
+
+```python
 >>> ONTO = ts.bind("onto", "http://example.com/onto#")
 >>> ONTO.MyConcept
 'http://example.com/onto#MyConcept'
 
-```  ##
-  ##
+```
+
 ### Adding triples to the triplestore
 Triples can now be added to the triplestore, using the [`add()`] and [`add_triples()`] methods:
-  ##
-```python  ##
+
+```python
 >>> from tripper.utils import en
 >>> ts.add_triples([
 ...     (ONTO.MyConcept, RDFS.subClassOf, OWL.Thing),
@@ -80,36 +80,36 @@ Triples can also be added from a source using the [`parse()`] method.
 For example will
 
 ```python
-ts.parse("onto.ttl", format="turtle")  ##
-```  ##
-  ##
+ts.parse("onto.ttl", format="turtle")
+```
+
 load all triples in turtle file `onto.ttl` into the triplestore.
 
 Similarly, the triplestore can be serialised to a string or a file using the [`serialize()`] method:
-  ##
-```python  ##
+
+```python
 ts.serialize("onto2.ttl")  # serialise to file `onto2.ttl`
 s = ts.serialize(format="ntriples")  # serialise to string s in ntriples format
-```  ##
-  ##
+```
+
 ### Retrieving triples from and querying a triplestore
 A set of convenient functions exist for simple queries, including [`triples()`], [`subjects()`], [`predicates()`], [`objects()`], [`subject_predicates()`], [`subject_objects()`], [`predicate_objects()`] and [`value()`].
 Except for [`value()`], they return iterators.
-For example:  ##
-  ##
-```python  ##
+For example:
+
+```python
 >>> ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf)  # doctest: +ELLIPSIS
 <generator object Triplestore.objects at 0x...>
 
 >>> list(ts.objects(subject=ONTO.MyConcept, predicate=RDFS.subClassOf))
 ['http://www.w3.org/2002/07/owl#Thing']
 
-```  ##
-  ##
+```
+
 The [`query()`] and [`update()`] methods can be used to query and update the triplestore using SPARQL.
 See the next section.
 
-  ##
+
 Slightly more advanced features
 -------------------------------
 
@@ -314,12 +314,12 @@ The purpose of the [`map()`] method, is to map a data models and its properties 
 ### Adding mappings
 Lets assume that you have a data model identified by the IRI `http://onto-ns.com/meta/ex/0.1/MyDataModel`, which has a property (structural element) called *velocity*.
 A namespace object for this data model can be created with
-  ##
-```python  ##
+
+```python
 from tripper import Namespace
 DM = Namespace("http://onto-ns.com/meta/ex/0.1/MyDataModel#")
-```  ##
-  ##
+```
+
 and use to map the data model property `velocity` to the concept `ONTO.Velocity` in the ontology
 
 
@@ -328,30 +328,30 @@ ts.map(DM.velocity, ONTO.Velocity)
 ```
 
 One can also work directly with DLite and SOFT7 data models.
-Here we repeat the above with DLite:  ##
-  ##
-```python  ##
-import dlite  ##
+Here we repeat the above with DLite:
+
+```python
+import dlite
 mymodel = dlite.get_instance("http://onto-ns.com/meta/ex/0.1/MyDataModel")
 ts.map(mymodel.velocity, ONTO.Velocity)
-```  ##
-  ##
+```
+
 The `add_function()` method documents a Python function semantically and adds mappings for its arguments and return value(s).
 Currently, it supports both [EMMO] and the [Function Ontology (FnO)] for the semantic documentation.
 
 For example, to semantically document the general function `mean()` applied to the special context of arm lengths, one can do
-  ##
-```python  ##
-def mean(x, y):  ##
-    """Returns the mean value of `x` and `y`."""  ##
-    return (x + y)/2  ##
-  ##
-ts.add_function(  ##
-    mean,  ##
-    expects=(ONTO.RightArmLength, ONTO.LeftArmLength),  ##
-    returns=ONTO.AverageArmLength,  ##
-)  ##
-```  ##
+
+```python
+def mean(x, y):
+    """Returns the mean value of `x` and `y`."""
+    return (x + y)/2
+
+ts.add_function(
+    mean,
+    expects=(ONTO.RightArmLength, ONTO.LeftArmLength),
+    returns=ONTO.AverageArmLength,
+)
+```
 
 
 ### Using mappings

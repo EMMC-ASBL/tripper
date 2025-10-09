@@ -1,7 +1,7 @@
-# To install the git pre-commit hook run:  ##
-#   pre-commit install  ##
-# To update the pre-commit hooks run:  ##
-#   pre-commit autoupdate && pre-commit autoupdate --freeze --repo https://github.com/SINTEF/ci-cd  ##
+# To install the git pre-commit hook run:
+#   pre-commit install
+# To update the pre-commit hooks run:
+#   pre-commit autoupdate && pre-commit autoupdate --freeze --repo https://github.com/SINTEF/ci-cd
 
 # pre-commit.ci
 ci:
@@ -17,63 +17,66 @@ ci:
   submodules: false
 
 # hooks
-repos:  ##
-  - repo: https://github.com/pre-commit/pre-commit-hooks  ##
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
-    hooks:  ##
-    - id: end-of-file-fixer  ##
+    hooks:
+    - id: end-of-file-fixer
       exclude: ^.*\.(svg)$
-    - id: debug-statements  ##
-    - id: check-yaml  ##
-      name: Check YAML  ##
-    - id: check-toml  ##
-      name: Check TOML  ##
-    - id: trailing-whitespace  ##
-      args: [--markdown-linebreak-ext=md]  ##
-  ##
+    - id: debug-statements
+    - id: check-yaml
+      name: Check YAML
+    - id: check-toml
+      name: Check TOML
+    - id: trailing-whitespace
+      args: [--markdown-linebreak-ext=md]
+
   - repo: https://github.com/PyCQA/isort
     rev: 6.1.0
-    hooks:  ##
-    - id: isort  ##
-      args:  ##
-      - --profile=black  ##
-      - --filter-files  ##
-      - --skip-gitignore  ##
-  ##
+    hooks:
+    - id: isort
+      args:
+      - --profile=black
+      - --filter-files
+      - --skip-gitignore
+
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 25.9.0
-    hooks:  ##
-    - id: black  ##
-      args: [--line-length=79]  ##
-  ##
-  - repo: https://github.com/PyCQA/bandit  ##
+    hooks:
+    - id: black
+      args: [--line-length=79]
+
+  - repo: https://github.com/PyCQA/bandit
     rev: 1.8.6
-    hooks:  ##
-    - id: bandit  ##
-      args: ["-r"]  ##
-      files: ^tripper/.*$  ##
-  ##
-  - repo: https://github.com/pre-commit/mirrors-mypy  ##
+    hooks:
+    - id: bandit
+      args: ["-r"]
+      files: ^tripper/.*$
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.18.2
-    hooks:  ##
-    - id: mypy  ##
-      exclude: ^tests/.*$  ##
-      additional_dependencies:  ##
-        - "types-requests"  ##
+    hooks:
+    - id: mypy
+      exclude: ^tests/.*$
+      additional_dependencies:
+        - "types-requests"
         - "types-pyyaml"
-        - "pydantic"  ##
-  ##
-  - repo: https://github.com/SINTEF/ci-cd  ##
+        - "pydantic"
+
+  - repo: https://github.com/SINTEF/ci-cd
     rev: v2.9.2
-    hooks:  ##
-    - id: docs-api-reference  ##
-      args:  ##
-      - --package-dir=tripper  ##
-    - id: docs-landing-page  ##
+    hooks:
+    - id: docs-api-reference
+      args:
+      - --package-dir=tripper
+      - --unwanted-folder=__pycache__
+      - --unwanted-folder=context
+      - --unwanted-folder=old
+    - id: docs-landing-page
     # - id: update-pyproject
-  ##
-  - repo: local  ##
-    hooks:  ##
+
+  - repo: local
+    hooks:
     - id: generate-context-and-doc
       name: Generate JSON-LD context and documentation
       entry: .hooks/generate-context-and-doc.sh
@@ -90,24 +93,24 @@ repos:  ##
     #   pass_filenames: false
     #   stages: ["pre-commit"]
 
-    - id: pylint  ##
-      name: pylint  ##
-      entry: pylint  ##
-      args:  ##
-      - --rcfile=pyproject.toml  ##
-      language: python  ##
-      types: [python]  ##
-      require_serial: true  ##
-      files: ^.*$  ##
-      exclude: ^tests/.*$  ##
+    - id: pylint
+      name: pylint
+      entry: pylint
+      args:
+      - --rcfile=pyproject.toml
+      language: python
+      types: [python]
+      require_serial: true
+      files: ^.*$
+      exclude: ^tests/.*$
 
-    - id: pylint-tests  ##
-      name: pylint - tests  ##
-      entry: pylint  ##
-      args:  ##
-      - "--rcfile=pyproject.toml"  ##
-      - "--disable=import-outside-toplevel,redefined-outer-name"  ##
-      language: python  ##
-      types: [python]  ##
-      require_serial: true  ##
-      files: ^tests/.*$  ##
+    - id: pylint-tests
+      name: pylint - tests
+      entry: pylint
+      args:
+      - "--rcfile=pyproject.toml"
+      - "--disable=import-outside-toplevel,redefined-outer-name"
+      language: python
+      types: [python]
+      require_serial: true
+      files: ^tests/.*$
