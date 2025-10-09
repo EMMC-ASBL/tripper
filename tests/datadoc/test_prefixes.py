@@ -1,5 +1,10 @@
 """Test the datadoc.prefixes module."""
 
+import pytest
+
+pytest.importorskip("pyld")
+pytest.importorskip("rdflib")
+
 
 def test_prefixes():
     """Test load_prefixes() and save_prefixes()."""

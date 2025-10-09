@@ -12,7 +12,7 @@ _bnode_counter = 0
 
 
 def bnode() -> str:
-    """Returns a blank node."""
+    """Returns a new unique blank node."""
     global _bnode_counter  # pylint: disable=global-statement
     _bnode_counter += 1
     return f"_:b{_bnode_counter}"
