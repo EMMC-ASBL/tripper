@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - 'master'
-      - 'push-action/**'  # Allow pushing to protected branches (using CasperWA/push-protected)
+      - 'push-action/**'  # Allow pushing to protected branches
 
 jobs:
   basic-tests:
