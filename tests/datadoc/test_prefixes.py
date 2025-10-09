@@ -1,7 +1,7 @@
 """Test the datadoc.prefixes module."""
 
-if True:
-    # def test_prefixes():
+
+def test_prefixes():
     """Test load_prefixes() and save_prefixes()."""
     from tripper import Triplestore
     from tripper.datadoc.prefixes import load_prefixes, save_prefixes
@@ -27,17 +27,48 @@ if True:
         "prov": "http://www.w3.org/ns/prov#",
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     }
-    intersection = {
-        k: prefixes1[k] for k in set(prefixes1).intersection(prefixes2)
+    prefixes3 = {
+        "dct": "http://purl.org/dc/terms/",
+        "dcat": "http://example.org/ns/dcat/",
     }
 
     ts = Triplestore(backend="rdflib")
 
-    r1 = save_prefixes(ts, prefixes1)
+    r1 = load_prefixes(ts)
     assert not r1
 
+    save_prefixes(ts, prefixes1)
     r2 = load_prefixes(ts)
-    assert dict(r2) == prefixes1
+    assert set(r2) == set(prefixes1.items())
 
-    d3 = save_prefixes(ts, prefixes2)
-    assert d3 == intersection
+    save_prefixes(ts, prefixes2)
+    r3 = load_prefixes(ts)
+    assert set(r3) == set(prefixes1.items()).union(prefixes2.items())
+
+    save_prefixes(ts, prefixes3)
+    r4 = load_prefixes(ts)
+    assert set(r4) == set(prefixes1.items()).union(prefixes2.items()).union(
+        prefixes3.items()
+    )
+
+    save_prefixes(ts, prefixes3)  # Save the same prefixes twice
+    r5 = load_prefixes(ts)
+    assert set(r5) == set(r4)
+
+    r6 = load_prefixes(ts, prefix="owl")
+    assert r6 == [("owl", prefixes2["owl"])]
+
+    r7 = load_prefixes(ts, prefix="dcat")
+    assert set(r7) == {
+        ("dcat", prefixes2["dcat"]),
+        ("dcat", prefixes3["dcat"]),
+    }
+
+    r8 = load_prefixes(ts, namespace=prefixes1["adms"])
+    assert r8 == [("adms", prefixes1["adms"])]
+
+    r9 = load_prefixes(ts, namespace=prefixes3["dct"])
+    assert set(r9) == {
+        ("dcterms", prefixes1["dcterms"]),
+        ("dct", prefixes3["dct"]),
+    }
