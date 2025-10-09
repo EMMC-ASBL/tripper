@@ -46,7 +46,7 @@ def save_prefixes(ts: "Triplestore", prefixes: dict) -> None:
 
 
 def load_prefixes(ts: "Triplestore", prefix=None, namespace=None) -> list:
-    """Return an list over all iterator over all matching prefix-namespace
+    """Returns an list of all matching prefix-namespace
     pairs defined in the triplestore.
 
     Arguments:
