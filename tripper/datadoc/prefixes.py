@@ -51,8 +51,8 @@ def load_prefixes(ts: "Triplestore", prefix=None, namespace=None) -> list:
 
     Arguments:
         ts: Triplestore instance to load from.
-        prefix:
-        namespace:
+        prefix: prefix to search for
+        namespace: namespace to search for (URI)
 
     Returns:
         Iterator over `(prefix, namespace)` tuples.
