@@ -1,53 +1,53 @@
-name: CI - Tests
-
-on:
-  pull_request:
-  push:
-    branches:
+name: CI - Tests  ##
+  ##
+on:  ##
+  pull_request:  ##
+  push:  ##
+    branches:  ##
       - 'master'
-      - 'push-action/**'  # Allow pushing to protected branches (using CasperWA/push-protected)
-
-jobs:
-  basic-tests:
-    name: External
+      - 'push-action/**'  # Allow pushing to protected branches (using CasperWA/push-protected)  ##
+  ##
+jobs:  ##
+  basic-tests:  ##
+    name: External  ##
     uses: SINTEF/ci-cd/.github/workflows/ci_tests.yml@v2.9.2
-    with:
-      ## General settings:
-      install_extras: "[dev]"
-
-      ## pre-commit
+    with:  ##
+      ## General settings:  ##
+      install_extras: "[dev]"  ##
+  ##
+      ## pre-commit  ##
       run_pre-commit: false
       skip_pre-commit_hooks: "generate-context-and-doc"
-
-      ## pylint & safety
+  ##
+      ## pylint & safety  ##
       python_version_pylint_safety: "3.11"
-
-      # pylint-specific settings
-      run_pylint: true
-      pylint_runs: |
-        --rcfile=pyproject.toml tripper
-        --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests
-
-      # safety-specific settings
+  ##
+      # pylint-specific settings  ##
+      run_pylint: true  ##
+      pylint_runs: |  ##
+        --rcfile=pyproject.toml tripper  ##
+        --rcfile=pyproject.toml --disable=import-outside-toplevel,redefined-outer-name tests  ##
+  ##
+      # safety-specific settings  ##
       run_safety: false
-
-      ## Build package
-      run_build_package: true
+  ##
+      ## Build package  ##
+      run_build_package: true  ##
       python_version_package: "3.11"
-      build_libs: flit
-      build_cmd: flit build
-
-      ## Build documentation
-      run_build_docs: true
+      build_libs: flit  ##
+      build_cmd: flit build  ##
+  ##
+      ## Build documentation  ##
+      run_build_docs: true  ##
       python_version_docs: "3.11"
-      warnings_as_errors: true
-      use_mkdocs: true
-
-      # mkdocs-specific settings
-      update_python_api_ref: true
-      update_docs_landing_page: true
-      package_dirs: tripper
-
+      warnings_as_errors: true  ##
+      use_mkdocs: true  ##
+  ##
+      # mkdocs-specific settings  ##
+      update_python_api_ref: true  ##
+      update_docs_landing_page: true  ##
+      package_dirs: tripper  ##
+  ##
   safety:
     runs-on: ubuntu-latest
     steps:
@@ -59,8 +59,8 @@ jobs:
           args: --detailed-output # To always see detailed output from this action
 
   pytest:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-latest  ##
+  ##
 
     services:
       fuseki:
@@ -76,38 +76,38 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    strategy:
-      fail-fast: false
-      matrix:
+    strategy:  ##
+      fail-fast: false  ##
+      matrix:  ##
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14.0-rc.2"]
-
-    steps:
-    - name: Checkout tripper
+  ##
+    steps:  ##
+    - name: Checkout tripper  ##
       uses: actions/checkout@v5
-
-    - name: Set up Python ${{ matrix.python-version }}
+  ##
+    - name: Set up Python ${{ matrix.python-version }}  ##
       uses: actions/setup-python@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
+      with:  ##
+        python-version: ${{ matrix.python-version }}  ##
+  ##
+    - name: Install dependencies  ##
+      run: |  ##
         sudo apt install graphviz
-        python -m pip install -U pip
-        pip install -U setuptools wheel flit
-        pip install -e .[testing]
-
+        python -m pip install -U pip  ##
+        pip install -U setuptools wheel flit  ##
+        pip install -e .[testing]  ##
+  ##
     - name: List installed packages
       run: pip freeze
 
-    - name: Test with pytest
+    - name: Test with pytest  ##
       run: pytest -vvv --cov-report=xml --doctest-modules
-
-    - name: Upload coverage to Codecov
+  ##
+    - name: Upload coverage to Codecov  ##
       if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      with:  ##
+        token: ${{ secrets.CODECOV_TOKEN }}  ##
 
     - name: Run doctest on tutorial
       run: python -m doctest docs/tutorial.md

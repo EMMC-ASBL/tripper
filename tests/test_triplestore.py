@@ -1,44 +1,44 @@
-"""Test triplestore.
-
-If backend is given, only that backend will be tested.  Otherwise all
-installed backends are tested one by one.
-"""
+"""Test triplestore.  ##
+  ##
+If backend is given, only that backend will be tested.  Otherwise all  ##
+installed backends are tested one by one.  ##
+"""  ##
 
 # pylint: disable=duplicate-code,comparison-with-callable,invalid-name
 # pylint: disable=import-outside-toplevel
-from typing import TYPE_CHECKING
-
-import pytest
-
-if TYPE_CHECKING:
-    from pathlib import Path
-    from typing import Any, Callable
-
+from typing import TYPE_CHECKING  ##
+  ##
+import pytest  ##
+  ##
+if TYPE_CHECKING:  ##
+    from pathlib import Path  ##
+    from typing import Any, Callable  ##
+  ##
 
 # @pytest.mark.parametrize("backend", ["rdflib", "ontopy", "collection"])
 @pytest.mark.parametrize("backend", ["rdflib", "collection"])
 def test_triplestore(  # pylint: disable=too-many-locals
-    backend: str,
-    example_function: "Callable[[Any, Any], Any]",
-    expected_function_triplestore: str,
-) -> None:
-    """Test the Triplestore class.
-
-    Parameters:
-        backend: Dynamic parameter based on the parametrize decorator.
-        example_function: Fixture from `conftest.py` to return a function
-            implementation example for use with Triplestore.
+    backend: str,  ##
+    example_function: "Callable[[Any, Any], Any]",  ##
+    expected_function_triplestore: str,  ##
+) -> None:  ##
+    """Test the Triplestore class.  ##
+  ##
+    Parameters:  ##
+        backend: Dynamic parameter based on the parametrize decorator.  ##
+        example_function: Fixture from `conftest.py` to return a function  ##
+            implementation example for use with Triplestore.  ##
         expected_function_triplestore: Fixture from `conftest.py`, which
             returns a Turtle-serialized string of what is expected when
             serializing the Triplestore in this test.
-
-    """
+  ##
+    """  ##
     pytest.importorskip("rdflib")
     pytest.importorskip("dlite")
     pytest.importorskip("SPARQLWrapper")
     from tripper.errors import NamespaceError
     from tripper.triplestore import DCTERMS, OWL, RDF, RDFS, XSD, Triplestore
-
+  ##
     ts = Triplestore(backend)
     assert ts.expand_iri("xsd:integer") == XSD.integer
     assert ts.prefix_iri(RDF.type) == "rdf:type"
@@ -60,7 +60,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
     assert ts.expand_iri(":MyConcept") == BASE.MyConcept
     assert ts.prefix_iri(BASE.MyConcept) == ":MyConcept"
 
-    assert str(EX) == "http://example.com/onto#"
+    assert str(EX) == "http://example.com/onto#"  ##
     ts.add_mapsTo(
         EX.MyConcept, "http://onto-ns.com/meta/0.1/MyEntity", "myprop"
     )
@@ -72,16 +72,16 @@ def test_triplestore(  # pylint: disable=too-many-locals
     assert ts.has(object=EX.NotInOntology) is False
 
     func_iri = ts.add_function(
-        example_function,
-        expects=(EX.MyConcept, EX.AnotherConcept),
-        returns=EX.Sum,
-        base_iri=EX,
+        example_function,  ##
+        expects=(EX.MyConcept, EX.AnotherConcept),  ##
+        returns=EX.Sum,  ##
+        base_iri=EX,  ##
         standard="fno",
-    )
-
+    )  ##
+  ##
     ts_as_turtle = ts.serialize(format="turtle")
     assert ts_as_turtle == expected_function_triplestore
-
+  ##
     # Test SPARQL query
     try:
         rows = ts.query("SELECT ?s ?o WHERE { ?s rdfs:subClassOf ?o }")
@@ -119,7 +119,7 @@ def test_triplestore(  # pylint: disable=too-many-locals
     }
     assert ts.prefer_sparql == facit[backend]
 
-
+  ##
 # if True:
 def test_restriction() -> None:  # pylint: disable=too-many-statements
     """Test add_restriction() method."""
@@ -286,18 +286,18 @@ def test_availability():
         ts.available()
 
 
-def test_backend_rdflib(expected_function_triplestore: str) -> None:
-    """Specifically test the rdflib backend Triplestore.
-
-    Parameters:
+def test_backend_rdflib(expected_function_triplestore: str) -> None:  ##
+    """Specifically test the rdflib backend Triplestore.  ##
+  ##
+    Parameters:  ##
         expected_function_triplestore: Fixture from `conftest.py`, which
             returns a Turtle-serialized string of what is expected when
             serializing the Triplestore in this test.
-
-    """
+  ##
+    """  ##
     pytest.importorskip("rdflib")
-    from tripper.triplestore import RDFS, Triplestore
-
+    from tripper.triplestore import RDFS, Triplestore  ##
+  ##
     ts = Triplestore("rdflib")
     EX = ts.bind(
         "ex", "http://example.com/onto#"
@@ -305,67 +305,67 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     ts.parse(format="turtle", data=expected_function_triplestore)
     assert ts.serialize(format="turtle") == expected_function_triplestore
     ts.set((EX.AnotherConcept, RDFS.subClassOf, EX.MyConcept))
-
-    def cost(parameter):
-        return 2 * parameter
-
+  ##
+    def cost(parameter):  ##
+        return 2 * parameter  ##
+  ##
     ts.add_mapsTo(
         EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost
     )
     assert list(ts.function_repo.values())[0] == cost
-
-    def func(parameter):
-        return parameter + 1
-
+  ##
+    def func(parameter):  ##
+        return parameter + 1  ##
+  ##
     ts.add_function(func, expects=EX.Sum, returns=EX.OneMore, cost=cost)
     assert list(ts.function_repo.values())[1] == func
     assert len(ts.function_repo) == 2  # cost is only added once
-
-    def func2(parameter):
-        return parameter + 2
-
-    def cost2(parameter):
-        return 2 * parameter + 1
-
+  ##
+    def func2(parameter):  ##
+        return parameter + 2  ##
+  ##
+    def cost2(parameter):  ##
+        return 2 * parameter + 1  ##
+  ##
     ts.add_function(func2, expects=EX.Sum, returns=EX.EvenMore, cost=cost2)
     assert len(ts.function_repo) == 4
-
-
-def test_backend_rdflib_base_iri(
-    get_ontology_path: "Callable[[str], Path]", tmp_path: "Path"
-) -> None:
-    """Test rdflib with `base_iri`.
-
-    Parameters:
+  ##
+  ##
+def test_backend_rdflib_base_iri(  ##
+    get_ontology_path: "Callable[[str], Path]", tmp_path: "Path"  ##
+) -> None:  ##
+    """Test rdflib with `base_iri`.  ##
+  ##
+    Parameters:  ##
         get_ontology_path: Fixture from `conftest.py` to retrieve a
             `pathlib.Path` object pointing to an ontology test file.
         tmp_path: Built-in pytest fixture, which returns a `pathlib.Path`
             object representing a temporary folder.
-
-    """
+  ##
+    """  ##
     pytest.importorskip("rdflib")
-    import shutil
-
-    from tripper.triplestore import RDF, Triplestore
-
-    ontopath_family = get_ontology_path("family")
-    tmp_onto = tmp_path / "family.ttl"
-    shutil.copy(ontopath_family, tmp_onto)
-
+    import shutil  ##
+  ##
+    from tripper.triplestore import RDF, Triplestore  ##
+  ##
+    ontopath_family = get_ontology_path("family")  ##
+    tmp_onto = tmp_path / "family.ttl"  ##
+    shutil.copy(ontopath_family, tmp_onto)  ##
+  ##
     ts = Triplestore(backend="rdflib")
     FAM = ts.bind(  # pylint: disable=invalid-name
-        "fam", "http://onto-ns.com/ontologies/examples/family#"
-    )
+        "fam", "http://onto-ns.com/ontologies/examples/family#"  ##
+    )  ##
     ts.add_triples(
-        [
-            (":Nils", RDF.type, FAM.Father),
-            (":Anna", RDF.type, FAM.Dauther),
-            (":Nils", FAM.hasChild, ":Anna"),
-        ]
-    )
+        [  ##
+            (":Nils", RDF.type, FAM.Father),  ##
+            (":Anna", RDF.type, FAM.Dauther),  ##
+            (":Nils", FAM.hasChild, ":Anna"),  ##
+        ]  ##
+    )  ##
     ts.close()
-
-
+  ##
+  ##
 def test_backend_rdflib_graph(
     get_ontology_path: "Callable[[str], Path]",
 ) -> None:
@@ -392,38 +392,38 @@ def test_backend_rdflib_graph(
 
 
 @pytest.mark.filterwarnings("ignore:adding new IRI to ontology:UserWarning")
-def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
-    """Specifically test the ontopy backend Triplestore.
-
-    Parameters:
+def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:  ##
+    """Specifically test the ontopy backend Triplestore.  ##
+  ##
+    Parameters:  ##
         get_ontology_path: Fixture from `conftest.py` to retrieve a
             `pathlib.Path` object pointing to an ontology test file.
-
-    """
+  ##
+    """  ##
     from tripper import Namespace, Triplestore
-
+  ##
     pytest.importorskip("ontopy")
-    ontopath_food = get_ontology_path("food")
-
-    FOOD = Namespace(  # pylint: disable=invalid-name
-        "http://onto-ns.com/ontologies/examples/food#",
-        label_annotations=True,
-        check=True,
+    ontopath_food = get_ontology_path("food")  ##
+  ##
+    FOOD = Namespace(  # pylint: disable=invalid-name  ##
+        "http://onto-ns.com/ontologies/examples/food#",  ##
+        label_annotations=True,  ##
+        check=True,  ##
         triplestore=ontopath_food,
-    )
-
+    )  ##
+  ##
     ts = Triplestore(
-        "ontopy",
-        base_iri="http://onto-ns.com/ontologies/examples/food",
-    )
+        "ontopy",  ##
+        base_iri="http://onto-ns.com/ontologies/examples/food",  ##
+    )  ##
     ts.parse(ontopath_food)
-
+  ##
     ts = Triplestore(
-        "ontopy",
-        base_iri="http://onto-ns.com/ontologies/examples/food",
-    )
+        "ontopy",  ##
+        base_iri="http://onto-ns.com/ontologies/examples/food",  ##
+    )  ##
     ts.bind("food", FOOD)
-    with open(ontopath_food, "rt", encoding="utf8") as handle:
+    with open(ontopath_food, "rt", encoding="utf8") as handle:  ##
         ts.parse(data=handle.read())
 
 

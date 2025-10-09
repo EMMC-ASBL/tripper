@@ -1,13 +1,13 @@
-name: CI - Activate auto-merging for dependencies PRs
-
-on:
-  pull_request_target:
-    branches: [ci/dependency-updates]
-
-jobs:
-  update-dependencies-branch:
-    name: External
+name: CI - Activate auto-merging for dependencies PRs  ##
+  ##
+on:  ##
+  pull_request_target:  ##
+    branches: [ci/dependency-updates]  ##
+  ##
+jobs:  ##
+  update-dependencies-branch:  ##
+    name: External  ##
     uses: SINTEF/ci-cd/.github/workflows/ci_automerge_prs.yml@v2.9.2
-    if: github.repository_owner == 'EMMC-ASBL' && ( ( startsWith(github.event.pull_request.head.ref, 'dependabot/') && github.actor == 'dependabot[bot]' ) || ( github.event.pull_request.head.ref == 'ci/update-pyproject' && github.actor == 'TEAM4-0' ) )
-    secrets:
-      PAT: ${{ secrets.RELEASE_PAT }}
+    if: github.repository_owner == 'EMMC-ASBL' && ( ( startsWith(github.event.pull_request.head.ref, 'dependabot/') && github.actor == 'dependabot[bot]' ) || ( github.event.pull_request.head.ref == 'ci/update-pyproject' && github.actor == 'TEAM4-0' ) )  ##
+    secrets:  ##
+      PAT: ${{ secrets.RELEASE_PAT }}  ##

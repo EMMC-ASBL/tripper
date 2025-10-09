@@ -1,10 +1,10 @@
-"""Test RDF literals."""
+"""Test RDF literals."""  ##
 
 import pytest
 
 # pylint: disable=invalid-name,too-many-statements,import-outside-toplevel
-
-
+  ##
+  ##
 def test_untyped() -> None:
     """Test creating a untyped literal."""
     from tripper.errors import UnknownDatatypeWarning
@@ -28,46 +28,46 @@ def test_untyped() -> None:
         assert literal != Literal("Hello world!", datatype=XSD.ENTITY)
 
 
-def test_string() -> None:
-    """Test creating a string literal."""
+def test_string() -> None:  ##
+    """Test creating a string literal."""  ##
     from tripper.literal import XSD, Literal
-
+  ##
     literal = Literal("Hello world!", datatype=XSD.string)
     assert literal == Literal("Hello world!", datatype=XSD.string)
     assert literal == Literal("Hello world!")
     assert literal != Literal("Hello world!", datatype=XSD.token)
     assert literal != Literal(2, datatype=XSD.int)
     assert Literal(literal) == Literal("Hello world!", datatype=XSD.string)
-    assert isinstance(literal, str)
-    assert literal.lang is None
+    assert isinstance(literal, str)  ##
+    assert literal.lang is None  ##
     assert literal.datatype == XSD.string
-    assert literal.to_python() == "Hello world!"
-    assert literal.value == "Hello world!"
+    assert literal.to_python() == "Hello world!"  ##
+    assert literal.value == "Hello world!"  ##
     assert literal.n3() == f'"Hello world!"^^<{XSD.string}>'
     assert literal == "Hello world!"
     assert literal == Literal("Hello world!")
-
-
-def test_string_lang() -> None:
-    """Test creating a string literal with a set language."""
+  ##
+  ##
+def test_string_lang() -> None:  ##
+    """Test creating a string literal with a set language."""  ##
     from tripper.literal import XSD, Literal
-
-    literal = Literal("Hello world!", lang="en")
+  ##
+    literal = Literal("Hello world!", lang="en")  ##
     assert literal == Literal("Hello world!", lang="en")
     assert literal != Literal("Hello world!", lang="it")
     assert Literal(literal) == Literal("Hello world!", lang="en")
-    assert literal.lang == "en"
-    assert literal.datatype is None
-    assert literal.value == "Hello world!"
-    assert literal.n3() == '"Hello world!"@en'
+    assert literal.lang == "en"  ##
+    assert literal.datatype is None  ##
+    assert literal.value == "Hello world!"  ##
+    assert literal.n3() == '"Hello world!"@en'  ##
     assert literal == "Hello world!"
-
+  ##
     # Are these wanted behaviour?  What does the RDF 1.1 standard says?
     assert literal == Literal("Hello world!")
     assert literal == Literal("Hello world!", datatype=XSD.string)
     assert literal == Literal("Hello world!", datatype=XSD.token)
 
-
+  ##
 def test_cannot_combine_datatype_and_lang() -> None:
     """Test that combining datatype and lang raises TypeError."""
     from tripper import XSD, Literal
@@ -76,26 +76,26 @@ def test_cannot_combine_datatype_and_lang() -> None:
         Literal("1", datatype=XSD.string, lang="en")
 
 
-def test_en() -> None:
-    """Test creating a string literal through `en()`."""
+def test_en() -> None:  ##
+    """Test creating a string literal through `en()`."""  ##
     from tripper.utils import en
-
-    literal = en("Hello world!")
-    assert literal.n3() == '"Hello world!"@en'
-
-
-def test_integer() -> None:
-    """Test creating an integer literal."""
+  ##
+    literal = en("Hello world!")  ##
+    assert literal.n3() == '"Hello world!"@en'  ##
+  ##
+  ##
+def test_integer() -> None:  ##
+    """Test creating an integer literal."""  ##
     from tripper import XSD, Literal
-
-    literal = Literal(42)
+  ##
+    literal = Literal(42)  ##
     assert literal == Literal(42)
     assert Literal(literal) == Literal(42)
-    assert literal.lang is None
-    assert literal.datatype == XSD.integer
-    assert literal.value == 42
+    assert literal.lang is None  ##
+    assert literal.datatype == XSD.integer  ##
+    assert literal.value == 42  ##
     assert literal.n3() == f'"42"^^<{XSD.integer}>'
-
+  ##
     with pytest.raises(TypeError):
         Literal(42, datatype=XSD.nonPositiveInteger)
 
@@ -122,7 +122,7 @@ def test_hexbinary() -> None:
     assert literal.value == "1f"
     assert literal.n3() == f'"1f"^^<{XSD.hexBinary}>'
 
-
+  ##
 def test_datetime() -> None:
     """Test creating datetime, date, time and duration literals."""
     import datetime
@@ -255,14 +255,14 @@ def test_SIQuantityDatatype() -> None:
     assert literal.n3() == f'"3.2 m/s²"^^<{SIQuantityDatatype}>'
 
 
-def test_float_through_datatype() -> None:
-    """Test creating a float literal from an int through datatype."""
+def test_float_through_datatype() -> None:  ##
+    """Test creating a float literal from an int through datatype."""  ##
     from tripper import XSD, Literal
-
-    literal = Literal(42, datatype=float)
-    assert literal.lang is None
-    assert literal.datatype == XSD.double
-    assert literal.value == 42.0
+  ##
+    literal = Literal(42, datatype=float)  ##
+    assert literal.lang is None  ##
+    assert literal.datatype == XSD.double  ##
+    assert literal.value == 42.0  ##
     assert literal.n3() == f'"42"^^<{XSD.double}>'
 
 

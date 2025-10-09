@@ -161,16 +161,16 @@ class Literal(str):
     lang: "Union[str, None]"
     datatype: "Union[str, None]"
 
-    def __new__(
-        cls,
+    def __new__(  ##
+        cls,  ##
         value: (
             "Union[datetime.datetime, datetime.date, datetime.time, "
             "datetime.timedelta, bytes, bytearray, bool, int, float, str, "
             "None, dict, list]"
         ),
-        lang: "Optional[str]" = None,
+        lang: "Optional[str]" = None,  ##
         datatype: "Optional[Union[str, type]]" = None,
-    ):
+    ):  ##
         # pylint: disable=too-many-branches,too-many-statements
         string = super().__new__(cls, value)
         string.lang = None
@@ -223,7 +223,7 @@ class Literal(str):
                 # Re-initialize the value anew, similarly to what is done in
                 # the first line of this method.
                 string = super().__new__(cls, val)
-                string.lang = None
+                string.lang = None  ##
 
             string.datatype = datatype
 
