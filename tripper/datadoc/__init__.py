@@ -20,4 +20,5 @@ from .dataset import (
     validate,
 )
 from .keywords import Keywords, get_keywords
+from .prefixes import load_prefixes, save_prefixes
 from .tabledoc import TableDoc
