@@ -20,7 +20,7 @@ def test_get_keywords():
 
     kw1 = get_keywords()
     assert kw1.data == keywords.data
-    assert list(kw1.data.keys()) == ["prefixes", "resources"]
+    assert list(kw1.data.keys()) == ["domain", "prefixes", "resources"]
     assert kw1.keywords == keywords.keywords
     assert kw1.domain == keywords.domain
     assert kw1.data.__class__.__name__ == "AttrDict"
@@ -41,12 +41,22 @@ def test_get_keywords():
     assert kw3.keywords.__class__.__name__ == "AttrDict"
 
     kw4 = get_keywords(domain="process")
-    assert list(kw4.data.keys()) == ["prefixes", "resources", "basedOn"]
+    assert list(kw4.data.keys()) == [
+        "domain",
+        "prefixes",
+        "resources",
+        "basedOn",
+    ]
     assert kw4.data.basedOn == "default"
     assert len(kw4.keywords) > len(kw1.keywords)
 
     kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
-    assert list(kw5.data.keys()) == ["prefixes", "resources", "basedOn"]
+    assert list(kw5.data.keys()) == [
+        "domain",
+        "prefixes",
+        "resources",
+        "basedOn",
+    ]
     assert kw5.data.basedOn == ["default", "process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 

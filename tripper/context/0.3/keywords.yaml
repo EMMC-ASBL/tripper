@@ -260,7 +260,7 @@ resources:
       label:
         iri: rdfs:label
         range: rdfs:Literal
-        description: Provides a human-readable version of a resource's name.
+        description: "Provides a human-readable version of a resource's name."
 
       seeAlso:
         iri: rdfs:seeAlso
