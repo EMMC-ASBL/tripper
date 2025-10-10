@@ -187,6 +187,7 @@ class Keywords:
 
         dm = self.domain[-1] if isinstance(self.domain, list) else self.domain
         domain = d.get("domain", dm)
+        print("*** domain", domain)
         self.add(d.get("basedOn"))
         recursive_update(self.data, d)
 
@@ -198,12 +199,16 @@ class Keywords:
                 valid_keys = [
                     "name",
                     "iri",
+                    "subPropertyOf",  # XXX - to be implemented
                     "domain",
                     "range",
                     "datatype",
+                    "inverse",  # XXX - to be implemented
+                    "unit",  # XXX - to be implemented
                     "conformance",
                     "description",
                     "usageNote",
+                    "characteristics",  # XXX - to be implemented
                     "default",
                 ]
                 for k in value.keys():
