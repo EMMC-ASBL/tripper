@@ -233,7 +233,7 @@ class Keywords:
                 if keyword in self.keywords:
                     # Only allowed changes to existing keywords:
                     #   - make conformance more strict
-                    #   - extend: domain, theme
+                    #   - add to: domain, theme, subPropertyOf
                     #   - change default value
                     for k, v in self.keywords[keyword].items():
                         if k == "conformance":
@@ -248,10 +248,8 @@ class Keywords:
                                     f"'{yamlfile}'"
                                 )
                             value.setdefault(k, v)
-                        elif k == "domain":
-                            add(value, "domain", resource_name)
-                        elif k == "theme":
-                            add(value, "theme", theme)
+                        elif k in ("domain", "theme", "subPropertyOf"):
+                            add(value, k, v)
                         elif k == "default":
                             value.setdefault(k, v)
                         elif k in value and value[k] != v:
