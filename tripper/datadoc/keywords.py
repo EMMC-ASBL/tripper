@@ -203,7 +203,7 @@ class Keywords:
                     "name",
                     "iri",
                     "subPropertyOf",  # XXX - to be implemented
-                    "theme",
+                    "domain",
                     "range",
                     "datatype",
                     "inverse",  # XXX - to be implemented
@@ -212,7 +212,7 @@ class Keywords:
                     "description",
                     "usageNote",
                     "characteristics",  # XXX - to be implemented
-                    "theme",  # XXX - to be implemented
+                    "theme",
                     "default",
                 ]
                 for k in value.keys():
