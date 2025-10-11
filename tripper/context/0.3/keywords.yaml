@@ -1,4 +1,5 @@
 ---
+theme: ddoc:default
 #basedOn:
 
 
@@ -8,6 +9,7 @@ prefixes:
   dcatap: "http://data.europa.eu/r5r/"
   dcterms: "http://purl.org/dc/terms/"
   dctype: "http://purl.org/dc/dcmitype/"
+  ddoc: "https://w3id.org/emmo/application/datadoc#"
   eli: "http://data.europa.eu/eli/ontology#"
   foaf: "http://xmlns.com/foaf/0.1/"
   iana: "https://www.iana.org/assignments/media-types/"
@@ -37,12 +39,15 @@ prefixes:
 #
 # Valid keys on keywords:
 #   - iri: IRI of property that the keyword is mapped to
+#   - subPropertyOf: The IRI of a property that this property is a subproperty of
 #   - range: Range of property (IRI)
 #   - datatype: Datatype of the property (only for data properties)
 #   - inverse: If true, `iri` refer to the inverse of this property
+#   - unit: IRI or unit symbol
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
 #   - usageNote: A note about how to use this keyword.
+#   - characteristics: NOT IMPLEMENTED
 #   - default: NOT IMPLEMENTED
 #
 resources:
@@ -193,7 +198,6 @@ resources:
       theme:
         iri: dcat:theme
         range: skos:Concept
-        #datatype: xsd:anyURI
         conformance: recommended
         description: A category of the resource.  A resource may be associated with multiple themes.
         usageNote: The set of themes used to categorize the resources are organized in a skos:ConceptScheme, skos:Collection, owl:Ontology or similar, describing all the categories and their relations in the catalog.
@@ -259,7 +263,7 @@ resources:
       label:
         iri: rdfs:label
         range: rdfs:Literal
-        description: Provides a human-readable version of a resource's name.
+        description: "Provides a human-readable version of a resource's name."
 
       seeAlso:
         iri: rdfs:seeAlso

@@ -1,6 +1,6 @@
 ---
 
-domain: process
+theme: ddoc:process
 
 Computation:
   "@id": ex:MySimulation

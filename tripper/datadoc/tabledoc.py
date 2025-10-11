@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterable, List, Optional, Protocol, Sequence, Union
 
     from tripper.datadoc.context import ContextType
-    from tripper.datadoc.keywords import Keywords
+    from tripper.datadoc.keywords import KeywordsType
 
     class Writer(Protocol):
         """Prototype for a class with a write() method."""
@@ -42,7 +42,7 @@ class TableDoc:
             "distribution", "accessService", "parser" and "generator"
             or an IRI to a class in an ontology.  Defaults to
             "dataset".
-        domain: Name of one of more domains to load keywords for.
+        theme: Name of one of more themes to load keywords for.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
         context: Additional user-defined context that should be
@@ -63,8 +63,8 @@ class TableDoc:
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
-        domain: "Optional[Union[str, Sequence[str]]]" = "default",
-        keywords: "Optional[Keywords]" = None,
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
@@ -72,7 +72,7 @@ class TableDoc:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.keywords = get_keywords(keywords=keywords, domain=domain)
+        self.keywords = get_keywords(keywords=keywords, theme=theme)
         self.context = get_context(
             context=context, keywords=self.keywords, prefixes=prefixes
         )
@@ -121,7 +121,7 @@ class TableDoc:
     def fromdicts(
         dicts: "Sequence[dict]",
         type: "Optional[str]" = "Dataset",
-        keywords: "Optional[Keywords]" = None,
+        keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
@@ -223,7 +223,7 @@ class TableDoc:
     def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
         type: "Optional[str]" = "Dataset",
-        keywords: "Optional[Keywords]" = None,
+        keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         encoding: str = "utf-8",

@@ -16,38 +16,49 @@ def test_get_keywords():
     """Test get_keywords() function."""
     from dataset_paths import testdir  # pylint: disable=import-error
 
+    from tripper import DDOC
     from tripper.datadoc import get_keywords
 
     kw1 = get_keywords()
     assert kw1.data == keywords.data
-    assert list(kw1.data.keys()) == ["prefixes", "resources"]
+    assert list(kw1.data.keys()) == ["prefixes", "theme", "resources"]
     assert kw1.keywords == keywords.keywords
-    assert kw1.domain == keywords.domain
+    assert kw1.theme == keywords.theme
     assert kw1.data.__class__.__name__ == "AttrDict"
     assert kw1.keywords.__class__.__name__ == "AttrDict"
 
-    kw2 = get_keywords(keywords, domain=None)
+    kw2 = get_keywords(keywords, theme=None)
     assert kw2.data == keywords.data
     assert kw2.keywords == keywords.keywords
-    assert kw2.domain == keywords.domain
+    assert kw2.theme == keywords.theme
     assert kw2.data.__class__.__name__ == "AttrDict"
     assert kw2.keywords.__class__.__name__ == "AttrDict"
 
     kw3 = get_keywords(keywords)
     assert kw3.data == keywords.data
     assert kw3.keywords == keywords.keywords
-    assert kw3.domain == keywords.domain
+    assert kw3.theme == keywords.theme
     assert kw3.data.__class__.__name__ == "AttrDict"
     assert kw3.keywords.__class__.__name__ == "AttrDict"
 
-    kw4 = get_keywords(domain="process")
-    assert list(kw4.data.keys()) == ["prefixes", "resources", "basedOn"]
-    assert kw4.data.basedOn == "default"
+    kw4 = get_keywords(theme=DDOC.process)
+    assert list(kw4.data.keys()) == [
+        "prefixes",
+        "theme",
+        "resources",
+        "basedOn",
+    ]
+    assert kw4.data.basedOn == "ddoc:default"
     assert len(kw4.keywords) > len(kw1.keywords)
 
     kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
-    assert list(kw5.data.keys()) == ["prefixes", "resources", "basedOn"]
-    assert kw5.data.basedOn == ["default", "process"]
+    assert list(kw5.data.keys()) == [
+        "prefixes",
+        "theme",
+        "resources",
+        "basedOn",
+    ]
+    assert kw5.data.basedOn == ["ddoc:default", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
 
@@ -58,7 +69,7 @@ def test_dir():
     assert "__dir__" in dirlist
     assert "data" in dirlist
     assert "keywords" in dirlist
-    assert "domain" in dirlist
+    assert "theme" in dirlist
 
 
 def test_copy():
@@ -66,7 +77,7 @@ def test_copy():
     copy = keywords.copy()
     assert copy.data == keywords.data
     assert copy.keywords == keywords.keywords
-    assert copy.domain == keywords.domain
+    assert copy.theme == keywords.theme
 
 
 def test_get_prefixes():

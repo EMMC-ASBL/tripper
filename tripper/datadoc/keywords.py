@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Sequence
 
 import yaml
 
-from tripper import Triplestore
+from tripper import DDOC, Triplestore
 from tripper.datadoc.dictutils import add, merge
 from tripper.datadoc.errors import (
     InvalidKeywordError,
@@ -21,7 +21,7 @@ from tripper.utils import (
     AttrDict,
     expand_iri,
     get_entry_points,
-    is_url,
+    is_uri,
     openfile,
     prefix_iri,
     recursive_update,
@@ -37,7 +37,7 @@ if TYPE_CHECKING:  # pragma: no cover
 @lru_cache(maxsize=32)
 def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
-    domain: "Optional[Union[str, Sequence[str]]]" = "default",
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
 ) -> "Keywords":
@@ -45,32 +45,32 @@ def get_keywords(
 
     Arguments:
         keywords: Optional existing keywords object.
-        domain: Name of one of more domains to load keywords for.
+        theme: IRI of one of more themes to load keywords for.
         yamlfile: YAML file with keyword definitions to parse.  May also
             be an URI in which case it will be accessed via HTTP GET.
         timeout: Timeout in case `yamlfile` is a URI.
     """
-    kw = Keywords(domain=domain, yamlfile=yamlfile, timeout=timeout)
+    kw = Keywords(theme=theme, yamlfile=yamlfile, timeout=timeout)
     if keywords:
         kw.add(keywords, timeout=timeout)
     return kw
 
 
 class Keywords:
-    """A class representing all keywords within a domain."""
+    """A class representing all keywords within a theme."""
 
     rootdir = Path(__file__).absolute().parent.parent.parent.resolve()
 
     def __init__(
         self,
-        domain: "Optional[Union[str, Sequence[str]]]" = "default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
         """Initialises keywords object.
 
         Arguments:
-            domain: Name of one of more domains to load keywords for.
+            theme: IRI of one of more themes to load keywords for.
             yamlfile: YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
             timeout: Timeout in case `yamlfile` is a URI.
@@ -79,14 +79,16 @@ class Keywords:
             data: The dict loaded from the keyword yamlfile.
             keywords: A dict mapping keywords (name/prefixed/iri) to dicts
                 describing the keywords.
-            domain: Name of the scientic domain that the keywords belong to.
+            theme: IRI of a theme or scientic domain that the keywords
+                belong to.
         """
-        self.data = AttrDict()
+        default_prefixes = AttrDict(ddoc=str(DDOC))
+        self.data = AttrDict(prefixes=default_prefixes)
         self.keywords = AttrDict()
-        self.domain = None
+        self.theme = None
 
-        if domain:
-            self.add_domain(domain)
+        if theme:
+            self.add_theme(theme)
 
         if yamlfile:
             if isinstance(yamlfile, (str, Path)):
@@ -105,14 +107,14 @@ class Keywords:
         return iter(self.keywords)
 
     def __dir__(self):
-        return dir(Keywords) + ["data", "keywords", "domain"]
+        return dir(Keywords) + ["data", "keywords", "theme"]
 
     def copy(self):
         """Returns a copy of self."""
-        new = Keywords(domain=None)
+        new = Keywords(theme=None)
         new.data.update(self.data)
         new.keywords.update(self.keywords)
-        new.domain = self.domain
+        new.theme = self.theme
         return new
 
     def add(self, keywords: "KeywordsType", timeout: float = 3) -> None:
@@ -124,14 +126,14 @@ class Keywords:
             elif isinstance(kw, Keywords):
                 self.data.update(kw.data)
                 self.keywords.update(kw.keywords)
-                self.domain = merge(self.domain, kw.domain)
+                self.theme = merge(self.theme, kw.theme)
             elif isinstance(kw, Path):
                 self.parse(kw, timeout=timeout)
             elif isinstance(kw, str):
-                if kw.startswith("/") or kw.startswith("./") or is_url(kw):
+                if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
                     self.parse(kw, timeout=timeout)
                 else:
-                    self.add_domain(kw, timeout=timeout)
+                    self.add_theme(kw, timeout=timeout)
             elif isinstance(kw, Sequence):
                 for e in kw:
                     _add(e)
@@ -143,27 +145,28 @@ class Keywords:
 
         _add(keywords)
 
-    def add_domain(
-        self, domain: "Union[str, Sequence[str]]", timeout: float = 3
+    def add_theme(
+        self, theme: "Union[str, Sequence[str]]", timeout: float = 3
     ) -> None:
-        """Add keywords for `domain`, where `domain` is the name of a
-        scientific domain or a list of scientific domain names."""
-        if isinstance(domain, str):
-            domain = [domain]
+        """Add keywords for `theme`, where `theme` is the IRI of a
+        theme or scientific domain or a list of such IRIs."""
+        if isinstance(theme, str):
+            theme = [theme]
 
-        for name in domain:  # type: ignore
-            if self.domain is None:
-                self.domain = name  # type: ignore
+        for name in theme:  # type: ignore
+            expanded = expand_iri(name, self.get_prefixes())
+            if self.theme is None:
+                self.theme = name  # type: ignore
             for ep in get_entry_points("tripper.keywords"):
-                if ep.value == name:
+                if expand_iri(ep.value, self.get_prefixes()) == expanded:
                     self.parse(
                         self.rootdir / ep.name / "keywords.yaml",
                         timeout=timeout,
                     )
                     break
             else:
-                if name == "default":
-                    # Fallback in case the entry point is not installed
+                # Fallback in case the entry point is not installed
+                if expanded == DDOC.default:
                     self.parse(
                         self.rootdir
                         / "tripper"
@@ -173,7 +176,7 @@ class Keywords:
                         timeout=timeout,
                     )
                 else:
-                    raise TypeError(f"Unknown domain name: {name}")
+                    raise TypeError(f"Unknown theme: {name}")
 
     def parse(
         self,
@@ -185,7 +188,10 @@ class Keywords:
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
 
+        dm = self.theme[-1] if isinstance(self.theme, list) else self.theme
+        theme = self.expanded(d.get("theme", dm))
         self.add(d.get("basedOn"))
+
         recursive_update(self.data, d)
 
         resources = self.data.get("resources", {})
@@ -196,12 +202,17 @@ class Keywords:
                 valid_keys = [
                     "name",
                     "iri",
+                    "subPropertyOf",  # XXX - to be implemented
                     "domain",
                     "range",
                     "datatype",
+                    "inverse",  # XXX - to be implemented
+                    "unit",  # XXX - to be implemented
                     "conformance",
                     "description",
                     "usageNote",
+                    "characteristics",  # XXX - to be implemented
+                    "theme",
                     "default",
                 ]
                 for k in value.keys():
@@ -222,7 +233,7 @@ class Keywords:
                 if keyword in self.keywords:
                     # Only allowed changes to existing keywords:
                     #   - make conformance more strict
-                    #   - extend the domain
+                    #   - add to: domain, theme, subPropertyOf
                     #   - change default value
                     for k, v in self.keywords[keyword].items():
                         if k == "conformance":
@@ -237,8 +248,8 @@ class Keywords:
                                     f"'{yamlfile}'"
                                 )
                             value.setdefault(k, v)
-                        elif k == "domain":
-                            add(value, "domain", resource_name)
+                        elif k in ("domain", "theme", "subPropertyOf"):
+                            add(value, k, v)
                         elif k == "default":
                             value.setdefault(k, v)
                         elif k in value and value[k] != v:
@@ -249,13 +260,14 @@ class Keywords:
                 else:
                     value["name"] = keyword
                     add(value, "domain", resource_name)
+                    add(value, "theme", theme)
                     recursive_update(
                         self.keywords,
                         {
                             keyword: value,
                             value["iri"]: value,
                             expand_iri(
-                                value["iri"], self.data["prefixes"]
+                                value["iri"], self.get_prefixes()
                             ): value,
                         },
                         append=False,
@@ -268,17 +280,17 @@ class Keywords:
             return False
         return True
 
-    def expanded(self, keyword: str) -> str:
+    def expanded(self, keyword: str, strict: bool = True) -> str:
         """Return the keyword expanded to its full IRI."""
         if keyword in self.keywords:
             iri = self.keywords[keyword].iri
-        elif keyword in self.data.resources:
+        elif "resources" in self.data and keyword in self.data.resources:
             iri = self.data.resources[keyword].iri
-        elif ":" in keyword:
+        elif ":" in keyword or not strict:
             iri = keyword
         else:
             raise InvalidKeywordError(keyword)
-        return expand_iri(iri, self.data.get("prefixes", {}))
+        return expand_iri(iri, self.get_prefixes(), strict=strict)
 
     def range(self, keyword: str) -> str:
         """Return the range of the keyword."""
@@ -306,7 +318,7 @@ class Keywords:
         if cls in self.data.resources:
             r = self.data.resources[cls]
         else:
-            cls = prefix_iri(cls, self.data.get("prefixes", {}))
+            cls = prefix_iri(cls, self.get_prefixes())
             rlst = [r for r in self.data.resources.values() if cls == r.iri]
             if not rlst:
                 raise NoSuchTypeError(cls)
@@ -349,7 +361,7 @@ class Keywords:
         """
         if type in self.data.resources:
             return type
-        prefixed = prefix_iri(type, self.data.prefixes)
+        prefixed = prefix_iri(type, self.get_prefixes())
         for name, r in self.data.resources.items():
             if prefixed == r.iri:
                 return name
@@ -357,7 +369,7 @@ class Keywords:
 
     def get_prefixes(self) -> dict:
         """Return prefixes dict."""
-        return self.data.prefixes
+        return self.data.get("prefixes", {})
 
     def add_prefix(self, prefix, namespace, replace=False):
         """Bind `prefix` to `namespace`.
@@ -443,13 +455,13 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        domain = f" for domain: {self.domain}" if self.domain else ""
+        theme = f" for theme: {self.theme}" if self.theme else ""
         out = [
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",
             "",
-            f"# Keywords{domain}",
-            f"The tables below lists the keywords the domain {self.domain}.",
+            f"# Keywords{theme}",
+            f"The tables below lists the keywords the theme {self.theme}.",
             "",
             "The meaning of the columns are as follows:",
             "",
@@ -638,11 +650,11 @@ def main(argv=None):
         help="Load keywords from this YAML file.",
     )
     parser.add_argument(
-        "--domain",
+        "--theme",
         "-f",
         metavar="NAME",
         action="append",
-        help="Load keywords from this domain.",
+        help="Load keywords from this theme.",
     )
     parser.add_argument(
         "--context",
@@ -664,10 +676,10 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    if not args.domain and not args.yamlfile:
-        args.domain = "default"
+    if not args.theme and not args.yamlfile:
+        args.theme = "ddoc:default"
 
-    keywords = Keywords(domain=args.domain, yamlfile=args.yamlfile)
+    keywords = Keywords(theme=args.theme, yamlfile=args.yamlfile)
 
     if args.context:
         keywords.write_context(args.context)

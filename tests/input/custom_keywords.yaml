@@ -1,5 +1,5 @@
 ---
-basedOn: [process, ]
+basedOn: ["ddoc:process", ]
 
 prefixes:
   kb: "http://example.com/kb#"
