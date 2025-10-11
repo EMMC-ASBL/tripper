@@ -14,6 +14,7 @@ from .namespace import (
     DCAT,
     DCATAP,
     DCTERMS,
+    DDOC,
     DM,
     DOAP,
     ELI,
@@ -63,6 +64,7 @@ __all__ = (
     "DCAT",  # Data Catalog Vocabulary
     "DCATAP",  # DCAT Application Profile
     "DCTERMS",  # Dublin Core terms
+    "DDOC",  # Tripper data documentation ontology
     "DM",  # Datamodel ontology
     "DOAP",  # Description of a Project
     "ELI",  # European Legislation Identifier

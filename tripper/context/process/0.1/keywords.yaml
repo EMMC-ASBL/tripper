@@ -1,5 +1,5 @@
 ---
-domain: process
+theme: process
 basedOn: default
 
 resources:

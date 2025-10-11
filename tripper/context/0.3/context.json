@@ -6,6 +6,7 @@
     "dcatap": "http://data.europa.eu/r5r/",
     "dcterms": "http://purl.org/dc/terms/",
     "dctype": "http://purl.org/dc/dcmitype/",
+    "ddoc": "https://w3id.org/emmo/application/datadoc#",
     "eli": "http://data.europa.eu/eli/ontology#",
     "foaf": "http://xmlns.com/foaf/0.1/",
     "iana": "https://www.iana.org/assignments/media-types/",

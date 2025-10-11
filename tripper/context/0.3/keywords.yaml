@@ -1,5 +1,5 @@
 ---
-domain: default
+theme: default
 #basedOn:
 
 
@@ -9,6 +9,7 @@ prefixes:
   dcatap: "http://data.europa.eu/r5r/"
   dcterms: "http://purl.org/dc/terms/"
   dctype: "http://purl.org/dc/dcmitype/"
+  ddoc: "https://w3id.org/emmo/application/datadoc#"
   eli: "http://data.europa.eu/eli/ontology#"
   foaf: "http://xmlns.com/foaf/0.1/"
   iana: "https://www.iana.org/assignments/media-types/"
@@ -197,7 +198,6 @@ resources:
       theme:
         iri: dcat:theme
         range: skos:Concept
-        #datatype: xsd:anyURI
         conformance: recommended
         description: A category of the resource.  A resource may be associated with multiple themes.
         usageNote: The set of themes used to categorize the resources are organized in a skos:ConceptScheme, skos:Collection, owl:Ontology or similar, describing all the categories and their relations in the catalog.

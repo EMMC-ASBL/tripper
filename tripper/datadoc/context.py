@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from pyld import jsonld
 
-from tripper import RDF, Triplestore
+from tripper import DDOC, RDF, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
@@ -24,8 +24,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def get_context(
     context: "Optional[ContextType]" = None,
-    domain: "Optional[Union[str, Sequence[str]]]" = None,
-    default_domain: "Optional[Union[str, Sequence[str]]]" = "default",
+    theme: "Optional[Union[str, Sequence[str]]]" = None,
+    default_theme: "Optional[Union[str, Sequence[str]]]" = DDOC.default,
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
@@ -36,9 +36,9 @@ def get_context(
     Arguments:
         context: Input context.  If it is a `Context` instance,
              it will be updated and returned.
-        domain: Load initial context for this domain.
-        default_domain: Initialise context for this domain if neither
-            `context` nor `domain` are provided.
+        theme: Load initial context for this theme.
+        default_theme: Initialise context for this theme if neither
+            `context` nor `theme` are provided.
         keywords: Initialise from this keywords instance.
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
@@ -50,15 +50,15 @@ def get_context(
     if isinstance(context, Context):
         if copy:
             context = context.copy()
-        if keywords or domain:
+        if keywords or theme:
             kw = keywords.copy() if keywords else Keywords()
-            if domain:
-                kw.add_domain(domain)
+            if theme:
+                kw.add_theme(theme)
             context.add_context(kw.get_context())
     else:
         context = Context(
             keywords=keywords,
-            domain=domain if context or domain or keywords else default_domain,
+            theme=theme if context or theme or keywords else default_theme,
             context=context,
             processingMode=processingMode,
         )
@@ -73,7 +73,7 @@ class Context:
     def __init__(
         self,
         context: "Optional[ContextType]" = None,
-        domain: "Optional[Union[str, Sequence[str]]]" = "default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "default",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
     ) -> None:
@@ -81,7 +81,7 @@ class Context:
 
         Arguments:
             context: Optional context to load.
-            domain: Load initial context for this domain.
+            theme: Load initial context for this theme.
             keywords: Initialise from this keywords instance.
             processingMode: Either "json-ld-1.0" or "json-ld-1.1".
 
@@ -95,11 +95,11 @@ class Context:
         self._shortnamed: dict = {}
 
         if keywords:
-            if domain:
-                keywords.add_domain(domain)
+            if theme:
+                keywords.add_theme(theme)
             self.add_context(keywords.get_context())
-        elif domain:
-            keywords = Keywords(domain=domain)
+        elif theme:
+            keywords = Keywords(theme=theme)
             self.add_context(keywords.get_context())
 
         if context:

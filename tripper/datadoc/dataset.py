@@ -41,6 +41,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import (
+    DDOC,
     OWL,
     RDF,
     Literal,
@@ -1068,7 +1069,7 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
-    context = get_context(context=context, domain="default")
+    context = get_context(context=context, theme=DDOC.default)
 
     dct = acquire(ts, iri, use_sparql=use_sparql)
 
