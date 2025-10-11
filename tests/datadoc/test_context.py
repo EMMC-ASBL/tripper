@@ -42,7 +42,7 @@ def test_add_context():
 
 def test_add_context_seq():
     """Test add_context() method with list input."""
-    from dataset_paths import indir
+    from dataset_paths import indir  # pylint: disable=import-error
 
     c = Context(domain=None)
     assert c.get_mappings() == {}
