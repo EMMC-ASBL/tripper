@@ -13,7 +13,6 @@ from tripper.datadoc import (
     TableDoc,
     acquire,
     delete,
-    get_jsonld_context,
     load,
     save_datadoc,
     search,
@@ -36,7 +35,7 @@ def subcommand_add(ts, args):
                 option, value = token.split("=", 1)
                 kw[option] = value
         td = TableDoc.parse_csv(
-            infile, context=get_jsonld_context(args.context), **kw
+            infile, keywords=args.keywords, context=args.context, **kw
         )
         td.save(ts)
     else:
@@ -190,6 +189,10 @@ def maincommand(argv=None):
         "-f",
         default="turtle",
         help='Format to use with `--dump`.  Default is "turtle".',
+    )
+    parser_add.add_argument(
+        "--keywords",
+        help="Path or URL to custom keywords file for the input.",
     )
 
     # Subcommand: delete

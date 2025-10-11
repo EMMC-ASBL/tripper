@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterable, List, Optional, Protocol, Sequence, Union
 
     from tripper.datadoc.context import ContextType
-    from tripper.datadoc.keywords import Keywords
+    from tripper.datadoc.keywords import KeywordsType
 
     class Writer(Protocol):
         """Prototype for a class with a write() method."""
@@ -64,7 +64,7 @@ class TableDoc:
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
         theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
-        keywords: "Optional[Keywords]" = None,
+        keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
@@ -121,7 +121,7 @@ class TableDoc:
     def fromdicts(
         dicts: "Sequence[dict]",
         type: "Optional[str]" = "Dataset",
-        keywords: "Optional[Keywords]" = None,
+        keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
@@ -223,7 +223,7 @@ class TableDoc:
     def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
         type: "Optional[str]" = "Dataset",
-        keywords: "Optional[Keywords]" = None,
+        keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         encoding: str = "utf-8",
