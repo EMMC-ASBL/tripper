@@ -161,6 +161,7 @@ class Context:
         elif isinstance(context, Sequence):
             for c in context:
                 self.add_context(c)
+            return
         elif isinstance(context, dict):
             pass
         else:
