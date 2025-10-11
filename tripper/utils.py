@@ -59,7 +59,7 @@ __all__ = (
     "parse_literal",
     "parse_object",
     "as_python",
-    "is_url",
+    "is_uri",
     "check_function",
     "random_string",
     "extend_namespace",
@@ -616,34 +616,62 @@ def as_python(value: "Any") -> "Any":
     return value
 
 
-def is_url(
-    url: str,
+def is_uri(
+    uri: str,
     require_netloc: bool = True,
     allow_unescaped: bool = False,
     safe: str = "%:~/?&;=#",
 ):
-    """Returns true if `url` is a valid URL, otherwise false.
+    """Returns true if `uri` is a valid URI, otherwise false.
 
     Arguments:
-        url: URL to validate.
-        require_netloc: Whether to require `url` to contain a network location.
-            Setting this to false, will exclude URNs, which in are valid URLs.
-            However, in most practical cases, you would expect the URL to
+        uri: URI to validate.
+        require_netloc: Whether to require `uri` to contain a network location.
+            Setting this to false, will exclude URNs, which in are valid URIs.
+            However, in most practical cases, you would expect the URI to
             contain a network location.
-        allow_unescaped: Whether to allow `url` to contain unescaped special
+        allow_unescaped: Whether to allow `uri` to contain unescaped special
             characters. Any character not in `safe` except for letters, digits
             and '_.-' are considered to be special.
-            Escaping is expected to use standard URL %xx escape codes.
+            Escaping is expected to use standard URI %xx escape codes.
         safe: Characters in addition to '_.-' that doesn't need to be
             escaped when `allow_unescaped` is false.
     """
-    if not allow_unescaped and urllib.parse.quote(url, safe=safe) != url:
+    if not allow_unescaped and urllib.parse.quote(uri, safe=safe) != uri:
         return False
     try:
-        result = urllib.parse.urlparse(url)
+        result = urllib.parse.urlparse(uri)
     except ValueError:
         return False
     return bool(result.scheme) and (not require_netloc or bool(result.netloc))
+
+
+def is_curie(curie: str, exclude_netloc=True) -> bool:
+    """Returns whether `curie` is a CURIE (compact URI).
+
+    Arguments:
+        curie: CURIE to validate.
+        exclude_netloc: Whether to exclude CURIEs with two slashes following
+            the first colon. If true, the part before the colon should also
+            correspond to a valid URI schema name.
+
+    Example:
+
+        >>> is_curie("http://example.com")
+        False
+        >>> is_curie("rdf:type")
+        True
+    """
+    if len(curie) < 3:
+        return False
+    if curie[0] == "[" and curie[-1] == "]":
+        curie = curie[1:-1]
+
+    if not exclude_netloc:
+        raise NotImplementedError(
+            "is_curie() with argument `exclude_netloc=False` isn't implemented"
+        )
+    return bool(re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:(?!//)\S*$", curie))
 
 
 def check_function(func: "Callable", s: str, exceptions) -> bool:

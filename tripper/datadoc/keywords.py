@@ -21,7 +21,7 @@ from tripper.utils import (
     AttrDict,
     expand_iri,
     get_entry_points,
-    is_url,
+    is_uri,
     openfile,
     prefix_iri,
     recursive_update,
@@ -37,7 +37,7 @@ if TYPE_CHECKING:  # pragma: no cover
 @lru_cache(maxsize=32)
 def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = "default",
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
 ) -> "Keywords":
@@ -63,7 +63,7 @@ class Keywords:
 
     def __init__(
         self,
-        theme: "Optional[Union[str, Sequence[str]]]" = "default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
@@ -82,7 +82,8 @@ class Keywords:
             theme: IRI of a theme or scientic domain that the keywords
                 belong to.
         """
-        self.data = AttrDict()
+        default_prefixes = AttrDict(ddoc=str(DDOC))
+        self.data = AttrDict(prefixes=default_prefixes)
         self.keywords = AttrDict()
         self.theme = None
 
@@ -129,7 +130,7 @@ class Keywords:
             elif isinstance(kw, Path):
                 self.parse(kw, timeout=timeout)
             elif isinstance(kw, str):
-                if kw.startswith("/") or kw.startswith("./") or is_url(kw):
+                if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
                     self.parse(kw, timeout=timeout)
                 else:
                     self.add_theme(kw, timeout=timeout)
@@ -153,10 +154,11 @@ class Keywords:
             theme = [theme]
 
         for name in theme:  # type: ignore
+            expanded = expand_iri(name, self.get_prefixes())
             if self.theme is None:
                 self.theme = name  # type: ignore
             for ep in get_entry_points("tripper.keywords"):
-                if ep.value == name:
+                if expand_iri(ep.value, self.get_prefixes()) == expanded:
                     self.parse(
                         self.rootdir / ep.name / "keywords.yaml",
                         timeout=timeout,
@@ -164,7 +166,7 @@ class Keywords:
                     break
             else:
                 # Fallback in case the entry point is not installed
-                if self.expanded(name) == DDOC.default:
+                if expanded == DDOC.default:
                     self.parse(
                         self.rootdir
                         / "tripper"
@@ -187,9 +189,9 @@ class Keywords:
             d = yaml.safe_load(f)
 
         dm = self.theme[-1] if isinstance(self.theme, list) else self.theme
-        theme = d.get("theme", dm)
-        print("*** theme", theme)
+        theme = self.expanded(d.get("theme", dm))
         self.add(d.get("basedOn"))
+
         recursive_update(self.data, d)
 
         resources = self.data.get("resources", {})
@@ -210,6 +212,7 @@ class Keywords:
                     "description",
                     "usageNote",
                     "characteristics",  # XXX - to be implemented
+                    "theme",  # XXX - to be implemented
                     "default",
                 ]
                 for k in value.keys():
@@ -230,7 +233,7 @@ class Keywords:
                 if keyword in self.keywords:
                     # Only allowed changes to existing keywords:
                     #   - make conformance more strict
-                    #   - extend the theme
+                    #   - extend: domain, theme
                     #   - change default value
                     for k, v in self.keywords[keyword].items():
                         if k == "conformance":
@@ -245,8 +248,10 @@ class Keywords:
                                     f"'{yamlfile}'"
                                 )
                             value.setdefault(k, v)
+                        elif k == "domain":
+                            add(value, "domain", resource_name)
                         elif k == "theme":
-                            add(value, "theme", resource_name)
+                            add(value, "theme", theme)
                         elif k == "default":
                             value.setdefault(k, v)
                         elif k in value and value[k] != v:
@@ -256,14 +261,15 @@ class Keywords:
                             )
                 else:
                     value["name"] = keyword
-                    add(value, "theme", resource_name)
+                    add(value, "domain", resource_name)
+                    add(value, "theme", theme)
                     recursive_update(
                         self.keywords,
                         {
                             keyword: value,
                             value["iri"]: value,
                             expand_iri(
-                                value["iri"], self.data["prefixes"]
+                                value["iri"], self.get_prefixes()
                             ): value,
                         },
                         append=False,
@@ -276,17 +282,17 @@ class Keywords:
             return False
         return True
 
-    def expanded(self, keyword: str) -> str:
+    def expanded(self, keyword: str, strict: bool = True) -> str:
         """Return the keyword expanded to its full IRI."""
         if keyword in self.keywords:
             iri = self.keywords[keyword].iri
-        elif keyword in self.data.resources:
+        elif "resources" in self.data and keyword in self.data.resources:
             iri = self.data.resources[keyword].iri
-        elif ":" in keyword:
+        elif ":" in keyword or not strict:
             iri = keyword
         else:
             raise InvalidKeywordError(keyword)
-        return expand_iri(iri, self.data.get("prefixes", {}))
+        return expand_iri(iri, self.get_prefixes(), strict=strict)
 
     def range(self, keyword: str) -> str:
         """Return the range of the keyword."""
@@ -314,7 +320,7 @@ class Keywords:
         if cls in self.data.resources:
             r = self.data.resources[cls]
         else:
-            cls = prefix_iri(cls, self.data.get("prefixes", {}))
+            cls = prefix_iri(cls, self.get_prefixes())
             rlst = [r for r in self.data.resources.values() if cls == r.iri]
             if not rlst:
                 raise NoSuchTypeError(cls)
@@ -357,7 +363,7 @@ class Keywords:
         """
         if type in self.data.resources:
             return type
-        prefixed = prefix_iri(type, self.data.prefixes)
+        prefixed = prefix_iri(type, self.get_prefixes())
         for name, r in self.data.resources.items():
             if prefixed == r.iri:
                 return name
@@ -365,7 +371,7 @@ class Keywords:
 
     def get_prefixes(self) -> dict:
         """Return prefixes dict."""
-        return self.data.prefixes
+        return self.data.get("prefixes", {})
 
     def add_prefix(self, prefix, namespace, replace=False):
         """Bind `prefix` to `namespace`.
@@ -673,7 +679,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if not args.theme and not args.yamlfile:
-        args.theme = DDOC.default
+        args.theme = "ddoc:default"
 
     keywords = Keywords(theme=args.theme, yamlfile=args.yamlfile)
 

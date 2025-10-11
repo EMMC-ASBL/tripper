@@ -42,7 +42,7 @@ class TableDoc:
             "distribution", "accessService", "parser" and "generator"
             or an IRI to a class in an ontology.  Defaults to
             "dataset".
-        domain: Name of one of more domains to load keywords for.
+        theme: Name of one of more themes to load keywords for.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
         context: Additional user-defined context that should be
@@ -63,7 +63,7 @@ class TableDoc:
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
-        domain: "Optional[Union[str, Sequence[str]]]" = "default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
         keywords: "Optional[Keywords]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
@@ -72,7 +72,7 @@ class TableDoc:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.keywords = get_keywords(keywords=keywords, domain=domain)
+        self.keywords = get_keywords(keywords=keywords, theme=theme)
         self.context = get_context(
             context=context, keywords=self.keywords, prefixes=prefixes
         )

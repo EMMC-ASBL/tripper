@@ -1,7 +1,7 @@
 <!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
 
-# Keywords for domain: default
-The tables below lists the keywords the domain default.
+# Keywords for theme: ddoc:default
+The tables below lists the keywords the theme ddoc:default.
 
 The meaning of the columns are as follows:
 
