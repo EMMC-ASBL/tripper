@@ -217,14 +217,14 @@ def test_get_jsonld_context():
         # Test online context. It should equal context on disk.
         # However, since they are updated asynchronously, we do not test for
         # equality.
-        online_context = get_jsonld_context()
+        online_context = get_jsonld_context(fromfile=False)
         assert isinstance(online_context, dict)
         assert len(online_context) > 80
         assert online_context["@version"] == 1.1
         assert online_context["status"] == "adms:status"
 
         # Test context argument
-        context2 = get_jsonld_context(context=CONTEXT_URL)
+        context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)
         assert context2 == online_context
 
         assert "newkey" not in context
