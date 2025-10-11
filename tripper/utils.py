@@ -239,7 +239,7 @@ def recursive_update(
 
 @contextmanager
 def openfile(
-    url: "Union[str, Path]", timeout: float = 3, **kwargs
+    url: "Union[str, Path]", mode: str = "rt", timeout: float = 3, **kwargs
 ) -> "Generator":
     """Like open(), but allows opening remote files using HTTP GET requests.
 
@@ -247,10 +247,11 @@ def openfile(
 
     Arguments:
         url: File path or URL to open.
+        mode: See `mode` argument of open().
         timeout: Timeout for accessing the file in seconds.
         kwargs: Additional passed to open().
 
-    Returns:
+    Yields:
         A stream object returned by open().
 
     """
@@ -279,7 +280,8 @@ def openfile(
         fname = url
 
     try:
-        f = open(fname, **kwargs)  # pylint: disable=unspecified-encoding
+        # pylint: disable=unspecified-encoding
+        f = open(fname, mode=mode, **kwargs)  # type: ignore
         yield f
     finally:
         if f is not None:

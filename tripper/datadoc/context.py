@@ -5,7 +5,7 @@
 import json
 import os
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
 
@@ -13,10 +13,10 @@ from tripper import RDF, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
-from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI
+from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Sequence, Union
+    from typing import IO, Optional, Union
 
     # Possible types for a JSON-LD context
     ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
@@ -30,12 +30,18 @@ def get_context(
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
     copy: bool = False,
+    timeout: float = 3,
 ) -> "Context":
     """A convinient function that returns an Context instance.
 
     Arguments:
-        context: Input context.  If it is a `Context` instance,
-             it will be updated and returned.
+        context: Input context.  Several types are supported:
+            - Context: The Context instance will be updated and returned,
+              unless `copy` is true.
+            - dict: Dict-representation of a valid JSON-LD context.
+            - str: If a valid URI, the context is loaded from this URI,
+              otherwise it is assumed to be a file path to load.
+            - sequence: A sequence of the above.
         theme: Load initial context for this theme.
         default_theme: Initialise context for this theme if neither
             `context` nor `theme` are provided.
@@ -43,6 +49,7 @@ def get_context(
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
         copy: If true, always return a new Context object.
+        timeout: Timeout when accessing remote files.
 
     Returns:
         Context object.
@@ -57,10 +64,11 @@ def get_context(
             context.add_context(kw.get_context())
     else:
         context = Context(
-            keywords=keywords,
-            theme=theme if context or theme or keywords else default_theme,
             context=context,
+            theme=theme if context or theme or keywords else default_theme,
+            keywords=keywords,
             processingMode=processingMode,
+            timeout=timeout,
         )
     if prefixes:
         context.add_context(prefixes)
@@ -76,20 +84,29 @@ class Context:
         theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
+        timeout: float = 3,
     ) -> None:
         """Initialises context object.
 
         Arguments:
-            context: Optional context to load.
+            context: Optional context to load. Supported types:
+                - Context: The Context instance will be updated and returned,
+                  unless `copy` is true.
+                - dict: Dict-representation of a valid JSON-LD context.
+                - str: If a valid URI, the context is loaded from this URI,
+                  otherwise it is assumed to be a file path to load.
+                - sequence: A sequence of the above.
             theme: Load initial context for this theme.
             keywords: Initialise from this keywords instance.
             processingMode: Either "json-ld-1.0" or "json-ld-1.1".
+            timeout: Timeout when accessing remote files.
 
         """
         self.ld = jsonld.JsonLdProcessor()
         self.ctx = self.ld._get_initial_context(
             options={"processingMode": processingMode}
         )
+        self.timeout = timeout
         self._expanded: dict = {}
         self._prefixed: dict = {}
         self._shortnamed: dict = {}
@@ -138,6 +155,20 @@ class Context:
         """Add a context to this object."""
         if isinstance(context, Context):
             context = context.get_context_dict()
+        elif isinstance(context, str):
+            with openfile(context, "rt", timeout=self.timeout) as f:
+                context = json.load(f)
+        elif isinstance(context, Sequence):
+            for c in context:
+                self.add_context(c)
+            return
+        elif isinstance(context, dict):
+            pass
+        else:
+            raise TypeError(
+                "`context` should be a dict, str, Context or a sequence of "
+                f"these.  Got: {type(context)}"
+            )
 
         if "@id" in context:
             if "@context" in context:

@@ -198,58 +198,76 @@ def test_told():
 
 
 def test_get_jsonld_context():
-    """Test get_jsonld_context()."""
+    """Test get_context()."""
+    import warnings
+
     from tripper.datadoc import get_jsonld_context
     from tripper.datadoc.dataset import CONTEXT_URL
 
-    context = get_jsonld_context()
-    assert isinstance(context, dict)
-    assert len(context) > 80
-    assert context["@version"] == 1.1
-    assert context["status"] == "adms:status"
+    # Ignore deprecation warnings from testing deprecated function
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
 
-    # Test online context. It should equal context on disk.
-    # However, since they are updated asynchronously, we do not test for
-    # equality.
-    online_context = get_jsonld_context(fromfile=False)
-    assert isinstance(online_context, dict)
-    assert len(online_context) > 80
-    assert online_context["@version"] == 1.1
-    assert online_context["status"] == "adms:status"
+        context = get_jsonld_context()
+        assert isinstance(context, dict)
+        assert len(context) > 80
+        assert context["@version"] == 1.1
+        assert context["status"] == "adms:status"
 
-    # Test context argument
-    context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)
-    assert context2 == online_context
+        # Test online context. It should equal context on disk.
+        # However, since they are updated asynchronously, we do not test for
+        # equality.
+        online_context = get_jsonld_context(fromfile=False)
+        assert isinstance(online_context, dict)
+        assert len(online_context) > 80
+        assert online_context["@version"] == 1.1
+        assert online_context["status"] == "adms:status"
 
-    assert "newkey" not in context
-    context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
-    assert context3["newkey"] == "onto:newkey"
+        # Test context argument
+        context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)
+        assert context2 == online_context
 
-    with pytest.raises(TypeError):
-        get_jsonld_context(context=[None])
+        assert "newkey" not in context
+        context3 = get_jsonld_context(context={"newkey": "onto:newkey"})
+        assert context3["newkey"] == "onto:newkey"
+
+        with pytest.raises(TypeError):
+            get_jsonld_context(context=[None])
 
 
 def test_get_prefixes():
     """Test get_prefixes()."""
+    import warnings
+
     from tripper.datadoc import get_prefixes
 
-    prefixes = get_prefixes()
-    assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
-    assert prefixes["emmo"] == "https://w3id.org/emmo#"
+    # Ignore deprecation warnings from testing deprecated function
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
 
-    # Test context argument
-    prefixes2 = get_prefixes(context={"onto": "http://example.com/onto#"})
-    assert prefixes2["onto"] == "http://example.com/onto#"
+        prefixes = get_prefixes()
+        assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
+        assert prefixes["emmo"] == "https://w3id.org/emmo#"
+
+        # Test context argument
+        prefixes2 = get_prefixes(context={"onto": "http://example.com/onto#"})
+        assert prefixes2["onto"] == "http://example.com/onto#"
 
 
 def test_get_shortnames():
     """Test get_shortnames()."""
+    import warnings
+
     from tripper import DCTERMS
     from tripper.datadoc.dataset import get_shortnames
 
-    shortnames = get_shortnames()
-    assert shortnames[DCTERMS.title] == "title"
-    assert shortnames[DCTERMS.issued] == "releaseDate"
+    # Ignore deprecation warnings from testing deprecated function
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+
+        shortnames = get_shortnames()
+        assert shortnames[DCTERMS.title] == "title"
+        assert shortnames[DCTERMS.issued] == "releaseDate"
 
 
 def test_store():
