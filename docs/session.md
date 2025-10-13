@@ -64,11 +64,16 @@ value is replaced with the password looked up using the [keyring] library.
 !!! tip
 
     To store the password for the "MyKB" backend in the keyring, make sure
-    that you have [keyring] installed and then run
+    that you have [keyring] installed and run the following command in a
+    terminal
 
         keyring set MyKB myname
 
-    and enter the password in the prompt. That's it!
+    Enter the password in the prompt. That's it, now you can access `MyKB`
+    as if the password was hardcoded into the session.yaml file.
+
+    See the [keyring] documentation for improved security by using one of
+    the recommended keyring backends for your system.
 
 
 Example
