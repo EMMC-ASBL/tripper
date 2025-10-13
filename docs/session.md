@@ -61,6 +61,16 @@ If an entry has a `password` keyword with the special value "KEYRING", the
 value is replaced with the password looked up using the [keyring] library.
 
 
+!!! tip
+
+    To store the password for the "MyKB" backend in the keyring, make sure
+    that you have [keyring] installed and then run
+
+        keyring set MyKB myname
+
+    and enter the password in the prompt. That's it!
+
+
 Example
 -------
 
