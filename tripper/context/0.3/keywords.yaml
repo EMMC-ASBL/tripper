@@ -1,5 +1,5 @@
 ---
-theme: ddoc:default
+theme: ddoc:datadoc
 #basedOn:
 
 
@@ -39,7 +39,12 @@ prefixes:
 #
 # Valid keys on keywords:
 #   - iri: IRI of property that the keyword is mapped to
+#   - type: Should be owl:AnnotationProperty, owl:DataProperty or owl:ObjectProperty.
+#     Is also used to express the characteristics: owl:FunctionalProperty,
+#     owl:InverseFunctionalProperty, owl:SymmetricProperty, owl:AsymmetricProperty,
+#     owl:ReflexiveProperty, owl:IrreflexiveProperty, owl:TransitiveProperty
 #   - subPropertyOf: The IRI of a property that this property is a subproperty of
+#   - domain: Domain of property (inferred from the resource) (IRI)
 #   - range: Range of property (IRI)
 #   - datatype: Datatype of the property (only for data properties)
 #   - inverse: If true, `iri` refer to the inverse of this property
@@ -47,7 +52,6 @@ prefixes:
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
 #   - usageNote: A note about how to use this keyword.
-#   - characteristics: NOT IMPLEMENTED
 #   - default: NOT IMPLEMENTED
 #
 resources:
@@ -760,10 +764,9 @@ resources:
         range: dcat:Role
         description: A function of an entity or agent with respect to another entity or resource.
 
-      relation:
+      relatedResource:
         iri: dcterms:relation
         range: rdfs:Resource
-        description: A resource related to the source resource.
 
 
   RightsStatement:

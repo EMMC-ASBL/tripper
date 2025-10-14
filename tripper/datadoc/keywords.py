@@ -4,17 +4,20 @@
 
 import json
 import os
+from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
 import yaml
 
-from tripper import DDOC, Triplestore
+import tripper
+from tripper import DDOC, OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.dictutils import add, merge
 from tripper.datadoc.errors import (
     InvalidKeywordError,
     NoSuchTypeError,
+    ParseError,
     RedefineKeywordError,
 )
 from tripper.utils import (
@@ -37,7 +40,7 @@ if TYPE_CHECKING:  # pragma: no cover
 @lru_cache(maxsize=32)
 def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
 ) -> "Keywords":
@@ -63,7 +66,7 @@ class Keywords:
 
     def __init__(
         self,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
@@ -83,9 +86,13 @@ class Keywords:
                 belong to.
         """
         default_prefixes = AttrDict(ddoc=str(DDOC))
+        self.theme = None  # theme for this object
         self.data = AttrDict(prefixes=default_prefixes)
+
+        # A "view" into `self.data`. A dict mapping short, prefixed
+        # and expanded keyword names to corresponding value dicts in
+        # self.data.
         self.keywords = AttrDict()
-        self.theme = None
 
         if theme:
             self.add_theme(theme)
@@ -109,24 +116,42 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "theme"]
 
+    def _set_keywords(self, clear=True):
+        """Update internal keywords attribute to data attribute.
+
+        If `clear` is false, only new keywords will be added, but nothing
+        removed.
+        """
+        if clear:
+            self.keywords.clear()
+        for clsvalue in self.data.get("resources", {}).values():
+            for keyword, value in clsvalue.get("keywords", {}).items():
+                if keyword not in self.keywords:
+                    expanded = expand_iri(value.iri, self.get_prefixes())
+                    self.keywords[keyword] = value
+                    self.keywords[value.iri] = value
+                    self.keywords[expanded] = value
+
     def copy(self):
         """Returns a copy of self."""
         new = Keywords(theme=None)
-        new.data.update(self.data)
-        new.keywords.update(self.keywords)
         new.theme = self.theme
+        new.data = deepcopy(self.data)
+        new._set_keywords()  # pylint: disable=protected-access
         return new
 
-    def add(self, keywords: "KeywordsType", timeout: float = 3) -> None:
+    def add(
+        self, keywords: "Optional[KeywordsType]", timeout: float = 3
+    ) -> None:
         """Add `keywords` to current keyword object."""
 
         def _add(kw):
             if kw is None:
                 pass
             elif isinstance(kw, Keywords):
-                self.data.update(kw.data)
-                self.keywords.update(kw.keywords)
                 self.theme = merge(self.theme, kw.theme)
+                recursive_update(self.data, kw.data, cls=AttrDict)
+                self._set_keywords(clear=False)
             elif isinstance(kw, Path):
                 self.parse(kw, timeout=timeout)
             elif isinstance(kw, str):
@@ -184,12 +209,17 @@ class Keywords:
         timeout: float = 3,
     ) -> None:
         """Parse YAML file with keyword definitions."""
-        # pylint: disable=too-many-nested-blocks
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
+        try:
+            self._parse(d)
+        except Exception as exc:
+            raise ParseError(f"error parsing '{yamlfile}'") from exc
 
-        dm = self.theme[-1] if isinstance(self.theme, list) else self.theme
-        theme = self.expanded(d.get("theme", dm))
+    def _parse(self, d: dict) -> None:
+        """Parse a dict with keyword definitions following the format of
+        the YAML file."""
+        # pylint: disable=too-many-nested-blocks
         self.add(d.get("basedOn"))
 
         recursive_update(self.data, d)
@@ -202,6 +232,7 @@ class Keywords:
                 valid_keys = [
                     "name",
                     "iri",
+                    "type",
                     "subPropertyOf",  # XXX - to be implemented
                     "domain",
                     "range",
@@ -211,7 +242,6 @@ class Keywords:
                     "conformance",
                     "description",
                     "usageNote",
-                    "characteristics",  # XXX - to be implemented
                     "theme",
                     "default",
                 ]
@@ -226,8 +256,7 @@ class Keywords:
                         raise InvalidKeywordError(
                             f"keyword '{keyword}' has invalid conformance: "
                             f"'{value['conformance']}'. Valid values are "
-                            f"{', '.join(valid_conformances)} "
-                            f"when parsing '{yamlfile}'"
+                            f"{', '.join(valid_conformances)}"
                         )
 
                 if keyword in self.keywords:
@@ -244,8 +273,7 @@ class Keywords:
                                 raise InvalidKeywordError(
                                     f"keyword '{keyword}' reduces strictness "
                                     "of existing conformance: "
-                                    f"{value.conformance} when parsing "
-                                    f"'{yamlfile}'"
+                                    f"{value.conformance}"
                                 )
                             value.setdefault(k, v)
                         elif k in ("domain", "theme", "subPropertyOf"):
@@ -254,24 +282,94 @@ class Keywords:
                             value.setdefault(k, v)
                         elif k in value and value[k] != v:
                             raise RedefineKeywordError(
-                                f"Cannot redefine '{k}' in keyword '{keyword}' "
-                                f"when parsing '{yamlfile}'"
+                                f"Cannot redefine '{k}' in keyword '{keyword}'"
                             )
                 else:
                     value["name"] = keyword
-                    add(value, "domain", resource_name)
-                    add(value, "theme", theme)
-                    recursive_update(
-                        self.keywords,
-                        {
-                            keyword: value,
-                            value["iri"]: value,
-                            expand_iri(
-                                value["iri"], self.get_prefixes()
-                            ): value,
-                        },
-                        append=False,
-                    )
+                    add(value, "domain", resource.iri)
+                    if "theme" in d:
+                        add(value, "theme", d["theme"])
+
+        self._set_keywords(clear=False)
+
+    def keywordnames(self) -> "list":
+        """Return a list with all keyword names defined in this instance."""
+        return [k for k in self.keywords.keys() if ":" not in k]
+
+    def asdicts(self, names: "Sequence" = None) -> "List[dict]":
+        """Return"""
+        if names is None:
+            names = keywordnames()
+        dicts = []
+        for name in names:
+            d = self.keywords[name]
+            if "range" in d and self.expanded(d.range) != RDFS.Literal:
+                proptype = "owl:ObjectProperty"
+                range = d.range
+            elif (
+                "datatype" in d and self.expanded(d.datatype) != RDF.langString
+            ):
+                proptype = "owl:DataProperty"
+                range = d.get("datatype")
+            else:
+                proptype = "owl:AnnotationProperty"
+                range = d.get("datatype")
+            dct = {
+                "@id": d.iri,
+                "@type": proptype,
+                "rdfs:label": d.name,
+                "rdfs:domain": d.domain,
+            }
+            if range:
+                d["rdfs:range"] = range
+            for k, v in d.items():
+                if k not in ("iri", "name", "range", "domain"):
+                    dct[k] = v
+
+            dicts.append(dct)
+
+        return dicts
+
+    def missing_keywords(
+        self, ts: "Triplestore", include_existing: bool = False
+    ):
+        """Return a list with the names of keywords in this instance that are
+        not defined in triplestore `ts`.
+
+        If `include_existing`, two lists are returned, both keywords
+        missing from and existing in `ts`.
+        """
+        expanded = {k for k in self.keywords.keys() if "://" in k}
+        iris = [f"<{k}>" for k in expanded]
+        query = f"""
+        SELECT ?s WHERE {{
+          VALUES ?s {{ { ' '.join(iris) } }}
+          ?s a ?o
+        }}
+        """
+        existing = {r[0] for r in ts.query(query)}
+        missing = expanded.difference(existing)
+        missing_names = [self.keywords[k].name for k in missing]
+        if include_existing:
+            existing_names = [self.keywords[k].name for k in existing]
+            return missing_names, existing_names
+        return missing_names
+
+    def save(self, ts: "Triplestore") -> dict:
+        """Save to triplestore."""
+        # pylint: disable=import-outside-toplevel,cyclic-import
+        from tripper.datadoc.dataset import store
+
+        # Ensure that the schema for properties is stored
+        ts.bind("ddoc", DDOC)
+        if not ts.query(f"ASK WHERE {{ <{DDOC()}> a <{OWL.Ontology}> }}"):
+            path = Path(tripper.__file__).parent / "context" / "datadoc.ttl"
+            ts.parse(path)
+
+        # Store all keywords that are not already in the triplestore
+        missing = self.missing_keywords(ts)
+        dicts = self.asdicts(missing)
+        return store(ts, dicts)
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
@@ -677,7 +775,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if not args.theme and not args.yamlfile:
-        args.theme = "ddoc:default"
+        args.theme = "ddoc:datadoc"
 
     keywords = Keywords(theme=args.theme, yamlfile=args.yamlfile)
 

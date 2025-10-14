@@ -1,6 +1,6 @@
 ---
 theme: ddoc:process
-basedOn: ddoc:default
+basedOn: ddoc:datadoc
 
 resources:
   Process:

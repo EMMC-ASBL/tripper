@@ -48,7 +48,7 @@ def test_get_keywords():
         "resources",
         "basedOn",
     ]
-    assert kw4.data.basedOn == "ddoc:default"
+    assert kw4.data.basedOn == "ddoc:datadoc"
     assert len(kw4.keywords) > len(kw1.keywords)
 
     kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
@@ -58,7 +58,7 @@ def test_get_keywords():
         "resources",
         "basedOn",
     ]
-    assert kw5.data.basedOn == ["ddoc:default", "ddoc:process"]
+    assert kw5.data.basedOn == ["ddoc:datadoc", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
 
@@ -78,6 +78,28 @@ def test_copy():
     assert copy.data == keywords.data
     assert copy.keywords == keywords.keywords
     assert copy.theme == keywords.theme
+
+
+def test_keywordnames():
+    """Test keywordnames()."""
+    assert len(keywords.keywordnames()) == 116
+
+
+# if 1:
+def test_save():
+    """Test missing_keywords()."""
+    from tripper import Triplestore
+    from tripper.datadoc import acquire, store
+
+    pytest.importorskip("rdflib")
+
+    ts = Triplestore(backend="rdflib")
+    missing = keywords.missing_keywords(ts)
+    assert len(missing) == len(keywords.keywordnames())
+    d = keywords.save(ts)
+    missing2, existing2 = keywords.missing_keywords(ts, include_existing=True)
+    # assert len(missing2) == 0
+    # assert len(existing2) == len(keywords.keywordnames())
 
 
 def test_get_prefixes():
@@ -214,3 +236,25 @@ def test_typename():
     assert keywords.typename(DCAT.Dataset) == "Dataset"
     with pytest.raises(NoSuchTypeError):
         keywords.typename("xxx")
+
+
+# if 1:
+def test_load():
+    """Test load() method."""
+    from dataset_paths import ontodir
+
+    from tripper import Triplestore
+    from tripper.datadoc import acquire, store
+
+    ts = Triplestore("rdflib")
+    ts.parse(ontodir / "family.ttl")
+    FAM = ts.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
+
+    d = acquire(ts, FAM.hasAge)
+
+    ts2 = Triplestore("rdflib")
+    ts2.bind("fam", FAM)
+    store(ts2, d)
+
+    print()
+    print(ts2.serialize())

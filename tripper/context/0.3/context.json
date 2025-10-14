@@ -342,10 +342,6 @@
       "@id": "dcat:hasRole",
       "@type": "@id"
     },
-    "relation": {
-      "@id": "dcterms:relation",
-      "@type": "@id"
-    },
     "altLabel": {
       "@id": "skos:altLabel",
       "@language": "en"

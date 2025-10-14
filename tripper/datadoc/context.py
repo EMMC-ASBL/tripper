@@ -25,7 +25,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def get_context(
     context: "Optional[ContextType]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = None,
-    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
@@ -81,7 +81,7 @@ class Context:
     def __init__(
         self,
         context: "Optional[ContextType]" = None,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
         timeout: float = 3,

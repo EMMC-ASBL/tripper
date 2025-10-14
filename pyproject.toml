@@ -138,7 +138,7 @@ good-names = [
 minversion = "7.0"
 addopts = """-rs --cov=tripper --cov-report=term \
     --doctest-modules --doctest-ignore-import-errors \
-    --ignore-glob=**/old
+    --ignore-glob=old/*
     """
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
@@ -151,5 +151,5 @@ filterwarnings = [
 
 # Note the quotes around dlite.python_storage_plugins to escape the embedded dot
 [project.entry-points."tripper.keywords"]
-"tripper/context/0.3" = "ddoc:default"
+"tripper/context/0.3" = "ddoc:datadoc"
 "tripper/context/process/0.1" = "ddoc:process"

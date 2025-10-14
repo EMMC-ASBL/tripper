@@ -1,7 +1,7 @@
 <!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
 
-# Keywords for theme: ddoc:default
-The tables below lists the keywords the theme ddoc:default.
+# Keywords for theme: ddoc:datadoc
+The tables below lists the keywords the theme ddoc:datadoc.
 
 The meaning of the columns are as follows:
 
@@ -238,7 +238,7 @@ A legal document giving official permission to do something with a resource.
 
 | Keyword | Range          | Conformance | Definition | Usage note |
 | ------- | -------------- | ----------- | ---------- | ---------- |
-| [type]  | [skos:Concept] | optional    |            |            |
+| [type]  | [skos:Concept] |             |            |            |
 
 
 ## Properties on [Location]
@@ -254,10 +254,10 @@ A spatial region or named place.
 ## Properties on [Relationship]
 An association class for attaching additional information to a relationship between DCAT Resources.
 
-| Keyword    | Range           | Conformance | Definition                                                                   | Usage note |
-| ---------- | --------------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
-| [hasRole]  | [dcat:Role]     |             | A function of an entity or agent with respect to another entity or resource. |            |
-| [relation] | [rdfs:Resource] |             | A resource related to the source resource.                                   |            |
+| Keyword           | Range           | Conformance | Definition                                                                   | Usage note |
+| ----------------- | --------------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
+| [hasRole]         | [dcat:Role]     |             | A function of an entity or agent with respect to another entity or resource. |            |
+| [relatedResource] | [rdfs:Resource] |             |                                                                              |            |
 
 
 ## Properties on [RightsStatement]
@@ -561,7 +561,7 @@ The class of property restrictions.
 [Relationship]: http://www.w3.org/ns/dcat#Relationship
 [hasRole]: http://www.w3.org/ns/dcat#hasRole
 [dcat:Role]: http://www.w3.org/ns/dcat#Role
-[relation]: http://purl.org/dc/terms/relation
+[relatedResource]: http://purl.org/dc/terms/relation
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [RightsStatement]: http://purl.org/dc/terms/RightsStatement
 [LegalResource]: http://data.europa.eu/eli/ontology#LegalResource

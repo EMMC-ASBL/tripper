@@ -587,7 +587,7 @@ def test_get_entry_points():
     from tripper.utils import get_entry_points
 
     for ep in get_entry_points("tripper.keywords"):
-        if ep.value == "ddoc:default":
+        if ep.value == "ddoc:datadoc":
             break
     else:
         raise RuntimeError(

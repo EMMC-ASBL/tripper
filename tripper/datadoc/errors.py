@@ -3,6 +3,9 @@
 from tripper.errors import TripperError, TripperWarning
 
 
+# ========
+# Errors
+# ========
 class InvalidDatadocError(TripperError):
     """Invalid data documentation dict (or list)."""
 
@@ -35,6 +38,13 @@ class IRIExistsError(TripperError):
     """The IRI already exists in the triplestore."""
 
 
+class ParseError(TripperError):
+    """Error when parsing a file."""
+
+
+# ==========
+# Warnings
+# ==========
 class UnknownKeywordWarning(TripperWarning):
     """Unknown keyword in data documentation."""
 
