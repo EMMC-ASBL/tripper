@@ -230,7 +230,7 @@ class SPARQLQuery:
         self._context_stack[-1].append(pattern)
         return self
 
-    def optional(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+    def optional(self, callback: Callable[['SPARQLQuery'], Any]) -> 'SPARQLQuery':
         """
         Add an optional block to the SPARQL query.
 
@@ -239,7 +239,7 @@ class SPARQLQuery:
         execution will be wrapped in an OPTIONAL clause.
 
         Args:
-            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+            callback (Callable[['SPARQLQuery'], Any]): A function that takes a SPARQLQuery
                 instance and adds patterns to it. These patterns will be made optional.
 
         Returns:
@@ -265,7 +265,7 @@ class SPARQLQuery:
         self._context_stack[-1].append(OptionalBlock(optional_patterns))
         return self
 
-    def union(self, *callbacks: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+    def union(self, *callbacks: Callable[['SPARQLQuery'], Any]) -> 'SPARQLQuery':
         """
         Create a UNION block in the SPARQL query.
 
@@ -309,14 +309,14 @@ class SPARQLQuery:
         self._context_stack[-1].append(UnionBlock(pattern_groups))
         return self
 
-    def minus(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+    def minus(self, callback: Callable[['SPARQLQuery'], Any]) -> 'SPARQLQuery':
         """Add a MINUS block to the SPARQL query.
 
         The MINUS block removes solutions from the query results. It subtracts matches
         from the overall result set based on the patterns defined in the callback.
 
         Args:
-            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+            callback (Callable[['SPARQLQuery'], Any]): A function that takes a SPARQLQuery
                 instance and adds patterns to it. Solutions matching these patterns will
                 be removed from the results.
 
@@ -339,7 +339,7 @@ class SPARQLQuery:
         self._context_stack[-1].append(MinusBlock(minus_patterns))
         return self
 
-    def graph(self, graph_uri: Union[str, None], callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+    def graph(self, graph_uri: Union[str, None], callback: Callable[['SPARQLQuery'], Any]) -> 'SPARQLQuery':
         """Add a GRAPH block to query a specific named graph.
 
         The GRAPH keyword allows querying patterns within a specific named graph.
@@ -354,7 +354,7 @@ class SPARQLQuery:
             graph_uri (Union[str, None]): The URI of the named graph to query, or a
                 variable (e.g., '?g') to match against any named graph. Can be None
                 for an anonymous graph variable.
-            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+            callback (Callable[['SPARQLQuery'], Any]): A function that takes a SPARQLQuery
                 instance and adds patterns to query within the specified graph.
 
         Returns:
@@ -458,14 +458,14 @@ class SPARQLQuery:
 
         return self.filter(condition)
 
-    def filter_exists(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+    def filter_exists(self, callback: Callable[['SPARQLQuery'], Any]) -> 'SPARQLQuery':
         """Add a FILTER EXISTS condition to require pattern matching.
 
         FILTER EXISTS tests whether a pattern matches in the data. The query only
         returns results where the EXISTS pattern finds at least one match.
 
         Args:
-            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+            callback (Callable[['SPARQLQuery'], Any]): A function that takes a SPARQLQuery
                 instance and adds patterns that must exist for the filter to pass.
 
         Returns:
@@ -495,14 +495,14 @@ class SPARQLQuery:
         exists_str = "\n".join(exists_lines)
         return self.filter(f"EXISTS {exists_str}")
 
-    def filter_not_exists(self, callback: Callable[['SPARQLQuery'], None]) -> 'SPARQLQuery':
+    def filter_not_exists(self, callback: Callable[['SPARQLQuery'], Any]) -> 'SPARQLQuery':
         """Add a FILTER NOT EXISTS condition to require pattern absence.
 
         FILTER NOT EXISTS tests whether a pattern does NOT match in the data. The query
         only returns results where the NOT EXISTS pattern finds no matches.
 
         Args:
-            callback (Callable[['SPARQLQuery'], None]): A function that takes a SPARQLQuery
+            callback (Callable[['SPARQLQuery'], Any]): A function that takes a SPARQLQuery
                 instance and adds patterns that must NOT exist for the filter to pass.
 
         Returns:
