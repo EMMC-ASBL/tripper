@@ -169,7 +169,7 @@ class GraphBlock(SPARQLElement):
         """Convert to SPARQL GRAPH block"""
         if self.graph_uri:
             if self.graph_uri.startswith('?'):
-                graph_ref = f"?{sanitize_variable(self.graph_uri)}"
+                graph_ref = sanitize_variable(self.graph_uri)
             else:
                 graph_ref = f"<{sanitize_uri(self.graph_uri)}>"
             lines = [f"{' ' * indent}GRAPH {graph_ref} {{"]
