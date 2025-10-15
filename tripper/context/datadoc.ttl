@@ -36,7 +36,7 @@
         owl:oneOf ( :mandatory :optional :recommended )
     ] ;
     dcterms:description "Whether the annotation is mandatory, recommended or optional."@en ;
-    vann:usageNote "It MUST take one of the values ':mandatory', ':recommended' or ';optional'."@en ;
+    vann:usageNote "It MUST take one of the values ':mandatory', ':recommended' or ':optional'."@en ;
     rdfs:isDefinedBy <https://w3id.org/emmo/application/datadoc> ;
     rdfs:label "conformance" .
 
@@ -68,28 +68,28 @@
 accr:PUBLIC a dcterms:RightsStatement ;
     skos:prefLabel "public"@en ;
     rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
-    skos:definition: "Publicly accessible by everyone."@en ;
-    vann:usageNote: "Permissible obstacles include registration and request for API keys, as long as anyone can request such registration and/or API keys."@en .
+    skos:definition "Publicly accessible by everyone."@en ;
+    vann:usageNote "Permissible obstacles include registration and request for API keys, as long as anyone can request such registration and/or API keys."@en .
 
 accr:NON_PUBLIC a dcterms:RightsStatement ;
     skos:prefLabel "non-public"@en ;
     rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
-    skos:definition: "Not publicly accessible for privacy, security or other reasons."@en ;
-    vann:usageNote: "This category may include resources that contain sensitive or personal information."@en .
+    skos:definition "Not publicly accessible for privacy, security or other reasons."@en ;
+    vann:usageNote "This category may include resources that contain sensitive or personal information."@en .
 
 accr:CONFIDENTIAL a dcterms:RightsStatement ;
     skos:prefLabel "confidential"@en ;
     rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
-    skos:definition: "Information that is not disclosed."@en ;
-    vann:usageNote: "Disclosure of this data could cause damage to interested parties such as public administrations and businesses. It may refer to personal and professional information as well as to information in the context of business, commerce or trade."@en .
+    skos:definition "Information that is not disclosed."@en ;
+    vann:usageNote "Disclosure of this data could cause damage to interested parties such as public administrations and businesses. It may refer to personal and professional information as well as to information in the context of business, commerce or trade."@en .
 
 accr:RESTRICTED a dcterms:RightsStatement ;
     skos:prefLabel "restricted"@en ;
     rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
-    skos:definition: "Only available under certain conditions."@en ;
-    vann:usageNote: "This category may include resources that require payment, resources shared under non-disclosure agreements, resources for which the publisher or owner has not yet decided if they can be publicly released."@en .
+    skos:definition "Only available under certain conditions."@en ;
+    vann:usageNote "This category may include resources that require payment, resources shared under non-disclosure agreements, resources for which the publisher or owner has not yet decided if they can be publicly released."@en .
 
 accr:SENSITIVE a dcterms:RightsStatement ;
     skos:prefLabel "sensitive"@en ;
     rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
-    skos:definition: "Sensitive non-classified (SNC) information, information whose unauthorised disclosure could cause damage to the Commission or other interested parties such as businesses, companies, intellectual property or personal data but which is not EU classified information."@en .
+    skos:definition "Sensitive non-classified (SNC) information, information whose unauthorised disclosure could cause damage to the Commission or other interested parties such as businesses, companies, intellectual property or personal data but which is not EU classified information."@en .

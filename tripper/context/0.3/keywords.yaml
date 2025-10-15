@@ -4,6 +4,7 @@ theme: ddoc:datadoc
 
 
 prefixes:
+  accr: "http://publications.europa.eu/resource/authority/access-right/"
   adms: "http://www.w3.org/ns/adms#"
   dcat: "http://www.w3.org/ns/dcat#"
   dcatap: "http://data.europa.eu/r5r/"
@@ -22,6 +23,7 @@ prefixes:
   schema: "https://schema.org/"
   skos: "http://www.w3.org/2004/02/skos/core#"
   spdx: "http://spdx.org/rdf/terms#"
+  vann: "http://purl.org/vocab/vann/"
   vcard: "http://www.w3.org/2006/vcard/ns#"
   xsd: "http://www.w3.org/2001/XMLSchema#"
 
@@ -35,6 +37,7 @@ prefixes:
 #   - iri: IRI of the resource
 #   - subClassOf: The IRI of class this resource is a subclass of
 #   - description: Description of the resource
+#   - usageNote: A note about how to use this class.
 #   - keywords: List of keywords (properties) of this resource
 #
 # Valid keys on keywords:
@@ -166,7 +169,6 @@ resources:
         datatype: xsd:date
         conformance: optional
         description: The most recent date on which the resource was changed or modified.
-
       publisher:
         iri: dcterms:publisher
         range: foaf:Agent
@@ -253,11 +255,22 @@ resources:
         range: rdfs:Literal
         description: A description of the subject resource. Use `description` instead.
 
+      conformance:
+        iri: ddoc:conformance
+        range: owl:NamedIndividual
+        description: Whether the annotation is mandatory, recommended or optional.
+        usageNote: It MUST take one of the values 'ddoc:mandatory', 'ddoc:recommended' or 'ddoc:optional'.
+
       deprecated:
         iri: owl:deprecated
         range: rdfs:Literal
         datatype: xsd:boolean
         description: The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.
+
+      domain:
+        iri: rdfs:domain
+        range: rdfs:Resource
+        description: A domain of the subject property.
 
       isDefinedBy:
         iri: rdfs:isDefinedBy
@@ -269,6 +282,11 @@ resources:
         range: rdfs:Literal
         description: "Provides a human-readable version of a resource's name."
 
+      range:
+        iri: rdfs:range
+        range: rdfs:Resource
+        description: A range of the subject property.
+
       seeAlso:
         iri: rdfs:seeAlso
         range: skos:Concept
@@ -279,6 +297,12 @@ resources:
         range: rdfs:Literal
         datatype: rdf:JSON
         description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
+
+      usageNote:
+        iri: vann:usageNote
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: A reference that provides information on how this resource is to be used.
 
 
   Dataset:

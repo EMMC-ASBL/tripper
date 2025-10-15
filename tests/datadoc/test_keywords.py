@@ -82,14 +82,14 @@ def test_copy():
 
 def test_keywordnames():
     """Test keywordnames()."""
-    assert len(keywords.keywordnames()) == 116
+    assert len(keywords.keywordnames()) == 120
 
 
-# if 1:
 def test_save():
-    """Test missing_keywords()."""
+    """Test missing_keywords().  VERY SLOW!"""
+    from dataset_paths import outdir  # pylint: disable=import-error
+
     from tripper import Triplestore
-    from tripper.datadoc import acquire, store
 
     pytest.importorskip("rdflib")
 
@@ -98,8 +98,38 @@ def test_save():
     assert len(missing) == len(keywords.keywordnames())
     d = keywords.save(ts)
     missing2, existing2 = keywords.missing_keywords(ts, include_existing=True)
-    # assert len(missing2) == 0
-    # assert len(existing2) == len(keywords.keywordnames())
+    assert len(missing2) == 0
+    assert len(existing2) == len(keywords.keywordnames())
+
+    graph = d["@graph"]
+    # assert len(graph) == len(existing2) - 1  # conformance already exists
+    (descr,) = [d for d in graph if d["@id"] == "dcterms:description"]
+    assert descr["@type"] == "owl:AnnotationProperty"
+    assert descr["rdfs:range"] == "rdf:langString"
+
+    # Create input to test_load()
+    ts.serialize(outdir / "default-keywords.ttl")
+
+
+if 1:
+    # def test_load():
+    """ """
+    from dataset_paths import outdir  # pylint: disable=import-error
+
+    from tripper import DCTERMS, Triplestore
+    from tripper.datadoc import acquire
+    from tripper.datadoc.keywords import load_datadoc_schema
+
+    ts = Triplestore(backend="rdflib")
+    load_datadoc_schema(ts)
+    ts.parse(outdir / "default-keywords.ttl")
+    d1 = acquire(ts, "dcterms:description")
+    d2 = acquire(ts, DCTERMS.description)
+    assert d2["@id"] == DCTERMS.description
+    d2["@id"] = "dcterms:description"
+    assert d1 == d2
+
+    kw = Keywords(theme=None)
 
 
 def test_get_prefixes():
@@ -226,6 +256,18 @@ def test_keywordname():
         keywords.keywordname("xxx")
 
 
+def test_prefixed():
+    """Test prefixed()."""
+    from tripper import DCTERMS
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    assert keywords.prefixed("title") == "dcterms:title"
+    assert keywords.prefixed("dcterms:title") == "dcterms:title"
+    assert keywords.prefixed(DCTERMS.title) == "dcterms:title"
+    with pytest.raises(InvalidKeywordError):
+        keywords.keywordname("xxx")
+
+
 def test_typename():
     """Test typename() method."""
     from tripper import DCAT
@@ -239,7 +281,7 @@ def test_typename():
 
 
 # if 1:
-def test_load():
+def test_load2():
     """Test load() method."""
     from dataset_paths import ontodir
 

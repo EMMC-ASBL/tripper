@@ -31,7 +31,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Union
+    from typing import List, Optional, Union
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
@@ -57,6 +57,17 @@ def get_keywords(
     if keywords:
         kw.add(keywords, timeout=timeout)
     return kw
+
+
+def load_datadoc_schema(ts: "Triplestore") -> None:
+    """Load schema for data documentation to triplestore `ts`.
+
+    It is safe to call this function more than once.
+    """
+    if not ts.query(f"ASK WHERE {{ <{DDOC()}> a <{OWL.Ontology}> }}"):
+        ts.bind("ddoc", DDOC)
+        path = Path(tripper.__file__).parent / "context" / "datadoc.ttl"
+        ts.parse(path)
 
 
 class Keywords:
@@ -225,7 +236,7 @@ class Keywords:
         recursive_update(self.data, d)
 
         resources = self.data.get("resources", {})
-        for resource_name, resource in resources.items():
+        for resource in resources.values():
             for keyword, value in resource.get("keywords", {}).items():
 
                 # Simple validation
@@ -296,10 +307,33 @@ class Keywords:
         """Return a list with all keyword names defined in this instance."""
         return [k for k in self.keywords.keys() if ":" not in k]
 
-    def asdicts(self, names: "Sequence" = None) -> "List[dict]":
-        """Return"""
+    def asdicts(
+        self,
+        names: "Optional[Sequence]" = None,
+        classes: "Optional[Sequence" = None,
+    ) -> "List[dict]":
+        """Return the content of this Keywords object as a list of JSON-LD
+        dicts.
+
+        If `names` is given, only dicts for keywords in `names` will be
+        returned.
+        """
+        maps = {
+            "subPropertyOf": "rdfs:subPropertyOf",
+            "unit": "ddoc:unitSymbol",
+            "description": "dcterms:description",
+            "usageNote": "vann:usageNote",
+        }
+        conformance_indv = {
+            "mandatory": "ddoc:mandatory",
+            "recommended": "ddoc:recommended",
+            "optional": "ddoc:optional",
+        }
         if names is None:
-            names = keywordnames()
+            names = self.keywordnames()
+        if classes is None:
+            classes = self.data.resources.keys()
+
         dicts = []
         for name in names:
             d = self.keywords[name]
@@ -321,14 +355,101 @@ class Keywords:
                 "rdfs:domain": d.domain,
             }
             if range:
-                d["rdfs:range"] = range
+                dct["rdfs:range"] = range
+            if "conformance" in d:
+                dct["ddoc:conformance"] = conformance_indv.get(
+                    d.conformance, d.conformance
+                )
             for k, v in d.items():
-                if k not in ("iri", "name", "range", "domain"):
-                    dct[k] = v
+                if k in maps:
+                    dct[maps[k]] = v
+            dicts.append(dct)
 
+        for cls in classes:
+            d = self.data.resources[cls]
+            dct = {"@id": d.iri, "@type": OWL.Class}
+            if "subClassOf" in d:
+                dct["rdfs:subClassOf"] = d.subClassOf
+            if "description" in d:
+                dct["dcterms:description"] = d.description
+            if "usageNote" in d:
+                dct["vann:usageNote"] = d.usageNote
             dicts.append(dct)
 
         return dicts
+
+    def fromdicts(
+        self,
+        dicts: "Sequence[dict]",
+        prefixes: "Optional[dict]" = None,
+        theme: "Optional[str]" = None,
+        basedOn: "Optional[str]" = None,
+    ) -> None:
+        """Populate this Keywords object from a sequence of dicts.
+
+        The format of the dicts should follow what is returned by
+        tripper.datadoc.acquire().
+
+        """
+        if prefixes:
+            for prefix, ns in prefixes.items():
+                self.add_prefix(prefix, ns)
+
+        entities = {self.expanded(d["@id"]): d for d in dicts}
+
+        def isproperty(v):
+            for t in v["@type"]:
+                exp = self.expanded(t)
+                if exp in (
+                    OWL.AnnotationProperty,
+                    OWL.ObjectProperty,
+                    OWL.DataProperty,
+                ):
+                    return True
+            return False
+
+        properties = {k: v for k, v in entities.items() if isproperty(v)}
+        classes = {k: v for k, v in entities.items() if k not in properties}
+
+        resources = {}
+
+        # Add classes
+        clsmaps = {
+            RDFS.subClassOf: "subClassOf",
+            "rdfs:subClassOf": "subClassOf",
+            DCTERMS.description: "description",
+            "dcterms:description": "description",
+            VANN.usageNote: "usageNote",
+            "vann:usageNote": "usageNote",
+        }
+        for k, v in classes.items():
+            d = AttrDict(iri=self.prefixed(k))
+            for iri, name in clsmaps:
+                if iri == k:
+                    d[name] = v
+            d.keywords = AttrDict()
+            resources[self.keywordname(k)] = d
+
+        # Add properties
+        for k, v in properties.items():
+            pass
+        #        d = AttrDict()
+        #        for dct in dicts:
+        #            v = AttrDict(dct)
+        #            d.iri = v["@id"]
+        #            d.type = v["@type"]
+        #            if "subPropertyOf" in v:
+        #                d.subPropertyOf = v.subPropertyOf
+
+        # Create data dict
+        data = AttrDict()
+        if theme:
+            data.theme = theme
+        if basedOn:
+            data.basedOn = basedOn
+        data.resources = resources
+
+        return data
 
     def missing_keywords(
         self, ts: "Triplestore", include_existing: bool = False
@@ -361,13 +482,11 @@ class Keywords:
         from tripper.datadoc.dataset import store
 
         # Ensure that the schema for properties is stored
-        ts.bind("ddoc", DDOC)
-        if not ts.query(f"ASK WHERE {{ <{DDOC()}> a <{OWL.Ontology}> }}"):
-            path = Path(tripper.__file__).parent / "context" / "datadoc.ttl"
-            ts.parse(path)
+        load_datadoc_schema(ts)
 
         # Store all keywords that are not already in the triplestore
         missing = self.missing_keywords(ts)
+
         dicts = self.asdicts(missing)
         return store(ts, dicts)
 
@@ -446,6 +565,19 @@ class Keywords:
         if keyword not in self.keywords:
             raise InvalidKeywordError(keyword)
         return self.keywords[keyword].name
+
+    def prefixed(self, keyword: str) -> str:
+        """Return prefixed name or `keyword`.
+
+        Example:
+
+        >>> keywords = Keywords()
+        >>> keywords.prefixed("title")
+        'dcterms:title'
+        """
+        if keyword not in self.keywords:
+            raise InvalidKeywordError(keyword)
+        return prefix_iri(self.keywords[keyword].iri, self.get_prefixes())
 
     def typename(self, type) -> str:
         """Return the short name of `type`.

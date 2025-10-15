@@ -5,6 +5,7 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | Prefix  | Namespace                                                         |
 | ------- | ----------------------------------------------------------------- |
 | ddoc    | https://w3id.org/emmo/application/datadoc#                        |
+| accr    | http://publications.europa.eu/resource/authority/access-right/    |
 | adms    | http://www.w3.org/ns/adms#                                        |
 | dcat    | http://www.w3.org/ns/dcat#                                        |
 | dcatap  | http://data.europa.eu/r5r/                                        |
