@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Sequence
 import yaml
 
 import tripper
-from tripper import DDOC, OWL, RDF, RDFS, Triplestore
+from tripper import DCTERMS, DDOC, OWL, RDF, RDFS, VANN, Triplestore
 from tripper.datadoc.dictutils import add, merge
 from tripper.datadoc.errors import (
     InvalidKeywordError,
@@ -244,7 +244,8 @@ class Keywords:
                     "name",
                     "iri",
                     "type",
-                    "subPropertyOf",  # XXX - to be implemented
+                    "subPropertyOf",
+                    "inverseOf",  # XXX - to be implemented
                     "domain",
                     "range",
                     "datatype",
@@ -310,7 +311,7 @@ class Keywords:
     def asdicts(
         self,
         names: "Optional[Sequence]" = None,
-        classes: "Optional[Sequence" = None,
+        classes: "Optional[Sequence]" = None,
     ) -> "List[dict]":
         """Return the content of this Keywords object as a list of JSON-LD
         dicts.
@@ -424,7 +425,7 @@ class Keywords:
         }
         for k, v in classes.items():
             d = AttrDict(iri=self.prefixed(k))
-            for iri, name in clsmaps:
+            for iri, name in clsmaps.items():
                 if iri == k:
                     d[name] = v
             d.keywords = AttrDict()

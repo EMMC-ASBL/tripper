@@ -47,6 +47,7 @@ prefixes:
 #     owl:InverseFunctionalProperty, owl:SymmetricProperty, owl:AsymmetricProperty,
 #     owl:ReflexiveProperty, owl:IrreflexiveProperty, owl:TransitiveProperty
 #   - subPropertyOf: The IRI of a property that this property is a subproperty of
+#   - inverseOf: IRI of the inverse of this property
 #   - domain: Domain of property (inferred from the resource) (IRI)
 #   - range: Range of property (IRI)
 #   - datatype: Datatype of the property (only for data properties)

@@ -73,7 +73,7 @@ def test_dir():
 
 
 def test_copy():
-    """Test copy()."""
+    """Test copy() method."""
     copy = keywords.copy()
     assert copy.data == keywords.data
     assert copy.keywords == keywords.keywords
@@ -81,12 +81,12 @@ def test_copy():
 
 
 def test_keywordnames():
-    """Test keywordnames()."""
+    """Test keywordnames() method."""
     assert len(keywords.keywordnames()) == 120
 
 
 def test_save():
-    """Test missing_keywords().  VERY SLOW!"""
+    """Test missing_keywords() method.  VERY SLOW!"""
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper import Triplestore
@@ -112,8 +112,8 @@ def test_save():
 
 
 if 1:
-    # def test_load():
-    """ """
+# def test_load():
+    """Test load() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper import DCTERMS, Triplestore
@@ -133,7 +133,7 @@ if 1:
 
 
 def test_get_prefixes():
-    """Test get_prefixes()."""
+    """Test get_prefixes() method."""
     prefixes = keywords.get_prefixes()
     assert prefixes["dcat"] == "http://www.w3.org/ns/dcat#"
 
@@ -154,7 +154,7 @@ def test_add_prefix():
 
 
 def test_get_context():
-    """Test get_context()."""
+    """Test get_context() method."""
     ctx = keywords.get_context()
     assert ctx["dcat"] == "http://www.w3.org/ns/dcat#"
     assert ctx["creator"] == {"@id": "dcterms:creator", "@type": "@id"}
