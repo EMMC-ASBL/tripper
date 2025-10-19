@@ -1682,6 +1682,18 @@ The keywords following it, correspond to the keyword arguments passed to the
 <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> constructor.</p>
 <p>If an entry has a <code>password</code> keyword with the special value "KEYRING", the
 value is replaced with the password looked up using the <a href="https://pypi.org/project/keyring/">keyring</a> library.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To store the password for the "MyKB" backend in the keyring, make sure
+that you have <a href="https://pypi.org/project/keyring/">keyring</a> installed and run the following command in a
+terminal</p>
+<div class="language-text highlight"><pre><span></span><code>keyring set MyKB myname
+</code></pre></div>
+<p>Enter the password in the prompt. That's it, now you can access <code>MyKB</code>
+as if the password was hardcoded into the session.yaml file.</p>
+<p>See the <a href="https://pypi.org/project/keyring/">keyring</a> documentation for improved security by using one of
+the recommended keyring backends for your system.</p>
+</div>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>If you have started the Fuseki service (as described on <a href="https://emmc-asbl.github.io/tripper/latest/developers/">developers</a>),
 you can now do:</p>
