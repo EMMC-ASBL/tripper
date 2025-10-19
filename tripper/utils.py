@@ -124,6 +124,10 @@ class AttrDict(dict):
         s.append(" " * indent + "})")
         return "\n".join(s)
 
+    def copy(self):
+        """Return a shallow copy of self."""
+        return AttrDict(self)
+
 
 def _rec(d, other, append, cls):
     """Recursive help function for recursive_update() that returns the

@@ -1,11 +1,12 @@
-"""Utilities for manipulating dicts."""
+"""Utilities for manipulating dicts and lists."""
 
+import re
 from typing import TYPE_CHECKING, Sequence
 
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Optional, Union
+    from typing import Any, Iterable, Optional, Union
 
     MergeType = Optional[Union[str, Sequence]]
 
@@ -126,3 +127,20 @@ def get(
             else [] if value is None else [value]
         )
     return value
+
+
+def asseq(value: "Union[str, Sequence]") -> "Sequence":
+    """Returns a string or sequence as an iterable."""
+    return [value] if isinstance(value, str) else value
+
+
+def iriname(value: str) -> str:
+    """Return the name part of an IRI or CURIE.
+    If value has no ":", it is returned as-is.
+    """
+    if ":" not in value:
+        return value
+    m = re.search("[:/#]([a-zA-Z_][a-zA-Z0.9_.+-]*)$", value)
+    if not m or not m.groups():
+        raise ValueError(f"Cannot infer name of IRI: {value}")
+    return m.groups()[0]

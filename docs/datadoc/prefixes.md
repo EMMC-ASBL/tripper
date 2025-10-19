@@ -23,6 +23,7 @@ See [User-defined prefixes] for how to extend this list with additional namespac
 | schema  | https://schema.org/                                               |
 | skos    | http://www.w3.org/2004/02/skos/core#                              |
 | spdx    | http://spdx.org/rdf/terms#                                        |
+| vann    | http://purl.org/vocab/vann/                                       |
 | vcard   | http://www.w3.org/2006/vcard/ns#                                  |
 | xsd     | http://www.w3.org/2001/XMLSchema#                                 |
 | emmo    | https://w3id.org/emmo#                                            |

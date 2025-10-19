@@ -21,7 +21,7 @@ def test_get_keywords():
 
     kw1 = get_keywords()
     assert kw1.data == keywords.data
-    assert list(kw1.data.keys()) == ["prefixes", "theme", "resources"]
+    assert set(kw1.data.keys()) == {"prefixes", "theme", "resources"}
     assert kw1.keywords == keywords.keywords
     assert kw1.theme == keywords.theme
     assert kw1.data.__class__.__name__ == "AttrDict"
@@ -42,22 +42,22 @@ def test_get_keywords():
     assert kw3.keywords.__class__.__name__ == "AttrDict"
 
     kw4 = get_keywords(theme=DDOC.process)
-    assert list(kw4.data.keys()) == [
+    assert set(kw4.data.keys()) == {
         "prefixes",
         "theme",
         "resources",
         "basedOn",
-    ]
+    }
     assert kw4.data.basedOn == "ddoc:datadoc"
     assert len(kw4.keywords) > len(kw1.keywords)
 
     kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
-    assert list(kw5.data.keys()) == [
+    assert set(kw5.data.keys()) == {
         "prefixes",
         "theme",
         "resources",
         "basedOn",
-    ]
+    }
     assert kw5.data.basedOn == ["ddoc:datadoc", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
@@ -111,8 +111,57 @@ def test_save():
     ts.serialize(outdir / "default-keywords.ttl")
 
 
-if 1:
-# def test_load():
+def test_fromdicts():
+    """Test fromdicts() method."""
+    from tripper.datadoc import get_context
+
+    kw = Keywords(theme=None)
+    prefixes = get_context().get_prefixes()
+    dicts1 = [
+        {
+            "@id": "dcterms:description",
+            "@type": "http://www.w3.org/2002/07/owl#AnnotationProperty",
+            "label": "description",
+            "description": "A free-text account of the resource.",
+            "usageNote": (
+                "This property can be repeated for parallel language versions "
+                "of the description."
+            ),
+            "domain": "dcat:Resource",
+            "range": "rdf:langString",
+            "conformance": "ddoc:mandatory",
+        },
+        {
+            "@id": "dcterms:modified",
+            "@type": "owl:DataProperty",
+            "label": "modificationDate",
+            "description": (
+                "The most recent date on which the resource was changed or "
+                "modified."
+            ),
+            "domain": "dcat:Resource",
+            "range": "xsd:date",
+            "conformance": "ddoc:optional",
+        },
+        {
+            "@id": "oteio:curator",
+            "@type": "owl:ObjectProperty",
+            "domain": "dcat:Resource",
+            "range": "foaf:Agent",
+            "description": "The agent that curated the resource.",
+            "usageNote": "Use `issued` to refer to the date of curation.",
+        },
+    ]
+    kw.fromdicts(dicts1, prefixes=prefixes)
+    assert kw.data.prefixes == prefixes
+    assert "description" in kw.keywords
+    assert "modificationDate" in kw.keywords
+    assert kw.keywords.modificationDate.iri == "dcterms:modified"
+    assert kw.keywords.curator.iri == "oteio:curator"
+    assert kw.keywords.curator.range == "foaf:Agent"
+
+
+def test_load():
     """Test load() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
 
@@ -129,7 +178,7 @@ if 1:
     d2["@id"] = "dcterms:description"
     assert d1 == d2
 
-    kw = Keywords(theme=None)
+    # kw = Keywords(theme=None)
 
 
 def test_get_prefixes():

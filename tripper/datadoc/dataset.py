@@ -48,7 +48,6 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.dictutils import add, get
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     IRIExistsError,
@@ -57,6 +56,7 @@ from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKey
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
+from tripper.datadoc.utils import add, get
 from tripper.utils import (
     AttrDict,
     as_python,

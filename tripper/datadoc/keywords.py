@@ -4,6 +4,7 @@
 
 import json
 import os
+import warnings
 from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
@@ -13,13 +14,15 @@ import yaml
 
 import tripper
 from tripper import DCTERMS, DDOC, OWL, RDF, RDFS, VANN, Triplestore
-from tripper.datadoc.dictutils import add, merge
 from tripper.datadoc.errors import (
     InvalidKeywordError,
+    MissingKeywordsClassWarning,
     NoSuchTypeError,
     ParseError,
+    PrefixMismatchError,
     RedefineKeywordError,
 )
+from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
     AttrDict,
     expand_iri,
@@ -35,6 +38,20 @@ if TYPE_CHECKING:  # pragma: no cover
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
+
+
+# Pre-defined conformance levels
+CONFORMANCE_MAPS = {
+    "mandatory": "mandatory",
+    DDOC.mandatory: "mandatory",
+    "ddoc:mandatory": "mandatory",
+    "recommended": "recommended",
+    DDOC.recommended: "recommended",
+    "ddoc:recommended": "recommended",
+    "optional": "optional",
+    DDOC.optional: "optional",
+    "ddoc:optional": "optional",
+}
 
 
 @lru_cache(maxsize=32)
@@ -98,7 +115,7 @@ class Keywords:
         """
         default_prefixes = AttrDict(ddoc=str(DDOC))
         self.theme = None  # theme for this object
-        self.data = AttrDict(prefixes=default_prefixes)
+        self.data = AttrDict(prefixes=default_prefixes, resources=AttrDict())
 
         # A "view" into `self.data`. A dict mapping short, prefixed
         # and expanded keyword names to corresponding value dicts in
@@ -325,11 +342,7 @@ class Keywords:
             "description": "dcterms:description",
             "usageNote": "vann:usageNote",
         }
-        conformance_indv = {
-            "mandatory": "ddoc:mandatory",
-            "recommended": "ddoc:recommended",
-            "optional": "ddoc:optional",
-        }
+        conformance_indv = {v: k for k, v in CONFORMANCE_MAPS.items()}
         if names is None:
             names = self.keywordnames()
         if classes is None:
@@ -392,15 +405,41 @@ class Keywords:
         tripper.datadoc.acquire().
 
         """
+        data = self._fromdicts(
+            dicts,
+            prefixes=prefixes,
+            theme=theme,
+            basedOn=basedOn,
+        )
+        self._parse(data)
+
+    def _fromdicts(
+        self,
+        dicts: "Sequence[dict]",
+        prefixes: "Optional[dict]" = None,
+        theme: "Optional[str]" = None,
+        basedOn: "Optional[str]" = None,
+    ) -> dict:
+        """Help method for `fromdicts()` that returns a dict with
+        keyword definitions following the format of the YAML file.
+        """
+        # pylint: disable=too-many-locals,too-many-statements
+
+        # Prefixes (merged with self.data.prefixes)
+        p = self.get_prefixes().copy()
         if prefixes:
             for prefix, ns in prefixes.items():
-                self.add_prefix(prefix, ns)
-
-        entities = {self.expanded(d["@id"]): d for d in dicts}
+                if prefix in p and p[prefix] != ns:
+                    raise PrefixMismatchError(
+                        f"adding prefix `{prefix}: {ns}` but it is already "
+                        f"defined to '{p[prefix]}'"
+                    )
+            p.update(prefixes)
 
         def isproperty(v):
-            for t in v["@type"]:
-                exp = self.expanded(t)
+            types = [v["@type"]] if isinstance(v["@type"], str) else v["@type"]
+            for t in types:
+                exp = expand_iri(t, p)
                 if exp in (
                     OWL.AnnotationProperty,
                     OWL.ObjectProperty,
@@ -409,10 +448,18 @@ class Keywords:
                     return True
             return False
 
+        entities = {expand_iri(d["@id"], p): d for d in dicts}
         properties = {k: v for k, v in entities.items() if isproperty(v)}
         classes = {k: v for k, v in entities.items() if k not in properties}
 
-        resources = {}
+        data = AttrDict()
+        if theme:
+            data.theme = theme
+        if basedOn:
+            data.basedOn = basedOn
+        data.prefixes = p
+        data.resources = AttrDict()
+        resources = data.resources
 
         # Add classes
         clsmaps = {
@@ -432,23 +479,48 @@ class Keywords:
             resources[self.keywordname(k)] = d
 
         # Add properties
-        for k, v in properties.items():
-            pass
-        #        d = AttrDict()
-        #        for dct in dicts:
-        #            v = AttrDict(dct)
-        #            d.iri = v["@id"]
-        #            d.type = v["@type"]
-        #            if "subPropertyOf" in v:
-        #                d.subPropertyOf = v.subPropertyOf
-
-        # Create data dict
-        data = AttrDict()
-        if theme:
-            data.theme = theme
-        if basedOn:
-            data.basedOn = basedOn
-        data.resources = resources
+        for propname, value in properties.items():
+            name = iriname(propname)
+            label = value["label"] if "label" in value else name
+            d = AttrDict(iri=value["@id"])
+            if "@type" in value:
+                d.type = prefix_iri(value["@type"], p)
+            if "domain" in value:
+                for domain in asseq(value["domain"]):
+                    domainname = iriname(domain)
+                    if domainname not in resources:
+                        if domainname not in self.data.resources:
+                            warnings.warn(
+                                "Adding undefined domain for keyword "
+                                f"'{label}': {domain}",
+                                MissingKeywordsClassWarning,
+                            )
+                            r = AttrDict(
+                                iri=prefix_iri(domain, self.data.prefixes),
+                                keywords=AttrDict(),
+                            )
+                        else:
+                            r = self.data.resources[domainname].copy()
+                        resources[domainname] = r
+                        r.keywords[label] = d
+                    else:
+                        resources[domainname].keywords[label] = d
+            if "range" in value:
+                _types = asseq(d.get("type", OWL.AnnotationProperty))
+                types = [expand_iri(t, p) for t in _types]
+                if OWL.ObjectProperty in types:
+                    d.range = value["range"]
+                else:
+                    d.range = "rdfs:Literal"
+                    d.datatype = value["range"]
+            if "conformance" in value:
+                d.conformance = CONFORMANCE_MAPS[value["conformance"]]
+            for k, v in value.items():
+                if (
+                    k not in ("@id", "@type", "domain", "label", "name")
+                    and k not in d
+                ):
+                    d[k] = v
 
         return data
 
