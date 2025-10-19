@@ -1,6 +1,6 @@
 """Parse keywords definition and generate context."""
 
-# pylint: disable=too-many-branches,redefined-builtin
+# pylint: disable=too-many-branches,redefined-builtin,too-many-lines
 
 import json
 import os
@@ -530,7 +530,7 @@ class Keywords:
         """Return a list with the names of keywords in this instance that are
         not defined in triplestore `ts`.
 
-        If `include_existing`, two lists are returned, both keywords
+        If `include_existing` is true, two lists are returned, both keywords
         missing from and existing in `ts`.
         """
         expanded = {k for k in self.keywords.keys() if "://" in k}
@@ -562,6 +562,14 @@ class Keywords:
 
         dicts = self.asdicts(missing)
         return store(ts, dicts)
+
+    # def load(
+    #     self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+    # ) -> None:
+    #     """Populate this Keyword object from a triplestore.
+    #
+    #     If `iris` is given, only the provided IRIs will be added.
+    #     """
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""

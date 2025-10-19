@@ -332,7 +332,7 @@ def test_typename():
 # if 1:
 def test_load2():
     """Test load() method."""
-    from dataset_paths import ontodir
+    from dataset_paths import ontodir  # pylint: disable=import-error
 
     from tripper import Triplestore
     from tripper.datadoc import acquire, store
