@@ -11,12 +11,13 @@ from pyld import jsonld
 
 from tripper import RDF, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
-from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
 from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
+
+    from tripper.datadoc.keywords import Keywords
 
     # Possible types for a JSON-LD context
     ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
@@ -54,6 +55,9 @@ def get_context(
     Returns:
         Context object.
     """
+    # pylint: disable=import-outside-toplevel
+    from tripper.datadoc.keywords import Keywords
+
     if isinstance(context, Context):
         if copy:
             context = context.copy()
@@ -102,6 +106,9 @@ class Context:
             timeout: Timeout when accessing remote files.
 
         """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.keywords import Keywords
+
         self.ld = jsonld.JsonLdProcessor()
         self.ctx = self.ld._get_initial_context(
             options={"processingMode": processingMode}

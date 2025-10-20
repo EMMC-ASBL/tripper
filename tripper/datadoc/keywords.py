@@ -549,6 +549,49 @@ class Keywords:
             return missing_names, existing_names
         return missing_names
 
+    def _loaddicts(
+        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+    ) -> "Sequence[dict]":
+        """Load given iris from triplestore `ts`.
+
+        If `iris` is not given, all OWL properties will be loaded.
+        """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.dataset import acquire
+
+        if iris is None:
+            query = """
+            PREFIX owl: <http://www.w3.org/2002/07/owl#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            SELECT ?s WHERE {
+              VALUES ?o {
+                owl:DataProperty owl:ObjectProperty owl:AnnotationProperty
+              }
+              ?s a ?o .
+            }
+            """
+            iris = [iri[0] for iri in ts.query(query)]
+
+        p = ts.namespaces
+        dicts = [acquire(ts, iri) for iri in iris]
+        dct = {expand_iri(d["iri"], p): d for d in dicts}
+
+        # Add domain and range to dicts
+        for d in dct.values():
+            if "domain" in d:
+                for domain in asseq(d["domain"]):
+                    expanded = expand_iri(domain, p)
+                    if expanded not in dct:
+                        dct[expanded] = d
+            if "range" in d:
+                for range_ in asseq(d["range"]):
+                    expanded = expand_iri(range_, p)
+                    if expanded not in dct:
+                        dct[expanded] = d
+
+        newdicts = list(dct.values())
+        return newdicts
+
     def save(self, ts: "Triplestore") -> dict:
         """Save to triplestore."""
         # pylint: disable=import-outside-toplevel,cyclic-import
@@ -563,13 +606,15 @@ class Keywords:
         dicts = self.asdicts(missing)
         return store(ts, dicts)
 
-    # def load(
-    #     self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
-    # ) -> None:
-    #     """Populate this Keyword object from a triplestore.
-    #
-    #     If `iris` is given, only the provided IRIs will be added.
-    #     """
+    def load(
+        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+    ) -> None:
+        """Populate this Keyword object from a triplestore.
+
+        If `iris` is given, only the provided IRIs will be added.
+        """
+        dicts = self._loaddicts(ts, iris)
+        self.fromdicts(dicts, prefixes=ts.namespaces)
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""

@@ -140,7 +140,7 @@ def iriname(value: str) -> str:
     """
     if ":" not in value:
         return value
-    m = re.search("[:/#]([a-zA-Z_][a-zA-Z0.9_.+-]*)$", value)
+    m = re.search("[:/#]([a-zA-Z_][a-zA-Z0-9_.+-]*)$", value)
     if not m or not m.groups():
         raise ValueError(f"Cannot infer name of IRI: {value}")
     return m.groups()[0]
