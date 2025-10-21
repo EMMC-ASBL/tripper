@@ -387,9 +387,20 @@ class SPARQLQuery:
         FILTER expressions are used to restrict the solutions based on boolean
         conditions. The condition can use SPARQL built-in functions and operators.
 
+        ⚠️  SECURITY WARNING: This method accepts raw SPARQL expressions without
+        validation. Never pass unsanitized user input directly to this method, as
+        it can enable SPARQL injection attacks that could allow unauthorized data
+        access, modification, or deletion.
+
+        For user-provided values, use the safe alternatives:
+        - filter_equals() - for equality comparisons
+        - filter_regex() - for pattern matching (properly escapes patterns)
+        - Build filter expressions programmatically using validated variables
+
         Args:
             condition (str): A SPARQL filter expression (e.g., '?age > 18',
                 'BOUND(?email)', 'REGEX(?name, "^A")').
+                ⚠️  Must be from a trusted source, not user input.
 
         Returns:
             SPARQLQuery: Amended query instance to allow method chaining.
@@ -399,6 +410,14 @@ class SPARQLQuery:
             WHERE {
                 FILTER (?age > 18)
             }
+
+        Warning:
+            # UNSAFE - vulnerable to injection:
+            >>> user_input = "?age > 18) } DELETE { ?s ?p ?o } WHERE { (?x"
+            >>> query.filter(user_input)  #危険 DANGER! Query structure compromised
+
+            # SAFE - use validated methods:
+            >>> query.filter_equals('?age', 18)  # ✓ Safe
         """
         self._context_stack[-1].append(FilterElement(condition))
         return self
@@ -614,9 +633,18 @@ class SPARQLQuery:
         HAVING is used with GROUP BY to filter groups based on aggregate conditions.
         Multiple HAVING conditions are combined with AND.
 
+        ⚠️  SECURITY WARNING: This method accepts raw SPARQL expressions without
+        validation. Never pass unsanitized user input directly to this method, as
+        it can enable SPARQL injection attacks that could allow unauthorized data
+        access, modification, or deletion.
+
+        Only use this method with trusted, hardcoded expressions or expressions
+        built from validated components.
+
         Args:
             condition (str): A SPARQL expression to filter groups
                 (e.g., 'COUNT(?item) > 5', 'AVG(?price) < 100').
+                ⚠️  Must be from a trusted source, not user input.
 
         Returns:
             SPARQLQuery: Amended query instance to allow method chaining.
@@ -625,6 +653,16 @@ class SPARQLQuery:
             >>> query.group_by('category').having('COUNT(?item) > 10')
             GROUP BY ?category
             HAVING (COUNT(?item) > 10)
+
+        Warning:
+            # UNSAFE - vulnerable to injection:
+            >>> user_input = "COUNT(?item) > 5) } INSERT { ?x ?y ?z } WHERE { (1=1"
+            >>> query.having(user_input)  # 危険 DANGER! Query structure compromised
+
+            # SAFE - construct from validated variables:
+            >>> validated_threshold = int(user_provided_number)
+            >>> validated_var = validate_variable(user_provided_var)
+            >>> query.having(f'COUNT({validated_var}) > {validated_threshold}')  # ✓ Safe
         """
         self._having_conditions.append(condition)
         return self
