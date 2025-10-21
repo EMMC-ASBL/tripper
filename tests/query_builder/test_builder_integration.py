@@ -25,12 +25,8 @@ class TestBasicSelectIntegration:
         # Verify we get the expected results
         assert len(results) == 3  # Alice, Bob, and Charlie
 
-        # Extract names from results (assuming results is list of tuples/dicts)
-        if results and isinstance(results[0], dict):
-            names = {result["name"] for result in results}
-        else:
-            # Assuming results is list of tuples
-            names = {result[1] for result in results}
+        # Extract names from results (rdflib returns list of tuples)
+        names = {result[1] for result in results}
 
         expected_names = {"Alice", "Bob", "Charlie"}
         assert names == expected_names
@@ -51,10 +47,7 @@ class TestBasicSelectIntegration:
         # Should get 3 unique institutions (university1, university2, institute1)
         assert len(results) == 3
 
-        if results and isinstance(results[0], dict):
-            institutions = {result["institution"] for result in results}
-        else:
-            institutions = {result[0] for result in results}
+        institutions = {result[0] for result in results}
 
         expected_institutions = {
             "http://example.org/university1",
@@ -81,10 +74,7 @@ class TestBasicSelectIntegration:
         # Should get Alice (at university1)
         assert len(results) == 1
 
-        if results and isinstance(results[0], dict):
-            names = {result["name"] for result in results}
-        else:
-            names = {result[1] for result in results}
+        names = {result[1] for result in results}
 
         expected_names = {"Alice"}
         assert names == expected_names
@@ -115,15 +105,7 @@ class TestOptionalIntegration:
         assert len(results) == 3
 
         # Check that some have emails and some don't
-        email_count = 0
-        if results and isinstance(results[0], dict):
-            for result in results:
-                if result.get("email"):
-                    email_count += 1
-        else:
-            for result in results:
-                if len(result) > 2 and result[2]:  # Third column is email
-                    email_count += 1
+        email_count = sum(1 for result in results if len(result) > 2 and result[2])
 
         # Based on our test data, some researchers should have emails
         assert email_count >= 1
@@ -153,10 +135,7 @@ class TestOptionalIntegration:
         assert len(results) == 3
 
         # All should have names
-        if results and isinstance(results[0], dict):
-            names = {result["name"] for result in results}
-        else:
-            names = {result[1] for result in results}
+        names = {result[1] for result in results}
 
         expected_names = {"Alice", "Bob", "Charlie"}
         assert names == expected_names
@@ -189,10 +168,7 @@ class TestUnionIntegration:
         # Should get researchers + journals
         assert len(results) >= 3  # At least the 3 researchers
 
-        if results and isinstance(results[0], dict):
-            names = {result["name"] for result in results}
-        else:
-            names = {result[1] for result in results}
+        names = {result[1] for result in results}
 
         # Should include all researcher names
         researcher_names = {"Alice", "Bob", "Charlie"}
@@ -220,10 +196,7 @@ class TestFilterIntegration:
         # Should get only Alice
         assert len(results) == 1
 
-        if results and isinstance(results[0], dict):
-            name = results[0]["name"]
-        else:
-            name = results[0][1]
+        name = results[0][1]
 
         assert name == "Alice"
 
@@ -245,10 +218,7 @@ class TestFilterIntegration:
         # Should get only Bob
         assert len(results) == 1
 
-        if results and isinstance(results[0], dict):
-            name = results[0]["name"]
-        else:
-            name = results[0][1]
+        name = results[0][1]
 
         assert name == "Bob"
 
@@ -274,10 +244,7 @@ class TestQueryModifiersIntegration:
         # Should get all 3 researchers in alphabetical order
         assert len(results) == 3
 
-        if results and isinstance(results[0], dict):
-            names = [result["name"] for result in results]
-        else:
-            names = [result[1] for result in results]
+        names = [result[1] for result in results]
 
         # Should be in alphabetical order
         expected_order = ["Alice", "Bob", "Charlie"]
@@ -302,10 +269,7 @@ class TestQueryModifiersIntegration:
         # Should get only 2 researchers
         assert len(results) == 2
 
-        if results and isinstance(results[0], dict):
-            names = [result["name"] for result in results]
-        else:
-            names = [result[1] for result in results]
+        names = [result[1] for result in results]
 
         # Should be first 2 in alphabetical order
         expected_names = ["Alice", "Bob"]
@@ -331,10 +295,7 @@ class TestQueryModifiersIntegration:
         # Should get 2 researchers starting from second
         assert len(results) == 2
 
-        if results and isinstance(results[0], dict):
-            names = [result["name"] for result in results]
-        else:
-            names = [result[1] for result in results]
+        names = [result[1] for result in results]
 
         # Should be Bob and Charlie
         expected_names = ["Bob", "Charlie"]
@@ -367,12 +328,8 @@ class TestComplexIntegration:
         # Should get all 3 researchers
         assert len(results) == 3
 
-        if results and isinstance(results[0], dict):
-            names = [result["name"] for result in results]
-            institutions = [result["institution"] for result in results]
-        else:
-            names = [result[1] for result in results]
-            institutions = [result[2] for result in results]
+        names = [result[1] for result in results]
+        institutions = [result[2] for result in results]
 
         # Should be ordered by name
         expected_names = ["Alice", "Bob", "Charlie"]
@@ -449,12 +406,7 @@ class TestAggregationIntegration:
 
         # Should have 4 papers total
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            count = int(results[0]["totalPapers"])
-        else:
-            count = int(results[0][0])
-        
+        count = int(results[0][0])
         assert count == 4
 
     def test_count_by_group_execution(self, in_memory_store):
@@ -477,12 +429,8 @@ class TestAggregationIntegration:
 
         # Should have 3 authors
         assert len(results) == 3
-        
-        if isinstance(results[0], dict):
-            counts = [int(r["paperCount"]) for r in results]
-        else:
-            counts = [int(r[1]) for r in results]
-        
+        counts = [int(r[1]) for r in results]
+
         # Alice has 2 papers, Bob has 1, Charlie has 1
         assert 2 in counts  # Alice's count
         assert counts.count(1) == 2  # Bob and Charlie
@@ -503,12 +451,7 @@ class TestAggregationIntegration:
 
         # Should have 2 distinct fields (QuantumPhysics, MaterialsScience)
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            count = int(results[0]["fieldCount"])
-        else:
-            count = int(results[0][0])
-        
+        count = int(results[0][0])
         assert count == 2
 
     def test_sum_execution(self, in_memory_store):
@@ -528,12 +471,7 @@ class TestAggregationIntegration:
 
         # Should have total citations: 150 + 89 + 203 + 95 = 537
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            total = int(results[0]["totalCitations"])
-        else:
-            total = int(results[0][0])
-        
+        total = int(results[0][0])
         assert total == 537
 
     def test_sum_by_group_execution(self, in_memory_store):
@@ -556,12 +494,8 @@ class TestAggregationIntegration:
 
         # Should have 2 fields
         assert len(results) == 2
-        
-        if isinstance(results[0], dict):
-            citation_totals = {r["field"]: int(r["totalCitations"]) for r in results}
-        else:
-            citation_totals = {r[0]: int(r[1]) for r in results}
-        
+        citation_totals = {r[0]: int(r[1]) for r in results}
+
         # MaterialsScience: 203, QuantumPhysics: 150 + 89 + 95 = 334
         assert any(total == 203 for total in citation_totals.values())
         assert any(total == 334 for total in citation_totals.values())
@@ -583,12 +517,7 @@ class TestAggregationIntegration:
 
         # Average: (150 + 89 + 203 + 95) / 4 = 134.25
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            avg = float(results[0]["avgCitations"])
-        else:
-            avg = float(results[0][0])
-        
+        avg = float(results[0][0])
         assert abs(avg - 134.25) < 0.01
 
     def test_min_execution(self, in_memory_store):
@@ -608,12 +537,7 @@ class TestAggregationIntegration:
 
         # Minimum is 89
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            min_val = int(results[0]["minCitations"])
-        else:
-            min_val = int(results[0][0])
-        
+        min_val = int(results[0][0])
         assert min_val == 89
 
     def test_max_execution(self, in_memory_store):
@@ -633,12 +557,7 @@ class TestAggregationIntegration:
 
         # Maximum is 203
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            max_val = int(results[0]["maxCitations"])
-        else:
-            max_val = int(results[0][0])
-        
+        max_val = int(results[0][0])
         assert max_val == 203
 
     def test_min_max_by_group(self, in_memory_store):
@@ -662,20 +581,14 @@ class TestAggregationIntegration:
 
         # Should have 2 journals
         assert len(results) == 2
-        
+
         # Journal1 has papers with citations: 150, 89, 95 (min=89, max=150)
         # Journal2 has papers with citations: 203 (min=203, max=203)
-        if isinstance(results[0], dict):
-            for r in results:
-                min_val = int(r["minCitations"])
-                max_val = int(r["maxCitations"])
-                # Each journal should have valid min/max
-                assert min_val <= max_val
-        else:
-            for r in results:
-                min_val = int(r[1])
-                max_val = int(r[2])
-                assert min_val <= max_val
+        for r in results:
+            min_val = int(r[1])
+            max_val = int(r[2])
+            # Each journal should have valid min/max
+            assert min_val <= max_val
 
     def test_sample_execution(self, in_memory_store):
         """Test SAMPLE aggregation."""
@@ -695,12 +608,8 @@ class TestAggregationIntegration:
 
         # Should have 2 fields, each with a sample paper
         assert len(results) == 2
-        
-        if isinstance(results[0], dict):
-            samples = [r["samplePaper"] for r in results]
-        else:
-            samples = [r[1] for r in results]
-        
+        samples = [r[1] for r in results]
+
         # Each sample should be a paper URI
         assert all(sample for sample in samples)
 
@@ -724,12 +633,8 @@ class TestAggregationIntegration:
 
         # Should have 3 authors
         assert len(results) == 3
-        
-        if isinstance(results[0], dict):
-            title_strings = [r["titles"] for r in results]
-        else:
-            title_strings = [r[1] for r in results]
-        
+        title_strings = [r[1] for r in results]
+
         # Alice should have 2 titles concatenated
         alice_titles = [t for t in title_strings if "Quantum" in t and " " in t]
         assert len(alice_titles) >= 1  # Alice has 2 papers
@@ -753,12 +658,8 @@ class TestAggregationIntegration:
 
         # Should have 2 specializations
         assert len(results) == 2
-        
-        if isinstance(results[0], dict):
-            name_strings = [r["names"] for r in results]
-        else:
-            name_strings = [r[1] for r in results]
-        
+        name_strings = [r[1] for r in results]
+
         # QuantumPhysics should have Alice and Charlie
         quantum_names = [n for n in name_strings if ", " in n or ("Alice" in n and "Charlie" in n)]
         assert len(quantum_names) >= 1
@@ -787,29 +688,18 @@ class TestAggregationIntegration:
 
         # Should have 2 fields with complete statistics
         assert len(results) == 2
-        
-        if isinstance(results[0], dict):
-            for r in results:
-                count = int(r["paperCount"])
-                total = int(r["totalCitations"])
-                avg = float(r["avgCitations"])
-                min_val = int(r["minCitations"])
-                max_val = int(r["maxCitations"])
-                
-                # Validate aggregation relationships
-                assert count > 0
-                assert min_val <= avg <= max_val
-                assert total >= min_val
-        else:
-            for r in results:
-                count = int(r[1])
-                total = int(r[2])
-                avg = float(r[3])
-                min_val = int(r[4])
-                max_val = int(r[5])
-                
-                assert count > 0
-                assert min_val <= avg <= max_val
+
+        for r in results:
+            count = int(r[1])
+            total = int(r[2])
+            avg = float(r[3])
+            min_val = int(r[4])
+            max_val = int(r[5])
+
+            # Validate aggregation relationships
+            assert count > 0
+            assert min_val <= avg <= max_val
+            assert total >= min_val
 
     def test_aggregation_with_having(self, in_memory_store):
         """Test aggregation with HAVING clause."""
@@ -830,12 +720,7 @@ class TestAggregationIntegration:
 
         # Only QuantumPhysics has more than 1 paper (has 3)
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            count = int(results[0]["paperCount"])
-        else:
-            count = int(results[0][1])
-        
+        count = int(results[0][1])
         assert count == 3
 
     def test_aggregation_with_filter(self, in_memory_store):
@@ -857,12 +742,7 @@ class TestAggregationIntegration:
 
         # Papers in 2024: paper2 (89), paper4 (95) -> avg = 92
         assert len(results) == 1
-        
-        if isinstance(results[0], dict):
-            avg = float(results[0]["avgCitations"])
-        else:
-            avg = float(results[0][0])
-        
+        avg = float(results[0][0])
         assert abs(avg - 92.0) < 0.01
 
     def test_aggregation_with_order_by(self, in_memory_store):
@@ -884,12 +764,8 @@ class TestAggregationIntegration:
 
         # Should have 3 authors
         assert len(results) == 3
-        
-        if isinstance(results[0], dict):
-            counts = [int(r["paperCount"]) for r in results]
-        else:
-            counts = [int(r[1]) for r in results]
-        
+        counts = [int(r[1]) for r in results]
+
         # Should be in descending order
         assert counts == sorted(counts, reverse=True)
         # Alice (2 papers) should be first

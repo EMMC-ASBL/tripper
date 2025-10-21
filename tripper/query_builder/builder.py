@@ -265,7 +265,7 @@ class SPARQLQuery:
         return self
 
     def select_group_concat(self, variable: str, alias: str,
-                           separator: str = " ") -> 'SPARQLQuery':
+                            separator: str = " ") -> 'SPARQLQuery':
         """Add GROUP_CONCAT aggregation to SELECT clause.
 
         Use with GROUP BY to concatenate values into a single string per group.
