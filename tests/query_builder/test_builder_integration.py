@@ -1,6 +1,7 @@
 """Tests for builder integration with triplestore."""
 
 from tripper.query_builder import select, select_distinct
+from tripper.query_builder.builder import SPARQLQuery
 
 
 class TestBasicSelectIntegration:
@@ -427,3 +428,469 @@ class TestComplexIntegration:
         # Should get some results
         assert len(results) >= 0
         assert isinstance(results, list)
+
+
+class TestAggregationIntegration:
+    """Test aggregation function execution."""
+
+    def test_count_all_execution(self, in_memory_store):
+        """Test COUNT(*) aggregation."""
+        ts = in_memory_store
+
+        # Count all papers
+        query = (
+            SPARQLQuery()
+            .select_count("*", "?totalPapers")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 4 papers total
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            count = int(results[0]["totalPapers"])
+        else:
+            count = int(results[0][0])
+        
+        assert count == 4
+
+    def test_count_by_group_execution(self, in_memory_store):
+        """Test COUNT with GROUP BY."""
+        ts = in_memory_store
+
+        # Count papers per author
+        query = (
+            SPARQLQuery()
+            .select("?author")
+            .select_count("?paper", "?paperCount")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+            .where("?paper", "ex:author", "?author")
+            .group_by("?author")
+            .order_by("?author")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 3 authors
+        assert len(results) == 3
+        
+        if isinstance(results[0], dict):
+            counts = [int(r["paperCount"]) for r in results]
+        else:
+            counts = [int(r[1]) for r in results]
+        
+        # Alice has 2 papers, Bob has 1, Charlie has 1
+        assert 2 in counts  # Alice's count
+        assert counts.count(1) == 2  # Bob and Charlie
+
+    def test_count_distinct_execution(self, in_memory_store):
+        """Test COUNT DISTINCT aggregation."""
+        ts = in_memory_store
+
+        # Count distinct fields of papers
+        query = (
+            SPARQLQuery()
+            .select_count("?field", "?fieldCount", distinct=True)
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:field", "?field")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 2 distinct fields (QuantumPhysics, MaterialsScience)
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            count = int(results[0]["fieldCount"])
+        else:
+            count = int(results[0][0])
+        
+        assert count == 2
+
+    def test_sum_execution(self, in_memory_store):
+        """Test SUM aggregation."""
+        ts = in_memory_store
+
+        # Sum all citation counts
+        query = (
+            SPARQLQuery()
+            .select_sum("?citations", "?totalCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+            .where("?paper", "ex:citationCount", "?citations")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have total citations: 150 + 89 + 203 + 95 = 537
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            total = int(results[0]["totalCitations"])
+        else:
+            total = int(results[0][0])
+        
+        assert total == 537
+
+    def test_sum_by_group_execution(self, in_memory_store):
+        """Test SUM with GROUP BY."""
+        ts = in_memory_store
+
+        # Sum citations per field
+        query = (
+            SPARQLQuery()
+            .select("?field")
+            .select_sum("?citations", "?totalCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:field", "?field")
+            .where("?paper", "ex:citationCount", "?citations")
+            .group_by("?field")
+            .order_by("?field")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 2 fields
+        assert len(results) == 2
+        
+        if isinstance(results[0], dict):
+            citation_totals = {r["field"]: int(r["totalCitations"]) for r in results}
+        else:
+            citation_totals = {r[0]: int(r[1]) for r in results}
+        
+        # MaterialsScience: 203, QuantumPhysics: 150 + 89 + 95 = 334
+        assert any(total == 203 for total in citation_totals.values())
+        assert any(total == 334 for total in citation_totals.values())
+
+    def test_avg_execution(self, in_memory_store):
+        """Test AVG aggregation."""
+        ts = in_memory_store
+
+        # Average citation count
+        query = (
+            SPARQLQuery()
+            .select_avg("?citations", "?avgCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+            .where("?paper", "ex:citationCount", "?citations")
+        )
+
+        results = ts.query(query.build())
+
+        # Average: (150 + 89 + 203 + 95) / 4 = 134.25
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            avg = float(results[0]["avgCitations"])
+        else:
+            avg = float(results[0][0])
+        
+        assert abs(avg - 134.25) < 0.01
+
+    def test_min_execution(self, in_memory_store):
+        """Test MIN aggregation."""
+        ts = in_memory_store
+
+        # Minimum citation count
+        query = (
+            SPARQLQuery()
+            .select_min("?citations", "?minCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+            .where("?paper", "ex:citationCount", "?citations")
+        )
+
+        results = ts.query(query.build())
+
+        # Minimum is 89
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            min_val = int(results[0]["minCitations"])
+        else:
+            min_val = int(results[0][0])
+        
+        assert min_val == 89
+
+    def test_max_execution(self, in_memory_store):
+        """Test MAX aggregation."""
+        ts = in_memory_store
+
+        # Maximum citation count
+        query = (
+            SPARQLQuery()
+            .select_max("?citations", "?maxCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+            .where("?paper", "ex:citationCount", "?citations")
+        )
+
+        results = ts.query(query.build())
+
+        # Maximum is 203
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            max_val = int(results[0]["maxCitations"])
+        else:
+            max_val = int(results[0][0])
+        
+        assert max_val == 203
+
+    def test_min_max_by_group(self, in_memory_store):
+        """Test MIN and MAX with GROUP BY."""
+        ts = in_memory_store
+
+        # Min and max citations per journal
+        query = (
+            SPARQLQuery()
+            .select("?journal")
+            .select_min("?citations", "?minCitations")
+            .select_max("?citations", "?maxCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:publishedIn", "?journal")
+            .where("?paper", "ex:citationCount", "?citations")
+            .group_by("?journal")
+            .order_by("?journal")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 2 journals
+        assert len(results) == 2
+        
+        # Journal1 has papers with citations: 150, 89, 95 (min=89, max=150)
+        # Journal2 has papers with citations: 203 (min=203, max=203)
+        if isinstance(results[0], dict):
+            for r in results:
+                min_val = int(r["minCitations"])
+                max_val = int(r["maxCitations"])
+                # Each journal should have valid min/max
+                assert min_val <= max_val
+        else:
+            for r in results:
+                min_val = int(r[1])
+                max_val = int(r[2])
+                assert min_val <= max_val
+
+    def test_sample_execution(self, in_memory_store):
+        """Test SAMPLE aggregation."""
+        ts = in_memory_store
+
+        # Sample one paper per field
+        query = (
+            SPARQLQuery()
+            .select("?field")
+            .select_sample("?paper", "?samplePaper")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:field", "?field")
+            .group_by("?field")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 2 fields, each with a sample paper
+        assert len(results) == 2
+        
+        if isinstance(results[0], dict):
+            samples = [r["samplePaper"] for r in results]
+        else:
+            samples = [r[1] for r in results]
+        
+        # Each sample should be a paper URI
+        assert all(sample for sample in samples)
+
+    def test_group_concat_default_separator(self, in_memory_store):
+        """Test GROUP_CONCAT with default separator."""
+        ts = in_memory_store
+
+        # Concatenate paper titles per author
+        query = (
+            SPARQLQuery()
+            .select("?author")
+            .select_group_concat("?title", "?titles")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:author", "?author")
+            .where("?paper", "ex:title", "?title")
+            .group_by("?author")
+            .order_by("?author")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 3 authors
+        assert len(results) == 3
+        
+        if isinstance(results[0], dict):
+            title_strings = [r["titles"] for r in results]
+        else:
+            title_strings = [r[1] for r in results]
+        
+        # Alice should have 2 titles concatenated
+        alice_titles = [t for t in title_strings if "Quantum" in t and " " in t]
+        assert len(alice_titles) >= 1  # Alice has 2 papers
+
+    def test_group_concat_custom_separator(self, in_memory_store):
+        """Test GROUP_CONCAT with custom separator."""
+        ts = in_memory_store
+
+        # Concatenate researcher names per specialization with comma separator
+        query = (
+            SPARQLQuery()
+            .select("?specialization")
+            .select_group_concat("?name", "?names", separator=", ")
+            .prefix("ex", "http://example.org/")
+            .where("?researcher", "ex:specialization", "?specialization")
+            .where("?researcher", "foaf:name", "?name")
+            .group_by("?specialization")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 2 specializations
+        assert len(results) == 2
+        
+        if isinstance(results[0], dict):
+            name_strings = [r["names"] for r in results]
+        else:
+            name_strings = [r[1] for r in results]
+        
+        # QuantumPhysics should have Alice and Charlie
+        quantum_names = [n for n in name_strings if ", " in n or ("Alice" in n and "Charlie" in n)]
+        assert len(quantum_names) >= 1
+
+    def test_multiple_aggregations_execution(self, in_memory_store):
+        """Test query with multiple aggregation functions."""
+        ts = in_memory_store
+
+        # Multiple statistics per field
+        query = (
+            SPARQLQuery()
+            .select("?field")
+            .select_count("?paper", "?paperCount")
+            .select_sum("?citations", "?totalCitations")
+            .select_avg("?citations", "?avgCitations")
+            .select_min("?citations", "?minCitations")
+            .select_max("?citations", "?maxCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:field", "?field")
+            .where("?paper", "ex:citationCount", "?citations")
+            .group_by("?field")
+            .order_by("?field")
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 2 fields with complete statistics
+        assert len(results) == 2
+        
+        if isinstance(results[0], dict):
+            for r in results:
+                count = int(r["paperCount"])
+                total = int(r["totalCitations"])
+                avg = float(r["avgCitations"])
+                min_val = int(r["minCitations"])
+                max_val = int(r["maxCitations"])
+                
+                # Validate aggregation relationships
+                assert count > 0
+                assert min_val <= avg <= max_val
+                assert total >= min_val
+        else:
+            for r in results:
+                count = int(r[1])
+                total = int(r[2])
+                avg = float(r[3])
+                min_val = int(r[4])
+                max_val = int(r[5])
+                
+                assert count > 0
+                assert min_val <= avg <= max_val
+
+    def test_aggregation_with_having(self, in_memory_store):
+        """Test aggregation with HAVING clause."""
+        ts = in_memory_store
+
+        # Find fields with more than 1 paper
+        query = (
+            SPARQLQuery()
+            .select("?field")
+            .select_count("?paper", "?paperCount")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:field", "?field")
+            .group_by("?field")
+            .having("COUNT(?paper) > 1")
+        )
+
+        results = ts.query(query.build())
+
+        # Only QuantumPhysics has more than 1 paper (has 3)
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            count = int(results[0]["paperCount"])
+        else:
+            count = int(results[0][1])
+        
+        assert count == 3
+
+    def test_aggregation_with_filter(self, in_memory_store):
+        """Test aggregation with FILTER clause."""
+        ts = in_memory_store
+
+        # Average citations for papers published in 2024
+        query = (
+            SPARQLQuery()
+            .select_avg("?citations", "?avgCitations")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "a", "ex:ResearchPaper")
+            .where("?paper", "ex:citationCount", "?citations")
+            .where("?paper", "ex:publishedYear", "?year")
+            .filter("?year = 2024")
+        )
+
+        results = ts.query(query.build())
+
+        # Papers in 2024: paper2 (89), paper4 (95) -> avg = 92
+        assert len(results) == 1
+        
+        if isinstance(results[0], dict):
+            avg = float(results[0]["avgCitations"])
+        else:
+            avg = float(results[0][0])
+        
+        assert abs(avg - 92.0) < 0.01
+
+    def test_aggregation_with_order_by(self, in_memory_store):
+        """Test aggregation results ordered by aggregate value."""
+        ts = in_memory_store
+
+        # Authors ordered by paper count
+        query = (
+            SPARQLQuery()
+            .select("?author")
+            .select_count("?paper", "?paperCount")
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:author", "?author")
+            .group_by("?author")
+            .order_by("?paperCount", descending=True)
+        )
+
+        results = ts.query(query.build())
+
+        # Should have 3 authors
+        assert len(results) == 3
+        
+        if isinstance(results[0], dict):
+            counts = [int(r["paperCount"]) for r in results]
+        else:
+            counts = [int(r[1]) for r in results]
+        
+        # Should be in descending order
+        assert counts == sorted(counts, reverse=True)
+        # Alice (2 papers) should be first
+        assert counts[0] == 2

@@ -1,6 +1,7 @@
 """Tests for builder string generation."""
 
 from tripper.query_builder import select, select_distinct, select_reduced
+from tripper.query_builder.builder import SPARQLQuery
 
 
 class TestBasicSelectQueries:
@@ -837,6 +838,415 @@ class TestQueryModifiers:
             "HAVING (COUNT(?researcher) >= 3)",
             "ORDER BY ?department",
             "LIMIT 5"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+
+class TestAggregationFunctions:
+    """Test aggregation function query generation."""
+
+    def test_select_count_with_variable(self):
+        """Test COUNT aggregation with variable."""
+        query = (
+            SPARQLQuery()
+            .select_count("?item", "?count")
+            .prefix("ex", "http://example.org/")
+            .where("?item", "a", "ex:Product")
+            .where("?item", "ex:category", "?category")
+            .group_by("?category")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (COUNT(?item) AS ?count)",
+            "WHERE {",
+            "  ?item a ex:Product .",
+            "  ?item ex:category ?category .",
+            "}",
+            "GROUP BY ?category"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_count_with_wildcard(self):
+        """Test COUNT(*) aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_count("*", "?total")
+            .prefix("ex", "http://example.org/")
+            .where("?person", "a", "ex:Person")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (COUNT(*) AS ?total)",
+            "WHERE {",
+            "  ?person a ex:Person .",
+            "}"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_count_distinct(self):
+        """Test COUNT DISTINCT aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_count("?author", "?uniqueAuthors", distinct=True)
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:author", "?author")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (COUNT(DISTINCT ?author) AS ?uniqueAuthors)",
+            "WHERE {",
+            "  ?paper ex:author ?author .",
+            "}"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_sum(self):
+        """Test SUM aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_sum("?price", "?totalPrice")
+            .prefix("ex", "http://example.org/")
+            .where("?item", "ex:price", "?price")
+            .where("?item", "ex:category", "?category")
+            .group_by("?category")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (SUM(?price) AS ?totalPrice)",
+            "WHERE {",
+            "  ?item ex:price ?price .",
+            "  ?item ex:category ?category .",
+            "}",
+            "GROUP BY ?category"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_avg(self):
+        """Test AVG aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_avg("?rating", "?avgRating")
+            .prefix("ex", "http://example.org/")
+            .where("?product", "ex:rating", "?rating")
+            .where("?product", "ex:brand", "?brand")
+            .group_by("?brand")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (AVG(?rating) AS ?avgRating)",
+            "WHERE {",
+            "  ?product ex:rating ?rating .",
+            "  ?product ex:brand ?brand .",
+            "}",
+            "GROUP BY ?brand"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_min(self):
+        """Test MIN aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_min("?price", "?minPrice")
+            .prefix("ex", "http://example.org/")
+            .where("?product", "ex:price", "?price")
+            .where("?product", "ex:category", "?category")
+            .group_by("?category")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (MIN(?price) AS ?minPrice)",
+            "WHERE {",
+            "  ?product ex:price ?price .",
+            "  ?product ex:category ?category .",
+            "}",
+            "GROUP BY ?category"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_max(self):
+        """Test MAX aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_max("?temperature", "?maxTemp")
+            .prefix("ex", "http://example.org/")
+            .where("?sensor", "ex:temperature", "?temperature")
+            .where("?sensor", "ex:location", "?location")
+            .group_by("?location")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (MAX(?temperature) AS ?maxTemp)",
+            "WHERE {",
+            "  ?sensor ex:temperature ?temperature .",
+            "  ?sensor ex:location ?location .",
+            "}",
+            "GROUP BY ?location"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_sample(self):
+        """Test SAMPLE aggregation."""
+        query = (
+            SPARQLQuery()
+            .select_sample("?member", "?anyMember")
+            .prefix("ex", "http://example.org/")
+            .where("?member", "ex:belongsTo", "?team")
+            .group_by("?team")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (SAMPLE(?member) AS ?anyMember)",
+            "WHERE {",
+            "  ?member ex:belongsTo ?team .",
+            "}",
+            "GROUP BY ?team"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_group_concat_default_separator(self):
+        """Test GROUP_CONCAT with default separator."""
+        query = (
+            SPARQLQuery()
+            .select_group_concat("?name", "?names")
+            .prefix("ex", "http://example.org/")
+            .where("?person", "foaf:name", "?name")
+            .where("?person", "ex:department", "?dept")
+            .group_by("?dept")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            'SELECT (GROUP_CONCAT(?name; SEPARATOR=" ") AS ?names)',
+            "WHERE {",
+            "  ?person foaf:name ?name .",
+            "  ?person ex:department ?dept .",
+            "}",
+            "GROUP BY ?dept"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_group_concat_custom_separator(self):
+        """Test GROUP_CONCAT with custom separator."""
+        query = (
+            SPARQLQuery()
+            .select_group_concat("?email", "?emails", separator=", ")
+            .prefix("ex", "http://example.org/")
+            .where("?person", "foaf:mbox", "?email")
+            .where("?person", "ex:team", "?team")
+            .group_by("?team")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            'SELECT (GROUP_CONCAT(?email; SEPARATOR=", ") AS ?emails)',
+            "WHERE {",
+            "  ?person foaf:mbox ?email .",
+            "  ?person ex:team ?team .",
+            "}",
+            "GROUP BY ?team"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_select_group_concat_separator_escaping(self):
+        """Test GROUP_CONCAT with separator requiring escaping."""
+        query = (
+            SPARQLQuery()
+            .select_group_concat("?value", "?values", separator='";')
+            .prefix("ex", "http://example.org/")
+            .where("?item", "ex:value", "?value")
+            .group_by("?item")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            'SELECT (GROUP_CONCAT(?value; SEPARATOR="\\";") AS ?values)',
+            "WHERE {",
+            "  ?item ex:value ?value .",
+            "}",
+            "GROUP BY ?item"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_multiple_aggregations(self):
+        """Test query with multiple aggregation functions."""
+        query = (
+            SPARQLQuery()
+            .select_count("?item", "?itemCount")
+            .select_sum("?price", "?totalPrice")
+            .select_avg("?price", "?avgPrice")
+            .select_min("?price", "?minPrice")
+            .select_max("?price", "?maxPrice")
+            .prefix("ex", "http://example.org/")
+            .where("?item", "ex:price", "?price")
+            .where("?item", "ex:category", "?category")
+            .group_by("?category")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (COUNT(?item) AS ?itemCount) (SUM(?price) AS ?totalPrice) (AVG(?price) AS ?avgPrice) (MIN(?price) AS ?minPrice) (MAX(?price) AS ?maxPrice)",
+            "WHERE {",
+            "  ?item ex:price ?price .",
+            "  ?item ex:category ?category .",
+            "}",
+            "GROUP BY ?category"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_aggregation_with_having(self):
+        """Test aggregation combined with HAVING clause."""
+        query = (
+            SPARQLQuery()
+            .select_count("?item", "?itemCount")
+            .select_avg("?price", "?avgPrice")
+            .prefix("ex", "http://example.org/")
+            .where("?item", "ex:price", "?price")
+            .where("?item", "ex:category", "?category")
+            .group_by("?category")
+            .having("AVG(?price) > 100")
+            .order_by("?avgPrice", descending=True)
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT (COUNT(?item) AS ?itemCount) (AVG(?price) AS ?avgPrice)",
+            "WHERE {",
+            "  ?item ex:price ?price .",
+            "  ?item ex:category ?category .",
+            "}",
+            "GROUP BY ?category",
+            "HAVING (AVG(?price) > 100)",
+            "ORDER BY DESC(?avgPrice)"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_aggregation_mixed_with_regular_select(self):
+        """Test aggregation mixed with regular SELECT variables."""
+        query = (
+            SPARQLQuery()
+            .select("?category")
+            .select_count("?item", "?itemCount")
+            .select_avg("?price", "?avgPrice")
+            .prefix("ex", "http://example.org/")
+            .where("?item", "ex:price", "?price")
+            .where("?item", "ex:category", "?category")
+            .group_by("?category")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT ?category (COUNT(?item) AS ?itemCount) (AVG(?price) AS ?avgPrice)",
+            "WHERE {",
+            "  ?item ex:price ?price .",
+            "  ?item ex:category ?category .",
+            "}",
+            "GROUP BY ?category"
+        ]
+        expected = "\n".join(expected_lines)
+
+        assert result == expected
+
+    def test_count_distinct_with_group_by(self):
+        """Test COUNT DISTINCT in GROUP BY context."""
+        query = (
+            SPARQLQuery()
+            .select("?paper")
+            .select_count("?author", "?authorCount", distinct=True)
+            .prefix("ex", "http://example.org/")
+            .where("?paper", "ex:author", "?author")
+            .where("?paper", "ex:year", "?year")
+            .group_by("?paper")
+        )
+
+        result = query.build()
+
+        expected_lines = [
+            "PREFIX ex: <http://example.org/>",
+            "",
+            "SELECT ?paper (COUNT(DISTINCT ?author) AS ?authorCount)",
+            "WHERE {",
+            "  ?paper ex:author ?author .",
+            "  ?paper ex:year ?year .",
+            "}",
+            "GROUP BY ?paper"
         ]
         expected = "\n".join(expected_lines)
 

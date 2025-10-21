@@ -116,6 +116,187 @@ class SPARQLQuery:
         self._distinct = True
         return self.select(*variables)
 
+    def select_count(self, variable: str, alias: str, distinct: bool = False) -> 'SPARQLQuery':
+        """Add COUNT aggregation to SELECT clause.
+
+        Use with GROUP BY to count items per group.
+
+        Args:
+            variable (str): The variable to count (e.g., '?item'). Use '*' to count all rows.
+            alias (str): The result variable name (e.g., '?count').
+            distinct (bool): If True, count only distinct values. Default is False.
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Examples:
+            >>> query.select('?category').select_count('?item', '?total')
+            SELECT ?category (COUNT(?item) AS ?total)
+
+            >>> query.select_count('*', '?total')
+            SELECT (COUNT(*) AS ?total)
+
+            >>> query.select_count('?item', '?unique', distinct=True)
+            SELECT (COUNT(DISTINCT ?item) AS ?unique)
+        """
+        if variable != '*':
+            validated_var = validate_variable(variable)
+        else:
+            validated_var = '*'
+
+        validated_alias = validate_variable(alias)
+
+        if distinct:
+            aggregation = f"(COUNT(DISTINCT {validated_var}) AS {validated_alias})"
+        else:
+            aggregation = f"(COUNT({validated_var}) AS {validated_alias})"
+
+        self._variables.append(aggregation)
+        return self
+
+    def select_sum(self, variable: str, alias: str) -> 'SPARQLQuery':
+        """Add SUM aggregation to SELECT clause.
+
+        Use with GROUP BY to sum numeric values per group.
+
+        Args:
+            variable (str): The variable to sum (e.g., '?price').
+            alias (str): The result variable name (e.g., '?total').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.select('?category').select_sum('?price', '?total')
+            SELECT ?category (SUM(?price) AS ?total)
+        """
+        validated_var = validate_variable(variable)
+        validated_alias = validate_variable(alias)
+        aggregation = f"(SUM({validated_var}) AS {validated_alias})"
+        self._variables.append(aggregation)
+        return self
+
+    def select_avg(self, variable: str, alias: str) -> 'SPARQLQuery':
+        """Add AVG aggregation to SELECT clause.
+
+        Use with GROUP BY to calculate average of numeric values per group.
+
+        Args:
+            variable (str): The variable to average (e.g., '?price').
+            alias (str): The result variable name (e.g., '?average').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.select('?category').select_avg('?price', '?average')
+            SELECT ?category (AVG(?price) AS ?average)
+        """
+        validated_var = validate_variable(variable)
+        validated_alias = validate_variable(alias)
+        aggregation = f"(AVG({validated_var}) AS {validated_alias})"
+        self._variables.append(aggregation)
+        return self
+
+    def select_min(self, variable: str, alias: str) -> 'SPARQLQuery':
+        """Add MIN aggregation to SELECT clause.
+
+        Use with GROUP BY to find minimum value per group.
+
+        Args:
+            variable (str): The variable to find minimum of (e.g., '?price').
+            alias (str): The result variable name (e.g., '?lowest').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.select('?category').select_min('?price', '?lowest')
+            SELECT ?category (MIN(?price) AS ?lowest)
+        """
+        validated_var = validate_variable(variable)
+        validated_alias = validate_variable(alias)
+        aggregation = f"(MIN({validated_var}) AS {validated_alias})"
+        self._variables.append(aggregation)
+        return self
+
+    def select_max(self, variable: str, alias: str) -> 'SPARQLQuery':
+        """Add MAX aggregation to SELECT clause.
+
+        Use with GROUP BY to find maximum value per group.
+
+        Args:
+            variable (str): The variable to find maximum of (e.g., '?price').
+            alias (str): The result variable name (e.g., '?highest').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.select('?category').select_max('?price', '?highest')
+            SELECT ?category (MAX(?price) AS ?highest)
+        """
+        validated_var = validate_variable(variable)
+        validated_alias = validate_variable(alias)
+        aggregation = f"(MAX({validated_var}) AS {validated_alias})"
+        self._variables.append(aggregation)
+        return self
+
+    def select_sample(self, variable: str, alias: str) -> 'SPARQLQuery':
+        """Add SAMPLE aggregation to SELECT clause.
+
+        Use with GROUP BY to select an arbitrary value from the group.
+
+        Args:
+            variable (str): The variable to sample (e.g., '?value').
+            alias (str): The result variable name (e.g., '?example').
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Example:
+            >>> query.select('?category').select_sample('?value', '?example')
+            SELECT ?category (SAMPLE(?value) AS ?example)
+        """
+        validated_var = validate_variable(variable)
+        validated_alias = validate_variable(alias)
+        aggregation = f"(SAMPLE({validated_var}) AS {validated_alias})"
+        self._variables.append(aggregation)
+        return self
+
+    def select_group_concat(self, variable: str, alias: str,
+                           separator: str = " ") -> 'SPARQLQuery':
+        """Add GROUP_CONCAT aggregation to SELECT clause.
+
+        Use with GROUP BY to concatenate values into a single string per group.
+
+        Args:
+            variable (str): The variable to concatenate (e.g., '?name').
+            alias (str): The result variable name (e.g., '?names').
+            separator (str): String to separate values. Default is " " (space).
+
+        Returns:
+            SPARQLQuery: Amended query instance to allow method chaining.
+
+        Examples:
+            >>> query.select('?person').select_group_concat('?interest', '?interests')
+            SELECT ?person (GROUP_CONCAT(?interest; SEPARATOR=" ") AS ?interests)
+
+            >>> query.select('?person').select_group_concat('?interest', '?interests', separator=", ")
+            SELECT ?person (GROUP_CONCAT(?interest; SEPARATOR=", ") AS ?interests)
+        """
+        validated_var = validate_variable(variable)
+        validated_alias = validate_variable(alias)
+
+        # Escape the separator for use in SPARQL
+        escaped_sep = separator.replace('\\', '\\\\').replace('"', '\\"')
+
+        # Always include SEPARATOR clause
+        aggregation = f'(GROUP_CONCAT({validated_var}; SEPARATOR="{escaped_sep}") AS {validated_alias})'
+
+        self._variables.append(aggregation)
+        return self
+
     def select_reduced(self, *variables: str) -> 'SPARQLQuery':
         """SELECT REDUCED query that eliminates duplicate solutions while allowing some duplicates to remain.
 
