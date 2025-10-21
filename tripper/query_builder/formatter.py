@@ -1,464 +1,662 @@
 """
-SPARQL value formatting and validation functions
+SPARQL value formatting and validation using rdflib
 
-These functions validate and format SPARQL values (subjects, predicates, objects)
-to ensure they are safe for use in SPARQL queries and prevent injection attacks.
+This module provides improved formatting and validation for SPARQL values
+(subjects, predicates, objects) using rdflib for proper RDF handling.
 """
 
 import re
 from typing import Any, Optional, Union
-from urllib.parse import quote, unquote, urlparse
+from rdflib import URIRef, Literal
+from rdflib.namespace import XSD
 
 
-def escape_string(value: str) -> str:
-    """Escape special characters in string literals"""
-    if not isinstance(value, str):
-        value = str(value)
+# -----------------------------------------------------------------------------
+# URI Validation and Formatting
 
-    # Escape backslashes first
-    value = value.replace('\\', '\\\\')
-    # Escape quotes
-    value = value.replace('"', '\\"')
-    value = value.replace("'", "\\'")
-    # Escape newlines and other control characters
-    value = value.replace('\n', '\\n')
-    value = value.replace('\r', '\\r')
-    value = value.replace('\t', '\\t')
+def _validate_and_parse_uri(uri: str) -> URIRef:
+    """Internal helper: validate URI and return URIRef object
 
-    return value
+    This is the single source of truth for URI validation.
+    All URI validation logic is consolidated here.
 
+    A valid URI must:
+    1. Be a string
+    2. Have a scheme (e.g., http, https, urn, etc.)
+    3. Not contain dangerous characters that could break SPARQL syntax
+    4. Parse correctly with rdflib
+    5. Look like a real URI (has :// or is a known scheme like urn:, mailto:)
 
-def sanitize_uri(uri: str) -> str:
-    """Percent-encode a URI for safe use in SPARQL
+    Args:
+        uri: URI string to validate
 
-    Uses urllib.parse.quote for RFC 3986 compliant URI encoding.
-    This handles real-world URIs that may contain spaces or other special characters.
+    Returns:
+        rdflib URIRef object
 
-    Assumes the URI has already been validated (e.g., with is_valid_uri()).
-    This function only performs the encoding transformation.
-
-    Leading/trailing whitespace is automatically stripped as it's never valid in URIs.
-    Note: Angle brackets < > should NOT be included in the uri parameter - they are
-    handled by the calling code.
+    Raises:
+        ValueError: If URI is invalid
     """
     if not isinstance(uri, str):
-        raise ValueError("URI must be a string")
+        raise ValueError(f"URI must be a string, got {type(uri)}")
 
-    # Strip leading/trailing whitespace - always a mistake for URIs
+    # Check for dangerous characters BEFORE stripping (newlines etc)
+    dangerous_chars = ['\n', '\r', '\t', '<', '>', '{', '}', '|', '\\', '^', '`', ' ']
+    if any(char in uri for char in dangerous_chars):
+        raise ValueError(f"URI contains dangerous characters: {repr(uri)}")
+
     uri = uri.strip()
-
-    # Basic validation
     if not uri:
         raise ValueError("URI cannot be empty")
 
-    # Use urllib.parse.quote for proper URI encoding
-    # First unquote to avoid double-encoding, then quote again
-    # This ensures URIs like "my%20file" don't become "my%2520file"
-    decoded_uri = unquote(uri)
+    # Validate URI scheme
+    # A URI should either:
+    # 1. Contain :// (e.g., http://, https://, ftp://)
+    # 2. Start with a known scheme without // (urn:, mailto:, tel:, doi:, etc.)
+    if '://' in uri:
+        # Has authority component - most common URIs
+        pass
+    elif uri.startswith(('urn:', 'mailto:', 'tel:', 'doi:', 'data:', 'file:', 'about:')):
+        # Known schemes without //
+        pass
+    elif ':' in uri:
+        # Has a colon but might just be a prefixed name like "foaf:name"
+        # Additional check: if there are multiple colons and no //, it's probably not a URI
+        colon_count = uri.count(':')
+        if colon_count > 1 and '://' not in uri:
+            # Check if it's a valid URN or similar
+            if not uri.startswith(('urn:', 'mailto:', 'tel:', 'doi:', 'data:', 'file:', 'about:')):
+                raise ValueError(f"Invalid URI scheme: {repr(uri)}")
+        # Single colon without // is probably a prefixed name, not a URI
+        # unless it's one of the known schemes above
+        if colon_count == 1 and '://' not in uri:
+            if not uri.startswith(('urn:', 'mailto:', 'tel:', 'doi:', 'data:', 'file:', 'about:')):
+                raise ValueError(f"Invalid URI scheme: {repr(uri)}")
+    else:
+        raise ValueError(f"URI must have a scheme: {repr(uri)}")
 
-    # safe parameter: characters that should NOT be encoded
-    # We keep ':/?#[]@!$&\'()*+,;=' as they are valid in URIs (RFC 3986)
-    # This handles spaces, quotes, and other special characters properly
-    encoded_uri = quote(decoded_uri, safe=':/?#[]@!$&\'()*+,;=')
-
-    return encoded_uri
+    # Parse with rdflib for final validation
+    try:
+        return URIRef(uri)
+    except Exception as e:
+        raise ValueError(f"Cannot parse URI: {repr(uri)}: {e}")
 
 
 def is_valid_uri(uri: str) -> bool:
-    """Check if a string is a valid URI using urllib.parse
+    """Check if a string is a valid URI (no exceptions raised)
 
-    Validates both URI structure (must have a scheme) and checks for dangerous
-    characters that could break SPARQL syntax.
-
-    A valid URI should have a scheme (e.g., http, https, mailto, urn, etc.)
-    and must not contain characters that could cause injection attacks.
-
-    Note: Angle brackets < > should NOT be in the uri parameter - they are
-    SPARQL delimiters handled by the calling code.
-    """
-    if not isinstance(uri, str):
-        return False
-
-    # Strip whitespace for checking (but not angle brackets - those should be removed by caller)
-    uri = uri.strip()
-
-    if not uri:
-        return False
-
-    # Check for dangerous characters that could break SPARQL syntax
-    # These cannot be safely encoded and should be rejected
-    # Note: spaces are allowed (will be percent-encoded by sanitize_uri)
-    # Note: # is allowed as it's a valid URI fragment identifier
-    dangerous_chars = ['\n', '\r', '\t', '<', '>', '{', '}', '|', '\\', '^', '`', '[', ']']
-    for char in dangerous_chars:
-        if char in uri:
-            return False  # Invalid - contains dangerous character
-
-    # Check URI structure
-    try:
-        parsed = urlparse(uri)
-        # A valid URI must have a scheme (http, https, mailto, urn, etc.)
-        # This helps distinguish URIs from plain strings
-        return bool(parsed.scheme)
-    except Exception:
-        return False
-
-
-def sanitize_variable(var: str) -> str:
-    """Validate variable names and ensure they have the correct prefix.
-
-    Variables in SPARQL must start with '?' or '$'. Leading/trailing whitespace
-    is automatically stripped.
+    This is a convenience wrapper around _validate_and_parse_uri() that
+    returns a boolean instead of raising exceptions.
 
     Args:
-        var (str): Variable name, must include '?' or '$' prefix
+        uri: String to validate as URI
 
     Returns:
-        str: The validated variable name with prefix intact
+        True if valid URI, False otherwise
+    """
+    try:
+        _validate_and_parse_uri(uri)
+        return True
+    except (ValueError, Exception):
+        return False
+
+
+def validate_uri(uri: str) -> str:
+    """Validate a URI and return it without angle brackets
+
+    This function validates that a string is a valid URI but returns
+    the raw URI string without formatting (no angle brackets).
+    Use this for PREFIX declarations and FROM clauses.
+
+    Args:
+        uri: URI string to validate
+
+    Returns:
+        The validated URI string (without angle brackets)
 
     Raises:
-        ValueError: If variable is invalid or missing prefix
+        ValueError: If URI is invalid
+    """
+    uriref = _validate_and_parse_uri(uri)
+    return str(uriref)
+
+
+def format_uri(uri: str) -> str:
+    """Format a URI using rdflib.URIRef with angle brackets
+
+    This function validates a URI and returns it formatted for use
+    in SPARQL triple patterns (wrapped in angle brackets).
+    Use this for subjects, predicates, and objects in WHERE clauses.
+
+    Args:
+        uri: URI string to format
+
+    Returns:
+        N3-formatted URI (e.g., <http://example.org/resource>)
+
+    Raises:
+        ValueError: If URI is invalid
+    """
+    uriref = _validate_and_parse_uri(uri)
+    return uriref.n3()
+
+
+# -----------------------------------------------------------------------------
+# Prefix Validation
+
+def validate_prefixed_name(term: str) -> str:
+    """Validate and return a prefixed name
+
+    Valid patterns:
+    - Simple: prefix:localname (e.g., foaf:Person)
+    - With dots in local part: prefix:local.name (e.g., ex:person.name)
+    - With hyphens: prefix:local-name
+
+    Args:
+        term: Prefixed name to validate
+
+    Returns:
+        The validated prefixed name
+
+    Raises:
+        ValueError: If not a valid prefixed name
+    """
+    if not isinstance(term, str):
+        raise ValueError(f"Prefixed name must be a string, got {type(term)}")
+
+    if ':' not in term:
+        raise ValueError(f"Prefixed name must contain ':' separator: {repr(term)}")
+
+    # Split only on first colon
+    parts = term.split(':', 1)
+    if len(parts) != 2:
+        raise ValueError(f"Invalid prefixed name format: {repr(term)}")
+
+    prefix, local = parts
+
+    # Validate prefix: must start with letter or underscore
+    if not re.match(r'^[a-zA-Z_][\w\-]*$', prefix):
+        raise ValueError(f"Invalid prefix (must start with letter or underscore): {repr(term)}")
+
+    # Validate local part: more permissive, allows dots
+    if not re.match(r'^[a-zA-Z_][\w\-\.]*$', local):
+        raise ValueError(f"Invalid local name (must start with letter or underscore): {repr(term)}")
+
+    return term
+
+
+def is_valid_prefixed_name(term: str) -> bool:
+    """Check if a term is a valid prefixed name (prefix:localname)
+
+    This is a convenience wrapper around validate_prefixed_name() that
+    returns a boolean instead of raising exceptions.
+
+    Args:
+        term: String to check
+
+    Returns:
+        True if valid prefixed name, False otherwise
+    """
+    try:
+        validate_prefixed_name(term)
+        return True
+    except (ValueError, Exception):
+        return False
+
+
+# -----------------------------------------------------------------------------
+# Variable Validation
+
+def validate_variable(var: str) -> str:
+    """Validate and format a SPARQL variable
+
+    Variables must:
+    1. Start with '?' or '$'
+    2. Have a name after the prefix
+    3. Name must contain only alphanumeric characters and underscores
+
+    Args:
+        var: Variable string (must include ? or $ prefix)
+
+    Returns:
+        The validated variable
+
+    Raises:
+        ValueError: If not a valid variable
     """
     if not isinstance(var, str):
         raise ValueError("Variable must be a string")
 
-    # Strip leading/trailing whitespace
     var = var.strip()
 
-    # Check for variable prefix
-    if not var or var[0] not in ('?', '$'):
-        raise ValueError(f"Variable must start with '?' or '$': {var}")
+    if not var:
+        raise ValueError("Variable cannot be empty")
 
-    # Extract the name part (without prefix)
+    if var[0] not in ('?', '$'):
+        raise ValueError(f"Variable must start with '?' or '$': {repr(var)}")
+
+    if len(var) == 1:
+        raise ValueError(f"Variable name cannot be empty: {repr(var)}")
+
     name = var[1:]
-
-    # Validate variable name (alphanumeric and underscore)
-    if not name:
-        raise ValueError(f"Variable name cannot be empty: {var}")
-
     if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', name):
-        raise ValueError(f"Invalid variable name: {var}. Variable names must start with a letter or underscore and contain only alphanumeric characters and underscores.")
+        raise ValueError(f"Invalid variable name: {repr(var)}")
 
     return var
 
 
-def sanitize_property_path(path: str) -> str:
-    """Validate and sanitize property path expressions
+def is_valid_variable(var: str) -> bool:
+    """Check if a string is a valid SPARQL variable
+
+    This is a convenience wrapper around validate_variable() that
+    returns a boolean instead of raising exceptions.
+
+    Args:
+        var: String to check
+
+    Returns:
+        True if valid variable, False otherwise
+    """
+    try:
+        validate_variable(var)
+        return True
+    except (ValueError, Exception):
+        return False
+
+
+# -----------------------------------------------------------------------------
+# Blank Node Support
+
+def validate_blank_node(term: str) -> str:
+    """Validate a blank node identifier
+
+    Blank nodes start with '_:' followed by a valid name.
+    Blank node names must start with letter or underscore and contain
+    alphanumeric characters, underscores, hyphens, or dots.
+
+    Args:
+        term: Blank node string (e.g., _:b1)
+
+    Returns:
+        The validated blank node
+
+    Raises:
+        ValueError: If not a valid blank node
+    """
+    if not isinstance(term, str):
+        raise ValueError(f"Blank node must be a string, got {type(term)}")
+
+    term = term.strip()
+
+    if not term.startswith('_:'):
+        raise ValueError(f"Blank node must start with '_:': {repr(term)}")
+
+    if len(term) == 2:
+        raise ValueError(f"Blank node name cannot be empty: {repr(term)}")
+
+    name = term[2:]
+    # Blank node names must start with letter or underscore and contain alphanumeric, underscore, hyphen, or dot
+    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_\-\.]*$', name):
+        raise ValueError(f"Invalid blank node name (must start with letter or underscore): {repr(term)}")
+
+    return term
+
+
+def is_blank_node(term: str) -> bool:
+    """Check if a term is a blank node identifier
+
+    This is a convenience wrapper around validate_blank_node() that
+    returns a boolean instead of raising exceptions.
+
+    Args:
+        term: String to check
+
+    Returns:
+        True if valid blank node, False otherwise
+    """
+    try:
+        validate_blank_node(term)
+        return True
+    except (ValueError, Exception):
+        return False
+
+
+# -----------------------------------------------------------------------------
+# Property Path Support
+
+def validate_property_path(path: str) -> str:
+    """Validate a SPARQL property path expression
 
     Property paths can contain:
-    - URI references (prefixed or full URIs in angle brackets)
-    - Path operators: * + ? | / ^
-    - Parentheses for grouping
-    - Negation with !
+    - URI references (prefixed names or full URIs in angle brackets)
+    - Path operators: * + ? | / ^ ( ) !
+    - Whitespace for readability
 
-    This prevents injection by ensuring the path only contains valid SPARQL property path syntax.
+    Property path operators: * + ? | / ^ ( ) !
+
+    Args:
+        path: Property path string
+
+    Returns:
+        The validated property path
+
+    Raises:
+        ValueError: If path contains invalid syntax
     """
     if not isinstance(path, str):
-        raise ValueError("Property path must be a string")
+        raise ValueError(f"Property path must be a string, got {type(path)}")
 
+    path = path.strip()
     if not path:
         raise ValueError("Property path cannot be empty")
 
-    # Check for dangerous characters that could break out of the predicate position
+    # Check for characters that could break SPARQL syntax
     dangerous_chars = ['.', ';', '#', '\n', '\r', '\t', '{', '}', '[', ']']
     for char in dangerous_chars:
         if char in path:
             raise ValueError(f"Invalid character in property path: {repr(char)}")
 
-    # Validate that the path is a reasonable property path expression
-    # It should contain either:
-    # 1. A URI pattern (prefix:name or <full-uri>)
-    # 2. Property path operators: * + ? | / ^ ( ) !
-    # 3. Combinations of the above
-
-    # Remove all valid property path components to see if anything suspicious remains
+    # Validate structure by removing valid components
+    # If anything suspicious remains, reject it
     cleaned = path
 
     # Remove URIs in angle brackets
     cleaned = re.sub(r'<[^<>]+>', '', cleaned)
 
-    # Remove prefixed names (namespace:localname)
-    cleaned = re.sub(r'[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-]*', '', cleaned)
+    # Remove prefixed names
+    cleaned = re.sub(r'[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-\.]*', '', cleaned)
 
-    # Remove valid property path operators and whitespace
+    # Remove property path operators and whitespace
     cleaned = re.sub(r'[*+?|/^()!\s]', '', cleaned)
 
-    # If anything remains after removing valid components, it's suspicious
+    # Remove 'a' (rdf:type shorthand)
+    cleaned = re.sub(r'\ba\b', '', cleaned)
+
+    # If anything remains, it's suspicious
     if cleaned:
-        raise ValueError(f"Property path contains invalid characters: {repr(cleaned)}")
+        raise ValueError(f"Property path contains invalid syntax: remaining={repr(cleaned)}")
 
     return path
 
 
-def format_literal(value: Any, datatype: Optional[str] = None, lang: Optional[str] = None) -> str:
-    """Format a literal value with optional datatype or language tag"""
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    elif isinstance(value, int) or isinstance(value, float):
-        return str(value)
-    else:
-        escaped = escape_string(str(value))
-        literal = f'"{escaped}"'
+def is_property_path(term: str) -> bool:
+    """Check if a term contains property path operators
 
-        if lang:
-            literal += f"@{lang}"
-        elif datatype:
-            literal += f"^^<{sanitize_uri(datatype)}>"
+    This is a convenience wrapper around validate_property_path() that
+    returns a boolean instead of raising exceptions.
 
-        return literal
-
-
-def format_subject(term: str) -> str:
-    """Format a subject term (URI, variable, or prefixed name)
-
-    This function validates and formats subject terms for safe use in SPARQL queries.
-    Does not support None for anonymous variables - that's handled by the query builder.
-
-    Leading/trailing whitespace is automatically stripped from string inputs.
+    Property path operators: * + ? | / ^ ( ) !
 
     Args:
-        term: Subject string (variable, URI, or prefixed name)
+        term: String to check
 
     Returns:
-        Formatted subject string safe for SPARQL
+        True if contains property path operators, False otherwise
+    """
+    # Quick check: property paths must contain operators
+    path_operators = ['*', '+', '?', '|', '/', '^', '(', ')', '!']
+    if not any(op in term for op in path_operators):
+        return False
+
+    # Validate the full path
+    try:
+        validate_property_path(term)
+        return True
+    except (ValueError, Exception):
+        return False
+
+
+# -----------------------------------------------------------------------------
+# Literal Formatting
+
+def format_literal(value: Any,
+                   datatype: Optional[str] = None,
+                   lang: Optional[str] = None) -> str:
+    """Format a literal value using rdflib.Literal
+
+    Args:
+        value: The literal value
+        datatype: Optional datatype URI
+        lang: Optional language tag
+
+    Returns:
+        N3-formatted literal
+    """
+    # Handle booleans specially (before type checking)
+    if isinstance(value, bool):
+        return "true" if value else "false"
+
+    # Handle numeric types
+    if isinstance(value, int):
+        lit = Literal(value, datatype=XSD.integer)
+        return lit.n3()
+
+    if isinstance(value, float):
+        lit = Literal(value, datatype=XSD.double)
+        return lit.n3()
+
+    # Handle strings with optional datatype or language
+    if datatype:
+        # Validate datatype URI if it looks like a full URI
+        if '://' in datatype or datatype.startswith('<'):
+            datatype_clean = datatype.strip('<>')
+            if not is_valid_uri(datatype_clean):
+                raise ValueError(f"Invalid datatype URI: {repr(datatype)}")
+            lit = Literal(str(value), datatype=URIRef(datatype_clean))
+        else:
+            # Assume it's a prefixed name or XSD type
+            lit = Literal(str(value), datatype=datatype)
+        return lit.n3()
+
+    if lang:
+        lit = Literal(str(value), lang=lang)
+        return lit.n3()
+
+    # Plain literal
+    lit = Literal(str(value))
+    return lit.n3()
+
+
+# -----------------------------------------------------------------------------
+# Subject Formatting
+
+def format_subject(term: str) -> str:
+    """Format a subject term for SPARQL
+
+    Subjects can be:
+    - Variables: ?var or $var
+    - URIs: <http://...> or http://...
+    - Prefixed names: prefix:name
+    - Blank nodes: _:b1
+
+    Args:
+        term: Subject term to format
+
+    Returns:
+        Formatted subject safe for SPARQL
 
     Raises:
-        ValueError: If term is not a valid subject format
+        ValueError: If term is not a valid subject
     """
-    # Must be a string
     if not isinstance(term, str):
         raise ValueError(f"Subject must be a string, got {type(term)}")
 
-    # Strip leading/trailing whitespace
     term = term.strip()
-
-    # Empty string check
     if not term:
-        raise ValueError("Subject cannot be an empty string")
+        raise ValueError("Subject cannot be empty")
 
-    # Variable
+    # Variables
     if term.startswith('?') or term.startswith('$'):
-        return sanitize_variable(term)
+        return validate_variable(term)
 
-    # Check for simple prefixed name pattern first (most common case)
-    if re.match(r'^[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-]+$', term):
-        return term
+    # Blank nodes
+    if term.startswith('_:'):
+        return validate_blank_node(term)
 
-    # URI in angle brackets - must have matching < and >
+    # URIs in angle brackets
     if term.startswith('<'):
         if not term.endswith('>'):
-            raise ValueError(f"Invalid subject: URI starting with '<' must end with '>': {repr(term)}")
+            raise ValueError(f"URI starting with '<' must end with '>': {repr(term)}")
         inner_uri = term[1:-1].strip()
         if not inner_uri:
-            raise ValueError("Subject URI cannot be empty")
-        if not is_valid_uri(inner_uri):
-            raise ValueError(f"Invalid URI in subject: {repr(inner_uri)}")
-        return f"<{sanitize_uri(inner_uri)}>"
+            raise ValueError("URI cannot be empty")
+        return format_uri(inner_uri)
 
-    # Full URI with scheme (e.g., http://...)
-    if is_valid_uri(term):
-        return f"<{sanitize_uri(term)}>"
+    # Prefixed names
+    if is_valid_prefixed_name(term):
+        return validate_prefixed_name(term)
 
-    # Complex prefixed name with dots
-    if ':' in term:
-        parts = term.split(':', 1)
-        if len(parts) == 2:
-            prefix, local = parts
-            if not re.match(r'^[a-zA-Z_][\w\-]*$', prefix):
-                raise ValueError(f"Invalid namespace prefix in subject: {repr(prefix)}")
-            if not re.match(r'^[a-zA-Z_][\w\-\.]*$', local):
-                raise ValueError(f"Invalid local name in subject: {repr(local)}")
-            return term
-        else:
-            raise ValueError(f"Invalid prefixed name format: {repr(term)}")
+    # Full URIs without angle brackets - try to format, will raise if invalid
+    try:
+        return format_uri(term)
+    except ValueError:
+        pass
 
-    # Check for dangerous characters to provide better error messages
-    dangerous_chars = [';', '#', '\n', '\r', '\t', '{', '}', '[', ']', ' ']
-    for char in dangerous_chars:
-        if char in term:
-            raise ValueError(
-                f"Invalid subject: contains forbidden character {repr(char)}. "
-                f"Subjects must be valid URIs, prefixed names, or variables."
-            )
-
+    # If we get here, it's not a valid subject
     raise ValueError(
-        f"Invalid subject format: {repr(term)}. "
-        f"Must be a variable (?name), URI (<uri> or http://...), or "
-        f"prefixed name (prefix:name)"
+        f"Invalid subject: {repr(term)}. "
+        f"Must be a variable (?var), URI (<uri>), prefixed name (prefix:name), "
+        f"or blank node (_:b1)"
     )
 
 
+# -----------------------------------------------------------------------------
+# Predicate Formatting
+
 def format_predicate(term: str) -> str:
-    """Format a predicate term (URI, variable, property path, or 'a')
+    """Format a predicate term for SPARQL
 
-    This function validates and formats predicate terms for safe use in SPARQL queries.
-    Does not support None for anonymous variables - that's handled by the query builder.
-
-    Leading/trailing whitespace is automatically stripped from string inputs.
+    Predicates can be:
+    - Variables: ?var or $var
+    - URIs: <http://...> or http://...
+    - Prefixed names: prefix:name
+    - 'a' shorthand for rdf:type
+    - Property paths: prefix:path+ or complex paths
 
     Args:
-        term: Predicate string (variable, URI, prefixed name, or property path)
+        term: Predicate term to format
 
     Returns:
-        Formatted predicate string safe for SPARQL
+        Formatted predicate safe for SPARQL
 
     Raises:
-        ValueError: If term is not a valid predicate format
+        ValueError: If term is not a valid predicate
     """
-    # Must be a string
     if not isinstance(term, str):
         raise ValueError(f"Predicate must be a string, got {type(term)}")
 
-    # Strip leading/trailing whitespace
     term = term.strip()
-
-    # Empty string check
     if not term:
-        raise ValueError("Predicate cannot be an empty string")
-
-    # Variable
-    if term.startswith('?') or term.startswith('$'):
-        return sanitize_variable(term)
+        raise ValueError("Predicate cannot be empty")
 
     # Special case: 'a' is shorthand for rdf:type
     if term == 'a':
         return 'a'
 
-    # Check for simple prefixed name pattern first (most common case)
-    if re.match(r'^[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-]+$', term):
-        return term
+    # Variables
+    if term.startswith('?') or term.startswith('$'):
+        return validate_variable(term)
 
-    # URI in angle brackets - must have matching < and >
+    # URIs in angle brackets
     if term.startswith('<'):
         if not term.endswith('>'):
-            raise ValueError(f"Invalid predicate: URI starting with '<' must end with '>': {repr(term)}")
+            raise ValueError(f"URI starting with '<' must end with '>': {repr(term)}")
         inner_uri = term[1:-1].strip()
         if not inner_uri:
-            raise ValueError("Predicate URI cannot be empty")
-        if not is_valid_uri(inner_uri):
-            raise ValueError(f"Invalid URI in predicate: {repr(inner_uri)}")
-        return f"<{sanitize_uri(inner_uri)}>"
+            raise ValueError("URI cannot be empty")
+        return format_uri(inner_uri)
 
-    # Full URI with :// (e.g., http://example.org/resource)
-    if '://' in term:
-        if not is_valid_uri(term):
-            raise ValueError(
-                f"Invalid predicate: {repr(term)}. "
-                f"Predicates must be valid URIs, prefixed names, or property paths."
-            )
-        return f"<{sanitize_uri(term)}>"
+    # Prefixed names (check before URIs since "foaf:name" could theoretically match URI patterns)
+    if is_valid_prefixed_name(term):
+        return validate_prefixed_name(term)
 
-    # Property path (contains operators like +, *, ?, etc.)
-    if any(op in term for op in ['*', '+', '?', '|', '/', '^', '(', ')']):
-        return sanitize_property_path(term)
+    # Full URIs - try to format, will raise if invalid
+    try:
+        return format_uri(term)
+    except ValueError:
+        pass
 
-    # Full URI with scheme (e.g., urn:, mailto:)
-    if is_valid_uri(term):
-        return f"<{sanitize_uri(term)}>"
+    # Property paths (detected by operators) - check last
+    if is_property_path(term):
+        return validate_property_path(term)
 
-    # Check for any dangerous characters
-    dangerous_chars = ['.', ';', '#', '\n', '\r', '\t', '{', '}', '[', ']', ' ']
-    for char in dangerous_chars:
-        if char in term:
-            raise ValueError(
-                f"Invalid predicate: contains forbidden character {repr(char)}. "
-                f"Predicates must be valid URIs, prefixed names, or property paths."
-            )
-
-    # Complex prefixed name with dots
-    if ':' in term:
-        parts = term.split(':', 1)
-        if len(parts) == 2:
-            prefix, local = parts
-            if not re.match(r'^[a-zA-Z_][\w\-]*$', prefix):
-                raise ValueError(f"Invalid namespace prefix in predicate: {repr(prefix)}")
-            if not re.match(r'^[a-zA-Z_][\w\-\.]*$', local):
-                raise ValueError(f"Invalid local name in predicate: {repr(local)}")
-            return term
-        else:
-            raise ValueError(f"Invalid prefixed name format: {repr(term)}")
-
+    # If we get here, it's not a valid predicate
     raise ValueError(
-        f"Invalid predicate format: {repr(term)}. "
-        f"Must be a variable (?name), URI (<uri> or http://...), "
-        f"prefixed name (prefix:name), or property path (e.g., foaf:knows+)"
+        f"Invalid predicate: {repr(term)}. "
+        f"Must be a variable (?var), URI (<uri>), prefixed name (prefix:name), "
+        f"'a' (rdf:type), or property path"
     )
 
+
+# -----------------------------------------------------------------------------
+# Object Formatting
 
 def format_object(term: Union[str, int, float, bool],
                   datatype: Optional[str] = None,
                   lang: Optional[str] = None) -> str:
-    """Format an object term (URI, variable, or literal)
+    """Format an object term for SPARQL
 
-    This function validates and formats object terms for safe use in SPARQL queries.
-    Does not support None for anonymous variables - that's handled by the query builder.
-
-    For URIs and variables: Leading/trailing whitespace is automatically stripped.
-    For literal strings: Whitespace is preserved as it may be intentional user data.
+    Objects can be:
+    - Variables: ?var or $var
+    - URIs: <http://...> or http://...
+    - Prefixed names: prefix:name
+    - Blank nodes: _:b1
+    - Literals: strings, numbers, booleans
 
     Args:
-        term: Object value (variable, URI, or literal)
-        datatype: Optional datatype URI for literal values
-        lang: Optional language tag for literal values
+        term: Object term to format
+        datatype: Optional datatype URI for literals
+        lang: Optional language tag for string literals
 
     Returns:
-        Formatted object string safe for SPARQL
+        Formatted object safe for SPARQL
 
     Raises:
-        ValueError: If term is not a valid object format
+        ValueError: If term is not a valid object
     """
-    # Literal (numbers and booleans) - handle before string processing
-    if isinstance(term, (int, float, bool)):
+    # Handle non-string literals (numbers, booleans)
+    if isinstance(term, (int, float, bool)) and not isinstance(term, bool):
         return format_literal(term, datatype, lang)
 
-    # String can be either URI, variable, or literal - determine by pattern
-    if isinstance(term, str):
-        # For structural elements (URIs/variables), strip first to check pattern
-        stripped_term = term.strip()
-
-        # Empty string check (after stripping)
-        if not stripped_term:
-            raise ValueError("Object cannot be an empty string")
-
-        # Variable - strip whitespace as it's structural
-        if stripped_term.startswith('?') or stripped_term.startswith('$'):
-            return sanitize_variable(stripped_term)
-
-        # Check for simple prefixed name pattern first (most common case for URIs)
-        if re.match(r'^[a-zA-Z_][\w\-]*:[a-zA-Z_][\w\-]+$', stripped_term):
-            return stripped_term
-
-        # URI in angle brackets - must have matching < and >
-        if stripped_term.startswith('<'):
-            if not stripped_term.endswith('>'):
-                raise ValueError(f"Invalid object: URI starting with '<' must end with '>': {repr(stripped_term)}")
-            inner_uri = stripped_term[1:-1].strip()
-            if not inner_uri:
-                raise ValueError("Object URI cannot be empty")
-            if not is_valid_uri(inner_uri):
-                raise ValueError(f"Invalid URI in object: {repr(inner_uri)}")
-            return f"<{sanitize_uri(inner_uri)}>"
-
-        # Full URI with scheme (e.g., http://...)
-        if is_valid_uri(stripped_term):
-            return f"<{sanitize_uri(stripped_term)}>"
-
-        # Complex prefixed name with dots
-        if ':' in stripped_term:
-            parts = stripped_term.split(':', 1)
-            if len(parts) == 2:
-                prefix, local = parts
-                if not re.match(r'^[a-zA-Z_][\w\-]*$', prefix):
-                    # Not a valid prefix, treat as literal
-                    return format_literal(term, datatype, lang)
-                if not re.match(r'^[a-zA-Z_][\w\-\.]*$', local):
-                    # Not a valid local name, treat as literal
-                    return format_literal(term, datatype, lang)
-                return stripped_term
-
-        # Plain string - treat as literal (will be properly escaped)
-        # Use original term to preserve intentional whitespace in user data
+    # Special handling for booleans (before general type check)
+    if isinstance(term, bool):
         return format_literal(term, datatype, lang)
 
-    # Default: treat as literal
-    return format_literal(str(term), datatype, lang)
+    # Must be string from here on
+    if not isinstance(term, str):
+        raise ValueError(f"Object must be a string, number, or boolean, got {type(term)}")
+
+    # Strip for structural elements, but we'll preserve original for literals
+    stripped_term = term.strip()
+    if not stripped_term:
+        raise ValueError("Object cannot be empty")
+
+    # Variables
+    if stripped_term.startswith('?') or stripped_term.startswith('$'):
+        return validate_variable(stripped_term)
+
+    # Blank nodes
+    if stripped_term.startswith('_:'):
+        return validate_blank_node(stripped_term)
+
+    # URIs in angle brackets
+    if stripped_term.startswith('<'):
+        if not stripped_term.endswith('>'):
+            raise ValueError(f"URI starting with '<' must end with '>': {repr(stripped_term)}")
+        inner_uri = stripped_term[1:-1].strip()
+        if not inner_uri:
+            raise ValueError("URI cannot be empty")
+        return format_uri(inner_uri)
+
+    # Prefixed names (check before URIs)
+    if is_valid_prefixed_name(stripped_term):
+        return validate_prefixed_name(stripped_term)
+
+    # Full URIs - try to format, will fall through to literal if invalid
+    try:
+        return format_uri(stripped_term)
+    except ValueError:
+        pass
+
+    # Everything else is treated as a literal
+    # Use original term to preserve whitespace in user data
+    return format_literal(term, datatype, lang)

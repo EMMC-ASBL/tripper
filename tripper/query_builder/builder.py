@@ -15,11 +15,11 @@ from .elements import (
     FilterElement,
     GraphBlock,
 )
+
 from .formatter import (
-    sanitize_uri,
-    sanitize_variable,
+    format_uri,
+    validate_variable,
     format_literal,
-    escape_string,
 )
 
 
@@ -60,8 +60,8 @@ class SPARQLQuery:
             >>> query.prefix('foaf', 'http://xmlns.com/foaf/0.1/')
             >>> query.prefix('ex', 'http://example.org/')
         """
-        sanitized_uri = sanitize_uri(uri)
-        self._prefixes[prefix] = sanitized_uri
+        formatted_uri = format_uri(uri)
+        self._prefixes[prefix] = formatted_uri
         return self
 
     def select(self, *variables: str) -> 'SPARQLQuery':
@@ -86,8 +86,8 @@ class SPARQLQuery:
             SELECT *
         """
         for var in variables:
-            sanitized_var = sanitize_variable(var)
-            self._variables.append(sanitized_var)
+            validated_var = validate_variable(var)
+            self._variables.append(validated_var)
         return self
 
     def select_distinct(self, *variables: str) -> 'SPARQLQuery':
@@ -166,8 +166,8 @@ class SPARQLQuery:
             >>> query.from_graph("http://example.org/graph1")
             FROM <http://example.org/graph1>
         """
-        sanitized_uri = sanitize_uri(graph_uri)
-        self._from_graphs.append(sanitized_uri)
+        formatted_uri = format_uri(graph_uri)
+        self._from_graphs.append(formatted_uri)
         return self
 
     def from_named_graph(self, graph_uri: str) -> 'SPARQLQuery':
@@ -192,9 +192,8 @@ class SPARQLQuery:
             >>> query.from_named_graph("http://example.org/graph1")
             FROM NAMED <http://example.org/graph1>
         """
-        """Add FROM NAMED clause"""
-        sanitized_uri = sanitize_uri(graph_uri)
-        self._from_named_graphs.append(sanitized_uri)
+        formatted_uri = format_uri(graph_uri)
+        self._from_named_graphs.append(formatted_uri)
         return self
 
     def where(self, subject: Union[str, None], predicate: Union[str, None],
@@ -424,7 +423,7 @@ class SPARQLQuery:
                 FILTER (?age = 25)
             }
         """
-        var = sanitize_variable(variable)
+        var = validate_variable(variable)
         val = format_literal(value, datatype)
         return self.filter(f"{var} = {val}")
 
@@ -448,8 +447,11 @@ class SPARQLQuery:
                 FILTER (REGEX(?name, "^A", "i"))
             }
         """
-        var = sanitize_variable(variable)
-        escaped_pattern = escape_string(pattern)
+        var = validate_variable(variable)
+
+        # Escape the pattern for use in SPARQL REGEX
+        # Escape backslashes first (each backslash becomes two), then escape quotes
+        escaped_pattern = pattern.replace('\\', '\\\\').replace('"', '\\"')
 
         if flags:
             condition = f'REGEX({var}, "{escaped_pattern}", "{flags}")'
@@ -580,7 +582,7 @@ class SPARQLQuery:
             >>> query.order_by('?name').order_by('?age', descending=True)
             ORDER BY ?name DESC(?age)
         """
-        var = sanitize_variable(variable)
+        var = validate_variable(variable)
         self._order_by.append((var, descending))
         return self
 
@@ -602,8 +604,8 @@ class SPARQLQuery:
             GROUP BY ?category ?type
         """
         for var in variables:
-            sanitized_var = sanitize_variable(var)
-            self._group_by.append(sanitized_var)
+            validated_var = validate_variable(var)
+            self._group_by.append(validated_var)
         return self
 
     def having(self, condition: str) -> 'SPARQLQuery':
@@ -706,7 +708,7 @@ class SPARQLQuery:
 
         # Add prefixes
         for prefix, uri in self._prefixes.items():
-            query_parts.append(f"PREFIX {prefix}: <{uri}>")
+            query_parts.append(f"PREFIX {prefix}: {uri}")
 
         if self._prefixes:
             query_parts.append("")
@@ -727,10 +729,10 @@ class SPARQLQuery:
 
         # Add FROM clauses
         for graph in self._from_graphs:
-            query_parts.append(f"FROM <{graph}>")
+            query_parts.append(f"FROM {graph}")
 
         for graph in self._from_named_graphs:
-            query_parts.append(f"FROM NAMED <{graph}>")
+            query_parts.append(f"FROM NAMED {graph}")
 
         # Add WHERE clause
         query_parts.append("WHERE {")

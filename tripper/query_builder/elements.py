@@ -11,8 +11,8 @@ from .formatter import (
     format_subject,
     format_predicate,
     format_object,
-    sanitize_variable,
-    sanitize_uri,
+    validate_variable,
+    format_uri,
 )
 
 
@@ -169,9 +169,9 @@ class GraphBlock(SPARQLElement):
         """Convert to SPARQL GRAPH block"""
         if self.graph_uri:
             if self.graph_uri.startswith('?'):
-                graph_ref = sanitize_variable(self.graph_uri)
+                graph_ref = validate_variable(self.graph_uri)
             else:
-                graph_ref = f"<{sanitize_uri(self.graph_uri)}>"
+                graph_ref = format_uri(self.graph_uri)
             lines = [f"{' ' * indent}GRAPH {graph_ref} {{"]
         else:
             lines = [f"{' ' * indent}{{"]
