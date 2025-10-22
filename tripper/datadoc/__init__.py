@@ -2,13 +2,13 @@
 
 from .context import Context, get_context
 from .dataaccess import load, save
+from .dataset import get_jsonld_context  # deprecated
+from .dataset import get_prefixes  # deprecated
 from .dataset import (
     acquire,
     delete,
     delete_iri,
-    get_jsonld_context,
     get_partial_pipeline,
-    get_prefixes,
     load_dict,
     read_datadoc,
     save_datadoc,

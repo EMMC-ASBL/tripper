@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 from tripper import Triplestore
 from tripper.datadoc.context import get_context
 from tripper.datadoc.dataset import store, told
-from tripper.datadoc.dictutils import addnested
 from tripper.datadoc.keywords import get_keywords
+from tripper.datadoc.utils import addnested
 from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
@@ -63,7 +63,7 @@ class TableDoc:
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,

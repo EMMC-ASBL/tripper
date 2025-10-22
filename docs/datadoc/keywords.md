@@ -1,7 +1,7 @@
 <!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
 
-# Keywords for theme: ddoc:default
-The tables below lists the keywords for the theme ddoc:default.
+# Keywords for theme: ddoc:datadoc
+The tables below lists the keywords the theme ddoc:datadoc.
 
 The meaning of the columns are as follows:
 
@@ -52,7 +52,7 @@ Resource published or curated by an agent.
 | [qualifiedAttribution]  | [prov:Attribution]                             | optional    | An Agent having some form of responsibility for the resource.                                                                                |                                                                                                                                                                                                                      |
 | [qualifiedRelation]     | [dcat:Relationship]                            | optional    | A description of a relationship with another resource.                                                                                       |                                                                                                                                                                                                                      |
 | [relatedResource]       | [rdfs:Resource]                                | optional    | A resource with an unspecified relationship to the cataloged resource.                                                                       |                                                                                                                                                                                                                      |
-| [releaseDate]           | [rdfs:Literal]<br>(xsd:date)                   | optional    | The date of formal issuance (e.g., publication) of the resource.                                                                             |                                                                                                                                                                                                                      |
+| [creationDate]          | [rdfs:Literal]<br>(xsd:date)                   | optional    | The date of formal issuance (e.g., publication) of the resource.                                                                             |                                                                                                                                                                                                                      |
 | [type]                  | [skos:Concept]                                 | optional    | A type of the resource.                                                                                                                      | A recommended controlled vocabulary data-type is foreseen. For agents, the value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf). |
 | [version]               | [rdfs:Literal]                                 | optional    | Version indicator (name or identifier) of a resource.                                                                                        |                                                                                                                                                                                                                      |
 | [versionNotes]          | [rdfs:Literal]                                 | optional    | A description of the differences between this version and a previous version of the resource.                                                | This property can be repeated for parallel language versions of the version notes.                                                                                                                                   |
@@ -60,11 +60,15 @@ Resource published or curated by an agent.
 | [abstract]              | [rdfs:Literal]<br>(rdf:langString)             |             | A summary of the resource.                                                                                                                   |                                                                                                                                                                                                                      |
 | [bibliographicCitation] | [rdfs:Literal]                                 |             | A bibliographic reference for the resource.                                                                                                  | Recommended practice is to include sufficient bibliographic detail to identify the resource as unambiguously as possible.                                                                                            |
 | [comment]               | [rdfs:Literal]                                 |             | A description of the subject resource. Use `description` instead.                                                                            |                                                                                                                                                                                                                      |
+| [conformance]           | [owl:NamedIndividual]                          |             | Whether the annotation is mandatory, recommended or optional.                                                                                | It MUST take one of the values 'ddoc:mandatory', 'ddoc:recommended' or 'ddoc:optional'.                                                                                                                              |
 | [deprecated]            | [rdfs:Literal]<br>(xsd:boolean)                |             | The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.                    |                                                                                                                                                                                                                      |
+| [domain]                | [rdfs:Resource]                                |             | A domain of the subject property.                                                                                                            |                                                                                                                                                                                                                      |
 | [isDefinedBy]           | [skos:Concept]                                 |             | Indicate a resource defining the subject resource. This property may be used to indicate an RDF vocabulary in which a resource is described. |                                                                                                                                                                                                                      |
 | [label]                 | [rdfs:Literal]                                 |             | Provides a human-readable version of a resource's name.                                                                                      |                                                                                                                                                                                                                      |
+| [range]                 | [rdfs:Resource]                                |             | A range of the subject property.                                                                                                             |                                                                                                                                                                                                                      |
 | [seeAlso]               | [skos:Concept]                                 |             | Indicates a resource that might provide additional information about the subject resource.                                                   |                                                                                                                                                                                                                      |
 | [statements]            | [rdfs:Literal]<br>(rdf:JSON)                   |             | A list of subject-predicate-object triples with additional RDF statements documenting the resource.                                          |                                                                                                                                                                                                                      |
+| [usageNote]             | [rdfs:Literal]<br>(rdf:langString)             |             | A reference that provides information on how this resource is to be used.                                                                    |                                                                                                                                                                                                                      |
 
 
 ## Properties on [Dataset]
@@ -238,7 +242,7 @@ A legal document giving official permission to do something with a resource.
 
 | Keyword | Range          | Conformance | Definition | Usage note |
 | ------- | -------------- | ----------- | ---------- | ---------- |
-| [type]  | [skos:Concept] | optional    |            |            |
+| [type]  | [skos:Concept] |             |            |            |
 
 
 ## Properties on [Location]
@@ -254,10 +258,10 @@ A spatial region or named place.
 ## Properties on [Relationship]
 An association class for attaching additional information to a relationship between DCAT Resources.
 
-| Keyword    | Range           | Conformance | Definition                                                                   | Usage note |
-| ---------- | --------------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
-| [hasRole]  | [dcat:Role]     |             | A function of an entity or agent with respect to another entity or resource. |            |
-| [relation] | [rdfs:Resource] |             | A resource related to the source resource.                                   |            |
+| Keyword           | Range           | Conformance | Definition                                                                   | Usage note |
+| ----------------- | --------------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
+| [hasRole]         | [dcat:Role]     |             | A function of an entity or agent with respect to another entity or resource. |            |
+| [relatedResource] | [rdfs:Resource] |             |                                                                              |            |
 
 
 ## Properties on [RightsStatement]
@@ -353,7 +357,7 @@ The class of property restrictions.
 [dcat:Relationship]: http://www.w3.org/ns/dcat#Relationship
 [relatedResource]: http://purl.org/dc/terms/relation
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
-[releaseDate]: http://purl.org/dc/terms/issued
+[creationDate]: http://purl.org/dc/terms/issued
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [theme]: http://www.w3.org/ns/dcat#theme
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
@@ -371,15 +375,23 @@ The class of property restrictions.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [comment]: http://www.w3.org/2000/01/rdf-schema#comment
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[conformance]: https://w3id.org/emmo/application/datadoc#conformance
+[owl:NamedIndividual]: http://www.w3.org/2002/07/owl#NamedIndividual
 [deprecated]: http://www.w3.org/2002/07/owl#deprecated
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[domain]: http://www.w3.org/2000/01/rdf-schema#domain
+[rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [isDefinedBy]: http://www.w3.org/2000/01/rdf-schema#isDefinedBy
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
 [label]: http://www.w3.org/2000/01/rdf-schema#label
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[range]: http://www.w3.org/2000/01/rdf-schema#range
+[rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [seeAlso]: http://www.w3.org/2000/01/rdf-schema#seeAlso
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
 [statements]: https://w3id.org/emmo/domain/oteio#statement
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
+[usageNote]: http://purl.org/vocab/vann/usageNote
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [dcat:Resource]: http://www.w3.org/ns/dcat#Resource
 [emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a]: https://w3id.org/emmo#EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a
@@ -561,7 +573,7 @@ The class of property restrictions.
 [Relationship]: http://www.w3.org/ns/dcat#Relationship
 [hasRole]: http://www.w3.org/ns/dcat#hasRole
 [dcat:Role]: http://www.w3.org/ns/dcat#Role
-[relation]: http://purl.org/dc/terms/relation
+[relatedResource]: http://purl.org/dc/terms/relation
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [RightsStatement]: http://purl.org/dc/terms/RightsStatement
 [LegalResource]: http://data.europa.eu/eli/ontology#LegalResource

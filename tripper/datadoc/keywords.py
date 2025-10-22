@@ -1,22 +1,28 @@
 """Parse keywords definition and generate context."""
 
-# pylint: disable=too-many-branches,redefined-builtin
+# pylint: disable=too-many-branches,redefined-builtin,too-many-lines
 
 import json
 import os
+import warnings
+from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
 import yaml
 
-from tripper import DDOC, Triplestore
-from tripper.datadoc.dictutils import add, merge
+import tripper
+from tripper import DCTERMS, DDOC, OWL, RDF, RDFS, VANN, Triplestore
 from tripper.datadoc.errors import (
     InvalidKeywordError,
+    MissingKeywordsClassWarning,
     NoSuchTypeError,
+    ParseError,
+    PrefixMismatchError,
     RedefineKeywordError,
 )
+from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
     AttrDict,
     expand_iri,
@@ -28,16 +34,30 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Optional, Union
+    from typing import List, Optional, Union
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
 
 
+# Pre-defined conformance levels
+CONFORMANCE_MAPS = {
+    "mandatory": "mandatory",
+    DDOC.mandatory: "mandatory",
+    "ddoc:mandatory": "mandatory",
+    "recommended": "recommended",
+    DDOC.recommended: "recommended",
+    "ddoc:recommended": "recommended",
+    "optional": "optional",
+    DDOC.optional: "optional",
+    "ddoc:optional": "optional",
+}
+
+
 @lru_cache(maxsize=32)
 def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
 ) -> "Keywords":
@@ -56,6 +76,17 @@ def get_keywords(
     return kw
 
 
+def load_datadoc_schema(ts: "Triplestore") -> None:
+    """Load schema for data documentation to triplestore `ts`.
+
+    It is safe to call this function more than once.
+    """
+    if not ts.query(f"ASK WHERE {{ <{DDOC()}> a <{OWL.Ontology}> }}"):
+        ts.bind("ddoc", DDOC)
+        path = Path(tripper.__file__).parent / "context" / "datadoc.ttl"
+        ts.parse(path)
+
+
 class Keywords:
     """A class representing all keywords within a theme."""
 
@@ -63,7 +94,7 @@ class Keywords:
 
     def __init__(
         self,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
         timeout: float = 3,
     ) -> None:
@@ -83,9 +114,13 @@ class Keywords:
                 belong to.
         """
         default_prefixes = AttrDict(ddoc=str(DDOC))
-        self.data = AttrDict(prefixes=default_prefixes)
+        self.theme = None  # theme for this object
+        self.data = AttrDict(prefixes=default_prefixes, resources=AttrDict())
+
+        # A "view" into `self.data`. A dict mapping short, prefixed
+        # and expanded keyword names to corresponding value dicts in
+        # self.data.
         self.keywords = AttrDict()
-        self.theme = None
 
         if theme:
             self.add_theme(theme)
@@ -109,24 +144,42 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "theme"]
 
+    def _set_keywords(self, clear=True):
+        """Update internal keywords attribute to data attribute.
+
+        If `clear` is false, only new keywords will be added, but nothing
+        removed.
+        """
+        if clear:
+            self.keywords.clear()
+        for clsvalue in self.data.get("resources", {}).values():
+            for keyword, value in clsvalue.get("keywords", {}).items():
+                if keyword not in self.keywords:
+                    expanded = expand_iri(value.iri, self.get_prefixes())
+                    self.keywords[keyword] = value
+                    self.keywords[value.iri] = value
+                    self.keywords[expanded] = value
+
     def copy(self):
         """Returns a copy of self."""
         new = Keywords(theme=None)
-        new.data.update(self.data)
-        new.keywords.update(self.keywords)
         new.theme = self.theme
+        new.data = deepcopy(self.data)
+        new._set_keywords()  # pylint: disable=protected-access
         return new
 
-    def add(self, keywords: "KeywordsType", timeout: float = 3) -> None:
+    def add(
+        self, keywords: "Optional[KeywordsType]", timeout: float = 3
+    ) -> None:
         """Add `keywords` to current keyword object."""
 
         def _add(kw):
             if kw is None:
                 pass
             elif isinstance(kw, Keywords):
-                self.data.update(kw.data)
-                self.keywords.update(kw.keywords)
                 self.theme = merge(self.theme, kw.theme)
+                recursive_update(self.data, kw.data, cls=AttrDict)
+                self._set_keywords(clear=False)
             elif isinstance(kw, Path):
                 self.parse(kw, timeout=timeout)
             elif isinstance(kw, str):
@@ -184,25 +237,32 @@ class Keywords:
         timeout: float = 3,
     ) -> None:
         """Parse YAML file with keyword definitions."""
-        # pylint: disable=too-many-nested-blocks
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
+        try:
+            self._parse(d)
+        except Exception as exc:
+            raise ParseError(f"error parsing '{yamlfile}'") from exc
 
-        dm = self.theme[-1] if isinstance(self.theme, list) else self.theme
-        theme = self.expanded(d.get("theme", dm))
+    def _parse(self, d: dict) -> None:
+        """Parse a dict with keyword definitions following the format of
+        the YAML file."""
+        # pylint: disable=too-many-nested-blocks
         self.add(d.get("basedOn"))
 
         recursive_update(self.data, d)
 
         resources = self.data.get("resources", {})
-        for resource_name, resource in resources.items():
+        for resource in resources.values():
             for keyword, value in resource.get("keywords", {}).items():
 
                 # Simple validation
                 valid_keys = [
                     "name",
                     "iri",
-                    "subPropertyOf",  # XXX - to be implemented
+                    "type",
+                    "subPropertyOf",
+                    "inverseOf",  # XXX - to be implemented
                     "domain",
                     "range",
                     "datatype",
@@ -211,7 +271,6 @@ class Keywords:
                     "conformance",
                     "description",
                     "usageNote",
-                    "characteristics",  # XXX - to be implemented
                     "theme",
                     "default",
                 ]
@@ -226,8 +285,7 @@ class Keywords:
                         raise InvalidKeywordError(
                             f"keyword '{keyword}' has invalid conformance: "
                             f"'{value['conformance']}'. Valid values are "
-                            f"{', '.join(valid_conformances)} "
-                            f"when parsing '{yamlfile}'"
+                            f"{', '.join(valid_conformances)}"
                         )
 
                 if keyword in self.keywords:
@@ -244,8 +302,7 @@ class Keywords:
                                 raise InvalidKeywordError(
                                     f"keyword '{keyword}' reduces strictness "
                                     "of existing conformance: "
-                                    f"{value.conformance} when parsing "
-                                    f"'{yamlfile}'"
+                                    f"{value.conformance}"
                                 )
                             value.setdefault(k, v)
                         elif k in ("domain", "theme", "subPropertyOf"):
@@ -254,24 +311,310 @@ class Keywords:
                             value.setdefault(k, v)
                         elif k in value and value[k] != v:
                             raise RedefineKeywordError(
-                                f"Cannot redefine '{k}' in keyword '{keyword}' "
-                                f"when parsing '{yamlfile}'"
+                                f"Cannot redefine '{k}' in keyword '{keyword}'"
                             )
                 else:
                     value["name"] = keyword
-                    add(value, "domain", resource_name)
-                    add(value, "theme", theme)
-                    recursive_update(
-                        self.keywords,
-                        {
-                            keyword: value,
-                            value["iri"]: value,
-                            expand_iri(
-                                value["iri"], self.get_prefixes()
-                            ): value,
-                        },
-                        append=False,
+                    add(value, "domain", resource.iri)
+                    if "theme" in d:
+                        add(value, "theme", d["theme"])
+
+        self._set_keywords(clear=False)
+
+    def keywordnames(self) -> "list":
+        """Return a list with all keyword names defined in this instance."""
+        return [k for k in self.keywords.keys() if ":" not in k]
+
+    def asdicts(
+        self,
+        names: "Optional[Sequence]" = None,
+        classes: "Optional[Sequence]" = None,
+    ) -> "List[dict]":
+        """Return the content of this Keywords object as a list of JSON-LD
+        dicts.
+
+        If `names` is given, only dicts for keywords in `names` will be
+        returned.
+        """
+        maps = {
+            "subPropertyOf": "rdfs:subPropertyOf",
+            "unit": "ddoc:unitSymbol",
+            "description": "dcterms:description",
+            "usageNote": "vann:usageNote",
+        }
+        conformance_indv = {v: k for k, v in CONFORMANCE_MAPS.items()}
+        if names is None:
+            names = self.keywordnames()
+        if classes is None:
+            classes = self.data.resources.keys()
+
+        dicts = []
+        for name in names:
+            d = self.keywords[name]
+            if "range" in d and self.expanded(d.range) != RDFS.Literal:
+                proptype = "owl:ObjectProperty"
+                range = d.range
+            elif (
+                "datatype" in d and self.expanded(d.datatype) != RDF.langString
+            ):
+                proptype = "owl:DataProperty"
+                range = d.get("datatype")
+            else:
+                proptype = "owl:AnnotationProperty"
+                range = d.get("datatype")
+            dct = {
+                "@id": d.iri,
+                "@type": proptype,
+                "rdfs:label": d.name,
+                "rdfs:domain": d.domain,
+            }
+            if range:
+                dct["rdfs:range"] = range
+            if "conformance" in d:
+                dct["ddoc:conformance"] = conformance_indv.get(
+                    d.conformance, d.conformance
+                )
+            for k, v in d.items():
+                if k in maps:
+                    dct[maps[k]] = v
+            dicts.append(dct)
+
+        for cls in classes:
+            d = self.data.resources[cls]
+            dct = {"@id": d.iri, "@type": OWL.Class}
+            if "subClassOf" in d:
+                dct["rdfs:subClassOf"] = d.subClassOf
+            if "description" in d:
+                dct["dcterms:description"] = d.description
+            if "usageNote" in d:
+                dct["vann:usageNote"] = d.usageNote
+            dicts.append(dct)
+
+        return dicts
+
+    def fromdicts(
+        self,
+        dicts: "Sequence[dict]",
+        prefixes: "Optional[dict]" = None,
+        theme: "Optional[str]" = None,
+        basedOn: "Optional[str]" = None,
+    ) -> None:
+        """Populate this Keywords object from a sequence of dicts.
+
+        The format of the dicts should follow what is returned by
+        tripper.datadoc.acquire().
+
+        """
+        data = self._fromdicts(
+            dicts,
+            prefixes=prefixes,
+            theme=theme,
+            basedOn=basedOn,
+        )
+        self._parse(data)
+
+    def _fromdicts(
+        self,
+        dicts: "Sequence[dict]",
+        prefixes: "Optional[dict]" = None,
+        theme: "Optional[str]" = None,
+        basedOn: "Optional[str]" = None,
+    ) -> dict:
+        """Help method for `fromdicts()` that returns a dict with
+        keyword definitions following the format of the YAML file.
+        """
+        # pylint: disable=too-many-locals,too-many-statements
+
+        # Prefixes (merged with self.data.prefixes)
+        p = self.get_prefixes().copy()
+        if prefixes:
+            for prefix, ns in prefixes.items():
+                if prefix in p and p[prefix] != ns:
+                    raise PrefixMismatchError(
+                        f"adding prefix `{prefix}: {ns}` but it is already "
+                        f"defined to '{p[prefix]}'"
                     )
+            p.update(prefixes)
+
+        def isproperty(v):
+            types = [v["@type"]] if isinstance(v["@type"], str) else v["@type"]
+            for t in types:
+                exp = expand_iri(t, p)
+                if exp in (
+                    OWL.AnnotationProperty,
+                    OWL.ObjectProperty,
+                    OWL.DataProperty,
+                ):
+                    return True
+            return False
+
+        entities = {expand_iri(d["@id"], p): d for d in dicts}
+        properties = {k: v for k, v in entities.items() if isproperty(v)}
+        classes = {k: v for k, v in entities.items() if k not in properties}
+
+        data = AttrDict()
+        if theme:
+            data.theme = theme
+        if basedOn:
+            data.basedOn = basedOn
+        data.prefixes = p
+        data.resources = AttrDict()
+        resources = data.resources
+
+        # Add classes
+        clsmaps = {
+            RDFS.subClassOf: "subClassOf",
+            "rdfs:subClassOf": "subClassOf",
+            DCTERMS.description: "description",
+            "dcterms:description": "description",
+            VANN.usageNote: "usageNote",
+            "vann:usageNote": "usageNote",
+        }
+        for k, v in classes.items():
+            d = AttrDict(iri=self.prefixed(k))
+            for iri, name in clsmaps.items():
+                if iri == k:
+                    d[name] = v
+            d.keywords = AttrDict()
+            resources[self.keywordname(k)] = d
+
+        # Add properties
+        for propname, value in properties.items():
+            name = iriname(propname)
+            label = value["label"] if "label" in value else name
+            d = AttrDict(iri=value["@id"])
+            if "@type" in value:
+                d.type = prefix_iri(value["@type"], p)
+            if "domain" in value:
+                for domain in asseq(value["domain"]):
+                    domainname = iriname(domain)
+                    if domainname not in resources:
+                        if domainname not in self.data.resources:
+                            warnings.warn(
+                                "Adding undefined domain for keyword "
+                                f"'{label}': {domain}",
+                                MissingKeywordsClassWarning,
+                            )
+                            r = AttrDict(
+                                iri=prefix_iri(domain, self.data.prefixes),
+                                keywords=AttrDict(),
+                            )
+                        else:
+                            r = self.data.resources[domainname].copy()
+                        resources[domainname] = r
+                        r.keywords[label] = d
+                    else:
+                        resources[domainname].keywords[label] = d
+            if "range" in value:
+                _types = asseq(d.get("type", OWL.AnnotationProperty))
+                types = [expand_iri(t, p) for t in _types]
+                if OWL.ObjectProperty in types:
+                    d.range = value["range"]
+                else:
+                    d.range = "rdfs:Literal"
+                    d.datatype = value["range"]
+            if "conformance" in value:
+                d.conformance = CONFORMANCE_MAPS[value["conformance"]]
+            for k, v in value.items():
+                if (
+                    k not in ("@id", "@type", "domain", "label", "name")
+                    and k not in d
+                ):
+                    d[k] = v
+
+        return data
+
+    def missing_keywords(
+        self, ts: "Triplestore", include_existing: bool = False
+    ):
+        """Return a list with the names of keywords in this instance that are
+        not defined in triplestore `ts`.
+
+        If `include_existing` is true, two lists are returned, both keywords
+        missing from and existing in `ts`.
+        """
+        expanded = {k for k in self.keywords.keys() if "://" in k}
+        iris = [f"<{k}>" for k in expanded]
+        query = f"""
+        SELECT ?s WHERE {{
+          VALUES ?s {{ { ' '.join(iris) } }}
+          ?s a ?o
+        }}
+        """
+        existing = {r[0] for r in ts.query(query)}
+        missing = expanded.difference(existing)
+        missing_names = [self.keywords[k].name for k in missing]
+        if include_existing:
+            existing_names = [self.keywords[k].name for k in existing]
+            return missing_names, existing_names
+        return missing_names
+
+    def _loaddicts(
+        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+    ) -> "Sequence[dict]":
+        """Load given iris from triplestore `ts`.
+
+        If `iris` is not given, all OWL properties will be loaded.
+        """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.dataset import acquire
+
+        if iris is None:
+            query = """
+            PREFIX owl: <http://www.w3.org/2002/07/owl#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            SELECT ?s WHERE {
+              VALUES ?o {
+                owl:DataProperty owl:ObjectProperty owl:AnnotationProperty
+              }
+              ?s a ?o .
+            }
+            """
+            iris = [iri[0] for iri in ts.query(query)]
+
+        p = ts.namespaces
+        dicts = [acquire(ts, iri) for iri in iris]
+        dct = {expand_iri(d["@id"], p): d for d in dicts}
+
+        # Add domain and range to dicts
+        for d in list(dct.values()):
+            if "domain" in d:
+                for domain in asseq(d["domain"]):
+                    expanded = expand_iri(domain, p)
+                    if expanded not in dct:
+                        dct[expanded] = d
+            if "range" in d:
+                for range_ in asseq(d["range"]):
+                    expanded = expand_iri(range_, p)
+                    if expanded not in dct:
+                        dct[expanded] = d
+
+        newdicts = list(dct.values())
+        return newdicts
+
+    def save(self, ts: "Triplestore") -> dict:
+        """Save to triplestore."""
+        # pylint: disable=import-outside-toplevel,cyclic-import
+        from tripper.datadoc.dataset import store
+
+        # Ensure that the schema for properties is stored
+        load_datadoc_schema(ts)
+
+        # Store all keywords that are not already in the triplestore
+        missing = self.missing_keywords(ts)
+
+        dicts = self.asdicts(missing)
+        return store(ts, dicts)
+
+    def load(
+        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+    ) -> None:
+        """Populate this Keyword object from a triplestore.
+
+        If `iris` is given, only the provided IRIs will be added.
+        """
+        dicts = self._loaddicts(ts, iris)
+        self.fromdicts(dicts, prefixes=ts.namespaces)
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
@@ -348,6 +691,19 @@ class Keywords:
         if keyword not in self.keywords:
             raise InvalidKeywordError(keyword)
         return self.keywords[keyword].name
+
+    def prefixed(self, keyword: str) -> str:
+        """Return prefixed name or `keyword`.
+
+        Example:
+
+        >>> keywords = Keywords()
+        >>> keywords.prefixed("title")
+        'dcterms:title'
+        """
+        if keyword not in self.keywords:
+            raise InvalidKeywordError(keyword)
+        return prefix_iri(self.keywords[keyword].iri, self.get_prefixes())
 
     def typename(self, type) -> str:
         """Return the short name of `type`.
@@ -677,7 +1033,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if not args.theme and not args.yamlfile:
-        args.theme = "ddoc:default"
+        args.theme = "ddoc:datadoc"
 
     keywords = Keywords(theme=args.theme, yamlfile=args.yamlfile)
 

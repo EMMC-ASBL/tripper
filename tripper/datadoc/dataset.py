@@ -48,7 +48,6 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.dictutils import add, get
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     IRIExistsError,
@@ -57,6 +56,7 @@ from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKey
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
+from tripper.datadoc.utils import add, get
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -165,7 +165,7 @@ def told(
     if not singlerepr:
         keywords = get_keywords(
             keywords=keywords,
-            theme=descr.get("theme", "ddoc:default"),  # type: ignore
+            theme=descr.get("theme", "ddoc:datadoc"),  # type: ignore
             yamlfile=descr.get("keywordfile"),  # type: ignore
         )
     else:
@@ -366,9 +366,9 @@ def store(
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
     """
     if isinstance(source, dict):
-        theme = source.get("theme", "ddoc:default")
+        theme = source.get("theme", "ddoc:datadoc")
     else:
-        theme = "ddoc:default"
+        theme = "ddoc:datadoc"
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
         keywords=keywords, context=context, prefixes=prefixes
@@ -1068,7 +1068,7 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
-    context = get_context(context=context, theme="ddoc:default")
+    context = get_context(context=context, theme="ddoc:datadoc")
 
     dct = acquire(ts, iri, use_sparql=use_sparql)
 

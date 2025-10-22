@@ -1,3 +1,0 @@
-# dictutils
-
-::: tripper.datadoc.dictutils
