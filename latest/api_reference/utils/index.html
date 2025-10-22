@@ -981,9 +981,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.utils.is_url" class="md-nav__link">
+  <a href="#tripper.utils.is_curie" class="md-nav__link">
     <span class="md-ellipsis">
-      is_url()
+      is_curie()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.is_uri" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_uri()
     </span>
   </a>
   
@@ -1907,9 +1916,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.utils.is_url" class="md-nav__link">
+  <a href="#tripper.utils.is_curie" class="md-nav__link">
     <span class="md-ellipsis">
-      is_url()
+      is_curie()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.utils.is_uri" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_uri()
     </span>
   </a>
   
@@ -2776,15 +2794,15 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
 
 
 
-<h2 id="tripper.utils.is_url" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">is_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">require_netloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_unescaped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;%:~/?&amp;;=#&#39;</span><span class="p">)</span></code>
+<h2 id="tripper.utils.is_curie" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_curie</span><span class="p">(</span><span class="n">curie</span><span class="p">,</span> <span class="n">exclude_netloc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
-<a href="#tripper.utils.is_url" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.utils.is_curie" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Returns true if <code>url</code> is a valid URL, otherwise false.</p>
+      <p>Returns whether <code>curie</code> is a CURIE (compact URI).</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -2798,27 +2816,111 @@ it make no sense to set <code>length</code> larger than 32 bytes.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>url</code></td>
+        <td><code>curie</code></td>
         <td><code>str</code></td>
-        <td><p>URL to validate.</p></td>
+        <td><p>CURIE to validate.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>exclude_netloc</code></td>
+        <td></td>
+        <td><p>Whether to exclude CURIEs with two slashes following
+the first colon. If true, the part before the colon should also
+correspond to a valid URI schema name.</p></td>
+        <td><code>True</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">is_curie</span><span class="p">(</span><span class="s2">&quot;http://example.com&quot;</span><span class="p">)</span>
+<span class="kc">False</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">is_curie</span><span class="p">(</span><span class="s2">&quot;rdf:type&quot;</span><span class="p">)</span>
+<span class="kc">True</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_curie</span><span class="p">(</span><span class="n">curie</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exclude_netloc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns whether `curie` is a CURIE (compact URI).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        curie: CURIE to validate.</span>
+<span class="sd">        exclude_netloc: Whether to exclude CURIEs with two slashes following</span>
+<span class="sd">            the first colon. If true, the part before the colon should also</span>
+<span class="sd">            correspond to a valid URI schema name.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; is_curie(&quot;http://example.com&quot;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; is_curie(&quot;rdf:type&quot;)</span>
+<span class="sd">        True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">curie</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">curie</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;[&quot;</span> <span class="ow">and</span> <span class="n">curie</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;]&quot;</span><span class="p">:</span>
+        <span class="n">curie</span> <span class="o">=</span> <span class="n">curie</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">exclude_netloc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;is_curie() with argument `exclude_netloc=False` isn&#39;t implemented&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-zA-Z][a-zA-Z0-9+.-]*:(?!//)\S*$&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="p">))</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.utils.is_uri" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">require_netloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_unescaped</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;%:~/?&amp;;=#&#39;</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.is_uri" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns true if <code>uri</code> is a valid URI, otherwise false.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>uri</code></td>
+        <td><code>str</code></td>
+        <td><p>URI to validate.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>require_netloc</code></td>
         <td><code>bool</code></td>
-        <td><p>Whether to require <code>url</code> to contain a network location.
-Setting this to false, will exclude URNs, which in are valid URLs.
-However, in most practical cases, you would expect the URL to
+        <td><p>Whether to require <code>uri</code> to contain a network location.
+Setting this to false, will exclude URNs, which in are valid URIs.
+However, in most practical cases, you would expect the URI to
 contain a network location.</p></td>
         <td><code>True</code></td>
       </tr>
       <tr>
         <td><code>allow_unescaped</code></td>
         <td><code>bool</code></td>
-        <td><p>Whether to allow <code>url</code> to contain unescaped special
+        <td><p>Whether to allow <code>uri</code> to contain unescaped special
 characters. Any character not in <code>safe</code> except for letters, digits
 and '_.-' are considered to be special.
-Escaping is expected to use standard URL %xx escape codes.</p></td>
+Escaping is expected to use standard URI %xx escape codes.</p></td>
         <td><code>False</code></td>
       </tr>
       <tr>
@@ -2832,31 +2934,31 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_url</span><span class="p">(</span>
-    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_uri</span><span class="p">(</span>
+    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">require_netloc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_unescaped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">safe</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;%:~/?&amp;;=#&quot;</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns true if `url` is a valid URL, otherwise false.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns true if `uri` is a valid URI, otherwise false.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        url: URL to validate.</span>
-<span class="sd">        require_netloc: Whether to require `url` to contain a network location.</span>
-<span class="sd">            Setting this to false, will exclude URNs, which in are valid URLs.</span>
-<span class="sd">            However, in most practical cases, you would expect the URL to</span>
+<span class="sd">        uri: URI to validate.</span>
+<span class="sd">        require_netloc: Whether to require `uri` to contain a network location.</span>
+<span class="sd">            Setting this to false, will exclude URNs, which in are valid URIs.</span>
+<span class="sd">            However, in most practical cases, you would expect the URI to</span>
 <span class="sd">            contain a network location.</span>
-<span class="sd">        allow_unescaped: Whether to allow `url` to contain unescaped special</span>
+<span class="sd">        allow_unescaped: Whether to allow `uri` to contain unescaped special</span>
 <span class="sd">            characters. Any character not in `safe` except for letters, digits</span>
 <span class="sd">            and &#39;_.-&#39; are considered to be special.</span>
-<span class="sd">            Escaping is expected to use standard URL %xx escape codes.</span>
+<span class="sd">            Escaping is expected to use standard URI %xx escape codes.</span>
 <span class="sd">        safe: Characters in addition to &#39;_.-&#39; that doesn&#39;t need to be</span>
 <span class="sd">            escaped when `allow_unescaped` is false.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_unescaped</span> <span class="ow">and</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span> <span class="o">!=</span> <span class="n">url</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_unescaped</span> <span class="ow">and</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="n">safe</span><span class="p">)</span> <span class="o">!=</span> <span class="n">uri</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">require_netloc</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">netloc</span><span class="p">))</span>

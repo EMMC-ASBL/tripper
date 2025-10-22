@@ -2542,7 +2542,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">        OTELib partial pipeline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=too-many-branches,too-many-locals</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">&quot;ddoc:default&quot;</span><span class="p">)</span>
 
     <span class="n">dct</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
 
@@ -3113,7 +3113,7 @@ accessible with HTTP GET.</p></td>
         <td><code>keywords</code></td>
         <td><code>&#39;Optional[Keywords]&#39;</code></td>
         <td><p>Optional Keywords object with keywords definitions.
-The default is to infer the keywords from the <code>domain</code> or
+The default is to infer the keywords from the <code>theme</code> or
 <code>keywordfile</code> keys in the YAML file.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -3157,7 +3157,7 @@ inferred from <code>keywords</code>.</p></td>
 <span class="sd">            the data documentation from.  It may also be an URL to a file</span>
 <span class="sd">            accessible with HTTP GET.</span>
 <span class="sd">        keywords: Optional Keywords object with keywords definitions.</span>
-<span class="sd">            The default is to infer the keywords from the `domain` or</span>
+<span class="sd">            The default is to infer the keywords from the `theme` or</span>
 <span class="sd">            `keywordfile` keys in the YAML file.</span>
 <span class="sd">        context: Optional Context object with mappings. By default it is</span>
 <span class="sd">            inferred from `keywords`.</span>
@@ -3842,10 +3842,10 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">domain</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span>
+        <span class="n">theme</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">domain</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
-    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="n">theme</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span>
+    <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
     <span class="p">)</span>
@@ -4017,7 +4017,7 @@ or included in the JSON-LD context.</p></td>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">single</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="s2">&quot;@graph&quot;</span>
-    <span class="n">multi</span> <span class="o">=</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;keywordfile&quot;</span><span class="p">,</span> <span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span>
+    <span class="n">multi</span> <span class="o">=</span> <span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;keywordfile&quot;</span><span class="p">,</span> <span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span>
     <span class="n">singlerepr</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="ow">in</span> <span class="n">descr</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">single</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
     <span class="n">multirepr</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="ow">in</span> <span class="n">descr</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">multi</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">singlerepr</span> <span class="ow">and</span> <span class="n">multirepr</span><span class="p">:</span>
@@ -4027,7 +4027,7 @@ or included in the JSON-LD context.</p></td>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">singlerepr</span><span class="p">:</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-            <span class="n">domain</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">theme</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
             <span class="n">yamlfile</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywordfile&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -4044,7 +4044,7 @@ or included in the JSON-LD context.</p></td>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">descr</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># type: ignore</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;domain&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;theme&quot;</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@context&quot;</span><span class="p">:</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>

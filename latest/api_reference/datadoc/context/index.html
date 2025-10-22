@@ -2034,7 +2034,7 @@ Context        </code>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -2049,7 +2049,7 @@ Context        </code>
 <span class="sd">                - str: If a valid URI, the context is loaded from this URI,</span>
 <span class="sd">                  otherwise it is assumed to be a file path to load.</span>
 <span class="sd">                - sequence: A sequence of the above.</span>
-<span class="sd">            domain: Load initial context for this domain.</span>
+<span class="sd">            theme: Load initial context for this theme.</span>
 <span class="sd">            keywords: Initialise from this keywords instance.</span>
 <span class="sd">            processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
 <span class="sd">            timeout: Timeout when accessing remote files.</span>
@@ -2065,11 +2065,11 @@ Context        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">domain</span><span class="p">:</span>
-                <span class="n">keywords</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
+                <span class="n">keywords</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
-        <span class="k">elif</span> <span class="n">domain</span><span class="p">:</span>
-            <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">theme</span><span class="p">:</span>
+            <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
@@ -2487,7 +2487,7 @@ Context        </code>
 
 
 <h3 id="tripper.datadoc.context.Context.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2523,10 +2523,10 @@ Context        </code>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>domain</code></td>
+        <td><code>theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Load initial context for this domain.</p></td>
-        <td><code>&#39;default&#39;</code></td>
+        <td><p>Load initial context for this theme.</p></td>
+        <td><code>&#39;ddoc:default&#39;</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
@@ -2553,7 +2553,7 @@ Context        </code>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -2568,7 +2568,7 @@ Context        </code>
 <span class="sd">            - str: If a valid URI, the context is loaded from this URI,</span>
 <span class="sd">              otherwise it is assumed to be a file path to load.</span>
 <span class="sd">            - sequence: A sequence of the above.</span>
-<span class="sd">        domain: Load initial context for this domain.</span>
+<span class="sd">        theme: Load initial context for this theme.</span>
 <span class="sd">        keywords: Initialise from this keywords instance.</span>
 <span class="sd">        processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
 <span class="sd">        timeout: Timeout when accessing remote files.</span>
@@ -2584,11 +2584,11 @@ Context        </code>
     <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">domain</span><span class="p">:</span>
-            <span class="n">keywords</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
+            <span class="n">keywords</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
-    <span class="k">elif</span> <span class="n">domain</span><span class="p">:</span>
-        <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">theme</span><span class="p">:</span>
+        <span class="n">keywords</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
@@ -3246,7 +3246,7 @@ If <code>update</code> is:</p>
 
 
 <h2 id="tripper.datadoc.context.get_context" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_domain</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_theme</span><span class="o">=</span><span class="s1">&#39;ddoc:default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.context.get_context" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3279,17 +3279,17 @@ If <code>update</code> is:</p>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>domain</code></td>
+        <td><code>theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Load initial context for this domain.</p></td>
+        <td><p>Load initial context for this theme.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
-        <td><code>default_domain</code></td>
+        <td><code>default_theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Initialise context for this domain if neither
-<code>context</code> nor <code>domain</code> are provided.</p></td>
-        <td><code>&#39;default&#39;</code></td>
+        <td><p>Initialise context for this theme if neither
+<code>context</code> nor <code>theme</code> are provided.</p></td>
+        <td><code>&#39;ddoc:default&#39;</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
@@ -3342,8 +3342,8 @@ If <code>update</code> is:</p>
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_context</span><span class="p">(</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">default_domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">default_theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
@@ -3360,9 +3360,9 @@ If <code>update</code> is:</p>
 <span class="sd">            - str: If a valid URI, the context is loaded from this URI,</span>
 <span class="sd">              otherwise it is assumed to be a file path to load.</span>
 <span class="sd">            - sequence: A sequence of the above.</span>
-<span class="sd">        domain: Load initial context for this domain.</span>
-<span class="sd">        default_domain: Initialise context for this domain if neither</span>
-<span class="sd">            `context` nor `domain` are provided.</span>
+<span class="sd">        theme: Load initial context for this theme.</span>
+<span class="sd">        default_theme: Initialise context for this theme if neither</span>
+<span class="sd">            `context` nor `theme` are provided.</span>
 <span class="sd">        keywords: Initialise from this keywords instance.</span>
 <span class="sd">        prefixes: Optional dict with additional prefixes.</span>
 <span class="sd">        processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
@@ -3375,16 +3375,16 @@ If <code>update</code> is:</p>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">keywords</span> <span class="ow">or</span> <span class="n">domain</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">keywords</span> <span class="ow">or</span> <span class="n">theme</span><span class="p">:</span>
             <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">keywords</span> <span class="k">else</span> <span class="n">Keywords</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">domain</span><span class="p">:</span>
-                <span class="n">kw</span><span class="o">.</span><span class="n">add_domain</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
+                <span class="n">kw</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
             <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span>
             <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">theme</span><span class="o">=</span><span class="n">theme</span> <span class="k">if</span> <span class="n">context</span> <span class="ow">or</span> <span class="n">theme</span> <span class="ow">or</span> <span class="n">keywords</span> <span class="k">else</span> <span class="n">default_theme</span><span class="p">,</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-            <span class="n">domain</span><span class="o">=</span><span class="n">domain</span> <span class="k">if</span> <span class="n">context</span> <span class="ow">or</span> <span class="n">domain</span> <span class="ow">or</span> <span class="n">keywords</span> <span class="k">else</span> <span class="n">default_domain</span><span class="p">,</span>
             <span class="n">processingMode</span><span class="o">=</span><span class="n">processingMode</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span>

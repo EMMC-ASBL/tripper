@@ -1871,6 +1871,10 @@
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Format to use with `--dump`.  Default is &quot;turtle&quot;.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--keywords&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path or URL to custom keywords file for the input.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Subcommand: delete</span>
     <span class="n">parser_delete</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
@@ -2098,7 +2102,7 @@
                 <span class="n">option</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">kw</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">td</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
-            <span class="n">infile</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">get_context</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span>
+            <span class="n">infile</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span>
         <span class="p">)</span>
         <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

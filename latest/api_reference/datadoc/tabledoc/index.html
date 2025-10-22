@@ -1846,14 +1846,14 @@ or an IRI to a class in an ontology.  Defaults to
         <td><code>&#39;Dataset&#39;</code></td>
       </tr>
       <tr>
-        <td><code>domain</code></td>
+        <td><code>theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Name of one of more domains to load keywords for.</p></td>
-        <td><code>&#39;default&#39;</code></td>
+        <td><p>Name of one of more themes to load keywords for.</p></td>
+        <td><code>&#39;ddoc:default&#39;</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>Optional[Keywords]</code></td>
+        <td><code>Optional[KeywordsType]</code></td>
         <td><p>Keywords object with additional keywords definitions.
 If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
@@ -1898,7 +1898,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
 <span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
 <span class="sd">            &quot;dataset&quot;.</span>
-<span class="sd">        domain: Name of one of more domains to load keywords for.</span>
+<span class="sd">        theme: Name of one of more themes to load keywords for.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Additional user-defined context that should be</span>
@@ -1919,8 +1919,8 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <span class="n">header</span><span class="p">:</span> <span class="s2">&quot;Sequence[str]&quot;</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;Sequence[Sequence[str]]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
-        <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -1928,7 +1928,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
             <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
         <span class="p">)</span>
@@ -1977,7 +1977,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
         <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2079,7 +2079,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
         <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
@@ -2313,7 +2313,7 @@ Defaults to "Dataset".</p></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>Optional[Keywords]</code></td>
+        <td><code>Optional[KeywordsType]</code></td>
         <td><p>Keywords object with additional keywords definitions.
 If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
@@ -2366,7 +2366,7 @@ from cells.</p></td>
 <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
     <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2517,7 +2517,7 @@ or an IRI to a class in an ontology.  Defaults to
       </tr>
       <tr>
         <td><code>keywords</code></td>
-        <td><code>Optional[Keywords]</code></td>
+        <td><code>Optional[KeywordsType]</code></td>
         <td><p>Keywords object with additional keywords definitions.
 If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
@@ -2582,7 +2582,7 @@ formatting parameters.  For more details, see
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
     <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
