@@ -437,6 +437,9 @@ def test_is_curie():
     from tripper.utils import is_curie
 
     assert is_curie("isbn:0393315703") is True
+    assert is_curie(" isbn:0393315703") is False
+    assert is_curie("_isbn:0393315703") is False
+    assert is_curie("isbn:0393315703 ") is False
     assert is_curie("[isbn:0393315703]") is True
     assert is_curie("home:#start") is True
     assert is_curie("joseki:") is True
@@ -591,5 +594,5 @@ def test_get_entry_points():
             break
     else:
         raise RuntimeError(
-            "no tripper.keywords entry point with value 'default'"
+            "no tripper.keywords entry point with value 'ddoc:default'"
         )
