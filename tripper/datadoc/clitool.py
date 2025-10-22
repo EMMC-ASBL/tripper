@@ -13,7 +13,7 @@ from tripper.datadoc import (
     TableDoc,
     acquire,
     delete,
-    get_jsonld_context,
+    get_context,
     load,
     save_datadoc,
     search,
@@ -36,7 +36,7 @@ def subcommand_add(ts, args):
                 option, value = token.split("=", 1)
                 kw[option] = value
         td = TableDoc.parse_csv(
-            infile, context=get_jsonld_context(args.context), **kw
+            infile, context=get_context(args.context), **kw
         )
         td.save(ts)
     else:

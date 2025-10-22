@@ -1231,7 +1231,7 @@ class UnitRegistry(pint.UnitRegistry):
         info = self.get_unit_info(
             name=name, symbol=symbol, iri=iri, unitCode=unitCode
         )
-        return self[info.name].u
+        return self(info.name).u
 
     def get_unit_info(
         self,

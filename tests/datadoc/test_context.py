@@ -19,7 +19,7 @@ def test_copy():
 
 
 def test_add_context():
-    """Test add_context() method."""
+    """Test add_context() method with dict input."""
     context = {
         "fam": "http://example.com/family#",
         "hasSon": {"@id": "fam:hasSon", "@type": "@id"},
@@ -40,8 +40,38 @@ def test_add_context():
     assert copy.ctx["mappings"]["hasSon"]["_prefix"] is False
 
 
+def test_add_context_seq():
+    """Test add_context() method with list input."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    c = Context(domain=None)
+    assert c.get_mappings() == {}
+
+    c.add_context(ctx)
+    assert c.get_mappings() == ctx.get_mappings()
+
+    c = Context(domain=None)
+    c.add_context(
+        [
+            str(indir / "semdata-context.json"),
+            {"pixel": "http:example.com/pixel"},
+        ]
+    )
+    assert set(c.get_mappings().keys()) == {"fromSample", "pixel"}
+    prefixes = c.get_prefixes()
+    assert "micro" in prefixes
+    assert "dcat" not in prefixes
+
+
+def test_add_context_invalid():
+    """Test add_context() method with invalid input."""
+    c = Context(domain=None)
+    with pytest.raises(TypeError):
+        c.add_context(3)
+
+
 def test_get_context_dict():
-    """Test get_context() method."""
+    """Test get_context_dict() method."""
     context = ctx.get_context_dict()
     assert context["adms"] == "http://www.w3.org/ns/adms#"
     assert context["mediaType"] == {
