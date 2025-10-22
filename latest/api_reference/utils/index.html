@@ -2873,7 +2873,7 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
 
 
 <h2 id="tripper.utils.openfile" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">openfile</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">openfile</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a href="#tripper.utils.openfile" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2901,6 +2901,12 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
+        <td><code>mode</code></td>
+        <td><code>str</code></td>
+        <td><p>See <code>mode</code> argument of open().</p></td>
+        <td><code>&#39;rt&#39;</code></td>
+      </tr>
+      <tr>
         <td><code>timeout</code></td>
         <td><code>float</code></td>
         <td><p>Timeout for accessing the file in seconds.</p></td>
@@ -2914,7 +2920,7 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
       </tr>
   </tbody>
 </table>
-<p><strong>Returns:</strong></p>
+<p><strong>Yields:</strong></p>
 <table>
   <thead>
     <tr>
@@ -2933,7 +2939,7 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">openfile</span><span class="p">(</span>
-    <span class="n">url</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path]&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">url</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path]&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Like open(), but allows opening remote files using HTTP GET requests.</span>
 
@@ -2941,10 +2947,11 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        url: File path or URL to open.</span>
+<span class="sd">        mode: See `mode` argument of open().</span>
 <span class="sd">        timeout: Timeout for accessing the file in seconds.</span>
 <span class="sd">        kwargs: Additional passed to open().</span>
 
-<span class="sd">    Returns:</span>
+<span class="sd">    Yields:</span>
 <span class="sd">        A stream object returned by open().</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2973,7 +2980,8 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">url</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># pylint: disable=unspecified-encoding</span>
+        <span class="c1"># pylint: disable=unspecified-encoding</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">yield</span> <span class="n">f</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

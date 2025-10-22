@@ -3638,7 +3638,7 @@ from ontologies.</p>
         <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit_info</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">unitCode</span><span class="o">=</span><span class="n">unitCode</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">u</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">u</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_unit_info</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4762,7 +4762,7 @@ Ex: "Ampere".</p></td>
     <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unit_info</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">unitCode</span><span class="o">=</span><span class="n">unitCode</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">u</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">u</span>
 </code></pre></div>
         </details>
     </div>

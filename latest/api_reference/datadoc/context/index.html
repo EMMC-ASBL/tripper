@@ -2037,20 +2037,29 @@ Context        </code>
         <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialises context object.</span>
 
 <span class="sd">        Arguments:</span>
-<span class="sd">            context: Optional context to load.</span>
+<span class="sd">            context: Optional context to load. Supported types:</span>
+<span class="sd">                - Context: The Context instance will be updated and returned,</span>
+<span class="sd">                  unless `copy` is true.</span>
+<span class="sd">                - dict: Dict-representation of a valid JSON-LD context.</span>
+<span class="sd">                - str: If a valid URI, the context is loaded from this URI,</span>
+<span class="sd">                  otherwise it is assumed to be a file path to load.</span>
+<span class="sd">                - sequence: A sequence of the above.</span>
 <span class="sd">            domain: Load initial context for this domain.</span>
 <span class="sd">            keywords: Initialise from this keywords instance.</span>
 <span class="sd">            processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
+<span class="sd">            timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ld</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdProcessor</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">_get_initial_context</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processingMode&quot;</span><span class="p">:</span> <span class="n">processingMode</span><span class="p">}</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2099,6 +2108,20 @@ Context        </code>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a context to this object.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;`context` should be a dict, str, Context or a sequence of &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
@@ -2464,7 +2487,7 @@ Context        </code>
 
 
 <h3 id="tripper.datadoc.context.Context.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2490,7 +2513,13 @@ Context        </code>
       <tr>
         <td><code>context</code></td>
         <td><code>Optional[ContextType]</code></td>
-        <td><p>Optional context to load.</p></td>
+        <td><p>Optional context to load. Supported types:
+- Context: The Context instance will be updated and returned,
+  unless <code>copy</code> is true.
+- dict: Dict-representation of a valid JSON-LD context.
+- str: If a valid URI, the context is loaded from this URI,
+  otherwise it is assumed to be a file path to load.
+- sequence: A sequence of the above.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -2511,6 +2540,12 @@ Context        </code>
         <td><p>Either "json-ld-1.0" or "json-ld-1.1".</p></td>
         <td><code>&#39;json-ld-1.1&#39;</code></td>
       </tr>
+      <tr>
+        <td><code>timeout</code></td>
+        <td><code>float</code></td>
+        <td><p>Timeout when accessing remote files.</p></td>
+        <td><code>3</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -2521,20 +2556,29 @@ Context        </code>
     <span class="n">domain</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialises context object.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        context: Optional context to load.</span>
+<span class="sd">        context: Optional context to load. Supported types:</span>
+<span class="sd">            - Context: The Context instance will be updated and returned,</span>
+<span class="sd">              unless `copy` is true.</span>
+<span class="sd">            - dict: Dict-representation of a valid JSON-LD context.</span>
+<span class="sd">            - str: If a valid URI, the context is loaded from this URI,</span>
+<span class="sd">              otherwise it is assumed to be a file path to load.</span>
+<span class="sd">            - sequence: A sequence of the above.</span>
 <span class="sd">        domain: Load initial context for this domain.</span>
 <span class="sd">        keywords: Initialise from this keywords instance.</span>
 <span class="sd">        processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
+<span class="sd">        timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ld</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdProcessor</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">_get_initial_context</span><span class="p">(</span>
         <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processingMode&quot;</span><span class="p">:</span> <span class="n">processingMode</span><span class="p">}</span>
     <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2579,6 +2623,20 @@ Context        </code>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a context to this object.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;`context` should be a dict, str, Context or a sequence of &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
@@ -3188,7 +3246,7 @@ If <code>update</code> is:</p>
 
 
 <h2 id="tripper.datadoc.context.get_context" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_domain</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_domain</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.context.get_context" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3211,8 +3269,13 @@ If <code>update</code> is:</p>
       <tr>
         <td><code>context</code></td>
         <td><code>Optional[ContextType]</code></td>
-        <td><p>Input context.  If it is a <code>Context</code> instance,
- it will be updated and returned.</p></td>
+        <td><p>Input context.  Several types are supported:
+- Context: The Context instance will be updated and returned,
+  unless <code>copy</code> is true.
+- dict: Dict-representation of a valid JSON-LD context.
+- str: If a valid URI, the context is loaded from this URI,
+  otherwise it is assumed to be a file path to load.
+- sequence: A sequence of the above.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -3252,6 +3315,12 @@ If <code>update</code> is:</p>
         <td><p>If true, always return a new Context object.</p></td>
         <td><code>False</code></td>
       </tr>
+      <tr>
+        <td><code>timeout</code></td>
+        <td><code>float</code></td>
+        <td><p>Timeout when accessing remote files.</p></td>
+        <td><code>3</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -3279,12 +3348,18 @@ If <code>update</code> is:</p>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Context&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A convinient function that returns an Context instance.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        context: Input context.  If it is a `Context` instance,</span>
-<span class="sd">             it will be updated and returned.</span>
+<span class="sd">        context: Input context.  Several types are supported:</span>
+<span class="sd">            - Context: The Context instance will be updated and returned,</span>
+<span class="sd">              unless `copy` is true.</span>
+<span class="sd">            - dict: Dict-representation of a valid JSON-LD context.</span>
+<span class="sd">            - str: If a valid URI, the context is loaded from this URI,</span>
+<span class="sd">              otherwise it is assumed to be a file path to load.</span>
+<span class="sd">            - sequence: A sequence of the above.</span>
 <span class="sd">        domain: Load initial context for this domain.</span>
 <span class="sd">        default_domain: Initialise context for this domain if neither</span>
 <span class="sd">            `context` nor `domain` are provided.</span>
@@ -3292,6 +3367,7 @@ If <code>update</code> is:</p>
 <span class="sd">        prefixes: Optional dict with additional prefixes.</span>
 <span class="sd">        processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
 <span class="sd">        copy: If true, always return a new Context object.</span>
+<span class="sd">        timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Context object.</span>
@@ -3306,10 +3382,11 @@ If <code>update</code> is:</p>
             <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
             <span class="n">domain</span><span class="o">=</span><span class="n">domain</span> <span class="k">if</span> <span class="n">context</span> <span class="ow">or</span> <span class="n">domain</span> <span class="ow">or</span> <span class="n">keywords</span> <span class="k">else</span> <span class="n">default_domain</span><span class="p">,</span>
-            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
             <span class="n">processingMode</span><span class="o">=</span><span class="n">processingMode</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
         <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
