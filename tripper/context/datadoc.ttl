@@ -55,7 +55,7 @@
 ### Classes
 :ConformanceLevel a owl:Class ;
     rdfs:label "ConformanceLevel" ;
-    dcterms:description "The class of conformance levels. Includes the following individuals: `ddoc:mandatory`, `ddoc:recommended` and `ddoc:optional`."
+    dcterms:description "The class of conformance levels. Includes the following individuals: `ddoc:mandatory`, `ddoc:recommended` and `ddoc:optional`." ;
     owl:oneOf ( :mandatory :optional :recommended ) .
 
 

@@ -574,10 +574,10 @@ class Keywords:
 
         p = ts.namespaces
         dicts = [acquire(ts, iri) for iri in iris]
-        dct = {expand_iri(d["iri"], p): d for d in dicts}
+        dct = {expand_iri(d["@id"], p): d for d in dicts}
 
         # Add domain and range to dicts
-        for d in dct.values():
+        for d in list(dct.values()):
             if "domain" in d:
                 for domain in asseq(d["domain"]):
                     expanded = expand_iri(domain, p)
