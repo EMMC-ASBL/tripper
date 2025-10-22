@@ -30,25 +30,43 @@
     rdfs:range xsd:string .
 
 
+:curator rdf:type owl:ObjectProperty ;
+    rdfs:label "curator"@en ;
+    rdfs:range foaf:Agent ;
+    :conformance :optional ;
+    dcterms:description "The agent that curated the resource."@en ;
+    vann:usageNote "Use `ddoc:curationDate` to refer to the date of curation."@en .
+
+:curationDate a owl:DatatypeProperty ;
+    rdfs:label "creationDate"@en ;
+    rdfs:range xsd:date ;
+    dcterms:description "Date of curation."@en ;
+    vann:usageNote "Use format: YYYY-MM-DD"@en .
+
+
 :conformance rdf:type owl:ObjectProperty ;
-    rdfs:range [
-        rdf:type owl:Class ;
-        owl:oneOf ( :mandatory :optional :recommended )
-    ] ;
+    rdfs:range :ConformanceLevel ;
     dcterms:description "Whether the annotation is mandatory, recommended or optional."@en ;
-    vann:usageNote "It MUST take one of the values ':mandatory', ':recommended' or ':optional'."@en ;
+    vann:usageNote "It MUST take one of the values 'ddoc:mandatory', 'ddoc:recommended' or 'ddoc:optional'."@en ;
     rdfs:isDefinedBy <https://w3id.org/emmo/application/datadoc> ;
     rdfs:label "conformance" .
 
 
+### Classes
+:ConformanceLevel a owl:Class ;
+    rdfs:label "ConformanceLevel" ;
+    dcterms:description "The class of conformance levels. Includes the following individuals: `ddoc:mandatory`, `ddoc:recommended` and `ddoc:optional`."
+    owl:oneOf ( :mandatory :optional :recommended ) .
+
+
 ### Conformance individuals
-:mandatory a owl:NamedIndividual ;
+:mandatory a :ConformanceLevel ;
     rdfs:label "mandatory"@en .
 
-:optional a owl:NamedIndividual ;
+:optional a :ConformanceLevel ;
     rdfs:label "optional"@en .
 
-:recommended a owl:NamedIndividual ;
+:recommended a :ConformanceLevel ;
     rdfs:label "recommended"@en .
 
 

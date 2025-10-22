@@ -194,7 +194,7 @@ resources:
         conformance: optional
         description: A resource with an unspecified relationship to the cataloged resource.
 
-      releaseDate:
+      creationDate:
         iri: dcterms:issued
         range: rdfs:Literal
         #datatype: ["xsd:date", "xsd:dateTime"]

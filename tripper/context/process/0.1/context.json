@@ -103,7 +103,7 @@
       "@id": "dcterms:relation",
       "@type": "@id"
     },
-    "releaseDate": {
+    "creationDate": {
       "@id": "dcterms:issued",
       "@type": "xsd:date"
     },
