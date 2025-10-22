@@ -103,7 +103,7 @@ logger = logging.getLogger(__name__)
 def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
     """Return the range of `keyword`.
 
-    If `keywords` is None, the keywords for the default domain are used.
+    If `keywords` is None, the keywords for the default theme are used.
     """
     keywords = get_keywords(keywords)
     return keywords[keyword].range
@@ -155,7 +155,7 @@ def told(
 
     """
     single = "@id", "@type", "@graph"
-    multi = "domain", "keywordfile", "prefixes", "base"
+    multi = "theme", "keywordfile", "prefixes", "base"
     singlerepr = any(s in descr for s in single) or isinstance(descr, list)
     multirepr = any(s in descr for s in multi)
     if singlerepr and multirepr:
@@ -165,7 +165,7 @@ def told(
     if not singlerepr:
         keywords = get_keywords(
             keywords=keywords,
-            domain=descr.get("domain", "default"),  # type: ignore
+            theme=descr.get("theme", "ddoc:default"),  # type: ignore
             yamlfile=descr.get("keywordfile"),  # type: ignore
         )
     else:
@@ -182,7 +182,7 @@ def told(
         d = {}
         graph = []
         for k, v in descr.items():  # type: ignore
-            if k == "domain":
+            if k == "theme":
                 pass
             elif k == "@context":
                 context.add_context(v)
@@ -366,10 +366,10 @@ def store(
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
     """
     if isinstance(source, dict):
-        domain = source.get("domain", "default")
+        theme = source.get("theme", "ddoc:default")
     else:
-        domain = "default"
-    keywords = get_keywords(keywords, domain=domain)
+        theme = "ddoc:default"
+    keywords = get_keywords(keywords, theme=theme)
     context = get_context(
         keywords=keywords, context=context, prefixes=prefixes
     )
@@ -924,7 +924,7 @@ def save_datadoc(
             the data documentation from.  It may also be an URL to a file
             accessible with HTTP GET.
         keywords: Optional Keywords object with keywords definitions.
-            The default is to infer the keywords from the `domain` or
+            The default is to infer the keywords from the `theme` or
             `keywordfile` keys in the YAML file.
         context: Optional Context object with mappings. By default it is
             inferred from `keywords`.
@@ -1068,7 +1068,7 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
-    context = get_context(context=context, domain="default")
+    context = get_context(context=context, theme="ddoc:default")
 
     dct = acquire(ts, iri, use_sparql=use_sparql)
 

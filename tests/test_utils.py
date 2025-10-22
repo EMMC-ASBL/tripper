@@ -413,22 +413,38 @@ def test_as_python():
     assert as_python(3.14) == 3.14
 
 
-def test_is_url():
-    """Test is_url()"""
+def test_is_uri():
+    """Test is_uri()"""
 
-    from tripper.utils import is_url
+    from tripper.utils import is_uri
 
-    assert is_url("http://example.com") is True
-    assert is_url("http://example.com ") is False
-    assert is_url("http://example.com ", allow_unescaped=True) is True
-    assert is_url("http://example.com/") is True
-    assert is_url("http://example.com/a b") is False
-    assert is_url("http://example.c om/") is False
-    assert is_url("http://example.com[/") is False
-    assert is_url("http://example.com/path?a=yes;b=no#fragment") is True
-    assert is_url("www.example.com") is False
-    assert is_url("urn:example.com") is False
-    assert is_url("urn:example.com", require_netloc=False) is True
+    assert is_uri("http://example.com") is True
+    assert is_uri("http://example.com ") is False
+    assert is_uri("http://example.com ", allow_unescaped=True) is True
+    assert is_uri("http://example.com/") is True
+    assert is_uri("http://example.com/a b") is False
+    assert is_uri("http://example.c om/") is False
+    assert is_uri("http://example.com[/") is False
+    assert is_uri("http://example.com/path?a=yes;b=no#fragment") is True
+    assert is_uri("www.example.com") is False
+    assert is_uri("urn:example.com") is False
+    assert is_uri("urn:example.com", require_netloc=False) is True
+
+
+def test_is_curie():
+    """Test is_curie()"""
+
+    from tripper.utils import is_curie
+
+    assert is_curie("isbn:0393315703") is True
+    assert is_curie(" isbn:0393315703") is False
+    assert is_curie("_isbn:0393315703") is False
+    assert is_curie("isbn:0393315703 ") is False
+    assert is_curie("[isbn:0393315703]") is True
+    assert is_curie("home:#start") is True
+    assert is_curie("joseki:") is True
+    assert is_curie("google:xforms+or+'xml+forms'") is True
+    assert is_curie("http://example.com") is False
 
 
 def test_random_string():
@@ -574,9 +590,9 @@ def test_get_entry_points():
     from tripper.utils import get_entry_points
 
     for ep in get_entry_points("tripper.keywords"):
-        if ep.value == "default":
+        if ep.value == "ddoc:default":
             break
     else:
         raise RuntimeError(
-            "no tripper.keywords entry point with value 'default'"
+            "no tripper.keywords entry point with value 'ddoc:default'"
         )

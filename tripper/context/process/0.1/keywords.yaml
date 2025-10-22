@@ -1,5 +1,6 @@
 ---
-basedOn: default
+theme: ddoc:process
+basedOn: ddoc:default
 
 resources:
   Process:

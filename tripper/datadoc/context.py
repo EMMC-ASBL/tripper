@@ -24,8 +24,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 def get_context(
     context: "Optional[ContextType]" = None,
-    domain: "Optional[Union[str, Sequence[str]]]" = None,
-    default_domain: "Optional[Union[str, Sequence[str]]]" = "default",
+    theme: "Optional[Union[str, Sequence[str]]]" = None,
+    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
@@ -42,9 +42,9 @@ def get_context(
             - str: If a valid URI, the context is loaded from this URI,
               otherwise it is assumed to be a file path to load.
             - sequence: A sequence of the above.
-        domain: Load initial context for this domain.
-        default_domain: Initialise context for this domain if neither
-            `context` nor `domain` are provided.
+        theme: Load initial context for this theme.
+        default_theme: Initialise context for this theme if neither
+            `context` nor `theme` are provided.
         keywords: Initialise from this keywords instance.
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
@@ -57,16 +57,16 @@ def get_context(
     if isinstance(context, Context):
         if copy:
             context = context.copy()
-        if keywords or domain:
+        if keywords or theme:
             kw = keywords.copy() if keywords else Keywords()
-            if domain:
-                kw.add_domain(domain)
+            if theme:
+                kw.add_theme(theme)
             context.add_context(kw.get_context())
     else:
         context = Context(
             context=context,
+            theme=theme if context or theme or keywords else default_theme,
             keywords=keywords,
-            domain=domain if context or domain or keywords else default_domain,
             processingMode=processingMode,
             timeout=timeout,
         )
@@ -81,7 +81,7 @@ class Context:
     def __init__(
         self,
         context: "Optional[ContextType]" = None,
-        domain: "Optional[Union[str, Sequence[str]]]" = "default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
         timeout: float = 3,
@@ -96,7 +96,7 @@ class Context:
                 - str: If a valid URI, the context is loaded from this URI,
                   otherwise it is assumed to be a file path to load.
                 - sequence: A sequence of the above.
-            domain: Load initial context for this domain.
+            theme: Load initial context for this theme.
             keywords: Initialise from this keywords instance.
             processingMode: Either "json-ld-1.0" or "json-ld-1.1".
             timeout: Timeout when accessing remote files.
@@ -112,11 +112,11 @@ class Context:
         self._shortnamed: dict = {}
 
         if keywords:
-            if domain:
-                keywords.add_domain(domain)
+            if theme:
+                keywords.add_theme(theme)
             self.add_context(keywords.get_context())
-        elif domain:
-            keywords = Keywords(domain=domain)
+        elif theme:
+            keywords = Keywords(theme=theme)
             self.add_context(keywords.get_context())
 
         if context:

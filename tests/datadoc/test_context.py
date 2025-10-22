@@ -44,13 +44,13 @@ def test_add_context_seq():
     """Test add_context() method with list input."""
     from dataset_paths import indir  # pylint: disable=import-error
 
-    c = Context(domain=None)
+    c = Context(theme=None)
     assert c.get_mappings() == {}
 
     c.add_context(ctx)
     assert c.get_mappings() == ctx.get_mappings()
 
-    c = Context(domain=None)
+    c = Context(theme=None)
     c.add_context(
         [
             str(indir / "semdata-context.json"),
@@ -65,7 +65,7 @@ def test_add_context_seq():
 
 def test_add_context_invalid():
     """Test add_context() method with invalid input."""
-    c = Context(domain=None)
+    c = Context(theme=None)
     with pytest.raises(TypeError):
         c.add_context(3)
 
