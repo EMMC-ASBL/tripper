@@ -94,7 +94,7 @@ class SparqlwrapperStrategy:
 
         if query_type == "ASK":
             self.sparql.setReturnFormat(JSON)
-            self.sparql.setMethod(POST)
+            self.sparql.setMethod(GET)
             self.sparql.setQuery(query_object)
             result = self.sparql.queryAndConvert()
             value = result["boolean"]
@@ -102,7 +102,7 @@ class SparqlwrapperStrategy:
 
         if query_type == "CONSTRUCT":
             self.sparql.setReturnFormat(TURTLE)
-            self.sparql.setMethod(POST)
+            self.sparql.setMethod(GET)
             self.sparql.setQuery(query_object)
             results = self.sparql.queryAndConvert()
             graph = Graph()
@@ -111,7 +111,7 @@ class SparqlwrapperStrategy:
 
         if query_type == "DESCRIBE":
             self.sparql.setReturnFormat(TURTLE)
-            self.sparql.setMethod(POST)
+            self.sparql.setMethod(GET)
             self.sparql.setQuery(query_object)
             results = self.sparql.queryAndConvert()
             graph = Graph()
@@ -120,7 +120,7 @@ class SparqlwrapperStrategy:
 
         if query_type == "SELECT":
             self.sparql.setReturnFormat(JSON)
-            self.sparql.setMethod(POST)
+            self.sparql.setMethod(GET)
             self.sparql.setQuery(query_object)
             ret = self.sparql.queryAndConvert()
             bindings = ret["results"]["bindings"]
@@ -173,6 +173,7 @@ class SparqlwrapperStrategy:
             raise NotImplementedError(
                 f"Update query type '{query_type}' not implemented."
             )
+        self.sparql.setReturnFormat(TURTLE)
         self.sparql.setMethod(POST)
         self.sparql.setQuery(update_object)
         self.sparql.query()
