@@ -4,6 +4,8 @@
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix ddoc: <https://w3id.org/emmo/application/datadoc#> .
 @base <http://onto-ns.com/ontologies/examples/family#> .
 
 <http://onto-ns.com/ontologies/examples/family> rdf:type owl:Ontology ;
@@ -16,11 +18,6 @@
 ###  http://onto-ns.com/ontologies/examples/family#hasName
 :hasName rdf:type owl:AnnotationProperty ;
          rdfs:comment "Name." .
-
-
-###  http://onto-ns.com/ontologies/examples/family#unit
-:unit rdf:type owl:AnnotationProperty ;
-      rdfs:comment "Unit of a data property." .
 
 
 #################################################################
@@ -49,14 +46,14 @@
 :hasAge rdf:type owl:DatatypeProperty ;
         rdfs:domain :Person ;
         rdfs:range xsd:double ;
-        :unit "year" .
+        ddoc:unitSymbol "year" .
 
 
 ###  http://onto-ns.com/ontologies/examples/family#hasWeight
 :hasWeight rdf:type owl:DatatypeProperty ;
            rdfs:domain :Person ;
            rdfs:range xsd:double ;
-           :unit "kg" .
+           ddoc:unitSymbol "kg" .
 
 
 #################################################################

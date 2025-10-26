@@ -976,7 +976,7 @@ def validate(
     def check_keyword(keyword, type):
         """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
-        name = keywords.keywordname(keyword)
+        name = keywords.shortname(keyword)
         if name in resources[typename].keywords:
             return True
         if "subClassOf" in resources[typename]:

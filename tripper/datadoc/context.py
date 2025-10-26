@@ -154,7 +154,7 @@ class Context:
 
     def copy(self) -> "Context":
         """Return a copy of this context."""
-        copy = Context()
+        copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
         return copy
 

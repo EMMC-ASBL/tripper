@@ -55,8 +55,8 @@
       "@language": "en"
     },
     "documentation": {
-      "@id": "foaf:documentation",
-      "@type": "xsd:anyURI"
+      "@id": "foaf:page",
+      "@type": "@id"
     },
     "hasVersion": {
       "@id": "dcat:hasVersion",
@@ -73,11 +73,11 @@
     },
     "landingPage": {
       "@id": "dcat:landingPage",
-      "@type": "xsd:anyURI"
+      "@type": "@id"
     },
     "language": {
       "@id": "dcterms:language",
-      "@language": "en"
+      "@type": "xsd:string"
     },
     "license": {
       "@id": "dcterms:license",
@@ -413,6 +413,7 @@
     "LegalResource": "eli:LegalResource",
     "Standard": "dcterms:Standard",
     "MediaType": "dcterms:MediaType",
+    "ConformanceLevel": "ddoc:ConformanceLevel",
     "OWLClass": "owl:Class",
     "Class": "rdfs:Class",
     "GenericResource": "rdfs:Resource",

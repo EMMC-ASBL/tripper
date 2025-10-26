@@ -82,7 +82,16 @@ def test_copy():
 
 def test_keywordnames():
     """Test keywordnames() method."""
-    assert len(keywords.keywordnames()) == 120
+    keywordnames = keywords.keywordnames()
+    assert "distribution" in keywordnames
+    assert len(keywordnames) == 120
+
+
+def test_classnames():
+    """Test keywordnames() method."""
+    classnames = keywords.classnames()
+    assert "Dataset" in classnames
+    assert len(classnames) == 26
 
 
 def test_fromdicts():
@@ -107,7 +116,7 @@ def test_fromdicts():
         },
         {
             "@id": "dcterms:modified",
-            "@type": "owl:DataProperty",
+            "@type": "owl:DatatypeProperty",
             "label": "modificationDate",
             "description": (
                 "The most recent date on which the resource was changed or "
@@ -144,12 +153,7 @@ def test_save():
     pytest.importorskip("rdflib")
 
     ts = Triplestore(backend="rdflib")
-    missing = keywords.missing_keywords(ts)
-    assert len(missing) == len(keywords.keywordnames())
     d = keywords.save(ts)
-    missing2, existing2 = keywords.missing_keywords(ts, include_existing=True)
-    assert len(missing2) == 0
-    assert len(existing2) == len(keywords.keywordnames())
 
     graph = d["@graph"]
     # assert len(graph) == len(existing2) - 1  # conformance already exists
@@ -159,6 +163,33 @@ def test_save():
 
     # Create input to test_load()
     ts.serialize(outdir / "default-keywords.ttl")
+
+
+def test_missing_keywords():
+    """Test missing_keywords() method."""
+    from dataset_paths import outdir  # pylint: disable=import-error
+
+    from tripper import Triplestore
+
+    pytest.importorskip("rdflib")
+
+    ts = Triplestore(backend="rdflib")
+    missing = keywords.missing_keywords(ts)
+    assert len(missing) == len(keywords.keywordnames())
+
+    missing2 = keywords.missing_keywords(ts, include_classes=True)
+    assert len(missing2) == (
+        len(keywords.keywordnames()) + len(keywords.classnames())
+    )
+
+    ts.parse(outdir / "default-keywords.ttl")
+
+    missing3 = keywords.missing_keywords(ts, include_classes=True)
+    assert len(missing3) == 0
+
+    missing4, existing4 = keywords.missing_keywords(ts, return_existing=True)
+    assert len(missing4) == 0
+    assert len(existing4) == len(keywords.keywordnames())
 
 
 def test_load():
@@ -173,17 +204,56 @@ def test_load():
     ts = Triplestore(backend="rdflib")
     load_datadoc_schema(ts)
     ts.parse(outdir / "default-keywords.ttl")
+    ts.bind("eli", "http://data.europa.eu/eli/ontology#")
 
     kw = Keywords(theme=None)
-    # dicts = kw._loaddicts(ts)
-    # dct = {d.label if "label" in d else iriname(d.iri): d for d in dicts}
     kw.load(ts)
 
-    # d1 = acquire(ts, "dcterms:description")
-    # d2 = acquire(ts, DCTERMS.description)
-    # assert d2["@id"] == DCTERMS.description
-    # d2["@id"] = "dcterms:description"
-    # assert d1 == d2
+    # Check that loaded Keywords object matches the global global
+    # keywords object
+    for name in keywords.keywordnames():
+        for k, v in keywords[name].items():
+            if k in ("range", "theme") and k not in kw[name]:
+                continue
+            if isinstance(kw[name][k], list):
+                continue
+            assert kw.expanded(kw[name][k], False) == keywords.expanded(
+                v, False
+            )
+
+
+def test_load2():
+    """Test load() on an ontology."""
+    from dataset_paths import ontodir  # pylint: disable=import-error
+
+    from tripper import XSD, Triplestore
+
+    ts = Triplestore("rdflib")
+    ts.parse(ontodir / "family.ttl")
+    FAM = ts.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
+
+    kw = Keywords(theme=None)
+    kw.load(ts)
+
+    assert set(kw.keywordnames()) == {
+        "hasAge",
+        "hasWeight",
+        "hasSkill",
+        "hasChild",
+        "hasName",
+    }
+    assert set(kw.classnames()) == {
+        "Person",
+        "Parent",
+        "Child",
+        "Skill",
+        "Resource",
+    }
+    d = kw["hasAge"]
+    assert d.iri == FAM.hasAge
+    assert d.range == "rdfs:Literal"
+    assert d.datatype == XSD.double
+    assert d.unit == "year"
 
 
 def test_get_prefixes():
@@ -233,7 +303,10 @@ def test_write():
         d1 = json.load(f)
     with open(outdir / "context.json", "rt", encoding="utf-8") as f:
         d2 = json.load(f)
-    assert d2 == d1
+    assert d2 == d1, (
+        "Tips: if this fails, try to run ./hooks/generate-context-and-doc.sh "
+        "before spending time on debugging"
+    )
 
     keywords.write_doc_keywords(outdir / "keywords.md")
     keywords.write_doc_prefixes(outdir / "prefixes.md")
@@ -300,26 +373,52 @@ def test_superclasses():
 
 def test_keywordname():
     """Test keywordname() method."""
+    import warnings
+
     from tripper import DCTERMS
     from tripper.datadoc.errors import InvalidKeywordError
 
-    assert keywords.keywordname("title") == "title"
-    assert keywords.keywordname("dcterms:title") == "title"
-    assert keywords.keywordname(DCTERMS.title) == "title"
+    # Ignore deprecation warnings from testing deprecated function
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+
+        assert keywords.keywordname("title") == "title"
+        assert keywords.keywordname("dcterms:title") == "title"
+        assert keywords.keywordname(DCTERMS.title) == "title"
+        with pytest.raises(InvalidKeywordError):
+            keywords.keywordname("xxx")
+
+
+def test_shortname():
+    """Test shortname() method."""
+    from tripper import DCAT, DCTERMS
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    assert keywords.shortname("title") == "title"
+    assert keywords.shortname("dcterms:title") == "title"
+    assert keywords.shortname(DCTERMS.title) == "title"
     with pytest.raises(InvalidKeywordError):
-        keywords.keywordname("xxx")
+        keywords.shortname("xxx")
+
+    assert keywords.shortname("Dataset") == "Dataset"
+    assert keywords.shortname("dcat:Dataset") == "Dataset"
+    assert keywords.shortname(DCAT.Dataset) == "Dataset"
 
 
 def test_prefixed():
-    """Test prefixed()."""
-    from tripper import DCTERMS
+    """Test prefixed() method."""
+    from tripper import DCAT, DCTERMS
     from tripper.datadoc.errors import InvalidKeywordError
 
     assert keywords.prefixed("title") == "dcterms:title"
     assert keywords.prefixed("dcterms:title") == "dcterms:title"
     assert keywords.prefixed(DCTERMS.title) == "dcterms:title"
     with pytest.raises(InvalidKeywordError):
-        keywords.keywordname("xxx")
+        keywords.shortname("xxx")
+
+    assert keywords.prefixed("Dataset") == "dcat:Dataset"
+    assert keywords.prefixed("dcat:Dataset") == "dcat:Dataset"
+    assert keywords.prefixed(DCAT.Dataset) == "dcat:Dataset"
 
 
 def test_typename():
@@ -332,25 +431,3 @@ def test_typename():
     assert keywords.typename(DCAT.Dataset) == "Dataset"
     with pytest.raises(NoSuchTypeError):
         keywords.typename("xxx")
-
-
-# if 1:
-def test_load2():
-    """Test load() method."""
-    from dataset_paths import ontodir  # pylint: disable=import-error
-
-    from tripper import Triplestore
-    from tripper.datadoc import acquire, store
-
-    ts = Triplestore("rdflib")
-    ts.parse(ontodir / "family.ttl")
-    FAM = ts.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
-
-    d = acquire(ts, FAM.hasAge)
-
-    ts2 = Triplestore("rdflib")
-    ts2.bind("fam", FAM)
-    store(ts2, d)
-
-    print()
-    print(ts2.serialize())
