@@ -527,11 +527,13 @@ class Keywords:
                 domainname = iriname(domain)
                 if domainname not in resources:
                     if domainname not in self.data.resources:
-                        warnings.warn(
-                            "Adding undefined domain for keyword "
-                            f"'{label}': {domain}",
-                            MissingKeywordsClassWarning,
-                        )
+                        if domainname not in ("Resource",):
+                            warnings.warn(
+                                f"Adding undefined domain '{domain}' for "
+                                f"keyword '{label}'",
+                                MissingKeywordsClassWarning,
+                                stacklevel=2,
+                            )
                         r = AttrDict(
                             iri=prefix_iri(domain, self.data.prefixes),
                             keywords=AttrDict(),
