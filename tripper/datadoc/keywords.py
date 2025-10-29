@@ -35,7 +35,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import List, Optional, Union
+    from typing import List, Optional, Tuple, Union
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
@@ -568,7 +568,7 @@ class Keywords:
         ts: "Triplestore",
         include_classes: bool = False,
         return_existing: bool = False,
-    ):
+    ) -> "Union[list, Tuple[list, list]]":
         """List keywords not defined in triplestore `ts`.
 
         Arguments:
