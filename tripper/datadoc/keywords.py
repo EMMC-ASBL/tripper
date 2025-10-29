@@ -532,7 +532,6 @@ class Keywords:
                                 f"Adding undefined domain '{domain}' for "
                                 f"keyword '{label}'",
                                 MissingKeywordsClassWarning,
-                                stacklevel=2,
                             )
                         r = AttrDict(
                             iri=prefix_iri(domain, self.data.prefixes),
