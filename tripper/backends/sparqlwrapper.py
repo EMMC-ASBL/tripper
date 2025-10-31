@@ -184,6 +184,30 @@ class SparqlwrapperStrategy:
         self.sparql.setQuery(update_object)
         self.sparql.query()
 
+    def is_available(self, timeout: float = 5, interval: float = 1) -> bool:
+        """Checks if the backend is available.
+
+        This is done by sending a request to the URL specified
+        in the `check_iri` attribute and checking for the response.
+
+        Arguments:
+            timeout: Total time in seconds to wait for a response.
+            interval: Internal time interval in seconds between checking if
+                the service has responded.
+
+        Returns:
+            Returns true if the service responds with code 200,
+            otherwise false is returned.
+
+        """
+        if self.check_iri is None:
+            raise ValueError(
+                "`check_iri` must be assigned before calling is_available()"
+            )
+        return check_service_availability(
+            self.check_iri, timeout=timeout, interval=interval
+        )
+
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
         variables = [
@@ -274,30 +298,6 @@ class SparqlwrapperStrategy:
         self.sparql.setMethod(POST)
         self.sparql.setQuery(query)
         return self.sparql.query()
-
-    def is_available(self, timeout: float = 5, interval: float = 1) -> bool:
-        """Checks if the backend is available.
-
-        This is done by sending a request to the URL specified
-        in the `check_iri` attribute and checking for the response.
-
-        Arguments:
-            timeout: Total time in seconds to wait for a response.
-            interval: Internal time interval in seconds between checking if
-                the service has responded.
-
-        Returns:
-            Returns true if the service responds with code 200,
-            otherwise false is returned.
-
-        """
-        if self.check_iri is None:
-            raise ValueError(
-                "`check_iri` must be assigned before calling is_available()"
-            )
-        return check_service_availability(
-            self.check_iri, timeout=timeout, interval=interval
-        )
 
     def _check_endpoint(self):
         """Check if the update endpoint is valid"""
