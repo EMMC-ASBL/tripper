@@ -2364,6 +2364,7 @@ Triplestore        </code>
 <span class="sd">            package: Required when `backend` is a relative module.  In that</span>
 <span class="sd">                case, it is relative to `package`.</span>
 <span class="sd">            check_url: A URL to use for checking that the backend is available.</span>
+<span class="sd">                Defaults to `base_iri`.</span>
 <span class="sd">            kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">                method.</span>
 
@@ -2398,7 +2399,7 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="o">=</span> <span class="n">package</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span> <span class="k">if</span> <span class="n">check_url</span> <span class="k">else</span> <span class="n">base_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -3904,7 +3905,8 @@ case, it is relative to <code>package</code>.</p></td>
       <tr>
         <td><code>check_url</code></td>
         <td><code>&#39;Optional[str]&#39;</code></td>
-        <td><p>A URL to use for checking that the backend is available.</p></td>
+        <td><p>A URL to use for checking that the backend is available.
+Defaults to <code>base_iri</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -4011,6 +4013,7 @@ context manager exits.</p>
 <span class="sd">        package: Required when `backend` is a relative module.  In that</span>
 <span class="sd">            case, it is relative to `package`.</span>
 <span class="sd">        check_url: A URL to use for checking that the backend is available.</span>
+<span class="sd">            Defaults to `base_iri`.</span>
 <span class="sd">        kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">            method.</span>
 
@@ -4045,7 +4048,7 @@ context manager exits.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend_name</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="o">=</span> <span class="n">package</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span> <span class="k">if</span> <span class="n">check_url</span> <span class="k">else</span> <span class="n">base_iri</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
