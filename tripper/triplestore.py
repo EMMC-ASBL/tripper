@@ -163,6 +163,7 @@ class Triplestore:
             package: Required when `backend` is a relative module.  In that
                 case, it is relative to `package`.
             check_url: A URL to use for checking that the backend is available.
+                Defaults to `base_iri`.
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
@@ -197,7 +198,7 @@ class Triplestore:
         self.backend_name = backend_name
         self.database = database
         self.package = package
-        self.check_url = check_url
+        self.check_url = check_url if check_url else base_iri
         self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
