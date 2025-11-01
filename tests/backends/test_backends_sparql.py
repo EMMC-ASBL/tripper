@@ -1,8 +1,10 @@
 """
-Test the sparqlwrapper backend with GraphDB.
-Note that this requires to have a running graphDB instance set up
-as described in the for_developers documentation on
-https://emmc-asbl.github.io/tripper/latest/developers/.
+A general test for all backends supporting SPARQL.
+
+Note that this test expects that that you have a Fuseki and a graphDB
+instance running.
+
+See https://emmc-asbl.github.io/tripper/latest/developers/
 """
 
 from pathlib import Path
@@ -20,6 +22,7 @@ session = Session(config=indir / "session.yaml")
 
 
 # if True:
+#    sessionName = "RdflibTest"
 #    sessionName = "GraphDBTest"
 #    sessionName = "FusekiTest"
 def populate_and_search(sessionName):  # pylint: disable=too-many-statements
@@ -30,7 +33,7 @@ def populate_and_search(sessionName):  # pylint: disable=too-many-statements
     from tripper.datadoc import acquire, save_datadoc, search
 
     ts = session.get_triplestore(sessionName)
-    if not ts.available(timeout=1):
+    if not ts.is_available(timeout=1):
         pytest.skip(f"{sessionName} service not available; skipping test.")
 
     datasetinput = thisdir / "datadocumentation_sample.yaml"
@@ -183,3 +186,9 @@ def test_fuseki():
     """Test the sparqlwrapper backend using Fuseki."""
     # Use service configured in tests/input/session.yaml
     populate_and_search("FusekiTest")
+
+
+def test_rdflib():
+    """Test the sparqlwrapper backend using rdflib."""
+    # Use service configured in tests/input/session.yaml
+    populate_and_search("RdflibTest")

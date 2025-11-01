@@ -95,7 +95,7 @@ def test_sparql_select2():
     pytest.importorskip("rdflib")
     from textwrap import dedent
 
-    from tripper import Triplestore
+    from tripper import Literal, Triplestore
 
     data = dedent(
         """
@@ -128,7 +128,10 @@ def test_sparql_select2():
     ts.parse(data=data)
     r = ts.query(query)
 
-    assert set(r) == {("Alice", "Bob", "None"), ("Alice", "Clare", "CT")}
+    assert set(r) == {
+        (Literal("Alice"), Literal("Bob"), "None"),
+        (Literal("Alice"), Literal("Clare"), Literal("CT")),
+    }
 
 
 # if True:

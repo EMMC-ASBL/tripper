@@ -46,17 +46,19 @@ def test_prefixes():
 
     save_prefixes(ts, prefixes1)
     r2 = load_prefixes(ts)
-    assert set(r2) == set(prefixes1.items())
+    assert set((str(p), str(ns)) for p, ns in r2) == set(prefixes1.items())
 
     save_prefixes(ts, prefixes2)
     r3 = load_prefixes(ts)
-    assert set(r3) == set(prefixes1.items()).union(prefixes2.items())
+    assert set((str(p), str(ns)) for p, ns in r3) == set(
+        prefixes1.items()
+    ).union(prefixes2.items())
 
     save_prefixes(ts, prefixes3)
     r4 = load_prefixes(ts)
-    assert set(r4) == set(prefixes1.items()).union(prefixes2.items()).union(
-        prefixes3.items()
-    )
+    assert set((str(p), str(ns)) for p, ns in r4) == set(
+        prefixes1.items()
+    ).union(prefixes2.items()).union(prefixes3.items())
 
     save_prefixes(ts, prefixes3)  # Save the same prefixes twice
     r5 = load_prefixes(ts)
@@ -66,7 +68,7 @@ def test_prefixes():
     assert r6 == [("owl", prefixes2["owl"])]
 
     r7 = load_prefixes(ts, prefix="dcat")
-    assert set(r7) == {
+    assert set((str(p), str(ns)) for p, ns in r7) == {
         ("dcat", prefixes2["dcat"]),
         ("dcat", prefixes3["dcat"]),
     }
@@ -75,7 +77,7 @@ def test_prefixes():
     assert r8 == [("adms", prefixes1["adms"])]
 
     r9 = load_prefixes(ts, namespace=prefixes3["dct"])
-    assert set(r9) == {
+    assert set((str(p), str(ns)) for p, ns in r9) == {
         ("dcterms", prefixes1["dcterms"]),
         ("dct", prefixes3["dct"]),
     }

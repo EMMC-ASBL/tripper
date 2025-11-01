@@ -54,6 +54,17 @@ def totriple(triple: "Triple"):
     return tordflib(s), tordflib(p), tordflib(o)
 
 
+def fromrdflib(
+    value: "Union[URIRef, rdflibLiteral, BNode]",
+) -> "Union[str, Literal]":
+    """Help function converting an rdflib value to corresponding tripper value."""
+    if isinstance(value, rdflibLiteral):
+        return parse_literal(value)
+    if isinstance(value, BNode) and not value.startswith("_:"):
+        return f"_:{value}"
+    return str(value)
+
+
 class RdflibStrategy:
     """Triplestore strategy for rdflib.
 
@@ -208,7 +219,8 @@ class RdflibStrategy:
             return result  # type: ignore
 
         if resulttype == "SELECT":
-            return [tuple(str(v) for v in row) for row in result]  # type: ignore
+            # type: ignore
+            return [tuple(fromrdflib(v) for v in row) for row in result]
         if resulttype == "ASK":
             return bool(result)
         if resulttype in ("CONSTRUCT", "DESCRIBE"):
@@ -258,21 +270,5 @@ class RdflibStrategy:
 def _convert_triples_to_tripper(triples) -> "Generator[Triple, None, None]":
     """Help function that converts a iterator/generator of rdflib triples
     to tripper triples."""
-    for s, p, o in triples:  ### p ylint: disable=not-an-iterable
-        yield (
-            (
-                f"_:{s}"
-                if isinstance(s, BNode) and not s.startswith("_:")
-                else str(s)
-            ),
-            str(p),
-            (
-                parse_literal(o)
-                if isinstance(o, rdflibLiteral)
-                else (
-                    f"_:{o}"
-                    if isinstance(o, BNode) and not o.startswith("_:")
-                    else str(o)
-                )
-            ),
-        )
+    for s, p, o in triples:  # pylint: disable=not-an-iterable
+        yield (fromrdflib(s), str(p), fromrdflib(o))
