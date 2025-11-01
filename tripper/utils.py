@@ -12,6 +12,7 @@ import tempfile
 import urllib
 import warnings
 from contextlib import contextmanager
+from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -100,11 +101,14 @@ class AttrDict(dict):
     def __dir__(self):
         return dict.__dir__(self) + list(self.keys())
 
-    def __getstate__(self):
+    def __getstate__(self):  # For pickle support
         return dict(self)
 
-    def __setstate__(self, state):
+    def __setstate__(self, state):  # For pickle support
         pass
+
+    def __deepcopy__(self, memo):  # For supporting deepcopy
+        return AttrDict((k, deepcopy(v, memo)) for k, v in self.items())
 
     def _pprint(self, obj=None, indent=0):
         """Help method for pretty printing."""
@@ -119,6 +123,10 @@ class AttrDict(dict):
             s.append(f"{' '*n}{k!r}: {val},")
         s.append(" " * indent + "})")
         return "\n".join(s)
+
+    def copy(self):
+        """Return a shallow copy of self."""
+        return AttrDict(self)
 
 
 def _rec(d, other, append, cls):

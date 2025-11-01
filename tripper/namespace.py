@@ -290,6 +290,9 @@ class Namespace:
             names += list(self._iris.keys())
         return names
 
+    def __call__(self):
+        return self._iri.rstrip("/#")
+
 
 def get_cachedir(create=True) -> Path:
     """Returns cross-platform path to tripper cache directory.

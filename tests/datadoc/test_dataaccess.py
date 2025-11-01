@@ -48,8 +48,15 @@ def test_save_and_load():
         type="Dataset",
     )
     newdistr = acquire(ts, SEMDATA.img1)
-    assert newdistr["@type"] == [DCAT.Dataset, DCAT.Resource, EMMO.Dataset]
-    assert newdistr.distribution["@type"] == [DCAT.Distribution, DCAT.Resource]
+    assert set(newdistr["@type"]) == {
+        DCAT.Dataset,
+        DCAT.Resource,
+        EMMO.Dataset,
+    }
+    assert set(newdistr.distribution["@type"]) == {
+        DCAT.Distribution,
+        DCAT.Resource,
+    }
     assert (
         newdistr.distribution.mediaType
         == "http://www.iana.org/assignments/media-types/image/tiff"

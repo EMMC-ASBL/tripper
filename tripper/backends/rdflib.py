@@ -208,7 +208,7 @@ class RdflibStrategy:
             return result  # type: ignore
 
         if resulttype == "SELECT":
-            return [tuple(str(v) for v in row) for row in result]  # type: ignore
+            return [tuple(None if v is None else str(v) for v in row) for row in result]  # type: ignore
         if resulttype == "ASK":
             return bool(result)
         if resulttype in ("CONSTRUCT", "DESCRIBE"):

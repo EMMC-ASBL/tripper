@@ -88,7 +88,6 @@ def test_sparql_construct():
     )
 
 
-# if True:
 def test_sparql_select2():
     """Test SPARQL SELECT query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#select
@@ -128,7 +127,7 @@ def test_sparql_select2():
     ts.parse(data=data)
     r = ts.query(query)
 
-    assert set(r) == {("Alice", "Bob", "None"), ("Alice", "Clare", "CT")}
+    assert set(r) == {("Alice", "Bob", None), ("Alice", "Clare", "CT")}
 
 
 # if True:
