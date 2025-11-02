@@ -1,0 +1,16 @@
+---
+basedOn: ["ddoc:invalid", ]
+
+prefixes:
+  kb: "http://example.com/kb#"
+  myonto: "http://example.com/myonto#"
+
+
+resources:
+  A:
+    iri: myonto:A
+    subClassOf: dcat:Resource
+    keywords:
+      a:
+        iri: myonto:a
+        range: myonto:B

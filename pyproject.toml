@@ -139,7 +139,7 @@ good-names = [
 minversion = "7.0"
 addopts = """-rs --cov=tripper --cov-report=term \
     --doctest-modules --doctest-ignore-import-errors \
-    --ignore-glob=old/*
+    --ignore-glob=**/old/
     """
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",

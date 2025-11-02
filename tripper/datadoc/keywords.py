@@ -15,7 +15,9 @@ import yaml
 import tripper
 from tripper import DCTERMS, DDOC, OWL, RDF, RDFS, VANN, XSD, Triplestore
 from tripper.datadoc.errors import (
+    InvalidDatadocError,
     InvalidKeywordError,
+    MissingKeyError,
     MissingKeywordsClassWarning,
     NoSuchTypeError,
     ParseError,
@@ -123,6 +125,9 @@ class Keywords:
         # self.data.
         self.keywords = AttrDict()
 
+        # Themes and files that has been parsed
+        self.parsed: "set" = set()
+
         if theme:
             self.add_theme(theme)
 
@@ -145,6 +150,14 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "theme"]
 
+    def _set_keyword(self, keywords, keyword, value):
+        """Add new keyword-value pair to `keywords` dict."""
+        expanded = expand_iri(value.iri, self.get_prefixes())
+        prefixed = prefix_iri(expanded, self.get_prefixes())
+        keywords[keyword] = value
+        keywords[prefixed] = value
+        keywords[expanded] = value
+
     def _set_keywords(self, clear=True):
         """Update internal keywords attribute to data attribute.
 
@@ -156,10 +169,7 @@ class Keywords:
         for clsvalue in self.data.get("resources", {}).values():
             for keyword, value in clsvalue.get("keywords", {}).items():
                 if keyword not in self.keywords:
-                    expanded = expand_iri(value.iri, self.get_prefixes())
-                    self.keywords[keyword] = value
-                    self.keywords[value.iri] = value
-                    self.keywords[expanded] = value
+                    self._set_keyword(self.keywords, keyword, value)
 
     def copy(self):
         """Returns a copy of self."""
@@ -209,8 +219,8 @@ class Keywords:
 
         for name in theme:  # type: ignore
             expanded = expand_iri(name, self.get_prefixes())
-            if self.theme is None:
-                self.theme = name  # type: ignore
+            prefixed = prefix_iri(name, self.get_prefixes())
+            add(self.data, "theme", prefixed)
             for ep in get_entry_points("tripper.keywords"):
                 if expand_iri(ep.value, self.get_prefixes()) == expanded:
                     self.parse(
@@ -243,6 +253,10 @@ class Keywords:
             yamlfile: Path of URL to a YAML file to load.
             timeout: Timeout when accessing remote files.
         """
+        if yamlfile in self.parsed:
+            return
+        self.parsed.add(yamlfile)
+
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
         try:
@@ -260,37 +274,71 @@ class Keywords:
         # pylint: disable=too-many-nested-blocks
         self.add(d.get("basedOn"))
 
-        recursive_update(self.data, d)
+        required_resource_keys = {"iri"}
+        valid_resource_keys = {
+            "iri",
+            "subClassOf",
+            "description",
+            "usageNote",
+            "keywords",
+        }
+        required_keywords = {"iri", "range"}
+        valid_keywords = {
+            "name",
+            "iri",
+            "type",
+            "subPropertyOf",
+            "inverseOf",  # XXX - to be implemented
+            "domain",
+            "range",
+            "datatype",
+            "inverse",  # XXX - to be implemented
+            "unit",  # XXX - to be implemented
+            "conformance",
+            "description",
+            "usageNote",
+            "theme",
+            "default",
+        }
+        valid_conformances = ["mandatory", "recommended", "optional"]
+        keywords = AttrDict(self.keywords).copy()
 
-        resources = self.data.get("resources", {})
-        for resource in resources.values():
-            for keyword, value in resource.get("keywords", {}).items():
+        # Prefixes
+        # TODO: consider to not update self.data.prefixes until after
+        # successful parsing
+        prefixes = self.data.prefixes
+        for prefix, ns in d.get("prefixes", {}).items():
+            if prefix in prefixes and ns != prefixes[prefix]:
+                raise PrefixMismatchError(
+                    f"prefix '{prefix}' is already mapped to "
+                    f"'{prefixes[prefix]}'. Cannot redefine it to '{ns}'"
+                )
+            prefixes[prefix] = ns
 
-                # Simple validation
-                valid_keys = [
-                    "name",
-                    "iri",
-                    "type",
-                    "subPropertyOf",
-                    "inverseOf",  # XXX - to be implemented
-                    "domain",
-                    "range",
-                    "datatype",
-                    "inverse",  # XXX - to be implemented
-                    "unit",  # XXX - to be implemented
-                    "conformance",
-                    "description",
-                    "usageNote",
-                    "theme",
-                    "default",
-                ]
+        # Resources
+        for cls, defs in d.get("resources", {}).items():
+            defs = AttrDict(defs).copy()
+            for key in required_resource_keys:
+                if key not in defs:
+                    raise MissingKeyError(
+                        f"missing required key '{key}' for resource '{cls}'"
+                    )
+            if check:
+                for key in defs:
+                    if key not in valid_resource_keys:
+                        raise InvalidDatadocError(
+                            f"invalid resource key: '{key}'"
+                        )
+            # TODO: Check for redefinition of existing class
+
+            for keyword, value in defs.get("keywords", {}).items():
+                value = AttrDict(value).copy()
                 if check:
                     for k in value.keys():
-                        if k not in valid_keys:
+                        if k not in valid_keywords:
                             raise InvalidKeywordError(
                                 f"keyword '{keyword}' has invalid key: {k}"
                             )
-                valid_conformances = ["mandatory", "recommended", "optional"]
                 if "conformance" in value:
                     if value["conformance"] not in valid_conformances:
                         raise InvalidKeywordError(
@@ -299,12 +347,12 @@ class Keywords:
                             f"{', '.join(valid_conformances)}"
                         )
 
-                if keyword in self.keywords:
+                if keyword in keywords:
                     # Only allowed changes to existing keywords:
                     #   - make conformance more strict
                     #   - add to: domain, theme, subPropertyOf
                     #   - change default value
-                    for k, v in self.keywords[keyword].items():
+                    for k, v in keywords[keyword].items():
                         if k == "conformance":
                             if "conformance" in value and (
                                 valid_conformances.index(value.conformance)
@@ -325,12 +373,25 @@ class Keywords:
                                 f"Cannot redefine '{k}' in keyword '{keyword}'"
                             )
                 else:
-                    value["name"] = keyword
-                    add(value, "domain", resource.iri)
+                    for k in required_keywords:
+                        if k not in value:
+                            raise MissingKeyError(
+                                f"missing required key '{k}' for keyword "
+                                f"'{keyword}'"
+                            )
+                        value["name"] = keyword
+                    add(value, "domain", defs.iri)
                     if "theme" in d:
                         add(value, "theme", d["theme"])
+                    self._set_keyword(keywords, keyword, value)
 
-        self._set_keywords(clear=False)
+                defs.setdefault("keywords", AttrDict())
+                defs.keywords[keyword] = value
+
+            self.data.resources.setdefault(cls, AttrDict())
+            self.data.resources[cls].update(defs)
+
+        self.keywords.update(keywords)
 
     def keywordnames(self) -> "list":
         """Return a list with all keyword names defined in this instance."""
@@ -551,6 +612,9 @@ class Keywords:
                 else:
                     d.range = "rdfs:Literal"
                     d.datatype = value["range"]
+            else:
+                d.range = "rdfs:Literal"
+                # TODO: Define if we accept missing datatype for literals
             if "conformance" in value:
                 d.conformance = CONFORMANCE_MAPS[value["conformance"]]
             if "unitSymbol" in value:

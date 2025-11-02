@@ -1,7 +1,7 @@
 <!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
 
-# Keywords for theme: ddoc:datadoc
-The tables below lists the keywords the theme ddoc:datadoc.
+# Keywords
+The tables below lists the keywords the theme None.
 
 The meaning of the columns are as follows:
 
@@ -253,7 +253,7 @@ A legal document giving official permission to do something with a resource.
 
 | Keyword | Range          | Conformance | Definition | Usage note |
 | ------- | -------------- | ----------- | ---------- | ---------- |
-| [type]  | [skos:Concept] |             |            |            |
+| [type]  | [skos:Concept] | optional    |            |            |
 
 
 ## Properties on [Location]
@@ -271,8 +271,8 @@ An association class for attaching additional information to a relationship betw
 
 | Keyword           | Range           | Conformance | Definition                                                                   | Usage note |
 | ----------------- | --------------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
+| [relatedResource] | [rdfs:Resource] | optional    |                                                                              |            |
 | [hasRole]         | [dcat:Role]     |             | A function of an entity or agent with respect to another entity or resource. |            |
-| [relatedResource] | [rdfs:Resource] |             |                                                                              |            |
 
 
 ## Properties on [RightsStatement]

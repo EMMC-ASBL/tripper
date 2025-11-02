@@ -46,9 +46,8 @@ def test_get_keywords():
         "prefixes",
         "theme",
         "resources",
-        "basedOn",
     }
-    assert kw4.data.basedOn == "ddoc:datadoc"
+    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:process"]
     assert len(kw4.keywords) > len(kw1.keywords)
 
     kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
@@ -56,9 +55,8 @@ def test_get_keywords():
         "prefixes",
         "theme",
         "resources",
-        "basedOn",
     }
-    assert kw5.data.basedOn == ["ddoc:datadoc", "ddoc:process"]
+    assert kw5.data.theme == ["ddoc:datadoc", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
 
@@ -78,6 +76,30 @@ def test_copy():
     assert copy.data == keywords.data
     assert copy.keywords == keywords.keywords
     assert copy.theme == keywords.theme
+
+
+def test_parse():
+    """Test parse() method. Most of it is already tested via get_keywords().
+    Only a few additional tests are added here.
+    """
+    from dataset_paths import indir
+
+    from tripper.datadoc.errors import ParseError
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords0.yaml")
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords1.yaml")
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords2.yaml")
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords3.yaml")
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords4.yaml")
 
 
 def test_keywordnames():
@@ -292,9 +314,12 @@ def test_write():
 
     from dataset_paths import outdir, rootdir  # pylint: disable=import-error
 
+    from tripper.datadoc import get_keywords
+
     pytest.importorskip("rdflib")
 
-    keywords.write_context(outdir / "context.json")
+    kw = get_keywords()
+    kw.write_context(outdir / "context.json")
     with open(
         rootdir / "tripper" / "context" / "0.3" / "context.json",
         mode="rt",
@@ -304,7 +329,7 @@ def test_write():
     with open(outdir / "context.json", "rt", encoding="utf-8") as f:
         d2 = json.load(f)
     assert d2 == d1, (
-        "Tips: if this fails, try to run ./hooks/generate-context-and-doc.sh "
+        "Tips: if this fails, try to run .hooks/generate-context-and-doc.sh "
         "before spending time on debugging"
     )
 

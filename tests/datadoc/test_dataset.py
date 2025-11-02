@@ -599,7 +599,7 @@ def test_validate():
 
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
-    pytest.skip()
+    pytest.skip("Skip broken OTEAPI")
 
     from tripper import Triplestore
 
@@ -634,23 +634,41 @@ def test_pipeline():
 
 def test_fuseki():
     """Test save and load dataset with Fuseki."""
-    import os
+    from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper import Triplestore
+    from tripper import Session
+    from tripper.datadoc import acquire, delete, store
 
-    host = os.getenv("TRIPLESTORE_HOST", "localhost")
-    port = os.getenv("TRIPLESTORE_PORT", "3030")
-    fuseki_args = {
-        "backend": "fusekix",
-        "base_iri": "http://example.com/ontology#",
-        "triplestore_url": f"http://{host}:{port}",
-        "database": "openmodel",
-    }
-    try:
-        ts = Triplestore(**fuseki_args)
-    except ModuleNotFoundError:
+    session = Session(indir / "session.yaml")
+    ts = session.get_triplestore("FusekiTest")
+    if not ts.available():
         pytest.skip("Cannot connect to Fuseki server")
-    ts.remove_database(**fuseki_args)
+
+    EX = ts.bind("ex", "http://example.com/ex#")
+    d = {
+        "@id": EX.exdata,
+        "@type": EX.ExData,
+        "creator": {"name": "John Doe"},
+        "inSeries": EX.series,
+        "distribution": {
+            "downloadURL": "http://example.com/downloads/exdata.csv",
+            "mediaType": (
+                "http://www.iana.org/assignments/media-types/text/csv"
+            ),
+        },
+    }
+
+    if ts.has(EX.exdata):
+        delete(ts, criteria={"@id": EX.exdata})
+
+    store(ts, d)
+    d2 = acquire(ts, EX.exdata)
+    assert d2["@id"] == d["@id"]
+    assert d2["@type"] == d["@type"]
+    assert d2.creator.name == d["creator"]["name"]
+    assert d2.inSeries == d["inSeries"]
+    assert d2.distribution.downloadURL == d["distribution"]["downloadURL"]
+    assert d2.distribution.mediaType == d["distribution"]["mediaType"]
 
 
 def test_deprecated():

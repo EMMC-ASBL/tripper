@@ -18,6 +18,25 @@ def merge(a: "MergeType", b: "MergeType") -> "MergeType":
     The result will be None if both `a` and `b` are None and a string if one
     is None and the other is a string or both are the same string.  Otherwise,
     the result will be a list with the unique strings from `a` and `b`.
+
+    Examples:
+    >>> merge(None, None)
+
+    >>> merge("a", None)
+    'a'
+
+    >>> merge(None, "b")
+    'b'
+
+    >>> merge("a", "b")
+    ['a', 'b']
+
+    >>> merge("a", ["c", "b", "a"])
+    ['a', 'c', 'b']
+
+    >>> merge(["a", "d"], ["c", "b", "a"])
+    ['a', 'd', 'c', 'b']
+
     """
     # pylint: disable=too-many-return-statements
     if a is None and b is None:

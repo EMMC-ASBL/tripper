@@ -10,11 +10,15 @@ class InvalidDatadocError(TripperError):
     """Invalid data documentation dict (or list)."""
 
 
-class InvalidKeywordError(TripperError, KeyError):
+class InvalidKeywordError(InvalidDatadocError, KeyError):
     """Keyword is not defined."""
 
 
-class RedefineKeywordError(TripperError, KeyError):
+class MissingKeyError(InvalidDatadocError):
+    """Missing required key in description of a resource or keyword."""
+
+
+class RedefineKeywordError(InvalidDatadocError, KeyError):
     """Trying to map an existing keyword to a new IRI."""
 
 
