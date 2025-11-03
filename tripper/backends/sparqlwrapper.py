@@ -8,6 +8,7 @@ from rdflib import Graph
 from tripper import Literal
 from tripper.backends.rdflib import _convert_triples_to_tripper
 from tripper.errors import TripperError
+from tripper.utils import check_service_availability
 
 try:
     from SPARQLWrapper import GET, JSON, POST, TURTLE, SPARQLWrapper
@@ -31,7 +32,10 @@ class SparqlwrapperStrategy:
     Arguments:
         base_iri: SPARQL endpoint.
         update_iri: Update SPARQL endpoint. For some triplestores (e.g.
-                    GraphDB), update endpoint is different from base endpoint.
+            GraphDB), update endpoint is different from base endpoint.
+            Defaults to base_iri.
+        check_iri: IRI to use for checking that the triplestore is available.
+            Defaults to base_iri.
         username: User name.
         password: Password.
         kwargs: Additional arguments passed to the SPARQLWrapper constructor.
@@ -44,10 +48,14 @@ class SparqlwrapperStrategy:
         self,
         base_iri: str,
         update_iri: "Optional[str]" = None,
+        check_iri: "Optional[str]" = None,
         username: "Optional[str]" = None,
         password: "Optional[str]" = None,
         **kwargs,
     ) -> None:
+        self.update_iri = update_iri if update_iri else base_iri
+        self.check_iri = check_iri if check_iri else base_iri
+
         kwargs.pop(
             "database", None
         )  # database is not used in the SPARQLWrapper backend
@@ -56,8 +64,6 @@ class SparqlwrapperStrategy:
         )
         if username and password:
             self.sparql.setCredentials(username, password)
-
-        self.update_iri = update_iri
 
     @property
     def update_iri(self) -> "Optional[str]":
@@ -177,6 +183,30 @@ class SparqlwrapperStrategy:
         self.sparql.setMethod(POST)
         self.sparql.setQuery(update_object)
         self.sparql.query()
+
+    def is_available(self, timeout: float = 5, interval: float = 1) -> bool:
+        """Checks if the backend is available.
+
+        This is done by sending a request to the URL specified
+        in the `check_iri` attribute and checking for the response.
+
+        Arguments:
+            timeout: Total time in seconds to wait for a response.
+            interval: Internal time interval in seconds between checking if
+                the service has responded.
+
+        Returns:
+            Returns true if the service responds with code 200,
+            otherwise false is returned.
+
+        """
+        if self.check_iri is None:
+            raise ValueError(
+                "`check_iri` must be assigned before calling is_available()"
+            )
+        return check_service_availability(
+            self.check_iri, timeout=timeout, interval=interval
+        )
 
     def triples(self, triple: "Triple") -> "Generator[Triple, None, None]":
         """Returns a generator over matching triples."""
