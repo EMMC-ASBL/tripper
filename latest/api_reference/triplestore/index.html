@@ -972,6 +972,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.is_available" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_available()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.list_databases" class="md-nav__link">
     <span class="md-ellipsis">
       list_databases()
@@ -2067,6 +2076,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.triplestore.Triplestore.is_available" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_available()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.triplestore.Triplestore.list_databases" class="md-nav__link">
     <span class="md-ellipsis">
       list_databases()
@@ -2337,7 +2355,7 @@ Triplestore        </code>
         <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">package</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">check_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">check_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
@@ -2363,8 +2381,9 @@ Triplestore        </code>
 <span class="sd">                supports it).</span>
 <span class="sd">            package: Required when `backend` is a relative module.  In that</span>
 <span class="sd">                case, it is relative to `package`.</span>
-<span class="sd">            check_url: A URL to use for checking that the backend is available.</span>
-<span class="sd">                Defaults to `base_iri`.</span>
+<span class="sd">            check_url: Deprecated. A URL for checking whether the backend</span>
+<span class="sd">                is available. Use the optional keyword argument `check_iri`</span>
+<span class="sd">                instead. Defaults to `base_iri`.</span>
 <span class="sd">            kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">                method.</span>
 
@@ -2376,7 +2395,6 @@ Triplestore        </code>
 <span class="sd">            namespaces: Dict mapping namespace prefixes to IRIs.</span>
 <span class="sd">            package: Name of Python package if the backend is implemented as</span>
 <span class="sd">                a relative module. Assigned to the `package` argument.</span>
-<span class="sd">            check_url: The value of the `check_url` argument.</span>
 
 <span class="sd">        Notes:</span>
 <span class="sd">            If the backend establishes a connection that should be closed</span>
@@ -2390,6 +2408,15 @@ Triplestore        </code>
 <span class="sd">            This ensures that the connection is automatically closed when the</span>
 <span class="sd">            context manager exits.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">check_url</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Argument `check_url` is deprecated. It defaults to &quot;</span>
+                <span class="s2">&quot;`base_iri` and is rarely needed.  If needed, `check_iri` &quot;</span>
+                <span class="s2">&quot;instead.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+
         <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">backend_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy&quot;</span><span class="p">)</span>
@@ -2399,7 +2426,7 @@ Triplestore        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="o">=</span> <span class="n">package</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span> <span class="k">if</span> <span class="n">check_url</span> <span class="k">else</span> <span class="n">base_iri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span> <span class="k">if</span> <span class="n">check_url</span> <span class="k">else</span> <span class="n">base_iri</span>  <span class="c1"># Deprecated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -2783,6 +2810,23 @@ Triplestore        </code>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span>
         <span class="k">return</span> <span class="n">ns</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the backend is available.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            timeout: Total time in seconds to wait for a response.</span>
+<span class="sd">            interval: Internal time interval in seconds between checking if</span>
+<span class="sd">                the service has responded.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Returns true if the backend is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;is_available&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">is_available</span><span class="p">(</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_database</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">database</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -3286,6 +3330,12 @@ Triplestore        </code>
 <span class="sd">            otherwise false is returned.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Method `Triplestore.available()` is deprecated. &quot;</span>
+            <span class="s2">&quot;Use `Triplestore.is_available()` instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;`check_url` must be assigned before calling available()&quot;</span>
@@ -3905,8 +3955,9 @@ case, it is relative to <code>package</code>.</p></td>
       <tr>
         <td><code>check_url</code></td>
         <td><code>&#39;Optional[str]&#39;</code></td>
-        <td><p>A URL to use for checking that the backend is available.
-Defaults to <code>base_iri</code>.</p></td>
+        <td><p>Deprecated. A URL for checking whether the backend
+is available. Use the optional keyword argument <code>check_iri</code>
+instead. Defaults to <code>base_iri</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -3959,11 +4010,6 @@ method.</p></td>
         <td><p>Name of Python package if the backend is implemented as
 a relative module. Assigned to the <code>package</code> argument.</p></td>
       </tr>
-      <tr>
-        <td><code>check_url</code></td>
-        <td></td>
-        <td><p>The value of the <code>check_url</code> argument.</p></td>
-      </tr>
   </tbody>
 </table>      <div class="admonition notes">
 <p class="admonition-title">Notes</p>
@@ -3986,7 +4032,7 @@ context manager exits.</p>
     <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">package</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">check_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">check_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise triplestore using the backend with the given name.</span>
@@ -4012,8 +4058,9 @@ context manager exits.</p>
 <span class="sd">            supports it).</span>
 <span class="sd">        package: Required when `backend` is a relative module.  In that</span>
 <span class="sd">            case, it is relative to `package`.</span>
-<span class="sd">        check_url: A URL to use for checking that the backend is available.</span>
-<span class="sd">            Defaults to `base_iri`.</span>
+<span class="sd">        check_url: Deprecated. A URL for checking whether the backend</span>
+<span class="sd">            is available. Use the optional keyword argument `check_iri`</span>
+<span class="sd">            instead. Defaults to `base_iri`.</span>
 <span class="sd">        kwargs: Keyword arguments passed to the backend&#39;s __init__()</span>
 <span class="sd">            method.</span>
 
@@ -4025,7 +4072,6 @@ context manager exits.</p>
 <span class="sd">        namespaces: Dict mapping namespace prefixes to IRIs.</span>
 <span class="sd">        package: Name of Python package if the backend is implemented as</span>
 <span class="sd">            a relative module. Assigned to the `package` argument.</span>
-<span class="sd">        check_url: The value of the `check_url` argument.</span>
 
 <span class="sd">    Notes:</span>
 <span class="sd">        If the backend establishes a connection that should be closed</span>
@@ -4039,6 +4085,15 @@ context manager exits.</p>
 <span class="sd">        This ensures that the connection is automatically closed when the</span>
 <span class="sd">        context manager exits.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">check_url</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Argument `check_url` is deprecated. It defaults to &quot;</span>
+            <span class="s2">&quot;`base_iri` and is rarely needed.  If needed, `check_iri` &quot;</span>
+            <span class="s2">&quot;instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">backend_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">Strategy&quot;</span><span class="p">)</span>
@@ -4048,7 +4103,7 @@ context manager exits.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">backend_name</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">package</span> <span class="o">=</span> <span class="n">package</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span> <span class="k">if</span> <span class="n">check_url</span> <span class="k">else</span> <span class="n">base_iri</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="o">=</span> <span class="n">check_url</span> <span class="k">if</span> <span class="n">check_url</span> <span class="k">else</span> <span class="n">base_iri</span>  <span class="c1"># Deprecated</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">base_iri</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -4702,6 +4757,12 @@ otherwise false is returned.</p></td>
 <span class="sd">        otherwise false is returned.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;Method `Triplestore.available()` is deprecated. &quot;</span>
+        <span class="s2">&quot;Use `Triplestore.is_available()` instead.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;`check_url` must be assigned before calling available()&quot;</span>
@@ -5156,6 +5217,87 @@ the give subject, predicate and/or object.</p>
         <span class="nb">next</span><span class="p">(</span><span class="n">triple</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.triplestore.Triplestore.is_available" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+
+
+<a href="#tripper.triplestore.Triplestore.is_available" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Checks if the backend is available.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>timeout</code></td>
+        <td><code>float</code></td>
+        <td><p>Total time in seconds to wait for a response.</p></td>
+        <td><code>5</code></td>
+      </tr>
+      <tr>
+        <td><code>interval</code></td>
+        <td><code>float</code></td>
+        <td><p>Internal time interval in seconds between checking if
+the service has responded.</p></td>
+        <td><code>1</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>Returns true if the backend is available.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/triplestore.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the backend is available.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        timeout: Total time in seconds to wait for a response.</span>
+<span class="sd">        interval: Internal time interval in seconds between checking if</span>
+<span class="sd">            the service has responded.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Returns true if the backend is available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;is_available&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">is_available</span><span class="p">(</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
 </code></pre></div>
         </details>

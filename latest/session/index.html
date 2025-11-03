@@ -1654,13 +1654,13 @@ GraphDBTest:
   backend: sparqlwrapper
   base_iri: http://localhost:7200/repositories/test_repo
   update_iri: http://localhost:7200/repositories/test_repo/statements
-  check_url: http://localhost:7200/repositories
+  check_iri: http://localhost:7200/repositories
 
 FusekiTest:
   backend: sparqlwrapper
   base_iri: http://localhost:3030/test_repo
   update_iri: http://localhost:3030/test_repo/update
-  check_url: http://localhost:3030
+  check_iri: http://localhost:3030
   username: admin
   password: admin0
 
@@ -1668,7 +1668,7 @@ MyKB:
   backend: sparqlwrapper
   base_iri: https://graphdb.myproject.eu/repositories/test_repo
   update_iri: https://graphdb.myproject.eu/repositories/test_repo/statements
-  check_url: https://graphdb.myproject.eu/repositories
+  check_iri: https://graphdb.myproject.eu/repositories
   username: myname
   password: KEYRING
 </code></pre></div>

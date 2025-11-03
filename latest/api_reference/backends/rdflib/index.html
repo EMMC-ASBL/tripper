@@ -1096,6 +1096,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.backends.rdflib.fromrdflib" class="md-nav__link">
+    <span class="md-ellipsis">
+      fromrdflib()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.backends.rdflib.tordflib" class="md-nav__link">
     <span class="md-ellipsis">
       tordflib()
@@ -1849,6 +1858,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.backends.rdflib.fromrdflib" class="md-nav__link">
+    <span class="md-ellipsis">
+      fromrdflib()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.backends.rdflib.tordflib" class="md-nav__link">
     <span class="md-ellipsis">
       tordflib()
@@ -2127,7 +2145,8 @@ creating a new empty Graph object.</p></td>
             <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore</span>
 
         <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="c1"># type: ignore</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">fromrdflib</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resulttype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">,</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">):</span>
@@ -2519,7 +2538,8 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
         <span class="k">return</span> <span class="n">result</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">fromrdflib</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">resulttype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">,</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">):</span>
@@ -2762,6 +2782,39 @@ the query() method for SELECT queries.</p>
 
   </div>
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.backends.rdflib.fromrdflib" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fromrdflib</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
+
+
+<a href="#tripper.backends.rdflib.fromrdflib" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Help function converting an rdflib value to corresponding tripper value.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fromrdflib</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[URIRef, rdflibLiteral, BNode]&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[str, Literal]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function converting an rdflib value to corresponding tripper value.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

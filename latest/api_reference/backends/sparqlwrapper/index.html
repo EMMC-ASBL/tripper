@@ -1042,6 +1042,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.is_available" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_available()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.query" class="md-nav__link">
     <span class="md-ellipsis">
       query()
@@ -1727,6 +1736,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.is_available" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_available()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.query" class="md-nav__link">
     <span class="md-ellipsis">
       query()
@@ -1849,7 +1867,15 @@ SparqlwrapperStrategy        </code>
         <td><code>update_iri</code></td>
         <td><code>Optional[str]</code></td>
         <td><p>Update SPARQL endpoint. For some triplestores (e.g.
-        GraphDB), update endpoint is different from base endpoint.</p></td>
+GraphDB), update endpoint is different from base endpoint.
+Defaults to base_iri.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>check_iri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>IRI to use for checking that the triplestore is available.
+Defaults to base_iri.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -1880,7 +1906,10 @@ SparqlwrapperStrategy        </code>
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: SPARQL endpoint.</span>
 <span class="sd">        update_iri: Update SPARQL endpoint. For some triplestores (e.g.</span>
-<span class="sd">                    GraphDB), update endpoint is different from base endpoint.</span>
+<span class="sd">            GraphDB), update endpoint is different from base endpoint.</span>
+<span class="sd">            Defaults to base_iri.</span>
+<span class="sd">        check_iri: IRI to use for checking that the triplestore is available.</span>
+<span class="sd">            Defaults to base_iri.</span>
 <span class="sd">        username: User name.</span>
 <span class="sd">        password: Password.</span>
 <span class="sd">        kwargs: Additional arguments passed to the SPARQLWrapper constructor.</span>
@@ -1893,10 +1922,14 @@ SparqlwrapperStrategy        </code>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">update_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">check_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">username</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="o">=</span> <span class="n">update_iri</span> <span class="k">if</span> <span class="n">update_iri</span> <span class="k">else</span> <span class="n">base_iri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span> <span class="o">=</span> <span class="n">check_iri</span> <span class="k">if</span> <span class="n">check_iri</span> <span class="k">else</span> <span class="n">base_iri</span>
+
         <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
             <span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>  <span class="c1"># database is not used in the SPARQLWrapper backend</span>
@@ -1905,8 +1938,6 @@ SparqlwrapperStrategy        </code>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setCredentials</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="o">=</span> <span class="n">update_iri</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Optional[str]&quot;</span><span class="p">:</span>
@@ -2026,6 +2057,30 @@ SparqlwrapperStrategy        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">update_object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the backend is available.</span>
+
+<span class="sd">        This is done by sending a request to the URL specified</span>
+<span class="sd">        in the `check_iri` attribute and checking for the response.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            timeout: Total time in seconds to wait for a response.</span>
+<span class="sd">            interval: Internal time interval in seconds between checking if</span>
+<span class="sd">                the service has responded.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Returns true if the service responds with code 200,</span>
+<span class="sd">            otherwise false is returned.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`check_iri` must be assigned before calling is_available()&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">check_service_availability</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
@@ -2208,6 +2263,97 @@ SparqlwrapperStrategy        </code>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.backends.sparqlwrapper.SparqlwrapperStrategy.is_available" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+
+
+<a href="#tripper.backends.sparqlwrapper.SparqlwrapperStrategy.is_available" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Checks if the backend is available.</p>
+<p>This is done by sending a request to the URL specified
+in the <code>check_iri</code> attribute and checking for the response.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>timeout</code></td>
+        <td><code>float</code></td>
+        <td><p>Total time in seconds to wait for a response.</p></td>
+        <td><code>5</code></td>
+      </tr>
+      <tr>
+        <td><code>interval</code></td>
+        <td><code>float</code></td>
+        <td><p>Internal time interval in seconds between checking if
+the service has responded.</p></td>
+        <td><code>1</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>Returns true if the service responds with code 200,
+otherwise false is returned.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the backend is available.</span>
+
+<span class="sd">    This is done by sending a request to the URL specified</span>
+<span class="sd">    in the `check_iri` attribute and checking for the response.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        timeout: Total time in seconds to wait for a response.</span>
+<span class="sd">        interval: Internal time interval in seconds between checking if</span>
+<span class="sd">            the service has responded.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Returns true if the service responds with code 200,</span>
+<span class="sd">        otherwise false is returned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;`check_iri` must be assigned before calling is_available()&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">check_service_availability</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
