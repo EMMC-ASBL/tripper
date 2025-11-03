@@ -989,7 +989,7 @@ class Keywords:
             "Edit the keywords.yaml file instead. -->",
             "",
             f"# Keywords{theme}",
-            f"The tables below lists the keywords the theme {self.theme}.",
+            f"The tables below lists the keywords for the theme {self.theme}.",
             "",
             "The meaning of the columns are as follows:",
             "",

@@ -101,6 +101,18 @@ class ITriplestore(Protocol):
         Should only be defined if the backend supports namespaces.
         """
 
+    def is_available(self, timeout: float = 5, interval: float = 1) -> bool:
+        """Checks if the backend is available.
+
+        Arguments:
+            timeout: Total time in seconds to wait for a response.
+            interval: Internal time interval in seconds between checking if
+                the service has responded.
+
+        Returns:
+            Returns true if the backend is available.
+        """
+
     def namespaces(self) -> dict:
         """Returns a dict mapping prefixes to namespaces.
 
