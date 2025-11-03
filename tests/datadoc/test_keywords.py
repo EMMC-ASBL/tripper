@@ -82,7 +82,7 @@ def test_parse():
     """Test parse() method. Most of it is already tested via get_keywords().
     Only a few additional tests are added here.
     """
-    from dataset_paths import indir
+    from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper.datadoc.errors import ParseError
 
