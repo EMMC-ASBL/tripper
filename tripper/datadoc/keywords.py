@@ -37,7 +37,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import List, Optional, Tuple, Union
+    from typing import Iterable, List, Optional, Tuple, Union
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
@@ -92,6 +92,8 @@ def load_datadoc_schema(ts: "Triplestore") -> None:
 
 class Keywords:
     """A class representing all keywords within a theme."""
+
+    # pylint: disable=too-many-public-methods
 
     rootdir = Path(__file__).absolute().parent.parent.parent.resolve()
 
@@ -352,8 +354,11 @@ class Keywords:
                     #   - make conformance more strict
                     #   - add to: domain, theme, subPropertyOf
                     #   - change default value
+                    add(value, "domain", cls)
                     for k, v in keywords[keyword].items():
-                        if k == "conformance":
+                        if k == "domain":
+                            pass
+                        elif k == "conformance":
                             if "conformance" in value and (
                                 valid_conformances.index(value.conformance)
                                 > valid_conformances.index(v)
@@ -364,7 +369,7 @@ class Keywords:
                                     f"{value.conformance}"
                                 )
                             value.setdefault(k, v)
-                        elif k in ("domain", "theme", "subPropertyOf"):
+                        elif k in ("theme", "subPropertyOf"):
                             add(value, k, v)
                         elif k == "default":
                             value.setdefault(k, v)
@@ -969,28 +974,168 @@ class Keywords:
 
         return ctx
 
-    def write_context(self, outfile: "FileLoc") -> None:
-        """Write JSON-LD context file."""
+    def write_context(self, outfile: "FileLoc", indent: int = 2) -> None:
+        """Write JSON-LD context file.
+
+        Arguments:
+            outfile: File to write the JSON-LD context to.
+            indent: Indentation level. Defaults to two.
+        """
         context = {"@context": self.get_context()}
         with open(outfile, "wt", encoding="utf-8") as f:
-            json.dump(context, f, indent=2)
+            json.dump(context, f, indent=indent)
             f.write(os.linesep)
 
-    def write_doc_keywords(self, outfile: "FileLoc") -> None:
-        """Write Markdown file with documentation of the keywords."""
+    def _keywords_list(
+        self,
+        keywords: "Optional[Sequence[str]]" = None,
+        domains: "Optional[Union[str, Sequence[str]]]" = None,
+        themes: "Optional[Union[str, Sequence[str]]]" = None,
+    ) -> "List[str]":
+        """Help function returning a list of keywords corresponding to arguments
+        `keywords`, `domains` and `themes`. See also write_keywords_table()."""
+        keywords = set(self.prefixed(k) for k in asseq(keywords)) if keywords else set()
+        domains = set(self.prefixed(d) for d in asseq(domains)) if domains else set()
+        themes = set(self.prefixed(t) for t in asseq(themes)) if themes else set()
+
+        if not keywords and not domains and not themes:
+            keywords.update(self.keywordnames())
+        for resource, value in self.data.resources.items():
+            for k, v in value.get("keywords", {}).items():
+                if domains:
+                    for domain in asseq(v.domain):
+                        prefixed = self.prefixed(domain)
+                        if prefixed in domains:
+                            keywords.add(k)
+                if themes:
+                    for theme in asseq(v.theme):
+                        prefixed = self.prefixed(theme)
+                        if prefixed in themes:
+                            keywords.add(k)
+        return sorted(keywords)
+
+    def _keywords_table(
+        self,
+        keywords: "Optional[Sequence[str]]" = None,
+        domains: "Optional[Union[str, Sequence[str]]]" = None,
+        themes: "Optional[Union[str, Sequence[str]]]" = None,
+    ) -> "List[str]":
+        """Help function for write_keywords_table().
+
+        Returns keywords table for the given themes as a list of Markdown-
+        formatted lines.
+        """
         # pylint: disable=too-many-locals,too-many-branches
+        keywords = self._keywords_list(keywords, domains, themes)
+        header = [
+            "Keyword",
+            "Range",
+            "Conformance",
+            "Definition",
+            "Usage note",
+        ]
+        order = {"mandatory": 1, "recommended": 2, "optional": 3}
+        refs = []
+        table = []
+        for keyword in keywords:
+            d = self.keywords[keyword]
+            rangestr = f"[{d.range}]" if "range" in d else ""
+            if "datatype" in d:
+                rangestr += (
+                    ", " + ", ".join(d.datatype)
+                    if isinstance(d.datatype, list)
+                    else f"<br>({d.datatype})"
+                )
+            table.append(
+                [
+                    f"[{keyword}]",
+                    rangestr,
+                    f"{d.conformance}" if "conformance" in d else "",
+                    f"{d.description}" if "description" in d else "",
+                    f"{d.usageNote}" if "usageNote" in d else "",
+                ]
+            )
+            refs.append(f"[{keyword}]: {self.expanded(d.iri)}")
+            if "range" in d:
+                refs.append(f"[{d.range}]: {self.expanded(d.range)}")
+        table.sort(key=lambda row: order.get(row[2], 10))
+
+        out = self._to_table(header, table)
+        out.append("")
+        out.extend(refs)
+        out.append("")
+        out.append("")
+        return out
+
+    def write_keywords_table(
+        self,
+        outfile: "FileLoc",
+        keywords: "Optional[Sequence[str]]" = None,
+        domains: "Optional[Union[str, Sequence[str]]]" = None,
+        themes: "Optional[Union[str, Sequence[str]]]" = None,
+    ) -> None:
+        """Write Markdown file with documentation of the keywords.
+
+        If none of `keywords`, `domains` or `themes` all keywords will be
+        included (default), but if any of these arguments are given, only
+        keywords matched by them will be include.
+
+        Arguments:
+            outfile: File to write the Markdown documentation to.
+            keywords: Sequence of keywords to include.
+            domains: Include keywords with these domains.
+            themes: Include keywords for these themes.
+
+        """
+        table = self._keywords_table(
+            keywords=keywords, domains=domains, themes=themes
+        )
+        with open(outfile, "wt", encoding="utf-8") as f:
+            f.write(os.linesep.join(table) + os.linesep)
+
+    def write_keywords_doc(
+        self,
+        outfile: "FileLoc",
+        keywords: "Optional[Sequence[str]]" = None,
+        domains: "Optional[Union[str, Sequence[str]]]" = None,
+        themes: "Optional[Union[str, Sequence[str]]]" = None,
+        explanation: bool = True,
+        special: bool = True,
+    ) -> None:
+        """Write Markdown file with documentation of the keywords.
+
+        Arguments:
+            outfile: File to write the Markdown documentation to.
+            keywords: Sequence of keywords to include.
+            domains: Include keywords with these domains.
+            themes: Only include keywords for these themes.
+            explanation: Whether to include explanation of columns labels.
+            special: Whether to generate documentation of special
+                JSON-LD keywords.
+
+        """
+        # pylint: disable=too-many-locals,too-many-branches
+        keywords = set(self.prefixed(k) for k in asseq(keywords)) if keywords else set()
+        domains = set(self.prefixed(d) for d in asseq(domains)) if domains else set()
+        themes = set(self.prefixed(t) for t in asseq(themes)) if themes else set()
         ts = Triplestore("rdflib")
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
-        theme = f" for theme: {self.theme}" if self.theme else ""
+        # theme = f" for theme: {self.theme}" if self.theme else ""
         out = [
             "<!-- Do not edit! This file is generated with Tripper. "
             "Edit the keywords.yaml file instead. -->",
             "",
-            f"# Keywords{theme}",
-            f"The tables below lists the keywords for the theme {self.theme}.",
+            f"# Keywords{f' for theme: {themes}' if themes else ''}",
+            (
+                f"The tables below lists the keywords for the theme {themes}."
+                if themes
+                else ""
+            ),
             "",
+        ]
+        column_explanations = [
             "The meaning of the columns are as follows:",
             "",
             "- **Keyword**: The keyword referring to a property used for "
@@ -1001,6 +1146,8 @@ class Keywords:
             "- **Definition**: The definition of the keyword.",
             "- **Usage note**: Notes about how to use the keyword.",
             "",
+        ]
+        special_keywords = [
             "## Special keywords (from JSON-LD)",
             "See the [JSON-LD specification] for more details.",
             "",
@@ -1015,11 +1162,32 @@ class Keywords:
             "| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |",
             "",
         ]
-        order = {"mandatory": 1, "recommended": 2, "optional": 3}
+        if explanation:
+            out.extend(column_explanations)
+        if special:
+            out.extend(special_keywords)
         refs = []
 
-        resources = self.data.get("resources", {})
-        for resource_name, resource in resources.items():
+        if domains:
+            included_resources = domains
+            for cls, value in self.data.resources.items():
+                pcls = self.prefixed(cls)
+                for k, v in value.get("keywords", {}).items():
+                    if pcls in {prefixed(d) for d in asseq(v.domain)}:
+                        XXX
+
+                    for d in asseq(v.domain):
+                        if self.prefixed(d) == pcls:
+
+
+        else:
+            included_resources = {self.keywords[k].domain for k in keywords}
+
+        # resources = self.data.get("resources", {})
+        # for resource_name, resource in resources.items():
+        for resource_name in sorted(included_resources):
+            shortname = iriname(resource_name)
+            resource = self.data.resources[shortname]
             out.append("")
             out.append(f"## Properties on [{resource_name}]")
             if "description" in resource:
@@ -1038,38 +1206,12 @@ class Keywords:
                     refs.append(f"[{sc}]: {ts.expand_iri(sc)}")
             if "iri" in resource:
                 refs.append(
-                    f"[{resource_name}]: {ts.expand_iri(resource.iri)}"
+                    f"[{shortname}]: {ts.expand_iri(resource.iri)}"
                 )
-            header = [
-                "Keyword",
-                "Range",
-                "Conformance",
-                "Definition",
-                "Usage note",
+            included_keywords = [
+                k for k in keywords if self.keywords[k].domain == resource_name
             ]
-            table = []
-            for keyword, d in resource.get("keywords", {}).items():
-                rangestr = f"[{d.range}]" if "range" in d else ""
-                if "datatype" in d:
-                    rangestr += (
-                        ", " + ", ".join(d.datatype)
-                        if isinstance(d.datatype, list)
-                        else f"<br>({d.datatype})"
-                    )
-                table.append(
-                    [
-                        f"[{keyword}]",
-                        rangestr,
-                        f"{d.conformance}" if "conformance" in d else "",
-                        f"{d.description}" if "description" in d else "",
-                        f"{d.usageNote}" if "usageNote" in d else "",
-                    ]
-                )
-                refs.append(f"[{keyword}]: {ts.expand_iri(d.iri)}")
-                if "range" in d:
-                    refs.append(f"[{d.range}]: {ts.expand_iri(d.range)}")
-            table.sort(key=lambda row: order.get(row[2], 10))
-            out.extend(self._to_table(header, table))
+            out.extend(self._keywords_table(keywords=included_keywords))
             out.append("")
 
         # References
@@ -1090,7 +1232,7 @@ class Keywords:
         with open(outfile, "wt", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
-    def write_doc_prefixes(self, outfile: "FileLoc") -> None:
+    def write_prefixes_doc(self, outfile: "FileLoc") -> None:
         """Write Markdown file with documentation of the prefixes."""
         out = [
             "# Predefined prefixes",
@@ -1120,7 +1262,7 @@ class Keywords:
         with open(outfile, "wt", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
-    def _to_table(self, header, rows):
+    def _to_table(self, header: "Sequence", rows: "Iterable") -> list:
         """Return header and rows as a ."""
 
         widths = [len(h) for h in header]
@@ -1194,7 +1336,45 @@ def main(argv=None):
         "--keywords",
         "-k",
         metavar="FILENAME",
-        help="Generate keywords Markdown documentation.",
+        help="Generate keywords Markdown documentation."
+    )
+    parser.add_argument(
+        "--explanation",
+        "-e",
+        action="store_true",
+        help="Whether to include explanation in generated documentation.",
+    )
+    parser.add_argument(
+        "--special-keywords",
+        "-s",
+        action="store_true",
+        help="Whether to include special keywords in generated documentation.",
+    )
+    parser.add_argument(
+        "--kw",
+        metavar="KW1,KW2,...",
+        help=(
+            "Comma-separated list of keywords to include in generated table. "
+            "Implies --keywords."
+        ),
+    )
+    parser.add_argument(
+        "--domains",
+        metavar="D1,D2,...",
+        help=(
+            "Generate keywords Markdown documentation for any keywords who's "
+            "domain is in the comma-separated list DOMAINS. "
+            "Implies --keywords."
+        ),
+    )
+    parser.add_argument(
+        "--themes",
+        metavar="T1,T2,...",
+        help=(
+            "Generate keywords Markdown documentation for any keywords that "
+            "belong to one of the themes in the comma-separated list THEMES. "
+            "Implies --keywords."
+        ),
     )
     parser.add_argument(
         "--prefixes",
@@ -1212,11 +1392,18 @@ def main(argv=None):
     if args.context:
         keywords.write_context(args.context)
 
-    if args.keywords:
-        keywords.write_doc_keywords(args.keywords)
+    if args.keywords or args.kw or args.domains or args.themes:
+        keywords.write_keywords_doc(
+            args.keywords,
+            keywords=args.kw.split(",") if args.kw else None,
+            domains=args.domains.split(",") if args.domains else None,
+            themes=args.themes.split(",") if args.themes else None,
+            explanation=args.explanation,
+            special=args.special_keywords,
+        )
 
     if args.prefixes:
-        keywords.write_doc_prefixes(args.prefixes)
+        keywords.write_prefixes_doc(args.prefixes)
 
 
 if __name__ == "__main__":

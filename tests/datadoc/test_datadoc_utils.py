@@ -77,3 +77,20 @@ def test_get():
     assert get(d, "c", default="x") == ["x"]
     assert get(d, "c", aslist=False) is None
     assert get(d, "c", default="x", aslist=False) == "x"
+
+
+def test_asseq():
+    """Test help-function asseq()."""
+    from tripper.datadoc.utils import asseq
+
+    assert asseq("abc") == ["abc"]
+    assert asseq(["abc"]) == ["abc"]
+
+
+def test_iriname():
+    """Test utility function iriname()."""
+    from tripper.datadoc.utils import iriname
+
+    assert iriname("abc") == "abc"
+    assert iriname("rdf:JSON") == "JSON"
+    assert iriname("https://w3id.org/emmo#Ampere") == "Ampere"

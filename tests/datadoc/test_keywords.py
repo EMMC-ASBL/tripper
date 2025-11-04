@@ -106,7 +106,7 @@ def test_keywordnames():
     """Test keywordnames() method."""
     keywordnames = keywords.keywordnames()
     assert "distribution" in keywordnames
-    assert len(keywordnames) == 120
+    assert len(keywordnames) == 121
 
 
 def test_classnames():
@@ -333,8 +333,8 @@ def test_write():
         "before spending time on debugging"
     )
 
-    keywords.write_doc_keywords(outdir / "keywords.md")
-    keywords.write_doc_prefixes(outdir / "prefixes.md")
+    keywords.write_keywords_doc(outdir / "keywords.md")
+    keywords.write_prefixes_doc(outdir / "prefixes.md")
 
 
 def test_isnested():

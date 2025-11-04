@@ -58,6 +58,10 @@
       "@id": "foaf:page",
       "@type": "@id"
     },
+    "hasPart": {
+      "@id": "dcterms:hasPart",
+      "@type": "@id"
+    },
     "hasVersion": {
       "@id": "dcat:hasVersion",
       "@type": "@id"

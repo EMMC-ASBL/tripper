@@ -579,7 +579,7 @@ def test_validate():
     d = {
         "@id": EX.data,
         "@type": EX.MyData,
-        "creator": {"name": "John Doe"},
+        "creator": {"@id": "John Doe"},
         "title": "Special data",
         "description": "My dataset with some special data ...",
         "theme": "ex:Data",
@@ -595,6 +595,31 @@ def test_validate():
     d3["distribution"] = "invalid-distribution-iri"
     with pytest.raises(ValidateError):
         validate(d3)
+
+
+def test_validate_class():
+    """Test validate datadoc dict describing a class."""
+    from tripper import DCAT, EMMO, OWL, Triplestore
+    from tripper.datadoc import validate
+
+    # from tripper.datadoc.errors import ValidateError
+
+    ts = Triplestore("rdflib")
+    EX = ts.bind("ex", "http://example.com/ex#")
+
+    d = {
+        "@id": EX.MyDataCollection,
+        "@type": OWL.Class,
+        "subClassOf": [DCAT.DatasetSeries, EMMO.Dataset],
+        "hasPart": [DCAT.Dataset, EMMO.Dataset],
+        "creator": {"name": "John Doe"},
+        "title": "Data Collection",
+        "description": "My collection of specialised datasets.",
+        "theme": "ex:Data",
+    }
+    validate(d)
+
+    # TODO: Add more tests with invalid input
 
 
 def test_pipeline():

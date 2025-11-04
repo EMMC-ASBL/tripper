@@ -155,7 +155,7 @@ def told(
 
     """
     single = "@id", "@type", "@graph"
-    multi = "theme", "keywordfile", "prefixes", "base"
+    multi = "keywordfile", "prefixes", "base"
     singlerepr = any(s in descr for s in single) or isinstance(descr, list)
     multirepr = any(s in descr for s in multi)
     if singlerepr and multirepr:
@@ -321,6 +321,7 @@ def store(
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
@@ -336,6 +337,7 @@ def store(
             defined in `keywords`.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
+        theme: IRI of one of more themes to load keywords for.
         context: Context object defining keywords in addition to those defined
             in the default [JSON-LD context].
             Complementing the `keywords` argument.
@@ -365,10 +367,6 @@ def store(
     [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
     """
-    if isinstance(source, dict):
-        theme = source.get("theme", "ddoc:datadoc")
-    else:
-        theme = "ddoc:datadoc"
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
         keywords=keywords, context=context, prefixes=prefixes
@@ -401,6 +399,7 @@ def store(
                 )
 
     context.sync_prefixes(ts)
+
     update_classes(doc, context=context, restrictions=restrictions)
     # add(doc, "@context", context.get_context_dict())
 
@@ -977,7 +976,10 @@ def validate(
         """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
         name = keywords.shortname(keyword)
-        if name in resources[typename].keywords:
+        if (
+            "keywords" in resources[typename]
+            and name in resources[typename].keywords
+        ):
             return True
         if "subClassOf" in resources[typename]:
             subclass = resources[typename].subClassOf

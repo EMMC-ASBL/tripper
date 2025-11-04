@@ -115,6 +115,12 @@ resources:
         conformance: optional
         description: A page or document about this resource.
 
+      hasPart:
+        iri: dcterms:hasPart
+        range: rdfs:Resource
+        conformance: optional
+        description: A related resource that is included either physically or logically in the described resource.
+
       hasVersion:
         iri: dcat:hasVersion
         range: rdfs:Resource
