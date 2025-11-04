@@ -1,7 +1,7 @@
 <!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
 
 # Keywords
-The tables below lists the keywords the theme None.
+The tables below lists the keywords for the theme None.
 
 The meaning of the columns are as follows:
 

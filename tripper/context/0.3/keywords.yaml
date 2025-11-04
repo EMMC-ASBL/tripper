@@ -56,7 +56,6 @@ prefixes:
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
 #   - usageNote: A note about how to use this keyword.
-#   - characteristics: NOT IMPLEMENTED
 #   - default: NOT IMPLEMENTED
 #
 resources:

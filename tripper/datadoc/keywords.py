@@ -198,6 +198,8 @@ class Keywords:
                     self.parse(kw, timeout=timeout)
                 else:
                     self.add_theme(kw, timeout=timeout)
+            elif isinstance(kw, dict):
+                self._parse(kw)
             elif isinstance(kw, Sequence):
                 for e in kw:
                     _add(e)
@@ -230,7 +232,7 @@ class Keywords:
                     break
             else:
                 # Fallback in case the entry point is not installed
-                if expanded == DDOC.default:
+                if expanded == DDOC.datadoc:
                     self.parse(
                         self.rootdir
                         / "tripper"
