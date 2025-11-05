@@ -81,11 +81,11 @@ resources:
 
   Material:
     iri: emmo:EMMO_4207e895_8b83_4318_996a_72cfb32acd94
-    subClassOf: https://w3id.org/emmo:EMMO_bc37743c_37c4_4ec7_9d58_d1aae5567352
+    subClassOf: emmo:EMMO_bc37743c_37c4_4ec7_9d58_d1aae5567352
     description: The class of individuals standing for an amount of ordinary matter substance (or mixture of substances) in different states of matter or phases.
 
   Substance:
-    iri: https://w3id.org/emmo:EMMO_bc37743c_37c4_4ec7_9d58_d1aae5567352
+    iri: emmo:EMMO_bc37743c_37c4_4ec7_9d58_d1aae5567352
     description: A composite physical object made of fermions (i.e. having mass and occupying space).
     keywords:
       hasSingleComponentComposition:

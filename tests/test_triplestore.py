@@ -282,8 +282,13 @@ def test_availability():
     from tripper.triplestore import Triplestore
 
     ts = Triplestore("rdflib")
-    with pytest.raises(ValueError):
-        ts.available()
+    assert ts.is_available()
+
+    ts = Triplestore(
+        "sparqlwrapper",
+        base_iri="http://example.no:3030/norepo",
+    )
+    assert not ts.is_available()
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:

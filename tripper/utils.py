@@ -61,6 +61,7 @@ __all__ = (
     "parse_object",
     "as_python",
     "is_uri",
+    "is_curie",
     "check_function",
     "random_string",
     "extend_namespace",
@@ -891,7 +892,11 @@ def check_service_availability(
 
     import requests  # pylint: disable=import-outside-toplevel
 
+    # Interval should never be larger than timeout
+    interval = min(interval, timeout)
+
     start_time = time.time()
+
     while True:
         try:
             response = requests.get(url, timeout=timeout)

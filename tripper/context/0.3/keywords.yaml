@@ -56,7 +56,6 @@ prefixes:
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
 #   - usageNote: A note about how to use this keyword.
-#   - characteristics: NOT IMPLEMENTED
 #   - default: NOT IMPLEMENTED
 #
 resources:
@@ -282,7 +281,7 @@ resources:
         iri: owl:deprecated
         range: rdfs:Literal
         datatype: xsd:boolean
-        description: The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.
+        description: 'The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.'
 
       domain:
         iri: rdfs:domain
@@ -575,8 +574,9 @@ resources:
 
   Agent:
     iri: foaf:Agent
-    subClassOf: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
-    description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
+    subClassOf: ["dcterms:Agent", "emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"]
+    description: An agent (eg. person, group, software or physical artifact).
+    usageNote: A resource that acts or has the power to act.
     keywords:
       name:
         iri: foaf:name

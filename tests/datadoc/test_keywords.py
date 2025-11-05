@@ -101,6 +101,52 @@ def test_parse():
     with pytest.raises(ParseError):
         keywords.parse(indir / "invalid_keywords4.yaml")
 
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords5.yaml")
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords6.yaml")
+
+    with pytest.raises(ParseError):
+        keywords.parse(indir / "invalid_keywords7.yaml")
+
+
+def test_unit():
+    """Test keyword definition with default."""
+    from tripper import Triplestore
+    from tripper.datadoc import get_keywords, store
+
+    kw = get_keywords(theme=None)
+    d = {
+        "prefixes": {
+            "ex": "http://example.com/ex#",
+        },
+        "resources": {
+            "Resource": {
+                "iri": "dcat:Resource",
+                "keywords": {
+                    "voltage": {
+                        "iri": "ex:voltage",
+                        "range": "rdfs:Literal",
+                        "datatype": "xsd:double",
+                        "unit": "Volt",
+                    }
+                },
+            }
+        },
+    }
+    kw.add(d)
+
+    ts = Triplestore(backend="rdflib")
+    data = {
+        "@id": "ex:equipment",
+        "@type": "dcat:Resource",
+        "voltage": 3.2,
+    }
+    store(ts, data, keywords=kw)
+    print(ts.serialize())
+    # TODO: complete the test...
+
 
 def test_keywordnames():
     """Test keywordnames() method."""

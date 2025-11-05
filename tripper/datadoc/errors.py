@@ -10,12 +10,16 @@ class InvalidDatadocError(TripperError):
     """Invalid data documentation dict (or list)."""
 
 
-class InvalidKeywordError(InvalidDatadocError, KeyError):
+class MissingKeyError(InvalidDatadocError):
+    """Missing required key in description of a resource or keyword."""
+
+
+class InvalidKeywordError(InvalidDatadocError, KeyError):  # remove?
     """Keyword is not defined."""
 
 
-class MissingKeyError(InvalidDatadocError):
-    """Missing required key in description of a resource or keyword."""
+class DatadocValueError(InvalidDatadocError, ValueError):
+    """Invalid/inconsistent value (of correct type)."""
 
 
 class RedefineKeywordError(InvalidDatadocError, KeyError):

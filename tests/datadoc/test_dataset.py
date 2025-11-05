@@ -666,7 +666,7 @@ def test_fuseki():
 
     session = Session(indir / "session.yaml")
     ts = session.get_triplestore("FusekiTest")
-    if not ts.available():
+    if not ts.is_available():
         pytest.skip("Cannot connect to Fuseki server")
 
     EX = ts.bind("ex", "http://example.com/ex#")

@@ -137,6 +137,7 @@ good-names = [
 
 [tool.pytest.ini_options]
 minversion = "7.0"
+# Tips: set --cov-report to "term-missing" to list missing coverage
 addopts = """-rs --cov=tripper --cov-report=term \
     --doctest-modules --doctest-ignore-import-errors \
     --ignore-glob=**/old/
