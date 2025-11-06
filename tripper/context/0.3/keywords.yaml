@@ -890,7 +890,6 @@ resources:
       usageNote:
         iri: vann:usageNote
 
-
   Restriction:
     iri: owl:Restriction
     description: The class of property restrictions.

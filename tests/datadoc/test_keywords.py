@@ -63,7 +63,7 @@ def test_get_keywords():
 def test_dir():
     """Test `dir(keywords)`."""
     dirlist = set(dir(keywords))
-    assert "write_context" in dirlist
+    assert "save_context" in dirlist
     assert "__dir__" in dirlist
     assert "data" in dirlist
     assert "keywords" in dirlist
@@ -78,8 +78,8 @@ def test_copy():
     assert copy.theme == keywords.theme
 
 
-def test_parse():
-    """Test parse() method. Most of it is already tested via get_keywords().
+def test_load_yaml():
+    """Test load_yaml() method. Most of it is already tested via get_keywords().
     Only a few additional tests are added here.
     """
     from dataset_paths import indir  # pylint: disable=import-error
@@ -87,38 +87,48 @@ def test_parse():
     from tripper.datadoc.errors import ParseError
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords0.yaml")
+        keywords.load_yaml(indir / "invalid_keywords0.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords1.yaml")
+        keywords.load_yaml(indir / "invalid_keywords1.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords2.yaml")
+        keywords.load_yaml(indir / "invalid_keywords2.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords3.yaml")
+        keywords.load_yaml(indir / "invalid_keywords3.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords4.yaml")
+        keywords.load_yaml(indir / "invalid_keywords4.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords5.yaml")
+        keywords.load_yaml(indir / "invalid_keywords5.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords6.yaml")
+        keywords.load_yaml(indir / "invalid_keywords6.yaml")
 
     with pytest.raises(ParseError):
-        keywords.parse(indir / "invalid_keywords7.yaml")
+        keywords.load_yaml(indir / "invalid_keywords7.yaml")
 
 
-def test_parse_csv():
-    """Test parse_csv() method."""
+def test_save_yaml():
+    """Test save_csv() method."""
+    from dataset_paths import outdir  # pylint: disable=import-error
+
+    from tripper.datadoc import get_keywords
+
+    kw = get_keywords()
+    kw.save_yaml(outdir / "keywords.yaml")
+
+
+def test_load_csv():
+    """Test load_csv() method."""
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
 
     kw = get_keywords()
-    kw.parse_csv(
+    kw.load_csv(
         indir / "keywords.csv", prefixes={"ex": "http://example.com/ex#"}
     )
     assert kw.keywords.hasColor == {
@@ -253,7 +263,7 @@ def test_fromdicts():
     assert kw.keywords.curator.range == "foaf:Agent"
 
 
-def test_save():
+def test_save_rdf():
     """Test missing_keywords() method.  VERY SLOW!"""
     from dataset_paths import outdir  # pylint: disable=import-error
 
@@ -262,7 +272,7 @@ def test_save():
     pytest.importorskip("rdflib")
 
     ts = Triplestore(backend="rdflib")
-    d = keywords.save(ts)
+    d = keywords.save_rdf(ts)
 
     graph = d["@graph"]
     # assert len(graph) == len(existing2) - 1  # conformance already exists
@@ -270,7 +280,7 @@ def test_save():
     assert descr["@type"] == "owl:AnnotationProperty"
     assert descr["rdfs:range"] == "rdf:langString"
 
-    # Create input to test_load()
+    # Create input to test_load_rdf()
     ts.serialize(outdir / "default-keywords.ttl")
 
 
@@ -302,8 +312,8 @@ def test_missing_keywords():
 
 
 # VERY SLOW - consider to replace default keywords with something smaller
-def test_load():
-    """Test load() method."""
+def test_load_rdf():
+    """Test load_rdf() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper import Triplestore
@@ -317,7 +327,7 @@ def test_load():
     ts.bind("eli", "http://data.europa.eu/eli/ontology#")
 
     kw = Keywords(theme=None)
-    kw.load(ts)
+    kw.load_rdf(ts)
 
     # Check that loaded Keywords object matches the global global
     # keywords object
@@ -333,7 +343,7 @@ def test_load():
 
 
 def test_load2():
-    """Test load() on an ontology."""
+    """Test load_rdf() on an ontology."""
     from dataset_paths import ontodir  # pylint: disable=import-error
 
     from tripper import Triplestore
@@ -345,7 +355,7 @@ def test_load2():
 
     kw = get_keywords(theme=None)
     assert kw.keywords == AttrDict()
-    kw.load(ts)
+    kw.load_rdf(ts)
 
     assert set(kw.keywordnames()) == {
         "hasAge",
@@ -406,8 +416,8 @@ def test_get_context():
     assert ctx["version"] == "dcat:version"
 
 
-def test_write():
-    """Test write JSON-LD context and documentation."""
+def test_save_context():
+    """Test save JSON-LD context and documentation."""
     import json
 
     from dataset_paths import outdir, rootdir  # pylint: disable=import-error
@@ -418,7 +428,7 @@ def test_write():
 
     # kw = get_keywords()
     kw = Keywords()
-    kw.write_context(outdir / "context.json")
+    kw.save_context(outdir / "context.json")
     with open(
         rootdir / "tripper" / "context" / "0.3" / "context.json",
         mode="rt",
@@ -432,8 +442,8 @@ def test_write():
         "before spending time on debugging"
     )
 
-    keywords.write_keywords_doc(outdir / "keywords.md")
-    keywords.write_prefixes_doc(outdir / "prefixes.md")
+    keywords.save_markdown(outdir / "keywords.md")
+    keywords.save_markdown_prefixes(outdir / "prefixes.md")
 
 
 def test_isnested():

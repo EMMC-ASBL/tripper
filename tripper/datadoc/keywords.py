@@ -139,10 +139,10 @@ class Keywords:
 
         if yamlfile:
             if isinstance(yamlfile, (str, Path)):
-                self.parse(yamlfile, timeout=timeout)
+                self.load_yaml(yamlfile, timeout=timeout)
             else:
                 for path in yamlfile:
-                    self.parse(path, timeout=timeout)
+                    self.load_yaml(path, timeout=timeout)
 
     def __contains__(self, item):
         return item in self.keywords
@@ -199,14 +199,14 @@ class Keywords:
                 recursive_update(self.data, kw.data, cls=AttrDict)
                 self._set_keywords(clear=False)
             elif isinstance(kw, Path):
-                self.parse(kw, timeout=timeout)
+                self.load_yaml(kw, timeout=timeout)
             elif isinstance(kw, str):
                 if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
-                    self.parse(kw, timeout=timeout)
+                    self.load_yaml(kw, timeout=timeout)
                 else:
                     self.add_theme(kw, timeout=timeout)
             elif isinstance(kw, dict):
-                self._parse(kw)
+                self._load_yaml(kw)
             elif isinstance(kw, Sequence):
                 for e in kw:
                     _add(e)
@@ -232,7 +232,7 @@ class Keywords:
             add(self.data, "theme", prefixed)
             for ep in get_entry_points("tripper.keywords"):
                 if expand_iri(ep.value, self.get_prefixes()) == expanded:
-                    self.parse(
+                    self.load_yaml(
                         self.rootdir / ep.name / "keywords.yaml",
                         timeout=timeout,
                     )
@@ -240,7 +240,7 @@ class Keywords:
             else:
                 # Fallback in case the entry point is not installed
                 if expanded == DDOC.datadoc:
-                    self.parse(
+                    self.load_yaml(
                         self.rootdir
                         / "tripper"
                         / "context"
@@ -251,12 +251,12 @@ class Keywords:
                 else:
                     raise TypeError(f"Unknown theme: {name}")
 
-    def parse(
+    def load_yaml(
         self,
         yamlfile: "Union[Path, str]",
         timeout: float = 3,
     ) -> None:
-        """Parse YAML file with keyword definitions.
+        """Load YAML file with keyword definitions.
 
         Arguments:
             yamlfile: Path of URL to a YAML file to load.
@@ -269,11 +269,11 @@ class Keywords:
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
         try:
-            self._parse(d, strict=True)
+            self._load_yaml(d, strict=True)
         except Exception as exc:
             raise ParseError(f"error parsing '{yamlfile}'") from exc
 
-    def _parse(self, d: dict, strict: bool = True) -> None:
+    def _load_yaml(self, d: dict, strict: bool = True) -> None:
         """Parse a dict with keyword definitions following the format of
         the YAML file.
 
@@ -435,7 +435,44 @@ class Keywords:
 
         self.keywords.update(keywords)
 
-    def parse_csv(
+    def save_yaml(
+        self,
+        yamlfile: "Union[Path, str]",
+        keywords: "Optional[Sequence[str]]" = None,
+        classes: "Optional[Union[str, Sequence[str]]]" = None,
+        themes: "Optional[Union[str, Sequence[str]]]" = None,
+    ) -> None:
+        """Save YAML file with keyword definitions.
+
+        Arguments:
+            yamlfile: File to save keyword definitions to.
+            keywords: Sequence of keywords to include.
+            classes: Include keywords that have these classes in their domain.
+            themes: Include keywords for these themes.
+
+        """
+        keywords, classes, themes = self._keywords_list(
+            keywords, classes, themes
+        )
+        resources = {}
+        for cls, clsval in self.data.resources.items():
+            print(cls)
+            if self.prefixed(cls) in classes:
+                resources[cls] = dict(clsval.copy())
+                resources[cls]["keywords"] = {}
+                for k, v in self.data.resources[cls].keywords.items():
+                    if self.prefixed(k) in keywords:
+                        print("  -", k)
+                        resources[cls]["keywords"][k] = dict(v)
+        data = dict(self.data.copy())
+        del data["resources"]
+        recursive_update(data, {}, cls=dict)
+        data["resources"] = resources
+
+        with open(yamlfile, "wt", encoding="utf-8") as f:
+            yaml.safe_dump(data, f, sort_keys=False)
+
+    def load_csv(
         self,
         csvfile: "FileLoc",
         prefixes: "Optional[dict]" = None,
@@ -574,7 +611,7 @@ class Keywords:
             theme=theme,
             basedOn=basedOn,
         )
-        self._parse(data, strict=False)
+        self._load_yaml(data, strict=False)
 
     def _fromdicts(
         self,
@@ -746,10 +783,11 @@ class Keywords:
             return missing_names, existing_names
         return missing_names
 
-    def _loaddicts(
+    def _load_rdf(
         self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
     ) -> "Sequence[dict]":
-        """Help method for load(). Returns dicts loaded from triplestore `ts`.
+        """Help method for load_rdf(). Returns dicts loaded from triplestore
+        `ts`.
 
         If `iris` is not given, all OWL properties in `ts` will be loaded.
         """
@@ -813,7 +851,7 @@ class Keywords:
         newdicts = list(dct.values())
         return newdicts
 
-    def save(self, ts: "Triplestore") -> dict:
+    def save_rdf(self, ts: "Triplestore") -> dict:
         """Save to triplestore."""
         # pylint: disable=import-outside-toplevel,cyclic-import
         from tripper.datadoc.dataset import store
@@ -830,14 +868,14 @@ class Keywords:
         dicts = self.asdicts(missing)
         return store(ts, dicts)
 
-    def load(
+    def load_rdf(
         self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
     ) -> None:
         """Populate this Keyword object from a triplestore.
 
         If `iris` is given, only the provided IRIs will be added.
         """
-        dicts = self._loaddicts(ts, iris)
+        dicts = self._load_rdf(ts, iris)
         self.fromdicts(dicts, prefixes=ts.namespaces)
 
     def isnested(self, keyword: str) -> bool:
@@ -1047,11 +1085,11 @@ class Keywords:
 
         return ctx
 
-    def write_context(self, outfile: "FileLoc", indent: int = 2) -> None:
-        """Write JSON-LD context file.
+    def save_context(self, outfile: "FileLoc", indent: int = 2) -> None:
+        """Save JSON-LD context file.
 
         Arguments:
-            outfile: File to write the JSON-LD context to.
+            outfile: File to save the JSON-LD context to.
             indent: Indentation level. Defaults to two.
         """
         context = {"@context": self.get_context()}
@@ -1066,7 +1104,7 @@ class Keywords:
         themes: "Optional[Union[str, Sequence[str]]]" = None,
     ) -> "Tuple[Set[str], Set[str], Set[str]]":
         """Help function returning a list of keywords corresponding to arguments
-        `keywords`, `classes` and `themes`. See also write_keywords_table().
+        `keywords`, `classes` and `themes`. See also save_markdown_table().
 
 
         Arguments:
@@ -1094,7 +1132,7 @@ class Keywords:
         orig_themes = themes.copy()
 
         if not keywords and not classes and not themes:
-            keywords.update(self.keywordnames())
+            keywords.update(self.prefixed(k) for k in self.keywordnames())
 
         for value in self.data.resources.values():
             for k, v in value.get("keywords", {}).items():
@@ -1128,7 +1166,7 @@ class Keywords:
         self,
         keywords: "Sequence[str]",
     ) -> "List[str]":
-        """Help function for write_keywords_table().
+        """Help function for save_markdown_table().
 
         Returns a list with Markdown table documenting the provided
         sequence of keywords.
@@ -1174,15 +1212,15 @@ class Keywords:
         out.append("")
         return out
 
-    def write_keywords_table(
+    def save_markdown_table(
         self, outfile: "FileLoc", keywords: "Sequence[str]"
     ) -> None:
-        """Write Markdown file with documentation of the keywords."""
+        """Save markdown file with documentation of the keywords."""
         table = self._keywords_table(keywords)
         with open(outfile, "wt", encoding="utf-8") as f:
             f.write(os.linesep.join(table) + os.linesep)
 
-    def write_keywords_doc(
+    def save_markdown(
         self,
         outfile: "FileLoc",
         keywords: "Optional[Sequence[str]]" = None,
@@ -1191,13 +1229,13 @@ class Keywords:
         explanation: bool = False,
         special: bool = False,
     ) -> None:
-        """Write Markdown file with documentation of the keywords.
+        """Save markdown file with documentation of the keywords.
 
         Arguments:
-            outfile: File to write the Markdown documentation to.
+            outfile: File to save the markdown documentation to.
             keywords: Sequence of keywords to include.
-            classes: Include keywords with these classes.
-            themes: Only include keywords for these themes.
+            classes: Include keywords that have these classes in their domain.
+            themes: Include keywords for these themes.
             explanation: Whether to include explanation of columns labels.
             special: Whether to generate documentation of special
                 JSON-LD keywords.
@@ -1306,8 +1344,8 @@ class Keywords:
         with open(outfile, "wt", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
 
-    def write_prefixes_doc(self, outfile: "FileLoc") -> None:
-        """Write Markdown file with documentation of the prefixes."""
+    def save_markdown_prefixes(self, outfile: "FileLoc") -> None:
+        """Save markdown file with documentation of the prefixes."""
         out = [
             "# Predefined prefixes",
             (
@@ -1464,10 +1502,10 @@ def main(argv=None):
     keywords = Keywords(theme=args.theme, yamlfile=args.yamlfile)
 
     if args.context:
-        keywords.write_context(args.context)
+        keywords.save_context(args.context)
 
     if args.keywords or args.kw or args.classes or args.themes:
-        keywords.write_keywords_doc(
+        keywords.save_markdown(
             args.keywords,
             keywords=args.kw.split(",") if args.kw else None,
             classes=args.classes.split(",") if args.classes else None,
@@ -1477,7 +1515,7 @@ def main(argv=None):
         )
 
     if args.prefixes:
-        keywords.write_prefixes_doc(args.prefixes)
+        keywords.save_markdown_prefixes(args.prefixes)
 
 
 if __name__ == "__main__":
