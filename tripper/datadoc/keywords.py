@@ -452,7 +452,9 @@ class Keywords:
         # pylint: disable=import-outside-toplevel
         from tripper.datadoc.tabledoc import TableDoc
 
-        td = TableDoc.parse_csv(csvfile, prefixes=prefixes, **kwargs)
+        td = TableDoc.parse_csv(
+            csvfile, type=None, prefixes=prefixes, **kwargs
+        )
         dicts = td.asdicts()
         self.fromdicts(dicts, prefixes=prefixes, theme=theme, basedOn=basedOn)
 
@@ -620,6 +622,13 @@ class Keywords:
         """
         # pylint: disable=too-many-locals,too-many-statements
 
+        def to_prefixed(x, prefixes, strict=True):
+            """Help function that converts an IRI or list of IRIs to
+            prefixed IRIs."""
+            if isinstance(x, str):
+                return prefix_iri(x, prefixes, strict=strict)
+            return [to_prefixed(e, prefixes, strict=strict) for e in x]
+
         # Prefixes (merged with self.data.prefixes)
         p = self.get_prefixes().copy()
         if prefixes:
@@ -641,6 +650,7 @@ class Keywords:
                     OWL.AnnotationProperty,
                     OWL.ObjectProperty,
                     OWL.DatatypeProperty,
+                    RDF.Property,
                 ):
                     return True
             return False
@@ -681,7 +691,7 @@ class Keywords:
             label = value["label"] if "label" in value else name
             d = AttrDict(iri=value["@id"])
             if "@type" in value:
-                d.type = prefix_iri(value["@type"], p)
+                d.type = to_prefixed(value["@type"], p)
             d.domain = value.get("domain", RDFS.Resource)
 
             for domain in asseq(d.domain):
@@ -711,7 +721,8 @@ class Keywords:
                     d.range = value["range"]
                 else:
                     d.range = "rdfs:Literal"
-                    d.datatype = value["range"]
+                    if "range" in value:
+                        d.datatype = value["range"]
             else:
                 d.range = "rdfs:Literal"
                 # TODO: Define if we accept missing datatype for literals
@@ -787,6 +798,7 @@ class Keywords:
             SELECT DISTINCT ?s WHERE {
               VALUES ?o {
                 owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty
+                rdf:Property
               }
               ?s a ?o .
             }

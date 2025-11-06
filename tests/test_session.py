@@ -35,3 +35,11 @@ def test_session():
     }
 
     assert session.get_names() == ["RdflibTest", "FusekiTest", "GraphDBTest"]
+
+
+def test_keyring():
+    """Test keyring access."""
+    import pytest
+
+    pytest.importorskip("yaml")
+    pytest.importorskip("keyring")

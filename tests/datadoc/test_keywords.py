@@ -111,36 +111,14 @@ def test_parse():
         keywords.parse(indir / "invalid_keywords7.yaml")
 
 
-if 1:
-    # def test_parse_csv():
+# if 1:
+def test_parse_csv():
     """Test parse_csv() method."""
     from dataset_paths import indir, outdir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
 
     kw = get_keywords()
-    kw.add(
-        {
-            "prefixes": {
-                "ex": "http://example.com/ex#",
-            },
-            "resources": {
-                "Resource": {
-                    "iri": "dcat:Resource",
-                    "keywords": {
-                        "datatype": {
-                            "iri": "ddoc:datatype",
-                            "range": "rdfs:Datatype",
-                        }
-                    },
-                }
-            },
-        }
-    )
-
-    context = {
-        "ex": "http://example.com/ex#",
-    }
 
     kw.parse_csv(
         indir / "keywords.csv", prefixes={"ex": "http://example.com/ex#"}
@@ -217,7 +195,7 @@ def test_keywordnames():
     """Test keywordnames() method."""
     keywordnames = keywords.keywordnames()
     assert "distribution" in keywordnames
-    assert len(keywordnames) == 121
+    assert len(keywordnames) == 122
 
 
 def test_classnames():
@@ -348,6 +326,15 @@ def test_load():
         for k, v in keywords[name].items():
             if k in ("range", "theme") and k not in kw[name]:
                 continue
+
+            if name not in kw or k not in kw[name]:
+                print()
+                print("*** name:", name)
+                print("*** k:", k)
+                print("*** v:", v)
+                print("*** kw[name]:", kw[name])
+                print("*** kw[name][k]:", kw[name][k])
+
             if isinstance(kw[name][k], list):
                 continue
             assert kw.expanded(kw[name][k], False) == keywords.expanded(
@@ -429,7 +416,8 @@ def test_write():
 
     pytest.importorskip("rdflib")
 
-    kw = get_keywords()
+    # kw = get_keywords()
+    kw = Keywords()
     kw.write_context(outdir / "context.json")
     with open(
         rootdir / "tripper" / "context" / "0.3" / "context.json",

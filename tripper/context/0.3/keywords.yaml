@@ -882,6 +882,11 @@ resources:
   GenericResource:
     iri: rdfs:Resource
     description: A generic resource defined by RDFS.
+    keywords:
+      datatype:
+        iri: ddoc:datatype
+        range: rdfs:Datatype
+        description: A datatype for annotations and data properties.
 
   Restriction:
     iri: owl:Restriction

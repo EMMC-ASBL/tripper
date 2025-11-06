@@ -23,6 +23,14 @@
     owl:versionInfo "0.0.1" .
 
 
+# :datatype a owl:ObjectProperty ;
+#     rdfs:label "datatype"@en ;
+#     #rdfs:subPropertyOf ;
+#     rdfs:domain rdfs:Resource ;
+#     rdfs:range rdfs:Datatype ;
+#     rdfs:comment "A datatype associated to a property."@en .
+
+
 :unitSymbol a owl:AnnotationProperty ;
     rdfs:label "unitSymbol"@en ;
     #rdfs:subPropertyOf ;

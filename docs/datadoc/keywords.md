@@ -428,6 +428,21 @@ The class of classes.
 
 
 
+## Properties on [Resource]
+Resource published or curated by an agent.
+
+- subClassOf: [rdfs:Resource]
+
+| Keyword    | Range           | Conformance | Definition                                      | Usage note |
+| ---------- | --------------- | ----------- | ----------------------------------------------- | ---------- |
+| [datatype] | [rdfs:Datatype] |             | A datatype for annotations and data properties. |            |
+
+[datatype]: https://w3id.org/emmo/application/datadoc#datatype
+[rdfs:Datatype]: http://www.w3.org/2000/01/rdf-schema#Datatype
+
+
+
+
 ## Properties on [Checksum]
 A preferred label of the concept.
 
@@ -553,6 +568,8 @@ A description following the vCard specification, e.g. to provide telephone numbe
 [Parser]: https://w3id.org/emmo/domain/oteio#Parser
 [Restriction]: http://www.w3.org/2002/07/owl#Restriction
 [Class]: http://www.w3.org/2000/01/rdf-schema#Class
+[rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
+[Resource]: http://www.w3.org/ns/dcat#Resource
 [Checksum]: http://spdx.org/rdf/terms#Checksum
 [Kind]: http://www.w3.org/2006/vcard/ns#Kind
 [@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords
