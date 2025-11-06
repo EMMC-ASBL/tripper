@@ -111,6 +111,71 @@ def test_parse():
         keywords.parse(indir / "invalid_keywords7.yaml")
 
 
+if 1:
+    # def test_parse_csv():
+    """Test parse_csv() method."""
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
+
+    from tripper.datadoc import get_keywords
+
+    kw = get_keywords()
+    kw.add(
+        {
+            "prefixes": {
+                "ex": "http://example.com/ex#",
+            },
+            "resources": {
+                "Resource": {
+                    "iri": "dcat:Resource",
+                    "keywords": {
+                        "datatype": {
+                            "iri": "ddoc:datatype",
+                            "range": "rdfs:Datatype",
+                        }
+                    },
+                }
+            },
+        }
+    )
+
+    context = {
+        "ex": "http://example.com/ex#",
+    }
+
+    kw.parse_csv(
+        indir / "keywords.csv", prefixes={"ex": "http://example.com/ex#"}
+    )
+    kw.write_keywords_doc(outdir / "keywords.md")
+
+
+# def test_parse_turtle():
+#    """Test parse_turtle() method."""
+#    from dataset_paths import ontodir, outdir  # pylint: disable=import-error
+#
+#    from tripper.datadoc import get_keywords
+#
+#    pytest.importorskip("rdflib")
+#
+#    kw = get_keywords(theme=None)
+#    kw.parse_turtle(ontodir / "family.ttl")
+#    kw.write_keywords_doc(outdir / "family.md")
+#    assert set(kw.keywordnames()) == {
+#        "hasName",
+#        "hasAge",
+#        "hasWeight",
+#        "hasSkill",
+#        "hasChild",
+#    }
+#    assert kw["hasName"] == {
+#        "iri": "fam:hasName",
+#        "type": "owl:AnnotationProperty",
+#        "domain": "rdfs:Resource",
+#        "range": "rdfs:Literal",
+#        "comment": "Name.",
+#        "name": "hasName",
+#    }
+
+
 def test_unit():
     """Test keyword definition with default."""
     from tripper import Triplestore
@@ -318,9 +383,9 @@ def test_load2():
         "Resource",
     }
     d = kw["hasAge"]
-    assert d.iri == FAM.hasAge
+    assert d.iri == "fam:hasAge"
     assert d.range == "rdfs:Literal"
-    assert d.datatype == XSD.double
+    assert d.datatype == "xsd:double"
     assert d.unit == "year"
 
 

@@ -75,7 +75,7 @@ def get_context(
             timeout=timeout,
         )
     if prefixes:
-        context.add_context(prefixes)
+        context.add_context({k: str(v) for k, v in prefixes.items()})
     return context
 
 

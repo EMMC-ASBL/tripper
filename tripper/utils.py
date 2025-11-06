@@ -754,14 +754,12 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     return iri
 
 
-def prefix_iri(
-    iri: str, prefixes: dict, require_prefixed: bool = False
-) -> str:
+def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     """Return prefixed IRI.
 
     This is the reverse of expand_iri().
 
-    If `require_prefixed` is true, a NamespaceError exception is raised
+    If `strict` is true, a NamespaceError exception is raised
     if no prefix can be found.
 
     """
@@ -769,7 +767,7 @@ def prefix_iri(
         for prefix, ns in prefixes.items():
             if iri.startswith(str(ns)):
                 return f"{prefix}:{iri[len(str(ns)):]}"
-        if require_prefixed:
+        if strict:
             raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
 

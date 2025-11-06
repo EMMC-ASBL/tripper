@@ -538,7 +538,7 @@ def test_prefix_iri():
     assert prefix_iri(RDF.type, prefixes) == "rdf:type"
     assert prefix_iri("xxx", prefixes) == "xxx"
     with pytest.raises(NamespaceError):
-        prefix_iri("xxx", prefixes, require_prefixed=True)
+        prefix_iri("xxx", prefixes, strict=True)
 
 
 def test_substitute_query():

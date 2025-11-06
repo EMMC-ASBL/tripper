@@ -38,7 +38,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterable, List, Optional, Set, Tuple, Union
+    from typing import Any, Iterable, List, Optional, Set, Tuple, Union
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
@@ -170,8 +170,8 @@ class Keywords:
         """
         if clear:
             self.keywords.clear()
-        for clsvalue in self.data.get("resources", {}).values():
-            for keyword, value in clsvalue.get("keywords", {}).items():
+        for clsvalue in self.data.get("resources", AttrDict()).values():
+            for keyword, value in clsvalue.get("keywords", AttrDict()).items():
                 if keyword not in self.keywords:
                     self._set_keyword(self.keywords, keyword, value)
 
@@ -278,6 +278,7 @@ class Keywords:
         dict describing a keyword contains an unknown key.
         """
         # pylint: disable=too-many-nested-blocks,too-many-statements
+        # pylint: disable=too-many-locals
         self.add(d.get("basedOn"))
 
         required_resource_keys = {"iri"}
@@ -306,8 +307,24 @@ class Keywords:
             "theme",
             "default",
         }
+        iri_keywords = {
+            "iri",
+            "type",
+            "subPropertyOf",
+            "inverseOf",
+            "domain",
+            "range",
+            "datatype",
+        }
         valid_conformances = ["mandatory", "recommended", "optional"]
         keywords = AttrDict(self.keywords).copy()
+
+        def to_prefixed(x):
+            """Help function that converts an IRI or list of IRIs to
+            prefixed IRIs."""
+            if isinstance(x, str):
+                return self.prefixed(x, strict=False)
+            return [to_prefixed(e) for e in x]
 
         # Prefixes
         # TODO: consider to not update self.data.prefixes until after
@@ -322,7 +339,7 @@ class Keywords:
             prefixes[prefix] = ns
 
         # Resources
-        for cls, defs in d.get("resources", {}).items():
+        for cls, defs in d.get("resources", AttrDict()).items():
             defs = AttrDict(defs).copy()
             for key in required_resource_keys:
                 if key not in defs:
@@ -337,7 +354,7 @@ class Keywords:
                         )
             # TODO: Check for redefinition of existing class
 
-            for keyword, value in defs.get("keywords", {}).items():
+            for keyword, value in defs.get("keywords", AttrDict()).items():
                 if strict:
                     for k in value.keys():
                         if k not in valid_keywords:
@@ -375,13 +392,17 @@ class Keywords:
                                 )
                             kwdef.conformance = v
                         elif k in ("domain", "theme", "subPropertyOf"):
-                            add(kwdef, k, v)
+                            add(kwdef, k, to_prefixed(v))
                         elif k == "default":
                             kwdef[k] = v
-                        elif k in kwdef and kwdef[k] != v:
-                            raise RedefineKeywordError(
-                                f"Cannot redefine '{k}' in keyword '{keyword}'"
-                            )
+                        elif k in kwdef:
+                            if k in iri_keywords:
+                                v = self.prefixed(v)
+                            if v != kwdef[k]:
+                                raise RedefineKeywordError(
+                                    f"Cannot redefine '{k}' in keyword "
+                                    f"'{keyword}'"
+                                )
                         else:
                             kwdef[k] = v
                 else:
@@ -396,6 +417,9 @@ class Keywords:
                     kwdef.name = keyword
                     if "theme" in d:
                         add(kwdef, "theme", d["theme"])
+                    for k in iri_keywords:
+                        if k in kwdef:
+                            kwdef[k] = to_prefixed(kwdef[k])
 
                     self._set_keyword(keywords, keyword, kwdef)
 
@@ -407,6 +431,67 @@ class Keywords:
             self.data.resources[cls].update(defs)
 
         self.keywords.update(keywords)
+
+    def parse_csv(
+        self,
+        csvfile: "FileLoc",
+        prefixes: "Optional[dict]" = None,
+        theme: "Optional[str]" = None,
+        basedOn: "Optional[Union[str, List[str]]]" = None,
+        **kwargs,
+    ) -> None:
+        """Load keywords from a csv file.
+
+        Arguments:
+            csvfile: CSV file to load.
+            prefixes: Dict with additional prefixes used by `dicts`.
+            theme: Theme defined by `dicts`.
+            basedOn: Theme(s) that `dicts` are based on.
+            kwargs: Keyword arguments passed on to TableDoc.parse_csv().
+        """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.tabledoc import TableDoc
+
+        td = TableDoc.parse_csv(csvfile, prefixes=prefixes, **kwargs)
+        dicts = td.asdicts()
+        self.fromdicts(dicts, prefixes=prefixes, theme=theme, basedOn=basedOn)
+
+    #    def parse_turtle(
+    #        self,
+    #        turtlefile: "FileLoc",
+    #        context: "Optional[Any]" = None,
+    #        prefixes: "Optional[dict]" = None,
+    #        theme: "Optional[str]" = None,
+    #        basedOn: "Optional[Union[str, List[str]]]" = None,
+    #        **kwargs,
+    #    ) -> None:
+    #        """Load keywords from a turtle file.  Requires rdflib.
+    #
+    #        Arguments:
+    #            turtlefile: Turtle file to load.
+    #            context: Context object defining keywords in addition to those
+    #                defined in the ddoc:datadoc theme.
+    #            prefixes: Dict with additional prefixes used by `dicts`.
+    #            theme: Theme defined by `dicts`.
+    #            basedOn: Theme(s) that `dicts` are based on.
+    #            kwargs: Keyword arguments passed on to Triplestore.parse().
+    #        """
+    #        # pylint: disable=import-outside-toplevel
+    #        from tripper.datadoc.context import get_context
+    #        from tripper.datadoc.dataset import acquire
+    #
+    #        ts = Triplestore(backend="rdflib")
+    #        ts.parse(turtlefile, **kwargs)
+    #
+    #        ctx = get_context(prefixes=prefixes)
+    #        prefixes = ctx.get_prefixes()
+    #        prefixes.update(ts.namespaces)
+    #
+    #        props = list(ts.subjects(RDF.type, OWL.AnnotationProperty))
+    #        props.extend(ts.subjects(RDF.type, OWL.DatatypeProperty))
+    #        props.extend(ts.subjects(RDF.type, OWL.ObjectProperty))
+    #        dicts = [acquire(ts, prop, context=context) for prop in props]
+    #        self.fromdicts(dicts, prefixes=prefixes, theme=theme, basedOn=basedOn)
 
     def keywordnames(self) -> "list":
         """Return a list with all keyword names defined in this instance."""
@@ -544,7 +629,7 @@ class Keywords:
                         f"adding prefix `{prefix}: {ns}` but it is already "
                         f"defined to '{p[prefix]}'"
                     )
-            p.update(prefixes)
+            p.update({k: str(v) for k, v in prefixes.items()})
         else:
             prefixes = {}
 
@@ -871,7 +956,7 @@ class Keywords:
                 return k
         raise InvalidKeywordError(iri)
 
-    def prefixed(self, name: str) -> str:
+    def prefixed(self, name: str, strict: bool = True) -> str:
         """Return prefixed name or `name`.
 
         Example:
@@ -886,11 +971,11 @@ class Keywords:
             return prefix_iri(
                 self.data.resources[name].iri,
                 self.get_prefixes(),
-                require_prefixed=True,
+                strict=strict,
             )
         if is_curie(name):
             return name
-        return prefix_iri(name, self.get_prefixes(), require_prefixed=True)
+        return prefix_iri(name, self.get_prefixes(), strict=strict)
 
     def typename(self, type) -> str:
         """Return the short name of `type`.
@@ -1035,8 +1120,10 @@ class Keywords:
 
         for value in self.data.resources.values():
             for k, v in value.get("keywords", {}).items():
-                vdomain = [self.prefixed(d) for d in asseq(v.domain)]
-                vtheme = [self.prefixed(t) for t in asseq(v.theme)]
+                vdomain = [
+                    self.prefixed(d) for d in asseq(v.get("domain", ()))
+                ]
+                vtheme = [self.prefixed(t) for t in asseq(v.get("theme", ()))]
                 if orig_classes:
                     for domain in vdomain:
                         prefixed = self.prefixed(domain)
@@ -1052,9 +1139,9 @@ class Keywords:
             v = self.keywords[k]
             vdomain = [self.prefixed(d) for d in asseq(v.get("domain", ()))]
             vtheme = [self.prefixed(t) for t in asseq(v.get("theme", ()))]
-            if not classes.intersection(vdomain):
+            if vdomain and not classes.intersection(vdomain):
                 classes.add(vdomain[0])
-            if not themes.intersection(vtheme):
+            if vtheme and not themes.intersection(vtheme):
                 themes.add(vtheme[0])
 
         return keywords, classes, themes
@@ -1123,8 +1210,8 @@ class Keywords:
         keywords: "Optional[Sequence[str]]" = None,
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
-        explanation: bool = True,
-        special: bool = True,
+        explanation: bool = False,
+        special: bool = False,
     ) -> None:
         """Write Markdown file with documentation of the keywords.
 
