@@ -126,34 +126,6 @@ def test_parse_csv():
     kw.write_keywords_doc(outdir / "keywords.md")
 
 
-# def test_parse_turtle():
-#    """Test parse_turtle() method."""
-#    from dataset_paths import ontodir, outdir  # pylint: disable=import-error
-#
-#    from tripper.datadoc import get_keywords
-#
-#    pytest.importorskip("rdflib")
-#
-#    kw = get_keywords(theme=None)
-#    kw.parse_turtle(ontodir / "family.ttl")
-#    kw.write_keywords_doc(outdir / "family.md")
-#    assert set(kw.keywordnames()) == {
-#        "hasName",
-#        "hasAge",
-#        "hasWeight",
-#        "hasSkill",
-#        "hasChild",
-#    }
-#    assert kw["hasName"] == {
-#        "iri": "fam:hasName",
-#        "type": "owl:AnnotationProperty",
-#        "domain": "rdfs:Resource",
-#        "range": "rdfs:Literal",
-#        "comment": "Name.",
-#        "name": "hasName",
-#    }
-
-
 def test_unit():
     """Test keyword definition with default."""
     from tripper import Triplestore
@@ -303,6 +275,7 @@ def test_missing_keywords():
     assert len(existing4) == len(keywords.keywordnames())
 
 
+# VERY SLOW - consider to replace default keywords with something smaller
 def test_load():
     """Test load() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
@@ -326,15 +299,6 @@ def test_load():
         for k, v in keywords[name].items():
             if k in ("range", "theme") and k not in kw[name]:
                 continue
-
-            if name not in kw or k not in kw[name]:
-                print()
-                print("*** name:", name)
-                print("*** k:", k)
-                print("*** v:", v)
-                print("*** kw[name]:", kw[name])
-                print("*** kw[name][k]:", kw[name][k])
-
             if isinstance(kw[name][k], list):
                 continue
             assert kw.expanded(kw[name][k], False) == keywords.expanded(
@@ -346,13 +310,13 @@ def test_load2():
     """Test load() on an ontology."""
     from dataset_paths import ontodir  # pylint: disable=import-error
 
-    from tripper import XSD, Triplestore
+    from tripper import Triplestore
+    from tripper.datadoc import get_keywords
 
     ts = Triplestore("rdflib")
     ts.parse(ontodir / "family.ttl")
-    FAM = ts.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
 
-    kw = Keywords(theme=None)
+    kw = get_keywords(theme=None)
     kw.load(ts)
 
     assert set(kw.keywordnames()) == {
@@ -374,6 +338,14 @@ def test_load2():
     assert d.range == "rdfs:Literal"
     assert d.datatype == "xsd:double"
     assert d.unit == "year"
+    assert kw["hasName"] == {
+        "iri": "fam:hasName",
+        "type": "owl:AnnotationProperty",
+        "domain": "rdfs:Resource",
+        "range": "rdfs:Literal",
+        "comment": "Name.",
+        "name": "hasName",
+    }
 
 
 def test_get_prefixes():
@@ -412,7 +384,7 @@ def test_write():
 
     from dataset_paths import outdir, rootdir  # pylint: disable=import-error
 
-    from tripper.datadoc import get_keywords
+    # from tripper.datadoc import get_keywords
 
     pytest.importorskip("rdflib")
 

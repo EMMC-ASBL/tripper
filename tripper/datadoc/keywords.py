@@ -458,43 +458,6 @@ class Keywords:
         dicts = td.asdicts()
         self.fromdicts(dicts, prefixes=prefixes, theme=theme, basedOn=basedOn)
 
-    #    def parse_turtle(
-    #        self,
-    #        turtlefile: "FileLoc",
-    #        context: "Optional[Any]" = None,
-    #        prefixes: "Optional[dict]" = None,
-    #        theme: "Optional[str]" = None,
-    #        basedOn: "Optional[Union[str, List[str]]]" = None,
-    #        **kwargs,
-    #    ) -> None:
-    #        """Load keywords from a turtle file.  Requires rdflib.
-    #
-    #        Arguments:
-    #            turtlefile: Turtle file to load.
-    #            context: Context object defining keywords in addition to those
-    #                defined in the ddoc:datadoc theme.
-    #            prefixes: Dict with additional prefixes used by `dicts`.
-    #            theme: Theme defined by `dicts`.
-    #            basedOn: Theme(s) that `dicts` are based on.
-    #            kwargs: Keyword arguments passed on to Triplestore.parse().
-    #        """
-    #        # pylint: disable=import-outside-toplevel
-    #        from tripper.datadoc.context import get_context
-    #        from tripper.datadoc.dataset import acquire
-    #
-    #        ts = Triplestore(backend="rdflib")
-    #        ts.parse(turtlefile, **kwargs)
-    #
-    #        ctx = get_context(prefixes=prefixes)
-    #        prefixes = ctx.get_prefixes()
-    #        prefixes.update(ts.namespaces)
-    #
-    #        props = list(ts.subjects(RDF.type, OWL.AnnotationProperty))
-    #        props.extend(ts.subjects(RDF.type, OWL.DatatypeProperty))
-    #        props.extend(ts.subjects(RDF.type, OWL.ObjectProperty))
-    #        dicts = [acquire(ts, prop, context=context) for prop in props]
-    #        self.fromdicts(dicts, prefixes=prefixes, theme=theme, basedOn=basedOn)
-
     def keywordnames(self) -> "list":
         """Return a list with all keyword names defined in this instance."""
         return [k for k in self.keywords.keys() if ":" not in k]
