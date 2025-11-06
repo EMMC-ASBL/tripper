@@ -6,7 +6,8 @@ import json
 import os
 import warnings
 from copy import deepcopy
-from functools import lru_cache
+
+# from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
@@ -58,14 +59,16 @@ CONFORMANCE_MAPS = {
 }
 
 
-@lru_cache(maxsize=32)
+# Todo: If enabling caching, ensure that the returned keywords object
+# is immutable.
+# @lru_cache(maxsize=32)
 def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
 ) -> "Keywords":
-    """A convinient function that returns an Context instance.
+    """A convinient function that returns a Context instance.
 
     Arguments:
         keywords: Optional existing keywords object.

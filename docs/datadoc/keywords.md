@@ -433,12 +433,15 @@ Resource published or curated by an agent.
 
 - subClassOf: [rdfs:Resource]
 
-| Keyword    | Range           | Conformance | Definition                                      | Usage note |
-| ---------- | --------------- | ----------- | ----------------------------------------------- | ---------- |
-| [datatype] | [rdfs:Datatype] |             | A datatype for annotations and data properties. |            |
+| Keyword     | Range                              | Conformance | Definition                                                                | Usage note |
+| ----------- | ---------------------------------- | ----------- | ------------------------------------------------------------------------- | ---------- |
+| [datatype]  | [rdfs:Datatype]                    |             | A datatype for annotations and data properties.                           |            |
+| [usageNote] | [rdfs:Literal]<br>(rdf:langString) |             | A reference that provides information on how this resource is to be used. |            |
 
 [datatype]: https://w3id.org/emmo/application/datadoc#datatype
 [rdfs:Datatype]: http://www.w3.org/2000/01/rdf-schema#Datatype
+[usageNote]: http://purl.org/vocab/vann/usageNote
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 
 
 

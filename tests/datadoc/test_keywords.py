@@ -111,19 +111,45 @@ def test_parse():
         keywords.parse(indir / "invalid_keywords7.yaml")
 
 
-# if 1:
 def test_parse_csv():
     """Test parse_csv() method."""
-    from dataset_paths import indir, outdir  # pylint: disable=import-error
+    from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
 
     kw = get_keywords()
-
     kw.parse_csv(
         indir / "keywords.csv", prefixes={"ex": "http://example.com/ex#"}
     )
-    kw.write_keywords_doc(outdir / "keywords.md")
+    assert kw.keywords.hasColor == {
+        "iri": "ex:hasColor",
+        "type": "owl:DatatypeProperty",
+        "domain": "prov:Entity",
+        "range": "rdfs:Literal",
+        "datatype": "xsd:string",
+        "conformance": "optional",
+        "description": "A colour name.",
+        "name": "hasColor",
+    }
+    assert kw.keywords.ref == {
+        "iri": "ex:ref",
+        "type": "owl:AnnotationProperty",
+        "domain": ["dcat:Resource", "rdfs:Resource"],  # is this intended?
+        "range": "rdfs:Literal",
+        "datatype": "rdf:langString",
+        "conformance": "optional",
+        "description": "A bibliographic reference.",
+        "name": "ref",
+    }
+    assert kw.keywords.neighbor == {
+        "iri": "ex:neighbor",
+        "type": "owl:ObjectProperty",
+        "domain": ["dcat:Resource", "rdfs:Resource"],
+        "range": "foaf:Agent",
+        "description": "A neighboring object.",
+        "usageNote": "Ref. to neighboring object.",
+        "name": "neighbor",
+    }
 
 
 def test_unit():
@@ -312,11 +338,13 @@ def test_load2():
 
     from tripper import Triplestore
     from tripper.datadoc import get_keywords
+    from tripper.utils import AttrDict
 
     ts = Triplestore("rdflib")
     ts.parse(ontodir / "family.ttl")
 
     kw = get_keywords(theme=None)
+    assert kw.keywords == AttrDict()
     kw.load(ts)
 
     assert set(kw.keywordnames()) == {

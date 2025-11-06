@@ -887,6 +887,9 @@ resources:
         iri: ddoc:datatype
         range: rdfs:Datatype
         description: A datatype for annotations and data properties.
+      usageNote:
+        iri: vann:usageNote
+
 
   Restriction:
     iri: owl:Restriction
