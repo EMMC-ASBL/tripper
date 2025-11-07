@@ -121,14 +121,14 @@ def test_save_yaml():
     kw.save_yaml(outdir / "keywords.yaml")
 
 
-def test_load_csv():
-    """Test load_csv() method."""
+def test_load_table():
+    """Test load_table() method."""
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
 
     kw = get_keywords()
-    kw.load_csv(
+    kw.load_table(
         indir / "keywords.csv", prefixes={"ex": "http://example.com/ex#"}
     )
     assert kw.keywords.hasColor == {
@@ -160,6 +160,39 @@ def test_load_csv():
         "usageNote": "Ref. to neighboring object.",
         "name": "neighbor",
     }
+
+
+def test_save_table():
+    """Test save_table() method."""
+    from dataset_paths import outdir  # pylint: disable=import-error
+
+    from tripper.datadoc import get_keywords
+
+    kw = get_keywords()
+    kw.save_table(outdir / "keywords.csv")
+
+    with open(outdir / "keywords.csv", "rt", encoding="utf-8") as f:
+        header = f.readline().strip().split(",")
+        row1 = f.readline().strip().split(",")
+    assert len(header) == 11
+    facit = [
+        ("@id", "dcterms:accessRights"),
+        ("@type", "owl:ObjectProperty"),
+        ("label", "accessRights"),
+        ("domain", "dcat:Resource"),
+        ("domain", ""),
+        ("domain", ""),
+        ("range", "dcterms:RightsStatement"),
+        ("conformance", "ddoc:optional"),
+        (
+            "description",
+            "Information about who can access the resource or an indication "
+            "of its security status.",
+        ),
+        ("theme", "ddoc:datadoc"),
+        ("usageNote", ""),
+    ]
+    assert list(zip(header, row1)) == facit
 
 
 def test_unit():

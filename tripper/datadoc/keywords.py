@@ -472,9 +472,10 @@ class Keywords:
         with open(yamlfile, "wt", encoding="utf-8") as f:
             yaml.safe_dump(data, f, sort_keys=False)
 
-    def load_csv(
+    def load_table(
         self,
-        csvfile: "FileLoc",
+        filename: "FileLoc",
+        format: "Optional[str]" = None,  # pylint: disable=unused-argument
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
         basedOn: "Optional[Union[str, List[str]]]" = None,
@@ -483,7 +484,8 @@ class Keywords:
         """Load keywords from a csv file.
 
         Arguments:
-            csvfile: CSV file to load.
+            filename: File to load.
+            format: File format. Unused.  Only csv is currently supported.
             prefixes: Dict with additional prefixes used by `dicts`.
             theme: Theme defined by `dicts`.
             basedOn: Theme(s) that `dicts` are based on.
@@ -493,10 +495,44 @@ class Keywords:
         from tripper.datadoc.tabledoc import TableDoc
 
         td = TableDoc.parse_csv(
-            csvfile, type=None, prefixes=prefixes, **kwargs
+            filename, type=None, prefixes=prefixes, **kwargs
         )
         dicts = td.asdicts()
         self.fromdicts(dicts, prefixes=prefixes, theme=theme, basedOn=basedOn)
+
+    def save_table(
+        self,
+        filename: "FileLoc",
+        format: "Optional[str]" = None,  # pylint: disable=unused-argument
+        names: "Optional[Sequence]" = None,
+        strip: bool = True,
+        keymode: str = "name",
+        **kwargs,
+    ) -> None:
+        # pylint: disable=line-too-long
+        """Load keywords from a csv file.
+
+        Arguments:
+            filename: File to load.
+            format: File format. Unused.  Only csv is currently supported.
+            names: A sequence of keyword or class names to save.  The
+                default is to save all keywords.
+            strip: Whether to strip leading and trailing whitespaces
+                from cells.
+            keymode: How to represent column headers.  Should be either
+                "name", "prefixed" (CURIE) or "expanded" (full IRI).
+            kwargs: Additional keyword arguments passed to the writer.
+                For more details, see [write_csv()].
+
+        References:
+        [write_csv()]: https://emmc-asbl.github.io/tripper/latest/api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc.write_csv
+        """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.tabledoc import TableDoc
+
+        dicts = self.asdicts(names, keymode=keymode)
+        td = TableDoc.fromdicts(dicts, type=None, keywords=self, strip=strip)
+        td.write_csv(filename, **kwargs)
 
     def keywordnames(self) -> "list":
         """Return a list with all keyword names defined in this instance."""
@@ -509,6 +545,7 @@ class Keywords:
     def asdicts(
         self,
         names: "Optional[Sequence]" = None,
+        keymode: str = "prefixed",
     ) -> "List[dict]":
         """Return the content of this Keywords object as a list of JSON-LD
         dicts.
@@ -516,10 +553,17 @@ class Keywords:
         Arguments:
             names: A sequence of keyword or class names.  The
                 default is to return all keywords.
+            keymode: How to represent keys.  Should be either "name",
+                "prefixed" (CURIE) or "expanded" (full IRI).
 
         Returns:
             List of JSON-LD dicts corresponding to `names`.
         """
+        keymodes = {
+            "name": iriname,
+            "prefixed": None,
+            "expanded": self.expanded,
+        }
         maps = {
             "subPropertyOf": "rdfs:subPropertyOf",
             "unit": "ddoc:unitSymbol",
@@ -527,6 +571,11 @@ class Keywords:
             "usageNote": "vann:usageNote",
             "theme": "dcat:theme",
         }
+
+        def key(k):
+            """Return key `k` accordig to `keymode`."""
+            return keymodes[keymode](k) if keymodes[keymode] else k
+
         conformance_indv = {v: k for k, v in CONFORMANCE_MAPS.items()}
         if names is None:
             names = self.keywordnames()
@@ -553,18 +602,18 @@ class Keywords:
             dct = {
                 "@id": d.iri,
                 "@type": proptype,
-                "rdfs:label": d.name,
-                "rdfs:domain": d.domain,
+                key("rdfs:label"): d.name,
+                key("rdfs:domain"): d.domain,
             }
             if range:
-                dct["rdfs:range"] = range
+                dct[key("rdfs:range")] = range
             if "conformance" in d:
-                dct["ddoc:conformance"] = conformance_indv.get(
+                dct[key("ddoc:conformance")] = conformance_indv.get(
                     d.conformance, d.conformance
                 )
             for k, v in d.items():
                 if k in maps:
-                    dct[maps[k]] = v
+                    dct[key(maps[k])] = v
             dicts.append(dct)
 
         if classes:
@@ -578,11 +627,11 @@ class Keywords:
                 d = self.data.resources[classmaps[name]]
                 dct = {"@id": d.iri, "@type": OWL.Class}
                 if "subClassOf" in d:
-                    dct["rdfs:subClassOf"] = d.subClassOf
+                    dct[key("rdfs:subClassOf")] = d.subClassOf
                 if "description" in d:
-                    dct["dcterms:description"] = d.description
+                    dct[key("dcterms:description")] = d.description
                 if "usageNote" in d:
-                    dct["vann:usageNote"] = d.usageNote
+                    dct[key("vann:usageNote")] = d.usageNote
                 dicts.append(dct)
 
         return dicts
@@ -864,7 +913,6 @@ class Keywords:
 
         # Store all keywords that are not already in the triplestore
         missing = self.missing_keywords(ts, include_classes=True)
-
         dicts = self.asdicts(missing)
         return store(ts, dicts)
 
