@@ -1,0 +1,17 @@
+---
+basedOn: "ddoc:datadoc"
+
+prefixes:
+  kb: "http://example.com/kb#"
+  myonto: "http://example.com/myonto#"
+
+
+resources:
+  A:
+    xxx: abc  # InvalidDatadocError - unknown keyword
+    iri: myonto:A
+    subClassOf: dcat:Resource
+    keywords:
+      description:
+        iri: myonto:description
+        range: myonto:B

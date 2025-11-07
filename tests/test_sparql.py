@@ -88,7 +88,6 @@ def test_sparql_construct():
     )
 
 
-# if True:
 def test_sparql_select2():
     """Test SPARQL SELECT query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#select

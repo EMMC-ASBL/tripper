@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 from tripper import Triplestore
 from tripper.datadoc.context import get_context
 from tripper.datadoc.dataset import store, told
-from tripper.datadoc.dictutils import addnested
 from tripper.datadoc.keywords import get_keywords
+from tripper.datadoc.utils import addnested
 from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
@@ -63,12 +63,12 @@ class TableDoc:
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = "Dataset",
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
-    ):
+    ) -> None:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
@@ -170,47 +170,46 @@ class TableDoc:
                 else:
                     headdict[prefix + k] = True
 
+        def tolist(v, mult, pad=None):
+            """Return `v` as a list of length `mult` with given padding."""
+            if isinstance(v, list):
+                return v + [pad] * (mult - len(v))
+            return [v] + [pad] * (mult - 1)
+
         # Assign the headdict
         for d in dicts:
             addheaddict(d)
 
         header = list(headdict)
 
-        # Column multiplicity
+        # Calculate multiplicity of each header label
         mult = [1] * len(header)
+        for dct in dicts:
+            for i, head in enumerate(header):
+                if head in dct and isinstance(dct[head], list):
+                    mult[i] = max(mult[i], len(dct[head]))
 
-        # Assign table data. Nested dicts are accounted for
+        # Assign table data. Multiplicity and nested dicts are accounted for
         data = []
         for dct in dicts:
             row = []
-            for i, head in enumerate(header):
+            for head, m in zip(header, mult):
                 if head in dct:
-                    row.append(dct[head])
+                    row.extend(tolist(dct[head], m))
                 else:
                     d = dct
                     for key in head.split("."):
                         d = d.get(key, {})
-                    row.append(d if d != {} else None)
-                if isinstance(row[-1], list):  # added value is a list
-                    mult[i] = len(row[-1])  # update column multiplicity
+                    row.extend(tolist(d if d != {} else None, m))
             data.append(row)
 
-        # Expand table with multiplicated columns
-        if max(mult) > 1:
-            exp_header = []
-            for h, m in zip(header, mult):
-                exp_header.extend([h] * m)
-
-            exp_data = []
-            for row in data:
-                r = []
-                for h, v in zip(header, row):
-                    r.extend(v if isinstance(v, list) else [v])
-                exp_data.append(r)
-            header, data = exp_header, exp_data
+        # New multiplied header
+        newheader = []
+        for head, m in zip(header, mult):
+            newheader.extend(tolist(head, m, head))
 
         return TableDoc(
-            header=header,
+            header=newheader,
             data=data,
             type=type,
             keywords=keywords,

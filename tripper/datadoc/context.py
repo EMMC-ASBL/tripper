@@ -11,12 +11,13 @@ from pyld import jsonld
 
 from tripper import RDF, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
-from tripper.datadoc.keywords import Keywords
 from tripper.errors import NamespaceError
 from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
+
+    from tripper.datadoc.keywords import Keywords
 
     # Possible types for a JSON-LD context
     ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
@@ -25,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def get_context(
     context: "Optional[ContextType]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = None,
-    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
@@ -54,6 +55,9 @@ def get_context(
     Returns:
         Context object.
     """
+    # pylint: disable=import-outside-toplevel
+    from tripper.datadoc.keywords import Keywords
+
     if isinstance(context, Context):
         if copy:
             context = context.copy()
@@ -71,7 +75,7 @@ def get_context(
             timeout=timeout,
         )
     if prefixes:
-        context.add_context(prefixes)
+        context.add_context({k: str(v) for k, v in prefixes.items()})
     return context
 
 
@@ -81,7 +85,7 @@ class Context:
     def __init__(
         self,
         context: "Optional[ContextType]" = None,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
         timeout: float = 3,
@@ -102,6 +106,9 @@ class Context:
             timeout: Timeout when accessing remote files.
 
         """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.keywords import Keywords
+
         self.ld = jsonld.JsonLdProcessor()
         self.ctx = self.ld._get_initial_context(
             options={"processingMode": processingMode}
@@ -147,7 +154,7 @@ class Context:
 
     def copy(self) -> "Context":
         """Return a copy of this context."""
-        copy = Context()
+        copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
         return copy
 

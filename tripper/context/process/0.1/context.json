@@ -2,6 +2,7 @@
   "@context": {
     "@version": 1.1,
     "ddoc": "https://w3id.org/emmo/application/datadoc#",
+    "accr": "http://publications.europa.eu/resource/authority/access-right/",
     "adms": "http://www.w3.org/ns/adms#",
     "dcat": "http://www.w3.org/ns/dcat#",
     "dcatap": "http://data.europa.eu/r5r/",
@@ -19,6 +20,7 @@
     "schema": "https://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "spdx": "http://spdx.org/rdf/terms#",
+    "vann": "http://purl.org/vocab/vann/",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "emmo": "https://w3id.org/emmo#",
@@ -53,8 +55,12 @@
       "@language": "en"
     },
     "documentation": {
-      "@id": "foaf:documentation",
-      "@type": "xsd:anyURI"
+      "@id": "foaf:page",
+      "@type": "@id"
+    },
+    "hasPart": {
+      "@id": "dcterms:hasPart",
+      "@type": "@id"
     },
     "hasVersion": {
       "@id": "dcat:hasVersion",
@@ -71,11 +77,11 @@
     },
     "landingPage": {
       "@id": "dcat:landingPage",
-      "@type": "xsd:anyURI"
+      "@type": "@id"
     },
     "language": {
       "@id": "dcterms:language",
-      "@language": "en"
+      "@type": "xsd:string"
     },
     "license": {
       "@id": "dcterms:license",
@@ -125,15 +131,27 @@
     },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",
+    "conformance": {
+      "@id": "ddoc:conformance",
+      "@type": "@id"
+    },
     "deprecated": {
       "@id": "owl:deprecated",
       "@type": "xsd:boolean"
+    },
+    "domain": {
+      "@id": "rdfs:domain",
+      "@type": "@id"
     },
     "isDefinedBy": {
       "@id": "rdfs:isDefinedBy",
       "@type": "@id"
     },
     "label": "rdfs:label",
+    "range": {
+      "@id": "rdfs:range",
+      "@type": "@id"
+    },
     "seeAlso": {
       "@id": "rdfs:seeAlso",
       "@type": "@id"
@@ -141,6 +159,10 @@
     "statements": {
       "@id": "oteio:statement",
       "@type": "@json"
+    },
+    "usageNote": {
+      "@id": "vann:usageNote",
+      "@language": "en"
     },
     "distribution": {
       "@id": "dcat:distribution",
@@ -342,10 +364,6 @@
       "@id": "dcat:hasRole",
       "@type": "@id"
     },
-    "relation": {
-      "@id": "dcterms:relation",
-      "@type": "@id"
-    },
     "altLabel": {
       "@id": "skos:altLabel",
       "@language": "en"
@@ -364,6 +382,10 @@
     },
     "subClassOf": {
       "@id": "rdfs:subClassOf",
+      "@type": "@id"
+    },
+    "datatype": {
+      "@id": "ddoc:datatype",
       "@type": "@id"
     },
     "qualifiedCardinality": {
@@ -399,6 +421,7 @@
     "LegalResource": "eli:LegalResource",
     "Standard": "dcterms:Standard",
     "MediaType": "dcterms:MediaType",
+    "ConformanceLevel": "ddoc:ConformanceLevel",
     "OWLClass": "owl:Class",
     "Class": "rdfs:Class",
     "GenericResource": "rdfs:Resource",

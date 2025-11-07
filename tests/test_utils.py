@@ -538,7 +538,7 @@ def test_prefix_iri():
     assert prefix_iri(RDF.type, prefixes) == "rdf:type"
     assert prefix_iri("xxx", prefixes) == "xxx"
     with pytest.raises(NamespaceError):
-        prefix_iri("xxx", prefixes, require_prefixed=True)
+        prefix_iri("xxx", prefixes, strict=True)
 
 
 def test_substitute_query():
@@ -590,7 +590,7 @@ def test_get_entry_points():
     from tripper.utils import get_entry_points
 
     for ep in get_entry_points("tripper.keywords"):
-        if ep.value == "ddoc:default":
+        if ep.value == "ddoc:datadoc":
             break
     else:
         raise RuntimeError(

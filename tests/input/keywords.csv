@@ -1,0 +1,4 @@
+@id,@type,domain,range,label,description,conformance,usageNote
+ex:hasColor,owl:DatatypeProperty,prov:Entity,xsd:string,hasColor,A colour name.,optional,
+ex:ref,owl:AnnotationProperty,,rdf:langString,ref,A bibliographic reference.,optional,
+ex:neighbor,owl:ObjectProperty,,foaf:Agent,neighbor,A neighboring object.,,Ref. to neighboring object.

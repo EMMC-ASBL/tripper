@@ -48,7 +48,6 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.dictutils import add, get
 from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
     InvalidDatadocError,
     IRIExistsError,
@@ -57,6 +56,7 @@ from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKey
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
+from tripper.datadoc.utils import add, get
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -155,7 +155,7 @@ def told(
 
     """
     single = "@id", "@type", "@graph"
-    multi = "theme", "keywordfile", "prefixes", "base"
+    multi = "keywordfile", "prefixes", "base"
     singlerepr = any(s in descr for s in single) or isinstance(descr, list)
     multirepr = any(s in descr for s in multi)
     if singlerepr and multirepr:
@@ -165,7 +165,7 @@ def told(
     if not singlerepr:
         keywords = get_keywords(
             keywords=keywords,
-            theme=descr.get("theme", "ddoc:default"),  # type: ignore
+            theme=descr.get("theme", "ddoc:datadoc"),  # type: ignore
             yamlfile=descr.get("keywordfile"),  # type: ignore
         )
     else:
@@ -235,11 +235,15 @@ def _told(
         """Add `cls` and its superclasses to key "@type" in dict `d`."""
         classes = cls if isinstance(cls, list) else [cls]
         missing = []
+        # print("*** addsuper:", cls)
+        # print(d)
         for c in classes:
             try:
+                # print("*** super:", keywords.superclasses(c))
                 add(d, "@type", keywords.superclasses(c))
             except NoSuchTypeError:
                 missing.append(prefix_iri(c, keywords.get_prefixes()))
+                # print("*** c:", c)
                 add(d, "@type", c)
             if missing:
                 # Using logging.info() here, since warnings is too verbose
@@ -271,6 +275,10 @@ def _told(
     for k in "@context", "@id":
         if k in descr:
             d[k] = descr[k]
+    # print()
+    # print("*** type:", type)
+    # print("*** descr:", descr)
+
     if "@type" in descr:
         addsuperclasses(d, descr["@type"])
     if type:
@@ -321,6 +329,7 @@ def store(
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
@@ -336,6 +345,7 @@ def store(
             defined in `keywords`.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
+        theme: IRI of one of more themes to load keywords for.
         context: Context object defining keywords in addition to those defined
             in the default [JSON-LD context].
             Complementing the `keywords` argument.
@@ -365,10 +375,6 @@ def store(
     [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/
     [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
     """
-    if isinstance(source, dict):
-        theme = source.get("theme", "ddoc:default")
-    else:
-        theme = "ddoc:default"
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
         keywords=keywords, context=context, prefixes=prefixes
@@ -401,6 +407,7 @@ def store(
                 )
 
     context.sync_prefixes(ts)
+
     update_classes(doc, context=context, restrictions=restrictions)
     # add(doc, "@context", context.get_context_dict())
 
@@ -976,8 +983,11 @@ def validate(
     def check_keyword(keyword, type):
         """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
-        name = keywords.keywordname(keyword)
-        if name in resources[typename].keywords:
+        name = keywords.shortname(keyword)
+        if (
+            "keywords" in resources[typename]
+            and name in resources[typename].keywords
+        ):
             return True
         if "subClassOf" in resources[typename]:
             subclass = resources[typename].subClassOf
@@ -1068,7 +1078,7 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
-    context = get_context(context=context, theme="ddoc:default")
+    context = get_context(context=context, theme="ddoc:datadoc")
 
     dct = acquire(ts, iri, use_sparql=use_sparql)
 

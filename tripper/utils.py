@@ -12,6 +12,7 @@ import tempfile
 import urllib
 import warnings
 from contextlib import contextmanager
+from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -60,6 +61,7 @@ __all__ = (
     "parse_object",
     "as_python",
     "is_uri",
+    "is_curie",
     "check_function",
     "random_string",
     "extend_namespace",
@@ -100,11 +102,14 @@ class AttrDict(dict):
     def __dir__(self):
         return dict.__dir__(self) + list(self.keys())
 
-    def __getstate__(self):
+    def __getstate__(self):  # For pickle support
         return dict(self)
 
-    def __setstate__(self, state):
+    def __setstate__(self, state):  # For pickle support
         pass
+
+    def __deepcopy__(self, memo):  # For supporting deepcopy
+        return AttrDict((k, deepcopy(v, memo)) for k, v in self.items())
 
     def _pprint(self, obj=None, indent=0):
         """Help method for pretty printing."""
@@ -119,6 +124,10 @@ class AttrDict(dict):
             s.append(f"{' '*n}{k!r}: {val},")
         s.append(" " * indent + "})")
         return "\n".join(s)
+
+    def copy(self):
+        """Return a shallow copy of self."""
+        return AttrDict(self)
 
 
 def _rec(d, other, append, cls):
@@ -745,14 +754,12 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     return iri
 
 
-def prefix_iri(
-    iri: str, prefixes: dict, require_prefixed: bool = False
-) -> str:
+def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     """Return prefixed IRI.
 
     This is the reverse of expand_iri().
 
-    If `require_prefixed` is true, a NamespaceError exception is raised
+    If `strict` is true, a NamespaceError exception is raised
     if no prefix can be found.
 
     """
@@ -760,7 +767,7 @@ def prefix_iri(
         for prefix, ns in prefixes.items():
             if iri.startswith(str(ns)):
                 return f"{prefix}:{iri[len(str(ns)):]}"
-        if require_prefixed:
+        if strict:
             raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
 
@@ -883,7 +890,11 @@ def check_service_availability(
 
     import requests  # pylint: disable=import-outside-toplevel
 
+    # Interval should never be larger than timeout
+    interval = min(interval, timeout)
+
     start_time = time.time()
+
     while True:
         try:
             response = requests.get(url, timeout=timeout)

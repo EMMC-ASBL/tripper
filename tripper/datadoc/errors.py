@@ -3,15 +3,26 @@
 from tripper.errors import TripperError, TripperWarning
 
 
+# ========
+# Errors
+# ========
 class InvalidDatadocError(TripperError):
     """Invalid data documentation dict (or list)."""
 
 
-class InvalidKeywordError(TripperError, KeyError):
+class MissingKeyError(InvalidDatadocError):
+    """Missing required key in description of a resource or keyword."""
+
+
+class InvalidKeywordError(InvalidDatadocError, KeyError):  # remove?
     """Keyword is not defined."""
 
 
-class RedefineKeywordError(TripperError, KeyError):
+class DatadocValueError(InvalidDatadocError, ValueError):
+    """Invalid/inconsistent value (of correct type)."""
+
+
+class RedefineKeywordError(InvalidDatadocError, KeyError):
     """Trying to map an existing keyword to a new IRI."""
 
 
@@ -35,6 +46,13 @@ class IRIExistsError(TripperError):
     """The IRI already exists in the triplestore."""
 
 
+class ParseError(TripperError):
+    """Error when parsing a file."""
+
+
+# ==========
+# Warnings
+# ==========
 class UnknownKeywordWarning(TripperWarning):
     """Unknown keyword in data documentation."""
 

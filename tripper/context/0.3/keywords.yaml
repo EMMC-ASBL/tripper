@@ -1,9 +1,10 @@
 ---
-theme: ddoc:default
+theme: ddoc:datadoc
 #basedOn:
 
 
 prefixes:
+  accr: "http://publications.europa.eu/resource/authority/access-right/"
   adms: "http://www.w3.org/ns/adms#"
   dcat: "http://www.w3.org/ns/dcat#"
   dcatap: "http://data.europa.eu/r5r/"
@@ -22,6 +23,7 @@ prefixes:
   schema: "https://schema.org/"
   skos: "http://www.w3.org/2004/02/skos/core#"
   spdx: "http://spdx.org/rdf/terms#"
+  vann: "http://purl.org/vocab/vann/"
   vcard: "http://www.w3.org/2006/vcard/ns#"
   xsd: "http://www.w3.org/2001/XMLSchema#"
 
@@ -35,11 +37,18 @@ prefixes:
 #   - iri: IRI of the resource
 #   - subClassOf: The IRI of class this resource is a subclass of
 #   - description: Description of the resource
+#   - usageNote: A note about how to use this class.
 #   - keywords: List of keywords (properties) of this resource
 #
 # Valid keys on keywords:
 #   - iri: IRI of property that the keyword is mapped to
+#   - type: Should be owl:AnnotationProperty, owl:DataProperty or owl:ObjectProperty.
+#     Is also used to express the characteristics: owl:FunctionalProperty,
+#     owl:InverseFunctionalProperty, owl:SymmetricProperty, owl:AsymmetricProperty,
+#     owl:ReflexiveProperty, owl:IrreflexiveProperty, owl:TransitiveProperty
 #   - subPropertyOf: The IRI of a property that this property is a subproperty of
+#   - inverseOf: IRI of the inverse of this property
+#   - domain: Domain of property (inferred from the resource) (IRI)
 #   - range: Range of property (IRI)
 #   - datatype: Datatype of the property (only for data properties)
 #   - inverse: If true, `iri` refer to the inverse of this property
@@ -47,7 +56,6 @@ prefixes:
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
 #   - usageNote: A note about how to use this keyword.
-#   - characteristics: NOT IMPLEMENTED
 #   - default: NOT IMPLEMENTED
 #
 resources:
@@ -101,11 +109,16 @@ resources:
         usageNote: This property can be repeated for parallel language versions of the description.
 
       documentation:
-        iri: foaf:documentation
+        iri: foaf:page
         range: foaf:Document
-        datatype: xsd:anyURI
         conformance: optional
         description: A page or document about this resource.
+
+      hasPart:
+        iri: dcterms:hasPart
+        range: rdfs:Resource
+        conformance: optional
+        description: A related resource that is included either physically or logically in the described resource.
 
       hasVersion:
         iri: dcat:hasVersion
@@ -136,18 +149,28 @@ resources:
       landingPage:
         iri: dcat:landingPage
         range: foaf:Document
-        datatype: xsd:anyURI
         conformance: optional
         description: A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
         usageNote: It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.
 
       language:
         iri: dcterms:language
-        range: dcterms:LinguisticSystem
-        datatype: rdf:langString
+        range: rdfs:Literal
+        datatype: xsd:string
         conformance: optional
         description: A language of the resource.
-        usageNote: This property can be repeated if the resource is expressed with multiple languages.
+        usageNote: |
+          Recommended practice is to use either a non-literal value
+          representing a language from a controlled vocabulary such as
+          ISO 639-2 or ISO 639-3, or a literal value consisting of an
+          IETF Best Current Practice 47
+          [[IETF-BCP47](https://tools.ietf.org/html/bcp47)] language
+          tag.
+
+          Example values: "en", "it", "no", "da"
+
+          This property can be repeated if the resource is expressed
+          with multiple languages.
 
       license:
         iri: dcterms:license
@@ -162,7 +185,6 @@ resources:
         datatype: xsd:date
         conformance: optional
         description: The most recent date on which the resource was changed or modified.
-
       publisher:
         iri: dcterms:publisher
         range: foaf:Agent
@@ -249,11 +271,22 @@ resources:
         range: rdfs:Literal
         description: A description of the subject resource. Use `description` instead.
 
+      conformance:
+        iri: ddoc:conformance
+        range: ddoc:ConformanceLevel
+        description: Whether the annotation is mandatory, recommended or optional.
+        usageNote: It MUST take one of the values 'ddoc:mandatory', 'ddoc:recommended' or 'ddoc:optional'.
+
       deprecated:
         iri: owl:deprecated
         range: rdfs:Literal
         datatype: xsd:boolean
-        description: The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.
+        description: 'The annotation property that indicates that a given entity has been deprecated. It should equal to `"true"^^xsd:boolean`.'
+
+      domain:
+        iri: rdfs:domain
+        range: rdfs:Resource
+        description: A domain of the subject property.
 
       isDefinedBy:
         iri: rdfs:isDefinedBy
@@ -265,6 +298,11 @@ resources:
         range: rdfs:Literal
         description: "Provides a human-readable version of a resource's name."
 
+      range:
+        iri: rdfs:range
+        range: rdfs:Resource
+        description: A range of the subject property.
+
       seeAlso:
         iri: rdfs:seeAlso
         range: skos:Concept
@@ -275,6 +313,12 @@ resources:
         range: rdfs:Literal
         datatype: rdf:JSON
         description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
+
+      usageNote:
+        iri: vann:usageNote
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: A reference that provides information on how this resource is to be used.
 
 
   Dataset:
@@ -530,8 +574,9 @@ resources:
 
   Agent:
     iri: foaf:Agent
-    subClassOf: emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046
-    description: Any entity carrying out actions with respect to the entities Catalogue and the Catalogued Resources.
+    subClassOf: ["dcterms:Agent", "emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"]
+    description: An agent (eg. person, group, software or physical artifact).
+    usageNote: A resource that acts or has the power to act.
     keywords:
       name:
         iri: foaf:name
@@ -760,10 +805,9 @@ resources:
         range: dcat:Role
         description: A function of an entity or agent with respect to another entity or resource.
 
-      relation:
+      relatedResource:
         iri: dcterms:relation
         range: rdfs:Resource
-        description: A resource related to the source resource.
 
 
   RightsStatement:
@@ -783,6 +827,10 @@ resources:
     iri: dcterms:MediaType
     description: A media type, e.g. the format of a computer file.
     usageNote: Media type instances follow the [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types) vocabulary using the <http://www.iana.org/assignments/media-types/> namespace. For example, the IRI of the media type `text/turtle` is <http://www.iana.org/assignments/media-types/text/turtle>.
+
+  ConformanceLevel:
+    iri: ddoc:ConformanceLevel
+    description: "The class of conformance levels. Includes the following individuals: `ddoc:mandatory`, `ddoc:recommended` and `ddoc:optional`."
 
 
 # Generic classes and properties
@@ -834,6 +882,13 @@ resources:
   GenericResource:
     iri: rdfs:Resource
     description: A generic resource defined by RDFS.
+    keywords:
+      datatype:
+        iri: ddoc:datatype
+        range: rdfs:Datatype
+        description: A datatype for annotations and data properties.
+      usageNote:
+        iri: vann:usageNote
 
   Restriction:
     iri: owl:Restriction
