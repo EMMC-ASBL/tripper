@@ -68,7 +68,7 @@ def get_keywords(
     yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
     timeout: float = 3,
 ) -> "Keywords":
-    """A convinient function that returns a Context instance.
+    """A convenient function that returns a Context instance.
 
     Arguments:
         keywords: Optional existing keywords object.
