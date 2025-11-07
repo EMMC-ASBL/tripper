@@ -803,8 +803,8 @@ class Keywords:
             ts: Triplestore object to check.
             include_classes: Also return missing classes.
             return_existing: If true, two lists are returned:
-                - list of keywords missing `ts`
-                - list of keywords existing `ts`
+                - list of keywords missing in `ts`
+                - list of keywords existing in `ts`
 
         Returns:
             List with the names of keywords in this instance that are
