@@ -286,6 +286,9 @@ def test_fromdicts():
             "description": "The agent that curated the resource.",
             "usageNote": "Use `issued` to refer to the date of curation.",
         },
+        {
+            "@id": "oteio:minimal",
+        },
     ]
     kw.fromdicts(dicts1, prefixes=prefixes)
     assert kw.data.prefixes == prefixes
