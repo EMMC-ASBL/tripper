@@ -267,7 +267,7 @@ def test_get_shortnames():
 
         shortnames = get_shortnames()
         assert shortnames[DCTERMS.title] == "title"
-        assert shortnames[DCTERMS.issued] == "creationDate"
+        assert shortnames[DCTERMS.issued] == "releaseDate"
 
 
 def test_store():
