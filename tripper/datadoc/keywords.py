@@ -646,7 +646,7 @@ class Keywords:
         """Populate this Keywords object from a sequence of dicts.
 
         Arguments:
-            dicts: A sequence DSON-LD dicts to populate this keywords object
+            dicts: A sequence of JSON-LD dicts to populate this keywords object
                 from.  Their format should follow what is returned by
                 tripper.datadoc.acquire().
             prefixes: Dict with additional prefixes used by `dicts`.
