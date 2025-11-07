@@ -3,6 +3,26 @@
 # Keywords for theme: {'ddoc:datadoc'}
 The tables below lists the keywords for the theme {'ddoc:datadoc'}.
 
+The meaning of the columns are as follows:
+
+- **Keyword**: The keyword referring to a property used for the data documentation.
+- **Range**: Refer to the class for the values of the keyword.
+- **Conformance**: Whether the keyword is mandatory, recommended or optional when documenting the given type of resources.
+- **Definition**: The definition of the keyword.
+- **Usage note**: Notes about how to use the keyword.
+
+## Special keywords (from JSON-LD)
+See the [JSON-LD specification] for more details.
+
+| Keyword    | Range         | Conformance | Definition                                                              | Usage note |
+|------------|---------------|-------------|-------------------------------------------------------------------------|------------|
+| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |
+| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |
+| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |
+| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |
+| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |
+| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |
+
 
 ## Properties on [DataService]
 A collection of operations that provides access to one or more datasets or data processing functions.
@@ -195,7 +215,7 @@ Resource published or curated by an agent.
 | [creator]               | [foaf:Agent]                       | optional    | An entity responsible for producing the resource.                                                                                            |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [hasPart]               | [rdfs:Resource]                    | optional    | A related resource that is included either physically or logically in the described resource.                                                |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [isReferencedBy]        | [rdfs:Resource]                    | optional    | A related resource, such as a publication, that references, cites, or otherwise points to the documented resource.                           |                                                                                                                                                                                                                                                                                                                                                                                                                |
-| [creationDate]          | [rdfs:Literal]<br>(xsd:date)       | optional    | The date of formal issuance (e.g., publication) of the resource.                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                |
+| [releaseDate]           | [rdfs:Literal]<br>(xsd:date)       | optional    | The date of formal issuance (e.g., publication) of the resource.                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [language]              | [rdfs:Literal]<br>(xsd:string)     | optional    | A language of the resource.                                                                                                                  | Recommended practice is to use either a non-literal value
 representing a language from a controlled vocabulary such as
 ISO 639-2 or ISO 639-3, or a literal value consisting of an
@@ -264,7 +284,7 @@ with multiple languages.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [isReferencedBy]: http://purl.org/dc/terms/isReferencedBy
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
-[creationDate]: http://purl.org/dc/terms/issued
+[releaseDate]: http://purl.org/dc/terms/issued
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [language]: http://purl.org/dc/terms/language
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
