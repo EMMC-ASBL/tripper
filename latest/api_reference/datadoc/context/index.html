@@ -1413,29 +1413,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../dictutils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    dictutils
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../errors/" class="md-nav__link">
         
   
@@ -1511,6 +1488,29 @@
   
   <span class="md-ellipsis">
     tabledoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    utils
     
   </span>
   
@@ -2034,7 +2034,7 @@ Context        </code>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
+        <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -2055,6 +2055,9 @@ Context        </code>
 <span class="sd">            timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=import-outside-toplevel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keywords</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ld</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdProcessor</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">_get_initial_context</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processingMode&quot;</span><span class="p">:</span> <span class="n">processingMode</span><span class="p">}</span>
@@ -2100,7 +2103,7 @@ Context        </code>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Context&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of this context.&quot;&quot;&quot;</span>
-        <span class="n">copy</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+        <span class="n">copy</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">copy</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span>  <span class="c1"># frozendict - no need to copy</span>
         <span class="k">return</span> <span class="n">copy</span>
 
@@ -2487,7 +2490,7 @@ Context        </code>
 
 
 <h3 id="tripper.datadoc.context.Context.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2526,7 +2529,7 @@ Context        </code>
         <td><code>theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
         <td><p>Load initial context for this theme.</p></td>
-        <td><code>&#39;ddoc:default&#39;</code></td>
+        <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
@@ -2553,7 +2556,7 @@ Context        </code>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -2574,6 +2577,9 @@ Context        </code>
 <span class="sd">        timeout: Timeout when accessing remote files.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keywords</span>
+
     <span class="bp">self</span><span class="o">.</span><span class="n">ld</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdProcessor</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">_get_initial_context</span><span class="p">(</span>
         <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;processingMode&quot;</span><span class="p">:</span> <span class="n">processingMode</span><span class="p">}</span>
@@ -2726,7 +2732,7 @@ Context        </code>
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Context&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a copy of this context.&quot;&quot;&quot;</span>
-    <span class="n">copy</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+    <span class="n">copy</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">copy</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span>  <span class="c1"># frozendict - no need to copy</span>
     <span class="k">return</span> <span class="n">copy</span>
 </code></pre></div>
@@ -3246,7 +3252,7 @@ If <code>update</code> is:</p>
 
 
 <h2 id="tripper.datadoc.context.get_context" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_theme</span><span class="o">=</span><span class="s1">&#39;ddoc:default&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processingMode</span><span class="o">=</span><span class="s1">&#39;json-ld-1.1&#39;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.context.get_context" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3289,7 +3295,7 @@ If <code>update</code> is:</p>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
         <td><p>Initialise context for this theme if neither
 <code>context</code> nor <code>theme</code> are provided.</p></td>
-        <td><code>&#39;ddoc:default&#39;</code></td>
+        <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
@@ -3343,7 +3349,7 @@ If <code>update</code> is:</p>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_context</span><span class="p">(</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">default_theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">,</span>
+    <span class="n">default_theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">processingMode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json-ld-1.1&quot;</span><span class="p">,</span>
@@ -3372,6 +3378,9 @@ If <code>update</code> is:</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        Context object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keywords</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -3389,7 +3398,7 @@ If <code>update</code> is:</p>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
     <span class="k">return</span> <span class="n">context</span>
 </code></pre></div>
         </details>

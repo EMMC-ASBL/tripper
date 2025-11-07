@@ -888,6 +888,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="AttrDict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.AttrDict.copy" class="md-nav__link">
+    <span class="md-ellipsis">
+      copy()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1432,29 +1447,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../datadoc/dictutils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    dictutils
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../datadoc/errors/" class="md-nav__link">
         
   
@@ -1530,6 +1522,29 @@
   
   <span class="md-ellipsis">
     tabledoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datadoc/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    utils
     
   </span>
   
@@ -1823,6 +1838,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="AttrDict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.AttrDict.copy" class="md-nav__link">
+    <span class="md-ellipsis">
+      copy()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2094,11 +2124,14 @@ AttrDict            (<span title="dict">dict</span>)
     <span class="k">def</span><span class="w"> </span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># For pickle support</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>  <span class="c1"># For pickle support</span>
         <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>  <span class="c1"># For supporting deepcopy</span>
+        <span class="k">return</span> <span class="n">AttrDict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">memo</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_pprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Help method for pretty printing.&quot;&quot;&quot;</span>
@@ -2113,6 +2146,10 @@ AttrDict            (<span title="dict">dict</span>)
             <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="n">n</span><span class="si">}{</span><span class="n">k</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">,&quot;</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="s2">&quot;})&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a shallow copy of self.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">AttrDict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -2131,6 +2168,34 @@ AttrDict            (<span title="dict">dict</span>)
 
 
 
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.utils.AttrDict.copy" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#tripper.utils.AttrDict.copy" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a shallow copy of self.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a shallow copy of self.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AttrDict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
@@ -2411,7 +2476,11 @@ otherwise false is returned.</p></td>
 
     <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
 
+    <span class="c1"># Interval should never be larger than timeout</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -3304,7 +3373,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
 
 <h2 id="tripper.utils.prefix_iri" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a href="#tripper.utils.prefix_iri" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3313,19 +3382,17 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
       <p>Return prefixed IRI.</p>
 <p>This is the reverse of expand_iri().</p>
-<p>If <code>require_prefixed</code> is true, a NamespaceError exception is raised
+<p>If <code>strict</code> is true, a NamespaceError exception is raised
 if no prefix can be found.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span>
-    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">require_prefixed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return prefixed IRI.</span>
 
 <span class="sd">    This is the reverse of expand_iri().</span>
 
-<span class="sd">    If `require_prefixed` is true, a NamespaceError exception is raised</span>
+<span class="sd">    If `strict` is true, a NamespaceError exception is raised</span>
 <span class="sd">    if no prefix can be found.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3333,7 +3400,7 @@ if no prefix can be found.</p>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
                 <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="n">require_prefixed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No prefix defined for IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">iri</span>
 </code></pre></div>

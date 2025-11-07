@@ -16,7 +16,7 @@
         <link rel="prev" href="../dataaccess/">
       
       
-        <link rel="next" href="../dictutils/">
+        <link rel="next" href="../errors/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -1434,29 +1434,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../dictutils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    dictutils
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../errors/" class="md-nav__link">
         
   
@@ -1532,6 +1509,29 @@
   
   <span class="md-ellipsis">
     tabledoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    utils
     
   </span>
   
@@ -2542,7 +2542,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="sd">        OTELib partial pipeline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=too-many-branches,too-many-locals</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">&quot;ddoc:default&quot;</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">)</span>
 
     <span class="n">dct</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
 
@@ -3684,7 +3684,7 @@ measured on a given sample:</p>
 
 
 <h2 id="tripper.datadoc.dataset.store" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
 
 
 <a href="#tripper.datadoc.dataset.store" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3729,6 +3729,12 @@ defined in <code>keywords</code>.</p></td>
         <td><p>Keywords object with additional keywords definitions.
 If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>theme</code></td>
+        <td><code>&#39;Optional[Union[str, Sequence[str]]]&#39;</code></td>
+        <td><p>IRI of one of more themes to load keywords for.</p></td>
+        <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
@@ -3797,6 +3803,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
@@ -3812,6 +3819,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">            defined in `keywords`.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
+<span class="sd">        theme: IRI of one of more themes to load keywords for.</span>
 <span class="sd">        context: Context object defining keywords in addition to those defined</span>
 <span class="sd">            in the default [JSON-LD context].</span>
 <span class="sd">            Complementing the `keywords` argument.</span>
@@ -3841,10 +3849,6 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">    [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/</span>
 <span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">theme</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">theme</span> <span class="o">=</span> <span class="s2">&quot;ddoc:default&quot;</span>
     <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
@@ -3877,6 +3881,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
                 <span class="p">)</span>
 
     <span class="n">context</span><span class="o">.</span><span class="n">sync_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
     <span class="n">update_classes</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
     <span class="c1"># add(doc, &quot;@context&quot;, context.get_context_dict())</span>
 
@@ -4017,7 +4022,7 @@ or included in the JSON-LD context.</p></td>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">single</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="s2">&quot;@graph&quot;</span>
-    <span class="n">multi</span> <span class="o">=</span> <span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;keywordfile&quot;</span><span class="p">,</span> <span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span>
+    <span class="n">multi</span> <span class="o">=</span> <span class="s2">&quot;keywordfile&quot;</span><span class="p">,</span> <span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span>
     <span class="n">singlerepr</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="ow">in</span> <span class="n">descr</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">single</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
     <span class="n">multirepr</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="ow">in</span> <span class="n">descr</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">multi</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">singlerepr</span> <span class="ow">and</span> <span class="n">multirepr</span><span class="p">:</span>
@@ -4027,7 +4032,7 @@ or included in the JSON-LD context.</p></td>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">singlerepr</span><span class="p">:</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-            <span class="n">theme</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;ddoc:default&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">theme</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
             <span class="n">yamlfile</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywordfile&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -4344,8 +4349,11 @@ converted to value restrictions.</p></td>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_keyword</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that the resource type `type` has keyword `keyword`.&quot;&quot;&quot;</span>
         <span class="n">typename</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">typename</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">keywordname</span><span class="p">(</span><span class="n">keyword</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">[</span><span class="n">typename</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">shortname</span><span class="p">(</span><span class="n">keyword</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">&quot;keywords&quot;</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">[</span><span class="n">typename</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">[</span><span class="n">typename</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="s2">&quot;subClassOf&quot;</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">[</span><span class="n">typename</span><span class="p">]:</span>
             <span class="n">subclass</span> <span class="o">=</span> <span class="n">resources</span><span class="p">[</span><span class="n">typename</span><span class="p">]</span><span class="o">.</span><span class="n">subClassOf</span>

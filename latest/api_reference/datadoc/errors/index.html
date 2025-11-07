@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://EMMC-ASBL.github.io/tripper/latest/api_reference/datadoc/errors/">
       
       
-        <link rel="prev" href="../dictutils/">
+        <link rel="prev" href="../dataset/">
       
       
         <link rel="next" href="../keywords/">
@@ -1182,29 +1182,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../dictutils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    dictutils
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -1267,6 +1244,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.DatadocValueError" class="md-nav__link">
+    <span class="md-ellipsis">
+      DatadocValueError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.errors.IRIExistsError" class="md-nav__link">
     <span class="md-ellipsis">
       IRIExistsError
@@ -1312,6 +1298,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.MissingKeyError" class="md-nav__link">
+    <span class="md-ellipsis">
+      MissingKeyError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.errors.MissingKeywordsClassWarning" class="md-nav__link">
     <span class="md-ellipsis">
       MissingKeywordsClassWarning
@@ -1324,6 +1319,15 @@
   <a href="#tripper.datadoc.errors.NoSuchTypeError" class="md-nav__link">
     <span class="md-ellipsis">
       NoSuchTypeError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.ParseError" class="md-nav__link">
+    <span class="md-ellipsis">
+      ParseError
     </span>
   </a>
   
@@ -1433,6 +1437,29 @@
   
   <span class="md-ellipsis">
     tabledoc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    utils
     
   </span>
   
@@ -1720,6 +1747,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.DatadocValueError" class="md-nav__link">
+    <span class="md-ellipsis">
+      DatadocValueError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.errors.IRIExistsError" class="md-nav__link">
     <span class="md-ellipsis">
       IRIExistsError
@@ -1765,6 +1801,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.MissingKeyError" class="md-nav__link">
+    <span class="md-ellipsis">
+      MissingKeyError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.errors.MissingKeywordsClassWarning" class="md-nav__link">
     <span class="md-ellipsis">
       MissingKeywordsClassWarning
@@ -1777,6 +1822,15 @@
   <a href="#tripper.datadoc.errors.NoSuchTypeError" class="md-nav__link">
     <span class="md-ellipsis">
       NoSuchTypeError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.ParseError" class="md-nav__link">
+    <span class="md-ellipsis">
+      ParseError
     </span>
   </a>
   
@@ -1851,6 +1905,37 @@
 
 
 
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.datadoc.errors.DatadocValueError" class="doc doc-heading">
+        <code>
+DatadocValueError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>, <span title="ValueError">ValueError</span>)
+        </code>
+
+
+
+<a href="#tripper.datadoc.errors.DatadocValueError" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Invalid/inconsistent value (of correct type).</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DatadocValueError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid/inconsistent value (of correct type).&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
 
 
 
@@ -1984,7 +2069,7 @@ InvalidDatadocError            (<a class="autorefs autorefs-internal" title="tri
 
 <h2 id="tripper.datadoc.errors.InvalidKeywordError" class="doc doc-heading">
         <code>
-InvalidKeywordError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="../../errors/#tripper.errors.TripperError">TripperError</a>, <span title="KeyError">KeyError</span>)
+InvalidKeywordError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>, <span title="KeyError">KeyError</span>)
         </code>
 
 
@@ -1997,8 +2082,39 @@ InvalidKeywordError            (<a class="autorefs autorefs-internal" title="tri
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InvalidKeywordError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InvalidKeywordError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>  <span class="c1"># remove?</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Keyword is not defined.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.datadoc.errors.MissingKeyError" class="doc doc-heading">
+        <code>
+MissingKeyError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>)
+        </code>
+
+
+
+<a href="#tripper.datadoc.errors.MissingKeyError" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Missing required key in description of a resource or keyword.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingKeyError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Missing required key in description of a resource or keyword.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 
@@ -2075,6 +2191,37 @@ NoSuchTypeError            (<a class="autorefs autorefs-internal" title="tripper
 
 
 
+<h2 id="tripper.datadoc.errors.ParseError" class="doc doc-heading">
+        <code>
+ParseError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="../../errors/#tripper.errors.TripperError">TripperError</a>)
+        </code>
+
+
+
+<a href="#tripper.datadoc.errors.ParseError" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Error when parsing a file.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParseError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when parsing a file.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
 <h2 id="tripper.datadoc.errors.PrefixMismatchError" class="doc doc-heading">
         <code>
 PrefixMismatchError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="../../errors/#tripper.errors.TripperError">TripperError</a>)
@@ -2108,7 +2255,7 @@ PrefixMismatchError            (<a class="autorefs autorefs-internal" title="tri
 
 <h2 id="tripper.datadoc.errors.RedefineKeywordError" class="doc doc-heading">
         <code>
-RedefineKeywordError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="../../errors/#tripper.errors.TripperError">TripperError</a>, <span title="KeyError">KeyError</span>)
+RedefineKeywordError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>, <span title="KeyError">KeyError</span>)
         </code>
 
 
@@ -2121,7 +2268,7 @@ RedefineKeywordError            (<a class="autorefs autorefs-internal" title="tr
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineKeywordError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineKeywordError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Trying to map an existing keyword to a new IRI.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
