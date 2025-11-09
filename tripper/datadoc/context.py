@@ -385,6 +385,21 @@ class Context:
         """Return wheter `name` is an object property that refers to a node."""
         return self.getdef(name).get("@type") == "@id"
 
+    def assume_object_property(self, name: str) -> bool:
+        """Returns whether `name` appear to be an object property."""
+        if name in ("type", "rdf:type", RDF.type, "subClassOf", "rdfs:subClassOf", RDFS.subClassOf):
+            return False
+        return self.getdef(name).get("@type") == "@id"
+
+    def assume_data_property(self, name: str) -> bool:
+        """Returns whether `name` appears to be a data property."""
+        type = self.getdef(name).get("@type")
+        return type and type != "@id"
+
+    def assume_annotation_property(self, name: str) -> bool:
+        """Returns whether `name` appears to bean annotation property."""
+        return "@type" not in self.getdef(name)
+
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
         return self.ld.expand(self._todict(doc), options={})

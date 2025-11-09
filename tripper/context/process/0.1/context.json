@@ -400,31 +400,109 @@
       "@id": "owl:maxQualifiedCardinality",
       "@type": "xsd:nonNegativeInteger"
     },
-    "Resource": "dcat:Resource",
-    "Dataset": "dcat:Dataset",
-    "Distribution": "dcat:Distribution",
-    "Parser": "oteio:Parser",
-    "Generator": "oteio:Generator",
-    "Agent": "foaf:Agent",
-    "Attribution": "prov:Attribution",
-    "Checksum": "spdx:Checksum",
-    "ChecksumAlgorithm": "spdx:ChecksumAlgorithm",
-    "Concept": "skos:Concept",
-    "DataService": "dcat:DataService",
-    "DatasetSeries": "dcat:DatasetSeries",
-    "Geometry": "locn:Geometry",
-    "Kind": "vcard:Kind",
-    "LicenseDocument": "dcterms:LicenseDocument",
-    "Location": "dcterms:Location",
-    "Relationship": "dcat:Relationship",
-    "RightsStatement": "dcterms:RightsStatement",
-    "LegalResource": "eli:LegalResource",
-    "Standard": "dcterms:Standard",
-    "MediaType": "dcterms:MediaType",
-    "ConformanceLevel": "ddoc:ConformanceLevel",
-    "OWLClass": "owl:Class",
-    "Class": "rdfs:Class",
-    "GenericResource": "rdfs:Resource",
-    "Restriction": "owl:Restriction"
+    "Resource": {
+      "@id": "dcat:Resource",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Dataset": {
+      "@id": "dcat:Dataset",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Distribution": {
+      "@id": "dcat:Distribution",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Parser": {
+      "@id": "oteio:Parser",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Generator": {
+      "@id": "oteio:Generator",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Agent": {
+      "@id": "foaf:Agent",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Attribution": {
+      "@id": "prov:Attribution",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Checksum": {
+      "@id": "spdx:Checksum",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "ChecksumAlgorithm": {
+      "@id": "spdx:ChecksumAlgorithm",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Concept": {
+      "@id": "skos:Concept",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "DataService": {
+      "@id": "dcat:DataService",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "DatasetSeries": {
+      "@id": "dcat:DatasetSeries",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Geometry": {
+      "@id": "locn:Geometry",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Kind": {
+      "@id": "vcard:Kind",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "LicenseDocument": {
+      "@id": "dcterms:LicenseDocument",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Location": {
+      "@id": "dcterms:Location",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Relationship": {
+      "@id": "dcat:Relationship",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "RightsStatement": {
+      "@id": "dcterms:RightsStatement",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "LegalResource": {
+      "@id": "eli:LegalResource",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Standard": {
+      "@id": "dcterms:Standard",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "MediaType": {
+      "@id": "dcterms:MediaType",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "ConformanceLevel": {
+      "@id": "ddoc:ConformanceLevel",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "OWLClass": {
+      "@id": "owl:Class",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Class": {
+      "@id": "rdfs:Class",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "GenericResource": {
+      "@id": "rdfs:Resource",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Restriction": {
+      "@id": "owl:Restriction",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    }
   }
 }

@@ -275,9 +275,6 @@ def _told(
     for k in "@context", "@id":
         if k in descr:
             d[k] = descr[k]
-    # print()
-    # print("*** type:", type)
-    # print("*** descr:", descr)
 
     if "@type" in descr:
         addsuperclasses(d, descr["@type"])
@@ -454,6 +451,94 @@ def save_dict(
         restrictions=restrictions,
     )
 
+def infer_restriction_types(
+    d: "Union[dict, list]",
+    iri: "Optional[str]" = None,
+    ts: "Optional[Triplestore]" = None,
+    context: "Optional[ContextType]" = None,
+) -> dict:
+    """Return a dict that describes what type of restriction the
+    properties of the class described by `d` should be converted to.
+
+    The following algorithm is used:
+      - If `iri` is not a class, i.e. if the value of `@type` is not
+        `owl:Class` or `rdfs:Class`, an empty dict is returned.
+      - Otherwise, for each property:
+          - If it is an object property that relates to a class,
+            assume an existential restriction.
+          - Otherwise, if it is an object property, set it to a value
+            restriction.
+          - Otherwise, if it is a data property, set it to a value
+            restriction.
+          - Otherwise, don't add a restriction type for the property,
+            indicating that it is an annotation property.
+
+    Arguments:
+        d: JSON-LD dict to analyse. Should describe a resource.
+        iri:
+        context: JSON-LD context object.
+
+    Returns:
+        The returned dict will maps labels of properties that should
+        be converted to restrictions to the restriction type. The
+        following restriction types are supported:
+          - "some": existential restriction
+          - "only": universal restriction
+          - "exactly <N>": exact cardinality restriction
+          - "min <N>": minimum cardinality restriction
+          - "max <N>": maximum cardinality restriction
+          - "value": value restriction
+
+        where `<N>` is a positive integer.
+
+    """
+    prefixes = context.get_prefixes()
+
+    def expandlist(iris):
+        """Return a list with `iris` expanded."""
+        if isinstance(iri, str):
+            return [expand_iri(iris, prefixes)]
+        return [expand_iri(iri, prefixes) for iri in iris]
+
+    if "@type" not in d:
+        return {}
+    expanded_type = expandlist(d["@type"])
+    if OWL.Class in expanded_type or RDFS.Class in expanded_type:
+        return {}
+
+    retval = {}
+    for k, v in d.items():
+        if k.startswith("@"):
+            continue
+        if context.assume_object_property(k):
+            retval[k] = "value"
+            if isinstance(v, dict):
+                if "@type" in v:
+                    et = expandlist(d["@type"])
+                    if OWL.Class in et or RDFS.Class in et:
+                        retval[k] = "some"
+            elif isinstance(v, str):
+                iri = expand_iri(v, prefixes)
+                if ts.has(iri):
+                    types = expandlist(ts.objects(iri, RDF.type))
+                    if OWL.Class in types or RDFS.Class in types:
+                        retval[k] = "some"
+                else:
+                    warnings.warn(
+                        f"keyword '{k}' of '{d['@id']}' appears to be an "
+                        f"object property, but its value '{v}' is not in the "
+                        "triplestore"
+                    )
+            else:
+                warnings.warn(
+                    f"keyword '{k}' of '{d['@id']}' appears to be an object "
+                    f"property, but its value '{v}' is neither a dict or string"
+                )
+        elif context.assume_data_property(k):
+            retval[k] = "value"
+
+    return retval
+
 
 def update_classes(
     source: "Union[dict, list]",
@@ -463,7 +548,10 @@ def update_classes(
     """Update documentation of classes, ensuring that they will be
     correctly represented in RDF.
 
-    Only resources of type `owl:Class` will be updated.
+    Only classes, i.e. resources of type `owl:Class` and `rdfs:Class`,
+    will be updated.
+
+    For classes will object properties
 
     If a resource has type `owl:Class`, all other types it has will be
     moved to the `subClassOf` keyword.
