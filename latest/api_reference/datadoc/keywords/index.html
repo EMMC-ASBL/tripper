@@ -2608,8 +2608,8 @@ Keywords        </code>
                                 <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                             <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">kwdef</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
                                 <span class="k">raise</span> <span class="n">RedefineKeywordError</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;Cannot redefine &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; in keyword &quot;</span>
-                                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Cannot redefine &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">kwdef</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;to &#39;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&#39; in keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                                 <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">kwdef</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
@@ -2900,6 +2900,8 @@ Keywords        </code>
             <span class="n">prefixes</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">isproperty</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
             <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
                 <span class="n">exp</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
