@@ -187,9 +187,29 @@ class Keywords:
         return new
 
     def add(
-        self, keywords: "Optional[KeywordsType]", timeout: float = 3
+        self,
+        keywords: "Optional[KeywordsType]",
+        timeout: float = 3,
+        strict=True,
+        allow_redefine=False,
     ) -> None:
-        """Add `keywords` to current keyword object."""
+        """Add `keywords` to current keyword object.
+
+        Arguments:
+            keywords: Keywords definitions to add to this Keyword object.
+                May be another Keyword object, path to a file, theme or a
+                sequence of these.
+            timeout: Timeout when accessing remote files.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            allow_redefine: Whether to raise a `RedefineKeywordError`
+                exception if `d` redefines an existing keyword. If false,
+                only the following changes are allowed:
+                  - make conformance more strict
+                  - add to: domain, theme or subPropertyOf
+                  - change default value
+
+        """
 
         def _add(kw):
             if kw is None:
@@ -199,14 +219,31 @@ class Keywords:
                 recursive_update(self.data, kw.data, cls=AttrDict)
                 self._set_keywords(clear=False)
             elif isinstance(kw, Path):
-                self.load_yaml(kw, timeout=timeout)
+                self.load_yaml(
+                    kw,
+                    timeout=timeout,
+                    strict=strict,
+                    allow_redefine=allow_redefine,
+                )
             elif isinstance(kw, str):
                 if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
-                    self.load_yaml(kw, timeout=timeout)
+                    self.load_yaml(
+                        kw,
+                        timeout=timeout,
+                        strict=strict,
+                        allow_redefine=allow_redefine,
+                    )
                 else:
-                    self.add_theme(kw, timeout=timeout)
+                    self.add_theme(
+                        kw,
+                        timeout=timeout,
+                        strict=strict,
+                        allow_redefine=allow_redefine,
+                    )
             elif isinstance(kw, dict):
-                self._load_yaml(kw)
+                self._load_yaml(
+                    kw, strict=strict, allow_redefine=allow_redefine
+                )
             elif isinstance(kw, Sequence):
                 for e in kw:
                     _add(e)
@@ -219,22 +256,46 @@ class Keywords:
         _add(keywords)
 
     def add_theme(
-        self, theme: "Union[str, Sequence[str]]", timeout: float = 3
+        self,
+        theme: "Union[str, Sequence[str]]",
+        timeout: float = 3,
+        strict=True,
+        allow_redefine=False,
     ) -> None:
         """Add keywords for `theme`, where `theme` is the IRI of a
-        theme or scientific domain or a list of such IRIs."""
+        theme or scientific domain or a list of such IRIs.
+
+        Arguments:
+            theme: IRI (or list of IRIs) of a theme/scientific domain to load.
+            timeout: Timeout when accessing remote files.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            allow_redefine: Whether to raise a `RedefineKeywordError`
+                exception if `d` redefines an existing keyword. If false,
+                only the following changes are allowed:
+                  - make conformance more strict
+                  - add to: domain, theme or subPropertyOf
+                  - change default value
+
+        """
         if isinstance(theme, str):
             theme = [theme]
 
         for name in theme:  # type: ignore
             expanded = expand_iri(name, self.get_prefixes())
             prefixed = prefix_iri(name, self.get_prefixes())
-            add(self.data, "theme", prefixed)
+            add(
+                self.data,
+                "theme",
+                prefixed,
+            )
             for ep in get_entry_points("tripper.keywords"):
                 if expand_iri(ep.value, self.get_prefixes()) == expanded:
                     self.load_yaml(
                         self.rootdir / ep.name / "keywords.yaml",
                         timeout=timeout,
+                        strict=strict,
+                        allow_redefine=allow_redefine,
                     )
                     break
             else:
@@ -247,6 +308,8 @@ class Keywords:
                         / "0.3"
                         / "keywords.yaml",
                         timeout=timeout,
+                        strict=strict,
+                        allow_redefine=allow_redefine,
                     )
                 else:
                     raise TypeError(f"Unknown theme: {name}")
@@ -255,12 +318,23 @@ class Keywords:
         self,
         yamlfile: "Union[Path, str]",
         timeout: float = 3,
+        strict: bool = True,
+        allow_redefine: bool = False,
     ) -> None:
         """Load YAML file with keyword definitions.
 
         Arguments:
             yamlfile: Path of URL to a YAML file to load.
             timeout: Timeout when accessing remote files.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            allow_redefine: Whether to raise a `RedefineKeywordError`
+                exception if `d` redefines an existing keyword. If false,
+                only the following changes are allowed:
+                  - make conformance more strict
+                  - add to: domain, theme or subPropertyOf
+                  - change default value
+
         """
         if yamlfile in self.parsed:
             return
@@ -269,16 +343,27 @@ class Keywords:
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
         try:
-            self._load_yaml(d, strict=True)
+            self._load_yaml(d, strict=strict, allow_redefine=allow_redefine)
         except Exception as exc:
             raise ParseError(f"error parsing '{yamlfile}'") from exc
 
-    def _load_yaml(self, d: dict, strict: bool = True) -> None:
+    def _load_yaml(
+        self, d: dict, strict: bool = True, allow_redefine: bool = False
+    ) -> None:
         """Parse a dict with keyword definitions following the format of
         the YAML file.
 
-        If `strict` is true, an InvalidKeywordError will be raise if the
-        dict describing a keyword contains an unknown key.
+        Arguments:
+            d: Dict defining a keyword following the YAML file format.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            allow_redefine: Whether to raise a `RedefineKeywordError`
+                exception if `d` redefines an existing keyword. If false,
+                only the following changes are allowed:
+                  - make conformance more strict
+                  - add to: domain, theme or subPropertyOf
+                  - change default value
+
         """
         # pylint: disable=too-many-nested-blocks,too-many-statements
         # pylint: disable=too-many-locals
@@ -385,9 +470,13 @@ class Keywords:
                                 raise DatadocValueError(
                                     f"invalid conformance: {v}"
                                 )
-                            if k in kwdef and (
-                                valid_conformances.index(v)
-                                > valid_conformances.index(kwdef[k])
+                            if (
+                                not allow_redefine
+                                and k in kwdef
+                                and (
+                                    valid_conformances.index(v)
+                                    > valid_conformances.index(kwdef[k])
+                                )
                             ):
                                 raise InvalidKeywordError(
                                     f"keyword '{keyword}' reduces strictness "
@@ -401,7 +490,7 @@ class Keywords:
                         elif k in kwdef:
                             if k in iri_keywords:
                                 v = self.prefixed(v)
-                            if v != kwdef[k]:
+                            if not allow_redefine and v != kwdef[k]:
                                 raise RedefineKeywordError(
                                     f"Cannot redefine '{k}' from '{kwdef[k]}' "
                                     f"to '{v}' in keyword '{keyword}'"
@@ -642,6 +731,8 @@ class Keywords:
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
         basedOn: "Optional[Union[str, List[str]]]" = None,
+        strict: bool = True,
+        allow_redefine: bool = False,
     ) -> None:
         """Populate this Keywords object from a sequence of dicts.
 
@@ -652,6 +743,14 @@ class Keywords:
             prefixes: Dict with additional prefixes used by `dicts`.
             theme: Theme defined by `dicts`.
             basedOn: Theme(s) that `dicts` are based on.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            allow_redefine: Whether to raise a `RedefineKeywordError`
+                exception if `d` redefines an existing keyword. If false,
+                only the following changes are allowed:
+                  - make conformance more strict
+                  - add to: domain, theme or subPropertyOf
+                  - change default value
 
         """
         data = self._fromdicts(
@@ -660,7 +759,7 @@ class Keywords:
             theme=theme,
             basedOn=basedOn,
         )
-        self._load_yaml(data, strict=False)
+        self._load_yaml(data, strict=strict, allow_redefine=allow_redefine)
 
     def _fromdicts(
         self,
@@ -919,14 +1018,29 @@ class Keywords:
         return store(ts, dicts)
 
     def load_rdf(
-        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None,
+        strict=True,
+        allow_redefine=False,
     ) -> None:
         """Populate this Keyword object from a triplestore.
 
         If `iris` is given, only the provided IRIs will be added.
+
+        Arguments:
+            ts:
+            iris:
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            allow_redefine: Whether to raise a `RedefineKeywordError`
+                exception if `d` redefines an existing keyword. If false,
+                only the following changes are allowed:
+                  - make conformance more strict
+                  - add to: domain, theme or subPropertyOf
+                  - change default value
+
         """
         dicts = self._load_rdf(ts, iris)
-        self.fromdicts(dicts, prefixes=ts.namespaces)
+        self.fromdicts(dicts, prefixes=ts.namespaces, strict=strict, allow_redefine=allow_redefine)
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
