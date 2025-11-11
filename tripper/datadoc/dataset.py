@@ -43,6 +43,7 @@ from typing import TYPE_CHECKING
 from tripper import (
     OWL,
     RDF,
+    RDFS,
     Literal,
     Namespace,
     Triplestore,
@@ -78,6 +79,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Union,
     )
 
+    from tripper.datadoc.context import ContextType
     from tripper.datadoc.keywords import FileLoc
     from tripper.utils import Triple
 
@@ -451,11 +453,13 @@ def save_dict(
         restrictions=restrictions,
     )
 
+
 def infer_restriction_types(
-    d: "Union[dict, list]",
+    dicts: "Union[dict, list]",
     iri: "Optional[str]" = None,
     ts: "Optional[Triplestore]" = None,
     context: "Optional[ContextType]" = None,
+    prefixes: "Optional[dict]" = None,
 ) -> dict:
     """Return a dict that describes what type of restriction the
     properties of the class described by `d` should be converted to.
@@ -492,50 +496,91 @@ def infer_restriction_types(
         where `<N>` is a positive integer.
 
     """
-    prefixes = context.get_prefixes()
+    if isinstance(dicts, dict):
+        if not iri:
+            iri = dicts["@iri"]
+        dicts = [dicts]
+    elif not iri:
+        raise TypeError("`iri` is required when `dicts` is a list")
 
-    def expandlist(iris):
+    context = get_context(context=context, prefixes=prefixes)
+    namespaces = context.get_prefixes()
+    dct = {expand_iri(d["@id"], namespaces): d for d in dicts}
+    d = dct[expand_iri(iri, namespaces)]
+
+    def expandlist(iris: "Union[str, Sequence]") -> "list":
         """Return a list with `iris` expanded."""
-        if isinstance(iri, str):
-            return [expand_iri(iris, prefixes)]
-        return [expand_iri(iri, prefixes) for iri in iris]
+        if isinstance(iris, str):
+            return [expand_iri(iris, namespaces)]
+        return [expand_iri(iri, namespaces) for iri in iris]
 
     if "@type" not in d:
         return {}
-    expanded_type = expandlist(d["@type"])
-    if OWL.Class in expanded_type or RDFS.Class in expanded_type:
+
+    types = expandlist(d["@type"])
+    classtypes = (OWL.Class, RDFS.Class)
+    if iri in context and not context.is_class(iri):
+        return {}
+    if not any(t in types for t in classtypes):
         return {}
 
     retval = {}
     for k, v in d.items():
         if k.startswith("@"):
             continue
-        if context.assume_object_property(k):
+        if context.is_object_property(k):
             retval[k] = "value"
-            if isinstance(v, dict):
-                if "@type" in v:
-                    et = expandlist(d["@type"])
-                    if OWL.Class in et or RDFS.Class in et:
-                        retval[k] = "some"
-            elif isinstance(v, str):
-                iri = expand_iri(v, prefixes)
-                if ts.has(iri):
-                    types = expandlist(ts.objects(iri, RDF.type))
-                    if OWL.Class in types or RDFS.Class in types:
-                        retval[k] = "some"
-                else:
-                    warnings.warn(
-                        f"keyword '{k}' of '{d['@id']}' appears to be an "
-                        f"object property, but its value '{v}' is not in the "
-                        "triplestore"
-                    )
-            else:
-                warnings.warn(
-                    f"keyword '{k}' of '{d['@id']}' appears to be an object "
-                    f"property, but its value '{v}' is neither a dict or string"
-                )
-        elif context.assume_data_property(k):
+            vtypes = []
+            if isinstance(v, dict) and "@type" in v:
+                vtypes = expandlist(v["@type"])
+            elif isinstance(v, (str, list)):
+                for e in expandlist(v):
+                    vtypes = merge(vtypes, expandlist(dct[e].get("@type")))
+            if (
+                vtypes
+                and any(t in vtypes for t in classtypes)
+                or any(context.is_class(t) for t in vtypes)
+            ):
+                retval[k] = "some"
+        elif context.is_data_property(k):
             retval[k] = "value"
+
+        #     and "@type" in v:
+        #     if isinstance(v, dict) and "@type" in v:
+        #         vtypes = expandlist(v["@type"])
+        #         if any(context.is_class(t) for t in vtypes):
+        #             retval[k] = "some"
+        #         elif any(t in vtypes for t in classtypes):
+        #             retval[k] = "some"
+        #     elif isinstance(v, str):
+        #         if context.is_class(v):
+        #             return [k] = "some"
+        #         x = dct.get(expand_iri(v, prefixes))
+        #         expanded =
+        #
+        #
+        #
+        #         if dct.get(expanded) expanded in dct and dct[expanded]
+        #
+        #
+        #         iri = expand_iri(v, prefixes)
+        #         if ts.has(iri):
+        #             types = expandlist(ts.objects(iri, RDF.type))
+        #             if OWL.Class in types or RDFS.Class in types:
+        #                 retval[k] = "some"
+        #         else:
+        #             warnings.warn(
+        #                 f"keyword '{k}' of '{d['@id']}' appears to be an "
+        #                 f"object property, but its value '{v}' is not in the "
+        #                 "triplestore"
+        #             )
+        #     else:
+        #         warnings.warn(
+        #             f"keyword '{k}' of '{d['@id']}' appears to be an object "
+        #             f"property, but its value '{v}' is neither a dict or string"
+        #         )
+        # elif context.assume_data_property(k):
+        #     retval[k] = "value"
 
     return retval
 

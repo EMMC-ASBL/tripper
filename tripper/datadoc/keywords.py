@@ -456,13 +456,11 @@ class Keywords:
         )
         resources = {}
         for cls, clsval in self.data.resources.items():
-            print(cls)
             if self.prefixed(cls) in classes:
                 resources[cls] = dict(clsval.copy())
                 resources[cls]["keywords"] = {}
                 for k, v in self.data.resources[cls].keywords.items():
                     if self.prefixed(k) in keywords:
-                        print("  -", k)
                         resources[cls]["keywords"][k] = dict(v)
         data = dict(self.data.copy())
         del data["resources"]
@@ -695,6 +693,8 @@ class Keywords:
             prefixes = {}
 
         def isproperty(v):
+            if not "@type" in v:
+                return False
             types = [v["@type"]] if isinstance(v["@type"], str) else v["@type"]
             for t in types:
                 exp = expand_iri(t, p)
@@ -1131,10 +1131,10 @@ class Keywords:
         for k, v in resources.items():
             ctx.setdefault(
                 k,
-                {
+                {  # type:ignore
                     "@id": v.iri,
                     "@type": OWL.Class,
-                }
+                },
             )
 
         return ctx

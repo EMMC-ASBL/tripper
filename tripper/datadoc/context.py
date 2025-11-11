@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
 
-from tripper import RDF, Triplestore
+from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.errors import NamespaceError
-from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile
+from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
@@ -385,20 +385,31 @@ class Context:
         """Return wheter `name` is an object property that refers to a node."""
         return self.getdef(name).get("@type") == "@id"
 
-    def assume_object_property(self, name: str) -> bool:
+    def is_object_property(self, name: str) -> bool:
         """Returns whether `name` appear to be an object property."""
-        if name in ("type", "rdf:type", RDF.type, "subClassOf", "rdfs:subClassOf", RDFS.subClassOf):
+        if name in (
+            "type",
+            "rdf:type",
+            RDF.type,
+            "subClassOf",
+            "rdfs:subClassOf",
+            RDFS.subClassOf,
+        ):
             return False
         return self.getdef(name).get("@type") == "@id"
 
-    def assume_data_property(self, name: str) -> bool:
+    def is_data_property(self, name: str) -> bool:
         """Returns whether `name` appears to be a data property."""
         type = self.getdef(name).get("@type")
-        return type and type != "@id"
+        return bool(type) and type not in ("@id", RDFS.Class, OWL.Class)
 
-    def assume_annotation_property(self, name: str) -> bool:
+    def is_annotation_property(self, name: str) -> bool:
         """Returns whether `name` appears to bean annotation property."""
         return "@type" not in self.getdef(name)
+
+    def is_class(self, name: str) -> bool:
+        """Returns whether `name` appears to be a class."""
+        return self.getdef(name).get("@type") in (RDFS.Class, OWL.Class)
 
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
@@ -458,14 +469,9 @@ class Context:
         self._shortnamed[RDF.type] = "@type"
         self._shortnamed["rdf:type"] = "@type"
         self._shortnamed["@type"] = "@type"
-        self._expanded.update(mappings)
-        self._expanded.update((v, v) for v in mappings.values())
         for key, expanded in mappings.items():
-            for prefix, ns in prefixes.items():
-                if expanded.startswith(ns):
-                    prefixed = f"{prefix}:{key}"
-                    self._update_caches(key, prefixed, expanded)
-                    break
+            prefixed = prefix_iri(expanded, prefixes)
+            self._update_caches(key, prefixed, expanded)
 
     def _update_caches(self, shortname, prefixed, expanded):
         self._expanded[shortname] = expanded

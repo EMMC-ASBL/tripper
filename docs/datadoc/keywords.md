@@ -428,6 +428,7 @@ The class of classes.
 | [conceptualisation] | [rdfs:Literal]<br>(rdf:langString) |             | A comment that helps the reader to understand how the world has been conceptualised by the ontology authors.                                                                                                                                                                     |            |
 | [elucidation]       | [rdfs:Literal]<br>(rdf:langString) |             | Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation. |            |
 | [subClassOf]        | [rdfs:Class]                       |             | The subject is a subclass of a class.                                                                                                                                                                                                                                            |            |
+| [subPropertyOf]     | [rdf:Property]                     |             | The subject is a subproperty of a property.                                                                                                                                                                                                                                      |            |
 | [altLabel]          | [rdfs:Literal]<br>(rdf:langString) |             | An alternative lexical label for a resource.                                                                                                                                                                                                                                     |            |
 | [hiddenLabel]       | [rdfs:Literal]<br>(rdf:langString) |             | A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.                                                                                                             |            |
 | [prefLabel]         | [rdfs:Literal]<br>(rdf:langString) |             | A preferred label of the concept.                                                                                                                                                                                                                                                |            |
@@ -438,6 +439,8 @@ The class of classes.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [subClassOf]: http://www.w3.org/2000/01/rdf-schema#subClassOf
 [rdfs:Class]: http://www.w3.org/2000/01/rdf-schema#Class
+[subPropertyOf]: http://www.w3.org/2000/01/rdf-schema#subPropertyOf
+[rdf:Property]: http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
 [altLabel]: http://www.w3.org/2004/02/skos/core#altLabel
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [hiddenLabel]: http://www.w3.org/2004/02/skos/core#hiddenLabel

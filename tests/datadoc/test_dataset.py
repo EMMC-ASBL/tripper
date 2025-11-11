@@ -318,17 +318,15 @@ def test_store():
         store(ts, d, type="Dataset", method="invalid_method_name")
 
 
-if 1:
-#def test_infer_restriction_types():
+# if 1:
+def test_infer_restriction_types():
     """Test infer_restriction_types()."""
     from tripper import DDOC, RDF, RDFS, Triplestore
 
     ts = Triplestore("rdflib")
     ts.bind("ddoc", DDOC)
-    ts.add_triples(
-        [
-        ]
-    )
+    ts.add_triples([])
+
 
 def test_update_classes():
     """Test update_classes()."""

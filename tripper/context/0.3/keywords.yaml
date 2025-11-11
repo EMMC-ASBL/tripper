@@ -879,6 +879,11 @@ resources:
         range: rdfs:Class
         description: The subject is a subclass of a class.
 
+      subPropertyOf:
+        iri: rdfs:subPropertyOf
+        range: rdf:Property
+        description: The subject is a subproperty of a property.
+
   GenericResource:
     iri: rdfs:Resource
     description: A generic resource defined by RDFS.

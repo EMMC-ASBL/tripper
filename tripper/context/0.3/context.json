@@ -384,6 +384,10 @@
       "@id": "rdfs:subClassOf",
       "@type": "@id"
     },
+    "subPropertyOf": {
+      "@id": "rdfs:subPropertyOf",
+      "@type": "@id"
+    },
     "datatype": {
       "@id": "ddoc:datatype",
       "@type": "@id"
