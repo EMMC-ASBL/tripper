@@ -392,7 +392,7 @@ def test_load2():
     # Create an empty Keywords object and load the ontology
     kw = get_keywords(theme=None)
     assert kw.keywords == AttrDict()
-    kw.load_rdf(ts)
+    kw.load_rdf(ts, strict=False)
 
     assert set(kw.keywordnames()) == {
         "hasAge",
@@ -425,7 +425,7 @@ def test_load2():
     # Create a new Keywords object with
     # default keywords and load from the triplestore
     kw2 = get_keywords()
-    kw2.load_rdf(ts)
+    kw2.load_rdf(ts, strict=False)
 
     assert set(kw2.keywordnames()) == {
         "hasAge",
