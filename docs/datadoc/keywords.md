@@ -34,7 +34,6 @@ A collection of operations that provides access to one or more datasets or data 
 | [endpointURL]         | [rdfs:Literal]<br>(xsd:anyURI) | mandatory   | The root location or primary endpoint of the service (an IRI).                                          |            |
 | [endpointDescription] | [rdfs:Resource]                | recommended | A description of the services available via the end-points, including their operations, parameters etc. |            |
 | [servesDataset]       | [dcat:Dataset]                 | recommended | This property refers to a collection of data that this data service can distribute.                     |            |
-| [parser]              | [oteio:Parser]                 |             | A parser that can parse the distribution.                                                               |            |
 
 [endpointDescription]: http://www.w3.org/ns/dcat#endpointDescription
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
@@ -42,8 +41,6 @@ A collection of operations that provides access to one or more datasets or data 
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [servesDataset]: http://www.w3.org/ns/dcat#servesDataset
 [dcat:Dataset]: http://www.w3.org/ns/dcat#Dataset
-[parser]: https://w3id.org/emmo/domain/oteio#parser
-[oteio:Parser]: https://w3id.org/emmo/domain/oteio#Parser
 
 
 
@@ -177,15 +174,12 @@ A physical embodiment of the Dataset in a particular format.
 ## Properties on [Relationship]
 An association class for attaching additional information to a relationship between DCAT Resources.
 
-| Keyword           | Range           | Conformance | Definition                                                                   | Usage note |
-| ----------------- | --------------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
-| [relatedResource] | [rdfs:Resource] | optional    | A resource with an unspecified relationship to the cataloged resource.       |            |
-| [hasRole]         | [dcat:Role]     |             | A function of an entity or agent with respect to another entity or resource. |            |
+| Keyword   | Range       | Conformance | Definition                                                                   | Usage note |
+| --------- | ----------- | ----------- | ---------------------------------------------------------------------------- | ---------- |
+| [hasRole] | [dcat:Role] |             | A function of an entity or agent with respect to another entity or resource. |            |
 
 [hasRole]: http://www.w3.org/ns/dcat#hasRole
 [dcat:Role]: http://www.w3.org/ns/dcat#Role
-[relatedResource]: http://purl.org/dc/terms/relation
-[rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 
 
 
@@ -202,7 +196,6 @@ Resource published or curated by an agent.
 | [contactPoint]          | [vcard:Kind]                       | recommended | Contact information that can be used for sending comments about the resource.                                                                |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [keyword]               | [rdfs:Literal]<br>(rdf:langString) | recommended | A keyword or tag describing the resource.                                                                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [theme]                 | [skos:Concept]                     | recommended | A category of the resource.  A resource may be associated with multiple themes.                                                              | The set of themes used to categorize the resources are organized in a skos:ConceptScheme, skos:Collection, owl:Ontology or similar, describing all the categories and their relations in the catalog.                                                                                                                                                                                                          |
-| [identifier]            | [rdfs:Literal]                     | recommended | URI or other unique identifier of the resource being described or cataloged.                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [publisher]             | [foaf:Agent]                       | recommended | Agent responsible for making the resource available.                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [versionNotes]          | [rdfs:Literal]                     | optional    | A description of the differences between this version and a previous version of the resource.                                                | This property can be repeated for parallel language versions of the version notes.                                                                                                                                                                                                                                                                                                                             |
 | [hasVersion]            | [rdfs:Resource]                    | optional    | A related resource that is a version, edition, or adaptation of the described resource.                                                      | This property is intended for relating a non-versioned or abstract resource to several versioned resources, e.g., snapshots.                                                                                                                                                                                                                                                                                   |
@@ -214,6 +207,7 @@ Resource published or curated by an agent.
 | [conformsTo]            | [dcterms:Standard]                 | optional    | An implementing rule or other specification.                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [creator]               | [foaf:Agent]                       | optional    | An entity responsible for producing the resource.                                                                                            |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [hasPart]               | [rdfs:Resource]                    | optional    | A related resource that is included either physically or logically in the described resource.                                                |                                                                                                                                                                                                                                                                                                                                                                                                                |
+| [identifier]            | [rdfs:Literal]                     | optional    | URI or other unique identifier of the resource being described.                                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [isReferencedBy]        | [rdfs:Resource]                    | optional    | A related resource, such as a publication, that references, cites, or otherwise points to the documented resource.                           |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [releaseDate]           | [rdfs:Literal]<br>(xsd:date)       | optional    | The date of formal issuance (e.g., publication) of the resource.                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [language]              | [rdfs:Literal]<br>(xsd:string)     | optional    | A language of the resource.                                                                                                                  | Recommended practice is to use either a non-literal value
@@ -354,16 +348,10 @@ An agent (eg. person, group, software or physical artifact).
 
 - subClassOf: [dcterms:Agent], [emmo:EMMO_2480b72b_db8d_460f_9a5f_c2912f979046]
 
-| Keyword      | Range                          | Conformance | Definition                                                                   | Usage note                                                                                                                                                                                                           |
-| ------------ | ------------------------------ | ----------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [name]       | [rdfs:Literal]<br>(xsd:string) | mandatory   | A name of the agent.                                                         |                                                                                                                                                                                                                      |
-| [identifier] | [rdfs:Literal]                 | recommended | URI or other unique identifier of the resource being described or cataloged. |                                                                                                                                                                                                                      |
-| [type]       | [skos:Concept]                 | optional    | A type of the resource.                                                      | A recommended controlled vocabulary data-type is foreseen. For agents, the value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf). |
+| Keyword | Range                          | Conformance | Definition           | Usage note |
+| ------- | ------------------------------ | ----------- | -------------------- | ---------- |
+| [name]  | [rdfs:Literal]<br>(xsd:string) | mandatory   | A name of the agent. |            |
 
-[identifier]: http://purl.org/dc/terms/identifier
-[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
-[type]: http://purl.org/dc/terms/type
-[skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
 [name]: http://xmlns.com/foaf/0.1/name
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 
@@ -430,7 +418,6 @@ The class of classes.
 | [subClassOf]        | [rdfs:Class]                       |             | The subject is a subclass of a class.                                                                                                                                                                                                                                            |            |
 | [altLabel]          | [rdfs:Literal]<br>(rdf:langString) |             | An alternative lexical label for a resource.                                                                                                                                                                                                                                     |            |
 | [hiddenLabel]       | [rdfs:Literal]<br>(rdf:langString) |             | A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.                                                                                                             |            |
-| [prefLabel]         | [rdfs:Literal]<br>(rdf:langString) |             | A preferred label of the concept.                                                                                                                                                                                                                                                |            |
 
 [conceptualisation]: https://w3id.org/emmo#EMMO_31252f35_c767_4b97_a877_1235076c3e13
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
@@ -442,8 +429,6 @@ The class of classes.
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 [hiddenLabel]: http://www.w3.org/2004/02/skos/core#hiddenLabel
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
-[prefLabel]: http://www.w3.org/2004/02/skos/core#prefLabel
-[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 
 
 
@@ -453,14 +438,24 @@ Resource published or curated by an agent.
 
 - subClassOf: [rdfs:Resource]
 
-| Keyword     | Range                              | Conformance | Definition                                                                | Usage note |
-| ----------- | ---------------------------------- | ----------- | ------------------------------------------------------------------------- | ---------- |
-| [datatype]  | [rdfs:Datatype]                    |             | A datatype for annotations and data properties.                           |            |
-| [usageNote] | [rdfs:Literal]<br>(rdf:langString) |             | A reference that provides information on how this resource is to be used. |            |
+| Keyword    | Range           | Conformance | Definition                                      | Usage note |
+| ---------- | --------------- | ----------- | ----------------------------------------------- | ---------- |
+| [datatype] | [rdfs:Datatype] |             | A datatype for annotations and data properties. |            |
 
 [datatype]: https://w3id.org/emmo/application/datadoc#datatype
 [rdfs:Datatype]: http://www.w3.org/2000/01/rdf-schema#Datatype
-[usageNote]: http://purl.org/vocab/vann/usageNote
+
+
+
+
+## Properties on [Concept]
+An idea or notion; a unit of thought.
+
+| Keyword     | Range                              | Conformance | Definition                        | Usage note |
+| ----------- | ---------------------------------- | ----------- | --------------------------------- | ---------- |
+| [prefLabel] | [rdfs:Literal]<br>(rdf:langString) |             | A preferred label of the concept. |            |
+
+[prefLabel]: http://www.w3.org/2004/02/skos/core#prefLabel
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 
 
@@ -593,6 +588,7 @@ A description following the vCard specification, e.g. to provide telephone numbe
 [Class]: http://www.w3.org/2000/01/rdf-schema#Class
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [Resource]: http://www.w3.org/ns/dcat#Resource
+[Concept]: http://www.w3.org/2004/02/skos/core#Concept
 [Checksum]: http://spdx.org/rdf/terms#Checksum
 [Kind]: http://www.w3.org/2006/vcard/ns#Kind
 [@id]: https://www.w3.org/TR/json-ld11/#syntax-tokens-and-keywords

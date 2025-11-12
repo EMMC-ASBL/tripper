@@ -18,12 +18,12 @@ class InvalidKeywordError(InvalidDatadocError, KeyError):  # remove?
     """Keyword is not defined."""
 
 
+class RedefineConceptError(TripperWarning):
+    """Trying to redefine an existing concept."""
+
+
 class DatadocValueError(InvalidDatadocError, ValueError):
     """Invalid/inconsistent value (of correct type)."""
-
-
-class RedefineKeywordError(InvalidDatadocError, KeyError):
-    """Trying to map an existing keyword to a new IRI."""
 
 
 class NoSuchTypeError(TripperError, KeyError):
@@ -63,3 +63,11 @@ class MissingKeywordsClassWarning(UnknownKeywordWarning):
 
 class IRIExistsWarning(TripperWarning):
     """The IRI already exists in the triplestore."""
+
+
+class RedefineKeywordWarning(TripperWarning):
+    """Redefine an existing keyword (by mapping it to a new IRI)."""
+
+
+class RenameKeywordWarning(TripperWarning):
+    """Rename a keyword (by appending a prefix to it)."""

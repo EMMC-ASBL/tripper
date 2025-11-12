@@ -131,7 +131,7 @@ resources:
         iri: dcterms:identifier
         range: rdfs:Literal
         conformance: optional
-        description: URI or other unique identifier of the resource being described or cataloged.
+        description: URI or other unique identifier of the resource being described.
 
       isReferencedBy:
         iri: dcterms:isReferencedBy
@@ -587,7 +587,7 @@ resources:
       identifier:
         iri: dcterms:identifier
         range: rdfs:Literal
-        conformance: recommended
+        #conformance: recommended
         #description: Identifier for the agent. E.g. organisation number.
       type:
         iri: dcterms:type
