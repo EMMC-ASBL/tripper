@@ -1018,17 +1018,18 @@ class Keywords:
         return store(ts, dicts)
 
     def load_rdf(
-        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None,
+        self,
+        ts: "Triplestore",
+        iris: "Optional[Sequence[str]]" = None,
         strict=True,
         allow_redefine=False,
     ) -> None:
         """Populate this Keyword object from a triplestore.
 
-        If `iris` is given, only the provided IRIs will be added.
-
         Arguments:
-            ts:
-            iris:
+            ts: Triplestore to load keywords from.
+            iris: IRIs to load. The default is to load IRIs corresponding to all
+                properties an classes.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
             allow_redefine: Whether to raise a `RedefineKeywordError`
@@ -1040,7 +1041,12 @@ class Keywords:
 
         """
         dicts = self._load_rdf(ts, iris)
-        self.fromdicts(dicts, prefixes=ts.namespaces, strict=strict, allow_redefine=allow_redefine)
+        self.fromdicts(
+            dicts,
+            prefixes=ts.namespaces,
+            strict=strict,
+            allow_redefine=allow_redefine,
+        )
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
