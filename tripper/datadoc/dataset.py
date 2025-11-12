@@ -671,7 +671,13 @@ def acquire(
                 val = [val]
             for v in val:
                 if key != "@id" and isinstance(v, str) and v.startswith("_:"):
-                    add(d, key, acquire(ts, iri=v, context=context, use_sparql=use_sparql))
+                    add(
+                        d,
+                        key,
+                        acquire(
+                            ts, iri=v, context=context, use_sparql=use_sparql
+                        ),
+                    )
                 else:
                     add(d, key, v)
 
