@@ -389,6 +389,7 @@ def test_load2():
     ts = Triplestore("rdflib")
     ts.parse(ontodir / "family.ttl")
 
+    # Create an empty Keywords object and load the ontology
     kw = get_keywords(theme=None)
     assert kw.keywords == AttrDict()
     kw.load_rdf(ts)
@@ -413,6 +414,39 @@ def test_load2():
     assert d.datatype == "xsd:double"
     assert d.unit == "year"
     assert kw["hasName"] == {
+        "iri": "fam:hasName",
+        "type": "owl:AnnotationProperty",
+        "domain": "rdfs:Resource",
+        "range": "rdfs:Literal",
+        "comment": "Name.",
+        "name": "hasName",
+    }
+
+    # Create a new Keywords object with
+    # default keywords and load from the triplestore
+    kw2 = get_keywords()
+    kw2.load_rdf(ts)
+
+    assert set(kw2.keywordnames()) == {
+        "hasAge",
+        "hasWeight",
+        "hasSkill",
+        "hasChild",
+        "hasName",
+    }
+    assert set(kw2.classnames()) == {
+        "Person",
+        "Parent",
+        "Child",
+        "Skill",
+        "Resource",
+    }
+    d = kw2["hasAge"]
+    assert d.iri == "fam:hasAge"
+    assert d.range == "rdfs:Literal"
+    assert d.datatype == "xsd:double"
+    assert d.unit == "year"
+    assert kw2["hasName"] == {
         "iri": "fam:hasName",
         "type": "owl:AnnotationProperty",
         "domain": "rdfs:Resource",

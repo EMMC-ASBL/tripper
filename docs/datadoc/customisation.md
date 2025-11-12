@@ -81,9 +81,49 @@ In your ontology you may define `fromBatch` as a object property with IRI: http:
 Here the special value "@id" for the "@type" means that the value of `fromBatch` must be an IRI.
 
 
+Creating a context with keywords from an ontology
+-------------------------------------------------
+Creating a context with keywords manually can be strenuous and is prone to human mistakes.
+It is therefore advisable to only use one source of truth, namely the ontolgy.
+
+The context can be generated from a triplestore with the ontology with the Keywords class:
+
+```python
+from tripper import Triplestore
+from tripper.datadoc import get_keywords
+
+ts = Triplestore('rdflib')
+
+ts.parse('https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl')
+
+kw =  get_keywords() # create an Keywords instance populated with the default keywords (ddoc:datadoc)
+# you can check the current keywords themes with:
+print(kw.data.themes)
+# Before loading the keywords file it is required that all namespaces have a prefix.
+# The family namespace does not have prefix by defualt and it must be added:
+kw.add_prefix('fam', 'http://onto-ns.com/ontologies/examples/family#')
+
+
+# We can now load the ontology into the keywords
+kw.load_rdf(ts)
+
+```
+
+
+Note that there are a few considerations when generating a context from an ontology:
+First of all, prefLabels that are the same as predefined keywords must be handled with care.
+The default behaviour is that these keywords are redefined, and just a warning is issued.
+This can be changed by setting the `allow_redefine` argument of the `load_rdf()` method to `False`, in which case existing keywords are not redefined.
+In the latter case, this means that the predefined keyword will be used when documenting resources. Make sure that this is what you want!
+
+
+
+
+
+
 Providing a custom context
 --------------------------
-Custom context can be provided for all the interfaces described in the section [Documenting a resource].
+A custom context with defined keywords can be provided for all the interfaces described in the section [Documenting a resource].
 
 ### Python dict
 Both for the single-resource and multi-resource dicts, you can add a `"@context"` key to the dict who's value is
