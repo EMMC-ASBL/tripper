@@ -419,7 +419,6 @@ class Keywords:
         # Create a deep copies that we are updating
         prefixes = deepcopy(self.data.prefixes)
         resources = deepcopy(self.data.resources)
-        #keywords = deepcopy(self.keywords)
 
         # Prefixes
         for prefix, ns in d.get("prefixes", AttrDict()).items():
@@ -450,9 +449,7 @@ class Keywords:
                     )
             for key in defs:
                 if strict and key not in valid_resource_keys:
-                    raise InvalidDatadocError(
-                        f"invalid resource key: '{key}'"
-                    )
+                    raise InvalidDatadocError(f"invalid resource key: '{key}'")
             # TODO: Check for redefinition of existing class
 
             resval.iri = prefix_iri(defs.iri, prefixes)
@@ -518,7 +515,7 @@ class Keywords:
                                 warnings.warn(
                                     "Redefining keyword '{keyword}' from "
                                     "'{oldval.iri}' to '{value.iri}'",
-                                    RedefineKeywordWarning
+                                    RedefineKeywordWarning,
                                 )
                                 break
                 add(value, "domain", prefix_iri(defs.iri, prefixes))

@@ -100,7 +100,7 @@ def test_load_yaml():
 
     # Not sure what is wrong here?
     # Can range not refer to a non-defined class?
-    #with pytest.raises(ParseError):
+    # with pytest.raises(ParseError):
     #    keywords.load_yaml(indir / "invalid_keywords4.yaml")
 
     with pytest.raises(ParseError):
@@ -182,8 +182,8 @@ def test_save_table():
         ("@type", "owl:ObjectProperty"),
         ("label", "accessRights"),
         ("domain", "dcat:Resource"),
-        #("domain", ""),
-        #("domain", ""),
+        # ("domain", ""),
+        # ("domain", ""),
         ("range", "dcterms:RightsStatement"),
         ("conformance", "ddoc:optional"),
         (
