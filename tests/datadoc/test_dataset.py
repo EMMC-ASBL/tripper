@@ -321,7 +321,7 @@ def test_store():
 # if 1:
 def test_infer_restriction_types():
     """Test infer_restriction_types()."""
-    from tripper import DDOC, RDF, RDFS, Triplestore
+    from tripper import DDOC, Triplestore
 
     ts = Triplestore("rdflib")
     ts.bind("ddoc", DDOC)

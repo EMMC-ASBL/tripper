@@ -57,7 +57,7 @@ from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKey
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
-from tripper.datadoc.utils import add, get
+from tripper.datadoc.utils import add, get, merge
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -478,9 +478,12 @@ def infer_restriction_types(
             indicating that it is an annotation property.
 
     Arguments:
-        d: JSON-LD dict to analyse. Should describe a resource.
+        dicts: JSON-LD dict or JSON-LD list of dicts describing resources
+            to analyse.
         iri:
+        ts: Optional Triplestore object to look up types in.
         context: JSON-LD context object.
+        prefixes:
 
     Returns:
         The returned dict will maps labels of properties that should
@@ -496,6 +499,7 @@ def infer_restriction_types(
         where `<N>` is a positive integer.
 
     """
+    # pylint: disable=unused-argument
     if isinstance(dicts, dict):
         if not iri:
             iri = dicts["@iri"]
@@ -535,7 +539,9 @@ def infer_restriction_types(
                 vtypes = expandlist(v["@type"])
             elif isinstance(v, (str, list)):
                 for e in expandlist(v):
-                    vtypes = merge(vtypes, expandlist(dct[e].get("@type")))
+                    vtypes = merge(  # type: ignore
+                        vtypes, expandlist(dct[e].get("@type"))
+                    )
             if (
                 vtypes
                 and any(t in vtypes for t in classtypes)

@@ -394,6 +394,9 @@ class Context:
             "subClassOf",
             "rdfs:subClassOf",
             RDFS.subClassOf,
+            "subPropertyOf",
+            "rdfs:subPropertyOf",
+            RDFS.subPropertyOf,
         ):
             return False
         return self.getdef(name).get("@type") == "@id"
