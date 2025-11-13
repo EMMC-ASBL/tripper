@@ -18,8 +18,8 @@ class InvalidKeywordError(InvalidDatadocError, KeyError):  # remove?
     """Keyword is not defined."""
 
 
-class RedefineConceptError(TripperWarning):
-    """Trying to redefine an existing concept."""
+class RedefineError(TripperWarning):
+    """Trying to redefine an existing concept or keyword."""
 
 
 class DatadocValueError(InvalidDatadocError, ValueError):
@@ -67,7 +67,3 @@ class IRIExistsWarning(TripperWarning):
 
 class RedefineKeywordWarning(TripperWarning):
     """Redefine an existing keyword (by mapping it to a new IRI)."""
-
-
-class RenameKeywordWarning(TripperWarning):
-    """Rename a keyword (by appending a prefix to it)."""

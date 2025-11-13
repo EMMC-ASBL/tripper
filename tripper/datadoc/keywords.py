@@ -24,9 +24,8 @@ from tripper.datadoc.errors import (
     NoSuchTypeError,
     ParseError,
     PrefixMismatchError,
-    RedefineConceptError,
+    RedefineError,
     RedefineKeywordWarning,
-    RenameKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
@@ -200,7 +199,7 @@ class Keywords:
         keywords: "Optional[KeywordsType]",
         timeout: float = 3,
         strict: bool = False,
-        rename_prefix: "Optional[str]" = None,
+        redefine: str = "raise",
     ) -> None:
         """Add `keywords` to this Keywords object.
 
@@ -211,10 +210,13 @@ class Keywords:
             timeout: Timeout when accessing remote files.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
-            rename_prefix: If not None, new keywords redefining an existing
-                keyword, will automatically be renamed by appending
-                `rename_prefix` to their name. If None, the existing keywords
-                will be overwritten.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
 
         """
 
@@ -230,7 +232,7 @@ class Keywords:
                     kw,
                     timeout=timeout,
                     strict=strict,
-                    rename_prefix=rename_prefix,
+                    redefine=redefine,
                 )
             elif isinstance(kw, str):
                 if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
@@ -238,17 +240,17 @@ class Keywords:
                         kw,
                         timeout=timeout,
                         strict=strict,
-                        rename_prefix=rename_prefix,
+                        redefine=redefine,
                     )
                 else:
                     self.add_theme(
                         kw,
                         timeout=timeout,
                         strict=strict,
-                        rename_prefix=rename_prefix,
+                        redefine=redefine,
                     )
             elif isinstance(kw, dict):
-                self._load_yaml(kw, strict=strict, rename_prefix=rename_prefix)
+                self._load_yaml(kw, strict=strict, redefine=redefine)
             elif isinstance(kw, Sequence):
                 for e in kw:
                     _add(e)
@@ -265,7 +267,7 @@ class Keywords:
         theme: "Union[str, Sequence[str]]",
         timeout: float = 3,
         strict: bool = False,
-        rename_prefix: "Optional[str]" = None,
+        redefine: str = "raise",
     ) -> None:
         """Add keywords for `theme`, where `theme` is the IRI of a
         theme or scientific domain or a list of such IRIs.
@@ -275,10 +277,13 @@ class Keywords:
             timeout: Timeout when accessing remote files.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
-            rename_prefix: If not None, new keywords redefining an existing
-                keyword, will automatically be renamed by appending
-                `rename_prefix` to their name. If None, the existing keywords
-                will be overwritten.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
 
         """
         if isinstance(theme, str):
@@ -298,7 +303,7 @@ class Keywords:
                         self.rootdir / ep.name / "keywords.yaml",
                         timeout=timeout,
                         strict=strict,
-                        rename_prefix=rename_prefix,
+                        redefine=redefine,
                     )
                     break
             else:
@@ -312,7 +317,7 @@ class Keywords:
                         / "keywords.yaml",
                         timeout=timeout,
                         strict=strict,
-                        rename_prefix=rename_prefix,
+                        redefine=redefine,
                     )
                 else:
                     raise TypeError(f"Unknown theme: {name}")
@@ -322,7 +327,7 @@ class Keywords:
         yamlfile: "Union[Path, str]",
         timeout: float = 3,
         strict: bool = True,
-        rename_prefix: "Optional[str]" = None,
+        redefine: str = "raise",
     ) -> None:
         """Load YAML file with keyword definitions.
 
@@ -331,10 +336,13 @@ class Keywords:
             timeout: Timeout when accessing remote files.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
-            rename_prefix: If not None, new keywords redefining an existing
-                keyword, will automatically be renamed by appending
-                `rename_prefix` to their name. If None, the existing keywords
-                will be overwritten.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
 
         """
         if yamlfile in self.parsed:
@@ -344,7 +352,7 @@ class Keywords:
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
         try:
-            self._load_yaml(d, strict=strict, rename_prefix=rename_prefix)
+            self._load_yaml(d, strict=strict, redefine=redefine)
         except Exception as exc:
             raise ParseError(f"error parsing '{yamlfile}'") from exc
 
@@ -352,7 +360,7 @@ class Keywords:
         self,
         d: dict,
         strict: bool = True,
-        rename_prefix: "Optional[str]" = None,
+        redefine: str = "raise",
     ) -> None:
         """Parse a dict with keyword definitions following the format of
         the YAML file.
@@ -361,10 +369,13 @@ class Keywords:
             d: Dict defining a keyword following the YAML file format.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
-            rename_prefix: If not None, new keywords redefining an existing
-                keyword, will automatically be renamed by appending
-                `rename_prefix` to their name. If None, the existing keywords
-                will be overwritten.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
 
         """
         # pylint: disable=too-many-nested-blocks,too-many-statements
@@ -486,14 +497,6 @@ class Keywords:
                     if k in value:
                         value[k] = to_prefixed(value[k])
 
-                if keyword in keywords and rename_prefix:
-                    newname = f"{keyword}_{rename_prefix}"
-                    warnings.warn(
-                        f"renaming keyword '{keyword}' to '{newname}'",
-                        RenameKeywordWarning,
-                    )
-                    keyword = newname
-
                 if len(value) == 1:
                     value = AttrDict(iris[value.iri])
 
@@ -507,7 +510,7 @@ class Keywords:
                         oldval = keywords[keyword].get(k)
                         if k not in ("iri", "domain") and v != oldval:
                             if value.iri == keywords[keyword].iri:
-                                raise RedefineConceptError(
+                                raise RedefineError(
                                     f"Redefining '{k}' from '{oldval}' to "
                                     f"'{v}' in concept '{keyword}'"
                                 )
@@ -743,7 +746,7 @@ class Keywords:
         theme: "Optional[str]" = None,
         basedOn: "Optional[Union[str, List[str]]]" = None,
         strict: bool = False,
-        rename_prefix: "Optional[str]" = None,
+        redefine: str = "raise",
     ) -> None:
         """Populate this Keywords object from a sequence of dicts.
 
@@ -756,10 +759,13 @@ class Keywords:
             basedOn: Theme(s) that `dicts` are based on.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
-            rename_prefix: If not None, new keywords redefining an existing
-                keyword, will automatically be renamed by appending
-                `rename_prefix` to their name. If None, the existing keywords
-                will be overwritten.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
 
         """
         data = self._fromdicts(
@@ -768,7 +774,7 @@ class Keywords:
             theme=theme,
             basedOn=basedOn,
         )
-        self._load_yaml(data, strict=strict, rename_prefix=rename_prefix)
+        self._load_yaml(data, strict=strict, redefine=redefine)
 
     def _fromdicts(
         self,
@@ -1034,7 +1040,7 @@ class Keywords:
         ts: "Triplestore",
         iris: "Optional[Sequence[str]]" = None,
         strict: bool = False,
-        rename_prefix: "Optional[str]" = None,
+        redefine: str = "raise",
     ) -> None:
         """Populate this Keyword object from a triplestore.
 
@@ -1044,10 +1050,13 @@ class Keywords:
                 properties an classes.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
-            rename_prefix: If not None, new keywords redefining an existing
-                keyword, will automatically be renamed by appending
-                `rename_prefix` to their name. If None, the existing keywords
-                will be overwritten.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
 
         """
         dicts = self._load_rdf(ts, iris)
@@ -1055,7 +1064,7 @@ class Keywords:
             dicts,
             prefixes=ts.namespaces,
             strict=strict,
-            rename_prefix=rename_prefix,
+            redefine=redefine,
         )
 
     def isnested(self, keyword: str) -> bool:
