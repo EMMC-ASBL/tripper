@@ -430,12 +430,12 @@ class Keywords:
             prefixes[prefix] = ns
 
         # Map keywords IRIs to keyword definitions
-        iris = {}
+        iridefs = {}
         for defs in d.get("resources", {}).values():
             for k, v in defs.get("keywords", {}).items():
                 key = prefix_iri(v["iri"], prefixes)
-                if len(v) > 1 or key not in iris:
-                    iris[key] = v
+                if len(v) > 1 or key not in iridefs:
+                    iridefs[key] = v
 
         # Resources
         for cls, defs in d.get("resources", AttrDict()).items():
@@ -468,6 +468,10 @@ class Keywords:
                             f"no '{k}' in keyword '{keyword}'"
                         )
 
+                # If a value only contain an IRI,
+                if len(value) == 1:
+                    value = AttrDict(iridefs[value.iri])
+
                 if "conformance" in value:
                     c = value["conformance"]
                     if c not in valid_conformances:
@@ -494,10 +498,8 @@ class Keywords:
                     )
                     keyword = newname
 
-                if len(value) == 1:
-                    value = AttrDict(iris[value.iri])
-
-                value.name = keyword
+                if "name" not in value or ":" in value.name:
+                    value.name = keyword
                 if "theme" in d:
                     add(value, "theme", d["theme"])
 
