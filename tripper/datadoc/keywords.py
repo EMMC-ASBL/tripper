@@ -441,12 +441,12 @@ class Keywords:
             prefixes[prefix] = ns
 
         # Map keywords IRIs to keyword definitions
-        iris = {}
+        iridefs = {}
         for defs in d.get("resources", {}).values():
             for k, v in defs.get("keywords", {}).items():
                 key = prefix_iri(v["iri"], prefixes)
-                if len(v) > 1 or key not in iris:
-                    iris[key] = v
+                if len(v) > 1 or key not in iridefs:
+                    iridefs[key] = v
 
         # Resources
         for cls, defs in d.get("resources", AttrDict()).items():
@@ -473,17 +473,29 @@ class Keywords:
             resval.setdefault("keywords", AttrDict())
 
             for keyword, value in defs.get("keywords", AttrDict()).items():
+                # If a value only contain an IRI, replace it with a more
+                # elaborate definition (if it exists)
+                if len(value) == 1:
+                    value = AttrDict(iridefs[value["iri"]])
+
+                if not value:
+                    print("*** empty", keyword, value)
+                    continue
+
+                # Check that value has all the required keywords
                 for k in required_keywords:
                     if k not in value:
                         raise MissingKeyError(
                             f"no '{k}' in keyword '{keyword}'"
                         )
 
+                # Check conformance values
                 if "conformance" in value:
                     c = value["conformance"]
                     if c not in valid_conformances:
                         raise DatadocValueError(f"invalid conformance: {c}")
 
+                # If strict, check that all keys are known
                 if strict:
                     for k in value.keys():
                         if k not in valid_keywords:
@@ -491,37 +503,62 @@ class Keywords:
                                 f"keyword '{keyword}' has invalid key: {k}"
                             )
 
-                # Normalise value to prefixed IRIs
+                # Normalise IRIs in values to prefixed IRIs
                 value = AttrDict(value).copy()
                 for k in iri_keywords:
                     if k in value:
                         value[k] = to_prefixed(value[k])
 
-                if len(value) == 1:
-                    value = AttrDict(iris[value.iri])
-
-                value.name = keyword
+                # Update value
+                if "name" not in value or ":" in value.name:
+                    value.name = keyword
                 if "theme" in d:
                     add(value, "theme", d["theme"])
+                add(value, "domain", prefix_iri(defs.iri, prefixes))
 
-                # Update keywords attrdict
+                # Check whether we try to redefine an existing keyword
+                skip = False
                 if keyword in keywords:
                     for k, v in value.items():
                         oldval = keywords[keyword].get(k)
                         if k not in ("iri", "domain") and v != oldval:
                             if value.iri == keywords[keyword].iri:
                                 raise RedefineError(
-                                    f"Redefining '{k}' from '{oldval}' to "
-                                    f"'{v}' in concept '{keyword}'"
+                                    "Cannot redefine existing concept "
+                                    f"'{value.iri}'. Trying to change "
+                                    f"property '{k}' from '{oldval}' to "
+                                    f"'{v}'."
                                 )
                             if oldval:
-                                warnings.warn(
-                                    "Redefining keyword '{keyword}' from "
-                                    "'{oldval.iri}' to '{value.iri}'",
-                                    RedefineKeywordWarning,
-                                )
+                                if redefine == "raise":
+                                    raise RedefineError(
+                                        f"Trying to redefine keyword "
+                                        f"'{keyword}' from '{oldval.iri}' "
+                                        f"to '{value.iri}'."
+                                    )
+                                if redefine == "skip":
+                                    skip = True
+                                    warnings.warn(
+                                        "Skip redefinition of keyword: "
+                                        f"{keyword}",
+                                        RedefineKeywordWarning,
+                                    )
+                                elif redefine == "allow":
+                                    warnings.warn(
+                                        f"Redefining keyword '{keyword}' from "
+                                        f"'{oldval.iri}' to '{value.iri}'.",
+                                        RedefineKeywordWarning,
+                                    )
+                                else:
+                                    raise ValueError(
+                                        "Invalid value of `redefine` "
+                                        f'argument: "{redefine}".  Should be '
+                                        'one of "allow", "keep" or "raise".'
+                                    )
                                 break
-                add(value, "domain", prefix_iri(defs.iri, prefixes))
+                if skip:
+                    continue
+
                 kw = resval.keywords
                 if keyword in kw:
                     kw[keyword].update(value)
