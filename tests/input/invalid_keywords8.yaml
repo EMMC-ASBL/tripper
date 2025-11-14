@@ -1,6 +1,6 @@
-# Invalid theme
+# Redefine existing concept
 ---
-basedOn: ["ddoc:invalid", ]
+basedOn: "ddoc:datadoc"
 
 prefixes:
   kb: "http://example.com/kb#"
@@ -12,6 +12,6 @@ resources:
     iri: myonto:A
     subClassOf: dcat:Resource
     keywords:
-      a:
-        iri: myonto:a
+      description:
+        iri: dcat:Dataset
         range: myonto:B
