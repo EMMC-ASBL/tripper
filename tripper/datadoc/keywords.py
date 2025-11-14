@@ -524,41 +524,41 @@ class Keywords:
                 if keyword in keywords:
                     for k, v in value.items():
                         oldval = keywords[keyword].get(k)
-                        if k not in ("iri", "domain") and v != oldval:
-                            oldiri = keywords[keyword].iri
-                            if value.iri == oldiri:
-                                raise RedefineError(
-                                    "Cannot redefine existing concept "
-                                    f"'{value.iri}'. Trying to change "
-                                    f"property '{k}' from '{oldval}' to "
-                                    f"'{v}'."
-                                )
-                            if redefine == "raise":
-                                raise RedefineError(
-                                    f"Trying to redefine keyword "
-                                    f"'{keyword}' from '{oldiri}' "
-                                    f"to '{value.iri}'."
-                                )
-                            if redefine == "skip":
-                                skip = True
-                                warnings.warn(
-                                    "Skip redefinition of keyword: "
-                                    f"{keyword}",
-                                    RedefineKeywordWarning,
-                                )
-                            elif redefine == "allow":
-                                warnings.warn(
-                                    f"Redefining keyword '{keyword}' from "
-                                    f"'{oldiri}' to '{value.iri}'.",
-                                    RedefineKeywordWarning,
-                                )
-                            else:
-                                raise ValueError(
-                                    "Invalid value of `redefine` "
-                                    f'argument: "{redefine}".  Should be '
-                                    'one of "allow", "keep" or "raise".'
-                                )
-                            break
+                        if k in ("iri", "domain") or v == oldval:
+                            continue
+                        oldiri = keywords[keyword].iri
+                        if value.iri == oldiri:
+                            raise RedefineError(
+                                "Cannot redefine existing concept "
+                                f"'{value.iri}'. Trying to change "
+                                f"property '{k}' from '{oldval}' to "
+                                f"'{v}'."
+                            )
+                        if redefine == "raise":
+                            raise RedefineError(
+                                f"Trying to redefine keyword "
+                                f"'{keyword}' from '{oldiri}' "
+                                f"to '{value.iri}'."
+                            )
+                        if redefine == "skip":
+                            skip = True
+                            warnings.warn(
+                                "Skip redefinition of keyword: " f"{keyword}",
+                                RedefineKeywordWarning,
+                            )
+                        elif redefine == "allow":
+                            warnings.warn(
+                                f"Redefining keyword '{keyword}' from "
+                                f"'{oldiri}' to '{value.iri}'.",
+                                RedefineKeywordWarning,
+                            )
+                        else:
+                            raise ValueError(
+                                "Invalid value of `redefine` "
+                                f'argument: "{redefine}".  Should be '
+                                'one of "allow", "keep" or "raise".'
+                            )
+                        break
                 if skip:
                     continue
 
