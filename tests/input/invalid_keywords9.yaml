@@ -1,0 +1,17 @@
+# Redefine existing keyword
+---
+basedOn: "ddoc:datadoc"
+
+prefixes:
+  kb: "http://example.com/kb#"
+  myonto: "http://example.com/myonto#"
+
+
+resources:
+  A:
+    iri: myonto:A
+    subClassOf: dcat:Resource
+    keywords:
+      title:
+        iri: myonto:a
+        range: myonto:B

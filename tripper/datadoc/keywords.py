@@ -492,9 +492,6 @@ class Keywords:
                 if len(value) == 1:
                     value = AttrDict(iridefs[value["iri"]])
 
-                if not value:
-                    continue
-
                 # Check conformance values
                 if "conformance" in value:
                     c = value["conformance"]
