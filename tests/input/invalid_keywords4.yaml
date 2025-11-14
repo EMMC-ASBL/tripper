@@ -1,4 +1,4 @@
-# ???
+# Missing keyword IRI
 ---
 basedOn: "ddoc:datadoc"
 
@@ -13,5 +13,4 @@ resources:
     subClassOf: dcat:Resource
     keywords:
       description:
-        iri: myonto:description
         range: myonto:B

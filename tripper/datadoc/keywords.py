@@ -164,34 +164,43 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "theme"]
 
-    def _set_keyword(self, keywords, keyword, value):
+    def __eq__(self, other):
+        return self.data == other.data and self.theme == other.theme
+
+    def _set_keyword(self, keywords, keyword, value, redefine=False):
         """Add new keyword-value pair to `keywords` dict."""
         # value = AttrDict(value)
         expanded = expand_iri(value.iri, self.get_prefixes())
         prefixed = prefix_iri(expanded, self.get_prefixes())
-        keywords[keyword] = value
-        keywords[prefixed] = value
-        keywords[expanded] = value
+        if redefine or keyword not in keywords:
+            keywords[keyword] = value
+        if redefine or prefixed not in keywords:
+            keywords[prefixed] = value
+        if redefine or expanded not in keywords:
+            keywords[expanded] = value
 
-    def _set_keywords(self, clear=True):
+    def _set_keywords(self, clear=True, redefine=False):
         """Update internal keywords attribute to data attribute.
 
-        If `clear` is false, only new keywords will be added, but nothing
-        removed.
+        Arguments:
+            clear: If false, only new keywords will be added, but nothing
+                removed.
+            redefine: Wheter to redefine existing keyword.
         """
         if clear:
             self.keywords.clear()
         for clsvalue in self.data.get("resources", AttrDict()).values():
             for keyword, value in clsvalue.get("keywords", AttrDict()).items():
-                if keyword not in self.keywords:
-                    self._set_keyword(self.keywords, keyword, value)
+                self._set_keyword(
+                    self.keywords, keyword, value, redefine=redefine
+                )
 
     def copy(self):
         """Returns a copy of self."""
         new = Keywords(theme=None)
         new.theme = self.theme
         new.data = deepcopy(self.data)
-        new._set_keywords()  # pylint: disable=protected-access
+        new.keywords = deepcopy(self.keywords)
         return new
 
     def add(
@@ -345,9 +354,9 @@ class Keywords:
                   - "raise": Raise an RedefineError (default).
 
         """
-        if yamlfile in self.parsed:
+        if (yamlfile, strict, redefine) in self.parsed:
             return
-        self.parsed.add(yamlfile)
+        self.parsed.add((yamlfile, strict, redefine))
 
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
@@ -418,7 +427,6 @@ class Keywords:
             "datatype",
         }
         valid_conformances = ["mandatory", "recommended", "optional"]
-        keywords = AttrDict(self.keywords).copy()
 
         def to_prefixed(x):
             """Help function that converts an IRI or list of IRIs to
@@ -430,6 +438,7 @@ class Keywords:
         # Create a deep copies that we are updating
         prefixes = deepcopy(self.data.prefixes)
         resources = deepcopy(self.data.resources)
+        keywords = deepcopy(self.keywords)
 
         # Prefixes
         for prefix, ns in d.get("prefixes", AttrDict()).items():
@@ -443,10 +452,14 @@ class Keywords:
         # Map keywords IRIs to keyword definitions
         iridefs = {}
         for defs in d.get("resources", {}).values():
-            for k, v in defs.get("keywords", {}).items():
-                key = prefix_iri(v["iri"], prefixes)
-                if len(v) > 1 or key not in iridefs:
-                    iridefs[key] = v
+            for kw, val in defs.get("keywords", {}).items():
+                # Check that value has all the required keywords
+                for k in required_keywords:
+                    if k not in val:
+                        raise MissingKeyError(f"no '{k}' in keyword '{kw}'")
+                key = prefix_iri(val["iri"], prefixes)
+                if len(val) > 1 or key not in iridefs:
+                    iridefs[key] = val
 
         # Resources
         for cls, defs in d.get("resources", AttrDict()).items():
@@ -473,21 +486,14 @@ class Keywords:
             resval.setdefault("keywords", AttrDict())
 
             for keyword, value in defs.get("keywords", AttrDict()).items():
+
                 # If a value only contain an IRI, replace it with a more
                 # elaborate definition (if it exists)
                 if len(value) == 1:
                     value = AttrDict(iridefs[value["iri"]])
 
                 if not value:
-                    print("*** empty", keyword, value)
                     continue
-
-                # Check that value has all the required keywords
-                for k in required_keywords:
-                    if k not in value:
-                        raise MissingKeyError(
-                            f"no '{k}' in keyword '{keyword}'"
-                        )
 
                 # Check conformance values
                 if "conformance" in value:
@@ -509,7 +515,7 @@ class Keywords:
                     if k in value:
                         value[k] = to_prefixed(value[k])
 
-                # Update value
+                # Add extra annotations to value
                 if "name" not in value or ":" in value.name:
                     value.name = keyword
                 if "theme" in d:
@@ -522,40 +528,40 @@ class Keywords:
                     for k, v in value.items():
                         oldval = keywords[keyword].get(k)
                         if k not in ("iri", "domain") and v != oldval:
-                            if value.iri == keywords[keyword].iri:
+                            oldiri = keywords[keyword].iri
+                            if value.iri == oldiri:
                                 raise RedefineError(
                                     "Cannot redefine existing concept "
                                     f"'{value.iri}'. Trying to change "
                                     f"property '{k}' from '{oldval}' to "
                                     f"'{v}'."
                                 )
-                            if oldval:
-                                if redefine == "raise":
-                                    raise RedefineError(
-                                        f"Trying to redefine keyword "
-                                        f"'{keyword}' from '{oldval.iri}' "
-                                        f"to '{value.iri}'."
-                                    )
-                                if redefine == "skip":
-                                    skip = True
-                                    warnings.warn(
-                                        "Skip redefinition of keyword: "
-                                        f"{keyword}",
-                                        RedefineKeywordWarning,
-                                    )
-                                elif redefine == "allow":
-                                    warnings.warn(
-                                        f"Redefining keyword '{keyword}' from "
-                                        f"'{oldval.iri}' to '{value.iri}'.",
-                                        RedefineKeywordWarning,
-                                    )
-                                else:
-                                    raise ValueError(
-                                        "Invalid value of `redefine` "
-                                        f'argument: "{redefine}".  Should be '
-                                        'one of "allow", "keep" or "raise".'
-                                    )
-                                break
+                            if redefine == "raise":
+                                raise RedefineError(
+                                    f"Trying to redefine keyword "
+                                    f"'{keyword}' from '{oldiri}' "
+                                    f"to '{value.iri}'."
+                                )
+                            if redefine == "skip":
+                                skip = True
+                                warnings.warn(
+                                    "Skip redefinition of keyword: "
+                                    f"{keyword}",
+                                    RedefineKeywordWarning,
+                                )
+                            elif redefine == "allow":
+                                warnings.warn(
+                                    f"Redefining keyword '{keyword}' from "
+                                    f"'{oldiri}' to '{value.iri}'.",
+                                    RedefineKeywordWarning,
+                                )
+                            else:
+                                raise ValueError(
+                                    "Invalid value of `redefine` "
+                                    f'argument: "{redefine}".  Should be '
+                                    'one of "allow", "keep" or "raise".'
+                                )
+                            break
                 if skip:
                     continue
 
@@ -565,6 +571,8 @@ class Keywords:
                 else:
                     kw[keyword] = value
 
+                self._set_keyword(keywords, keyword, value, redefine=True)
+
             if cls in resources:
                 resources[cls].update(resval)
             else:
@@ -573,8 +581,10 @@ class Keywords:
         # Everything succeeded, update instance
         self.data.prefixes.update(prefixes)
         self.data.resources.update(resources)
+        self.keywords.update(keywords)
 
-        self._set_keywords()
+        # Run an extra round and add keywords we have missed.
+        self._set_keywords(clear=False, redefine=False)
 
     def save_yaml(
         self,
