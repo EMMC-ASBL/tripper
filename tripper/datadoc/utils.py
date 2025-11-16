@@ -103,8 +103,8 @@ def addnested(
     Example:
 
         >>> d = {}
-        >>> addnested(d, "a.b.c", "val") == {'a': {'b': {'c': 'val'}}}
-        True
+        >>> addnested(d, "a.b.c", "val")
+        {'a': {'b': {'c': 'val'}}}
 
     """
     # pylint: disable=too-many-branches
@@ -146,7 +146,7 @@ def stripnested(d):
 
     >>> d = {"a[1]": {"x": 1, "y": 2}, "a[2]": {"x": 3}}
     >>> stripnested(d)
-    {"a": [{"x": 1, "y": 2}, {"x": 3}]}
+    {'a': [{'x': 1, 'y': 2}, {'x': 3}]}
 
     """
     if isinstance(d, list):
