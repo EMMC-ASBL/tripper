@@ -58,11 +58,17 @@ def test_addnested():
     assert d.a[0] == "2"
     assert d.a[1].b[1].c == {"d": "3"}
     assert d == {"a": ["2", {"b": ["1", {"c": {"d": "3"}}]}]}
+    assert isinstance(d.a[1], AttrDict)
 
     l = []
     assert addnested(l, "a.b", 1) == [{"a": {"b": 1}}]
     assert addnested(l, "a.b", 1) == [{"a": {"b": 1}}]
     assert addnested(l, "a.b", 2) == [{"a": {"b": [1, 2]}}]
+
+    d2 = {}
+    addnested(d2, "a[1].x", 1)
+    addnested(d2, "a[1].y", 2)
+    addnested(d2, "a[2].x", 3)
 
 
 def test_get():
