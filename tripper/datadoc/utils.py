@@ -136,6 +136,32 @@ def addnested(
     return d
 
 
+def stripnested(d):
+    """Strip off brackets from keys in nested dicts.
+
+    This function is intended for post-processing the result of a
+    series of calls to addnested().
+
+    Example:
+
+    >>> d = {"a[1]": {"x": 1, "y": 2}, "a[2]": {"x": 3}}
+    >>> stripnested(d)
+    {"a": [{"x": 1, "y": 2}, {"x": 3}]}
+
+    """
+    if isinstance(d, list):
+        new = type(d)()
+        for e in d:
+            new.append(stripnested(e))
+    elif isinstance(d, dict):
+        new = type(d)()
+        for k, v in d.items():
+            add(new, k.split("[")[0], v)
+    else:
+        new = d
+    return new
+
+
 def get(
     d: dict, key: str, default: "Any" = None, aslist: bool = True
 ) -> "Any":

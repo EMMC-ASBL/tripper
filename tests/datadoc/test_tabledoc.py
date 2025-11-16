@@ -5,7 +5,6 @@ import pytest
 pytest.importorskip("pyld")
 
 
-# if 1:
 def test_asdicts():
     """Test the asdicts() method."""
 
@@ -21,7 +20,7 @@ def test_asdicts():
             "@type",
             "inSeries",
             "distribution[1].downloadURL",
-            "distribution[1].metiaType",
+            "distribution[1].mediaType",
             "distribution[2].downloadURL",
         ],
         data=[
@@ -59,10 +58,17 @@ def test_asdicts():
         "onto:T2",
     }
     assert "inSeries" not in s1
-    assert s1["distribution"] == {
-        "@type": ["dcat:Distribution", "dcat:Resource"],
-        "downloadURL": "file:///data/",
-    }
+    assert s1["distribution"] == [
+        {
+            "@type": ["dcat:Distribution", "dcat:Resource"],
+            "downloadURL": "file:///d0.txt",
+            "mediaType": IANA["text/plain"],
+        },
+        {
+            "@type": ["dcat:Distribution", "dcat:Resource"],
+            "downloadURL": "file:///data/",
+        },
+    ]
 
     assert d1["@id"] == "ds:d1"
     assert set(d1["@type"]) == {
@@ -74,7 +80,7 @@ def test_asdicts():
     assert d1["inSeries"] == "ds:s1"
     assert d1["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
-        "downloadURL": "file:///data/d1.txt",
+        "downloadURL": "file:///d1.txt",
     }
 
     assert d2["@id"] == "ds:d2"
@@ -87,7 +93,7 @@ def test_asdicts():
     assert d2["inSeries"] == "ds:s1"
     assert d2["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
-        "downloadURL": "file:///data/d2.txt",
+        "downloadURL": "file:///d2.txt",
     }
 
     ts = Triplestore(backend="rdflib")
@@ -233,6 +239,33 @@ def test_csv_duplicated_columns():
         "distribution.downloadURL",
     ]
     td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
+
+
+def test_unique_header():
+    """Test unique_header() method."""
+    from tripper.datadoc import TableDoc
+
+    header = [
+        "@id",
+        "@type",
+        "@type",
+        "inSeries",
+        "distribution.downloadURL",
+        "distribution.downloadURL",
+    ]
+    unique_header = [
+        "@id",
+        "@type[1]",
+        "@type[2]",
+        "inSeries",
+        "distribution[1].downloadURL",
+        "distribution[2].downloadURL",
+    ]
+    td = TableDoc(header=header, data=[])
+    assert td.unique_header() == unique_header
+
+    td.header = unique_header
+    assert td.unique_header() == unique_header
 
 
 def test_csvsniff():
