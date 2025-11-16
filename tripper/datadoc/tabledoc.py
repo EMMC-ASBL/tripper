@@ -62,7 +62,7 @@ class TableDoc:
         self,
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
-        type: "Optional[str]" = "Dataset",
+        type: "Optional[str]" = None,
         theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
