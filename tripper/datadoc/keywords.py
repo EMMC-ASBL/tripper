@@ -403,8 +403,8 @@ class Keywords:
                                 v = self.prefixed(v)
                             if v != kwdef[k]:
                                 raise RedefineKeywordError(
-                                    f"Cannot redefine '{k}' in keyword "
-                                    f"'{keyword}'"
+                                    f"Cannot redefine '{k}' from '{kwdef[k]}' "
+                                    f"to '{v}' in keyword '{keyword}'"
                                 )
                         else:
                             kwdef[k] = v
@@ -695,6 +695,8 @@ class Keywords:
             prefixes = {}
 
         def isproperty(v):
+            if "@type" not in v:
+                return False
             types = [v["@type"]] if isinstance(v["@type"], str) else v["@type"]
             for t in types:
                 exp = expand_iri(t, p)
