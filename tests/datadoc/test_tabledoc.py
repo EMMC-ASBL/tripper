@@ -190,9 +190,6 @@ def test_csv_duplicated_columns():
     img1, img2, img3 = td.asdicts()
 
     assert set(img1["@type"]) == {
-        "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
         "pm:BrightFieldImage",
         "pm:TEMImage",
     }
@@ -202,9 +199,6 @@ def test_csv_duplicated_columns():
         "@id",
         "@type",  # TEMImage
         "@type",  # BrightFieldEmage
-        "@type",  # emmo:Dataset
-        "@type",  # dcat:Resource
-        "@type",  # dcat:Dataset
         "description",
         "distribution.downloadURL",
     ]
@@ -241,6 +235,7 @@ def test_csv_keywords():
 
     td = TableDoc.parse_csv(
         indir / "batchdata.csv",
+        type="dcat:Dataset",
         keywords=indir / "custom_keywords.yaml",
     )
     batch1 = td.asdicts()[0]
