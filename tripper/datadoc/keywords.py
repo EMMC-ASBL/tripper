@@ -26,6 +26,7 @@ from tripper.datadoc.errors import (
     ParseError,
     PrefixMismatchError,
     RedefineError,
+    RedefineKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
@@ -546,13 +547,15 @@ class Keywords:
                             )
                         if redefine == "skip":
                             skip = True
-                            logger.info(
-                                f"Skip redefinition of keyword: {keyword}"
+                            warnings.warn(
+                                f"Skip redefinition of keyword: {keyword}",
+                                RedefineKeywordWarning,
                             )
                         elif redefine == "allow":
-                            logger.info(
+                            warnings.warn(
                                 f"Redefining keyword '{keyword}' from "
-                                f"'{oldiri}' to '{value.iri}'."
+                                f"'{oldiri}' to '{value.iri}'.",
+                                RedefineKeywordWarning,
                             )
                         else:
                             raise ValueError(

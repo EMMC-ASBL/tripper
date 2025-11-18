@@ -59,3 +59,7 @@ class UnknownKeywordWarning(TripperWarning):
 
 class IRIExistsWarning(TripperWarning):
     """The IRI already exists in the triplestore."""
+
+
+class RedefineKeywordWarning(TripperWarning):
+    """Redefine an existing keyword (by mapping it to a new IRI)."""
