@@ -57,13 +57,5 @@ class UnknownKeywordWarning(TripperWarning):
     """Unknown keyword in data documentation."""
 
 
-class MissingKeywordsClassWarning(UnknownKeywordWarning):
-    """A class is referred to that is not defined in a keywords file."""
-
-
 class IRIExistsWarning(TripperWarning):
     """The IRI already exists in the triplestore."""
-
-
-class RedefineKeywordWarning(TripperWarning):
-    """Redefine an existing keyword (by mapping it to a new IRI)."""

@@ -48,7 +48,7 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
+from tripper.datadoc.errors import (
     InvalidDatadocError,
     IRIExistsError,
     IRIExistsWarning,

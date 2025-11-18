@@ -1,8 +1,10 @@
 """Parse keywords definition and generate context."""
 
 # pylint: disable=too-many-branches,redefined-builtin,too-many-lines
+# pylint: disable=logging-not-lazy,logging-fstring-interpolation
 
 import json
+import logging
 import os
 import warnings
 from copy import deepcopy
@@ -20,12 +22,10 @@ from tripper.datadoc.errors import (
     InvalidDatadocError,
     InvalidKeywordError,
     MissingKeyError,
-    MissingKeywordsClassWarning,
     NoSuchTypeError,
     ParseError,
     PrefixMismatchError,
     RedefineError,
-    RedefineKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
@@ -44,6 +44,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
+
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 # Pre-defined conformance levels
@@ -542,15 +546,13 @@ class Keywords:
                             )
                         if redefine == "skip":
                             skip = True
-                            warnings.warn(
-                                "Skip redefinition of keyword: " f"{keyword}",
-                                RedefineKeywordWarning,
+                            logger.info(
+                                f"Skip redefinition of keyword: {keyword}"
                             )
                         elif redefine == "allow":
-                            warnings.warn(
+                            logger.info(
                                 f"Redefining keyword '{keyword}' from "
-                                f"'{oldiri}' to '{value.iri}'.",
-                                RedefineKeywordWarning,
+                                f"'{oldiri}' to '{value.iri}'."
                             )
                         else:
                             raise ValueError(
@@ -805,10 +807,8 @@ class Keywords:
                 contains an unknown key.
             redefine: Determine how to handle redefinition of existing
                 keywords.  Should be one of the following strings:
-                  - "allow": Allow redefining a keyword. Emits a
-                    `RedefineKeywordWarning`.
-                  - "skip": Don't redefine existing keyword. Emits a
-                    `RedefineKeywordWarning`.
+                  - "allow": Allow redefining a keyword.
+                  - "skip": Don't redefine existing keyword.
                   - "raise": Raise an RedefineError (default).
 
         """
@@ -911,10 +911,9 @@ class Keywords:
                 if domainname not in resources:
                     if domainname not in self.data.resources:
                         if domainname not in ("Resource",):
-                            warnings.warn(
+                            logger.info(
                                 f"Adding undefined domain '{domain}' for "
-                                f"keyword '{label}'",
-                                MissingKeywordsClassWarning,
+                                f"keyword '{label}'"
                             )
                         r = AttrDict(
                             iri=prefix_iri(domain, self.data.prefixes),
