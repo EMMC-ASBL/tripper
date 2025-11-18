@@ -27,6 +27,7 @@ from tripper.datadoc.errors import (
     PrefixMismatchError,
     RedefineError,
     RedefineKeywordWarning,
+    SkipRedefineKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
@@ -549,7 +550,7 @@ class Keywords:
                             skip = True
                             warnings.warn(
                                 f"Skip redefinition of keyword: {keyword}",
-                                RedefineKeywordWarning,
+                                SkipRedefineKeywordWarning,
                             )
                         elif redefine == "allow":
                             warnings.warn(

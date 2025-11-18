@@ -63,3 +63,8 @@ class IRIExistsWarning(TripperWarning):
 
 class RedefineKeywordWarning(TripperWarning):
     """Redefine an existing keyword (by mapping it to a new IRI)."""
+
+
+class SkipRedefineKeywordWarning(TripperWarning):
+    """Skip redefining an existing keyword in a user-defined keyword
+    definition (by mapping it to a new IRI)."""
