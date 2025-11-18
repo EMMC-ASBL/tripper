@@ -107,7 +107,9 @@ kw.add_prefix('fam', 'http://onto-ns.com/ontologies/examples/family#')
 
 
 # We can now load the ontology into the keywords
-kw.load_rdf(ts, redefine='skip')
+kw.load_rdf(ts, redefine='skip') # keywords that are already defined are skipped
+# or
+lw.load_rdf(ts, redefine='allow') # keywords that are already defined are redefined
 
 ```
 
