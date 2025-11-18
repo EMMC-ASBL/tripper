@@ -101,8 +101,6 @@ ts.parse(
 )
 
 kw =  get_keywords() # create an Keywords instance populated with the default keywords (ddoc:datadoc)
-# you can check the current keywords themes with:
-print(kw.data.themes)
 # Before loading the keywords file it is required that all namespaces have a prefix.
 # The family namespace does not have prefix by defualt and it must be added:
 kw.add_prefix('fam', 'http://onto-ns.com/ontologies/examples/family#')
