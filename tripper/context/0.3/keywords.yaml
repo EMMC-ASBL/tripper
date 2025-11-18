@@ -127,6 +127,7 @@ resources:
         description: A related resource that is a version, edition, or adaptation of the described resource.
         usageNote: This property is intended for relating a non-versioned or abstract resource to several versioned resources, e.g., snapshots.
 
+      # update
       identifier:
         iri: dcterms:identifier
         range: rdfs:Literal
@@ -146,11 +147,13 @@ resources:
         conformance: recommended
         description: A keyword or tag describing the resource.
 
+      # update
       landingPage:
         iri: dcat:landingPage
         range: foaf:Document
         conformance: optional
-        description: A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
+        description: A Web page that can be navigated to in a Web browser to gain access to the catalog, a dataset, its distributions and/or additional information.
+          A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
         usageNote: It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.
 
       language:
@@ -239,6 +242,7 @@ resources:
         description: A type of the resource.
         usageNote: A recommended controlled vocabulary data-type is foreseen. For agents, the value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
+      # update
       version:
         iri: dcat:version
         range: rdfs:Literal
@@ -539,7 +543,7 @@ resources:
         description: A parser that can parse the distribution.
 
       status:
-        iri: adms:status
+        iri: dcatap:status
         range: rdfs:Literal
         conformance: optional
         description: The status of the distribution in the context of maturity lifecycle.
@@ -629,9 +633,6 @@ resources:
     keywords:
       prefLabel:
         iri: skos:prefLabel
-        range: rdfs:Literal
-        datatype: rdf:langString
-        description: A preferred label of the concept.
 
 
   DataService:
@@ -911,3 +912,13 @@ resources:
         description: The property that determines the cardinality of a maximum qualified cardinality restriction.
         range: rdfs:Literal
         datatype: xsd:nonNegativeInteger
+
+    # Add prov:Activity
+    #     prov:uses
+
+    # Add prov:Agent
+    #     prov:wasAssociatedWith
+
+    # Add prov:Entity
+
+    # foaf:Document

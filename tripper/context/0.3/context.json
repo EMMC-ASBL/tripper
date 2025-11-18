@@ -293,7 +293,7 @@
       "@id": "oteio:parser",
       "@type": "@id"
     },
-    "status": "adms:status",
+    "status": "dcatap:status",
     "configuration": {
       "@id": "oteio:hasConfiguration",
       "@type": "@json"
