@@ -131,7 +131,7 @@ resources:
         iri: dcterms:identifier
         range: rdfs:Literal
         conformance: optional
-        description: URI or other unique identifier of the resource being described or cataloged.
+        description: URI or other unique identifier of the resource being described.
 
       isReferencedBy:
         iri: dcterms:isReferencedBy
@@ -586,13 +586,13 @@ resources:
         description: A name of the agent.
       identifier:
         iri: dcterms:identifier
-        range: rdfs:Literal
-        conformance: recommended
+        #range: rdfs:Literal
+        #conformance: recommended
         #description: Identifier for the agent. E.g. organisation number.
       type:
         iri: dcterms:type
-        range: skos:Concept
-        conformance: optional
+        #range: skos:Concept
+        #conformance: optional
         #description: The nature of the agent.
         #usageNote: The value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
@@ -768,7 +768,7 @@ resources:
     keywords:
       type:
         iri: dcterms:type
-        range: skos:Concept
+        #range: skos:Concept
         #description: A type of licence, e.g. indicating 'public domain' or 'royalties required'.
 
 
@@ -807,7 +807,7 @@ resources:
 
       relatedResource:
         iri: dcterms:relation
-        range: rdfs:Resource
+        #range: rdfs:Resource
 
 
   RightsStatement:

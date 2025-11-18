@@ -1,8 +1,10 @@
 """Parse keywords definition and generate context."""
 
 # pylint: disable=too-many-branches,redefined-builtin,too-many-lines
+# pylint: disable=logging-not-lazy,logging-fstring-interpolation
 
 import json
+import logging
 import os
 import warnings
 from copy import deepcopy
@@ -20,11 +22,12 @@ from tripper.datadoc.errors import (
     InvalidDatadocError,
     InvalidKeywordError,
     MissingKeyError,
-    MissingKeywordsClassWarning,
     NoSuchTypeError,
     ParseError,
     PrefixMismatchError,
-    RedefineKeywordError,
+    RedefineError,
+    RedefineKeywordWarning,
+    SkipRedefineKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
 from tripper.utils import (
@@ -43,6 +46,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", Path, str, Sequence]
+
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 # Pre-defined conformance levels
@@ -77,9 +84,16 @@ def get_keywords(
             be an URI in which case it will be accessed via HTTP GET.
         timeout: Timeout in case `yamlfile` is a URI.
     """
-    kw = Keywords(theme=theme, yamlfile=yamlfile, timeout=timeout)
-    if keywords:
-        kw.add(keywords, timeout=timeout)
+    if isinstance(keywords, Keywords):
+        kw = keywords
+        if theme:
+            kw.add(theme, timeout=timeout)
+        if yamlfile:
+            kw.add(yamlfile, timeout=timeout)
+    else:
+        kw = Keywords(theme=theme, yamlfile=yamlfile, timeout=timeout)
+        if keywords:
+            kw.add(keywords, timeout=timeout)
     return kw
 
 
@@ -156,40 +170,70 @@ class Keywords:
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "theme"]
 
-    def _set_keyword(self, keywords, keyword, value):
+    def __eq__(self, other):
+        return self.data == other.data and self.theme == other.theme
+
+    def _set_keyword(self, keywords, keyword, value, redefine=False):
         """Add new keyword-value pair to `keywords` dict."""
         # value = AttrDict(value)
         expanded = expand_iri(value.iri, self.get_prefixes())
         prefixed = prefix_iri(expanded, self.get_prefixes())
-        keywords[keyword] = value
-        keywords[prefixed] = value
-        keywords[expanded] = value
+        if redefine or keyword not in keywords:
+            keywords[keyword] = value
+        if redefine or prefixed not in keywords:
+            keywords[prefixed] = value
+        if redefine or expanded not in keywords:
+            keywords[expanded] = value
 
-    def _set_keywords(self, clear=True):
+    def _set_keywords(self, clear=True, redefine=False):
         """Update internal keywords attribute to data attribute.
 
-        If `clear` is false, only new keywords will be added, but nothing
-        removed.
+        Arguments:
+            clear: If false, only new keywords will be added, but nothing
+                removed.
+            redefine: Wheter to redefine existing keyword.
         """
         if clear:
             self.keywords.clear()
         for clsvalue in self.data.get("resources", AttrDict()).values():
             for keyword, value in clsvalue.get("keywords", AttrDict()).items():
-                if keyword not in self.keywords:
-                    self._set_keyword(self.keywords, keyword, value)
+                self._set_keyword(
+                    self.keywords, keyword, value, redefine=redefine
+                )
 
     def copy(self):
         """Returns a copy of self."""
         new = Keywords(theme=None)
         new.theme = self.theme
         new.data = deepcopy(self.data)
-        new._set_keywords()  # pylint: disable=protected-access
+        new.keywords = deepcopy(self.keywords)
         return new
 
     def add(
-        self, keywords: "Optional[KeywordsType]", timeout: float = 3
+        self,
+        keywords: "Optional[KeywordsType]",
+        timeout: float = 3,
+        strict: bool = False,
+        redefine: str = "raise",
     ) -> None:
-        """Add `keywords` to current keyword object."""
+        """Add `keywords` to this Keywords object.
+
+        Arguments:
+            keywords: Keywords definitions to add to this Keyword object.
+                May be another Keyword object, path to a file, theme or a
+                sequence of these.
+            timeout: Timeout when accessing remote files.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+
+        """
 
         def _add(kw):
             if kw is None:
@@ -199,14 +243,29 @@ class Keywords:
                 recursive_update(self.data, kw.data, cls=AttrDict)
                 self._set_keywords(clear=False)
             elif isinstance(kw, Path):
-                self.load_yaml(kw, timeout=timeout)
+                self.load_yaml(
+                    kw,
+                    timeout=timeout,
+                    strict=strict,
+                    redefine=redefine,
+                )
             elif isinstance(kw, str):
                 if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
-                    self.load_yaml(kw, timeout=timeout)
+                    self.load_yaml(
+                        kw,
+                        timeout=timeout,
+                        strict=strict,
+                        redefine=redefine,
+                    )
                 else:
-                    self.add_theme(kw, timeout=timeout)
+                    self.add_theme(
+                        kw,
+                        timeout=timeout,
+                        strict=strict,
+                        redefine=redefine,
+                    )
             elif isinstance(kw, dict):
-                self._load_yaml(kw)
+                self._load_yaml(kw, strict=strict, redefine=redefine)
             elif isinstance(kw, Sequence):
                 for e in kw:
                     _add(e)
@@ -219,22 +278,47 @@ class Keywords:
         _add(keywords)
 
     def add_theme(
-        self, theme: "Union[str, Sequence[str]]", timeout: float = 3
+        self,
+        theme: "Union[str, Sequence[str]]",
+        timeout: float = 3,
+        strict: bool = False,
+        redefine: str = "raise",
     ) -> None:
         """Add keywords for `theme`, where `theme` is the IRI of a
-        theme or scientific domain or a list of such IRIs."""
+        theme or scientific domain or a list of such IRIs.
+
+        Arguments:
+            theme: IRI (or list of IRIs) of a theme/scientific domain to load.
+            timeout: Timeout when accessing remote files.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+
+        """
         if isinstance(theme, str):
             theme = [theme]
 
         for name in theme:  # type: ignore
             expanded = expand_iri(name, self.get_prefixes())
             prefixed = prefix_iri(name, self.get_prefixes())
-            add(self.data, "theme", prefixed)
+            add(
+                self.data,
+                "theme",
+                prefixed,
+            )
             for ep in get_entry_points("tripper.keywords"):
                 if expand_iri(ep.value, self.get_prefixes()) == expanded:
                     self.load_yaml(
                         self.rootdir / ep.name / "keywords.yaml",
                         timeout=timeout,
+                        strict=strict,
+                        redefine=redefine,
                     )
                     break
             else:
@@ -247,6 +331,8 @@ class Keywords:
                         / "0.3"
                         / "keywords.yaml",
                         timeout=timeout,
+                        strict=strict,
+                        redefine=redefine,
                     )
                 else:
                     raise TypeError(f"Unknown theme: {name}")
@@ -255,30 +341,57 @@ class Keywords:
         self,
         yamlfile: "Union[Path, str]",
         timeout: float = 3,
+        strict: bool = True,
+        redefine: str = "raise",
     ) -> None:
         """Load YAML file with keyword definitions.
 
         Arguments:
             yamlfile: Path of URL to a YAML file to load.
             timeout: Timeout when accessing remote files.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+
         """
-        if yamlfile in self.parsed:
+        if (yamlfile, strict, redefine) in self.parsed:
             return
-        self.parsed.add(yamlfile)
+        self.parsed.add((yamlfile, strict, redefine))
 
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
         try:
-            self._load_yaml(d, strict=True)
+            self._load_yaml(d, strict=strict, redefine=redefine)
         except Exception as exc:
             raise ParseError(f"error parsing '{yamlfile}'") from exc
 
-    def _load_yaml(self, d: dict, strict: bool = True) -> None:
+    def _load_yaml(
+        self,
+        d: dict,
+        strict: bool = True,
+        redefine: str = "raise",
+    ) -> None:
         """Parse a dict with keyword definitions following the format of
         the YAML file.
 
-        If `strict` is true, an InvalidKeywordError will be raise if the
-        dict describing a keyword contains an unknown key.
+        Arguments:
+            d: Dict defining a keyword following the YAML file format.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+
         """
         # pylint: disable=too-many-nested-blocks,too-many-statements
         # pylint: disable=too-many-locals
@@ -292,7 +405,7 @@ class Keywords:
             "usageNote",
             "keywords",
         }
-        required_keywords = {"iri", "range"}
+        required_keywords = {"iri"}
         valid_keywords = {
             "name",
             "iri",
@@ -320,7 +433,6 @@ class Keywords:
             "datatype",
         }
         valid_conformances = ["mandatory", "recommended", "optional"]
-        keywords = AttrDict(self.keywords).copy()
 
         def to_prefixed(x):
             """Help function that converts an IRI or list of IRIs to
@@ -329,11 +441,13 @@ class Keywords:
                 return self.prefixed(x, strict=False)
             return [to_prefixed(e) for e in x]
 
+        # Create a deep copies that we are updating
+        prefixes = deepcopy(self.data.prefixes)
+        resources = deepcopy(self.data.resources)
+        keywords = deepcopy(self.keywords)
+
         # Prefixes
-        # TODO: consider to not update self.data.prefixes until after
-        # successful parsing
-        prefixes = self.data.prefixes
-        for prefix, ns in d.get("prefixes", {}).items():
+        for prefix, ns in d.get("prefixes", AttrDict()).items():
             if prefix in prefixes and ns != prefixes[prefix]:
                 raise PrefixMismatchError(
                     f"prefix '{prefix}' is already mapped to "
@@ -341,99 +455,139 @@ class Keywords:
                 )
             prefixes[prefix] = ns
 
+        # Map keywords IRIs to keyword definitions
+        iridefs = {}
+        for defs in d.get("resources", {}).values():
+            for kw, val in defs.get("keywords", {}).items():
+                # Check that value has all the required keywords
+                for k in required_keywords:
+                    if k not in val:
+                        raise MissingKeyError(f"no '{k}' in keyword '{kw}'")
+                key = prefix_iri(val["iri"], prefixes)
+                if len(val) > 1 or key not in iridefs:
+                    iridefs[key] = val
+
         # Resources
         for cls, defs in d.get("resources", AttrDict()).items():
+            resval = resources.get(cls, AttrDict())
+
             defs = AttrDict(defs).copy()
             for key in required_resource_keys:
                 if key not in defs:
                     raise MissingKeyError(
                         f"missing required key '{key}' for resource '{cls}'"
                     )
-            if strict:
-                for key in defs:
-                    if key not in valid_resource_keys:
-                        raise InvalidDatadocError(
-                            f"invalid resource key: '{key}'"
-                        )
+            for key in defs:
+                if strict and key not in valid_resource_keys:
+                    raise InvalidDatadocError(f"invalid resource key: '{key}'")
             # TODO: Check for redefinition of existing class
 
+            resval.iri = prefix_iri(defs.iri, prefixes)
+            if "subClassOf" in defs:
+                resval.subClassOf = to_prefixed(defs.subClassOf)
+            if "description" in defs:
+                resval.description = defs.description
+            if "usageNote" in defs:
+                resval.usageNote = defs.usageNote
+            resval.setdefault("keywords", AttrDict())
+
             for keyword, value in defs.get("keywords", AttrDict()).items():
+
+                # If a value only contain an IRI, replace it with a more
+                # elaborate definition (if it exists)
+                if len(value) == 1:
+                    value = AttrDict(iridefs[value["iri"]])
+
+                # Check conformance values
+                if "conformance" in value:
+                    c = value["conformance"]
+                    if c not in valid_conformances:
+                        raise DatadocValueError(f"invalid conformance: {c}")
+
+                # If strict, check that all keys are known
                 if strict:
                     for k in value.keys():
                         if k not in valid_keywords:
                             raise InvalidKeywordError(
                                 f"keyword '{keyword}' has invalid key: {k}"
                             )
-                if "conformance" in value:
-                    if value["conformance"] not in valid_conformances:
-                        raise InvalidKeywordError(
-                            f"keyword '{keyword}' has invalid conformance: "
-                            f"'{value['conformance']}'. Valid values are "
-                            f"{', '.join(valid_conformances)}"
-                        )
 
+                # Normalise IRIs in values to prefixed IRIs
+                value = AttrDict(value).copy()
+                for k in iri_keywords:
+                    if k in value:
+                        value[k] = to_prefixed(value[k])
+
+                # Add extra annotations to value
+                if "name" not in value or ":" in value.name:
+                    value.name = keyword
+                if "theme" in d:
+                    add(value, "theme", d["theme"])
+                add(value, "domain", prefix_iri(defs.iri, prefixes))
+
+                # Check whether we try to redefine an existing keyword
+                skip = False
                 if keyword in keywords:
-                    # Only allowed changes to existing keywords:
-                    #   - make conformance more strict
-                    #   - add to: domain, theme, subPropertyOf
-                    #   - change default value
-                    kwdef = keywords[keyword]
-
                     for k, v in value.items():
-                        if k == "conformance":
-                            if v not in valid_conformances:
-                                raise DatadocValueError(
-                                    f"invalid conformance: {v}"
-                                )
-                            if k in kwdef and (
-                                valid_conformances.index(v)
-                                > valid_conformances.index(kwdef[k])
-                            ):
-                                raise InvalidKeywordError(
-                                    f"keyword '{keyword}' reduces strictness "
-                                    f"of existing conformance: {kwdef[k]}"
-                                )
-                            kwdef.conformance = v
-                        elif k in ("domain", "theme", "subPropertyOf"):
-                            add(kwdef, k, to_prefixed(v))
-                        elif k == "default":
-                            kwdef[k] = v
-                        elif k in kwdef:
-                            if k in iri_keywords:
-                                v = self.prefixed(v)
-                            if v != kwdef[k]:
-                                raise RedefineKeywordError(
-                                    f"Cannot redefine '{k}' from '{kwdef[k]}' "
-                                    f"to '{v}' in keyword '{keyword}'"
-                                )
-                        else:
-                            kwdef[k] = v
-                else:
-                    for k in required_keywords:
-                        if k not in value:
-                            raise MissingKeyError(
-                                f"missing required key '{k}' for keyword "
-                                f"'{keyword}'"
+                        oldval = keywords[keyword].get(k)
+                        if k in ("iri", "domain") or v == oldval:
+                            continue
+                        oldiri = keywords[keyword].iri
+                        if value.iri == oldiri:
+                            raise RedefineError(
+                                "Cannot redefine existing concept "
+                                f"'{value.iri}'. Trying to change "
+                                f"property '{k}' from '{oldval}' to "
+                                f"'{v}'."
                             )
+                        if redefine == "raise":
+                            raise RedefineError(
+                                f"Trying to redefine keyword "
+                                f"'{keyword}' from '{oldiri}' "
+                                f"to '{value.iri}'."
+                            )
+                        if redefine == "skip":
+                            skip = True
+                            warnings.warn(
+                                f"Skip redefinition of keyword: {keyword}",
+                                SkipRedefineKeywordWarning,
+                            )
+                        elif redefine == "allow":
+                            warnings.warn(
+                                f"Redefining keyword '{keyword}' from "
+                                f"'{oldiri}' to '{value.iri}'.",
+                                RedefineKeywordWarning,
+                            )
+                        else:
+                            raise ValueError(
+                                "Invalid value of `redefine` "
+                                f'argument: "{redefine}".  Should be '
+                                'one of "allow", "keep" or "raise".'
+                            )
+                        break
+                if skip:
+                    continue
 
-                    kwdef = AttrDict(value).copy()
-                    kwdef.name = keyword
-                    if "theme" in d:
-                        add(kwdef, "theme", d["theme"])
-                    for k in iri_keywords:
-                        if k in kwdef:
-                            kwdef[k] = to_prefixed(kwdef[k])
+                kw = resval.keywords
+                if keyword in kw:
+                    kw[keyword].update(value)
+                else:
+                    kw[keyword] = value
 
-                    self._set_keyword(keywords, keyword, kwdef)
+                self._set_keyword(keywords, keyword, value, redefine=True)
 
-                add(kwdef, "domain", self.prefixed(defs.iri))
-                defs.setdefault("keywords", AttrDict())
-                defs.keywords[keyword] = kwdef
+            if cls in resources:
+                resources[cls].update(resval)
+            else:
+                resources[cls] = resval
 
-            self.data.resources.setdefault(cls, AttrDict())
-            self.data.resources[cls].update(defs)
-
+        # Everything succeeded, update instance
+        self.data.prefixes.update(prefixes)
+        self.data.resources.update(resources)
         self.keywords.update(keywords)
+
+        # Run an extra round and add keywords we have missed.
+        self._set_keywords(clear=False, redefine=False)
 
     def save_yaml(
         self,
@@ -456,13 +610,11 @@ class Keywords:
         )
         resources = {}
         for cls, clsval in self.data.resources.items():
-            print(cls)
             if self.prefixed(cls) in classes:
                 resources[cls] = dict(clsval.copy())
                 resources[cls]["keywords"] = {}
                 for k, v in self.data.resources[cls].keywords.items():
                     if self.prefixed(k) in keywords:
-                        print("  -", k)
                         resources[cls]["keywords"][k] = dict(v)
         data = dict(self.data.copy())
         del data["resources"]
@@ -603,8 +755,9 @@ class Keywords:
                 "@id": d.iri,
                 "@type": proptype,
                 key("rdfs:label"): d.name,
-                key("rdfs:domain"): d.domain,
             }
+            if "domain" in d:
+                dct[key("rdfs:domain")] = d.domain
             if range:
                 dct[key("rdfs:range")] = range
             if "conformance" in d:
@@ -642,6 +795,8 @@ class Keywords:
         prefixes: "Optional[dict]" = None,
         theme: "Optional[str]" = None,
         basedOn: "Optional[Union[str, List[str]]]" = None,
+        strict: bool = False,
+        redefine: str = "raise",
     ) -> None:
         """Populate this Keywords object from a sequence of dicts.
 
@@ -652,6 +807,13 @@ class Keywords:
             prefixes: Dict with additional prefixes used by `dicts`.
             theme: Theme defined by `dicts`.
             basedOn: Theme(s) that `dicts` are based on.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword.
+                  - "skip": Don't redefine existing keyword.
+                  - "raise": Raise an RedefineError (default).
 
         """
         data = self._fromdicts(
@@ -660,7 +822,7 @@ class Keywords:
             theme=theme,
             basedOn=basedOn,
         )
-        self._load_yaml(data, strict=False)
+        self._load_yaml(data, strict=strict, redefine=redefine)
 
     def _fromdicts(
         self,
@@ -753,10 +915,9 @@ class Keywords:
                 if domainname not in resources:
                     if domainname not in self.data.resources:
                         if domainname not in ("Resource",):
-                            warnings.warn(
+                            logger.info(
                                 f"Adding undefined domain '{domain}' for "
-                                f"keyword '{label}'",
-                                MissingKeywordsClassWarning,
+                                f"keyword '{label}'"
                             )
                         r = AttrDict(
                             iri=prefix_iri(domain, self.data.prefixes),
@@ -877,7 +1038,10 @@ class Keywords:
             # TODO: if calling acquire() multiple times is too slow,
             # consider to create a temporary rdflib triplestore
             # populated with a single CONSTRUCT sparql query.
-            for k, v in acquire(ts, iri).items():
+            #
+            # FIXME: Make it possible to set argument `keywords=self`.
+            # Currently, we reload keywords for each look iteration...
+            for k, v in acquire(ts, iri, keywords=None).items():
                 d[names.get(k, k)] = v
             dicts.append(d)
 
@@ -895,7 +1059,7 @@ class Keywords:
                             continue
                         if expanded not in seen:
                             seen.add(expanded)
-                            acquired = acquire(ts, expanded)
+                            acquired = acquire(ts, expanded, keywords=None)
                             if acquired:
                                 dct[expanded] = acquired  # type: ignore
 
@@ -919,14 +1083,36 @@ class Keywords:
         return store(ts, dicts)
 
     def load_rdf(
-        self, ts: "Triplestore", iris: "Optional[Sequence[str]]" = None
+        self,
+        ts: "Triplestore",
+        iris: "Optional[Sequence[str]]" = None,
+        strict: bool = False,
+        redefine: str = "raise",
     ) -> None:
         """Populate this Keyword object from a triplestore.
 
-        If `iris` is given, only the provided IRIs will be added.
+        Arguments:
+            ts: Triplestore to load keywords from.
+            iris: IRIs to load. The default is to load IRIs corresponding to all
+                properties an classes.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+
         """
         dicts = self._load_rdf(ts, iris)
-        self.fromdicts(dicts, prefixes=ts.namespaces)
+        self.fromdicts(
+            dicts,
+            prefixes=ts.namespaces,
+            strict=strict,
+            redefine=redefine,
+        )
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
@@ -1121,7 +1307,7 @@ class Keywords:
                         d["@type"] = dt
 
                     ctx[k] = d  # type: ignore
-                elif v["range"] == "rdfs:Literal":
+                elif v.get("range", "rdfs:Literal") == "rdfs:Literal":
                     ctx[k] = iri
                 else:
                     ctx[k] = {  # type: ignore
