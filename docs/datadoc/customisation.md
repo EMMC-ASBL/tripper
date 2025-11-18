@@ -94,7 +94,10 @@ from tripper.datadoc import get_keywords
 
 ts = Triplestore('rdflib')
 
-ts.parse('https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl')
+ts.parse(
+    'https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl', 
+    format='turtle',
+)
 
 kw =  get_keywords() # create an Keywords instance populated with the default keywords (ddoc:datadoc)
 # you can check the current keywords themes with:
