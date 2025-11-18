@@ -115,12 +115,12 @@ kw.load_rdf(ts, redefine='skip')
 
 
 Note that there are a few considerations when generating a context from an ontology:
-First of all, prefLabels that are the same as predefined keywords must be handled with care.
+First of all, labels that are the same as predefined keywords must be handled with care.
 The default behaviour is that if this is attempted, an error is raised (`redefine = raise`).
-This choice have been made to enure that redefining predefined keywords is a conscious decision.
+This choice have been made to ensure that redefining predefined keywords is a conscious decision.
 In order to redefine an existing keyword, the argument `redefine` of the `load_rdf()` method must be set to `allow`.
 A warning will be emitted for each keyword that is redefined.
-In order to generate keywords from an ontology without redefining existing keywords, the `redefine` argument can be set to `skip`, in which case existing keywords are left unchanged and a warning is emitted for each attempt to redefine an existing keyword.
+In order to generate keywords from an ontology without redefining existing keywords, the `redefine` argument can be set to `skip`, in which case existing keywords are left unchanged and a warning is emitted for each new keyword that is skipped to the advantage of the existing keyword.
 
 
 
