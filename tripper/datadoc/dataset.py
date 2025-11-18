@@ -33,6 +33,7 @@ from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 # pylint: disable=too-many-branches
+# pylint: disable=logging-not-lazy,logging-fstring-interpolation
 import json
 import logging
 import re
@@ -1034,7 +1035,7 @@ def validate(
         for k in dct:
             if not k.startswith("@"):
                 if not check_keyword(k, typename):
-                    warnings.warn(
+                    logger.info(
                         f"unexpected keyword '{k}' provided for type: '{type}'"
                     )
 
