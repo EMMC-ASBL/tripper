@@ -84,7 +84,8 @@ Here the special value "@id" for the "@type" means that the value of `fromBatch`
 Creating a context with keywords from an ontology
 -------------------------------------------------
 Creating a context with keywords manually can be strenuous and is prone to human mistakes.
-It is therefore advisable to only use one source of truth, namely the ontolgy.
+It is therefore advisable to only use one source of truth, namely the ontology.
+
 
 The context can be generated from a triplestore with the ontology with the Keywords class:
 
@@ -108,16 +109,19 @@ kw.add_prefix('fam', 'http://onto-ns.com/ontologies/examples/family#')
 
 
 # We can now load the ontology into the keywords
-kw.load_rdf(ts)
+kw.load_rdf(ts, redefine='skip')
 
 ```
 
 
 Note that there are a few considerations when generating a context from an ontology:
 First of all, prefLabels that are the same as predefined keywords must be handled with care.
-The default behaviour is that these keywords are redefined, and just a warning is issued.
-This can be changed by setting the `allow_redefine` argument of the `load_rdf()` method to `False`, in which case existing keywords are not redefined.
-In the latter case, this means that the predefined keyword will be used when documenting resources. Make sure that this is what you want!
+The default behaviour is that if this is attempted, an error is raised (`redefine = raise`).
+This choice have been made to enure that redefining predefined keywords is a conscious decision.
+In order to redefine an existing keyword, the argument `redefine` of the `load_rdf()` method must be set to `allow`.
+A warning will be emitted for each keyword that is redefined.
+In order to generate keywords from an ontology without redefining existing keywords, the `redefine` argument can be set to `skip`, in which case existing keywords are left unchanged and a warning is emitted for each attempt to redefine an existing keyword.
+
 
 
 
