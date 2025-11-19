@@ -81,9 +81,12 @@
 
 
 ### Status individuals
-stat:completed a skos:Concept ;
+
+# Note: Individuals should normally be lowercase.
+# However, these individuals are defined externally, so we can't change them.
+stat:Completed a skos:Concept ;
     skos:notation "Completed" ;
-    skos:prefLabel "completed"@en ;
+    skos:prefLabel "Completed"@en ;
     skos:inScheme <http://purl.org/adms/status/1.0> .
 
 stat:Deprecated a skos:Concept ;
@@ -100,7 +103,6 @@ stat:Withdrawn a skos:Concept ;
     skos:notation "Withdrawn" ;
     skos:prefLabel "Withdrawn"@en ;
     skos:inScheme <http://purl.org/adms/status/1.0> .
-
 
 
 ### Rights statements individuals
