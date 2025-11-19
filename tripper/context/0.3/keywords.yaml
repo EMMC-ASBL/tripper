@@ -88,6 +88,12 @@ resources:
         conformance: recommended
         description: Contact information that can be used for sending comments about the resource.
 
+      contributor:
+        iri: dcterms:contributor
+        range: foaf:Agent
+        conformance: optional
+        description: An entity responsible for making contributions to the resource.
+
       creator:
         iri: dcterms:creator
         range: foaf:Agent
@@ -911,3 +917,7 @@ resources:
         description: The property that determines the cardinality of a maximum qualified cardinality restriction.
         range: rdfs:Literal
         datatype: xsd:nonNegativeInteger
+
+
+# contributor
+# hasFormat
