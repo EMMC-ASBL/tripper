@@ -40,8 +40,7 @@ class TableDoc:
         type: Type of data to save (applies to all rows).  Should
             either be one of the pre-defined names: "dataset",
             "distribution", "accessService", "parser" and "generator"
-            or an IRI to a class in an ontology.  Defaults to
-            "dataset".
+            or an IRI to a class in an ontology.
         theme: Name of one of more themes to load keywords for.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
@@ -62,7 +61,7 @@ class TableDoc:
         self,
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
-        type: "Optional[str]" = "Dataset",
+        type: "Optional[str]" = None,
         theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
@@ -120,7 +119,7 @@ class TableDoc:
     @staticmethod
     def fromdicts(
         dicts: "Sequence[dict]",
-        type: "Optional[str]" = "Dataset",
+        type: "Optional[str]" = None,
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
@@ -134,7 +133,6 @@ class TableDoc:
                 either be one of the pre-defined names: "Dataset",
                 "Distribution", "AccessService", "Parser" and
                 "Generator" or an IRI to a class in an ontology.
-                Defaults to "Dataset".
             keywords: Keywords object with additional keywords definitions.
                 If not provided, only default keywords are considered.
             context: Additional user-defined context that should be
@@ -221,7 +219,7 @@ class TableDoc:
     @staticmethod
     def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
-        type: "Optional[str]" = "Dataset",
+        type: "Optional[str]" = None,
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
@@ -237,8 +235,7 @@ class TableDoc:
             type: Type of data to save (applies to all rows).  Should
                 either be one of the pre-defined names: "Dataset",
                 "Distribution", "AccessService", "Parser" and "Generator"
-                or an IRI to a class in an ontology.  Defaults to
-                "Dataset".
+                or an IRI to a class in an ontology.
             keywords: Keywords object with additional keywords definitions.
                 If not provided, only default keywords are considered.
             context: Dict with user-defined JSON-LD context.
