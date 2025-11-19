@@ -1841,9 +1841,8 @@ be represented by dot-separated label strings (e.g.
         <td><p>Type of data to save (applies to all rows).  Should
 either be one of the pre-defined names: "dataset",
 "distribution", "accessService", "parser" and "generator"
-or an IRI to a class in an ontology.  Defaults to
-"dataset".</p></td>
-        <td><code>&#39;Dataset&#39;</code></td>
+or an IRI to a class in an ontology.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>theme</code></td>
@@ -1896,8 +1895,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
 <span class="sd">            either be one of the pre-defined names: &quot;dataset&quot;,</span>
 <span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
-<span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
-<span class="sd">            &quot;dataset&quot;.</span>
+<span class="sd">            or an IRI to a class in an ontology.</span>
 <span class="sd">        theme: Name of one of more themes to load keywords for.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
@@ -1918,7 +1916,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">header</span><span class="p">:</span> <span class="s2">&quot;Sequence[str]&quot;</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;Sequence[Sequence[str]]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1976,7 +1974,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
         <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1990,7 +1988,6 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
 <span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
 <span class="sd">                &quot;Generator&quot; or an IRI to a class in an ontology.</span>
-<span class="sd">                Defaults to &quot;Dataset&quot;.</span>
 <span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">                If not provided, only default keywords are considered.</span>
 <span class="sd">            context: Additional user-defined context that should be</span>
@@ -2077,7 +2074,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
         <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2093,8 +2090,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 <span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
 <span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
 <span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
-<span class="sd">                or an IRI to a class in an ontology.  Defaults to</span>
-<span class="sd">                &quot;Dataset&quot;.</span>
+<span class="sd">                or an IRI to a class in an ontology.</span>
 <span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">                If not provided, only default keywords are considered.</span>
 <span class="sd">            context: Dict with user-defined JSON-LD context.</span>
@@ -2271,7 +2267,7 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.fromdicts" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2306,9 +2302,8 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
         <td><p>Type of data to save (applies to all rows).  Should
 either be one of the pre-defined names: "Dataset",
 "Distribution", "AccessService", "Parser" and
-"Generator" or an IRI to a class in an ontology.
-Defaults to "Dataset".</p></td>
-        <td><code>&#39;Dataset&#39;</code></td>
+"Generator" or an IRI to a class in an ontology.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
@@ -2364,7 +2359,7 @@ from cells.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
     <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2378,7 +2373,6 @@ from cells.</p></td>
 <span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
 <span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
 <span class="sd">            &quot;Generator&quot; or an IRI to a class in an ontology.</span>
-<span class="sd">            Defaults to &quot;Dataset&quot;.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Additional user-defined context that should be</span>
@@ -2474,7 +2468,7 @@ from cells.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.parse_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;Dataset&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2509,9 +2503,8 @@ from cells.</p></td>
         <td><p>Type of data to save (applies to all rows).  Should
 either be one of the pre-defined names: "Dataset",
 "Distribution", "AccessService", "Parser" and "Generator"
-or an IRI to a class in an ontology.  Defaults to
-"Dataset".</p></td>
-        <td><code>&#39;Dataset&#39;</code></td>
+or an IRI to a class in an ontology.</p></td>
+        <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>keywords</code></td>
@@ -2579,7 +2572,7 @@ formatting parameters.  For more details, see
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
     <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2595,8 +2588,7 @@ formatting parameters.  For more details, see
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
 <span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
 <span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
-<span class="sd">            or an IRI to a class in an ontology.  Defaults to</span>
-<span class="sd">            &quot;Dataset&quot;.</span>
+<span class="sd">            or an IRI to a class in an ontology.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Dict with user-defined JSON-LD context.</span>
