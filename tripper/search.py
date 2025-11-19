@@ -6,7 +6,6 @@ excellent `SPARQL-builder` package develop by 7P9 in the PINK project.
 from sparqlbuilder import select
 
 
-
 def make_query(
     criteria: "Optional[Union[Sequence[Tuple[str, str]], Mapping]]" = None,
     prefixes: "Optional[dict]" = None,
