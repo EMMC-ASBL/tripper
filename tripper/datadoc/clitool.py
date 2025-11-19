@@ -35,7 +35,11 @@ def subcommand_add(ts, args):
                 option, value = token.split("=", 1)
                 kw[option] = value
         td = TableDoc.parse_csv(
-            infile, keywords=args.keywords, context=args.context, **kw
+            infile,
+            type=args.type,
+            keywords=args.keywords,
+            context=args.context,
+            **kw,
         )
         td.save(ts)
     else:
@@ -194,6 +198,11 @@ def maincommand(argv=None):
         "--keywords",
         help="Path or URL to custom keywords file for the input.",
     )
+    parser_add.add_argument(
+        "--type",
+        "-t",
+        help="Add this type to rows.",
+    )
 
     # Subcommand: delete
     parser_delete = subparsers.add_parser(
@@ -204,7 +213,7 @@ def maincommand(argv=None):
         "--type",
         "-t",
         help=(
-            'Either a resource type (ex: "dataset", "distribution", ...) '
+            'Either a resource type (ex: "Dataset", "Distribution", ...) '
             "or the IRI of a class to limit the search to."
         ),
     )

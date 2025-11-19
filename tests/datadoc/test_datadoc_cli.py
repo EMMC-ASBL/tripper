@@ -86,6 +86,7 @@ def test_add():
         f"--config={indir/'session.yaml'}",
         "add",
         f"--context={indir/'semdata-context.json'}",
+        "--type=dcat:Dataset",
         f"--dump={outdir/'semdata.ttl'}",
         f"{indir/'semdata.csv'}",
     ]
