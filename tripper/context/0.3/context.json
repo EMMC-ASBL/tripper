@@ -43,6 +43,10 @@
       "@id": "dcat:contactPoint",
       "@type": "@id"
     },
+    "contributor": {
+      "@id": "dcterms:contributor",
+      "@type": "@id"
+    },
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
