@@ -4,7 +4,15 @@ This module is not imported by default, since it depends on the
 excellent `SPARQL-builder` package develop by 7P9 in the PINK project.
 """
 
+from typing import TYPE_CHECKING
+
 from sparqlbuilder import select
+
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import IO, Optional, Sequence, Tuple
+
+    from tripper.datadoc.context import ContextType
+    from tripper.datadoc.keywords import KeywordsType
 
 
 def make_query(
@@ -25,11 +33,12 @@ def make_query(
     criteria specified in the arguments.
 
     Arguments:
-        criteria: Exact match criteria. A dict of IRI, value pairs, where the
-            IRIs refer to data properties on the resource match. The IRIs
-            may use any prefix defined in `ts`. E.g. if the prefix `dcterms`
-            is in `ts`, it is expanded and the match criteria `dcterms:title`
-            is correctly parsed.
+        criteria: A sequence of tuples describing a set of matching criteria
+            that all must be met.
+
+                (pred, obj, [spec])
+
+
         type: Either a [resource type] (ex: "Dataset", "Distribution", ...)
             or the IRI of a class to limit the search to.
         skipblanks: Whether the query will skip matching blank nodes.
@@ -56,27 +65,47 @@ def make_query(
 
         Alternative ways to search for all datasets:
 
-        >>> make_query(criteria=[("rdf:type", "dcat:Dataset")])
-        >>> make_query(type="dcat:Dataset"))  # use shorthand `type` argument
-        >>> make_query(type="Dataset"))  # refer to a pre-defined keyword
+        ```
+        >>> q = make_query(criteria=[("rdf:type", "dcat:Dataset")])
+        >>> q = make_query(type="dcat:Dataset"))  # use `type` argument
+        >>> q = make_query(type="Dataset"))  # refer to a pre-defined keyword
+        ```
 
         Search for all datasets created by a given agent:
-        >>> make_query(
+
+        ```
+        >>> q = make_query(
         ...     type="Dataset",
         ...     criteria=[("creator", "kb:JohnDow")],
         ... )
+        ```
 
         alternatively:
 
-        >>> make_query(
+        ```
+        >>> q = make_query(
         ...     criteria=[("rdf:type": "Dataset"), ("creator", "kb:JohnDow")],
         ... )
+        ```
 
-        All datasets that has a creator, regardless who:
-        >>> make_query(
+        Match all datasets that has a creator, regardless who:
+
+        ```
+        >>> q = make_query(
         ...     type="Dataset",
         ...     criteria=[("creator", None)],
         ... )
+        ```
+
+        Use regular expressions to match all resources that have a labels that
+        ends with "Atom".
+
+        ```
+        >>> q = make_query(
+        ...     criteria=[("rdfs:label", ".+Atom", "regex")],
+        ... )
+        ```
+
 
     """
 
