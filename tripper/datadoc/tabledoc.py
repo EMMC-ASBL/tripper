@@ -11,7 +11,7 @@ from tripper import Triplestore
 from tripper.datadoc.context import get_context
 from tripper.datadoc.dataset import store, told
 from tripper.datadoc.keywords import get_keywords
-from tripper.datadoc.utils import addnested
+from tripper.datadoc.utils import addnested, stripnested
 from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
@@ -99,14 +99,15 @@ class TableDoc:
 
                     # Convert cell value to correct Python type
                     if not colname.startswith("@"):
-                        df = self.context.getdef(colname.split(".")[-1])
+                        leafname = colname.split(".")[-1]
+                        df = self.context.getdef(leafname.split("[")[0])
                         if "@type" in df and df["@type"] != "@id":
                             cell = Literal(cell, datatype=df["@type"]).value
 
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
                     )
-            results.append(d)
+            results.append(stripnested(d))
         ld = told(
             results,
             type=self.type,
@@ -340,6 +341,33 @@ class TableDoc:
                 write(f)
         else:
             write(csvfile)
+
+    def unique_header(self):
+        """Return the header with brackets appended to duplicated labels
+        to make them unique.
+
+        For example, the header
+
+            ["@id", "@type", "@type", "part.name", "part.name"]
+
+        "distribution.downloadURL",
+
+        would be renamed to
+
+            ["@id", "@type[1]", "@type[2]", "part[1].name", "part[2].name"]
+
+        """
+        new = []
+        seen = {}
+        for h in self.header:
+            if self.header.count(h) == 1:
+                new.append(h)
+            else:
+                head, tail = h.split(".", 1) if "." in h else (h, None)
+                n = seen[head] + 1 if head in seen else 1
+                seen[head] = n
+                new.append(f"{head}[{n}].{tail}" if tail else f"{head}[{n}]")
+        return new
 
 
 def csvsniff(sample):
