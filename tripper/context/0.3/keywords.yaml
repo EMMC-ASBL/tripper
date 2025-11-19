@@ -254,7 +254,6 @@ resources:
         description: A type of the resource.
         usageNote: A recommended controlled vocabulary data-type is foreseen. For agents, the value should be chosen from [ADMS publisher type](https://raw.githubusercontent.com/SEMICeu/ADMS-AP/master/purl.org/ADMS_SKOS_v1.00.rdf).
 
-      # update
       version:
         iri: dcat:version
         range: rdfs:Literal
