@@ -1227,7 +1227,7 @@ def make_query(
     context = get_context(keywords=keywords)
     context._create_caches()  # pylint: disable=protected-access
     expanded = context._expanded  # pylint: disable=protected-access
-
+    # print("expanded", expanded)
     # Add prefixes to triplestore
     ts.namespaces.update(keywords.get_prefixes())
 
@@ -1267,6 +1267,8 @@ def make_query(
         """Add criteria to SPARQL query."""
         nonlocal n
         key = f"@{k[1:]}" if k.startswith("_") else k
+        # print("key", key)
+        # print("value", v)
         if isinstance(v, list):
             for ele in v:
                 add_crit(key, ele, regex=regex, s=s)
@@ -1300,7 +1302,7 @@ def make_query(
                     f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
                 )
             else:
-                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+                filters.append(f"FILTER(?{var} = {value}) .")
 
     for k, v in criteria.items():
         add_crit(k, v)
@@ -1319,6 +1321,10 @@ def make_query(
       {where_statements}
     }}
     """
+    # print("---")
+    # print(query)
+    # print("---")
+
     return query
 
 
