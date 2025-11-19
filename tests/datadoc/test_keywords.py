@@ -295,7 +295,7 @@ def test_keywordnames():
     """Test keywordnames() method."""
     keywordnames = keywords.keywordnames()
     assert "distribution" in keywordnames
-    assert len(keywordnames) == 123
+    assert len(keywordnames) == 124
 
 
 def test_classnames():

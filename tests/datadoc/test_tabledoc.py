@@ -51,9 +51,6 @@ def test_asdicts():
 
     assert s1["@id"] == "ds:s1"
     assert set(s1["@type"]) == {
-        "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
         "onto:T1",
         "onto:T2",
     }
@@ -71,12 +68,7 @@ def test_asdicts():
     ]
 
     assert d1["@id"] == "ds:d1"
-    assert set(d1["@type"]) == {
-        "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-        "onto:T1",
-    }
+    assert d1["@type"] == "onto:T1"
     assert d1["inSeries"] == "ds:s1"
     assert d1["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
@@ -84,12 +76,7 @@ def test_asdicts():
     }
 
     assert d2["@id"] == "ds:d2"
-    assert set(d2["@type"]) == {
-        "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
-        "onto:T2",
-    }
+    assert d2["@type"] == "onto:T2"
     assert d2["inSeries"] == "ds:s1"
     assert d2["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
@@ -220,9 +207,6 @@ def test_csv_duplicated_columns():
     img1, img2, img3 = td.asdicts()
 
     assert set(img1["@type"]) == {
-        "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
         "pm:BrightFieldImage",
         "pm:TEMImage",
     }
@@ -232,9 +216,6 @@ def test_csv_duplicated_columns():
         "@id",
         "@type",  # TEMImage
         "@type",  # BrightFieldEmage
-        "@type",  # emmo:Dataset
-        "@type",  # dcat:Resource
-        "@type",  # dcat:Dataset
         "description",
         "distribution.downloadURL",
     ]
@@ -298,6 +279,7 @@ def test_csv_keywords():
 
     td = TableDoc.parse_csv(
         indir / "batchdata.csv",
+        type="dcat:Dataset",
         keywords=indir / "custom_keywords.yaml",
     )
     batch1 = td.asdicts()[0]

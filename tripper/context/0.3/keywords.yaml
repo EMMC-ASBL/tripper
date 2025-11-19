@@ -90,6 +90,12 @@ resources:
         conformance: recommended
         description: Contact information that can be used for sending comments about the resource.
 
+      contributor:
+        iri: dcterms:contributor
+        range: foaf:Agent
+        conformance: optional
+        description: An entity responsible for making contributions to the resource.
+
       creator:
         iri: dcterms:creator
         range: foaf:Agent
@@ -932,11 +938,3 @@ resources:
     iri: foaf:Document
     description: A document.
     usageNote: "The Document class represents those things which are, broadly conceived, 'documents'. E.g. images."
-
-# Add prov:Activity
-#     prov:uses
-
-# Add prov:Agent
-#     prov:wasAssociatedWith
-
-# Add prov:Entity
