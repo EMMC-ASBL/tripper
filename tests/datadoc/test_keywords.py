@@ -162,7 +162,7 @@ def test_load_yaml():
 
 
 def test_save_yaml():
-    """Test save_csv() method."""
+    """Test save_yaml() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
@@ -214,6 +214,8 @@ def test_load_table():
 
 def test_save_table():
     """Test save_table() method."""
+    import csv
+
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
@@ -222,16 +224,16 @@ def test_save_table():
     kw.save_table(outdir / "keywords.csv")
 
     with open(outdir / "keywords.csv", "rt", encoding="utf-8") as f:
-        header = f.readline().strip().split(",")
-        row1 = f.readline().strip().split(",")
+        cr = csv.reader(f)
+        header = next(cr)
+        row1 = next(cr)
+
     assert len(header) == 9
     facit = [
         ("@id", "dcterms:accessRights"),
         ("@type", "owl:ObjectProperty"),
         ("label", "accessRights"),
         ("domain", "dcat:Resource"),
-        # ("domain", ""),
-        # ("domain", ""),
         ("range", "dcterms:RightsStatement"),
         ("conformance", "ddoc:optional"),
         (
@@ -239,8 +241,15 @@ def test_save_table():
             "Information about who can access the resource or an indication "
             "of its security status.",
         ),
+        (
+            "usageNote",
+            "Access Rights may include information regarding access or "
+            "restrictions based on privacy, security, or other policies. "
+            "The following preferred Rights Statement individuals are "
+            "defined: `accr:PUBLIC`, `accr:NON_PUBLIC`, `accr:CONFIDENTIAL`, "
+            "`accr:RESTRICTED`, `accr:SENSITIVE`",
+        ),
         ("theme", "ddoc:datadoc"),
-        ("usageNote", ""),
     ]
     assert list(zip(header, row1)) == facit
 
@@ -293,7 +302,7 @@ def test_classnames():
     """Test keywordnames() method."""
     classnames = keywords.classnames()
     assert "Dataset" in classnames
-    assert len(classnames) == 26
+    assert len(classnames) == 27
 
 
 def test_fromdicts():

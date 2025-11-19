@@ -1342,7 +1342,6 @@ class Keywords:
         """Help function returning a list of keywords corresponding to arguments
         `keywords`, `classes` and `themes`. See also save_markdown_table().
 
-
         Arguments:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.

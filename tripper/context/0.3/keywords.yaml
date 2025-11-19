@@ -23,6 +23,7 @@ prefixes:
   schema: "https://schema.org/"
   skos: "http://www.w3.org/2004/02/skos/core#"
   spdx: "http://spdx.org/rdf/terms#"
+  stat: "http://purl.org/adms/status/"
   vann: "http://purl.org/vocab/vann/"
   vcard: "http://www.w3.org/2006/vcard/ns#"
   xsd: "http://www.w3.org/2001/XMLSchema#"
@@ -52,11 +53,11 @@ prefixes:
 #   - range: Range of property (IRI)
 #   - datatype: Datatype of the property (only for data properties)
 #   - inverse: If true, `iri` refer to the inverse of this property
-#   - unit: IRI or unit symbol
+#   - unit: IRI or unit symbol. NOT FULLY IMPLEMENTED
 #   - conformance: One of "mandatory", "recommended", "optional" or not included
 #   - description: Description of keyword
 #   - usageNote: A note about how to use this keyword.
-#   - default: NOT IMPLEMENTED
+#   - default: Default value. NOT FULLY IMPLEMENTED
 #
 resources:
   Resource:
@@ -69,6 +70,7 @@ resources:
         range: dcterms:RightsStatement
         conformance: optional
         description: Information about who can access the resource or an indication of its security status.
+        usageNote: "Access Rights may include information regarding access or restrictions based on privacy, security, or other policies. The following preferred Rights Statement individuals are defined: `accr:PUBLIC`, `accr:NON_PUBLIC`, `accr:CONFIDENTIAL`, `accr:RESTRICTED`, `accr:SENSITIVE`"
 
       applicableLegislation:
         iri: dcatap:applicableLegislation
@@ -100,11 +102,16 @@ resources:
         conformance: optional
         description: An entity responsible for producing the resource.
 
+      curationDate:
+        iri: ddoc:curationDate
+        range: xsd:date
+        description: Date of curation.
+
       curator:
-        iri: oteio:curator
+        iri: ddoc:curator
         range: foaf:Agent
         description: The agent that curated the resource.
-        usageNote: Use `issued` to refer to the date of curation.
+        usageNote: Use `ddoc:curationDate` to refer to the date of curation.
 
       description:
         iri: dcterms:description
@@ -138,6 +145,7 @@ resources:
         range: rdfs:Literal
         conformance: optional
         description: URI or other unique identifier of the resource being described.
+        usageNote: Recommended practice is to identify the resource by means of a string conforming to an identification system. Examples include International Standard Book Number (ISBN), Digital Object Identifier (DOI), and Uniform Resource Name (URN).  Persistent identifiers should be provided as HTTP URIs.
 
       isReferencedBy:
         iri: dcterms:isReferencedBy
@@ -157,7 +165,15 @@ resources:
         range: foaf:Document
         conformance: optional
         description: A web page that provides access to the resource and/or additional information (e.g. the distribution for a dataset).
-        usageNote: It is intended to point to a landing page at the original data provider, not to a page on a site of a third party, such as an aggregator.
+        usageNote: |
+          It is intended to point to a landing page at the original
+          data provider, not to a page on a site of a third party,
+          such as an aggregator.
+
+          For distributions, if they are accessible only through a
+          landing page (i.e. direct download URLs are not known), then
+          the landing page link should be duplicated as accessURL on a
+          distribution.
 
       language:
         iri: dcterms:language
@@ -187,10 +203,10 @@ resources:
       modificationDate:
         iri: dcterms:modified
         range: rdfs:Literal
-        #datatype: ["xsd:date", "xsd:dateTime"]
         datatype: xsd:date
         conformance: optional
         description: The most recent date on which the resource was changed or modified.
+
       publisher:
         iri: dcterms:publisher
         range: foaf:Agent
@@ -218,7 +234,6 @@ resources:
       releaseDate:
         iri: dcterms:issued
         range: rdfs:Literal
-        #datatype: ["xsd:date", "xsd:dateTime"]
         datatype: xsd:date
         conformance: optional
         description: The date of formal issuance (e.g., publication) of the resource.
@@ -250,6 +265,7 @@ resources:
         range: rdfs:Literal
         conformance: optional
         description: Version indicator (name or identifier) of a resource.
+        usageNote: "DCAT does not prescribe how a version name / identifier should be specified, and refers for guidance to [DWBP]'s Best Practice 7: Provide a version indicator."
 
       versionNotes:
         iri: adms:versionNotes
@@ -331,6 +347,7 @@ resources:
     iri: dcat:Dataset
     subClassOf: ["dcat:Resource", "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a"]
     description: A collection of data, published or curated by an agent, and available for access or download in one or more representations.
+    usageNote: This class represents the actual dataset as published by the dataset provider. In cases where a distinction between the actual dataset and its entry in the catalog is necessary (because metadata such as modification date and maintainer might differ), the catalog record class can be used for the latter.
     keywords:
       distribution:
         iri: dcat:distribution
@@ -475,7 +492,7 @@ resources:
         iri: dcat:accessURL
         range: rdfs:Resource
         conformance: mandatory
-        description: A URL that gives access to a Distribution of the Dataset.
+        description: A URL that gives access to a Distribution of the Dataset. E.g. landing page, feed, SPARQL endpoint. Use for all cases except a simple download link, in which case downloadURL is preferred.
         usageNote: The resource at the access URL may contain information about how to get the Dataset.
 
       availability:
@@ -512,7 +529,8 @@ resources:
         range: rdfs:Literal
         datatype: xsd:anyURI
         conformance: optional
-        description: A URL that is a direct link to a downloadable file in a given format.
+        description: "A URL that is a direct link to a downloadable file in a given format. The format is indicated by the distribution's 'dterms:format' and/or 'dcat:mediaType'."
+
 
       format:
         iri: dcterms:format
@@ -545,11 +563,11 @@ resources:
         description: A parser that can parse the distribution.
 
       status:
-        iri: adms:status
-        range: rdfs:Literal
+        iri: dcatap:status
+        range: skos:Concept
         conformance: optional
         description: The status of the distribution in the context of maturity lifecycle.
-        usageNote: "It MUST take one of the values: 'Completed', 'Deprecated', 'Under Development', 'Withdrawn'."
+        usageNote: "It MUST take one of the values: 'stat:Completed', 'stat:Deprecated', 'stat:UnderDevelopment', 'stat:Withdrawn'."
 
 
   Parser:
@@ -635,9 +653,6 @@ resources:
     keywords:
       prefLabel:
         iri: skos:prefLabel
-        range: rdfs:Literal
-        datatype: rdf:langString
-        description: A preferred label of the concept.
 
 
   DataService:
@@ -819,6 +834,7 @@ resources:
   RightsStatement:
     iri: dcterms:RightsStatement
     description: A statement about the intellectual property rights (IPR) held in or over a resource, a legal document giving official permission to do something with a resource, or a statement about access rights.
+    usageNote: "EU pre-defines the following individuals: accr:PUBLIC, accr:NON_PUBLIC, accr:CONFIDENTIAL, accr:RESTRICTED, accr:SENSITIVE."
 
   LegalResource:
     iri: eli:LegalResource
@@ -918,6 +934,8 @@ resources:
         range: rdfs:Literal
         datatype: xsd:nonNegativeInteger
 
+  Document:
+    iri: foaf:Document
+    description: A document.
+    usageNote: "The Document class represents those things which are, broadly conceived, 'documents'. E.g. images."
 
-# contributor
-# hasFormat
