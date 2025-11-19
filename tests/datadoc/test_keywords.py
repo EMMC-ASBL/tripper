@@ -59,6 +59,12 @@ def test_get_keywords():
     assert kw5.data.theme == ["ddoc:datadoc", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
+    kw6 = get_keywords(
+        kw4, yamlfile=testdir / "input" / "custom_keywords.yaml"
+    )
+    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:process"]
+    assert "batchNumber" in kw6
+
 
 def test_dir():
     """Test `dir(keywords)`."""
@@ -78,6 +84,28 @@ def test_copy():
     assert copy.theme == keywords.theme
 
 
+def test_add():
+    """Test add() method."""
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    from tripper.datadoc import get_keywords
+
+    kw = get_keywords(theme=None)
+    kw1 = kw.copy()
+    kw1.add("ddoc:datadoc")
+    assert kw1 == keywords
+
+    kw2 = kw.copy()
+    kw2.add(indir / "custom_keywords.yaml")
+    assert "distribution" in kw2
+    assert "batchNumber" in kw2
+
+    # Works, but requires that the tests are run from the root directory
+    # kw3 = kw.copy()
+    # kw3.add("./tests/input/custom_keywords.yaml")
+    # assert kw3 == kw2
+
+
 def test_load_yaml():
     """Test load_yaml() method. Most of it is already tested via get_keywords().
     Only a few additional tests are added here.
@@ -86,33 +114,55 @@ def test_load_yaml():
 
     from tripper.datadoc.errors import ParseError
 
-    with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords0.yaml")
+    kw = keywords.copy()
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords1.yaml")
+        kw.load_yaml(indir / "invalid_keywords0.yaml")
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords2.yaml")
+        kw.load_yaml(indir / "invalid_keywords1.yaml")
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords3.yaml")
+        kw.load_yaml(indir / "invalid_keywords2.yaml")
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords4.yaml")
+        kw.load_yaml(indir / "invalid_keywords3.yaml")
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords5.yaml")
+        kw.load_yaml(indir / "invalid_keywords4.yaml")
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords6.yaml")
+        kw.load_yaml(indir / "invalid_keywords5.yaml")
 
     with pytest.raises(ParseError):
-        keywords.load_yaml(indir / "invalid_keywords7.yaml")
+        kw.load_yaml(indir / "invalid_keywords6.yaml")
+
+    with pytest.raises(ParseError):
+        kw.load_yaml(indir / "invalid_keywords7.yaml")
+
+    with pytest.raises(ParseError):
+        kw.load_yaml(indir / "invalid_keywords8.yaml")
+
+    with pytest.raises(ParseError):
+        kw.load_yaml(indir / "invalid_keywords9.yaml")
+
+    with pytest.raises(ParseError):
+        kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="xxx")
+
+    # keywords are unchanged by failures
+    # assert kw == keywords
+
+    kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="skip")
+    assert kw["title"].iri == "dcterms:title"
+
+    kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="allow")
+    assert kw["title"].iri == "myonto:a"
+
+    kw.load_yaml(indir / "valid_keywords.yaml")
 
 
 def test_save_yaml():
-    """Test save_csv() method."""
+    """Test save_yaml() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
@@ -144,7 +194,7 @@ def test_load_table():
     assert kw.keywords.ref == {
         "iri": "ex:ref",
         "type": "owl:AnnotationProperty",
-        "domain": ["dcat:Resource", "rdfs:Resource"],  # is this intended?
+        "domain": ["dcat:Resource", "rdfs:Resource"],
         "range": "rdfs:Literal",
         "datatype": "rdf:langString",
         "conformance": "optional",
@@ -164,6 +214,8 @@ def test_load_table():
 
 def test_save_table():
     """Test save_table() method."""
+    import csv
+
     from dataset_paths import outdir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
@@ -172,16 +224,16 @@ def test_save_table():
     kw.save_table(outdir / "keywords.csv")
 
     with open(outdir / "keywords.csv", "rt", encoding="utf-8") as f:
-        header = f.readline().strip().split(",")
-        row1 = f.readline().strip().split(",")
-    assert len(header) == 11
+        cr = csv.reader(f)
+        header = next(cr)
+        row1 = next(cr)
+
+    assert len(header) == 9
     facit = [
         ("@id", "dcterms:accessRights"),
         ("@type", "owl:ObjectProperty"),
         ("label", "accessRights"),
         ("domain", "dcat:Resource"),
-        ("domain", ""),
-        ("domain", ""),
         ("range", "dcterms:RightsStatement"),
         ("conformance", "ddoc:optional"),
         (
@@ -189,8 +241,15 @@ def test_save_table():
             "Information about who can access the resource or an indication "
             "of its security status.",
         ),
+        (
+            "usageNote",
+            "Access Rights may include information regarding access or "
+            "restrictions based on privacy, security, or other policies. "
+            "The following preferred Rights Statement individuals are "
+            "defined: `accr:PUBLIC`, `accr:NON_PUBLIC`, `accr:CONFIDENTIAL`, "
+            "`accr:RESTRICTED`, `accr:SENSITIVE`",
+        ),
         ("theme", "ddoc:datadoc"),
-        ("usageNote", ""),
     ]
     assert list(zip(header, row1)) == facit
 
@@ -236,14 +295,14 @@ def test_keywordnames():
     """Test keywordnames() method."""
     keywordnames = keywords.keywordnames()
     assert "distribution" in keywordnames
-    assert len(keywordnames) == 122
+    assert len(keywordnames) == 123
 
 
 def test_classnames():
     """Test keywordnames() method."""
     classnames = keywords.classnames()
     assert "Dataset" in classnames
-    assert len(classnames) == 26
+    assert len(classnames) == 27
 
 
 def test_fromdicts():
@@ -389,9 +448,10 @@ def test_load2():
     ts = Triplestore("rdflib")
     ts.parse(ontodir / "family.ttl")
 
+    # Create an empty Keywords object and load the ontology
     kw = get_keywords(theme=None)
     assert kw.keywords == AttrDict()
-    kw.load_rdf(ts)
+    kw.load_rdf(ts, strict=False, redefine="allow")
 
     assert set(kw.keywordnames()) == {
         "hasAge",
@@ -416,6 +476,43 @@ def test_load2():
         "iri": "fam:hasName",
         "type": "owl:AnnotationProperty",
         "domain": "rdfs:Resource",
+        "range": "rdfs:Literal",
+        "comment": "Name.",
+        "name": "hasName",
+    }
+
+    ts = Triplestore("rdflib")
+    ts.parse(ontodir / "family.ttl")
+
+    # Create a new Keywords object with
+    # default keywords and load from the triplestore
+    kw2 = get_keywords()
+    kw2.load_rdf(ts, redefine="allow")
+
+    # Ensure that the specified keywords are in kw2
+    assert not {
+        "hasAge",
+        "hasWeight",
+        "hasSkill",
+        "hasChild",
+        "hasName",
+    }.difference(kw2.keywordnames())
+    assert not {
+        "Person",
+        "Parent",
+        "Child",
+        "Skill",
+        "Resource",
+    }.difference(kw2.classnames())
+    d = kw2["hasAge"]
+    assert d.iri == "fam:hasAge"
+    assert d.range == "rdfs:Literal"
+    assert d.datatype == "xsd:double"
+    assert d.unit == "year"
+    assert kw2["hasName"] == {  # vcard:hasName is overwritten
+        "iri": "fam:hasName",
+        "type": "owl:AnnotationProperty",
+        "domain": ["dcat:Resource", "rdfs:Resource"],
         "range": "rdfs:Literal",
         "comment": "Name.",
         "name": "hasName",

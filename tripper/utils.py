@@ -62,6 +62,7 @@ __all__ = (
     "as_python",
     "is_uri",
     "is_curie",
+    # "is_iri",
     "check_function",
     "random_string",
     "extend_namespace",
