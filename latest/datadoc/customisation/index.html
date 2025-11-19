@@ -629,6 +629,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#creating-a-context-with-keywords-from-an-ontology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a context with keywords from an ontology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#providing-a-custom-context" class="md-nav__link">
     <span class="md-ellipsis">
       Providing a custom context
@@ -1793,6 +1802,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#creating-a-context-with-keywords-from-an-ontology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a context with keywords from an ontology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#providing-a-custom-context" class="md-nav__link">
     <span class="md-ellipsis">
       Providing a custom context
@@ -1899,8 +1917,39 @@ In your ontology you may define <code>fromBatch</code> as a object property with
 <span class="p">},</span>
 </code></pre></div>
 <p>Here the special value "@id" for the "@type" means that the value of <code>fromBatch</code> must be an IRI.</p>
+<h2 id="creating-a-context-with-keywords-from-an-ontology">Creating a context with keywords from an ontology<a class="headerlink" href="#creating-a-context-with-keywords-from-an-ontology" title="Permanent link">&para;</a></h2>
+<p>Creating a context with keywords manually can be strenuous and is prone to human mistakes.
+It is therefore advisable to only use one source of truth, namely the ontology.</p>
+<p>The context can be generated from a triplestore with the ontology with the Keywords class:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_keywords</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s1">&#39;rdflib&#39;</span><span class="p">)</span>
+
+<span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+    <span class="s1">&#39;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl&#39;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">kw</span> <span class="o">=</span>  <span class="n">get_keywords</span><span class="p">()</span> <span class="c1"># create an Keywords instance populated with the default keywords (ddoc:datadoc)</span>
+<span class="c1"># Before loading the keywords file it is required that all namespaces have a prefix.</span>
+<span class="c1"># The family namespace does not have prefix by defualt and it must be added:</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="s1">&#39;fam&#39;</span><span class="p">,</span> <span class="s1">&#39;http://onto-ns.com/ontologies/examples/family#&#39;</span><span class="p">)</span>
+
+<span class="c1"># We can now load the ontology into the keywords</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;skip&#39;</span><span class="p">)</span> <span class="c1"># keywords that are already defined are skipped</span>
+<span class="c1"># or</span>
+<span class="n">lw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;allow&#39;</span><span class="p">)</span> <span class="c1"># keywords that are already defined are redefined</span>
+</code></pre></div>
+<p>Note that there are a few considerations when generating a context from an ontology:</p>
+<p>First of all, labels that are the same as predefined keywords must be handled with care.
+The default behaviour is that if this is attempted, an error is raised (<code>redefine = raise</code>).
+This choice have been made to ensure that redefining predefined keywords is a conscious decision.
+In order to redefine an existing keyword, the argument <code>redefine</code> of the <code>load_rdf()</code> method must be set to <code>allow</code>.
+A warning will be emitted for each keyword that is redefined.
+In order to generate keywords from an ontology without redefining existing keywords, the <code>redefine</code> argument can be set to <code>skip</code>, in which case existing keywords are left unchanged and a warning is emitted for each new keyword that is skipped to the advantage of the existing keyword.</p>
 <h2 id="providing-a-custom-context">Providing a custom context<a class="headerlink" href="#providing-a-custom-context" title="Permanent link">&para;</a></h2>
-<p>Custom context can be provided for all the interfaces described in the section <a href="../documenting-a-resource/">Documenting a resource</a>.</p>
+<p>A custom context with defined keywords can be provided for all the interfaces described in the section <a href="../documenting-a-resource/">Documenting a resource</a>.</p>
 <h3 id="python-dict">Python dict<a class="headerlink" href="#python-dict" title="Permanent link">&para;</a></h3>
 <p>Both for the single-resource and multi-resource dicts, you can add a <code>"@context"</code> key to the dict who's value is</p>
 <ul>

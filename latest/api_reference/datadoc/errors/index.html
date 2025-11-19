@@ -1307,15 +1307,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.datadoc.errors.MissingKeywordsClassWarning" class="md-nav__link">
-    <span class="md-ellipsis">
-      MissingKeywordsClassWarning
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#tripper.datadoc.errors.NoSuchTypeError" class="md-nav__link">
     <span class="md-ellipsis">
       NoSuchTypeError
@@ -1343,9 +1334,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.datadoc.errors.RedefineKeywordError" class="md-nav__link">
+  <a href="#tripper.datadoc.errors.RedefineError" class="md-nav__link">
     <span class="md-ellipsis">
-      RedefineKeywordError
+      RedefineError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.RedefineKeywordWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      RedefineKeywordWarning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.SkipRedefineKeywordWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      SkipRedefineKeywordWarning
     </span>
   </a>
   
@@ -1810,15 +1819,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.datadoc.errors.MissingKeywordsClassWarning" class="md-nav__link">
-    <span class="md-ellipsis">
-      MissingKeywordsClassWarning
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#tripper.datadoc.errors.NoSuchTypeError" class="md-nav__link">
     <span class="md-ellipsis">
       NoSuchTypeError
@@ -1846,9 +1846,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tripper.datadoc.errors.RedefineKeywordError" class="md-nav__link">
+  <a href="#tripper.datadoc.errors.RedefineError" class="md-nav__link">
     <span class="md-ellipsis">
-      RedefineKeywordError
+      RedefineError
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.RedefineKeywordWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      RedefineKeywordWarning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.errors.SkipRedefineKeywordWarning" class="md-nav__link">
+    <span class="md-ellipsis">
+      SkipRedefineKeywordWarning
     </span>
   </a>
   
@@ -2129,37 +2147,6 @@ MissingKeyError            (<a class="autorefs autorefs-internal" title="tripper
 
 
 
-<h2 id="tripper.datadoc.errors.MissingKeywordsClassWarning" class="doc doc-heading">
-        <code>
-MissingKeywordsClassWarning            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.UnknownKeywordWarning" href="#tripper.datadoc.errors.UnknownKeywordWarning">UnknownKeywordWarning</a>)
-        </code>
-
-
-
-<a href="#tripper.datadoc.errors.MissingKeywordsClassWarning" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents ">
-
-      <p>A class is referred to that is not defined in a keywords file.</p>
-
-        <details class="quote">
-          <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingKeywordsClassWarning</span><span class="p">(</span><span class="n">UnknownKeywordWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class is referred to that is not defined in a keywords file.&quot;&quot;&quot;</span>
-</code></pre></div>
-        </details>
-
-
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-class">
-
-
-
 <h2 id="tripper.datadoc.errors.NoSuchTypeError" class="doc doc-heading">
         <code>
 NoSuchTypeError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperError" href="../../errors/#tripper.errors.TripperError">TripperError</a>, <span title="KeyError">KeyError</span>)
@@ -2253,23 +2240,87 @@ PrefixMismatchError            (<a class="autorefs autorefs-internal" title="tri
 
 
 
-<h2 id="tripper.datadoc.errors.RedefineKeywordError" class="doc doc-heading">
+<h2 id="tripper.datadoc.errors.RedefineError" class="doc doc-heading">
         <code>
-RedefineKeywordError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>, <span title="KeyError">KeyError</span>)
+RedefineError            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperWarning" href="../../errors/#tripper.errors.TripperWarning">TripperWarning</a>)
         </code>
 
 
 
-<a href="#tripper.datadoc.errors.RedefineKeywordError" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#tripper.datadoc.errors.RedefineError" class="headerlink" title="Permanent link">&para;</a></h2>
 
     <div class="doc doc-contents ">
 
-      <p>Trying to map an existing keyword to a new IRI.</p>
+      <p>Trying to redefine an existing concept or keyword.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineKeywordError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trying to map an existing keyword to a new IRI.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineError</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trying to redefine an existing concept or keyword.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.datadoc.errors.RedefineKeywordWarning" class="doc doc-heading">
+        <code>
+RedefineKeywordWarning            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperWarning" href="../../errors/#tripper.errors.TripperWarning">TripperWarning</a>)
+        </code>
+
+
+
+<a href="#tripper.datadoc.errors.RedefineKeywordWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Redefine an existing keyword (by mapping it to a new IRI).</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineKeywordWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Redefine an existing keyword (by mapping it to a new IRI).&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h2 id="tripper.datadoc.errors.SkipRedefineKeywordWarning" class="doc doc-heading">
+        <code>
+SkipRedefineKeywordWarning            (<a class="autorefs autorefs-internal" title="tripper.errors.TripperWarning" href="../../errors/#tripper.errors.TripperWarning">TripperWarning</a>)
+        </code>
+
+
+
+<a href="#tripper.datadoc.errors.SkipRedefineKeywordWarning" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Skip redefining an existing keyword in a user-defined keyword
+definition (by mapping it to a new IRI).</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SkipRedefineKeywordWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Skip redefining an existing keyword in a user-defined keyword</span>
+<span class="sd">    definition (by mapping it to a new IRI).&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>
 

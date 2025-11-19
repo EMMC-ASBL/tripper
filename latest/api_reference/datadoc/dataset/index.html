@@ -2083,7 +2083,7 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 
 
 <h2 id="tripper.datadoc.dataset.acquire" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.acquire" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2124,7 +2124,7 @@ Defaults to the value of <code>ts.prefer_sparql</code>.</p></td>
       </tr>
       <tr>
         <td><code>context</code></td>
-        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><code>&#39;Optional[ContextType]&#39;</code></td>
         <td><p>Context object defining keywords in addition to those defined
 in the default [JSON-LD context].</p></td>
         <td><code>None</code></td>
@@ -2152,7 +2152,8 @@ in the default [JSON-LD context].</p></td>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load description of a resource from the triplestore.</span>
 
@@ -2167,6 +2168,8 @@ in the default [JSON-LD context].</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict describing the resource identified by `iri`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">use_sparql</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">use_sparql</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">prefer_sparql</span>
     <span class="k">if</span> <span class="n">use_sparql</span><span class="p">:</span>
@@ -2182,7 +2185,13 @@ in the default [JSON-LD context].</p></td>
                 <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">):</span>
-                    <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">))</span>
+                    <span class="n">add</span><span class="p">(</span>
+                        <span class="n">d</span><span class="p">,</span>
+                        <span class="n">key</span><span class="p">,</span>
+                        <span class="n">acquire</span><span class="p">(</span>
+                            <span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">add</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
@@ -4397,7 +4406,7 @@ converted to value restrictions.</p></td>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">check_keyword</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">typename</span><span class="p">):</span>
-                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;unexpected keyword &#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&#39; provided for type: &#39;</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                     <span class="p">)</span>
 
