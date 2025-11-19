@@ -20,6 +20,7 @@
     "schema": "https://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "spdx": "http://spdx.org/rdf/terms#",
+    "stat": "http://purl.org/adms/status/",
     "vann": "http://purl.org/vocab/vann/",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
@@ -46,8 +47,12 @@
       "@id": "dcterms:creator",
       "@type": "@id"
     },
+    "curationDate": {
+      "@id": "ddoc:curationDate",
+      "@type": "@id"
+    },
     "curator": {
-      "@id": "oteio:curator",
+      "@id": "ddoc:curator",
       "@type": "@id"
     },
     "description": {
@@ -293,7 +298,10 @@
       "@id": "oteio:parser",
       "@type": "@id"
     },
-    "status": "dcatap:status",
+    "status": {
+      "@id": "dcatap:status",
+      "@type": "@id"
+    },
     "configuration": {
       "@id": "oteio:hasConfiguration",
       "@type": "@json"
@@ -425,6 +433,7 @@
     "OWLClass": "owl:Class",
     "Class": "rdfs:Class",
     "GenericResource": "rdfs:Resource",
-    "Restriction": "owl:Restriction"
+    "Restriction": "owl:Restriction",
+    "Document": "foaf:Document"
   }
 }
