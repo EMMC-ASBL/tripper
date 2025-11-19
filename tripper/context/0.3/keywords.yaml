@@ -938,4 +938,3 @@ resources:
     iri: foaf:Document
     description: A document.
     usageNote: "The Document class represents those things which are, broadly conceived, 'documents'. E.g. images."
-
