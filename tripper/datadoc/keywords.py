@@ -324,8 +324,9 @@ class Keywords:
                         )
             else:
                 raise TypeError(
-                    "`keywords` must be a Keywords object, a Path object, "
-                    f"a string or a sequence of these.  Got: {type(kw)}"
+                    "`keywords` must be a KeywordsType object (Keywords "
+                    "instance, dict, IO, Path, string or sequence). "
+                    f"Got: {type(kw)}"
                 )
 
         _add(keywords, format)

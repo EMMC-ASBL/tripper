@@ -131,6 +131,7 @@ def test_add():
     assert len(kw5) == len(kw2)
 
     with pytest.raises(TypeError):
+        # Length of input and format must equal
         kw5.add([indir / "custom_keywords.yaml"], format=["yaml", "yml"])
 
     kw6 = get_keywords(theme="ddoc:prefixes")
@@ -143,6 +144,9 @@ def test_add():
 
     kw7 = get_keywords(theme=None)
     kw7.add(ontodir / "family.ttl")
+
+    with pytest.raises(TypeError):
+        kw7.add(True)
 
 
 def test_load_yaml():
