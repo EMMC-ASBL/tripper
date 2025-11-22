@@ -1,0 +1,4 @@
+@id,@type,label,subPropertyOf,subClassOf,domain,range,description
+ex:Device,owl:Class,DeviceX,,emmo:Device,,,A device.
+ex:voltage,owl:DatatypeProperty,voltage,hasProperty,,ex:Device,xsd:double,Device voltage.
+ex:owner,owl:ObjectProperty,owner,,,ex:Device,foaf:Agent,Owner of a device.
