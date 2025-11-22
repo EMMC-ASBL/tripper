@@ -2118,7 +2118,7 @@ InvalidKeywordError            (<a class="autorefs autorefs-internal" title="tri
 
 <h2 id="tripper.datadoc.errors.MissingKeyError" class="doc doc-heading">
         <code>
-MissingKeyError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>)
+MissingKeyError            (<a class="autorefs autorefs-internal" title="tripper.datadoc.errors.InvalidDatadocError" href="#tripper.datadoc.errors.InvalidDatadocError">InvalidDatadocError</a>, <span title="KeyError">KeyError</span>)
         </code>
 
 
@@ -2131,7 +2131,7 @@ MissingKeyError            (<a class="autorefs autorefs-internal" title="tripper
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingKeyError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingKeyError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Missing required key in description of a resource or keyword.&quot;&quot;&quot;</span>
 </code></pre></div>
         </details>

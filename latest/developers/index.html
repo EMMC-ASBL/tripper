@@ -1558,6 +1558,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Profiling
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1718,6 +1727,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Profiling
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1782,6 +1800,16 @@ mkdocs build
 mkdocs serve
 </code></pre></div>
 <p>Then open http://127.0.0.1:8000/tripper/ in your browser.</p>
+<h2 id="profiling">Profiling<a class="headerlink" href="#profiling" title="Permanent link">&para;</a></h2>
+<p>To identify performance bottlenecks, install <code>pytest-profiling</code> and run run</p>
+<div class="language-text highlight"><pre><span></span><code>pytest --profile
+</code></pre></div>
+<p>to generate a <code>prof/</code> subdirectory with profiling information.</p>
+<p>For a graphical overview, install <code>gprof2dot</code> and <code>dot</code> and run</p>
+<div class="language-text highlight"><pre><span></span><code>pytest --profile-svg
+</code></pre></div>
+<p>This will create the figure <code>prof/combined.svg</code>, which shows what functions that uses most time and how many times they are called.</p>
+<p>See https://pypi.org/project/pytest-profiling/ for more information.</p>
 
 
 

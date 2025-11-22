@@ -3067,8 +3067,8 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
   <tbody>
       <tr>
         <td><code>url</code></td>
-        <td><code>Union[str, Path]</code></td>
-        <td><p>File path or URL to open.</p></td>
+        <td><code>Union[str, Path, IO]</code></td>
+        <td><p>File path, URL or stream to open.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -3101,7 +3101,7 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>Generator</code></td>
+      <td><code>Iterator[IO]</code></td>
       <td><p>A stream object returned by open().</p></td>
     </tr>
   </tbody>
@@ -3110,14 +3110,14 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
           <summary>Source code in <code>tripper/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">openfile</span><span class="p">(</span>
-    <span class="n">url</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path]&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
+    <span class="n">url</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path, IO]&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Iterator[IO]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Like open(), but allows opening remote files using HTTP GET requests.</span>
 
 <span class="sd">    Should always be used in a with-statement.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        url: File path or URL to open.</span>
+<span class="sd">        url: File path, URL or stream to open.</span>
 <span class="sd">        mode: See `mode` argument of open().</span>
 <span class="sd">        timeout: Timeout for accessing the file in seconds.</span>
 <span class="sd">        kwargs: Additional passed to open().</span>
@@ -3126,6 +3126,10 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
 <span class="sd">        A stream object returned by open().</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="p">(</span><span class="n">IO</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">)):</span>
+        <span class="k">yield</span> <span class="n">url</span>
+        <span class="k">return</span>
+
     <span class="n">url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="n">tmpfile</span> <span class="o">=</span> <span class="kc">False</span>
@@ -3153,7 +3157,7 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># pylint: disable=unspecified-encoding</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="k">yield</span> <span class="n">f</span>
+        <span class="k">yield</span> <span class="n">f</span>  <span class="c1"># type:ignore</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
