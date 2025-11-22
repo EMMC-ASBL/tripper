@@ -1181,7 +1181,7 @@ class Keywords:
         """Load RDF from file or URL.
 
         Arguments:
-            filename: File to load.
+            rdffile: File to load.
             format: Any format supported by rdflib.Graph.parse().
             timeout: Timeout in case `yamlfile` is a URI.
             iris: IRIs to load. The default is to load IRIs corresponding to
