@@ -8,15 +8,19 @@ import logging
 import os
 import warnings
 from copy import deepcopy
+from importlib import import_module
+from io import IOBase
 
 # from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
 import yaml
+from rdflib.util import SUFFIX_FORMAT_MAP as RDFLIB_SUFFIX_FORMAT_MAP
+from rdflib.util import guess_format as guess_rdf_format
 
 import tripper
-from tripper import DCTERMS, DDOC, OWL, RDF, RDFS, VANN, XSD, Triplestore
+from tripper import DDOC, OWL, RDF, RDFS, XSD, Triplestore
 from tripper.datadoc.errors import (
     DatadocValueError,
     InvalidDatadocError,
@@ -42,10 +46,10 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterable, List, Optional, Set, Tuple, Union
+    from typing import IO, Any, Iterable, List, Optional, Set, Tuple, Union
 
     FileLoc = Union[Path, str]
-    KeywordsType = Union["Keywords", Path, str, Sequence]
+    KeywordsType = Union["Keywords", dict, IO, Path, str, Sequence]
 
 
 # Module-level logger
@@ -71,29 +75,40 @@ CONFORMANCE_MAPS = {
 # @lru_cache(maxsize=32)
 def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
+    format: "Optional[str]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-    yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+    yamlfile: "Optional[FileLoc]" = None,
     timeout: float = 3,
 ) -> "Keywords":
     """A convenient function that returns a Context instance.
 
     Arguments:
         keywords: Optional existing keywords object.
+        format: Format of input if `keywords` refer to a file that can be
+            loaded.
         theme: IRI of one of more themes to load keywords for.
         yamlfile: YAML file with keyword definitions to parse.  May also
             be an URI in which case it will be accessed via HTTP GET.
+            Deprecated. Use the `add_yaml()` or `add()` methods instead.
         timeout: Timeout in case `yamlfile` is a URI.
     """
     if isinstance(keywords, Keywords):
         kw = keywords
         if theme:
-            kw.add(theme, timeout=timeout)
-        if yamlfile:
-            kw.add(yamlfile, timeout=timeout)
+            kw.add_theme(theme, timeout=timeout)
     else:
-        kw = Keywords(theme=theme, yamlfile=yamlfile, timeout=timeout)
+        kw = Keywords(theme=theme)
         if keywords:
-            kw.add(keywords, timeout=timeout)
+            kw.add(keywords, format=format, timeout=timeout)
+
+    if yamlfile:
+        warnings.warn(
+            "The `yamlfile` argument is deprecated. Use the `add_yaml()` or "
+            "`add()` methods instead.",
+            DeprecationWarning,
+        )
+        kw.load_yaml(yamlfile, timeout=timeout)
+
     return kw
 
 
@@ -118,15 +133,16 @@ class Keywords:
     def __init__(
         self,
         theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-        yamlfile: "Optional[Union[FileLoc, Sequence[FileLoc]]]" = None,
+        yamlfile: "Optional[FileLoc]" = None,
         timeout: float = 3,
     ) -> None:
         """Initialises keywords object.
 
         Arguments:
             theme: IRI of one of more themes to load keywords for.
-            yamlfile: YAML file with keyword definitions to parse.  May also
+            yamlfile: A YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
+                Deprecated. Use the `add_yaml()` or `add()` methods instead.
             timeout: Timeout in case `yamlfile` is a URI.
 
         Attributes:
@@ -152,6 +168,11 @@ class Keywords:
             self.add_theme(theme)
 
         if yamlfile:
+            warnings.warn(
+                "The `yamlfile` argument is deprecated. Use the `add_yaml()` "
+                "or `add()` methods instead.",
+                DeprecationWarning,
+            )
             if isinstance(yamlfile, (str, Path)):
                 self.load_yaml(yamlfile, timeout=timeout)
             else:
@@ -166,6 +187,9 @@ class Keywords:
 
     def __iter__(self):
         return iter(k for k in self.keywords if is_curie(k))
+
+    def __len__(self):
+        return len(list(self.__iter__()))
 
     def __dir__(self):
         return dir(Keywords) + ["data", "keywords", "theme"]
@@ -212,6 +236,7 @@ class Keywords:
     def add(
         self,
         keywords: "Optional[KeywordsType]",
+        format: "Optional[Union[str, Sequence]]" = None,
         timeout: float = 3,
         strict: bool = False,
         redefine: str = "raise",
@@ -222,6 +247,8 @@ class Keywords:
             keywords: Keywords definitions to add to this Keyword object.
                 May be another Keyword object, path to a file, theme or a
                 sequence of these.
+            format: Format if `keywords`. Recognised formats include:
+                yaml, csv, tsv, turtle, xml, json-ld, rdfa, ...
             timeout: Timeout when accessing remote files.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
@@ -234,48 +261,74 @@ class Keywords:
                   - "raise": Raise an RedefineError (default).
 
         """
+        if not isinstance(keywords, str) and isinstance(keywords, Sequence):
+            if isinstance(format, str):
+                format = [format] * len(keywords)
+            elif format and len(format) != len(keywords):
+                raise TypeError(
+                    "If given, `format` must have the same length as "
+                    "`keywords`"
+                )
 
-        def _add(kw):
+        def _add(kw, fmt):
             if kw is None:
                 pass
             elif isinstance(kw, Keywords):
                 self.theme = merge(self.theme, kw.theme)
                 recursive_update(self.data, kw.data, cls=AttrDict)
                 self._set_keywords(clear=False)
-            elif isinstance(kw, Path):
-                self.load_yaml(
-                    kw,
-                    timeout=timeout,
-                    strict=strict,
-                    redefine=redefine,
-                )
-            elif isinstance(kw, str):
-                if kw.startswith("/") or kw.startswith("./") or is_uri(kw):
-                    self.load_yaml(
-                        kw,
-                        timeout=timeout,
-                        strict=strict,
-                        redefine=redefine,
+            elif isinstance(kw, dict):
+                self._load_yaml(kw, strict=strict, redefine=redefine)
+            elif not isinstance(kw, str) and isinstance(kw, Sequence):
+                for i, e in enumerate(kw):
+                    _add(e, fmt[i] if fmt else None)
+            elif isinstance(kw, (str, Path, IOBase)):
+                if (
+                    isinstance(kw, str)
+                    and ":" in kw
+                    and not (
+                        kw.startswith("/") or kw.startswith("./") or is_uri(kw)
                     )
-                else:
+                ):
                     self.add_theme(
                         kw,
                         timeout=timeout,
                         strict=strict,
                         redefine=redefine,
                     )
-            elif isinstance(kw, dict):
-                self._load_yaml(kw, strict=strict, redefine=redefine)
-            elif isinstance(kw, Sequence):
-                for e in kw:
-                    _add(e)
+                else:
+                    if not fmt:
+                        name = kw.name if hasattr(kw, "name") else kw
+                        fmt = Path(name).suffix
+                    fmt = fmt.lstrip(".").lower()
+                    # pylint:disable=consider-using-get
+                    if fmt in RDFLIB_SUFFIX_FORMAT_MAP:
+                        fmt = RDFLIB_SUFFIX_FORMAT_MAP[fmt]
+
+                    if fmt in ("yaml", "yml"):
+                        self.load_yaml(
+                            kw,
+                            timeout=timeout,
+                            strict=strict,
+                            redefine=redefine,
+                        )
+                    elif fmt in ("csv", "tsv", "xlsx", "excel"):
+                        self.load_table(kw, format=fmt)
+                    else:
+                        self.load_rdffile(
+                            kw,
+                            format=fmt,
+                            timeout=timeout,
+                            strict=strict,
+                            redefine=redefine,
+                        )
             else:
                 raise TypeError(
                     "`keywords` must be a Keywords object, a Path object, "
                     f"a string or a sequence of these.  Got: {type(kw)}"
                 )
 
-        _add(keywords)
+        _add(keywords, format)
 
     def add_theme(
         self,
@@ -290,8 +343,8 @@ class Keywords:
         Arguments:
             theme: IRI (or list of IRIs) of a theme/scientific domain to load.
             timeout: Timeout when accessing remote files.
-            strict: Whether to raise an `InvalidKeywordError` exception if `d`
-                contains an unknown key.
+            strict: Whether to raise an `InvalidKeywordError` exception if the
+                theme contains an unknown key.
             redefine: Determine how to handle redefinition of existing
                 keywords.  Should be one of the following strings:
                   - "allow": Allow redefining a keyword. Emits a
@@ -314,8 +367,13 @@ class Keywords:
             )
             for ep in get_entry_points("tripper.keywords"):
                 if expand_iri(ep.value, self.get_prefixes()) == expanded:
-                    self.load_yaml(
-                        self.rootdir / ep.name / "keywords.yaml",
+                    package_name, path = ep.name.split("/", 1)
+                    package = import_module(package_name)
+                    fullpath = (
+                        Path(package.__file__).parent / path  # type: ignore
+                    )
+                    self.add(
+                        fullpath,
                         timeout=timeout,
                         strict=strict,
                         redefine=redefine,
@@ -638,9 +696,9 @@ class Keywords:
         Arguments:
             filename: File to load.
             format: File format. Unused.  Only csv is currently supported.
-            prefixes: Dict with additional prefixes used by `dicts`.
-            theme: Theme defined by `dicts`.
-            basedOn: Theme(s) that `dicts` are based on.
+            prefixes: Dict with additional prefixes used in the table.
+            theme: Theme defined by the table.
+            basedOn: Theme(s) that the table is based on.
             kwargs: Keyword arguments passed on to TableDoc.parse_csv().
         """
         # pylint: disable=import-outside-toplevel
@@ -853,15 +911,13 @@ class Keywords:
                         f"defined to '{p[prefix]}'"
                     )
             p.update({k: str(v) for k, v in prefixes.items()})
-        else:
-            prefixes = {}
 
         def isproperty(v):
             if "@type" not in v:
                 return False
             types = [v["@type"]] if isinstance(v["@type"], str) else v["@type"]
             for t in types:
-                exp = expand_iri(t, p)
+                exp = expand_iri(t, p, strict=True)
                 if exp in (
                     OWL.AnnotationProperty,
                     OWL.ObjectProperty,
@@ -885,21 +941,19 @@ class Keywords:
         resources = data.resources
 
         # Add classes
-        clsmaps = {
-            RDFS.subClassOf: "subClassOf",
-            "rdfs:subClassOf": "subClassOf",
-            DCTERMS.description: "description",
-            "dcterms:description": "description",
-            VANN.usageNote: "usageNote",
-            "vann:usageNote": "usageNote",
-        }
+        clslabels = {}
         for k, v in classes.items():
-            d = AttrDict(iri=prefix_iri(k, prefixes))
-            for iri, name in clsmaps.items():
-                if iri == k:
-                    d[name] = v
+            d = AttrDict(iri=prefix_iri(k, p))
+            for kk, vv in v.items():
+                if kk in ("description", "usageNote"):
+                    d[kk] = vv
+                if kk == "subClassOf":
+                    if isinstance(vv, str):
+                        d[kk] = to_prefixed(vv, p, strict=True)
             d.setdefault("keywords", AttrDict())
-            resources[iriname(k)] = d
+            label = v["label"] if "label" in v else iriname(k)
+            resources[label] = d
+            clslabels[d.iri] = label
 
         # Add properties
         for propname, value in properties.items():
@@ -911,7 +965,8 @@ class Keywords:
             d.domain = value.get("domain", RDFS.Resource)
 
             for domain in asseq(d.domain):
-                domainname = iriname(domain)
+                dlabel = prefix_iri(domain, p, strict=True)
+                domainname = clslabels.get(dlabel, iriname(domain))
                 if domainname not in resources:
                     if domainname not in self.data.resources:
                         if domainname not in ("Resource",):
@@ -920,7 +975,7 @@ class Keywords:
                                 f"keyword '{label}'"
                             )
                         r = AttrDict(
-                            iri=prefix_iri(domain, self.data.prefixes),
+                            iri=prefix_iri(domain, p),
                             keywords=AttrDict(),
                         )
                     else:
@@ -1113,6 +1168,42 @@ class Keywords:
             strict=strict,
             redefine=redefine,
         )
+
+    def load_rdffile(
+        self,
+        rdffile: "FileLoc",
+        format: "Optional[str]" = None,
+        timeout: float = 3,
+        iris: "Optional[Sequence[str]]" = None,
+        strict: bool = False,
+        redefine: str = "raise",
+    ) -> None:
+        """Load RDF from file or URL.
+
+        Arguments:
+            filename: File to load.
+            format: Any format supported by rdflib.Graph.parse().
+            timeout: Timeout in case `yamlfile` is a URI.
+            iris: IRIs to load. The default is to load IRIs corresponding to
+                all properties an classes.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+
+        """
+        if format is None:
+            format = guess_rdf_format(rdffile)
+
+        ts = Triplestore("rdflib")
+        with openfile(rdffile, timeout=timeout, mode="rt") as f:
+            ts.parse(f, format=format)
+        self.load_rdf(ts, iris=iris, strict=strict, redefine=redefine)
 
     def isnested(self, keyword: str) -> bool:
         """Returns whether the keyword corresponds to an object property."""
@@ -1532,7 +1623,16 @@ class Keywords:
         for cls in sorted(classes):
             name = self.prefixed(cls)
             shortname = iriname(name)
-            resource = self.data.resources[shortname]
+            if shortname in self.data.resources:
+                resource = self.data.resources[shortname]
+            else:
+                for rname, resource in self.data.resources.items():
+                    if self.prefixed(resource.iri) == name:
+                        shortname = rname
+                        break
+                else:
+                    raise MissingKeyError(cls)
+
             out.append("")
             out.append(f"## Properties on [{shortname}]")
             if "description" in resource:
@@ -1660,18 +1760,44 @@ def main(argv=None):
         )
     )
     parser.add_argument(
-        "--yamlfile",
+        "--input",
         "-i",
-        metavar="YAMLFILE",
+        metavar="FILENAME",
+        default=[],
         action="append",
-        help="Load keywords from this YAML file.",
+        help="Load keywords from this file. May be given multiple times.",
+    )
+    parser.add_argument(
+        "--format",
+        "-f",
+        metavar="FORMAT",
+        nargs="?",
+        action="append",
+        help=(
+            "Formats of --input. Default format is inferred from the file "
+            "name extension.  If given, this option must be provided the "
+            "same number of times as --input."
+        ),
     )
     parser.add_argument(
         "--theme",
-        "-f",
+        "-t",
         metavar="NAME",
+        nargs="?",
+        default=[],
         action="append",
         help="Load keywords from this theme.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Whether to raise an exception of input contains an unknown key.",
+    )
+    parser.add_argument(
+        "--redefine",
+        default="raise",
+        choices=["raise", "allow", "skip"],
+        help="How to handle redifinition of existing keywords.",
     )
     parser.add_argument(
         "--context",
@@ -1729,18 +1855,42 @@ def main(argv=None):
         metavar="FILENAME",
         help="Generate prefixes Markdown documentation.",
     )
+    parser.add_argument(
+        "--list-themes",
+        action="store_true",
+        help="List installed themes and exit.",
+    )
+
     args = parser.parse_args(argv)
 
-    if not args.theme and not args.yamlfile:
-        args.theme = "ddoc:datadoc"
+    if args.list_themes:
+        themes = [ep.value for ep in get_entry_points("tripper.keywords")]
+        parser.exit(message=os.linesep.join(themes) + os.linesep)
 
-    keywords = Keywords(theme=args.theme, yamlfile=args.yamlfile)
+    if args.format and len(args.format) != len(args.input):
+        parser.error(
+            "The number of --format options must match the number "
+            "of --input options."
+        )
+
+    if args.theme:
+        default_theme = None if None in args.theme else args.theme[0]
+    else:
+        default_theme = "ddoc:datadoc"
+
+    kw = Keywords(theme=default_theme)
+
+    for theme in args.theme[1:]:
+        if theme:
+            kw.add_theme(theme, strict=args.strict, redefine=args.redefine)
+
+    kw.add(args.input, args.format, strict=args.strict, redefine=args.redefine)
 
     if args.context:
-        keywords.save_context(args.context)
+        kw.save_context(args.context)
 
     if args.keywords or args.kw or args.classes or args.themes:
-        keywords.save_markdown(
+        kw.save_markdown(
             args.keywords,
             keywords=args.kw.split(",") if args.kw else None,
             classes=args.classes.split(",") if args.classes else None,
@@ -1750,7 +1900,7 @@ def main(argv=None):
         )
 
     if args.prefixes:
-        keywords.save_markdown_prefixes(args.prefixes)
+        kw.save_markdown_prefixes(args.prefixes)
 
 
 if __name__ == "__main__":
