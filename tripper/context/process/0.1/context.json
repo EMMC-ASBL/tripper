@@ -20,6 +20,7 @@
     "schema": "https://schema.org/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "spdx": "http://spdx.org/rdf/terms#",
+    "stat": "http://purl.org/adms/status/",
     "vann": "http://purl.org/vocab/vann/",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
@@ -42,12 +43,20 @@
       "@id": "dcat:contactPoint",
       "@type": "@id"
     },
+    "contributor": {
+      "@id": "dcterms:contributor",
+      "@type": "@id"
+    },
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
     },
+    "curationDate": {
+      "@id": "ddoc:curationDate",
+      "@type": "@id"
+    },
     "curator": {
-      "@id": "oteio:curator",
+      "@id": "ddoc:curator",
       "@type": "@id"
     },
     "description": {
@@ -110,6 +119,10 @@
     "releaseDate": {
       "@id": "dcterms:issued",
       "@type": "xsd:date"
+    },
+    "subPropertyOf": {
+      "@id": "rdfs:subPropertyOf",
+      "@type": "@id"
     },
     "theme": {
       "@id": "dcat:theme",
@@ -293,7 +306,10 @@
       "@id": "oteio:parser",
       "@type": "@id"
     },
-    "status": "adms:status",
+    "status": {
+      "@id": "dcatap:status",
+      "@type": "@id"
+    },
     "configuration": {
       "@id": "oteio:hasConfiguration",
       "@type": "@json"
@@ -382,10 +398,6 @@
     },
     "subClassOf": {
       "@id": "rdfs:subClassOf",
-      "@type": "@id"
-    },
-    "subPropertyOf": {
-      "@id": "rdfs:subPropertyOf",
       "@type": "@id"
     },
     "datatype": {
@@ -506,6 +518,10 @@
     },
     "Restriction": {
       "@id": "owl:Restriction",
+      "@type": "http://www.w3.org/2002/07/owl#Class"
+    },
+    "Document": {
+      "@id": "foaf:Document",
       "@type": "http://www.w3.org/2002/07/owl#Class"
     }
   }

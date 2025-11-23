@@ -33,6 +33,7 @@ from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 # pylint: disable=too-many-branches
+# pylint: disable=logging-not-lazy,logging-fstring-interpolation
 import json
 import logging
 import re
@@ -49,7 +50,7 @@ from tripper import (
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
+from tripper.datadoc.errors import (
     InvalidDatadocError,
     IRIExistsError,
     IRIExistsWarning,
@@ -237,15 +238,11 @@ def _told(
         """Add `cls` and its superclasses to key "@type" in dict `d`."""
         classes = cls if isinstance(cls, list) else [cls]
         missing = []
-        # print("*** addsuper:", cls)
-        # print(d)
         for c in classes:
             try:
-                # print("*** super:", keywords.superclasses(c))
                 add(d, "@type", keywords.superclasses(c))
             except NoSuchTypeError:
                 missing.append(prefix_iri(c, keywords.get_prefixes()))
-                # print("*** c:", c)
                 add(d, "@type", c)
             if missing:
                 # Using logging.info() here, since warnings is too verbose
@@ -783,7 +780,8 @@ def acquire(
     ts: Triplestore,
     iri: str,
     use_sparql: "Optional[bool]" = None,
-    context: "Optional[Context]" = None,
+    context: "Optional[ContextType]" = None,
+    keywords: "Optional[Keywords]" = None,
 ) -> dict:
     """Load description of a resource from the triplestore.
 
@@ -798,6 +796,8 @@ def acquire(
     Returns:
         Dict describing the resource identified by `iri`.
     """
+    context = get_context(context, keywords=keywords)
+
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
     if use_sparql:
@@ -813,7 +813,13 @@ def acquire(
                 val = [val]
             for v in val:
                 if key != "@id" and isinstance(v, str) and v.startswith("_:"):
-                    add(d, key, acquire(ts, iri=v, use_sparql=use_sparql))
+                    add(
+                        d,
+                        key,
+                        acquire(
+                            ts, iri=v, context=context, use_sparql=use_sparql
+                        ),
+                    )
                 else:
                     add(d, key, v)
 
@@ -1170,7 +1176,7 @@ def validate(
         for k in dct:
             if not k.startswith("@"):
                 if not check_keyword(k, typename):
-                    warnings.warn(
+                    logger.info(
                         f"unexpected keyword '{k}' provided for type: '{type}'"
                     )
 

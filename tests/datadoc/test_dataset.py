@@ -212,7 +212,7 @@ def test_get_jsonld_context():
         assert isinstance(context, dict)
         assert len(context) > 80
         assert context["@version"] == 1.1
-        assert context["status"] == "adms:status"
+        assert context["title"] == {"@id": "dcterms:title", "@language": "en"}
 
         # Test online context. It should equal context on disk.
         # However, since they are updated asynchronously, we do not test for
@@ -221,7 +221,10 @@ def test_get_jsonld_context():
         assert isinstance(online_context, dict)
         assert len(online_context) > 80
         assert online_context["@version"] == 1.1
-        assert online_context["status"] == "adms:status"
+        assert online_context["title"] == {
+            "@id": "dcterms:title",
+            "@language": "en",
+        }
 
         # Test context argument
         context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)

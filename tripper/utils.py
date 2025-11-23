@@ -4,6 +4,7 @@
 import datetime
 import hashlib
 import inspect
+import io
 import random
 import re
 import string
@@ -14,7 +15,7 @@ import warnings
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import IO, TYPE_CHECKING
 
 from tripper.errors import NamespaceError
 from tripper.literal import Literal
@@ -32,6 +33,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Callable,
         Generator,
         Iterable,
+        Iterator,
         List,
         Optional,
         Tuple,
@@ -62,6 +64,7 @@ __all__ = (
     "as_python",
     "is_uri",
     "is_curie",
+    # "is_iri",
     "check_function",
     "random_string",
     "extend_namespace",
@@ -248,14 +251,14 @@ def recursive_update(
 
 @contextmanager
 def openfile(
-    url: "Union[str, Path]", mode: str = "rt", timeout: float = 3, **kwargs
-) -> "Generator":
+    url: "Union[str, Path, IO]", mode: str = "rt", timeout: float = 3, **kwargs
+) -> "Iterator[IO]":
     """Like open(), but allows opening remote files using HTTP GET requests.
 
     Should always be used in a with-statement.
 
     Arguments:
-        url: File path or URL to open.
+        url: File path, URL or stream to open.
         mode: See `mode` argument of open().
         timeout: Timeout for accessing the file in seconds.
         kwargs: Additional passed to open().
@@ -264,6 +267,10 @@ def openfile(
         A stream object returned by open().
 
     """
+    if isinstance(url, (IO, io.IOBase)):
+        yield url
+        return
+
     url = str(url)
     u = url.lower()
     tmpfile = False
@@ -291,7 +298,7 @@ def openfile(
     try:
         # pylint: disable=unspecified-encoding
         f = open(fname, mode=mode, **kwargs)  # type: ignore
-        yield f
+        yield f  # type:ignore
     finally:
         if f is not None:
             f.close()

@@ -52,7 +52,6 @@ Note that if the fuseki instance is not found the test will just be skipped.
 
 
 ## Creating new release
-
 To create a new release, it is good to have a release summary.
 
 To add this, create a milestone that matches the new version and tag, e.g., `v1.0.8`.
@@ -70,7 +69,6 @@ Finally, press the "Publish release" button and ensure the release workflow succ
 
 
 ## Testing documentation locally
-
 To test the documentation locally, just install and run [mkdocs]:
 
     pip install .[dev]
@@ -78,6 +76,25 @@ To test the documentation locally, just install and run [mkdocs]:
     mkdocs serve
 
 Then open http://127.0.0.1:8000/tripper/ in your browser.
+
+
+
+## Profiling
+To identify performance bottlenecks, install `pytest-profiling` and run run
+
+    pytest --profile
+
+to generate a `prof/` subdirectory with profiling information.
+
+For a graphical overview, install `gprof2dot` and `dot` and run
+
+    pytest --profile-svg
+
+This will create the figure `prof/combined.svg`, which shows what functions that uses most time and how many times they are called.
+
+
+See https://pypi.org/project/pytest-profiling/ for more information.
+
 
 
 
