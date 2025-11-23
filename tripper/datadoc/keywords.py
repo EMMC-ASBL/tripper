@@ -231,6 +231,7 @@ class Keywords:
         new.theme = self.theme
         new.data = deepcopy(self.data)
         new.keywords = deepcopy(self.keywords)
+        new.parsed = self.parsed.copy()
         return new
 
     def add(
@@ -358,6 +359,10 @@ class Keywords:
         if isinstance(theme, str):
             theme = [theme]
 
+        parsedkey = (tuple(theme), strict, redefine)
+        if parsedkey in self.parsed:
+            return
+
         for name in theme:  # type: ignore
             expanded = expand_iri(name, self.get_prefixes())
             prefixed = prefix_iri(name, self.get_prefixes())
@@ -396,6 +401,8 @@ class Keywords:
                 else:
                     raise TypeError(f"Unknown theme: {name}")
 
+        self.parsed.add(parsedkey)
+
     def load_yaml(
         self,
         yamlfile: "Union[Path, str]",
@@ -419,9 +426,9 @@ class Keywords:
                   - "raise": Raise an RedefineError (default).
 
         """
-        if (yamlfile, strict, redefine) in self.parsed:
+        parsedkey = (yamlfile, strict, redefine)
+        if parsedkey in self.parsed:
             return
-        self.parsed.add((yamlfile, strict, redefine))
 
         with openfile(yamlfile, timeout=timeout, mode="rt") as f:
             d = yaml.safe_load(f)
@@ -429,6 +436,8 @@ class Keywords:
             self._load_yaml(d, strict=strict, redefine=redefine)
         except Exception as exc:
             raise ParseError(f"error parsing '{yamlfile}'") from exc
+
+        self.parsed.add(parsedkey)
 
     def _load_yaml(
         self,
@@ -1061,7 +1070,10 @@ class Keywords:
         """
         # pylint: disable=import-outside-toplevel,too-many-nested-blocks
         # pylint: disable=too-many-locals
+        from tripper.datadoc.context import Context
         from tripper.datadoc.dataset import acquire
+
+        context = Context(self.get_context())
 
         if iris is None:
             query = """
@@ -1090,14 +1102,7 @@ class Keywords:
         dicts = []
         for iri in iris:
             d = AttrDict()
-
-            # TODO: if calling acquire() multiple times is too slow,
-            # consider to create a temporary rdflib triplestore
-            # populated with a single CONSTRUCT sparql query.
-            #
-            # FIXME: Make it possible to set argument `keywords=self`.
-            # Currently, we reload keywords for each look iteration...
-            for k, v in acquire(ts, iri, keywords=None).items():
+            for k, v in acquire(ts, iri, context=context).items():
                 d[names.get(k, k)] = v
             dicts.append(d)
 
@@ -1115,7 +1120,7 @@ class Keywords:
                             continue
                         if expanded not in seen:
                             seen.add(expanded)
-                            acquired = acquire(ts, expanded, keywords=None)
+                            acquired = acquire(ts, expanded, context=context)
                             if acquired:
                                 dct[expanded] = acquired  # type: ignore
 
