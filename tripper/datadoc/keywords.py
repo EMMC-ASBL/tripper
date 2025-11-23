@@ -1518,13 +1518,15 @@ class Keywords:
                     if isinstance(d.datatype, list)
                     else f"<br>({d.datatype})"
                 )
+            descr = f"{d.description}" if "description" in d else ""
+            usage = f"{d.usageNote}" if "usageNote" in d else ""
             table.append(
                 [
                     f"[{d.name}]",
                     rangestr,
                     f"{d.conformance}" if "conformance" in d else "",
-                    f"{d.description}" if "description" in d else "",
-                    f"{d.usageNote}" if "usageNote" in d else "",
+                    descr.replace("\n", "\\n"),
+                    usage.replace("\n", "\\n"),
                 ]
             )
             refs.append(f"[{d.name}]: {self.expanded(d.iri)}")
@@ -1577,17 +1579,13 @@ class Keywords:
             ts.bind(prefix, ns)
 
         out = [
-            "<!-- Do not edit! This file is generated with Tripper. "
-            "Edit the keywords.yaml file instead. -->",
-            "",
-            f"# Keywords{f' for theme: {themes}' if themes else ''}",
-            (
-                f"The tables below lists the keywords for the theme {themes}."
-                if themes
-                else ""
-            ),
+            "<!-- Do not edit! This file is generated with Tripper. -->",
             "",
         ]
+        if themes:
+            out.append(f"Keywords for theme: {', '.join(themes)}")
+            out.append("")
+
         column_explanations = [
             "The meaning of the columns are as follows:",
             "",
@@ -1635,7 +1633,7 @@ class Keywords:
                     raise MissingKeyError(cls)
 
             out.append("")
-            out.append(f"## Properties on [{shortname}]")
+            out.append(f"## Properties on [{name}]")
             if "description" in resource:
                 out.append(resource.description)
             if "subClassOf" in resource:
