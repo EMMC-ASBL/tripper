@@ -1338,19 +1338,28 @@ class Keywords:
         keywords: "Optional[Sequence[str]]" = None,
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
+        namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
     ) -> "Tuple[Set[str], Set[str], Set[str]]":
-        """Help function returning a list of keywords corresponding to arguments
-        `keywords`, `classes` and `themes`. See also save_markdown_table().
+        """Help function returning a list of keywords corresponding to
+        arguments `keywords`, `classes` and `themes`.
 
         Arguments:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
+            namespace_filter: A prefix, namespace or a sequence of these.
+                If given, filter out keywords and classes from the returned
+                `keywordset` and `classet` who's IRIs does not has one of
+                these namespaces.
 
         Returns:
             keywordset: Set with all included keywords.
             classet: Set with all included classes.
             themeset: Set with all included themes.
+
+        SeeAlso:
+            save_markdown_table()
+
         """
         keywords = (
             set(self.prefixed(k) for k in asseq(keywords))
@@ -1394,6 +1403,14 @@ class Keywords:
                 classes.add(vdomain[0])
             if vtheme and not themes.intersection(vtheme):
                 themes.add(vtheme[0])
+
+        if namespace_filter:
+            if isinstance(namespace_filter, str):
+                namespaces = [namespace_filter]
+
+            for ns in namespace_filter:
+                pass
+
 
         return keywords, classes, themes
 

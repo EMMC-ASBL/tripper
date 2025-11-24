@@ -698,3 +698,10 @@ def test_typename():
     assert keywords.typename(DCAT.Dataset) == "Dataset"
     with pytest.raises(NoSuchTypeError):
         keywords.typename("xxx")
+
+
+if 1:
+#def test__keywords_list():
+    """Test _keywords_list() method."""
+    kwset, clset, themeset = keywords._keywords_list()
+    assert len(kwset) == len(keywords)
