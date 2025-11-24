@@ -452,35 +452,39 @@ def save_dict(
 
 
 def infer_restriction_types(
-    dicts: "Union[dict, list]",
+    source: "Union[dict, list]",
     iri: "Optional[str]" = None,
-    ts: "Optional[Triplestore]" = None,
-    context: "Optional[ContextType]" = None,
+    context: "Optional[Context]" = None,
+    keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
 ) -> dict:
     """Return a dict that describes what type of restriction the
-    properties of the class described by `d` should be converted to.
+    properties of a class in `source` should be converted to.
 
     The following algorithm is used:
-      - If `iri` is not a class, i.e. if the value of `@type` is not
-        `owl:Class` or `rdfs:Class`, an empty dict is returned.
-      - Otherwise, for each property:
-          - If it is an object property that relates to a class,
-            assume an existential restriction.
-          - Otherwise, if it is an object property, set it to a value
+      - Suggested restriction will only be provided for classes, i.e.
+        if the value of `@type` is `owl:Class` or `rdfs:Class`.
+      - For each property:
+          - If the value is a class, assume an existential
             restriction.
-          - Otherwise, if it is a data property, set it to a value
+          - Otherwise, if the value is an IRI (to presumably an
+            individual), assume a value restriction.
+          - Otherwise, if the value is a literal with no language
+            specification, (indicating a data property) assume a value
             restriction.
-          - Otherwise, don't add a restriction type for the property,
-            indicating that it is an annotation property.
+          - Otherwise, don't add a restriction type for the property
+            (assuming that it is an annotation property).
 
     Arguments:
-        dicts: JSON-LD dict or JSON-LD list of dicts describing resources
-            to analyse.
-        iri:
-        ts: Optional Triplestore object to look up types in.
-        context: JSON-LD context object.
-        prefixes:
+        source: JSON-LD dict or list of JSON-LD dicts to analyse.
+        iri: If given, only the class with this IRI is analysed.
+            Otherwise, suggestions are provided for all classes in
+            `source`.
+        context: Optional JSON-LD context object used for providing
+            hints about classes and relation types.
+        keywords: Optional Keywords object used for providing
+            hints about classes and relation types.
+        prefixes: ???
 
     Returns:
         The returned dict will maps labels of properties that should
@@ -497,16 +501,16 @@ def infer_restriction_types(
 
     """
     # pylint: disable=unused-argument
-    if isinstance(dicts, dict):
+    if isinstance(source, dict):
         if not iri:
-            iri = dicts["@iri"]
-        dicts = [dicts]
+            iri = source["@iri"]
+        source = [source]
     elif not iri:
-        raise TypeError("`iri` is required when `dicts` is a list")
+        raise TypeError("`iri` is required when `source` is a list")
 
     context = get_context(context=context, prefixes=prefixes)
     namespaces = context.get_prefixes()
-    dct = {expand_iri(d["@id"], namespaces): d for d in dicts}
+    dct = {expand_iri(d["@id"], namespaces): d for d in source}
     d = dct[expand_iri(iri, namespaces)]
 
     def expandlist(iris: "Union[str, Sequence]") -> "list":
