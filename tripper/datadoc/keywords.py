@@ -1502,12 +1502,19 @@ class Keywords:
                 themes.add(vtheme[0])
 
         if namespace_filter:
-            if isinstance(namespace_filter, str):
-                namespaces = [namespace_filter]
+            nf = (
+                [namespace_filter]
+                if isinstance(namespace_filter, str)
+                else list(namespace_filter)
+            )
+            for i, value in enumerate(nf):
+                if value not in self.data.prefixes:
+                    nf[i] = self.prefixed(value).rstrip(":")
+            prefixtuple = tuple(f"{v}:" for v in nf)
 
-            for ns in namespace_filter:
-                pass
-
+            print("***", prefixtuple)
+            keywords = {kw for kw in keywords if kw.startswith(prefixtuple)}
+            classes = {c for c in classes if c.startswith(prefixtuple)}
 
         return keywords, classes, themes
 
@@ -1575,6 +1582,7 @@ class Keywords:
         keywords: "Optional[Sequence[str]]" = None,
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
+        namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
         explanation: bool = False,
         special: bool = False,
     ) -> None:
@@ -1592,7 +1600,7 @@ class Keywords:
         """
         # pylint: disable=too-many-locals,too-many-branches
         keywords, classes, themes = self._keywords_list(
-            keywords, classes, themes
+            keywords, classes, themes, namespace_filter=namespace_filter
         )
         ts = Triplestore("rdflib")
         for prefix, ns in self.data.get("prefixes", {}).items():
@@ -1845,6 +1853,15 @@ def main(argv=None):
         "-s",
         action="store_true",
         help="Whether to include special keywords in generated documentation.",
+    )
+    parser.add_argument(
+        "--filter-namespace",
+        "--fn",
+        action="append",
+        help=(
+            "Filter out IRIs in the MarkDown documentation that are not in "
+            "thise filters.  Can be provided more that once."
+        ),
     )
     parser.add_argument(
         "--kw",
