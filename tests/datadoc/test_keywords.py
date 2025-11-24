@@ -449,7 +449,6 @@ def test_missing_keywords():
     assert len(existing4) == len(keywords.keywordnames())
 
 
-# VERY SLOW - consider to replace default keywords with something smaller
 def test_load_rdf():
     """Test load_rdf() method."""
     from dataset_paths import outdir  # pylint: disable=import-error

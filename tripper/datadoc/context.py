@@ -56,15 +56,13 @@ def get_context(
         Context object.
     """
     # pylint: disable=import-outside-toplevel
-    from tripper.datadoc.keywords import Keywords
+    from tripper.datadoc.keywords import get_keywords
 
     if isinstance(context, Context):
         if copy:
             context = context.copy()
         if keywords or theme:
-            kw = keywords.copy() if keywords else Keywords()
-            if theme:
-                kw.add_theme(theme)
+            kw = get_keywords(keywords=keywords, theme=theme)
             context.add_context(kw.get_context())
     else:
         context = Context(
@@ -118,7 +116,7 @@ class Context:
         self._prefixed: dict = {}
         self._shortnamed: dict = {}
 
-        if keywords:
+        if keywords is not None:
             if theme:
                 keywords.add_theme(theme)
             self.add_context(keywords.get_context())
