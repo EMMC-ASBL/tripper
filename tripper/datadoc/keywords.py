@@ -1838,6 +1838,7 @@ def main(argv=None):
     )
     parser.add_argument(
         "--keywords",
+        "--markdown",
         "-k",
         metavar="FILENAME",
         help="Generate keywords Markdown documentation.",
@@ -1857,10 +1858,14 @@ def main(argv=None):
     parser.add_argument(
         "--filter-namespace",
         "--fn",
+        metavar="NAMESPACE",
         action="append",
         help=(
-            "Filter out IRIs in the MarkDown documentation that are not in "
-            "thise filters.  Can be provided more that once."
+            "To be used with the --keywords option. Filter out IRIs in the "
+            "generated MarkDown documentation that does not have a namespace "
+            "provided by this option.  Can be provided more that once. "
+            "A namespace can be specified by its full IRI or by a pre-defined "
+            "prefix."
         ),
     )
     parser.add_argument(
