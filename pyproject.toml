@@ -154,7 +154,8 @@ filterwarnings = [
 "tripper.context" = ["*.json", "*.yaml"]
 
 
-# Note the quotes around dlite.python_storage_plugins to escape the embedded dot
+# Note the quotes around "tripper.keywords" to escape the embedded dot
 [project.entry-points."tripper.keywords"]
-"tripper/context/0.3" = "ddoc:datadoc"
-"tripper/context/process/0.1" = "ddoc:process"
+"tripper/context/0.3/prefixes.yaml" = "ddoc:prefixes"
+"tripper/context/0.3/keywords.yaml" = "ddoc:datadoc"
+"tripper/context/process/0.1/keywords.yaml" = "ddoc:process"

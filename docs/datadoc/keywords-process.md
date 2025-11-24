@@ -11,18 +11,6 @@ The meaning of the columns are as follows:
 - **Definition**: The definition of the keyword.
 - **Usage note**: Notes about how to use the keyword.
 
-## Special keywords (from JSON-LD)
-See the [JSON-LD specification] for more details.
-
-| Keyword    | Range         | Conformance | Definition                                                              | Usage note |
-|------------|---------------|-------------|-------------------------------------------------------------------------|------------|
-| [@id]      | IRI           | mandatory   | IRI identifying the resource to document.                               |            |
-| [@type]    | IRI           | recommended | Ontological class defining the class of a node.                         |            |
-| [@context] | dict&#124list | optional    | Context defining namespace prefixes and additional keywords.            |            |
-| [@base]    | namespace     | optional    | Base IRI against which relative IRIs are resolved.                      |            |
-| [@vocab]   | namespace     | optional    | Used to expand properties and values in @type with a common prefix IRI. |            |
-| [@graph]   | list          | optional    | Used for documenting multiple resources.                                |            |
-
 
 ## Properties on [DataService]
 A collection of operations that provides access to one or more datasets or data processing functions.
