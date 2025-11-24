@@ -1606,16 +1606,16 @@ class Keywords:
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
+        if namespace_filter:
+            header = "Keywords for namespaces:" + ", ".join(namespace_filter)
+        elif themes:
+            header = "Keywords for theme: " + ", ".join(themes)
+        else:
+            header = "Keywords"
         out = [
-            "<!-- Do not edit! This file is generated with Tripper. "
-            "Edit the keywords.yaml file instead. -->",
+            "<!-- Do not edit! This file is generated with Tripper. -->",
             "",
-            f"# Keywords{f' for theme: {themes}' if themes else ''}",
-            (
-                f"The tables below lists the keywords for the theme {themes}."
-                if themes
-                else ""
-            ),
+            header,
             "",
         ]
         column_explanations = [
