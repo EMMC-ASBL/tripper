@@ -47,7 +47,7 @@ def test_get_keywords():
         "theme",
         "resources",
     }
-    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:process"]
+    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert len(kw4.keywords) > len(kw1.keywords)
 
     kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
@@ -56,18 +56,35 @@ def test_get_keywords():
         "theme",
         "resources",
     }
-    assert kw5.data.theme == ["ddoc:datadoc", "ddoc:process"]
+    assert kw5.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
     kw6 = get_keywords(
         kw4, yamlfile=testdir / "input" / "custom_keywords.yaml"
     )
-    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:process"]
+    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert "batchNumber" in kw6
 
 
+def test_iter():
+    """Test __iter__() method."""
+    n = 0
+    for k in keywords:
+        if k:
+            n += 1
+    assert n == len(keywords)
+
+    it = iter(keywords)
+    assert next(it) in keywords
+
+
+def test_len():
+    """Test __iter__() method."""
+    assert len(keywords) == 125
+
+
 def test_dir():
-    """Test `dir(keywords)`."""
+    """Test __dir__() method."""
     dirlist = set(dir(keywords))
     assert "save_context" in dirlist
     assert "__dir__" in dirlist
@@ -86,7 +103,7 @@ def test_copy():
 
 def test_add():
     """Test add() method."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir, ontodir  # pylint: disable=import-error
 
     from tripper.datadoc import get_keywords
 
@@ -104,6 +121,32 @@ def test_add():
     # kw3 = kw.copy()
     # kw3.add("./tests/input/custom_keywords.yaml")
     # assert kw3 == kw2
+
+    kw4 = get_keywords(theme=None)
+    kw4.add(kw2)
+    assert len(kw4) == len(kw2)
+
+    kw5 = get_keywords(theme=None)
+    kw5.add([indir / "custom_keywords.yaml"], format="yaml")
+    assert len(kw5) == len(kw2)
+
+    with pytest.raises(TypeError):
+        # Length of input and format must equal
+        kw5.add([indir / "custom_keywords.yaml"], format=["yaml", "yml"])
+
+    kw6 = get_keywords(theme="ddoc:prefixes")
+    kw6.add_prefix("ex", "http://example.com/kw/")
+    kw6.add([indir / "new_keywords.csv"])
+    assert list(kw6.data.resources.DeviceX.keywords.keys()) == [
+        "voltage",
+        "owner",
+    ]
+
+    kw7 = get_keywords(theme=None)
+    kw7.add(ontodir / "family.ttl")
+
+    with pytest.raises(TypeError):
+        kw7.add(True)
 
 
 def test_load_yaml():
@@ -295,7 +338,7 @@ def test_keywordnames():
     """Test keywordnames() method."""
     keywordnames = keywords.keywordnames()
     assert "distribution" in keywordnames
-    assert len(keywordnames) == 124
+    assert len(keywordnames) == len(keywords)
 
 
 def test_classnames():
@@ -406,7 +449,6 @@ def test_missing_keywords():
     assert len(existing4) == len(keywords.keywordnames())
 
 
-# VERY SLOW - consider to replace default keywords with something smaller
 def test_load_rdf():
     """Test load_rdf() method."""
     from dataset_paths import outdir  # pylint: disable=import-error
@@ -559,7 +601,6 @@ def test_save_context():
 
     pytest.importorskip("rdflib")
 
-    # kw = get_keywords()
     kw = Keywords()
     kw.save_context(outdir / "context.json")
     with open(

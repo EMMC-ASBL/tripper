@@ -16,6 +16,9 @@ site/
 # Build
 dist/
 
+# Profiling
+prof/
+
 # Test output
 route.svg
 coverage.xml
