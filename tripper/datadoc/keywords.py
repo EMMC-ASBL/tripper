@@ -1512,7 +1512,6 @@ class Keywords:
                     nf[i] = self.prefixed(value).rstrip(":")
             prefixtuple = tuple(f"{v}:" for v in nf)
 
-            print("***", prefixtuple)
             keywords = {kw for kw in keywords if kw.startswith(prefixtuple)}
             classes = {c for c in classes if c.startswith(prefixtuple)}
 
@@ -1856,7 +1855,7 @@ def main(argv=None):
         help="Whether to include special keywords in generated documentation.",
     )
     parser.add_argument(
-        "--filter-namespace",
+        "--namespace-filter",
         "--fn",
         metavar="NAMESPACE",
         action="append",
@@ -1942,6 +1941,7 @@ def main(argv=None):
             themes=args.themes.split(",") if args.themes else None,
             explanation=args.explanation,
             special=args.special_keywords,
+            namespace_filter=args.namespace_filter,
         )
 
     if args.prefixes:
