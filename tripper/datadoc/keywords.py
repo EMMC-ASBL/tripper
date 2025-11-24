@@ -1856,7 +1856,7 @@ def main(argv=None):
     )
     parser.add_argument(
         "--namespace-filter",
-        "--fn",
+        "--nf",
         metavar="NAMESPACE",
         action="append",
         help=(
