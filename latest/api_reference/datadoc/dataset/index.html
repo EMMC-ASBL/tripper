@@ -2083,7 +2083,7 @@ meaning of the keywords in this dict are defined by a <a href="https://raw.githu
 
 
 <h2 id="tripper.datadoc.dataset.acquire" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.acquire" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2153,7 +2153,6 @@ in the default [JSON-LD context].</p></td>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load description of a resource from the triplestore.</span>
 
@@ -2168,7 +2167,7 @@ in the default [JSON-LD context].</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict describing the resource identified by `iri`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">use_sparql</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">use_sparql</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">prefer_sparql</span>

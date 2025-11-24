@@ -2067,7 +2067,7 @@ Context        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
                 <span class="n">keywords</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
@@ -2589,7 +2589,7 @@ Context        </code>
     <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
             <span class="n">keywords</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">keywords</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
@@ -3379,15 +3379,13 @@ If <code>update</code> is:</p>
 <span class="sd">        Context object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=import-outside-toplevel</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">Keywords</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_keywords</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">keywords</span> <span class="ow">or</span> <span class="n">theme</span><span class="p">:</span>
-            <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">keywords</span> <span class="k">else</span> <span class="n">Keywords</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
-                <span class="n">kw</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
             <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span>

@@ -2426,6 +2426,7 @@ Keywords        </code>
         <span class="n">new</span><span class="o">.</span><span class="n">theme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theme</span>
         <span class="n">new</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">new</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">parsed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">new</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span>
@@ -2553,6 +2554,10 @@ Keywords        </code>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">theme</span> <span class="o">=</span> <span class="p">[</span><span class="n">theme</span><span class="p">]</span>
 
+        <span class="n">parsedkey</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">theme</span><span class="p">),</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsedkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">theme</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="n">expanded</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">())</span>
             <span class="n">prefixed</span> <span class="o">=</span> <span class="n">prefix_iri</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">())</span>
@@ -2591,6 +2596,8 @@ Keywords        </code>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown theme: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parsedkey</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">load_yaml</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
@@ -2614,9 +2621,9 @@ Keywords        </code>
 <span class="sd">                  - &quot;raise&quot;: Raise an RedefineError (default).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
+        <span class="n">parsedkey</span> <span class="o">=</span> <span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsedkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">))</span>
 
         <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -2624,6 +2631,8 @@ Keywords        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error parsing &#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parsedkey</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_yaml</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3256,7 +3265,10 @@ Keywords        </code>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=import-outside-toplevel,too-many-nested-blocks</span>
         <span class="c1"># pylint: disable=too-many-locals</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Context</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">acquire</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_context</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="n">iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -3285,14 +3297,7 @@ Keywords        </code>
         <span class="n">dicts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
-
-            <span class="c1"># TODO: if calling acquire() multiple times is too slow,</span>
-            <span class="c1"># consider to create a temporary rdflib triplestore</span>
-            <span class="c1"># populated with a single CONSTRUCT sparql query.</span>
-            <span class="c1">#</span>
-            <span class="c1"># FIXME: Make it possible to set argument `keywords=self`.</span>
-            <span class="c1"># Currently, we reload keywords for each look iteration...</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
             <span class="n">dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
@@ -3310,7 +3315,7 @@ Keywords        </code>
                             <span class="k">continue</span>
                         <span class="k">if</span> <span class="n">expanded</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
                             <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">expanded</span><span class="p">)</span>
-                            <span class="n">acquired</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">expanded</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                            <span class="n">acquired</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">expanded</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
                             <span class="k">if</span> <span class="n">acquired</span><span class="p">:</span>
                                 <span class="n">dct</span><span class="p">[</span><span class="n">expanded</span><span class="p">]</span> <span class="o">=</span> <span class="n">acquired</span>  <span class="c1"># type: ignore</span>
 
@@ -4403,6 +4408,10 @@ keywords.  Should be one of the following strings:
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">theme</span> <span class="o">=</span> <span class="p">[</span><span class="n">theme</span><span class="p">]</span>
 
+    <span class="n">parsedkey</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">theme</span><span class="p">),</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parsedkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
+        <span class="k">return</span>
+
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">theme</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
         <span class="n">expanded</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">())</span>
         <span class="n">prefixed</span> <span class="o">=</span> <span class="n">prefix_iri</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">())</span>
@@ -4440,6 +4449,8 @@ keywords.  Should be one of the following strings:
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown theme: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parsedkey</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4658,6 +4669,7 @@ default is to return all keywords.</p></td>
     <span class="n">new</span><span class="o">.</span><span class="n">theme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theme</span>
     <span class="n">new</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="n">new</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">)</span>
+    <span class="n">new</span><span class="o">.</span><span class="n">parsed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">new</span>
 </code></pre></div>
         </details>
@@ -5415,9 +5427,9 @@ keywords.  Should be one of the following strings:
 <span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
+    <span class="n">parsedkey</span> <span class="o">=</span> <span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parsedkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
         <span class="k">return</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="p">))</span>
 
     <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -5425,6 +5437,8 @@ keywords.  Should be one of the following strings:
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error parsing &#39;</span><span class="si">{</span><span class="n">yamlfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parsedkey</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
