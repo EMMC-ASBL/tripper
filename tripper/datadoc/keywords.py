@@ -1445,8 +1445,8 @@ class Keywords:
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
             namespace_filter: A prefix, namespace or a sequence of these.
-                If given, filter out keywords and classes from the returned
-                `keywordset` and `classet` who's IRIs does not has one of
+                If given, keep only keywords and classes from the returned
+                `keywordset` and `classet` with IRIs in one of
                 these namespaces.
 
         Returns:
@@ -1860,9 +1860,10 @@ def main(argv=None):
         metavar="NAMESPACE",
         action="append",
         help=(
-            "To be used with the --keywords option. Filter out IRIs in the "
-            "generated MarkDown documentation that does not have a namespace "
+            "Keep only keywords with IRIs in "
+            "the namespace "
             "provided by this option.  Can be provided more that once. "
+            "To be used with the --keywords option. "
             "A namespace can be specified by its full IRI or by a pre-defined "
             "prefix."
         ),
