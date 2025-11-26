@@ -67,6 +67,16 @@ resources:
         conformance: optional
         description: An entity responsible for making contributions to the resource.
 
+      creationDate:
+        iri: dcterms:created
+        range: xsd:date
+        description: Date of creation (YYYY-MM-DD).
+
+      creationTime:
+        iri: ddoc:creationTime
+        range: xsd:time
+        description: Time of creation (HH:MM:SS).
+
       creator:
         iri: dcterms:creator
         range: foaf:Agent
