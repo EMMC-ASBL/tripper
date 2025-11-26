@@ -756,7 +756,6 @@ def acquire(
     iri: str,
     use_sparql: "Optional[bool]" = None,
     context: "Optional[ContextType]" = None,
-    keywords: "Optional[Keywords]" = None,
 ) -> dict:
     """Load description of a resource from the triplestore.
 
@@ -771,7 +770,7 @@ def acquire(
     Returns:
         Dict describing the resource identified by `iri`.
     """
-    context = get_context(context, keywords=keywords)
+    context = get_context(context, theme=None)
 
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
