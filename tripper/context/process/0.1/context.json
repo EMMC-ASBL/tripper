@@ -181,6 +181,10 @@
       "@id": "oteio:statement",
       "@type": "@json"
     },
+    "unit": {
+      "@id": "ddoc:unit",
+      "@type": "xsd:string"
+    },
     "usageNote": {
       "@id": "vann:usageNote",
       "@language": "en"

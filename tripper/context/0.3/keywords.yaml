@@ -322,6 +322,13 @@ resources:
         datatype: rdf:JSON
         description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
 
+      unit:
+        iri: ddoc:unit
+        range: rdfs:Literal
+        datatype: xsd:string
+        description: A SI unit associated to a property.
+        usageNote: "The unit should be written with standard SI unit symbols.  Examples: As, μm, J, m/s²"
+
       usageNote:
         iri: vann:usageNote
         range: rdfs:Literal

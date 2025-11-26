@@ -80,7 +80,7 @@ def test_iter():
 
 def test_len():
     """Test __iter__() method."""
-    assert len(keywords) == 127
+    assert len(keywords) == 128
 
 
 def test_dir():
