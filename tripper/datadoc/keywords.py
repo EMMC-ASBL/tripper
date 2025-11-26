@@ -602,11 +602,18 @@ class Keywords:
                             continue
                         oldiri = keywords[keyword].iri
                         if value.iri == oldiri:
-                            raise RedefineError(
-                                "Cannot redefine existing concept "
-                                f"'{value.iri}'. Trying to change "
-                                f"property '{k}' from '{oldval}' to "
-                                f"'{v}'."
+                            if redefine != "allow":
+                                raise RedefineError(
+                                    "Cannot redefine existing concept "
+                                    f"'{value.iri}'. Trying to change "
+                                    f"property '{k}' from '{oldval}' to "
+                                    f"'{v}'."
+                                )
+                            warnings.warn(
+                                "Redefining existing concept "
+                                f"'{value.iri}'. Change property "
+                                f"'{k}' from '{oldval}' to '{v}'.",
+                                RedefineKeywordWarning,
                             )
                         if redefine == "raise":
                             raise RedefineError(
