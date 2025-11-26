@@ -79,7 +79,7 @@ MATCH_PREFIXED_IRI = re.compile(
     r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
 )
 MATCH_IRI = re.compile(
-    "^([a-z0-9]*)://([a-zA-Z0-9.-]+)((/[a-zA-Z0-9_+-]+)+)[#/]([a-zA-Z0-9_+-]+)$"
+    "^([a-z0-9]*)://([a-zA-Z0-9.-]+)((/[a-zA-Z0-9_+-]+)*)[#/]([a-zA-Z0-9_+-]+)$"
 )
 
 
@@ -645,7 +645,7 @@ def is_uri(
     Arguments:
         uri: URI to validate.
         require_netloc: Whether to require `uri` to contain a network location.
-            Setting this to false, will exclude URNs, which in are valid URIs.
+            Setting this to true, will exclude URNs, which in are valid URIs.
             However, in most practical cases, you would expect the URI to
             contain a network location.
         allow_unescaped: Whether to allow `uri` to contain unescaped special

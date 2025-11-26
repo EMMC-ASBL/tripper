@@ -315,19 +315,16 @@ class Context:
         # Check ctx
         if name in self.ctx["mappings"]:
             return self.ctx["mappings"][name]["@id"]
+        # Check if name is already expanded
+        if re.match(MATCH_IRI, name):
+            return name
         # Check if prefixed
         if re.match(MATCH_PREFIXED_IRI, name):
             prefix, shortname = name.split(":", 1)
             prefixes = self.get_prefixes()
             if prefix in prefixes:
-                expanded = f"{prefixes[prefix]}{shortname}"
-                self._create_caches()
-                self._update_caches(shortname, name, expanded)
-                return expanded
-        # Check if name is already expanded
-        if re.match(MATCH_IRI, name):
-            return name
-        # Cannot expand
+                return f"{prefixes[prefix]}{shortname}"
+        # Name not defined in context
         if strict:
             raise NamespaceError(f"cannot expand: {name}")
         return name
@@ -387,32 +384,48 @@ class Context:
 
     def is_object_property(self, name: str) -> bool:
         """Returns whether `name` appear to be an object property."""
-        if name in (
-            "type",
-            "rdf:type",
-            RDF.type,
-            "subClassOf",
-            "rdfs:subClassOf",
-            RDFS.subClassOf,
-            "subPropertyOf",
-            "rdfs:subPropertyOf",
-            RDFS.subPropertyOf,
+        if (
+            name
+            in (
+                "type",
+                "rdf:type",
+                RDF.type,
+                "subClassOf",
+                "rdfs:subClassOf",
+                RDFS.subClassOf,
+                "subPropertyOf",
+                "rdfs:subPropertyOf",
+                RDFS.subPropertyOf,
+            )
+            or name not in self
         ):
             return False
         return self.getdef(name).get("@type") == "@id"
 
     def is_data_property(self, name: str) -> bool:
         """Returns whether `name` appears to be a data property."""
+        if name not in self or (
+            self.is_object_property(name)
+            or self.is_annotation_property(name)
+            or self.is_class(name)
+        ):
+            return False
         type = self.getdef(name).get("@type")
         return bool(type) and type not in ("@id", RDFS.Class, OWL.Class)
 
     def is_annotation_property(self, name: str) -> bool:
         """Returns whether `name` appears to bean annotation property."""
-        return "@type" not in self.getdef(name)
+        if name not in self:
+            return False
+        d = self.getdef(name)
+        return "@type" not in d or "@language" in d
 
     def is_class(self, name: str) -> bool:
         """Returns whether `name` appears to be a class."""
-        return self.getdef(name).get("@type") in (RDFS.Class, OWL.Class)
+        return name in self and self.getdef(name).get("@type") in (
+            RDFS.Class,
+            OWL.Class,
+        )
 
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
