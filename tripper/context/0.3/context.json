@@ -120,6 +120,10 @@
       "@id": "dcterms:issued",
       "@type": "xsd:date"
     },
+    "subPropertyOf": {
+      "@id": "rdfs:subPropertyOf",
+      "@type": "@id"
+    },
     "theme": {
       "@id": "dcat:theme",
       "@type": "@id"

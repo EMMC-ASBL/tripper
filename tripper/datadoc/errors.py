@@ -10,7 +10,7 @@ class InvalidDatadocError(TripperError):
     """Invalid data documentation dict (or list)."""
 
 
-class MissingKeyError(InvalidDatadocError):
+class MissingKeyError(InvalidDatadocError, KeyError):
     """Missing required key in description of a resource or keyword."""
 
 
