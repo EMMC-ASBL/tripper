@@ -739,3 +739,15 @@ def test_typename():
     assert keywords.typename(DCAT.Dataset) == "Dataset"
     with pytest.raises(NoSuchTypeError):
         keywords.typename("xxx")
+
+
+def test__keywords_list():
+    """Test _keywords_list() method."""
+    # pylint: disable=protected-access
+    kwset, clset, themeset = keywords._keywords_list()
+    assert len(kwset) == len(keywords)
+    assert isinstance(themeset, set)
+
+    kwset, clset, themeset = keywords._keywords_list(namespace_filter="ddoc")
+    assert len(kwset) == 4
+    assert len(clset) == 0
