@@ -749,5 +749,5 @@ def test__keywords_list():
     assert isinstance(themeset, set)
 
     kwset, clset, themeset = keywords._keywords_list(namespace_filter="ddoc")
-    assert len(kwset) == 4
+    assert len(kwset) == 6
     assert len(clset) == 0
