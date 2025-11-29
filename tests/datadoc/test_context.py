@@ -191,6 +191,46 @@ def test_isref():
     assert ctx.isref("dcterms:title") is False
 
 
+def test_is_object_property():
+    """Test is_object_property() method."""
+    assert ctx.is_object_property("dcat:theme")
+    assert not ctx.is_object_property("dcterms:issued")
+    assert not ctx.is_object_property("dcterms:title")
+    assert not ctx.is_object_property("foaf:Agent")
+    assert not ctx.is_object_property("rdfs:subClassOf")
+    assert not ctx.is_object_property("rdfs:subPropertyOf")
+
+
+def test_is_data_property():
+    """Test is_data_property() method."""
+    assert not ctx.is_data_property("dcat:theme")
+    assert ctx.is_data_property("dcterms:issued")
+    assert not ctx.is_data_property("dcterms:title")
+    assert not ctx.is_data_property("foaf:Agent")
+    assert not ctx.is_data_property("rdfs:subClassOf")
+    assert not ctx.is_data_property("rdfs:subPropertyOf")
+
+
+def test_is_annotation_property():
+    """Test is_annotation_property() method."""
+    assert not ctx.is_annotation_property("dcat:theme")
+    assert not ctx.is_annotation_property("dcterms:issued")
+    assert ctx.is_annotation_property("dcterms:title")
+    assert not ctx.is_annotation_property("foaf:Agent")
+    assert not ctx.is_annotation_property("rdfs:subClassOf")
+    assert not ctx.is_annotation_property("rdfs:subPropertyOf")
+
+
+def test_is_class():
+    """Test is_class() method."""
+    assert not ctx.is_class("dcat:theme")
+    assert not ctx.is_class("dcterms:issued")
+    assert not ctx.is_class("dcterms:title")
+    assert ctx.is_class("foaf:Agent")
+    assert not ctx.is_class("rdfs:subClassOf")
+    assert not ctx.is_class("rdfs:subPropertyOf")
+
+
 def test_to_triplestore():
     """Test to_triplestore() method."""
     from tripper import Namespace, Triplestore

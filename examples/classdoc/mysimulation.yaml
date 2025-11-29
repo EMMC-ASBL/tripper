@@ -2,6 +2,9 @@
 
 theme: ddoc:process
 
+prefixes:
+  ex: "http://example.org#"
+
 Computation:
   "@id": ex:MySimulation
   "@type": owl:Class
@@ -19,7 +22,6 @@ Computation:
     - "@id": ex:MyInputDataset
       "@type": owl:Class
       subClassOf: ["dcat:Dataset", "emmo:Dataset"]
-      restrictionType: exactly 1  # defaults to "some"
       prefLabel: MyInputDataset
       elucidation: My input dataset.
       distribution:
@@ -31,7 +33,6 @@ Computation:
     - "@id": ex:MyOutputDataset
       "@type": owl:Class
       subClassOf: ["dcat:Dataset", "emmo:Dataset"]
-      restrictionType: exactly 1  # defaults to "some"
       prefLabel: MyOutputDataset
       elucidation: My output dataset.
       distribution:
