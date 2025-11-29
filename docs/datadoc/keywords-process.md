@@ -1,7 +1,6 @@
-<!-- Do not edit! This file is generated with Tripper. Edit the keywords.yaml file instead. -->
+<!-- Do not edit! This file is generated with Tripper. -->
 
-# Keywords for theme: {'ddoc:datadoc'}
-The tables below lists the keywords for the theme {'ddoc:datadoc'}.
+Keywords for theme: ddoc:datadoc
 
 The meaning of the columns are as follows:
 
