@@ -602,11 +602,18 @@ class Keywords:
                             continue
                         oldiri = keywords[keyword].iri
                         if value.iri == oldiri:
-                            raise RedefineError(
-                                "Cannot redefine existing concept "
-                                f"'{value.iri}'. Trying to change "
-                                f"property '{k}' from '{oldval}' to "
-                                f"'{v}'."
+                            if redefine != "allow":
+                                raise RedefineError(
+                                    "Cannot redefine existing concept "
+                                    f"'{value.iri}'. Trying to change "
+                                    f"property '{k}' from '{oldval}' to "
+                                    f"'{v}'."
+                                )
+                            warnings.warn(
+                                "Redefining existing concept "
+                                f"'{value.iri}'. Change property "
+                                f"'{k}' from '{oldval}' to '{v}'.",
+                                RedefineKeywordWarning,
                             )
                         if redefine == "raise":
                             raise RedefineError(
@@ -1441,19 +1448,28 @@ class Keywords:
         keywords: "Optional[Sequence[str]]" = None,
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
+        namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
     ) -> "Tuple[Set[str], Set[str], Set[str]]":
-        """Help function returning a list of keywords corresponding to arguments
-        `keywords`, `classes` and `themes`. See also save_markdown_table().
+        """Help function returning a list of keywords corresponding to
+        arguments `keywords`, `classes` and `themes`.
 
         Arguments:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
+            namespace_filter: A prefix, namespace or a sequence of these.
+                If given, keep only keywords and classes from the returned
+                `keywordset` and `classet` with IRIs in one of
+                these namespaces.
 
         Returns:
             keywordset: Set with all included keywords.
             classet: Set with all included classes.
             themeset: Set with all included themes.
+
+        SeeAlso:
+            save_markdown_table()
+
         """
         keywords = (
             set(self.prefixed(k) for k in asseq(keywords))
@@ -1497,6 +1513,20 @@ class Keywords:
                 classes.add(vdomain[0])
             if vtheme and not themes.intersection(vtheme):
                 themes.add(vtheme[0])
+
+        if namespace_filter:
+            nf = (
+                [namespace_filter]
+                if isinstance(namespace_filter, str)
+                else list(namespace_filter)
+            )
+            for i, value in enumerate(nf):
+                if value not in self.data.prefixes:
+                    nf[i] = self.prefixed(value).rstrip(":")
+            prefixtuple = tuple(f"{v}:" for v in nf)
+
+            keywords = {kw for kw in keywords if kw.startswith(prefixtuple)}
+            classes = {c for c in classes if c.startswith(prefixtuple)}
 
         return keywords, classes, themes
 
@@ -1564,6 +1594,7 @@ class Keywords:
         keywords: "Optional[Sequence[str]]" = None,
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
+        namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
         explanation: bool = False,
         special: bool = False,
     ) -> None:
@@ -1581,22 +1612,22 @@ class Keywords:
         """
         # pylint: disable=too-many-locals,too-many-branches
         keywords, classes, themes = self._keywords_list(
-            keywords, classes, themes
+            keywords, classes, themes, namespace_filter=namespace_filter
         )
         ts = Triplestore("rdflib")
         for prefix, ns in self.data.get("prefixes", {}).items():
             ts.bind(prefix, ns)
 
+        if namespace_filter:
+            header = "Keywords for namespaces:" + ", ".join(namespace_filter)
+        elif themes:
+            header = "Keywords for theme: " + ", ".join(themes)
+        else:
+            header = "Keywords"
         out = [
-            "<!-- Do not edit! This file is generated with Tripper. "
-            "Edit the keywords.yaml file instead. -->",
+            "<!-- Do not edit! This file is generated with Tripper. -->",
             "",
-            f"# Keywords{f' for theme: {themes}' if themes else ''}",
-            (
-                f"The tables below lists the keywords for the theme {themes}."
-                if themes
-                else ""
-            ),
+            header,
             "",
         ]
         column_explanations = [
@@ -1819,6 +1850,7 @@ def main(argv=None):
     )
     parser.add_argument(
         "--keywords",
+        "--markdown",
         "-k",
         metavar="FILENAME",
         help="Generate keywords Markdown documentation.",
@@ -1834,6 +1866,20 @@ def main(argv=None):
         "-s",
         action="store_true",
         help="Whether to include special keywords in generated documentation.",
+    )
+    parser.add_argument(
+        "--namespace-filter",
+        "--nf",
+        metavar="NAMESPACE",
+        action="append",
+        help=(
+            "Keep only keywords with IRIs in "
+            "the namespace "
+            "provided by this option.  Can be provided more that once. "
+            "To be used with the --keywords option. "
+            "A namespace can be specified by its full IRI or by a pre-defined "
+            "prefix."
+        ),
     )
     parser.add_argument(
         "--kw",
@@ -1909,6 +1955,7 @@ def main(argv=None):
             themes=args.themes.split(",") if args.themes else None,
             explanation=args.explanation,
             special=args.special_keywords,
+            namespace_filter=args.namespace_filter,
         )
 
     if args.prefixes:
