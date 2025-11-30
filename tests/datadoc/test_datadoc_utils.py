@@ -43,8 +43,8 @@ def test_add():
 
 
 def test_addnested():
-    """Test help-function addnested()."""
-    from tripper.datadoc.utils import addnested
+    """Test help-functions addnested() and stripnested()."""
+    from tripper.datadoc.utils import addnested, stripnested
     from tripper.utils import AttrDict
 
     d = AttrDict()
@@ -58,11 +58,29 @@ def test_addnested():
     assert d.a[0] == "2"
     assert d.a[1].b[1].c == {"d": "3"}
     assert d == {"a": ["2", {"b": ["1", {"c": {"d": "3"}}]}]}
+    assert isinstance(d.a[1], AttrDict)
 
     l = []
     assert addnested(l, "a.b", 1) == [{"a": {"b": 1}}]
     assert addnested(l, "a.b", 1) == [{"a": {"b": 1}}]
     assert addnested(l, "a.b", 2) == [{"a": {"b": [1, 2]}}]
+
+    d2 = {}
+    assert addnested(d2, "a.x", 1) == {"a": {"x": 1}}
+    assert addnested(d2, "a.y", 2) == {"a": {"x": 1, "y": 2}}
+    assert addnested(d2, "a.x", 3) == {"a": {"x": [1, 3], "y": 2}}
+
+    d3 = {}
+    assert addnested(d3, "a.x", 1) == {"a": {"x": 1}}
+    assert addnested(d3, "a.y", 2) == {"a": {"x": 1, "y": 2}}
+    assert addnested(d3, "b.x", 3) == {"a": {"x": 1, "y": 2}, "b": {"x": 3}}
+
+    d4 = {}
+    addnested(d4, "a[1].x", 1)
+    addnested(d4, "a[1].y", 2)
+    addnested(d4, "a[2].x", 3)
+    assert d4 == {"a[1]": {"x": 1, "y": 2}, "a[2]": {"x": 3}}
+    assert stripnested(d4) == {"a": [{"x": 1, "y": 2}, {"x": 3}]}
 
 
 def test_get():
