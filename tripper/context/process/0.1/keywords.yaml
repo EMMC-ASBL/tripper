@@ -74,10 +74,15 @@ resources:
     subClassOf: emmo:EMMO_4207e895_8b83_4318_996a_72cfb32acd94
     description: An object that has been designed and manufactured for a particular purpose.
     keywords:
-      hasManufacturer:
-        iri: emmo:EMMO_e27901a3_df06_4e81_b234_f1af1976014b
+      manufacturedBy:
+        iri: emmo:EMMO_b24af630_0758_447e_a04d_a0e95db9b4fa
         range: emmo:EMMO_c0afb341_7d31_4883_a307_ae4606df2a1b
         description: Relates a manufactured product to its manufacturer.
+
+      manufacturedWith:
+        iri: emmo:EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461
+        range: emmo:EMMO_a4d66059_5dd3_4b90_b4cb_10960559441b
+        description: Relates a manufactured product to the manufacturing process it was manufactured with.
 
   Material:
     iri: emmo:EMMO_4207e895_8b83_4318_996a_72cfb32acd94
