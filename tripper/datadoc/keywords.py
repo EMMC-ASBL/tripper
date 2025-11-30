@@ -1880,6 +1880,12 @@ def main(argv=None):
         help="Generate keywords Markdown documentation.",
     )
     parser.add_argument(
+        "--yaml",
+        "-y",
+        metavar="FILENAME",
+        help="Generate keywords YAML file.",
+    )
+    parser.add_argument(
         "--explanation",
         "-e",
         action="store_true",
@@ -1984,6 +1990,9 @@ def main(argv=None):
 
     if args.prefixes:
         kw.save_markdown_prefixes(args.prefixes)
+
+    if args.yaml:
+        kw.save_yaml(args.yaml, namespace_filter=args.namespace_filter)
 
 
 if __name__ == "__main__":
