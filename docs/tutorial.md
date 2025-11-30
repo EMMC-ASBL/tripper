@@ -193,6 +193,24 @@ tripper.errors.NoSuchIRIError: http://onto-ns.com/ontologies/examples/food#Fish.
 ```
 
 
+Namespace objects also have a few convenient methods, including:
+
+* Return the namespace base IRI as a string:
+
+      >>> +FOOD  # same as str(FOOD)
+      'http://onto-ns.com/ontologies/examples/food#'
+
+* Return the namespace base IRI with the final slash or hash stripped off:
+
+      >>> -FOOD
+      'http://onto-ns.com/ontologies/examples/food'
+
+* Reverse mapping of namespace IRIs
+
+      >>> EMMO('https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad')
+      'Atom'
+
+
 ### Writing SPARQL queries using Tripper
 A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
 This challenge is greatly mitigated by using the `label_annotations` feature of Tripper namespaces.
