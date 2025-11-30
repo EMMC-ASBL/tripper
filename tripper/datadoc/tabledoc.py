@@ -52,10 +52,20 @@ class TableDoc:
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         strip: Whether to strip leading and trailing whitespaces from cells.
+        strict: Whether to raise an `InvalidKeywordError` exception if `d`
+            contains an unknown key.
+        redefine: Determine how to handle redefinition of existing
+            keywords.  Should be one of the following strings:
+              - "allow": Allow redefining a keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "skip": Don't redefine existing keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "raise": Raise an RedefineError (default).
 
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
+    # pylint: disable=too-many-arguments
 
     def __init__(
         self,
@@ -67,13 +77,22 @@ class TableDoc:
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
+        strict: bool = False,
+        redefine: str = "raise",
     ) -> None:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.keywords = get_keywords(keywords=keywords, theme=theme)
+        self.keywords = get_keywords(
+            keywords=keywords,
+            theme=theme,
+            strict=strict,
+            redefine=redefine,
+        )
         self.context = get_context(
-            context=context, keywords=self.keywords, prefixes=prefixes
+            context=context,
+            keywords=self.keywords,
+            prefixes=prefixes,
         )
         self.strip = strip
 
@@ -225,6 +244,8 @@ class TableDoc:
         prefixes: "Optional[dict]" = None,
         encoding: str = "utf-8",
         dialect: "Optional[Union[csv.Dialect, str]]" = None,
+        strict: bool = False,
+        redefine: str = "raise",
         **kwargs,
     ) -> "TableDoc":
         # pylint: disable=line-too-long
@@ -246,6 +267,15 @@ class TableDoc:
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
             kwargs: Additional keyword arguments overriding individual
                 formatting parameters.  For more details, see
                 [Dialects and Formatting Parameters].
@@ -287,6 +317,8 @@ class TableDoc:
             keywords=keywords,
             context=context,
             prefixes=prefixes,
+            strict=strict,
+            redefine=redefine,
         )
 
     def write_csv(
