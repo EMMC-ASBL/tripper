@@ -138,7 +138,7 @@ def load_datadoc_schema(ts: "Triplestore") -> None:
 
     It is safe to call this function more than once.
     """
-    if not ts.query(f"ASK WHERE {{ <{DDOC()}> a <{OWL.Ontology}> }}"):
+    if not ts.query(f"ASK WHERE {{ <{-DDOC}> a <{OWL.Ontology}> }}"):
         ts.bind("ddoc", DDOC)
         path = Path(tripper.__file__).parent / "context" / "datadoc.ttl"
         ts.parse(path)
