@@ -381,7 +381,7 @@ class Context:
         return self.getdef(name).get("@type") == "@id"
 
     def is_object_property(self, name: str) -> bool:
-        """Returns whether `name` appear to be an object property."""
+        """Whether `name` appears to be an object property or not."""
         if (
             name
             in (
