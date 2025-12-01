@@ -412,7 +412,7 @@ class Context:
         return bool(type) and type not in ("@id", RDFS.Class, OWL.Class)
 
     def is_annotation_property(self, name: str) -> bool:
-        """Returns whether `name` appears to bean annotation property."""
+        """Returns whether `name` appears to be an annotation property."""
         if name not in self:
             return False
         d = self.getdef(name)
