@@ -67,6 +67,16 @@ resources:
         conformance: optional
         description: An entity responsible for making contributions to the resource.
 
+      creationDate:
+        iri: dcterms:created
+        range: xsd:date
+        description: Date of creation (YYYY-MM-DD).
+
+      creationTime:
+        iri: ddoc:creationTime
+        range: xsd:time
+        description: Time of creation (HH:MM:SS).
+
       creator:
         iri: dcterms:creator
         range: foaf:Agent
@@ -311,6 +321,13 @@ resources:
         range: rdfs:Literal
         datatype: rdf:JSON
         description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
+
+      unit:
+        iri: ddoc:unit
+        range: rdfs:Literal
+        datatype: xsd:string
+        description: A SI unit associated to a property.
+        usageNote: "The unit should be written with standard SI unit symbols.  Examples: As, μm, J, m/s²"
 
       usageNote:
         iri: vann:usageNote
