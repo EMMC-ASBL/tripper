@@ -645,9 +645,9 @@ def is_uri(
     Arguments:
         uri: URI to validate.
         require_netloc: Whether to require `uri` to contain a network location.
-            Setting this to true, will exclude URNs, which in are valid URIs.
-            However, in most practical cases, you would expect the URI to
-            contain a network location.
+            Setting this to true will exclude URNs (although they are valid
+            URIs). However, in most practical cases, you would expect the URI
+            to contain a network location.
         allow_unescaped: Whether to allow `uri` to contain unescaped special
             characters. Any character not in `safe` except for letters, digits
             and '_.-' are considered to be special.
