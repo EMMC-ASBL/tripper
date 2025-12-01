@@ -89,6 +89,7 @@ def test_neg():
 
 def test_call():
     """Test the __call__() method."""
+    pytest.importorskip("rdflib")
     from tripper import DCTERMS, EMMO
     from tripper.errors import NamespaceError
 
