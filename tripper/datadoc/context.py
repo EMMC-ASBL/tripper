@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
 
-from tripper import RDF, Triplestore
+from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.errors import NamespaceError
-from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile
+from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
@@ -313,19 +313,16 @@ class Context:
         # Check ctx
         if name in self.ctx["mappings"]:
             return self.ctx["mappings"][name]["@id"]
+        # Check if name is already expanded
+        if re.match(MATCH_IRI, name):
+            return name
         # Check if prefixed
         if re.match(MATCH_PREFIXED_IRI, name):
             prefix, shortname = name.split(":", 1)
             prefixes = self.get_prefixes()
             if prefix in prefixes:
-                expanded = f"{prefixes[prefix]}{shortname}"
-                self._create_caches()
-                self._update_caches(shortname, name, expanded)
-                return expanded
-        # Check if name is already expanded
-        if re.match(MATCH_IRI, name):
-            return name
-        # Cannot expand
+                return f"{prefixes[prefix]}{shortname}"
+        # Name not defined in context
         if strict:
             raise NamespaceError(f"cannot expand: {name}")
         return name
@@ -382,6 +379,51 @@ class Context:
     def isref(self, name: str) -> bool:
         """Return wheter `name` is an object property that refers to a node."""
         return self.getdef(name).get("@type") == "@id"
+
+    def is_object_property(self, name: str) -> bool:
+        """Whether `name` appears to be an object property or not."""
+        if (
+            name
+            in (
+                "type",
+                "rdf:type",
+                RDF.type,
+                "subClassOf",
+                "rdfs:subClassOf",
+                RDFS.subClassOf,
+                "subPropertyOf",
+                "rdfs:subPropertyOf",
+                RDFS.subPropertyOf,
+            )
+            or name not in self
+        ):
+            return False
+        return self.getdef(name).get("@type") == "@id"
+
+    def is_data_property(self, name: str) -> bool:
+        """Returns whether `name` appears to be a data property."""
+        if name not in self or (
+            self.is_object_property(name)
+            or self.is_annotation_property(name)
+            or self.is_class(name)
+        ):
+            return False
+        type = self.getdef(name).get("@type")
+        return bool(type) and type not in ("@id", RDFS.Class, OWL.Class)
+
+    def is_annotation_property(self, name: str) -> bool:
+        """Returns whether `name` appears to be an annotation property."""
+        if name not in self:
+            return False
+        d = self.getdef(name)
+        return "@type" not in d or "@language" in d
+
+    def is_class(self, name: str) -> bool:
+        """Returns whether `name` appears to be a class."""
+        return name in self and self.getdef(name).get("@type") in (
+            RDFS.Class,
+            OWL.Class,
+        )
 
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
@@ -441,14 +483,9 @@ class Context:
         self._shortnamed[RDF.type] = "@type"
         self._shortnamed["rdf:type"] = "@type"
         self._shortnamed["@type"] = "@type"
-        self._expanded.update(mappings)
-        self._expanded.update((v, v) for v in mappings.values())
         for key, expanded in mappings.items():
-            for prefix, ns in prefixes.items():
-                if expanded.startswith(ns):
-                    prefixed = f"{prefix}:{key}"
-                    self._update_caches(key, prefixed, expanded)
-                    break
+            prefixed = prefix_iri(expanded, prefixes)
+            self._update_caches(key, prefixed, expanded)
 
     def _update_caches(self, shortname, prefixed, expanded):
         self._expanded[shortname] = expanded

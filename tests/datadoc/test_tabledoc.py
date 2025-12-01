@@ -10,7 +10,7 @@ def test_asdicts():
 
     pytest.importorskip("rdflib")
 
-    from tripper import Triplestore
+    from tripper import IANA, Triplestore
     from tripper.datadoc import TableDoc
 
     td = TableDoc(
@@ -19,12 +19,22 @@ def test_asdicts():
             "@type",
             "@type",
             "inSeries",
-            "distribution.downloadURL",
+            "distribution[1].downloadURL",
+            "distribution[1].mediaType",
+            "distribution[2].downloadURL",
         ],
         data=[
-            ("ds:s1", "onto:T1", "onto:T2", None, "file:///data/"),
-            ("ds:d1", "onto:T1", None, "ds:s1", "file:///data/d1.txt"),
-            ("ds:d2", "onto:T2", None, "ds:s1", "file:///data/d2.txt"),
+            (
+                "ds:s1",
+                "onto:T1",
+                "onto:T2",
+                None,
+                "file:///d0.txt",
+                IANA["text/plain"],
+                "file:///data/",
+            ),
+            ("ds:d1", "onto:T1", None, "ds:s1", "file:///d1.txt", None, None),
+            ("ds:d2", "onto:T2", None, "ds:s1", "file:///d2.txt", None, None),
         ],
         prefixes={
             "onto": "http://example.com/onto#",
@@ -45,17 +55,24 @@ def test_asdicts():
         "onto:T2",
     }
     assert "inSeries" not in s1
-    assert s1["distribution"] == {
-        "@type": ["dcat:Distribution", "dcat:Resource"],
-        "downloadURL": "file:///data/",
-    }
+    assert s1["distribution"] == [
+        {
+            "@type": ["dcat:Distribution", "dcat:Resource"],
+            "downloadURL": "file:///d0.txt",
+            "mediaType": IANA["text/plain"],
+        },
+        {
+            "@type": ["dcat:Distribution", "dcat:Resource"],
+            "downloadURL": "file:///data/",
+        },
+    ]
 
     assert d1["@id"] == "ds:d1"
     assert d1["@type"] == "onto:T1"
     assert d1["inSeries"] == "ds:s1"
     assert d1["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
-        "downloadURL": "file:///data/d1.txt",
+        "downloadURL": "file:///d1.txt",
     }
 
     assert d2["@id"] == "ds:d2"
@@ -63,7 +80,7 @@ def test_asdicts():
     assert d2["inSeries"] == "ds:s1"
     assert d2["distribution"] == {
         "@type": ["dcat:Distribution", "dcat:Resource"],
-        "downloadURL": "file:///data/d2.txt",
+        "downloadURL": "file:///d2.txt",
     }
 
     ts = Triplestore(backend="rdflib")
@@ -203,6 +220,33 @@ def test_csv_duplicated_columns():
         "distribution.downloadURL",
     ]
     td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
+
+
+def test_unique_header():
+    """Test unique_header() method."""
+    from tripper.datadoc import TableDoc
+
+    header = [
+        "@id",
+        "@type",
+        "@type",
+        "inSeries",
+        "distribution.downloadURL",
+        "distribution.downloadURL",
+    ]
+    unique_header = [
+        "@id",
+        "@type[1]",
+        "@type[2]",
+        "inSeries",
+        "distribution[1].downloadURL",
+        "distribution[2].downloadURL",
+    ]
+    td = TableDoc(header=header, data=[])
+    assert td.unique_header() == unique_header
+
+    td.header = unique_header
+    assert td.unique_header() == unique_header
 
 
 def test_csvsniff():

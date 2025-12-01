@@ -1447,7 +1447,13 @@ class Keywords:
 
         # Add resources (classes) to context
         for k, v in resources.items():
-            ctx.setdefault(k, v.iri)
+            ctx.setdefault(
+                k,
+                {  # type:ignore
+                    "@id": v.iri,
+                    "@type": OWL.Class,
+                },
+            )
 
         return ctx
 
