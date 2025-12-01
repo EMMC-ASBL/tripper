@@ -796,6 +796,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Namespace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.namespace.Namespace.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.namespace.Namespace.__neg__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __neg__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.namespace.Namespace.__pos__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __pos__()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1643,6 +1676,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Namespace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.namespace.Namespace.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.namespace.Namespace.__neg__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __neg__()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.namespace.Namespace.__pos__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __pos__()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1836,11 +1902,14 @@ corresponding to <code>reload=True</code>).</p></td>
 <span class="sd">        triplestore_url: Deprecated. Use the `triplestore` argument instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;_iri&quot;</span><span class="p">,</span>  <span class="c1"># Ontology IRI</span>
         <span class="s2">&quot;_label_annotations&quot;</span><span class="p">,</span>  <span class="c1"># Recognised annotations for labels</span>
         <span class="s2">&quot;_check&quot;</span><span class="p">,</span>  <span class="c1"># Whether to check that IRIs exists</span>
         <span class="s2">&quot;_iris&quot;</span><span class="p">,</span>  <span class="c1"># Dict mapping labels to IRIs</span>
+        <span class="s2">&quot;_reviris&quot;</span><span class="p">,</span>  <span class="c1"># Dict mapping IRIs to labels. The reverse of `_iris`</span>
         <span class="s2">&quot;_reload&quot;</span><span class="p">,</span>  <span class="c1"># Whether to reload</span>
         <span class="s2">&quot;_triplestore&quot;</span><span class="p">,</span>  <span class="c1"># Triplestore for label lookup and checking</span>
         <span class="s2">&quot;_format&quot;</span><span class="p">,</span>  <span class="c1"># Format to use when loading from a triplestore</span>
@@ -1893,6 +1962,7 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span> <span class="s2">&quot;dict&quot;</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="n">reload</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span> <span class="o">=</span> <span class="n">triplestore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="nb">format</span>
@@ -1948,6 +2018,9 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">subjects</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
         <span class="p">)</span>
+        <span class="c1"># Clear _reviris, such that the dict will be regenerated next time</span>
+        <span class="c1"># it is needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return annotation labels corresponding to the given IRI.&quot;&quot;&quot;</span>
@@ -2079,8 +2152,57 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="n">names</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">names</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The negation operator (-) is a short-hand for returning the base</span>
+<span class="sd">        iri with any trailing slash or hash stripped off.</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; from tripper import OWL</span>
+<span class="sd">        &gt;&gt;&gt; -OWL</span>
+<span class="sd">        &#39;http://www.w3.org/2002/07/owl&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/#&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The positive operator (+) is a short-hand for returning the base</span>
+<span class="sd">        iri.</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; from tripper import OWL</span>
+<span class="sd">        &gt;&gt;&gt; +OWL</span>
+<span class="sd">        &#39;http://www.w3.org/2002/07/owl#&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the name or label associated with the given iri.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;IRI &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; is not in namespace &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span>
+                    <span class="n">triplestore</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span><span class="p">,</span>
+                    <span class="n">reload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reload</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">iri</span><span class="p">:</span> <span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="p">}</span>
+        <span class="k">if</span> <span class="n">iri</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span>
+            <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span>
 </code></pre></div>
         </details>
 
@@ -2098,12 +2220,167 @@ corresponding to <code>reload=True</code>).</p></td>
 
 
 
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.namespace.Namespace.__call__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#tripper.namespace.Namespace.__call__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns the name or label associated with the given iri.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/namespace.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the name or label associated with the given iri.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;IRI &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; is not in namespace &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span> <span class="p">:]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">(</span>
+                <span class="n">triplestore</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span><span class="p">,</span>
+                <span class="n">reload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reload</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">iri</span><span class="p">:</span> <span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">iri</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span>
+        <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
 
 
 
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.namespace.Namespace.__neg__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#tripper.namespace.Namespace.__neg__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The negation operator (-) is a short-hand for returning the base
+iri with any trailing slash or hash stripped off.</p>
+
+<p><strong>Examples:</strong></p>
+    
+      <blockquote>
+<blockquote>
+<blockquote>
+<p>from tripper import OWL
+-OWL
+'http://www.w3.org/2002/07/owl'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/namespace.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The negation operator (-) is a short-hand for returning the base</span>
+<span class="sd">    iri with any trailing slash or hash stripped off.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; from tripper import OWL</span>
+<span class="sd">    &gt;&gt;&gt; -OWL</span>
+<span class="sd">    &#39;http://www.w3.org/2002/07/owl&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/#&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.namespace.Namespace.__pos__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#tripper.namespace.Namespace.__pos__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>The positive operator (+) is a short-hand for returning the base
+iri.</p>
+
+<p><strong>Examples:</strong></p>
+    
+      <blockquote>
+<blockquote>
+<blockquote>
+<p>from tripper import OWL
++OWL
+'http://www.w3.org/2002/07/owl#'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/namespace.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The positive operator (+) is a short-hand for returning the base</span>
+<span class="sd">    iri.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; from tripper import OWL</span>
+<span class="sd">    &gt;&gt;&gt; +OWL</span>
+<span class="sd">    &#39;http://www.w3.org/2002/07/owl#&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

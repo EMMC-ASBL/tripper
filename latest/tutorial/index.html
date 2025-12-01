@@ -1962,6 +1962,42 @@ For example:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Fish</span>
 <span class="s1">&#39;http://onto-ns.com/ontologies/examples/food#FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26&#39;</span>
 </code></pre></div>
+<p>Namespace objects also have a few convenient methods, including:</p>
+<ul>
+<li>
+<p>Return the namespace base IRI as a string:</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>+FOOD  # same as str(FOOD)
+  'http://onto-ns.com/ontologies/examples/food#'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
+<li>
+<p>Return the namespace base IRI with the final slash or hash stripped off:</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>-FOOD
+  'http://onto-ns.com/ontologies/examples/food'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
+<li>
+<p>Reverse mapping of namespace IRIs</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>EMMO('https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad')
+  'Atom'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
+</ul>
 <h3 id="writing-sparql-queries-using-tripper">Writing SPARQL queries using Tripper<a class="headerlink" href="#writing-sparql-queries-using-tripper" title="Permanent link">&para;</a></h3>
 <p>A challenge with ontologies using numerical IRIs is that SPARQL queries become difficult to read and understand.
 This challenge is greatly mitigated by using the <code>label_annotations</code> feature of Tripper namespaces.
