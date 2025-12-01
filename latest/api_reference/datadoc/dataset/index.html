@@ -1293,6 +1293,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.infer_restriction_types" class="md-nav__link">
+    <span class="md-ellipsis">
+      infer_restriction_types()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.load_dict" class="md-nav__link">
     <span class="md-ellipsis">
       load_dict()
@@ -1885,6 +1894,15 @@
   <a href="#tripper.datadoc.dataset.get_values" class="md-nav__link">
     <span class="md-ellipsis">
       get_values()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.infer_restriction_types" class="md-nav__link">
+    <span class="md-ellipsis">
+      infer_restriction_types()
     </span>
   </a>
   
@@ -2823,6 +2841,191 @@ nested manner.</p>
 
 
 
+<h2 id="tripper.datadoc.dataset.infer_restriction_types" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">infer_restriction_types</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.infer_restriction_types" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a dict that describes what type of restriction the
+properties of a class in <code>source</code> should be converted to.</p>
+<p>The following algorithm is used:
+  - Suggested restriction will only be provided for classes, i.e.
+    if the value of <code>@type</code> is <code>owl:Class</code> or <code>rdfs:Class</code>.
+  - For each property:
+      - If the value is a class, assume an existential
+        restriction.
+      - Otherwise, if the value is an IRI (to presumably an
+        individual), assume a value restriction.
+      - Otherwise, if the value is a literal with no language
+        specification, (indicating a data property) assume a value
+        restriction.
+      - Otherwise, don't add a restriction type for the property
+        (assuming that it is an annotation property).</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>source</code></td>
+        <td><code>&#39;Union[dict, list]&#39;</code></td>
+        <td><p>JSON-LD dict or list of JSON-LD dicts to analyse.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>context</code></td>
+        <td><code>&#39;Optional[Context]&#39;</code></td>
+        <td><p>Optional JSON-LD context object used for providing
+hints about classes and relation types.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>A dict that maps class IRIs to dicts that associate property IRIs
+to restriction types. For example</code></td>
+      <td><p>{
+      "ClassA": {"prop1": "some", "prop2": "value"},
+      "ClassB": {"prop3": "some"},
+    }</p>
+<p>The following restriction types are supported:
+  - "some": existential restriction
+  - "only": universal restriction
+  - "exactly <N>": exact cardinality restriction
+  - "min <N>": minimum cardinality restriction
+  - "max <N>": maximum cardinality restriction
+  - "value": value restriction</p>
+<p>where <code>&lt;N&gt;</code> is a positive integer.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">infer_restriction_types</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a dict that describes what type of restriction the</span>
+<span class="sd">    properties of a class in `source` should be converted to.</span>
+
+<span class="sd">    The following algorithm is used:</span>
+<span class="sd">      - Suggested restriction will only be provided for classes, i.e.</span>
+<span class="sd">        if the value of `@type` is `owl:Class` or `rdfs:Class`.</span>
+<span class="sd">      - For each property:</span>
+<span class="sd">          - If the value is a class, assume an existential</span>
+<span class="sd">            restriction.</span>
+<span class="sd">          - Otherwise, if the value is an IRI (to presumably an</span>
+<span class="sd">            individual), assume a value restriction.</span>
+<span class="sd">          - Otherwise, if the value is a literal with no language</span>
+<span class="sd">            specification, (indicating a data property) assume a value</span>
+<span class="sd">            restriction.</span>
+<span class="sd">          - Otherwise, don&#39;t add a restriction type for the property</span>
+<span class="sd">            (assuming that it is an annotation property).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        source: JSON-LD dict or list of JSON-LD dicts to analyse.</span>
+<span class="sd">        context: Optional JSON-LD context object used for providing</span>
+<span class="sd">            hints about classes and relation types.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dict that maps class IRIs to dicts that associate property IRIs</span>
+<span class="sd">        to restriction types. For example:</span>
+
+<span class="sd">            {</span>
+<span class="sd">              &quot;ClassA&quot;: {&quot;prop1&quot;: &quot;some&quot;, &quot;prop2&quot;: &quot;value&quot;},</span>
+<span class="sd">              &quot;ClassB&quot;: {&quot;prop3&quot;: &quot;some&quot;},</span>
+<span class="sd">            }</span>
+
+<span class="sd">        The following restriction types are supported:</span>
+<span class="sd">          - &quot;some&quot;: existential restriction</span>
+<span class="sd">          - &quot;only&quot;: universal restriction</span>
+<span class="sd">          - &quot;exactly &lt;N&gt;&quot;: exact cardinality restriction</span>
+<span class="sd">          - &quot;min &lt;N&gt;&quot;: minimum cardinality restriction</span>
+<span class="sd">          - &quot;max &lt;N&gt;&quot;: maximum cardinality restriction</span>
+<span class="sd">          - &quot;value&quot;: value restriction</span>
+
+<span class="sd">        where `&lt;N&gt;` is a positive integer.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=unused-argument</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">isclass</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return true if expanded IRI `iri` refer to a class.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">classes</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">context</span> <span class="ow">and</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">context</span> <span class="ow">and</span> <span class="n">context</span><span class="o">.</span><span class="n">is_class</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;@graph&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+
+    <span class="n">classes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_isclassdoc</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+            <span class="n">classes</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">src</span>
+
+    <span class="n">restrictions</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">iri</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">kexp</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span> <span class="k">if</span> <span class="n">_isclassdoc</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;value&quot;</span>
+                <span class="n">dct</span> <span class="o">=</span> <span class="n">infer_restriction_types</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+                <span class="n">dct</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">restrictions</span><span class="p">)</span>
+                <span class="n">restrictions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">is_uri</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">require_netloc</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">context</span>
+                <span class="ow">and</span> <span class="n">kexp</span> <span class="ow">in</span> <span class="n">context</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">is_annotation_property</span><span class="p">(</span><span class="n">kexp</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">vexp</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span> <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">vexp</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;value&quot;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">context</span>
+                <span class="ow">and</span> <span class="n">kexp</span> <span class="ow">in</span> <span class="n">context</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">is_annotation_property</span><span class="p">(</span><span class="n">kexp</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
+        <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">restrictions</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+
+    <span class="k">return</span> <span class="n">restrictions</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 id="tripper.datadoc.dataset.load_dict" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">load_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
@@ -3195,7 +3398,7 @@ inferred from <code>keywords</code>.</p></td>
 
 
 <h2 id="tripper.datadoc.dataset.save_dict" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;merge&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.save_dict" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3217,7 +3420,7 @@ inferred from <code>keywords</code>.</p></td>
     <span class="c1"># The unnecessary strictness of the &quot;build documentation&quot; CI enforces us</span>
     <span class="c1"># to add a `restrictions` argument to save_dict(), although this argument</span>
     <span class="c1"># came after that save_dict() was renamed.</span>
-    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function is deprecated. Use store() instead.&quot;&quot;&quot;</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -3692,7 +3895,7 @@ measured on a given sample:</p>
 
 
 <h2 id="tripper.datadoc.dataset.store" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.store" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3776,10 +3979,11 @@ with the same id as <code>source</code>. Possible values are:
       </tr>
       <tr>
         <td><code>restrictions</code></td>
-        <td><code>&#39;Collection&#39;</code></td>
-        <td><p>Collection of additional keywords that shuld be
-converted to value restrictions.</p></td>
-        <td><code>()</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><p>A dict describing how properties of classes in
+<code>source</code> should be mapped to restrictions.  The default is
+to call <code>infer_restriction_types()</code>.</p></td>
+        <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
@@ -3815,7 +4019,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store documentation of a resource to a triplestore.</span>
@@ -3843,8 +4047,9 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">              is unwanted, merge manually and use &quot;overwrite&quot;.</span>
 <span class="sd">            - &quot;ignore&quot;: If the IRI of `source` already exists, do nothing but</span>
 <span class="sd">              issueing an `IRIExistsWarning`.</span>
-<span class="sd">        restrictions: Collection of additional keywords that shuld be</span>
-<span class="sd">            converted to value restrictions.</span>
+<span class="sd">        restrictions: A dict describing how properties of classes in</span>
+<span class="sd">            `source` should be mapped to restrictions.  The default is</span>
+<span class="sd">            to call `infer_restriction_types()`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A copy of `source` updated to valid JSON-LD.</span>
@@ -4100,7 +4305,7 @@ or included in the JSON-LD context.</p></td>
 
 
 <h2 id="tripper.datadoc.dataset.update_classes" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">update_classes</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="p">())</span></code>
+<code class="highlight language-python"><span class="n">update_classes</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.update_classes" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -4109,13 +4314,8 @@ or included in the JSON-LD context.</p></td>
 
       <p>Update documentation of classes, ensuring that they will be
 correctly represented in RDF.</p>
-<p>Only resources of type <code>owl:Class</code> will be updated.</p>
-<p>If a resource has type <code>owl:Class</code>, all other types it has will be
-moved to the <code>subClassOf</code> keyword.</p>
-<p>By default, only object properties who's value is either a class
-or has a <code>restrictionType</code> key are converted to restrictions. Use
-the <code>restrictions</code> argument to convert other keywords as well to
-restrictions.</p>
+<p>Only classes, i.e. resources of type <code>owl:Class</code> and <code>rdfs:Class</code>,
+will be updated.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -4144,10 +4344,11 @@ will be updated in-place. It is typically a dict returned by
       </tr>
       <tr>
         <td><code>restrictions</code></td>
-        <td><code>&#39;Collection&#39;</code></td>
-        <td><p>Collection of additional keywords that shuld be
-converted to value restrictions.</p></td>
-        <td><code>()</code></td>
+        <td><code>&#39;Optional[dict]&#39;</code></td>
+        <td><p>A dict describing how properties of classes in
+<code>source</code> should be mapped to restrictions.  The default is
+to call <code>infer_restriction_types()</code>.</p></td>
+        <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
@@ -4171,52 +4372,51 @@ converted to value restrictions.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_classes</span><span class="p">(</span>
     <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Collection&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update documentation of classes, ensuring that they will be</span>
 <span class="sd">    correctly represented in RDF.</span>
 
-<span class="sd">    Only resources of type `owl:Class` will be updated.</span>
-
-<span class="sd">    If a resource has type `owl:Class`, all other types it has will be</span>
-<span class="sd">    moved to the `subClassOf` keyword.</span>
-
-<span class="sd">    By default, only object properties who&#39;s value is either a class</span>
-<span class="sd">    or has a `restrictionType` key are converted to restrictions. Use</span>
-<span class="sd">    the `restrictions` argument to convert other keywords as well to</span>
-<span class="sd">    restrictions.</span>
+<span class="sd">    Only classes, i.e. resources of type `owl:Class` and `rdfs:Class`,</span>
+<span class="sd">    will be updated.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        source: Input documentation of one or more resources. This dict</span>
 <span class="sd">            will be updated in-place. It is typically a dict returned by</span>
 <span class="sd">            `told()`.</span>
 <span class="sd">        context: Context object defining the keywords.</span>
-<span class="sd">        restrictions: Collection of additional keywords that shuld be</span>
-<span class="sd">            converted to value restrictions.</span>
+<span class="sd">        restrictions: A dict describing how properties of classes in</span>
+<span class="sd">            `source` should be mapped to restrictions.  The default is</span>
+<span class="sd">            to call `infer_restriction_types()`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The updated version of `source`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-statements</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add restriction to `source`.&quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=no-else-return</span>
+
+        <span class="n">iri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="s2">&quot;*&quot;</span>
+        <span class="n">propiri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prop</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="k">elif</span> <span class="n">restrictions</span> <span class="ow">and</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="p">:</span>
-            <span class="n">restrictionType</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="s2">&quot;restrictionType&quot;</span> <span class="ow">in</span> <span class="n">value</span>
-            <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">))</span>
-        <span class="p">):</span>
-            <span class="n">restrictionType</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;restrictionType&quot;</span><span class="p">,</span> <span class="s2">&quot;some&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_isclassdoc</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
             <span class="n">update_classes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">restrictionType</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="p">:</span>
+            <span class="n">restrictionType</span> <span class="o">=</span> <span class="n">restrictions</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">propiri</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="p">:</span>
+            <span class="n">restrictionType</span> <span class="o">=</span> <span class="n">restrictions</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">propiri</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">restrictionType</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
@@ -4244,12 +4444,26 @@ converted to value restrictions.</p></td>
         <span class="k">if</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>  <span class="c1"># Avoid removing prop more than once</span>
             <span class="k">del</span> <span class="n">source</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">!=</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span>  <span class="c1"># Recursively update related calsses</span>
+        <span class="c1"># Recursively update related calsses</span>
+        <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">!=</span> <span class="s2">&quot;value&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">update_classes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="p">)</span>
 
     <span class="c1"># Local context</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">restrictions</span> <span class="o">=</span> <span class="p">{</span><span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="p">}</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">if</span> <span class="n">restrictions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">restrictions</span> <span class="o">=</span> <span class="n">infer_restriction_types</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">restrictions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">ckey</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="k">else</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">ckey</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="p">{</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">pkey</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="n">pval</span>
+                <span class="k">for</span> <span class="n">pkey</span><span class="p">,</span> <span class="n">pval</span> <span class="ow">in</span> <span class="n">cval</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">ckey</span><span class="p">,</span> <span class="n">cval</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
 
     <span class="c1"># Handle lists and graphs</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
@@ -4259,10 +4473,6 @@ converted to value restrictions.</p></td>
         <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
             <span class="n">update_classes</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">source</span>
-
-    <span class="c1"># Update local context</span>
-    <span class="k">if</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">])</span>
 
     <span class="c1"># Ensure that source is only of type owl:Class</span>
     <span class="c1"># Move all other types to subClassOf</span>

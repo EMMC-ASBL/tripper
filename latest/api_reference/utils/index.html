@@ -2978,9 +2978,9 @@ correspond to a valid URI schema name.</p></td>
         <td><code>require_netloc</code></td>
         <td><code>bool</code></td>
         <td><p>Whether to require <code>uri</code> to contain a network location.
-Setting this to false, will exclude URNs, which in are valid URIs.
-However, in most practical cases, you would expect the URI to
-contain a network location.</p></td>
+Setting this to true will exclude URNs (although they are valid
+URIs). However, in most practical cases, you would expect the URI
+to contain a network location.</p></td>
         <td><code>True</code></td>
       </tr>
       <tr>
@@ -3014,9 +3014,9 @@ escaped when <code>allow_unescaped</code> is false.</p></td>
 <span class="sd">    Arguments:</span>
 <span class="sd">        uri: URI to validate.</span>
 <span class="sd">        require_netloc: Whether to require `uri` to contain a network location.</span>
-<span class="sd">            Setting this to false, will exclude URNs, which in are valid URIs.</span>
-<span class="sd">            However, in most practical cases, you would expect the URI to</span>
-<span class="sd">            contain a network location.</span>
+<span class="sd">            Setting this to true will exclude URNs (although they are valid</span>
+<span class="sd">            URIs). However, in most practical cases, you would expect the URI</span>
+<span class="sd">            to contain a network location.</span>
 <span class="sd">        allow_unescaped: Whether to allow `uri` to contain unescaped special</span>
 <span class="sd">            characters. Any character not in `safe` except for letters, digits</span>
 <span class="sd">            and &#39;_.-&#39; are considered to be special.</span>
