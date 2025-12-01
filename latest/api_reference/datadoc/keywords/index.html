@@ -2865,6 +2865,7 @@ Keywords        </code>
         <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Sequence[str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">classes</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">themes</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">namespace_filter</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save YAML file with keyword definitions.</span>
 
@@ -2873,10 +2874,14 @@ Keywords        </code>
 <span class="sd">            keywords: Sequence of keywords to include.</span>
 <span class="sd">            classes: Include keywords that have these classes in their domain.</span>
 <span class="sd">            themes: Include keywords for these themes.</span>
+<span class="sd">            namespace_filter: A prefix, namespace or a sequence of these.</span>
+<span class="sd">                If given, keep only keywords and classes from the returned</span>
+<span class="sd">                `keywordset` and `classet` with IRIs in one of</span>
+<span class="sd">                these namespaces.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keywords_list</span><span class="p">(</span>
-            <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span>
+            <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">namespace_filter</span>
         <span class="p">)</span>
         <span class="n">resources</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">clsval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3680,11 +3685,29 @@ Keywords        </code>
         <span class="n">orig_classes</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">orig_themes</span> <span class="o">=</span> <span class="n">themes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
+        <span class="n">prefixtuple</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">if</span> <span class="n">namespace_filter</span><span class="p">:</span>
+            <span class="n">nf</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">namespace_filter</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">namespace_filter</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">namespace_filter</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nf</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
+                    <span class="n">nf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">prefixtuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">:&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nf</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">keywords</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">themes</span><span class="p">:</span>
-            <span class="n">keywords</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywordnames</span><span class="p">())</span>
+            <span class="n">keywords</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">p</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keywordnames</span><span class="p">())</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">namespace_filter</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefixtuple</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefixtuple</span><span class="p">):</span>
+                    <span class="k">continue</span>
                 <span class="n">vdomain</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">asseq</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="p">()))</span>
                 <span class="p">]</span>
@@ -3708,20 +3731,6 @@ Keywords        </code>
                 <span class="n">classes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vdomain</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">vtheme</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">themes</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">vtheme</span><span class="p">):</span>
                 <span class="n">themes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vtheme</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-        <span class="k">if</span> <span class="n">namespace_filter</span><span class="p">:</span>
-            <span class="n">nf</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="p">[</span><span class="n">namespace_filter</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">namespace_filter</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-                <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">namespace_filter</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nf</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
-                    <span class="n">nf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-            <span class="n">prefixtuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">:&quot;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nf</span><span class="p">)</span>
-
-            <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span><span class="n">kw</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">keywords</span> <span class="k">if</span> <span class="n">kw</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefixtuple</span><span class="p">)}</span>
-            <span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefixtuple</span><span class="p">)}</span>
 
         <span class="k">return</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span>
 
@@ -6192,7 +6201,7 @@ For more details, see [write_csv()].</p></td>
 
 
 <h3 id="tripper.datadoc.keywords.Keywords.save_yaml" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">themes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">themes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.keywords.Keywords.save_yaml" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -6236,6 +6245,15 @@ For more details, see [write_csv()].</p></td>
         <td><p>Include keywords for these themes.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>namespace_filter</code></td>
+        <td><code>Optional[Union[str, Sequence[str]]]</code></td>
+        <td><p>A prefix, namespace or a sequence of these.
+If given, keep only keywords and classes from the returned
+<code>keywordset</code> and <code>classet</code> with IRIs in one of
+these namespaces.</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -6246,6 +6264,7 @@ For more details, see [write_csv()].</p></td>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Sequence[str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">themes</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">namespace_filter</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save YAML file with keyword definitions.</span>
 
@@ -6254,10 +6273,14 @@ For more details, see [write_csv()].</p></td>
 <span class="sd">        keywords: Sequence of keywords to include.</span>
 <span class="sd">        classes: Include keywords that have these classes in their domain.</span>
 <span class="sd">        themes: Include keywords for these themes.</span>
+<span class="sd">        namespace_filter: A prefix, namespace or a sequence of these.</span>
+<span class="sd">            If given, keep only keywords and classes from the returned</span>
+<span class="sd">            `keywordset` and `classet` with IRIs in one of</span>
+<span class="sd">            these namespaces.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keywords_list</span><span class="p">(</span>
-        <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span>
+        <span class="n">keywords</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">themes</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">namespace_filter</span>
     <span class="p">)</span>
     <span class="n">resources</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">clsval</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -6488,7 +6511,7 @@ keywords.typename("dcat:Dataset")
 
 
 <h2 id="tripper.datadoc.keywords.get_keywords" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">yamlfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">yamlfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.keywords.get_keywords" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -6541,6 +6564,25 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
         <td><p>Timeout in case <code>yamlfile</code> is a URI.</p></td>
         <td><code>3</code></td>
       </tr>
+      <tr>
+        <td><code>strict</code></td>
+        <td><code>bool</code></td>
+        <td><p>Whether to raise an <code>InvalidKeywordError</code> exception if <code>d</code>
+contains an unknown key.</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
+        <td><code>redefine</code></td>
+        <td><code>str</code></td>
+        <td><p>Determine how to handle redefinition of existing
+keywords.  Should be one of the following strings:
+  - "allow": Allow redefining a keyword. Emits a
+    <code>RedefineKeywordWarning</code>.
+  - "skip": Don't redefine existing keyword. Emits a
+    <code>RedefineKeywordWarning</code>.
+  - "raise": Raise an RedefineError (default).</p></td>
+        <td><code>&#39;raise&#39;</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -6551,6 +6593,8 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
     <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
     <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Optional[FileLoc]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Keywords&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A convenient function that returns a Context instance.</span>
 
@@ -6563,15 +6607,32 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
 <span class="sd">            be an URI in which case it will be accessed via HTTP GET.</span>
 <span class="sd">            Deprecated. Use the `add_yaml()` or `add()` methods instead.</span>
 <span class="sd">        timeout: Timeout in case `yamlfile` is a URI.</span>
+<span class="sd">        strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
+<span class="sd">            contains an unknown key.</span>
+<span class="sd">        redefine: Determine how to handle redefinition of existing</span>
+<span class="sd">            keywords.  Should be one of the following strings:</span>
+<span class="sd">              - &quot;allow&quot;: Allow redefining a keyword. Emits a</span>
+<span class="sd">                `RedefineKeywordWarning`.</span>
+<span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
+<span class="sd">                `RedefineKeywordWarning`.</span>
+<span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">Keywords</span><span class="p">):</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span>
         <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
-            <span class="n">kw</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span>
+                <span class="n">theme</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span>
+            <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
-            <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">keywords</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+                <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">yamlfile</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -6579,7 +6640,9 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
             <span class="s2">&quot;`add()` methods instead.&quot;</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span>
+            <span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">kw</span>
 </code></pre></div>
@@ -6684,7 +6747,7 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Whether to raise an exception of input contains an unknown key.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>  <span class="c1"># pylint: disable=duplicate-code</span>
         <span class="s2">&quot;--redefine&quot;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;skip&quot;</span><span class="p">],</span>
@@ -6702,6 +6765,12 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
         <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate keywords Markdown documentation.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--yaml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate keywords YAML file.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--explanation&quot;</span><span class="p">,</span>
@@ -6808,6 +6877,9 @@ Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instea
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
         <span class="n">kw</span><span class="o">.</span><span class="n">save_markdown_prefixes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">prefixes</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">yaml</span><span class="p">:</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">save_yaml</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">yaml</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">namespace_filter</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
