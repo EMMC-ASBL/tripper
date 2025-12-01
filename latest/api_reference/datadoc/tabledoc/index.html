@@ -1359,6 +1359,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.tabledoc.TableDoc.unique_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      unique_header()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.tabledoc.TableDoc.write_csv" class="md-nav__link">
     <span class="md-ellipsis">
       write_csv()
@@ -1736,6 +1745,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.tabledoc.TableDoc.unique_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      unique_header()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.tabledoc.TableDoc.write_csv" class="md-nav__link">
     <span class="md-ellipsis">
       write_csv()
@@ -1954,14 +1972,15 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 
                     <span class="c1"># Convert cell value to correct Python type</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">colname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
-                        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">colname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">leafname</span> <span class="o">=</span> <span class="n">colname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">leafname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
                         <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
                             <span class="n">cell</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">value</span>
 
                     <span class="n">addnested</span><span class="p">(</span>
                         <span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span>
                     <span class="p">)</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stripnested</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
         <span class="n">ld</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
             <span class="n">results</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -2195,6 +2214,33 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
                 <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">write</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">unique_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the header with brackets appended to duplicated labels</span>
+<span class="sd">        to make them unique.</span>
+
+<span class="sd">        For example, the header</span>
+
+<span class="sd">            [&quot;@id&quot;, &quot;@type&quot;, &quot;@type&quot;, &quot;part.name&quot;, &quot;part.name&quot;]</span>
+
+<span class="sd">        &quot;distribution.downloadURL&quot;,</span>
+
+<span class="sd">        would be renamed to</span>
+
+<span class="sd">            [&quot;@id&quot;, &quot;@type[1]&quot;, &quot;@type[2]&quot;, &quot;part[1].name&quot;, &quot;part[2].name&quot;]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">h</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">seen</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+                <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">].</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">tail</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span>
 </code></pre></div>
         </details>
 
@@ -2238,14 +2284,15 @@ JSON-LD context.  Should map namespace prefixes to IRIs.</p></td>
 
                 <span class="c1"># Convert cell value to correct Python type</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">colname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
-                    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">colname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">leafname</span> <span class="o">=</span> <span class="n">colname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">leafname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
                         <span class="n">cell</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">value</span>
 
                 <span class="n">addnested</span><span class="p">(</span>
                     <span class="n">d</span><span class="p">,</span> <span class="n">colname</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="k">else</span> <span class="n">colname</span><span class="p">,</span> <span class="n">cell</span>
                 <span class="p">)</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stripnested</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
     <span class="n">ld</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
         <span class="n">results</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -2675,6 +2722,64 @@ formatting parameters.  For more details, see
         <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
     <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(),</span> <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.datadoc.tabledoc.TableDoc.unique_header" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">unique_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.tabledoc.TableDoc.unique_header" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return the header with brackets appended to duplicated labels
+to make them unique.</p>
+<p>For example, the header</p>
+<div class="language-text highlight"><pre><span></span><code>[&quot;@id&quot;, &quot;@type&quot;, &quot;@type&quot;, &quot;part.name&quot;, &quot;part.name&quot;]
+</code></pre></div>
+<p>"distribution.downloadURL",</p>
+<p>would be renamed to</p>
+<div class="language-text highlight"><pre><span></span><code>[&quot;@id&quot;, &quot;@type[1]&quot;, &quot;@type[2]&quot;, &quot;part[1].name&quot;, &quot;part[2].name&quot;]
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">unique_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the header with brackets appended to duplicated labels</span>
+<span class="sd">    to make them unique.</span>
+
+<span class="sd">    For example, the header</span>
+
+<span class="sd">        [&quot;@id&quot;, &quot;@type&quot;, &quot;@type&quot;, &quot;part.name&quot;, &quot;part.name&quot;]</span>
+
+<span class="sd">    &quot;distribution.downloadURL&quot;,</span>
+
+<span class="sd">    would be renamed to</span>
+
+<span class="sd">        [&quot;@id&quot;, &quot;@type[1]&quot;, &quot;@type[2]&quot;, &quot;part[1].name&quot;, &quot;part[2].name&quot;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">h</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">seen</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">].</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">tail</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new</span>
 </code></pre></div>
         </details>
     </div>

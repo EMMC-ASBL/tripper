@@ -1389,6 +1389,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.utils.stripnested" class="md-nav__link">
+    <span class="md-ellipsis">
+      stripnested()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1728,6 +1737,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.utils.stripnested" class="md-nav__link">
+    <span class="md-ellipsis">
+      stripnested()
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1827,7 +1845,7 @@ are not duplicated.</p>
 
 
 <h2 id="tripper.datadoc.utils.addnested" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.utils.addnested" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1837,30 +1855,42 @@ are not duplicated.</p>
       <p>Like add(), but allows <code>key</code> to be a dot-separated list of sub-keys.
 Returns the updated <code>d</code>.</p>
 <p>Each sub-key will be added to <code>d</code> as a corresponding sub-dict.</p>
+<p>Subdicts will be of type <code>cls</code>. If <code>cls</code> is None, subdicts will default
+to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict otherwise.</p>
 
 <p><strong>Examples:</strong></p>
     <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;a.b.c&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">}}}</span>
-<span class="kc">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;a.b.c&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">}}}</span>
 </code></pre></div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addnested</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span>
+    <span class="n">d</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="s2">&quot;Optional[type]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Like add(), but allows `key` to be a dot-separated list of sub-keys.</span>
 <span class="sd">    Returns the updated `d`.</span>
 
 <span class="sd">    Each sub-key will be added to `d` as a corresponding sub-dict.</span>
 
+<span class="sd">    Subdicts will be of type `cls`. If `cls` is None, subdicts will default</span>
+<span class="sd">    to the same type as `d` if `d` is a mapping, or to a dict otherwise.</span>
+
 <span class="sd">    Example:</span>
 
 <span class="sd">        &gt;&gt;&gt; d = {}</span>
-<span class="sd">        &gt;&gt;&gt; addnested(d, &quot;a.b.c&quot;, &quot;val&quot;) == {&#39;a&#39;: {&#39;b&#39;: {&#39;c&#39;: &#39;val&#39;}}}</span>
-<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; addnested(d, &quot;a.b.c&quot;, &quot;val&quot;)</span>
+<span class="sd">        {&#39;a&#39;: {&#39;b&#39;: {&#39;c&#39;: &#39;val&#39;}}}</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-branches</span>
+    <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span>
+
     <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
         <span class="n">first</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -1869,11 +1899,11 @@ Returns the updated <code>d</code>.</p>
                     <span class="n">addnested</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addnested</span><span class="p">({},</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addnested</span><span class="p">(</span><span class="bp">cls</span><span class="p">(),</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">addnested</span><span class="p">(</span><span class="n">AttrDict</span><span class="p">(),</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+            <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">addnested</span><span class="p">(</span><span class="bp">cls</span><span class="p">(),</span> <span class="n">rest</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -2082,6 +2112,68 @@ the result will be a list with the unique strings from <code>a</code> and <code>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">b</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input must be None, string or a sequence&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.datadoc.utils.stripnested" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">stripnested</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.utils.stripnested" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Strip off brackets from keys in nested dicts.</p>
+<p>This function is intended for post-processing the result of a
+series of calls to addnested().</p>
+
+<p><strong>Examples:</strong></p>
+    
+      <blockquote>
+<blockquote>
+<blockquote>
+<p>d = {"a[1]": {"x": 1, "y": 2}, "a[2]": {"x": 3}}
+stripnested(d)
+{'a': [{'x': 1, 'y': 2}, {'x': 3}]}</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stripnested</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Strip off brackets from keys in nested dicts.</span>
+
+<span class="sd">    This function is intended for post-processing the result of a</span>
+<span class="sd">    series of calls to addnested().</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; d = {&quot;a[1]&quot;: {&quot;x&quot;: 1, &quot;y&quot;: 2}, &quot;a[2]&quot;: {&quot;x&quot;: 3}}</span>
+<span class="sd">    &gt;&gt;&gt; stripnested(d)</span>
+<span class="sd">    {&#39;a&#39;: [{&#39;x&#39;: 1, &#39;y&#39;: 2}, {&#39;x&#39;: 3}]}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)()</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stripnested</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="k">return</span> <span class="n">new</span>
 </code></pre></div>
         </details>
     </div>
