@@ -1944,11 +1944,19 @@ def main(argv=None):
         ),
     )
     parser.add_argument(
-        "--prefixes",
-        "-p",
+        "--write_prefixes",
+        "-w",
         metavar="FILENAME",
-        help="Generate prefixes Markdown documentation.",
+        help="Write prefixes file.",
     )
+    parser.add_argument(
+        "--prefix",
+        "--p",
+        metavar="PREFIX=NAMESPACE",
+        help="Add the prefix given as tuple PREFIX=NAMESPACE, "
+        "can be used multiple times.",
+    )
+
     parser.add_argument(
         "--list-themes",
         action="store_true",
@@ -1994,11 +2002,21 @@ def main(argv=None):
             namespace_filter=args.namespace_filter,
         )
 
-    if args.prefixes:
-        kw.save_markdown_prefixes(args.prefixes)
+    if args.write_prefixes:
+        kw.save_markdown_prefixes(args.write_prefixes)
 
     if args.yaml:
         kw.save_yaml(args.yaml, namespace_filter=args.namespace_filter)
+
+    if args.prefix:
+        for p in asseq(args.prefix):
+            if "=" not in p:
+                parser.error(
+                    f"Invalid prefix definition '{p}'. Must be of the "
+                    "form PREFIX=NAMESPACE."
+                )
+            prefix, namespace = p.split("=", 1)
+            kw.add_prefix(prefix, namespace, replace=True)
 
 
 if __name__ == "__main__":
