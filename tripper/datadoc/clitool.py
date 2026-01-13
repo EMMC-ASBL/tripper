@@ -39,6 +39,7 @@ def subcommand_add(ts, args):
             type=args.type,
             keywords=args.keywords,
             context=args.context,
+            redefine=args.redefine,
             **kw,
         )
         td.save(ts)
@@ -202,6 +203,12 @@ def maincommand(argv=None):
         "--type",
         "-t",
         help="Add this type to rows.",
+    )
+    parser_add.add_argument(
+        "--redefine",
+        default="raise",
+        choices=["raise", "allow", "skip"],
+        help="How to handle redifinition of existing keywords.",
     )
 
     # Subcommand: delete

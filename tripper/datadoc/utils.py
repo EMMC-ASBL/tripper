@@ -1,9 +1,7 @@
 """Utilities for manipulating dicts and lists."""
 
 import re
-from typing import TYPE_CHECKING, Sequence
-
-from tripper.utils import AttrDict
+from typing import TYPE_CHECKING, Mapping, Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, Optional, Union
@@ -89,20 +87,30 @@ def add(d: dict, key: str, value: "Any") -> None:
 
 
 def addnested(
-    d: "Union[dict, list]", key: str, value: "Any"
+    d: "Union[dict, list]",
+    key: str,
+    value: "Any",
+    cls: "Optional[type]" = None,
 ) -> "Union[dict, list]":
     """Like add(), but allows `key` to be a dot-separated list of sub-keys.
     Returns the updated `d`.
 
     Each sub-key will be added to `d` as a corresponding sub-dict.
 
+    Subdicts will be of type `cls`. If `cls` is None, subdicts will default
+    to the same type as `d` if `d` is a mapping, or to a dict otherwise.
+
     Example:
 
         >>> d = {}
-        >>> addnested(d, "a.b.c", "val") == {'a': {'b': {'c': 'val'}}}
-        True
+        >>> addnested(d, "a.b.c", "val")
+        {'a': {'b': {'c': 'val'}}}
 
     """
+    # pylint: disable=too-many-branches
+    if cls is None:
+        cls = type(d) if isinstance(d, Mapping) else dict
+
     if "." in key:
         first, rest = key.split(".", 1)
         if isinstance(d, list):
@@ -111,11 +119,11 @@ def addnested(
                     addnested(ele, key, value)
                     break
             else:
-                d.append(addnested({}, key, value))
+                d.append(addnested(cls(), key, value))
         elif first in d and isinstance(d[first], (dict, list)):
             addnested(d[first], rest, value)
         else:
-            addnested(d, first, addnested(AttrDict(), rest, value))
+            addnested(d, first, addnested(cls(), rest, value))
     elif isinstance(d, list):
         for ele in d:
             if isinstance(ele, dict):
@@ -126,6 +134,32 @@ def addnested(
     else:
         add(d, key, value)
     return d
+
+
+def stripnested(d):
+    """Strip off brackets from keys in nested dicts.
+
+    This function is intended for post-processing the result of a
+    series of calls to addnested().
+
+    Example:
+
+    >>> d = {"a[1]": {"x": 1, "y": 2}, "a[2]": {"x": 3}}
+    >>> stripnested(d)
+    {'a': [{'x': 1, 'y': 2}, {'x': 3}]}
+
+    """
+    if isinstance(d, list):
+        new = type(d)()
+        for e in d:
+            new.append(stripnested(e))
+    elif isinstance(d, dict):
+        new = type(d)()
+        for k, v in d.items():
+            add(new, k.split("[")[0], v)
+    else:
+        new = d
+    return new
 
 
 def get(
