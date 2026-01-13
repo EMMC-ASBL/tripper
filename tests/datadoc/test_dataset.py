@@ -321,16 +321,48 @@ def test_store():
         store(ts, d, type="Dataset", method="invalid_method_name")
 
 
+def test_infer_restriction_types():
+    """Test infer_restriction_types()."""
+    from tripper import DCTERMS, Namespace
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import infer_restriction_types
+
+    EX = Namespace("http://example.org#")
+    ctx = get_context()
+    ctx.add_context({"ex": str(EX)})
+
+    source = {
+        "@id": "ex:A",
+        "@type": "owl:Class",
+        "description": "Description of class A.",
+        "creator": "foaf:Agent",
+        "hasPart": "ex:some_part",
+        "version": "0.1",
+        "label": "A",
+        "releaseDate": "2025-11-25",
+    }
+    assert infer_restriction_types(source, ctx) == {
+        "http://example.org#A": {
+            DCTERMS.creator: "some",
+            DCTERMS.hasPart: "value",
+            DCTERMS.issued: "value",
+        }
+    }
+
+
 def test_update_classes():
     """Test update_classes()."""
     from copy import deepcopy
 
     from tripper import DCAT
-    from tripper.datadoc.dataset import update_classes
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import infer_restriction_types, update_classes
+
+    ctx = get_context()
 
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
-    update_classes(r1)
+    update_classes(r1, ctx)
     assert r1 == d1
 
     d2 = {
@@ -344,8 +376,10 @@ def test_update_classes():
             "accessService": "ex:service",
         },
     }
+    ctx.add_context(d2)
+
     r2 = deepcopy(d2)
-    update_classes(r2)
+    update_classes(r2, ctx)
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
         "rdf:type": "owl:Restriction",
@@ -358,7 +392,9 @@ def test_update_classes():
     } in r2["subClassOf"]
 
     r3 = deepcopy(d2)
-    update_classes(r3, restrictions=("accessService",))
+    restrictions = infer_restriction_types(r3, ctx)
+    restrictions["*"] = {"accessService": "exactly 1"}
+    update_classes(r3, ctx, restrictions=restrictions)
     assert "dcat:Dataset" in r3["subClassOf"]
     assert {
         "rdf:type": "owl:Restriction",
@@ -370,7 +406,8 @@ def test_update_classes():
                 {
                     "rdf:type": "owl:Restriction",
                     "owl:onProperty": DCAT.accessService,
-                    "owl:hasValue": "ex:service",
+                    "owl:onClass": "ex:service",
+                    "owl:qualifiedCardinality": 1,
                 },
             ],
         },

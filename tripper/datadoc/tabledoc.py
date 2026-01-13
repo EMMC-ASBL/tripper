@@ -11,7 +11,7 @@ from tripper import Triplestore
 from tripper.datadoc.context import get_context
 from tripper.datadoc.dataset import store, told
 from tripper.datadoc.keywords import get_keywords
-from tripper.datadoc.utils import addnested
+from tripper.datadoc.utils import addnested, stripnested
 from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
@@ -52,10 +52,20 @@ class TableDoc:
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         strip: Whether to strip leading and trailing whitespaces from cells.
+        strict: Whether to raise an `InvalidKeywordError` exception if `d`
+            contains an unknown key.
+        redefine: Determine how to handle redefinition of existing
+            keywords.  Should be one of the following strings:
+              - "allow": Allow redefining a keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "skip": Don't redefine existing keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "raise": Raise an RedefineError (default).
 
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
+    # pylint: disable=too-many-arguments
 
     def __init__(
         self,
@@ -67,13 +77,22 @@ class TableDoc:
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
+        strict: bool = False,
+        redefine: str = "raise",
     ) -> None:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.keywords = get_keywords(keywords=keywords, theme=theme)
+        self.keywords = get_keywords(
+            keywords=keywords,
+            theme=theme,
+            strict=strict,
+            redefine=redefine,
+        )
         self.context = get_context(
-            context=context, keywords=self.keywords, prefixes=prefixes
+            context=context,
+            keywords=self.keywords,
+            prefixes=prefixes,
         )
         self.strip = strip
 
@@ -99,14 +118,15 @@ class TableDoc:
 
                     # Convert cell value to correct Python type
                     if not colname.startswith("@"):
-                        df = self.context.getdef(colname.split(".")[-1])
+                        leafname = colname.split(".")[-1]
+                        df = self.context.getdef(leafname.split("[")[0])
                         if "@type" in df and df["@type"] != "@id":
                             cell = Literal(cell, datatype=df["@type"]).value
 
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
                     )
-            results.append(d)
+            results.append(stripnested(d))
         ld = told(
             results,
             type=self.type,
@@ -225,6 +245,8 @@ class TableDoc:
         prefixes: "Optional[dict]" = None,
         encoding: str = "utf-8",
         dialect: "Optional[Union[csv.Dialect, str]]" = None,
+        strict: bool = False,
+        redefine: str = "raise",
         **kwargs,
     ) -> "TableDoc":
         # pylint: disable=line-too-long
@@ -246,6 +268,15 @@ class TableDoc:
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
             kwargs: Additional keyword arguments overriding individual
                 formatting parameters.  For more details, see
                 [Dialects and Formatting Parameters].
@@ -287,6 +318,8 @@ class TableDoc:
             keywords=keywords,
             context=context,
             prefixes=prefixes,
+            strict=strict,
+            redefine=redefine,
         )
 
     def write_csv(
@@ -340,6 +373,33 @@ class TableDoc:
                 write(f)
         else:
             write(csvfile)
+
+    def unique_header(self):
+        """Return the header with brackets appended to duplicated labels
+        to make them unique.
+
+        For example, the header
+
+            ["@id", "@type", "@type", "part.name", "part.name"]
+
+        "distribution.downloadURL",
+
+        would be renamed to
+
+            ["@id", "@type[1]", "@type[2]", "part[1].name", "part[2].name"]
+
+        """
+        new = []
+        seen = {}
+        for h in self.header:
+            if self.header.count(h) == 1:
+                new.append(h)
+            else:
+                head, tail = h.split(".", 1) if "." in h else (h, None)
+                n = seen[head] + 1 if head in seen else 1
+                seen[head] = n
+                new.append(f"{head}[{n}].{tail}" if tail else f"{head}[{n}]")
+        return new
 
 
 def csvsniff(sample):

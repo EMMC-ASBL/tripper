@@ -77,7 +77,32 @@ def test_namespaces() -> None:
     assert "foot" not in FAM
 
 
-# if True:
+def test_neg():
+    """Test negation and plus operators."""
+    from tripper import DCTERMS, RDF
+
+    assert -DCTERMS == "http://purl.org/dc/terms"
+    assert +DCTERMS == "http://purl.org/dc/terms/"
+    assert -RDF == "http://www.w3.org/1999/02/22-rdf-syntax-ns"
+    assert +RDF == "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+
+
+def test_call():
+    """Test the __call__() method."""
+    pytest.importorskip("rdflib")
+    from tripper import DCTERMS, EMMO
+    from tripper.errors import NamespaceError
+
+    assert DCTERMS("http://purl.org/dc/terms/issued") == "issued"
+    assert EMMO(EMMO.Atom) == "Atom"
+
+    with pytest.raises(NamespaceError):
+        DCTERMS("xxx:issued")
+
+    with pytest.raises(NamespaceError):
+        EMMO("https://w3id.org/emmo#xxx")
+
+
 def test_triplestore_arg() -> None:
     """Test triplestore argument of Namespace.__init__()."""
     pytest.importorskip("rdflib")

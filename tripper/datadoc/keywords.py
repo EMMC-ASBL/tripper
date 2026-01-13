@@ -79,6 +79,8 @@ def get_keywords(
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     yamlfile: "Optional[FileLoc]" = None,
     timeout: float = 3,
+    strict: bool = False,
+    redefine: str = "raise",
 ) -> "Keywords":
     """A convenient function that returns a Context instance.
 
@@ -91,15 +93,32 @@ def get_keywords(
             be an URI in which case it will be accessed via HTTP GET.
             Deprecated. Use the `add_yaml()` or `add()` methods instead.
         timeout: Timeout in case `yamlfile` is a URI.
+        strict: Whether to raise an `InvalidKeywordError` exception if `d`
+            contains an unknown key.
+        redefine: Determine how to handle redefinition of existing
+            keywords.  Should be one of the following strings:
+              - "allow": Allow redefining a keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "skip": Don't redefine existing keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "raise": Raise an RedefineError (default).
     """
     if isinstance(keywords, Keywords):
         kw = keywords
         if theme:
-            kw.add_theme(theme, timeout=timeout)
+            kw.add_theme(
+                theme, timeout=timeout, strict=strict, redefine=redefine
+            )
     else:
         kw = Keywords(theme=theme)
         if keywords:
-            kw.add(keywords, format=format, timeout=timeout)
+            kw.add(
+                keywords,
+                format=format,
+                timeout=timeout,
+                strict=strict,
+                redefine=redefine,
+            )
 
     if yamlfile:
         warnings.warn(
@@ -107,7 +126,9 @@ def get_keywords(
             "`add()` methods instead.",
             DeprecationWarning,
         )
-        kw.load_yaml(yamlfile, timeout=timeout)
+        kw.load_yaml(
+            yamlfile, timeout=timeout, strict=strict, redefine=redefine
+        )
 
     return kw
 
@@ -117,7 +138,7 @@ def load_datadoc_schema(ts: "Triplestore") -> None:
 
     It is safe to call this function more than once.
     """
-    if not ts.query(f"ASK WHERE {{ <{DDOC()}> a <{OWL.Ontology}> }}"):
+    if not ts.query(f"ASK WHERE {{ <{-DDOC}> a <{OWL.Ontology}> }}"):
         ts.bind("ddoc", DDOC)
         path = Path(tripper.__file__).parent / "context" / "datadoc.ttl"
         ts.parse(path)
@@ -670,6 +691,7 @@ class Keywords:
         keywords: "Optional[Sequence[str]]" = None,
         classes: "Optional[Union[str, Sequence[str]]]" = None,
         themes: "Optional[Union[str, Sequence[str]]]" = None,
+        namespace_filter: "Optional[Union[str, Sequence[str]]]" = None,
     ) -> None:
         """Save YAML file with keyword definitions.
 
@@ -678,10 +700,14 @@ class Keywords:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
+            namespace_filter: A prefix, namespace or a sequence of these.
+                If given, keep only keywords and classes from the returned
+                `keywordset` and `classet` with IRIs in one of
+                these namespaces.
 
         """
         keywords, classes, themes = self._keywords_list(
-            keywords, classes, themes
+            keywords, classes, themes, namespace_filter=namespace_filter
         )
         resources = {}
         for cls, clsval in self.data.resources.items():
@@ -1421,7 +1447,13 @@ class Keywords:
 
         # Add resources (classes) to context
         for k, v in resources.items():
-            ctx.setdefault(k, v.iri)
+            ctx.setdefault(
+                k,
+                {  # type:ignore
+                    "@id": v.iri,
+                    "@type": OWL.Class,
+                },
+            )
 
         return ctx
 
@@ -1479,11 +1511,29 @@ class Keywords:
         orig_classes = classes.copy()
         orig_themes = themes.copy()
 
+        prefixtuple = ()
+        if namespace_filter:
+            nf = (
+                [namespace_filter]
+                if isinstance(namespace_filter, str)
+                else list(namespace_filter)
+            )
+            for i, value in enumerate(nf):
+                if value not in self.data.prefixes:
+                    nf[i] = self.prefixed(value).rstrip(":")
+            prefixtuple = tuple(f"{v}:" for v in nf)  # type: ignore
+
         if not keywords and not classes and not themes:
-            keywords.update(self.prefixed(k) for k in self.keywordnames())
+            keywords.update(
+                p
+                for p in (self.prefixed(k) for k in self.keywordnames())
+                if not namespace_filter or p.startswith(prefixtuple)
+            )
 
         for value in self.data.resources.values():
             for k, v in value.get("keywords", {}).items():
+                if not self.prefixed(k).startswith(prefixtuple):
+                    continue
                 vdomain = [
                     self.prefixed(d) for d in asseq(v.get("domain", ()))
                 ]
@@ -1507,20 +1557,6 @@ class Keywords:
                 classes.add(vdomain[0])
             if vtheme and not themes.intersection(vtheme):
                 themes.add(vtheme[0])
-
-        if namespace_filter:
-            nf = (
-                [namespace_filter]
-                if isinstance(namespace_filter, str)
-                else list(namespace_filter)
-            )
-            for i, value in enumerate(nf):
-                if value not in self.data.prefixes:
-                    nf[i] = self.prefixed(value).rstrip(":")
-            prefixtuple = tuple(f"{v}:" for v in nf)
-
-            keywords = {kw for kw in keywords if kw.startswith(prefixtuple)}
-            classes = {c for c in classes if c.startswith(prefixtuple)}
 
         return keywords, classes, themes
 
@@ -1830,7 +1866,7 @@ def main(argv=None):
         action="store_true",
         help="Whether to raise an exception of input contains an unknown key.",
     )
-    parser.add_argument(
+    parser.add_argument(  # pylint: disable=duplicate-code
         "--redefine",
         default="raise",
         choices=["raise", "allow", "skip"],
@@ -1848,6 +1884,12 @@ def main(argv=None):
         "-k",
         metavar="FILENAME",
         help="Generate keywords Markdown documentation.",
+    )
+    parser.add_argument(
+        "--yaml",
+        "-y",
+        metavar="FILENAME",
+        help="Generate keywords YAML file.",
     )
     parser.add_argument(
         "--explanation",
@@ -1954,6 +1996,9 @@ def main(argv=None):
 
     if args.prefixes:
         kw.save_markdown_prefixes(args.prefixes)
+
+    if args.yaml:
+        kw.save_yaml(args.yaml, namespace_filter=args.namespace_filter)
 
 
 if __name__ == "__main__":
