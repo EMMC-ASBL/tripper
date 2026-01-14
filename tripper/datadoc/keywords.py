@@ -91,7 +91,7 @@ def get_keywords(
         theme: IRI of one of more themes to load keywords for.
         yamlfile: YAML file with keyword definitions to parse.  May also
             be an URI in which case it will be accessed via HTTP GET.
-            Deprecated. Use the `add_yaml()` or `add()` methods instead.
+            Deprecated. Use the `load_yaml()` or `add()` methods instead.
         timeout: Timeout in case `yamlfile` is a URI.
         strict: Whether to raise an `InvalidKeywordError` exception if `d`
             contains an unknown key.
@@ -122,7 +122,7 @@ def get_keywords(
 
     if yamlfile:
         warnings.warn(
-            "The `yamlfile` argument is deprecated. Use the `add_yaml()` or "
+            "The `yamlfile` argument is deprecated. Use the `load_yaml()` or "
             "`add()` methods instead.",
             DeprecationWarning,
         )
@@ -163,7 +163,7 @@ class Keywords:
             theme: IRI of one of more themes to load keywords for.
             yamlfile: A YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
-                Deprecated. Use the `add_yaml()` or `add()` methods instead.
+                Deprecated. Use the `load_yaml()` or `add()` methods instead.
             timeout: Timeout in case `yamlfile` is a URI.
 
         Attributes:
@@ -190,7 +190,7 @@ class Keywords:
 
         if yamlfile:
             warnings.warn(
-                "The `yamlfile` argument is deprecated. Use the `add_yaml()` "
+                "The `yamlfile` argument is deprecated. Use the `load_yaml()` "
                 "or `add()` methods instead.",
                 DeprecationWarning,
             )
