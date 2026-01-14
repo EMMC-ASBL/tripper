@@ -4,13 +4,13 @@ import pytest
 
 pytest.importorskip("pyld")
 
-
-def test_asdicts():
+if 1:
+    # def test_asdicts():
     """Test the asdicts() method."""
 
     pytest.importorskip("rdflib")
 
-    from tripper import IANA, Triplestore
+    from tripper import IANA, OWL, RDF, RDFS, XSD, Literal, Triplestore
     from tripper.datadoc import TableDoc
 
     td = TableDoc(
@@ -86,6 +86,34 @@ def test_asdicts():
     ts = Triplestore(backend="rdflib")
     td.save(ts)
     print(ts.serialize())
+
+    # Test optional arguments `ts` and `strict`
+    DS = ts.namespaces["ds"]
+    ONTO = ts.namespaces["onto"]
+    ts.add_triples(
+        [
+            (ONTO.rel, RDF.type, OWL.ObjectProperty),
+            (ONTO.rel, RDFS.domain, ONTO.T1),
+            (ONTO.rel, RDFS.range, ONTO.T2),
+            (ONTO.val, RDF.type, OWL.DatatypeProperty),
+            (ONTO.val, RDFS.domain, ONTO.T1),
+            (ONTO.val, RDFS.range, XSD.double),
+        ]
+    )
+    td = TableDoc(
+        header=[
+            "@id",
+            "@type",
+            "title",
+            "onto:rel",
+            "onto:val",
+        ],
+        data=[
+            ("ds:a", "onto:A", "a", "ds:d1", "1.1"),
+            ("ds:b", "onto:B", "b", DS.d2, "2.2"),
+        ],
+    )
+    td.save(ts)
 
 
 def test_fromdicts():
@@ -267,6 +295,14 @@ def test_csvsniff():
     assert dialect.delimiter == ","
     assert dialect.lineterminator == "\n"
     assert dialect.quotechar == "'"
+
+    lines = [
+        "1;1.1;2.2",
+        "3.3;4.4;5.5",
+    ]
+    dialect = csvsniff("\r\n".join(lines))
+    assert dialect.delimiter == ";"
+    assert dialect.lineterminator == "\r\n"
 
 
 def test_csv_keywords():
