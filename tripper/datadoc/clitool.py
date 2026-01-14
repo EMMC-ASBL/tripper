@@ -42,7 +42,7 @@ def subcommand_add(ts, args):
             redefine=args.redefine,
             **kw,
         )
-        td.save(ts)
+        td.save(ts, strict=args.strict)
     else:
         raise ValueError(f"Unknown input format: {fmt}")
 
@@ -209,6 +209,12 @@ def maincommand(argv=None):
         default="raise",
         choices=["raise", "allow", "skip"],
         help="How to handle redifinition of existing keywords.",
+    )
+    parser_add.add_argument(
+        "--strict",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Whether to allow cell with unexpected datatype.",
     )
 
     # Subcommand: delete
