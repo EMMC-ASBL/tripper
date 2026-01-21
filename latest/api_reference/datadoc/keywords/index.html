@@ -6835,6 +6835,16 @@ keywords.  Should be one of the following strings:
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List installed themes and exit.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--set-prefix&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-P&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PREFIX:NAMESPACE&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Set perfix. This option may be given more than once. &quot;</span>
+            <span class="s2">&quot;It can be used as a workaround for PrefixMismatchError.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
 
@@ -6858,6 +6868,11 @@ keywords.  Should be one of the following strings:
     <span class="k">for</span> <span class="n">theme</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
             <span class="n">kw</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">redefine</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">set_prefix</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">set_prefix</span><span class="p">:</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span>
 
     <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">redefine</span><span class="p">)</span>
 
