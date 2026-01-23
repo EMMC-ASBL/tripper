@@ -12,6 +12,7 @@ Note:
     package.
 
 """
+
 from __future__ import annotations
 
 import secrets  # From Python 3.9+ we could use random.randbytes(16).hex()

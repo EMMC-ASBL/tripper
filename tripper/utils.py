@@ -298,7 +298,7 @@ def openfile(
     try:
         # pylint: disable=unspecified-encoding
         f = open(fname, mode=mode, **kwargs)  # type: ignore
-        yield f  # type:ignore
+        yield f  # type: ignore
     finally:
         if f is not None:
             f.close()

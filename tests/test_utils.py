@@ -11,13 +11,10 @@ def test_AttrDict():
 
     d = AttrDict(a=1, b=2)
     assert d.a == 1
-    assert (
-        repr(d)
-        == """AttrDict({
+    assert repr(d) == """AttrDict({
   'a': 1,
   'b': 2,
 })"""
-    )
     assert repr(AttrDict()) == "AttrDict()"
 
     with pytest.raises(KeyError):
