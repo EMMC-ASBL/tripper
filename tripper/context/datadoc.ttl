@@ -32,8 +32,8 @@
     dcterms:description "A datatype for annotations and data properties."@en .
 
 
-:unitSymbol a owl:AnnotationProperty ;
-    rdfs:label "unitSymbol"@en ;
+:unit a owl:AnnotationProperty ;
+    rdfs:label "unit"@en ;
     #rdfs:subPropertyOf ;
     rdfs:domain dcat:Resource ;
     rdfs:range xsd:string ;
