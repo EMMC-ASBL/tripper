@@ -47,14 +47,6 @@
       "@id": "dcterms:contributor",
       "@type": "@id"
     },
-    "creationDate": {
-      "@id": "dcterms:created",
-      "@type": "@id"
-    },
-    "creationTime": {
-      "@id": "ddoc:creationTime",
-      "@type": "@id"
-    },
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
@@ -180,10 +172,6 @@
     "statements": {
       "@id": "oteio:statement",
       "@type": "@json"
-    },
-    "unit": {
-      "@id": "ddoc:unit",
-      "@type": "xsd:string"
     },
     "usageNote": {
       "@id": "vann:usageNote",
