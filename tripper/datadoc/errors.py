@@ -68,3 +68,7 @@ class RedefineKeywordWarning(TripperWarning):
 class SkipRedefineKeywordWarning(TripperWarning):
     """Skip redefining an existing keyword in a user-defined keyword
     definition (by mapping it to a new IRI)."""
+
+
+class TypeConversionWarning(TripperWarning):
+    """Cannot convert to the given type."""
