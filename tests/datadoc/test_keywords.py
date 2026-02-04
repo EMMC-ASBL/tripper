@@ -50,7 +50,8 @@ def test_get_keywords():
     assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert len(kw4.keywords) > len(kw1.keywords)
 
-    kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
+    kw5 = get_keywords()
+    kw5.load_yaml(testdir / "input" / "custom_keywords.yaml")
     assert set(kw5.data.keys()) == {
         "prefixes",
         "theme",
@@ -59,10 +60,9 @@ def test_get_keywords():
     assert kw5.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
-    kw6 = get_keywords(
-        kw4, yamlfile=testdir / "input" / "custom_keywords.yaml"
-    )
-    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
+    kw6 = get_keywords(kw4)
+    kw6.load_yaml(testdir / "input" / "custom_keywords.yaml")
+    assert kw6.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert "batchNumber" in kw6
 
 
@@ -80,7 +80,7 @@ def test_iter():
 
 def test_len():
     """Test __iter__() method."""
-    assert len(keywords) == 125
+    assert len(keywords) == 126
 
 
 def test_dir():
