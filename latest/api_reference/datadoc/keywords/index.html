@@ -3809,6 +3809,10 @@ Keywords        </code>
 <span class="sd">            keywords: Sequence of keywords to include.</span>
 <span class="sd">            classes: Include keywords that have these classes in their domain.</span>
 <span class="sd">            themes: Include keywords for these themes.</span>
+<span class="sd">            namespace_filter: A prefix, namespace or a sequence of these.</span>
+<span class="sd">                Keep only keywords within this namespace.</span>
+<span class="sd">                It is important that the namespace(s) are defined with</span>
+<span class="sd">                prefixes in the Keywords object.</span>
 <span class="sd">            explanation: Whether to include explanation of columns labels.</span>
 <span class="sd">            special: Whether to generate documentation of special</span>
 <span class="sd">                JSON-LD keywords.</span>
@@ -5805,6 +5809,15 @@ keywords.prefixed("title")
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>namespace_filter</code></td>
+        <td><code>Optional[Union[str, Sequence[str]]]</code></td>
+        <td><p>A prefix, namespace or a sequence of these.
+Keep only keywords within this namespace.
+It is important that the namespace(s) are defined with
+prefixes in the Keywords object.</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>explanation</code></td>
         <td><code>bool</code></td>
         <td><p>Whether to include explanation of columns labels.</p></td>
@@ -5838,6 +5851,10 @@ JSON-LD keywords.</p></td>
 <span class="sd">        keywords: Sequence of keywords to include.</span>
 <span class="sd">        classes: Include keywords that have these classes in their domain.</span>
 <span class="sd">        themes: Include keywords for these themes.</span>
+<span class="sd">        namespace_filter: A prefix, namespace or a sequence of these.</span>
+<span class="sd">            Keep only keywords within this namespace.</span>
+<span class="sd">            It is important that the namespace(s) are defined with</span>
+<span class="sd">            prefixes in the Keywords object.</span>
 <span class="sd">        explanation: Whether to include explanation of columns labels.</span>
 <span class="sd">        special: Whether to generate documentation of special</span>
 <span class="sd">            JSON-LD keywords.</span>
@@ -6703,7 +6720,7 @@ keywords.  Should be one of the following strings:
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># pylint: disable=too-many-statements</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main function providing CLI access to keywords.&quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
 
@@ -6754,20 +6771,20 @@ keywords.  Should be one of the following strings:
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How to handle redifinition of existing keywords.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--context&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--write-context&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--write-json&quot;</span><span class="p">,</span>
         <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate JSON-LD context file.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--keywords&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--markdown&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--write-kw-md&quot;</span><span class="p">,</span>
         <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate keywords Markdown documentation.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--yaml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--write-kw-yaml&quot;</span><span class="p">,</span>
         <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate keywords YAML file.&quot;</span><span class="p">,</span>
@@ -6793,9 +6810,12 @@ keywords.  Should be one of the following strings:
             <span class="s2">&quot;Keep only keywords with IRIs in &quot;</span>
             <span class="s2">&quot;the namespace &quot;</span>
             <span class="s2">&quot;provided by this option.  Can be provided more that once. &quot;</span>
-            <span class="s2">&quot;To be used with the --keywords option. &quot;</span>
+            <span class="s2">&quot;To be used with the --write-kw-md option. &quot;</span>
             <span class="s2">&quot;A namespace can be specified by its full IRI or by a pre-defined &quot;</span>
             <span class="s2">&quot;prefix.&quot;</span>
+            <span class="s2">&quot;Note that the namespace must be defined with a prefix. &quot;</span>
+            <span class="s2">&quot;If missing,&quot;</span>
+            <span class="s2">&quot;it can be added with --prefix.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -6803,7 +6823,7 @@ keywords.  Should be one of the following strings:
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;KW1,KW2,...&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Comma-separated list of keywords to include in generated table. &quot;</span>
-            <span class="s2">&quot;Implies --keywords.&quot;</span>
+            <span class="s2">&quot;Implies --write-kw-md.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -6812,7 +6832,7 @@ keywords.  Should be one of the following strings:
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Generate keywords Markdown documentation for any keywords who&#39;s &quot;</span>
             <span class="s2">&quot;domain is in the comma-separated list CLASSES. &quot;</span>
-            <span class="s2">&quot;Implies --keywords.&quot;</span>
+            <span class="s2">&quot;Implies --write-kw-md.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -6821,15 +6841,25 @@ keywords.  Should be one of the following strings:
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;Generate keywords Markdown documentation for any keywords that &quot;</span>
             <span class="s2">&quot;belong to one of the themes in the comma-separated list THEMES. &quot;</span>
-            <span class="s2">&quot;Implies --keywords.&quot;</span>
+            <span class="s2">&quot;Implies --write-kw-md, --write-kw-json or --write-kw-yaml.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--prefixes&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--write-prefixes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-w&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate prefixes Markdown documentation.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Write prefixes Markdown file.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--prefix&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PREFIX:NAMESPACE&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Add the prefix given as tuple PREFIX=NAMESPACE, &quot;</span>
+        <span class="s2">&quot;can be used multiple times.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--list-themes&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
@@ -6865,6 +6895,16 @@ keywords.  Should be one of the following strings:
 
     <span class="n">kw</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">default_theme</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">asseq</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Invalid prefix definition &#39;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">&#39;. Must be of the &quot;</span>
+                    <span class="s2">&quot;form PREFIX:NAMESPACE.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">theme</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
             <span class="n">kw</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">redefine</span><span class="p">)</span>
@@ -6876,12 +6916,12 @@ keywords.  Should be one of the following strings:
 
     <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">redefine</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">save_context</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">write_context</span><span class="p">:</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">save_context</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">write_context</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">keywords</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">kw</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">themes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">write_kw_md</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">kw</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">themes</span><span class="p">:</span>
         <span class="n">kw</span><span class="o">.</span><span class="n">save_markdown</span><span class="p">(</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">write_kw_md</span><span class="p">,</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">kw</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">kw</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">classes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">classes</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">themes</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">themes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">themes</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -6890,11 +6930,13 @@ keywords.  Should be one of the following strings:
             <span class="n">namespace_filter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">namespace_filter</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">save_markdown_prefixes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">prefixes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">write_prefixes</span><span class="p">:</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">save_markdown_prefixes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">write_prefixes</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">yaml</span><span class="p">:</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">save_yaml</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">yaml</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">namespace_filter</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">write_kw_yaml</span><span class="p">:</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">save_yaml</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">write_kw_yaml</span><span class="p">,</span> <span class="n">namespace_filter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">namespace_filter</span>
+        <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
