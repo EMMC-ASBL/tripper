@@ -1636,8 +1636,8 @@ class Keywords:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
-            namespace_filter: Keep only keywords within this namespace.
-                A prefix, namespace or a sequence of these.
+            namespace_filter: A prefix, namespace or a sequence of these.
+                Keep only keywords within this namespace.
                 It is important that the namespace(s) are defined with
                 prefixes in the Keywords object.
             explanation: Whether to include explanation of columns labels.
