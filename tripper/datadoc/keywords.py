@@ -1938,7 +1938,7 @@ def main(argv=None):
         help=(
             "Generate keywords Markdown documentation for any keywords who's "
             "domain is in the comma-separated list CLASSES. "
-            "Implies --write-markdown."
+            "Implies --write-kw-md."
         ),
     )
     parser.add_argument(
