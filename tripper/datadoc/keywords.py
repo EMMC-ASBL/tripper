@@ -185,6 +185,24 @@ class Keywords:
         # Themes and files that has been parsed
         self.parsed: "set" = set()
 
+        # Used for parsing dicts. Maps any of the elements in the
+        # value to the key (with highest precedence first).
+        # The value elements may be IRIs or keyword names.
+        self.input_mappings = {
+            "label": ["label"],
+            "description": ["description"],
+            "usageNote": ["usageNote"],
+            "inverseOf": ["inverseOf"],
+        }
+
+        # Used for serialising to dicts.
+        self.output_mappings = {
+            "label": "rdfs:label",
+            "description": "skos:definition",
+            "usageNote": "vann:usageNote",
+            "inverseOf": "owl:inverseOf",
+        }
+
         if theme:
             self.add_theme(theme)
 
@@ -987,14 +1005,24 @@ class Keywords:
         clslabels = {}
         for k, v in classes.items():
             d = AttrDict(iri=prefix_iri(k, p))
-            for kk, vv in v.items():
-                if kk in ("description", "usageNote"):
-                    d[kk] = vv
-                if kk == "subClassOf":
-                    if isinstance(vv, str):
-                        d[kk] = to_prefixed(vv, p, strict=True)
+
+            for key, maps in self.input_mappings.items():
+                for m in maps:
+                    if m in v:
+                        d[key] = v[m]
+                    break
+            if "subClassOf" in v and isinstance(v["subClassOf"], str):
+                d["subClassOf"] = to_prefixed(v["subClassOf"], p, strict=True)
+
+            # for kk, vv in v.items():
+            #    if kk in ("description", "usageNote"):
+            #        d[kk] = vv
+            #    if kk == "subClassOf":
+            #        if isinstance(vv, str):
+            #            d[kk] = to_prefixed(vv, p, strict=True)
             d.setdefault("keywords", AttrDict())
-            label = v["label"] if "label" in v else iriname(k)
+            # label = v["label"] if "label" in v else iriname(k)
+            label = d.pop("label") if "label" in d else iriname(k)
             resources[label] = d
             clslabels[d.iri] = label
 
