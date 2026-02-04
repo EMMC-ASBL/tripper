@@ -62,7 +62,7 @@ def test_get_keywords():
 
     kw6 = get_keywords(kw4)
     kw6.load_yaml(testdir / "input" / "custom_keywords.yaml")
-    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
+    assert kw6.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert "batchNumber" in kw6
 
 
@@ -80,7 +80,7 @@ def test_iter():
 
 def test_len():
     """Test __iter__() method."""
-    assert len(keywords) == 125
+    assert len(keywords) == 126
 
 
 def test_dir():
