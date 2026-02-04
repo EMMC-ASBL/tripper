@@ -1449,7 +1449,7 @@ class Keywords:
         for k, v in resources.items():
             ctx.setdefault(
                 k,
-                {  # type:ignore
+                {  # type: ignore
                     "@id": v.iri,
                     "@type": OWL.Class,
                 },
@@ -1971,6 +1971,16 @@ def main(argv=None):
         action="store_true",
         help="List installed themes and exit.",
     )
+    parser.add_argument(
+        "--set-prefix",
+        "-P",
+        metavar="PREFIX:NAMESPACE",
+        action="append",
+        help=(
+            "Set perfix. This option may be given more than once. "
+            "It can be used as a workaround for PrefixMismatchError."
+        ),
+    )
 
     args = parser.parse_args(argv)
 
@@ -2004,6 +2014,11 @@ def main(argv=None):
     for theme in args.theme[1:]:
         if theme:
             kw.add_theme(theme, strict=args.strict, redefine=args.redefine)
+
+    if args.set_prefix:
+        for s in args.set_prefix:
+            prefix, ns = s.split(":", 1)
+            kw.data.prefixes[prefix] = ns
 
     kw.add(args.input, args.format, strict=args.strict, redefine=args.redefine)
 
