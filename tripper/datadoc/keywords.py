@@ -1357,7 +1357,6 @@ class Keywords:
             )
         if is_curie(name):
             return name
-        print(name)
         return prefix_iri(name, self.get_prefixes(), strict=strict)
 
     def typename(self, type) -> str:
