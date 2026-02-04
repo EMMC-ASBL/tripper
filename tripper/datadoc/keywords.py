@@ -1826,7 +1826,7 @@ class Keywords:
         return lines
 
 
-def main(argv=None):
+def main(argv=None):  # pylint: disable=too-many-statements
     """Main function providing CLI access to keywords."""
     import argparse  # pylint: disable=import-outside-toplevel
 
