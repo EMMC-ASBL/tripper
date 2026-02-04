@@ -6720,14 +6720,12 @@ arguments.</p>
             <span class="p">)</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">num</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        SELECT ?qvalue WHERE </span><span class="se">{{</span>
 <span class="s2">          &lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt; &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasNumericalPart</span><span class="si">}</span><span class="s2">&gt; ?v .</span>
 <span class="s2">          ?v &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasNumberValue</span><span class="si">}</span><span class="s2">&gt; ?qvalue .</span>
 <span class="s2">        </span><span class="se">}}</span>
-<span class="s2">        &quot;&quot;&quot;</span>
-        <span class="p">)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span>
         <span class="n">ref</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasReferencePart</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="n">ref</span>
