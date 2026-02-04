@@ -226,14 +226,12 @@ def load_emmo_quantity(ts: Triplestore, iri: str) -> "Tuple[float, str]":
             )
         )[0][0]
     else:
-        num = ts.query(
-            f"""
+        num = ts.query(f"""
         SELECT ?qvalue WHERE {{
           <{iri}> <{EMMO.hasNumericalPart}> ?v .
           ?v <{EMMO.hasNumberValue}> ?qvalue .
         }}
-        """
-        )
+        """)
         ref = ts.value(iri, EMMO.hasReferencePart)
 
     return float(num[0][0]), ref
