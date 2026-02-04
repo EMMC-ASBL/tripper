@@ -1929,7 +1929,7 @@ def main(argv=None):
         metavar="KW1,KW2,...",
         help=(
             "Comma-separated list of keywords to include in generated table. "
-            "Implies --write-markdown."
+            "Implies --write-kw-md."
         ),
     )
     parser.add_argument(
