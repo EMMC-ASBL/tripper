@@ -1917,7 +1917,7 @@ def main(argv=None):
             "Keep only keywords with IRIs in "
             "the namespace "
             "provided by this option.  Can be provided more that once. "
-            "To be used with the --write-markdown option. "
+            "To be used with the --write-kw-md option. "
             "A namespace can be specified by its full IRI or by a pre-defined "
             "prefix."
             "Note that the namespace must be defined with a prefix. "
