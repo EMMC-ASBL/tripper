@@ -1449,7 +1449,7 @@ class Keywords:
         for k, v in resources.items():
             ctx.setdefault(
                 k,
-                {  # type:ignore
+                {  # type: ignore
                     "@id": v.iri,
                     "@type": OWL.Class,
                 },
