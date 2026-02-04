@@ -67,6 +67,13 @@ resources:
         conformance: optional
         description: An entity responsible for making contributions to the resource.
 
+      creationDate:
+        iri: dcterms:created
+        range: rdfs:Literal
+        #range: xsd:dateTime
+        conformance: optional
+        description: Date of creation
+
       creator:
         iri: dcterms:creator
         range: foaf:Agent
@@ -214,6 +221,7 @@ resources:
         range: rdf:Property
         description: The subject is a subproperty of a property.
 
+#| [unit]                  | [rdfs:Literal]<br>(xsd:string)     |             | A SI unit associated to a property.                                                                                                          | The unit should be written with standard SI unit symbols.  Examples: As, Î¼m, J, m/sÂ²                                                                                                                                                                                                                                                                                                                           |
       theme:
         iri: dcat:theme
         range: skos:Concept

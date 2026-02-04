@@ -47,6 +47,7 @@
       "@id": "dcterms:contributor",
       "@type": "@id"
     },
+    "creationDate": "dcterms:created",
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
