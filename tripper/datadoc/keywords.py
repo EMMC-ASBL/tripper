@@ -1635,6 +1635,10 @@ class Keywords:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
+            namespace_filter: A prefix, namespace or a sequence of these.
+                Keep only keywords within this namespace.
+                It is important that the namespace(s) are defined with
+                prefixes in the Keywords object.
             explanation: Whether to include explanation of columns labels.
             special: Whether to generate documentation of special
                 JSON-LD keywords.
@@ -1822,7 +1826,7 @@ class Keywords:
         return lines
 
 
-def main(argv=None):
+def main(argv=None):  # pylint: disable=too-many-statements
     """Main function providing CLI access to keywords."""
     import argparse  # pylint: disable=import-outside-toplevel
 
@@ -1873,20 +1877,20 @@ def main(argv=None):
         help="How to handle redifinition of existing keywords.",
     )
     parser.add_argument(
-        "--context",
+        "--write-context",
+        "--write-json",
         "-c",
         metavar="FILENAME",
         help="Generate JSON-LD context file.",
     )
     parser.add_argument(
-        "--keywords",
-        "--markdown",
+        "--write-kw-md",
         "-k",
         metavar="FILENAME",
         help="Generate keywords Markdown documentation.",
     )
     parser.add_argument(
-        "--yaml",
+        "--write-kw-yaml",
         "-y",
         metavar="FILENAME",
         help="Generate keywords YAML file.",
@@ -1912,9 +1916,12 @@ def main(argv=None):
             "Keep only keywords with IRIs in "
             "the namespace "
             "provided by this option.  Can be provided more that once. "
-            "To be used with the --keywords option. "
+            "To be used with the --write-kw-md option. "
             "A namespace can be specified by its full IRI or by a pre-defined "
             "prefix."
+            "Note that the namespace must be defined with a prefix. "
+            "If missing,"
+            "it can be added with --prefix."
         ),
     )
     parser.add_argument(
@@ -1922,7 +1929,7 @@ def main(argv=None):
         metavar="KW1,KW2,...",
         help=(
             "Comma-separated list of keywords to include in generated table. "
-            "Implies --keywords."
+            "Implies --write-kw-md."
         ),
     )
     parser.add_argument(
@@ -1931,7 +1938,7 @@ def main(argv=None):
         help=(
             "Generate keywords Markdown documentation for any keywords who's "
             "domain is in the comma-separated list CLASSES. "
-            "Implies --keywords."
+            "Implies --write-kw-md."
         ),
     )
     parser.add_argument(
@@ -1940,15 +1947,25 @@ def main(argv=None):
         help=(
             "Generate keywords Markdown documentation for any keywords that "
             "belong to one of the themes in the comma-separated list THEMES. "
-            "Implies --keywords."
+            "Implies --write-kw-md, --write-kw-json or --write-kw-yaml."
         ),
     )
     parser.add_argument(
-        "--prefixes",
-        "-p",
+        "--write-prefixes",
+        "-w",
         metavar="FILENAME",
-        help="Generate prefixes Markdown documentation.",
+        help="Write prefixes Markdown file.",
     )
+    parser.add_argument(
+        "--prefix",
+        "-p",
+        metavar="PREFIX:NAMESPACE",
+        default=[],
+        action="append",
+        help="Add the prefix given as tuple PREFIX=NAMESPACE, "
+        "can be used multiple times.",
+    )
+
     parser.add_argument(
         "--list-themes",
         action="store_true",
@@ -1984,6 +2001,16 @@ def main(argv=None):
 
     kw = Keywords(theme=default_theme)
 
+    if args.prefix:
+        for p in asseq(args.prefix):
+            if ":" not in p:
+                parser.error(
+                    f"Invalid prefix definition '{p}'. Must be of the "
+                    "form PREFIX:NAMESPACE."
+                )
+            prefix, namespace = p.split(":", 1)
+            kw.add_prefix(prefix, namespace, replace=True)
+
     for theme in args.theme[1:]:
         if theme:
             kw.add_theme(theme, strict=args.strict, redefine=args.redefine)
@@ -1995,12 +2022,12 @@ def main(argv=None):
 
     kw.add(args.input, args.format, strict=args.strict, redefine=args.redefine)
 
-    if args.context:
-        kw.save_context(args.context)
+    if args.write_context:
+        kw.save_context(args.write_context)
 
-    if args.keywords or args.kw or args.classes or args.themes:
+    if args.write_kw_md or args.kw or args.classes or args.themes:
         kw.save_markdown(
-            args.keywords,
+            args.write_kw_md,
             keywords=args.kw.split(",") if args.kw else None,
             classes=args.classes.split(",") if args.classes else None,
             themes=args.themes.split(",") if args.themes else None,
@@ -2009,11 +2036,13 @@ def main(argv=None):
             namespace_filter=args.namespace_filter,
         )
 
-    if args.prefixes:
-        kw.save_markdown_prefixes(args.prefixes)
+    if args.write_prefixes:
+        kw.save_markdown_prefixes(args.write_prefixes)
 
-    if args.yaml:
-        kw.save_yaml(args.yaml, namespace_filter=args.namespace_filter)
+    if args.write_kw_yaml:
+        kw.save_yaml(
+            args.write_kw_yaml, namespace_filter=args.namespace_filter
+        )
 
 
 if __name__ == "__main__":
