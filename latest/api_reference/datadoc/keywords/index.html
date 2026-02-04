@@ -2337,7 +2337,7 @@ Keywords        </code>
 <span class="sd">            theme: IRI of one of more themes to load keywords for.</span>
 <span class="sd">            yamlfile: A YAML file with keyword definitions to parse.  May also</span>
 <span class="sd">                be an URI in which case it will be accessed via HTTP GET.</span>
-<span class="sd">                Deprecated. Use the `add_yaml()` or `add()` methods instead.</span>
+<span class="sd">                Deprecated. Use the `load_yaml()` or `add()` methods instead.</span>
 <span class="sd">            timeout: Timeout in case `yamlfile` is a URI.</span>
 
 <span class="sd">        Attributes:</span>
@@ -2364,7 +2364,7 @@ Keywords        </code>
 
         <span class="k">if</span> <span class="n">yamlfile</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `add_yaml()` &quot;</span>
+                <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `load_yaml()` &quot;</span>
                 <span class="s2">&quot;or `add()` methods instead.&quot;</span><span class="p">,</span>
                 <span class="ne">DeprecationWarning</span><span class="p">,</span>
             <span class="p">)</span>
@@ -4053,7 +4053,7 @@ Keywords        </code>
         <td><code>Optional[FileLoc]</code></td>
         <td><p>A YAML file with keyword definitions to parse.  May also
 be an URI in which case it will be accessed via HTTP GET.
-Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instead.</p></td>
+Deprecated. Use the <code>load_yaml()</code> or <code>add()</code> methods instead.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -4107,7 +4107,7 @@ belong to.</p></td>
 <span class="sd">        theme: IRI of one of more themes to load keywords for.</span>
 <span class="sd">        yamlfile: A YAML file with keyword definitions to parse.  May also</span>
 <span class="sd">            be an URI in which case it will be accessed via HTTP GET.</span>
-<span class="sd">            Deprecated. Use the `add_yaml()` or `add()` methods instead.</span>
+<span class="sd">            Deprecated. Use the `load_yaml()` or `add()` methods instead.</span>
 <span class="sd">        timeout: Timeout in case `yamlfile` is a URI.</span>
 
 <span class="sd">    Attributes:</span>
@@ -4134,7 +4134,7 @@ belong to.</p></td>
 
     <span class="k">if</span> <span class="n">yamlfile</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `add_yaml()` &quot;</span>
+            <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `load_yaml()` &quot;</span>
             <span class="s2">&quot;or `add()` methods instead.&quot;</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
@@ -6555,7 +6555,7 @@ loaded.</p></td>
         <td><code>Optional[FileLoc]</code></td>
         <td><p>YAML file with keyword definitions to parse.  May also
 be an URI in which case it will be accessed via HTTP GET.
-Deprecated. Use the <code>add_yaml()</code> or <code>add()</code> methods instead.</p></td>
+Deprecated. Use the <code>load_yaml()</code> or <code>add()</code> methods instead.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -6605,7 +6605,7 @@ keywords.  Should be one of the following strings:
 <span class="sd">        theme: IRI of one of more themes to load keywords for.</span>
 <span class="sd">        yamlfile: YAML file with keyword definitions to parse.  May also</span>
 <span class="sd">            be an URI in which case it will be accessed via HTTP GET.</span>
-<span class="sd">            Deprecated. Use the `add_yaml()` or `add()` methods instead.</span>
+<span class="sd">            Deprecated. Use the `load_yaml()` or `add()` methods instead.</span>
 <span class="sd">        timeout: Timeout in case `yamlfile` is a URI.</span>
 <span class="sd">        strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
 <span class="sd">            contains an unknown key.</span>
@@ -6636,7 +6636,7 @@ keywords.  Should be one of the following strings:
 
     <span class="k">if</span> <span class="n">yamlfile</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `add_yaml()` or &quot;</span>
+            <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `load_yaml()` or &quot;</span>
             <span class="s2">&quot;`add()` methods instead.&quot;</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
