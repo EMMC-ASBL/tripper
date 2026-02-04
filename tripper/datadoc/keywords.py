@@ -1955,7 +1955,7 @@ def main(argv=None):
         "--write-prefixes",
         "-w",
         metavar="FILENAME",
-        help="Write prefixes file.",
+        help="Write prefixes Markdown file.",
     )
     parser.add_argument(
         "--prefix",
