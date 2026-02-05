@@ -185,6 +185,24 @@ class Keywords:
         # Themes and files that has been parsed
         self.parsed: "set" = set()
 
+        # Used for parsing dicts. Maps any of the elements in the
+        # value to the key (with highest precedence first).
+        self.input_mappings = {
+            "label": ["skos:prefLabel", "rdfs:label"],
+            "description": [
+                # TODO: Uncomment when EMMO has changed annotations to
+                # human readable IRIs
+                # "emmo:elucidation",
+                "skos:definition",
+                "dcterms:description",
+                "rdfs:comment",
+            ],
+            "usageNote": ["vann:usageNote", "skos:scopeNote"],
+            "unit": ["ddoc:unitSymbol"],
+            "subPropertyOf": ["rdfs:subPropertyOf"],
+            "inverseOf": ["owl:inverseOf"],
+        }
+
         if theme:
             self.add_theme(theme)
 
@@ -817,6 +835,7 @@ class Keywords:
             "prefixed": None,
             "expanded": self.expanded,
         }
+        # TODO: use `self.input_mappings` instead
         maps = {
             "subPropertyOf": "rdfs:subPropertyOf",
             "unit": "ddoc:unitSymbol",
@@ -983,18 +1002,35 @@ class Keywords:
         data.resources = AttrDict()
         resources = data.resources
 
+        # Expand input mappings
+        input_mappings = {}
+        for key, maps in self.input_mappings.items():
+            s = []
+            for m in maps:
+                s.append(self.expanded(m, strict=False))
+                s.append(self.prefixed(m, strict=False))
+                s.append(iriname(m))
+            input_mappings[key] = s
+
         # Add classes
         clslabels = {}
         for k, v in classes.items():
             d = AttrDict(iri=prefix_iri(k, p))
-            for kk, vv in v.items():
-                if kk in ("description", "usageNote"):
-                    d[kk] = vv
-                if kk == "subClassOf":
-                    if isinstance(vv, str):
-                        d[kk] = to_prefixed(vv, p, strict=True)
+            for key, maps in input_mappings.items():
+                for m in maps:
+                    if m in v:
+                        d[key] = v[m]
+                        break
+            if "subClassOf" in v and isinstance(v["subClassOf"], str):
+                d["subClassOf"] = to_prefixed(v["subClassOf"], p, strict=True)
             d.setdefault("keywords", AttrDict())
-            label = v["label"] if "label" in v else iriname(k)
+            # label = d.pop("label") if "label" in d else iriname(k)
+            for key in d:
+                if key in input_mappings["label"]:
+                    label = d.pop(key)
+                    break
+            else:
+                label = iriname(k)
             resources[label] = d
             clslabels[d.iri] = label
 
@@ -1041,15 +1077,11 @@ class Keywords:
                 # TODO: Define if we accept missing datatype for literals
             if "conformance" in value:
                 d.conformance = CONFORMANCE_MAPS[value["conformance"]]
-            if "unitSymbol" in value:
-                d.unit = value["unitSymbol"]
-            for k, v in value.items():
-                if (
-                    k not in ("@id", "@type", "domain", "label", "name")
-                    and k not in d
-                ):
-                    d[k] = v
-
+            for key, maps in input_mappings.items():
+                for m in maps:
+                    if key != "label" and m in value:
+                        d.setdefault(key, value[m])
+                        break
         return data
 
     def missing_keywords(
@@ -1126,19 +1158,9 @@ class Keywords:
         for prefix, ns in ts.namespaces.items():
             self.add_prefix(prefix, ns)
 
-        # Maps JSON-LD key name to keyword
-        names = {
-            DDOC.unitSymbol: "unit",
-            "ddoc:unitSymbol": "unit",
-        }
-
-        dicts = []
-        for iri in iris:
-            d = AttrDict()
-            for k, v in acquire(ts, iri, context=context).items():
-                d[names.get(k, k)] = v
-            dicts.append(d)
-
+        dicts = [
+            AttrDict(acquire(ts, iri, context=context).items()) for iri in iris
+        ]
         dct = {expand_iri(d["@id"], prefixes): d for d in dicts}
 
         # FIXME: Add domain and range to returned dicts
@@ -1321,6 +1343,8 @@ class Keywords:
     def shortname(self, iri: str) -> str:
         """Return the short name of `iri`.
 
+        If `strict` is False, return last component of the expanded IRI.
+
         Example:
 
         >>> keywords = Keywords()
@@ -1336,6 +1360,9 @@ class Keywords:
         for k, v in self.data.resources.items():
             if expanded == self.expanded(v.iri):
                 return k
+            for kk, vv in v.keywords.items():
+                if expanded == self.expanded(vv.iri):
+                    return kk
         raise InvalidKeywordError(iri)
 
     def prefixed(self, name: str, strict: bool = True) -> str:
