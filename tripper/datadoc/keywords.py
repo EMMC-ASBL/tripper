@@ -188,25 +188,19 @@ class Keywords:
         # Used for parsing dicts. Maps any of the elements in the
         # value to the key (with highest precedence first).
         self.input_mappings = {
-            "label": ["label"],
+            "label": ["skos:prefLabel", "rdfs:label"],
             "description": [
+                # TODO: Uncomment when EMMO has changed annotations to
+                # human readable IRIs
                 # "emmo:elucidation",
                 "skos:definition",
                 "dcterms:description",
                 "rdfs:comment",
             ],
             "usageNote": ["vann:usageNote", "skos:scopeNote"],
+            "unit": ["ddoc:unitSymbol"],
             "subPropertyOf": ["rdfs:subPropertyOf"],
             "inverseOf": ["owl:inverseOf"],
-        }
-
-        # Used for serialising to dicts.
-        self.output_mappings = {
-            "label": "rdfs:label",
-            "description": "skos:definition",
-            "usageNote": "vann:usageNote",
-            "subPropertyOf": "rdfs:subPropertyOf",
-            "inverseOf": "owl:inverseOf",
         }
 
         if theme:
@@ -841,6 +835,7 @@ class Keywords:
             "prefixed": None,
             "expanded": self.expanded,
         }
+        # TODO: use `self.input_mappings` instead
         maps = {
             "subPropertyOf": "rdfs:subPropertyOf",
             "unit": "ddoc:unitSymbol",
@@ -1028,15 +1023,14 @@ class Keywords:
                         break
             if "subClassOf" in v and isinstance(v["subClassOf"], str):
                 d["subClassOf"] = to_prefixed(v["subClassOf"], p, strict=True)
-            # for kk, vv in v.items():
-            #    if kk in ("description", "usageNote"):
-            #        d[kk] = vv
-            #    if kk == "subClassOf":
-            #        if isinstance(vv, str):
-            #            d[kk] = to_prefixed(vv, p, strict=True)
             d.setdefault("keywords", AttrDict())
-            # label = v["label"] if "label" in v else iriname(k)
-            label = d.pop("label") if "label" in d else iriname(k)
+            # label = d.pop("label") if "label" in d else iriname(k)
+            for key in d:
+                if key in input_mappings["label"]:
+                    label = d.pop(key)
+                    break
+            else:
+                label = iriname(k)
             resources[label] = d
             clslabels[d.iri] = label
 
@@ -1083,20 +1077,11 @@ class Keywords:
                 # TODO: Define if we accept missing datatype for literals
             if "conformance" in value:
                 d.conformance = CONFORMANCE_MAPS[value["conformance"]]
-            if "unitSymbol" in value:
-                d.unit = value["unitSymbol"]
             for key, maps in input_mappings.items():
                 for m in maps:
-                    if m in value:
-                        d[key] = value[m]
+                    if key != "label" and m in value:
+                        d.setdefault(key, value[m])
                         break
-            # for k, v in value.items():
-            #    if (
-            #        k not in ("@id", "@type", "domain", "label", "name")
-            #        and k not in d
-            #    ):
-            #        d[k] = v
-
         return data
 
     def missing_keywords(
@@ -1173,19 +1158,9 @@ class Keywords:
         for prefix, ns in ts.namespaces.items():
             self.add_prefix(prefix, ns)
 
-        # Maps JSON-LD key name to keyword
-        names = {
-            DDOC.unitSymbol: "unit",
-            "ddoc:unitSymbol": "unit",
-        }
-
-        dicts = []
-        for iri in iris:
-            d = AttrDict()
-            for k, v in acquire(ts, iri, context=context).items():
-                d[names.get(k, k)] = v
-            dicts.append(d)
-
+        dicts = [
+            AttrDict(acquire(ts, iri, context=context).items()) for iri in iris
+        ]
         dct = {expand_iri(d["@id"], prefixes): d for d in dicts}
 
         # FIXME: Add domain and range to returned dicts

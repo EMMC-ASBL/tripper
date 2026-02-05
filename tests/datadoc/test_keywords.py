@@ -519,7 +519,7 @@ def test_load2():
         "type": "owl:AnnotationProperty",
         "domain": "rdfs:Resource",
         "range": "rdfs:Literal",
-        "comment": "Name.",
+        "description": "Name.",
         "name": "hasName",
     }
 
@@ -556,7 +556,7 @@ def test_load2():
         "type": "owl:AnnotationProperty",
         "domain": ["dcat:Resource", "rdfs:Resource"],
         "range": "rdfs:Literal",
-        "comment": "Name.",
+        "description": "Name.",
         "name": "hasName",
     }
 
