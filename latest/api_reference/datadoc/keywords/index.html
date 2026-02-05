@@ -2359,6 +2359,24 @@ Keywords        </code>
         <span class="c1"># Themes and files that has been parsed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span> <span class="s2">&quot;set&quot;</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
+        <span class="c1"># Used for parsing dicts. Maps any of the elements in the</span>
+        <span class="c1"># value to the key (with highest precedence first).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_mappings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;skos:prefLabel&quot;</span><span class="p">,</span> <span class="s2">&quot;rdfs:label&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="c1"># TODO: Uncomment when EMMO has changed annotations to</span>
+                <span class="c1"># human readable IRIs</span>
+                <span class="c1"># &quot;emmo:elucidation&quot;,</span>
+                <span class="s2">&quot;skos:definition&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dcterms:description&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;rdfs:comment&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;usageNote&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;vann:usageNote&quot;</span><span class="p">,</span> <span class="s2">&quot;skos:scopeNote&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ddoc:unitSymbol&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;subPropertyOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;rdfs:subPropertyOf&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;inverseOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;owl:inverseOf&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
         <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
 
@@ -2991,6 +3009,7 @@ Keywords        </code>
             <span class="s2">&quot;prefixed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">&quot;expanded&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="c1"># TODO: use `self.input_mappings` instead</span>
         <span class="n">maps</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;subPropertyOf&quot;</span><span class="p">:</span> <span class="s2">&quot;rdfs:subPropertyOf&quot;</span><span class="p">,</span>
             <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;ddoc:unitSymbol&quot;</span><span class="p">,</span>
@@ -3157,18 +3176,35 @@ Keywords        </code>
         <span class="n">data</span><span class="o">.</span><span class="n">resources</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
         <span class="n">resources</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">resources</span>
 
+        <span class="c1"># Expand input mappings</span>
+        <span class="n">input_mappings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">maps</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">maps</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iriname</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+            <span class="n">input_mappings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
         <span class="c1"># Add classes</span>
         <span class="n">clslabels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">prefix_iri</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">kk</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;usageNote&quot;</span><span class="p">):</span>
-                    <span class="n">d</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">vv</span>
-                <span class="k">if</span> <span class="n">kk</span> <span class="o">==</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                        <span class="n">d</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_prefixed</span><span class="p">(</span><span class="n">vv</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">maps</span> <span class="ow">in</span> <span class="n">input_mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">maps</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                        <span class="k">break</span>
+            <span class="k">if</span> <span class="s2">&quot;subClassOf&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_prefixed</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="n">AttrDict</span><span class="p">())</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;label&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="k">else</span> <span class="n">iriname</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1"># label = d.pop(&quot;label&quot;) if &quot;label&quot; in d else iriname(k)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">input_mappings</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">iriname</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
             <span class="n">resources</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
             <span class="n">clslabels</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">iri</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
 
@@ -3215,15 +3251,11 @@ Keywords        </code>
                 <span class="c1"># TODO: Define if we accept missing datatype for literals</span>
             <span class="k">if</span> <span class="s2">&quot;conformance&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">conformance</span> <span class="o">=</span> <span class="n">CONFORMANCE_MAPS</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;conformance&quot;</span><span class="p">]]</span>
-            <span class="k">if</span> <span class="s2">&quot;unitSymbol&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;unitSymbol&quot;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
-                    <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span>
-                <span class="p">):</span>
-                    <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">maps</span> <span class="ow">in</span> <span class="n">input_mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">maps</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;label&quot;</span> <span class="ow">and</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+                        <span class="k">break</span>
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">missing_keywords</span><span class="p">(</span>
@@ -3300,19 +3332,9 @@ Keywords        </code>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
-        <span class="c1"># Maps JSON-LD key name to keyword</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">DDOC</span><span class="o">.</span><span class="n">unitSymbol</span><span class="p">:</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ddoc:unitSymbol&quot;</span><span class="p">:</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-
-        <span class="n">dicts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">:</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">d</span><span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
-            <span class="n">dicts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-
+        <span class="n">dicts</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">AttrDict</span><span class="p">(</span><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span>
+        <span class="p">]</span>
         <span class="n">dct</span> <span class="o">=</span> <span class="p">{</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">prefixes</span><span class="p">):</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dicts</span><span class="p">}</span>
 
         <span class="c1"># FIXME: Add domain and range to returned dicts</span>
@@ -3495,6 +3517,8 @@ Keywords        </code>
     <span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the short name of `iri`.</span>
 
+<span class="sd">        If `strict` is False, return last component of the expanded IRI.</span>
+
 <span class="sd">        Example:</span>
 
 <span class="sd">        &gt;&gt;&gt; keywords = Keywords()</span>
@@ -3510,6 +3534,9 @@ Keywords        </code>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">expanded</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">iri</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">k</span>
+            <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">expanded</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">vv</span><span class="o">.</span><span class="n">iri</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">kk</span>
         <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">prefixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -4133,6 +4160,24 @@ belong to.</p></td>
     <span class="c1"># Themes and files that has been parsed</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span> <span class="s2">&quot;set&quot;</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
+    <span class="c1"># Used for parsing dicts. Maps any of the elements in the</span>
+    <span class="c1"># value to the key (with highest precedence first).</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">input_mappings</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;skos:prefLabel&quot;</span><span class="p">,</span> <span class="s2">&quot;rdfs:label&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="c1"># TODO: Uncomment when EMMO has changed annotations to</span>
+            <span class="c1"># human readable IRIs</span>
+            <span class="c1"># &quot;emmo:elucidation&quot;,</span>
+            <span class="s2">&quot;skos:definition&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dcterms:description&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rdfs:comment&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;usageNote&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;vann:usageNote&quot;</span><span class="p">,</span> <span class="s2">&quot;skos:scopeNote&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ddoc:unitSymbol&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;subPropertyOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;rdfs:subPropertyOf&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;inverseOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;owl:inverseOf&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
     <span class="k">if</span> <span class="n">theme</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_theme</span><span class="p">(</span><span class="n">theme</span><span class="p">)</span>
 
@@ -4590,6 +4635,7 @@ default is to return all keywords.</p></td>
         <span class="s2">&quot;prefixed&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;expanded&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="c1"># TODO: use `self.input_mappings` instead</span>
     <span class="n">maps</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;subPropertyOf&quot;</span><span class="p">:</span> <span class="s2">&quot;rdfs:subPropertyOf&quot;</span><span class="p">,</span>
         <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;ddoc:unitSymbol&quot;</span><span class="p">,</span>
@@ -6335,6 +6381,7 @@ these namespaces.</p></td>
     <div class="doc doc-contents ">
 
       <p>Return the short name of <code>iri</code>.</p>
+<p>If <code>strict</code> is False, return last component of the expanded IRI.</p>
 
 <p><strong>Examples:</strong></p>
     
@@ -6353,6 +6400,8 @@ keywords.shortname("dcterms:title")
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the short name of `iri`.</span>
 
+<span class="sd">    If `strict` is False, return last component of the expanded IRI.</span>
+
 <span class="sd">    Example:</span>
 
 <span class="sd">    &gt;&gt;&gt; keywords = Keywords()</span>
@@ -6368,6 +6417,9 @@ keywords.shortname("dcterms:title")
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">expanded</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">iri</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">k</span>
+        <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">expanded</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">expanded</span><span class="p">(</span><span class="n">vv</span><span class="o">.</span><span class="n">iri</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">kk</span>
     <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
 </code></pre></div>
         </details>
