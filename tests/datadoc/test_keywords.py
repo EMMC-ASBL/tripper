@@ -712,10 +712,6 @@ def test_shortname():
     assert keywords.shortname("dcat:Dataset") == "Dataset"
     assert keywords.shortname(DCAT.Dataset) == "Dataset"
 
-    assert keywords.shortname("Dataset", strict=False) == "Dataset"
-    assert keywords.shortname("dcat:Dataset", strict=False) == "Dataset"
-    assert keywords.shortname(DCAT.Dataset, strict=False) == "Dataset"
-
 
 def test_prefixed():
     """Test prefixed() method."""

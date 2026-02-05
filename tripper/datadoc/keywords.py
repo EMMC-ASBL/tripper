@@ -205,6 +205,7 @@ class Keywords:
             "label": "rdfs:label",
             "description": "skos:definition",
             "usageNote": "vann:usageNote",
+            "subPropertyOf": "rdfs:subPropertyOf",
             "inverseOf": "owl:inverseOf",
         }
 
