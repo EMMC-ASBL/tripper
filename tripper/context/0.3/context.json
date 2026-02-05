@@ -60,6 +60,10 @@
       "@id": "ddoc:curator",
       "@type": "@id"
     },
+    "definition": {
+      "@id": "skos:definition",
+      "@language": "en"
+    },
     "description": {
       "@id": "dcterms:description",
       "@language": "en"

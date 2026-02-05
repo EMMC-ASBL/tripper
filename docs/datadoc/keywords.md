@@ -250,6 +250,7 @@ with multiple languages.
 | [label]                 | [rdfs:Literal]                     |             | Provides a human-readable version of a resource's name.                                                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [range]                 | [rdfs:Resource]                    |             | A range of the subject property.                                                                                                             |                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [seeAlso]               | [skos:Concept]                     |             | Indicates a resource that might provide additional information about the subject resource.                                                   |                                                                                                                                                                                                                                                                                                                                                                                                                |
+| [definition]            | [rdfs:Literal]<br>(rdf:langString) |             | A statement or formal explanation of the meaning of a concept.                                                                               |                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 [versionNotes]: http://www.w3.org/ns/adms#versionNotes
 [rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
@@ -327,6 +328,8 @@ with multiple languages.
 [rdfs:Resource]: http://www.w3.org/2000/01/rdf-schema#Resource
 [seeAlso]: http://www.w3.org/2000/01/rdf-schema#seeAlso
 [skos:Concept]: http://www.w3.org/2004/02/skos/core#Concept
+[definition]: http://www.w3.org/2004/02/skos/core#definition
+[rdfs:Literal]: http://www.w3.org/2000/01/rdf-schema#Literal
 
 
 

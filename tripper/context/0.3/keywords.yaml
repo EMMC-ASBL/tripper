@@ -91,6 +91,12 @@ resources:
         description: The agent that curated the resource.
         usageNote: Use `ddoc:curationDate` to refer to the date of curation.
 
+      definition:
+        iri: skos:definition
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: A statement or formal explanation of the meaning of a concept.
+
       description:
         iri: dcterms:description
         range: rdfs:Literal

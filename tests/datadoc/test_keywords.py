@@ -80,7 +80,7 @@ def test_iter():
 
 def test_len():
     """Test __iter__() method."""
-    assert len(keywords) == 126
+    assert len(keywords) == 127
 
 
 def test_dir():
@@ -711,6 +711,10 @@ def test_shortname():
     assert keywords.shortname("Dataset") == "Dataset"
     assert keywords.shortname("dcat:Dataset") == "Dataset"
     assert keywords.shortname(DCAT.Dataset) == "Dataset"
+
+    assert keywords.shortname("Dataset", strict=False) == "Dataset"
+    assert keywords.shortname("dcat:Dataset", strict=False) == "Dataset"
+    assert keywords.shortname(DCAT.Dataset, strict=False) == "Dataset"
 
 
 def test_prefixed():

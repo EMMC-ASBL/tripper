@@ -187,12 +187,17 @@ class Keywords:
 
         # Used for parsing dicts. Maps any of the elements in the
         # value to the key (with highest precedence first).
-        # The value elements may be IRIs or keyword names.
         self.input_mappings = {
             "label": ["label"],
-            "description": ["description"],
-            "usageNote": ["usageNote"],
-            "inverseOf": ["inverseOf"],
+            "description": [
+                # "emmo:elucidation",
+                "skos:definition",
+                "dcterms:description",
+                "rdfs:comment",
+            ],
+            "usageNote": ["vann:usageNote", "skos:scopeNote"],
+            "subPropertyOf": ["rdfs:subPropertyOf"],
+            "inverseOf": ["owl:inverseOf"],
         }
 
         # Used for serialising to dicts.
@@ -1001,19 +1006,27 @@ class Keywords:
         data.resources = AttrDict()
         resources = data.resources
 
+        # Expand input mappings
+        input_mappings = {}
+        for key, maps in self.input_mappings.items():
+            s = []
+            for m in maps:
+                s.append(self.expanded(m, strict=False))
+                s.append(self.prefixed(m, strict=False))
+                s.append(iriname(m))
+            input_mappings[key] = s
+
         # Add classes
         clslabels = {}
         for k, v in classes.items():
             d = AttrDict(iri=prefix_iri(k, p))
-
-            for key, maps in self.input_mappings.items():
+            for key, maps in input_mappings.items():
                 for m in maps:
                     if m in v:
                         d[key] = v[m]
-                    break
+                        break
             if "subClassOf" in v and isinstance(v["subClassOf"], str):
                 d["subClassOf"] = to_prefixed(v["subClassOf"], p, strict=True)
-
             # for kk, vv in v.items():
             #    if kk in ("description", "usageNote"):
             #        d[kk] = vv
@@ -1071,12 +1084,17 @@ class Keywords:
                 d.conformance = CONFORMANCE_MAPS[value["conformance"]]
             if "unitSymbol" in value:
                 d.unit = value["unitSymbol"]
-            for k, v in value.items():
-                if (
-                    k not in ("@id", "@type", "domain", "label", "name")
-                    and k not in d
-                ):
-                    d[k] = v
+            for key, maps in input_mappings.items():
+                for m in maps:
+                    if m in value:
+                        d[key] = value[m]
+                        break
+            # for k, v in value.items():
+            #    if (
+            #        k not in ("@id", "@type", "domain", "label", "name")
+            #        and k not in d
+            #    ):
+            #        d[k] = v
 
         return data
 
@@ -1349,6 +1367,8 @@ class Keywords:
     def shortname(self, iri: str) -> str:
         """Return the short name of `iri`.
 
+        If `strict` is False, return last component of the expanded IRI.
+
         Example:
 
         >>> keywords = Keywords()
@@ -1364,6 +1384,9 @@ class Keywords:
         for k, v in self.data.resources.items():
             if expanded == self.expanded(v.iri):
                 return k
+            for kk, vv in v.keywords.items():
+                if expanded == self.expanded(vv.iri):
+                    return kk
         raise InvalidKeywordError(iri)
 
     def prefixed(self, name: str, strict: bool = True) -> str:
