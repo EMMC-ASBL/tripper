@@ -1347,8 +1347,9 @@ def make_query(
         if criteria is None:
             criteria = criterias
 
-    keywords = get_keywords(keywords=keywords, theme=None)
-    context = get_context(keywords=keywords, default_theme=None)
+    # Are we risking overwriting existing keywords here?
+    keywords = get_keywords(keywords=keywords)
+    context = get_context(keywords=keywords)
     context._create_caches()  # pylint: disable=protected-access
     expanded = context._expanded  # pylint: disable=protected-access
 
