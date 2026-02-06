@@ -92,6 +92,7 @@ class TableDoc:
         self.context = get_context(
             context=context,
             keywords=self.keywords,
+            default_theme=None,
             prefixes=prefixes,
         )
         self.strip = strip

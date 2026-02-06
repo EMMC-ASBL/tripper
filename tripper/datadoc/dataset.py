@@ -109,7 +109,8 @@ def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
 
     If `keywords` is None, the keywords for the default theme are used.
     """
-    keywords = get_keywords(keywords)
+    if not keywords:
+        keywords = get_keywords(keywords=keywords)
     return keywords[keyword].range
 
 
@@ -169,14 +170,18 @@ def told(
     if not singlerepr:
         keywords = get_keywords(
             keywords=keywords,
+            # is this correct?
             theme=descr.get("theme", "ddoc:datadoc"),  # type: ignore
             yamlfile=descr.get("keywordfile"),  # type: ignore
         )
     else:
-        keywords = get_keywords(keywords=keywords)
+        keywords = get_keywords(keywords=keywords, theme=None)
 
     context = get_context(
-        context=context, keywords=keywords, prefixes=prefixes
+        context=context,
+        keywords=keywords,
+        prefixes=prefixes,
+        default_theme=None,
     )
     resources = keywords.data.resources
 
@@ -326,7 +331,7 @@ def store(
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
+    theme: "Optional[Union[str, Sequence[str]]]" = None,
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
@@ -375,7 +380,10 @@ def store(
     """
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
-        keywords=keywords, context=context, prefixes=prefixes
+        keywords=keywords,
+        context=context,
+        prefixes=prefixes,
+        default_theme=None,
     )
     doc = told(
         source,
@@ -384,6 +392,7 @@ def store(
         context=context,
         prefixes=prefixes,
     )
+
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
         iri = d["@id"]
@@ -1338,8 +1347,8 @@ def make_query(
         if criteria is None:
             criteria = criterias
 
-    keywords = get_keywords(keywords=keywords)
-    context = get_context(keywords=keywords)
+    keywords = get_keywords(keywords=keywords, theme=None)
+    context = get_context(keywords=keywords, default_theme=None)
     context._create_caches()  # pylint: disable=protected-access
     expanded = context._expanded  # pylint: disable=protected-access
 
