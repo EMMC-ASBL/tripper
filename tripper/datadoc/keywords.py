@@ -105,10 +105,6 @@ def get_keywords(
     """
     if isinstance(keywords, Keywords):
         kw = keywords
-        if theme:
-            kw.add_theme(
-                theme, timeout=timeout, strict=strict, redefine=redefine
-            )
     else:
         kw = Keywords(theme=theme)
         if keywords:

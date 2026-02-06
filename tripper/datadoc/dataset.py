@@ -172,7 +172,6 @@ def told(
             keywords=keywords,
             # is this correct?
             theme=descr.get("theme", "ddoc:datadoc"),  # type: ignore
-            yamlfile=descr.get("keywordfile"),  # type: ignore
         )
     else:
         keywords = get_keywords(keywords=keywords)
@@ -331,7 +330,7 @@ def store(
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
-    theme: "Optional[Union[str, Sequence[str]]]" = None,
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
@@ -1074,6 +1073,12 @@ def save_datadoc(
     else:
         with openfile(file_or_dict, mode="rt", encoding="utf-8") as f:
             d = yaml.safe_load(f)
+
+    if "theme" in d:
+        keywords = get_keywords(keywords, theme=d["theme"])
+        context = get_context(
+            keywords=keywords, context=context, theme=d["theme"]
+        )
 
     return store(ts, d, keywords=keywords, context=context)
 
