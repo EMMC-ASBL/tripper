@@ -175,7 +175,7 @@ def told(
             yamlfile=descr.get("keywordfile"),  # type: ignore
         )
     else:
-        keywords = get_keywords(keywords=keywords, theme=None)
+        keywords = get_keywords(keywords=keywords)
 
     context = get_context(
         context=context,
@@ -1347,7 +1347,6 @@ def make_query(
         if criteria is None:
             criteria = criterias
 
-    # Are we risking overwriting existing keywords here?
     keywords = get_keywords(keywords=keywords)
     context = get_context(keywords=keywords)
     context._create_caches()  # pylint: disable=protected-access
