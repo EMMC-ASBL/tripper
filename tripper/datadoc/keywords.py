@@ -1170,6 +1170,8 @@ class Keywords:
             for ref in ("domain", "range"):
                 if ref in d:
                     for domain in asseq(d[ref]):
+                        if isinstance(domain, dict):  # skip blank nodes
+                            continue
                         expanded = expand_iri(domain, prefixes)
                         if expanded.startswith(str(XSD)):
                             continue

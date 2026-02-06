@@ -4,16 +4,18 @@
 
 import csv
 import re
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from tripper import Triplestore
 from tripper.datadoc.context import get_context
-from tripper.datadoc.dataset import store, told
+from tripper.datadoc.dataset import acquire, store, told
+from tripper.datadoc.errors import TypeConversionWarning
 from tripper.datadoc.keywords import get_keywords
 from tripper.datadoc.utils import addnested, stripnested
 from tripper.literal import Literal
-from tripper.utils import AttrDict, openfile
+from tripper.utils import AttrDict, is_curie, is_uri, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Iterable, List, Optional, Protocol, Sequence, Union
@@ -96,8 +98,12 @@ class TableDoc:
         )
         self.strip = strip
 
-    def save(self, ts: Triplestore) -> None:
-        """Save tabular datadocumentation to triplestore."""
+    def save(self, ts: Triplestore, strict: bool = True) -> None:
+        """Save tabular datadocumentation to triplestore.
+
+        If `strict` is false, do not raise an exception if a cell
+        value cannot be converted to the expected datatype.
+        """
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
         )
@@ -105,24 +111,66 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        store(ts, self.asdicts(), type=self.type, context=self.context)
+        store(
+            ts,
+            self.asdicts(ts=ts, strict=strict),
+            type=self.type,
+            context=self.context,
+        )
 
-    def asdicts(self) -> "List[dict]":
-        """Return the table as a list of dicts."""
+    def asdicts(
+        self, ts: "Optional[Triplestore]" = None, strict: bool = True
+    ) -> "List[dict]":
+        """Return the table as a list of dicts.
+
+        Arguments:
+            ts: Optional triplestore to look up header names in if they
+                are not found in the json-ld context.
+            strict: Whether to raise an error if a cell contain data that
+                cannot be converted to expected datatype.
+
+        """
+        # pylint: disable=too-many-nested-blocks
         results = []
         for row in self.data:
             d = AttrDict()
+            print()
             for i, colname in enumerate(self.header):
                 cell = row[i].strip() if row[i] and self.strip else row[i]
+                print("* colname:", colname)
+                print("  cell:", repr(cell))
                 if cell:
-
                     # Convert cell value to correct Python type
                     if not colname.startswith("@"):
-                        leafname = colname.split(".")[-1]
-                        df = self.context.getdef(leafname.split("[")[0])
-                        if "@type" in df and df["@type"] != "@id":
-                            cell = Literal(cell, datatype=df["@type"]).value
-
+                        leafname = colname.split(".")[-1].split("[")[0]
+                        dt = None
+                        if leafname in self.context:
+                            df = self.context.getdef(leafname)
+                            t = df.get("@type")
+                            dt = t if t != "@id" else None
+                        elif is_curie(leafname) or is_uri(leafname):
+                            if ts:
+                                df = acquire(ts, leafname)
+                                dt = df.get("range")
+                            # TODO: if acquire() fails, check if `leafname`
+                            # is a resolvable URI that returns a turtle file.
+                            # If so, extract the definition of `leafname` from
+                            # this file.
+                        print("  dt:  ", dt)
+                        if dt:
+                            try:
+                                cell = Literal(cell, datatype=dt).value
+                            except ValueError:
+                                if strict:
+                                    raise
+                                warnings.warn(
+                                    f"Skipping '{cell}' in column '{colname}' "
+                                    "since it cannot be converted to datatype "
+                                    f"'{dt}'",
+                                    TypeConversionWarning,
+                                )
+                                continue
+                    print("  val: ", repr(cell))
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
                     )
