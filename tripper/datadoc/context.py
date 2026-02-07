@@ -8,6 +8,7 @@ import re
 from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
+from rdflib import Graph
 
 from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
@@ -433,12 +434,48 @@ class Context:
         """Return compacted JSON-LD document `doc`."""
         return self.ld.compact(doc, self.get_context_dict(), options={})
 
-    def to_triplestore(self, ts, doc: "Union[dict, list]"):
-        """Store JSON-LD document `doc` to triplestore `ts`."""
-        nt = jsonld.to_rdf(
-            self._todict(doc), options={"format": "application/n-quads"}
+    def to_triplestore(
+        self,
+        ts,
+        doc: "Union[dict, list]",
+        force=False,
+    ) -> Graph:
+        """Store JSON-LD document `doc` to triplestore `ts`.
+
+        Arguments:
+            ts: Triplestore to store to.
+            doc: JSON-LD document to store, as a dict or list of dicts.
+            force: If true, store document even if it contains invalid terms.
+                Incomplete IRIs will be store with namespace "http://falseiri/".
+
+        Returns:
+            The store RDFLIB Graph created from the document.
+
+        """
+        # nt = jsonld.to_rdf(
+        #    self._todict(doc), options={"format": "application/n-quads"}
+        # )
+        g = Graph()
+        g.parse(
+            data=self._todict(doc), format="json-ld", base="https://falseiri/"
         )
-        ts.parse(data=nt, format="ntriples")
+
+        # Check that no IRIs are in namespace "https://iri/not/given#".
+        # If Force is True, issue a warning
+        # If Force is False, raise an error
+        for s, p, o in g:
+            for term in (s, p, o):
+                print("term", term)
+                if isinstance(term, str) and term.startswith(
+                    "https://falseiri/"
+                ):
+                    msg = f"Term '{term}' is not a valid IRI."
+                    if force:
+                        print(f"WARNING: {msg}")
+                    else:
+                        raise InvalidContextError(msg)
+
+        ts.parse(data=g.serialize(format="ntriples"), format="ntriples")
 
         if isinstance(doc, dict) and "@context" in doc:
             ctx = self.copy()
@@ -448,6 +485,7 @@ class Context:
         for prefix, ns in ctx.get_prefixes().items():
             if prefix not in ts.namespaces:
                 ts.bind(prefix, ns)
+        return g
 
     def _todict(self, doc: "Union[dict, list]") -> dict:
         """Returns a shallow copy of doc as a dict with current
