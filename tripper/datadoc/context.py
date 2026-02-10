@@ -477,7 +477,7 @@ class Context:
                     if force:
                         warnings.warn(msg, NamespaceWarning)
                     else:
-                        raise InvalidContextError(msg)
+                        raise NamespaceError(msg)
 
         ts.parse(data=g.serialize(format="ntriples"), format="ntriples")
 

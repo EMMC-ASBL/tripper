@@ -279,6 +279,7 @@ def test_store():
     from tripper import Triplestore
     from tripper.datadoc import acquire, store
     from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
+    from tripper.errors import NamespaceError
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -319,6 +320,17 @@ def test_store():
 
     with pytest.raises(ValueError):
         store(ts, d, type="Dataset", method="invalid_method_name")
+
+    # Test baseiri
+    d5 = {
+        "@id": "myInstrument",
+        "@type": EX.Instrument,
+        "title": "My super duper exiting instrument.",
+    }
+    with pytest.raises(NamespaceError):
+        store(ts, d5)
+
+    store(ts, d5, baseiri="http://example.com/devices#")
 
 
 def test_infer_restriction_types():
