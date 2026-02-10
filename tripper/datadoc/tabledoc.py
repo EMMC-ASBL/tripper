@@ -92,6 +92,7 @@ class TableDoc:
         self.context = get_context(
             context=context,
             keywords=self.keywords,
+            default_theme=None,
             prefixes=prefixes,
         )
         self.strip = strip
@@ -105,7 +106,13 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        store(ts, self.asdicts(), type=self.type, context=self.context)
+        store(
+            ts,
+            self.asdicts(),
+            type=self.type,
+            keywords=self.keywords,
+            context=self.context,
+        )
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""

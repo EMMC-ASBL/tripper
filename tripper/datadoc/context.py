@@ -242,6 +242,7 @@ class Context:
 
     def get_prefixes(self) -> dict:
         """Return a dict mapping prefixes to IRIs."""
+
         prefixes = {"": self.base} if self.base else {}
         for k, v in self.ctx["mappings"].items():
             if v.get("_prefix") and "@id" in v:
@@ -263,7 +264,6 @@ class Context:
         """
         ns1 = self.get_prefixes().copy()
         ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}
-
         if update is None:
             mismatch = [
                 p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]

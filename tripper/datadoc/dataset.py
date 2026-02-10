@@ -109,7 +109,7 @@ def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
 
     If `keywords` is None, the keywords for the default theme are used.
     """
-    keywords = get_keywords(keywords)
+    keywords = get_keywords(keywords=keywords)
     return keywords[keyword].range
 
 
@@ -166,17 +166,20 @@ def told(
         raise InvalidDatadocError(
             "invalid mixture of single- and multi-resource dict"
         )
-    if not singlerepr:
+
+    if not singlerepr and "theme" in descr:
         keywords = get_keywords(
             keywords=keywords,
-            theme=descr.get("theme", "ddoc:datadoc"),  # type: ignore
-            yamlfile=descr.get("keywordfile"),  # type: ignore
+            theme=descr["theme"],  # type: ignore
         )
     else:
         keywords = get_keywords(keywords=keywords)
 
     context = get_context(
-        context=context, keywords=keywords, prefixes=prefixes
+        context=context,
+        keywords=keywords,
+        prefixes=prefixes,
+        default_theme=None,
     )
     resources = keywords.data.resources
 
@@ -375,7 +378,10 @@ def store(
     """
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
-        keywords=keywords, context=context, prefixes=prefixes
+        keywords=keywords,
+        context=context,
+        prefixes=prefixes,
+        default_theme=None,
     )
     doc = told(
         source,
@@ -384,6 +390,7 @@ def store(
         context=context,
         prefixes=prefixes,
     )
+
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
         iri = d["@id"]
@@ -417,7 +424,6 @@ def store(
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
-
     return doc
 
 
@@ -1065,6 +1071,12 @@ def save_datadoc(
     else:
         with openfile(file_or_dict, mode="rt", encoding="utf-8") as f:
             d = yaml.safe_load(f)
+
+    if "theme" in d:
+        keywords = get_keywords(keywords, theme=d["theme"])
+        context = get_context(
+            keywords=keywords, context=context, theme=d["theme"]
+        )
 
     return store(ts, d, keywords=keywords, context=context)
 

@@ -23,7 +23,7 @@ def test_told():
     # pylint: disable=too-many-statements
     from pathlib import Path
 
-    from tripper import DCAT, DCTERMS, OWL, RDF, Literal, Triplestore
+    from tripper import DCAT, DCTERMS, RDF, Literal, Triplestore
     from tripper.datadoc.dataset import store, told
 
     indir = Path(__file__).resolve().parent.parent / "input"
@@ -150,7 +150,7 @@ def test_told():
 
     # Test store() on descrC
     ts.remove()
-    store(ts, descrB, prefixes=prefixes)
+    store(ts, descrC, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
     assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
@@ -159,9 +159,10 @@ def test_told():
     descrD = {
         "prefixes": prefixes,
         "base": "http://base.com#",
+        # "theme": "ddoc:datadoc",
         "Dataset": [
             {
-                "@id": "a",
+                "@id": "ex:a",
                 "@type": "ex:A",
                 "title": "Dataset a",
                 "distribution": {
@@ -170,7 +171,7 @@ def test_told():
                 },
             },
             {
-                "@id": "b",
+                "@id": "ex:b",
                 "title": "Dataset b",
             },
         ],
@@ -187,14 +188,14 @@ def test_told():
         "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     ]
 
-    # Test store() on descrC
+    # Test store() on descrD
     ts.remove()
-    store(ts, descrB, prefixes=prefixes)
+    store(ts, descrD, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
     assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
-    assert ts.has(EX.b, RDF.type, OWL.NamedIndividual)
+    assert ts.has(EX.b, RDF.type, DCAT.Dataset)
 
 
 def test_get_jsonld_context():
@@ -294,7 +295,6 @@ def test_store():
         },
     }
     store(ts, d, type="Dataset")
-    print(ts.serialize())
 
     with pytest.raises(IRIExistsError):
         store(ts, d, type="Dataset")
@@ -757,7 +757,6 @@ def test_deprecated():
     }
     with pytest.warns(DeprecationWarning):
         save_dict(ts, d, type="Dataset")
-    print(ts.serialize())
 
     with pytest.warns(DeprecationWarning):
         d2 = load_dict(ts, EX.exdata)
