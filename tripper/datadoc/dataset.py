@@ -334,6 +334,7 @@ def store(
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
     restrictions: "Optional[dict]" = None,
+    baseiri: "Optional[str]" = None,
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -364,6 +365,8 @@ def store(
         restrictions: A dict describing how properties of classes in
             `source` should be mapped to restrictions.  The default is
             to call `infer_restriction_types()`.
+        baseiri: If given, it will be used as a base iri to
+            resolve relative IRIs. (I.e. Not valid URLs).
 
     Returns:
         A copy of `source` updated to valid JSON-LD.
@@ -420,7 +423,7 @@ def store(
     # TODO: reenable validation
     # validate(doc, type=type, keywords=keywords)
 
-    context.to_triplestore(ts, doc)
+    context.to_triplestore(ts, doc, baseiri=baseiri)
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!

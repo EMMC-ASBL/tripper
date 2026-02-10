@@ -5,6 +5,7 @@
 import json
 import os
 import re
+import warnings
 from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
@@ -12,7 +13,7 @@ from rdflib import Graph
 
 from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
-from tripper.errors import NamespaceError
+from tripper.errors import NamespaceError, NamespaceWarning
 from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -438,7 +439,8 @@ class Context:
         self,
         ts,
         doc: "Union[dict, list]",
-        force=False,
+        force: "bool" = False,
+        baseiri: "Optional[str]" = None,
     ) -> Graph:
         """Store JSON-LD document `doc` to triplestore `ts`.
 
@@ -447,31 +449,33 @@ class Context:
             doc: JSON-LD document to store, as a dict or list of dicts.
             force: If true, store document even if it contains invalid terms.
                 Incomplete IRIs will be store with namespace "http://falseiri/".
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
 
         Returns:
             The store RDFLIB Graph created from the document.
 
         """
-        # nt = jsonld.to_rdf(
-        #    self._todict(doc), options={"format": "application/n-quads"}
-        # )
-        g = Graph()
-        g.parse(
-            data=self._todict(doc), format="json-ld", base="https://falseiri/"
-        )
+        base = baseiri if baseiri else "https://falseiri/"
 
-        # Check that no IRIs are in namespace "https://iri/not/given#".
+        g = Graph()
+
+        g.parse(data=self._todict(doc), format="json-ld", base=base)
+
+        # Check that no IRIs are in namespace "https://falseiri/".
         # If Force is True, issue a warning
         # If Force is False, raise an error
         for s, p, o in g:
             for term in (s, p, o):
-                print("term", term)
                 if isinstance(term, str) and term.startswith(
                     "https://falseiri/"
                 ):
-                    msg = f"Term '{term}' is not a valid IRI."
+                    msg = (
+                        f"Missing base iri for term: "
+                        f"'{term.lstrip('https://falseiri/')}'"
+                    )
                     if force:
-                        print(f"WARNING: {msg}")
+                        warnings.warn(msg, NamespaceWarning)
                     else:
                         raise InvalidContextError(msg)
 
