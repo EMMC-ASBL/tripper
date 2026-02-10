@@ -3384,6 +3384,12 @@ inferred from <code>keywords</code>.</p></td>
         <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">file_or_dict</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="s2">&quot;theme&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;theme&quot;</span><span class="p">])</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
+            <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;theme&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -4064,7 +4070,10 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
-        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+        <span class="n">default_theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
         <span class="n">source</span><span class="p">,</span>
@@ -4073,6 +4082,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@graph&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">doc</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
         <span class="n">iri</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
@@ -4106,7 +4116,6 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 
     <span class="c1"># Add statements and data models to triplestore</span>
     <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>
-
     <span class="k">return</span> <span class="n">doc</span>
 </code></pre></div>
         </details>
@@ -4242,17 +4251,20 @@ or included in the JSON-LD context.</p></td>
         <span class="k">raise</span> <span class="n">InvalidDatadocError</span><span class="p">(</span>
             <span class="s2">&quot;invalid mixture of single- and multi-resource dict&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">singlerepr</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">singlerepr</span> <span class="ow">and</span> <span class="s2">&quot;theme&quot;</span> <span class="ow">in</span> <span class="n">descr</span><span class="p">:</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-            <span class="n">theme</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;theme&quot;</span><span class="p">,</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-            <span class="n">yamlfile</span><span class="o">=</span><span class="n">descr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;keywordfile&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">theme</span><span class="o">=</span><span class="n">descr</span><span class="p">[</span><span class="s2">&quot;theme&quot;</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
 
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
-        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
+        <span class="n">default_theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">resources</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span>
 
