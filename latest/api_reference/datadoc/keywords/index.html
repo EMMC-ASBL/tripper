@@ -2841,11 +2841,12 @@ Keywords        </code>
                                 <span class="n">SkipRedefineKeywordWarning</span><span class="p">,</span>
                             <span class="p">)</span>
                         <span class="k">elif</span> <span class="n">redefine</span> <span class="o">==</span> <span class="s2">&quot;allow&quot;</span><span class="p">:</span>
-                            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Redefining keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; from &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">oldiri</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
-                                <span class="n">RedefineKeywordWarning</span><span class="p">,</span>
-                            <span class="p">)</span>
+                            <span class="k">if</span> <span class="n">oldiri</span> <span class="o">!=</span> <span class="n">value</span><span class="o">.</span><span class="n">iri</span><span class="p">:</span>
+                                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s2">&quot;Redefining keyword &#39;</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">&#39; from &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">oldiri</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
+                                    <span class="n">RedefineKeywordWarning</span><span class="p">,</span>
+                                <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                                 <span class="s2">&quot;Invalid value of `redefine` &quot;</span>
