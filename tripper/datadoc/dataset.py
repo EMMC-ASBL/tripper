@@ -109,8 +109,7 @@ def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
 
     If `keywords` is None, the keywords for the default theme are used.
     """
-    if not keywords:
-        keywords = get_keywords(keywords=keywords)
+    keywords = get_keywords(keywords=keywords)
     return keywords[keyword].range
 
 
@@ -167,11 +166,11 @@ def told(
         raise InvalidDatadocError(
             "invalid mixture of single- and multi-resource dict"
         )
-    if not singlerepr:
+
+    if not singlerepr and "theme" in descr:
         keywords = get_keywords(
             keywords=keywords,
-            # is this correct?
-            theme=descr.get("theme", "ddoc:datadoc"),  # type: ignore
+            theme=descr["theme"],  # type: ignore
         )
     else:
         keywords = get_keywords(keywords=keywords)
@@ -425,7 +424,6 @@ def store(
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
-
     return doc
 
 

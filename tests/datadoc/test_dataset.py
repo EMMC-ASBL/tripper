@@ -159,6 +159,7 @@ def test_told():
     descrD = {
         "prefixes": prefixes,
         "base": "http://base.com#",
+        # "theme": "ddoc:datadoc",
         "Dataset": [
             {
                 "@id": "ex:a",
@@ -294,7 +295,6 @@ def test_store():
         },
     }
     store(ts, d, type="Dataset")
-    print(ts.serialize())
 
     with pytest.raises(IRIExistsError):
         store(ts, d, type="Dataset")
@@ -757,7 +757,6 @@ def test_deprecated():
     }
     with pytest.warns(DeprecationWarning):
         save_dict(ts, d, type="Dataset")
-    print(ts.serialize())
 
     with pytest.warns(DeprecationWarning):
         d2 = load_dict(ts, EX.exdata)
