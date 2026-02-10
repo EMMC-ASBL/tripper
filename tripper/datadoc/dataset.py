@@ -109,8 +109,7 @@ def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
 
     If `keywords` is None, the keywords for the default theme are used.
     """
-    if not keywords:
-        keywords = get_keywords(keywords=keywords)
+    keywords = get_keywords(keywords=keywords)
     return keywords[keyword].range
 
 
