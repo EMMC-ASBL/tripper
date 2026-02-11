@@ -49,3 +49,7 @@ class UnknownDatatypeWarning(TripperWarning):
 
 class PermissionWarning(TripperWarning, UserWarning):
     """Not enough permissions."""
+
+
+class NamespaceWarning(TripperWarning, UserWarning):
+    """Namespace warning."""

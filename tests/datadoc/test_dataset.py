@@ -279,6 +279,7 @@ def test_store():
     from tripper import Triplestore
     from tripper.datadoc import acquire, store
     from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
+    from tripper.errors import NamespaceError
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -290,7 +291,7 @@ def test_store():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }
@@ -319,6 +320,17 @@ def test_store():
 
     with pytest.raises(ValueError):
         store(ts, d, type="Dataset", method="invalid_method_name")
+
+    # Test baseiri
+    d5 = {
+        "@id": "myInstrument",
+        "@type": EX.Instrument,
+        "title": "My super duper exiting instrument.",
+    }
+    with pytest.raises(NamespaceError):
+        store(ts, d5)
+
+    store(ts, d5, baseiri="http://example.com/devices#")
 
 
 def test_infer_restriction_types():
@@ -449,7 +461,7 @@ def test_datadoc():
     }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == (
-        "http://www.iana.org/assignments/media-types/image/tiff"
+        "https://www.iana.org/assignments/media-types/image/tiff"
     )
 
     assert not acquire(ts, "non-existing")
@@ -487,7 +499,7 @@ def test_datadoc():
         source={
             "@id": SEMDATA.newdistr,
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/plain"
+                "https://www.iana.org/assignments/media-types/text/plain"
             ),
         },
         type="Distribution",
@@ -497,7 +509,7 @@ def test_datadoc():
     assert newdistr["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert (
         newdistr.mediaType
-        == "http://www.iana.org/assignments/media-types/text/plain"
+        == "https://www.iana.org/assignments/media-types/text/plain"
     )
 
     # Test load updated distribution
@@ -718,7 +730,7 @@ def test_fuseki():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }
@@ -751,7 +763,7 @@ def test_deprecated():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }

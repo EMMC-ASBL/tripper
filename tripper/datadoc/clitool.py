@@ -40,6 +40,7 @@ def subcommand_add(ts, args):
             keywords=args.keywords,
             context=args.context,
             redefine=args.redefine,
+            baseiri=args.base_iri,
             **kw,
         )
         td.save(ts)
@@ -209,6 +210,15 @@ def maincommand(argv=None):
         default="raise",
         choices=["raise", "allow", "skip"],
         help="How to handle redifinition of existing keywords.",
+    )
+
+    parser_add.add_argument(
+        "--base-iri",
+        help=(
+            "Base IRI to resolve relative IRIs. "
+            "An error will be raised if relative IRIs are "
+            "encountered without this option.",
+        ),
     )
 
     # Subcommand: delete
