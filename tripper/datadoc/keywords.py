@@ -663,11 +663,12 @@ class Keywords:
                                 SkipRedefineKeywordWarning,
                             )
                         elif redefine == "allow":
-                            warnings.warn(
-                                f"Redefining keyword '{keyword}' from "
-                                f"'{oldiri}' to '{value.iri}'.",
-                                RedefineKeywordWarning,
-                            )
+                            if oldiri != value.iri:
+                                warnings.warn(
+                                    f"Redefining keyword '{keyword}' from "
+                                    f"'{oldiri}' to '{value.iri}'.",
+                                    RedefineKeywordWarning,
+                                )
                         else:
                             raise ValueError(
                                 "Invalid value of `redefine` "
