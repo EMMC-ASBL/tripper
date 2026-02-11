@@ -1257,8 +1257,10 @@ def get_partial_pipeline(
 
     mediaType = distr.get("mediaType")
     mediaTypeShort = (
-        mediaType[44:]
-        if mediaType.startswith("http://www.iana.org/assignments/media-types/")
+        mediaType[45:]
+        if mediaType.startswith(
+            "https://www.iana.org/assignments/media-types/"
+        )
         else mediaType
     )
     dataresource = client.create_dataresource(

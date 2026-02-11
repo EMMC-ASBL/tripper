@@ -291,7 +291,7 @@ def test_store():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }
@@ -461,7 +461,7 @@ def test_datadoc():
     }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == (
-        "http://www.iana.org/assignments/media-types/image/tiff"
+        "https://www.iana.org/assignments/media-types/image/tiff"
     )
 
     assert not acquire(ts, "non-existing")
@@ -499,7 +499,7 @@ def test_datadoc():
         source={
             "@id": SEMDATA.newdistr,
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/plain"
+                "https://www.iana.org/assignments/media-types/text/plain"
             ),
         },
         type="Distribution",
@@ -509,7 +509,7 @@ def test_datadoc():
     assert newdistr["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert (
         newdistr.mediaType
-        == "http://www.iana.org/assignments/media-types/text/plain"
+        == "https://www.iana.org/assignments/media-types/text/plain"
     )
 
     # Test load updated distribution
@@ -730,7 +730,7 @@ def test_fuseki():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }
@@ -763,7 +763,7 @@ def test_deprecated():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }

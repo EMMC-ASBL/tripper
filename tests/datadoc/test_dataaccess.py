@@ -41,7 +41,7 @@ def test_save_and_load():
                     "master/tests/input/77600-23-001_5kV_400x_m001.tif"
                 ),
                 "mediaType": (
-                    "http://www.iana.org/assignments/media-types/image/tiff"
+                    "https://www.iana.org/assignments/media-types/image/tiff"
                 ),
             },
         },
@@ -59,7 +59,7 @@ def test_save_and_load():
     }
     assert (
         newdistr.distribution.mediaType
-        == "http://www.iana.org/assignments/media-types/image/tiff"
+        == "https://www.iana.org/assignments/media-types/image/tiff"
     )
 
     store(
@@ -115,7 +115,7 @@ def test_save_and_load():
             "@id": SEMDATA.newdistr2,
             "downloadURL": f"file:{newfile2}",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/image/png"
+                "https://www.iana.org/assignments/media-types/image/png"
             ),
             "generator": GEN.sem_hitachi,
             "parser": PARSER.sem_hitachi,
