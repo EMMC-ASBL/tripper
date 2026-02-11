@@ -216,7 +216,7 @@ def maincommand(argv=None):
         "--base-iri",
         help=(
             "Base IRI to resolve relative IRIs. "
-            "Error will be raised if relative IRIs are "
+            "An error will be raised if relative IRIs are "
             "encountered without this option.",
         ),
     )
