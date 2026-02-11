@@ -1887,6 +1887,15 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How to handle redifinition of existing keywords.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--base-iri&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Base IRI to resolve relative IRIs. &quot;</span>
+            <span class="s2">&quot;An error will be raised if relative IRIs are &quot;</span>
+            <span class="s2">&quot;encountered without this option.&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
     <span class="c1"># Subcommand: delete</span>
     <span class="n">parser_delete</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delete matching resources in the triplestore.&quot;</span>
@@ -2118,6 +2127,7 @@
             <span class="n">keywords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
             <span class="n">redefine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">redefine</span><span class="p">,</span>
+            <span class="n">baseiri</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">base_iri</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kw</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>

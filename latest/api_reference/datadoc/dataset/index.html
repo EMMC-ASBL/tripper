@@ -2610,8 +2610,10 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 
     <span class="n">mediaType</span> <span class="o">=</span> <span class="n">distr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mediaType&quot;</span><span class="p">)</span>
     <span class="n">mediaTypeShort</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">mediaType</span><span class="p">[</span><span class="mi">44</span><span class="p">:]</span>
-        <span class="k">if</span> <span class="n">mediaType</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http://www.iana.org/assignments/media-types/&quot;</span><span class="p">)</span>
+        <span class="n">mediaType</span><span class="p">[</span><span class="mi">45</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">mediaType</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+            <span class="s2">&quot;https://www.iana.org/assignments/media-types/&quot;</span>
+        <span class="p">)</span>
         <span class="k">else</span> <span class="n">mediaType</span>
     <span class="p">)</span>
     <span class="n">dataresource</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_dataresource</span><span class="p">(</span>
@@ -3286,7 +3288,7 @@ to restriction types. For example</code></td>
 
 
 <h2 id="tripper.datadoc.dataset.save_datadoc" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_datadoc</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">file_or_dict</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_datadoc</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">file_or_dict</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.save_datadoc" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3335,6 +3337,13 @@ The default is to infer the keywords from the <code>theme</code> or
 inferred from <code>keywords</code>.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>baseiri</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>If given, it will be used as a base iri to
+resolve relative IRIs. (I.e. Not valid URLs).</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -3359,6 +3368,7 @@ inferred from <code>keywords</code>.</p></td>
     <span class="n">file_or_dict</span><span class="p">:</span> <span class="s2">&quot;Union[str, Path, dict]&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate triplestore with data documentation.</span>
 
@@ -3372,6 +3382,8 @@ inferred from <code>keywords</code>.</p></td>
 <span class="sd">            `keywordfile` keys in the YAML file.</span>
 <span class="sd">        context: Optional Context object with mappings. By default it is</span>
 <span class="sd">            inferred from `keywords`.</span>
+<span class="sd">        baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict-representation of the loaded dataset.</span>
@@ -3390,7 +3402,7 @@ inferred from <code>keywords</code>.</p></td>
             <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;theme&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="n">baseiri</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3901,7 +3913,7 @@ measured on a given sample:</p>
 
 
 <h2 id="tripper.datadoc.dataset.store" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.store" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3991,6 +4003,13 @@ with the same id as <code>source</code>. Possible values are:
 to call <code>infer_restriction_types()</code>.</p></td>
         <td><code>None</code></td>
       </tr>
+      <tr>
+        <td><code>baseiri</code></td>
+        <td><code>&#39;Optional[str]&#39;</code></td>
+        <td><p>If given, it will be used as a base iri to
+resolve relative IRIs. (I.e. Not valid URLs).</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
 <p><strong>Returns:</strong></p>
@@ -4026,6 +4045,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
     <span class="n">restrictions</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store documentation of a resource to a triplestore.</span>
@@ -4056,6 +4076,8 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">        restrictions: A dict describing how properties of classes in</span>
 <span class="sd">            `source` should be mapped to restrictions.  The default is</span>
 <span class="sd">            to call `infer_restriction_types()`.</span>
+<span class="sd">        baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A copy of `source` updated to valid JSON-LD.</span>
@@ -4112,7 +4134,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="c1"># TODO: reenable validation</span>
     <span class="c1"># validate(doc, type=type, keywords=keywords)</span>
 
-    <span class="n">context</span><span class="o">.</span><span class="n">to_triplestore</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">to_triplestore</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="n">baseiri</span><span class="p">)</span>
 
     <span class="c1"># Add statements and data models to triplestore</span>
     <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>

@@ -2456,12 +2456,52 @@ Context        </code>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return compacted JSON-LD document `doc`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">compact</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">(),</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_triplestore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store JSON-LD document `doc` to triplestore `ts`.&quot;&quot;&quot;</span>
-        <span class="n">nt</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">to_rdf</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;application/n-quads&quot;</span><span class="p">}</span>
-        <span class="p">)</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nt</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_triplestore</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ts</span><span class="p">,</span>
+        <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Store JSON-LD document `doc` to triplestore `ts`.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            ts: Triplestore to store to.</span>
+<span class="sd">            doc: JSON-LD document to store, as a dict or list of dicts.</span>
+<span class="sd">            force: If True, store document even if it contains invalid terms.</span>
+<span class="sd">                Incomplete IRIs will be stored with namespace</span>
+<span class="sd">                &quot;http://falseiri/&quot;, unless baseiri is given.</span>
+<span class="sd">            baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">                resolve relative IRIs. (I.e. Not valid URLs).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The store RDFLIB Graph created from the document.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="s2">&quot;https://falseiri/&quot;</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+        <span class="n">g</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
+
+        <span class="c1"># Check that no IRIs are in namespace &quot;https://falseiri/&quot;.</span>
+        <span class="c1"># If Force is True, issue a warning</span>
+        <span class="c1"># If Force is False, raise an error</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                    <span class="s2">&quot;https://falseiri/&quot;</span>
+                <span class="p">):</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Missing base iri for term: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;https://falseiri/&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">NamespaceWarning</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
             <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -2471,6 +2511,7 @@ Context        </code>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_todict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a shallow copy of doc as a dict with current</span>
@@ -3445,7 +3486,7 @@ If <code>update</code> is:</p>
 
 
 <h3 id="tripper.datadoc.context.Context.to_triplestore" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">to_triplestore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">to_triplestore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.context.Context.to_triplestore" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3454,14 +3495,109 @@ If <code>update</code> is:</p>
 
       <p>Store JSON-LD document <code>doc</code> to triplestore <code>ts</code>.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td></td>
+        <td><p>Triplestore to store to.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>doc</code></td>
+        <td><code>Union[dict, list]</code></td>
+        <td><p>JSON-LD document to store, as a dict or list of dicts.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>force</code></td>
+        <td><code>bool</code></td>
+        <td><p>If True, store document even if it contains invalid terms.
+Incomplete IRIs will be stored with namespace
+"http://falseiri/", unless baseiri is given.</p></td>
+        <td><code>False</code></td>
+      </tr>
+      <tr>
+        <td><code>baseiri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>If given, it will be used as a base iri to
+resolve relative IRIs. (I.e. Not valid URLs).</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Graph</code></td>
+      <td><p>The store RDFLIB Graph created from the document.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_triplestore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store JSON-LD document `doc` to triplestore `ts`.&quot;&quot;&quot;</span>
-    <span class="n">nt</span> <span class="o">=</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">to_rdf</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;application/n-quads&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
-    <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">nt</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_triplestore</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">ts</span><span class="p">,</span>
+    <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store JSON-LD document `doc` to triplestore `ts`.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        ts: Triplestore to store to.</span>
+<span class="sd">        doc: JSON-LD document to store, as a dict or list of dicts.</span>
+<span class="sd">        force: If True, store document even if it contains invalid terms.</span>
+<span class="sd">            Incomplete IRIs will be stored with namespace</span>
+<span class="sd">            &quot;http://falseiri/&quot;, unless baseiri is given.</span>
+<span class="sd">        baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The store RDFLIB Graph created from the document.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="s2">&quot;https://falseiri/&quot;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+    <span class="n">g</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
+
+    <span class="c1"># Check that no IRIs are in namespace &quot;https://falseiri/&quot;.</span>
+    <span class="c1"># If Force is True, issue a warning</span>
+    <span class="c1"># If Force is False, raise an error</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                <span class="s2">&quot;https://falseiri/&quot;</span>
+            <span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Missing base iri for term: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;https://falseiri/&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">NamespaceWarning</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
         <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -3471,6 +3607,7 @@ If <code>update</code> is:</p>
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">g</span>
 </code></pre></div>
         </details>
     </div>

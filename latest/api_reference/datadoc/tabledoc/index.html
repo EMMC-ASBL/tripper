@@ -1917,6 +1917,13 @@ keywords.  Should be one of the following strings:
   - "raise": Raise an RedefineError (default).</p></td>
         <td><code>&#39;raise&#39;</code></td>
       </tr>
+      <tr>
+        <td><code>baseiri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>If given, it will be used as a base iri to
+resolve relative IRIs. (I.e. Not valid URLs).</p></td>
+        <td><code>None</code></td>
+      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -1953,7 +1960,8 @@ keywords.  Should be one of the following strings:
 <span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
 <span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
-
+<span class="sd">        baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># pylint: disable=redefined-builtin,too-few-public-methods</span>
@@ -1971,6 +1979,7 @@ keywords.  Should be one of the following strings:
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
@@ -1988,6 +1997,7 @@ keywords.  Should be one of the following strings:
             <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span> <span class="o">=</span> <span class="n">baseiri</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
@@ -2004,6 +2014,7 @@ keywords.  Should be one of the following strings:
             <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
             <span class="n">keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">baseiri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[dict]&quot;</span><span class="p">:</span>
@@ -2146,6 +2157,7 @@ keywords.  Should be one of the following strings:
         <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[csv.Dialect, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
         <span class="c1"># pylint: disable=line-too-long</span>
@@ -2176,6 +2188,8 @@ keywords.  Should be one of the following strings:
 <span class="sd">                  - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
 <span class="sd">                    `RedefineKeywordWarning`.</span>
 <span class="sd">                  - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">            baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">                resolve relative IRIs. (I.e. Not valid URLs).</span>
 <span class="sd">            kwargs: Additional keyword arguments overriding individual</span>
 <span class="sd">                formatting parameters.  For more details, see</span>
 <span class="sd">                [Dialects and Formatting Parameters].</span>
@@ -2219,6 +2233,7 @@ keywords.  Should be one of the following strings:
             <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
             <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
             <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">,</span>
+            <span class="n">baseiri</span><span class="o">=</span><span class="n">baseiri</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_csv</span><span class="p">(</span>
@@ -2573,7 +2588,7 @@ from cells.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.parse_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -2666,6 +2681,13 @@ keywords.  Should be one of the following strings:
         <td><code>&#39;raise&#39;</code></td>
       </tr>
       <tr>
+        <td><code>baseiri</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>If given, it will be used as a base iri to
+resolve relative IRIs. (I.e. Not valid URLs).</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
         <td><code>kwargs</code></td>
         <td></td>
         <td><p>Additional keyword arguments overriding individual
@@ -2704,6 +2726,7 @@ formatting parameters.  For more details, see
     <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[csv.Dialect, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
     <span class="c1"># pylint: disable=line-too-long</span>
@@ -2734,6 +2757,8 @@ formatting parameters.  For more details, see
 <span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
 <span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">        baseiri: If given, it will be used as a base iri to</span>
+<span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 <span class="sd">        kwargs: Additional keyword arguments overriding individual</span>
 <span class="sd">            formatting parameters.  For more details, see</span>
 <span class="sd">            [Dialects and Formatting Parameters].</span>
@@ -2777,6 +2802,7 @@ formatting parameters.  For more details, see
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
         <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
         <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="o">=</span><span class="n">baseiri</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2817,6 +2843,7 @@ formatting parameters.  For more details, see
         <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
