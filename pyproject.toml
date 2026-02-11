@@ -45,14 +45,14 @@ mappings = [
 datadoc = [
     "tripper[mappings]",
     "keyring>=22.0.0,<25.6.1",
-    "PyLD>=2.0.0,<2.0.5; python_version<='3.13'",
+    "PyLD>=2.0.0,<2.0.5",
     "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
     "requests>=2.0.0,<3.4.1",  # todo: check lower version
     "sparqlwrapper>=2.0.0,<2.0.1",
 ]
 backends = [
     "dlite-python>=0.5.27; python_version<='3.13'",
-    "emmontopy>=0.5.0,<=0.8.1; python_version<='3.13'",
+    "emmontopy>=0.5.0,<=0.8.1",
     "graphviz>=0.20.1,<0.20.2",
     "numpy<2.1.0; python_version=='3.13'",  # todo: relax versions
     "rdflib>=6.3.0,<7.0.0",
