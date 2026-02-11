@@ -1050,6 +1050,7 @@ def save_datadoc(
     file_or_dict: "Union[str, Path, dict]",
     keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
+    baseiri: "Optional[str]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -1063,6 +1064,8 @@ def save_datadoc(
             `keywordfile` keys in the YAML file.
         context: Optional Context object with mappings. By default it is
             inferred from `keywords`.
+        baseiri: If given, it will be used as a base iri to
+            resolve relative IRIs. (I.e. Not valid URLs).
 
     Returns:
         Dict-representation of the loaded dataset.
@@ -1081,7 +1084,7 @@ def save_datadoc(
             keywords=keywords, context=context, theme=d["theme"]
         )
 
-    return store(ts, d, keywords=keywords, context=context)
+    return store(ts, d, keywords=keywords, context=context, baseiri=baseiri)
 
 
 def validate(
