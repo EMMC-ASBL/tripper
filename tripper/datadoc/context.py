@@ -447,8 +447,9 @@ class Context:
         Arguments:
             ts: Triplestore to store to.
             doc: JSON-LD document to store, as a dict or list of dicts.
-            force: If true, store document even if it contains invalid terms.
-                Incomplete IRIs will be store with namespace "http://falseiri/".
+            force: If True, store document even if it contains invalid terms.
+                Incomplete IRIs will be stored with namespace
+                "http://falseiri/", unless baseiri is given.
             baseiri: If given, it will be used as a base iri to
                 resolve relative IRIs. (I.e. Not valid URLs).
 
