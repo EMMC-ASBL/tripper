@@ -569,7 +569,7 @@ def update_classes(
     restrictions: "Optional[dict]" = None,
 ) -> "Union[dict, list]":
     """Update documentation of classes, ensuring that they will be
-    correctly represented in RDF.
+    correctly represented in OWL.
 
     Only classes, i.e. resources of type `owl:Class` and `rdfs:Class`,
     will be updated.
@@ -685,6 +685,31 @@ def update_classes(
         addrestriction(source, k, v)
 
     return source
+
+
+def update_individuals(
+    source: "Union[dict, list]",
+    context: "Optional[Context]" = None,
+    restrictions: "Optional[dict]" = None,
+) -> "Union[dict, list]":
+    """Update relations on individuals that have a class as object.
+
+    Only classes, i.e. resources of type `owl:Class` and `rdfs:Class`,
+    will be updated.
+
+    Arguments:
+        source: Input documentation of one or more resources. This dict
+            will be updated in-place. It is typically a dict returned by
+            `told()`.
+        context: Context object defining the keywords.
+        restrictions: A dict describing how properties of classes in
+            `source` should be mapped to restrictions.  The default is
+            to call `infer_restriction_types()`.
+
+    Returns:
+        The updated version of `source`.
+
+    """
 
 
 def save_extra_content(ts: Triplestore, source: dict) -> None:
