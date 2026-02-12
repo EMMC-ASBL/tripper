@@ -51,7 +51,7 @@ datadoc = [
     "sparqlwrapper>=2.0.0,<2.0.1",
 ]
 backends = [
-    "dlite-python>=0.5.27; python_version<='3.13'",
+    "dlite-python>=0.5.27",
     "emmontopy>=0.5.0,<=0.8.1",
     "graphviz>=0.20.1,<0.20.2",
     "numpy<2.1.0; python_version=='3.13'",  # todo: relax versions
