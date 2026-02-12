@@ -5,13 +5,15 @@
 import json
 import os
 import re
+import warnings
 from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
+from rdflib import Graph
 
 from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
-from tripper.errors import NamespaceError
+from tripper.errors import NamespaceError, NamespaceWarning
 from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -433,12 +435,52 @@ class Context:
         """Return compacted JSON-LD document `doc`."""
         return self.ld.compact(doc, self.get_context_dict(), options={})
 
-    def to_triplestore(self, ts, doc: "Union[dict, list]"):
-        """Store JSON-LD document `doc` to triplestore `ts`."""
-        nt = jsonld.to_rdf(
-            self._todict(doc), options={"format": "application/n-quads"}
-        )
-        ts.parse(data=nt, format="ntriples")
+    def to_triplestore(
+        self,
+        ts,
+        doc: "Union[dict, list]",
+        force: "bool" = False,
+        baseiri: "Optional[str]" = None,
+    ) -> Graph:
+        """Store JSON-LD document `doc` to triplestore `ts`.
+
+        Arguments:
+            ts: Triplestore to store to.
+            doc: JSON-LD document to store, as a dict or list of dicts.
+            force: If True, store document even if it contains invalid terms.
+                Incomplete IRIs will be stored with namespace
+                "http://falseiri/", unless baseiri is given.
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
+
+        Returns:
+            The store RDFLIB Graph created from the document.
+
+        """
+        base = baseiri if baseiri else "https://falseiri/"
+
+        g = Graph()
+
+        g.parse(data=self._todict(doc), format="json-ld", base=base)
+
+        # Check that no IRIs are in namespace "https://falseiri/".
+        # If Force is True, issue a warning
+        # If Force is False, raise an error
+        for s, p, o in g:
+            for term in (s, p, o):
+                if isinstance(term, str) and term.startswith(
+                    "https://falseiri/"
+                ):
+                    msg = (
+                        f"Missing base iri for term: "
+                        f"'{term.lstrip('https://falseiri/')}'"
+                    )
+                    if force:
+                        warnings.warn(msg, NamespaceWarning)
+                    else:
+                        raise NamespaceError(msg)
+
+        ts.parse(data=g.serialize(format="ntriples"), format="ntriples")
 
         if isinstance(doc, dict) and "@context" in doc:
             ctx = self.copy()
@@ -448,6 +490,7 @@ class Context:
         for prefix, ns in ctx.get_prefixes().items():
             if prefix not in ts.namespaces:
                 ts.bind(prefix, ns)
+        return g
 
     def _todict(self, doc: "Union[dict, list]") -> dict:
         """Returns a shallow copy of doc as a dict with current
