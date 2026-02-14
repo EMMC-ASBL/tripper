@@ -222,12 +222,6 @@ resources:
         conformance: optional
         description: The date of formal issuance (e.g., publication) of the resource.
 
-      subPropertyOf:
-        iri: rdfs:subPropertyOf
-        range: rdf:Property
-        description: The subject is a subproperty of a property.
-
-#| [unit]                  | [rdfs:Literal]<br>(xsd:string)     |             | A SI unit associated to a property.                                                                                                          | The unit should be written with standard SI unit symbols.  Examples: As, Î¼m, J, m/sÂ²                                                                                                                                                                                                                                                                                                                           |
       theme:
         iri: dcat:theme
         range: skos:Concept
@@ -283,6 +277,12 @@ resources:
         range: rdfs:Literal
         description: A description of the subject resource. Use `description` instead.
 
+      conceptualisation:
+        iri: emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13
+        description: A comment that helps the reader to understand how the world has been conceptualised by the ontology authors.
+        range: rdfs:Literal
+        datatype: rdf:langString
+
       conformance:
         iri: ddoc:conformance
         range: ddoc:ConformanceLevel
@@ -300,6 +300,18 @@ resources:
         range: rdfs:Resource
         description: A domain of the subject property.
 
+      elucidation:
+        iri: emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation.
+
+      hiddenLabel:
+        iri: skos:hiddenLabel
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.
+
       isDefinedBy:
         iri: rdfs:isDefinedBy
         range: skos:Concept
@@ -309,6 +321,12 @@ resources:
         iri: rdfs:label
         range: rdfs:Literal
         description: "Provides a human-readable version of a resource's name."
+
+      prefLabel:
+        iri: skos:prefLabel
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: A preferred label of the concept.
 
       range:
         iri: rdfs:range
@@ -325,6 +343,16 @@ resources:
         range: rdfs:Literal
         datatype: rdf:JSON
         description: A list of subject-predicate-object triples with additional RDF statements documenting the resource.
+
+      subClassOf:
+        iri: rdfs:subClassOf
+        range: owl:Class
+        description: The subject is a subclass of a class.
+
+      subPropertyOf:
+        iri: rdfs:subPropertyOf
+        range: rdf:Property
+        description: The subject is a subproperty of a property.
 
       usageNote:
         iri: vann:usageNote
@@ -843,69 +871,6 @@ resources:
   ConformanceLevel:
     iri: ddoc:ConformanceLevel
     description: "The class of conformance levels. Includes the following individuals: `ddoc:mandatory`, `ddoc:recommended` and `ddoc:optional`."
-
-
-# Generic classes and properties
-
-  OWLClass:
-    iri: owl:Class
-    description: The class of OWL classes.
-    subClassOf: rdfs:Class
-
-  Class:
-    iri: rdfs:Class
-    description: The class of classes.
-    keywords:
-      altLabel:
-        iri: skos:altLabel
-        description: An alternative lexical label for a resource.
-        range: rdfs:Literal
-        datatype: rdf:langString
-
-      conceptualisation:
-        iri: emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13
-        description: A comment that helps the reader to understand how the world has been conceptualised by the ontology authors.
-        range: rdfs:Literal
-        datatype: rdf:langString
-
-      elucidation:
-        iri: emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9
-        range: rdfs:Literal
-        datatype: rdf:langString
-        description: Short enlightening explanation aimed to facilitate the user in drawing the connection (interpretation) between a OWL entity and the real world object(s) for which it stands.  It should address the real world entities using the concepts introduced by the conceptualisation.
-
-      hiddenLabel:
-        iri: skos:hiddenLabel
-        range: rdfs:Literal
-        datatype: rdf:langString
-        description: A lexical label for a resource that should be hidden when generating visual displays of the resource, but should still be accessible to free text search operations.
-
-      prefLabel:
-        iri: skos:prefLabel
-        range: rdfs:Literal
-        datatype: rdf:langString
-        description: A preferred label of the concept.
-
-      subClassOf:
-        iri: rdfs:subClassOf
-        range: rdfs:Class
-        description: The subject is a subclass of a class.
-
-      subPropertyOf:
-        iri: rdfs:subPropertyOf
-        range: rdf:Property
-        description: The subject is a subproperty of a property.
-
-  GenericResource:
-    iri: rdfs:Resource
-    description: A generic resource defined by RDFS.
-    keywords:
-      datatype:
-        iri: ddoc:datatype
-        range: rdfs:Datatype
-        description: A datatype for annotations and data properties.
-      usageNote:
-        iri: vann:usageNote
 
   Restriction:
     iri: owl:Restriction
