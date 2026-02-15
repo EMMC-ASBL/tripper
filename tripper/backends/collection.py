@@ -33,7 +33,7 @@ class CollectionStrategy:
         database: "Optional[str]" = None,
         collection: "Optional[Union[dlite.Collection, str]]" = None,
     ):
-        # pylint: disable=unused-argument,import-outside-toplevel
+        # pylint: disable=unused-argument,import-outside-toplevel,import-error
         import dlite
 
         if collection is None:

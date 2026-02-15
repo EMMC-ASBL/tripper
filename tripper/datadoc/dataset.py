@@ -58,7 +58,7 @@ from tripper.datadoc.errors import (
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
-from tripper.datadoc.utils import add, asseq, get
+from tripper.datadoc.utils import add, asseq, get, iriname
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -533,12 +533,23 @@ def infer_restriction_types(
     # pylint: disable=unused-argument
 
     context = get_context(context=context)
-    if "@context" in source:
+    if isinstance(source, dict) and "@context" in source:
         context = context.copy()
         context.add_context(source["@context"])
 
     if isinstance(source, dict):
         source = source["@graph"] if "@graph" in source else [source]
+
+    ignored = (
+        "rdfs:subClassOf",
+        "rdfs:range",
+        "rdfs:domain",
+    )
+    all_ignored = set()
+    for term in ignored:
+        all_ignored.add(iriname(term))
+        all_ignored.add(term)
+        all_ignored.add(context.expand(term, strict=False))
 
     restrictions: dict = {}
     for src in source:
@@ -547,7 +558,7 @@ def infer_restriction_types(
         iri = context.expand(src["@id"], strict=True)
         d = {}
         for k, v in src.items():
-            if k.startswith("@") or k in ("subClassOf", "rdfs:subClassOf"):
+            if k.startswith("@") or k in all_ignored:
                 continue
             kexp = context.expand(k, strict=True)
             if _isclassdoc(src):

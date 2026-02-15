@@ -508,8 +508,12 @@ def test_update_restrictions():
                     "https://w3id.org/emmo/hume#Device",
                     {
                         "rdf:type": "owl:Restriction",
-                        "owl:onProperty": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
-                        "owl:someValuesFrom": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                        "owl:onProperty": (
+                            "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
+                        ),
+                        "owl:someValuesFrom": (
+                            "https://w3id.org/emmo/hume#MeasuringInstrument"
+                        ),
                     },
                 ],
             },
@@ -520,7 +524,9 @@ def test_update_restrictions():
                     {
                         "rdf:type": "owl:Restriction",
                         "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-                        "owl:someValuesFrom": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                        "owl:someValuesFrom": (
+                            "https://w3id.org/emmo/hume#MeasuringInstrument"
+                        ),
                     },
                 ],
             },

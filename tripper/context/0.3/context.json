@@ -291,10 +291,7 @@
       "@id": "dcat:downloadURL",
       "@type": "xsd:anyURI"
     },
-    "format": {
-      "@id": "dcterms:format",
-      "@type": "@id"
-    },
+    "format": "dcterms:format",
     "generator": {
       "@id": "oteio:generator",
       "@type": "@id"
