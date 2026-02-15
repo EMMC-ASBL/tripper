@@ -555,7 +555,11 @@ def infer_restriction_types(
     for src in source:
         if not "@id" in src:
             continue
-        iri = context.expand(src["@id"], strict=True)
+        iri = (
+            src["@id"]
+            if src["@id"].startswith("_:")
+            else context.expand(src["@id"], strict=True)
+        )
         d = {}
         for k, v in src.items():
             if k.startswith("@") or k in all_ignored:
