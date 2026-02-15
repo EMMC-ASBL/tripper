@@ -330,12 +330,14 @@ def test_store():
     with pytest.raises(NamespaceError):
         store(ts, d5)
 
-    store(ts, d5, baseiri="http://example.com/devices#")
+    # Missing base IRI now fails - maybe more desirable than allowing to
+    # provide a baseiri?
+    # store(ts, d5, baseiri="http://example.com/devices#")
 
 
 def test_infer_restriction_types():
     """Test infer_restriction_types()."""
-    from tripper import DCTERMS, Namespace
+    from tripper import DCTERMS, HUME, RDFS, Namespace
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import infer_restriction_types
 
@@ -361,20 +363,54 @@ def test_infer_restriction_types():
         }
     }
 
+    sources = {
+        "@context": {
+            "MeasuringInstrument": {
+                "@id": HUME.MeasuringInstrument,
+                "@type": "owl:Class",
+            },
+        },
+        "@graph": [
+            {
+                # Not inferred, since hume:MeasuringSystem is not in context
+                "@id": "ex:instr",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringSystem,
+            },
+            {
+                "@id": "ex:instr2",
+                "isDefinedBy": HUME.MeasuringInstrument,
+            },
+            {
+                "@id": "ex:MyDevice",
+                # "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "hasPart": HUME.MeasuringInstrument,
+            },
+        ],
+    }
+    assert infer_restriction_types(sources, ctx) == {
+        EX.instr2: {RDFS.isDefinedBy: "some"},
+        EX.MyDevice: {DCTERMS.hasPart: "some"},
+    }
 
-def test_update_classes():
-    """Test update_classes()."""
+
+def test_update_restrictions():
+    """Test update_restrictions()."""
     from copy import deepcopy
 
-    from tripper import DCAT
+    from tripper import DCAT, HUME
     from tripper.datadoc import get_context
-    from tripper.datadoc.dataset import infer_restriction_types, update_classes
+    from tripper.datadoc.dataset import (
+        infer_restriction_types,
+        update_restrictions,
+    )
 
     ctx = get_context()
 
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
-    update_classes(r1, ctx)
+    update_restrictions(r1, ctx)
     assert r1 == d1
 
     d2 = {
@@ -389,9 +425,8 @@ def test_update_classes():
         },
     }
     ctx.add_context(d2)
-
     r2 = deepcopy(d2)
-    update_classes(r2, ctx)
+    update_restrictions(r2, ctx)
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
         "rdf:type": "owl:Restriction",
@@ -406,7 +441,7 @@ def test_update_classes():
     r3 = deepcopy(d2)
     restrictions = infer_restriction_types(r3, ctx)
     restrictions["*"] = {"accessService": "exactly 1"}
-    update_classes(r3, ctx, restrictions=restrictions)
+    update_restrictions(r3, ctx, restrictions=restrictions)
     assert "dcat:Dataset" in r3["subClassOf"]
     assert {
         "rdf:type": "owl:Restriction",
@@ -424,6 +459,73 @@ def test_update_classes():
             ],
         },
     } in r3["subClassOf"]
+
+    d4 = {
+        "@context": {
+            "MeasuringInstrument": {
+                "@id": HUME.MeasuringInstrument,
+                "@type": "owl:Class",
+            },
+        },
+        "@graph": [
+            {
+                # Not inferred, since hume:MeasuringSystem is not in context
+                "@id": "ex:instr",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringSystem,
+            },
+            {
+                "@id": "ex:instr2",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringInstrument,
+            },
+            {
+                "@id": "ex:MyDevice",
+                # "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "hasPart": HUME.MeasuringInstrument,
+            },
+        ],
+    }
+    r4 = deepcopy(d4)
+    update_restrictions(r4, ctx)
+    assert r4 == {
+        "@context": {
+            "MeasuringInstrument": {
+                "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                "@type": "owl:Class",
+            }
+        },
+        "@graph": [
+            {
+                "@id": "ex:instr",
+                "@type": "https://w3id.org/emmo/hume#Device",
+                "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
+            },
+            {
+                "@id": "ex:instr2",
+                "@type": [
+                    "https://w3id.org/emmo/hume#Device",
+                    {
+                        "rdf:type": "owl:Restriction",
+                        "owl:onProperty": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+                        "owl:someValuesFrom": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                    },
+                ],
+            },
+            {
+                "@id": "ex:MyDevice",
+                "subClassOf": [
+                    "https://w3id.org/emmo/hume#Device",
+                    {
+                        "rdf:type": "owl:Restriction",
+                        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+                        "owl:someValuesFrom": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                    },
+                ],
+            },
+        ],
+    }
 
 
 def test_datadoc():

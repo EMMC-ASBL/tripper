@@ -416,7 +416,7 @@ def store(
 
     context.sync_prefixes(ts)
 
-    update_classes(doc, context=context, restrictions=restrictions)
+    update_restrictions(doc, context=context, restrictions=restrictions)
     # add(doc, "@context", context.get_context_dict())
 
     # Validate
@@ -464,9 +464,20 @@ def save_dict(
 
 def _isclassdoc(d):
     """Help function. Return true if `d` documents a class."""
-    return any(
-        t in ("owl:Class", OWL.Class, "rdfs:Class", RDFS.Class)
-        for t in asseq(d.get("@type", ()))
+    return (
+        any(t in ("owl:Class", OWL.Class) for t in asseq(d.get("@type", ())))
+        or "subClassOf" in d
+        or "rdfs:subClassOf" in d
+        or RDFS.subClassOf in d
+    )
+
+
+def _isclass(d, context):
+    """Help function. Return true if `d` documents a class or is a class IRI."""
+    return (
+        context.is_class(d)
+        if isinstance(d, str)
+        else _isclassdoc(d) if isinstance(d, dict) else False
     )
 
 
@@ -474,13 +485,12 @@ def infer_restriction_types(
     source: "Union[dict, list]",
     context: "Optional[Context]" = None,
 ) -> dict:
-    """Return a dict that describes what type of restriction the
-    properties of a class in `source` should be converted to.
+    """Return a dict that describes what type of restriction that
+    properties on classes or object properties on individuals that
+    relates to a class in `source` should be converted to.
 
     The following algorithm is used:
-      - Suggested restriction will only be provided for classes, i.e.
-        if the value of `@type` is `owl:Class` or `rdfs:Class`.
-      - For each property:
+      - For each property or each class in `source`:
           - If the value is a class, assume an existential
             restriction.
           - Otherwise, if the value is an IRI (to presumably an
@@ -490,6 +500,8 @@ def infer_restriction_types(
             restriction.
           - Otherwise, don't add a restriction type for the property
             (assuming that it is an annotation property).
+      - For object properties on individuals in `source`:
+          - If the value is a class, assume an existential restruction.
 
     Arguments:
         source: JSON-LD dict or list of JSON-LD dicts to analyse.
@@ -497,12 +509,14 @@ def infer_restriction_types(
             hints about classes and relation types.
 
     Returns:
-        A dict that maps class IRIs to dicts that associate property IRIs
-        to restriction types. For example:
+        A dict that maps the IRIs or classes/individuals in `source`
+        to dicts that associate property IRIs to restriction
+        types. For example:
 
             {
               "ClassA": {"prop1": "some", "prop2": "value"},
-              "ClassB": {"prop3": "some"},
+              "ClassB": {"prop3": "only"},
+              "indv": {"prop4": "some"},
             }
 
         The following restriction types are supported:
@@ -518,71 +532,66 @@ def infer_restriction_types(
     """
     # pylint: disable=unused-argument
 
-    def isclass(iri):
-        """Return true if expanded IRI `iri` refer to a class."""
-        return iri in classes or (
-            context and iri in context and context.is_class(iri)
-        )
-
     context = get_context(context=context)
+    if "@context" in source:
+        context = context.copy()
+        context.add_context(source["@context"])
 
     if isinstance(source, dict):
         source = source["@graph"] if "@graph" in source else [source]
 
-    classes = {}
-    for src in source:
-        if _isclassdoc(src) and "@id" in src:
-            classes[context.expand(src["@id"], strict=True)] = src
-
     restrictions: dict = {}
-    for iri, cls in classes.items():
+    for src in source:
+        if not "@id" in src:
+            continue
+        iri = context.expand(src["@id"], strict=True)
         d = {}
-        for k, v in cls.items():
+        for k, v in src.items():
             if k.startswith("@") or k in ("subClassOf", "rdfs:subClassOf"):
                 continue
             kexp = context.expand(k, strict=True)
-            if isinstance(v, dict):
-                d[kexp] = "some" if _isclassdoc(v) else "value"
-                dct = infer_restriction_types(v, context=context)
-                dct.update(restrictions)
-                restrictions.update(dct)
-            elif isinstance(v, str) and (
-                is_uri(v, require_netloc=False)
-                and context
-                and kexp in context
-                and not context.is_annotation_property(kexp)
-            ):
-                vexp = context.expand(v, strict=True)
-                d[kexp] = "some" if isclass(vexp) else "value"
-            elif not isinstance(v, str) or (
-                context
-                and kexp in context
-                and not context.is_annotation_property(kexp)
-            ):
-                d[kexp] = "value"
+            if _isclassdoc(src):
+                if isinstance(v, dict):
+                    d[kexp] = "some" if _isclassdoc(v) else "value"
+                    dct = infer_restriction_types(v, context=context)
+                    dct.update(restrictions)
+                    restrictions.update(dct)
+                elif isinstance(v, str) and (
+                    is_uri(v, require_netloc=False)
+                    and context
+                    and kexp in context
+                    and not context.is_annotation_property(kexp)
+                ):
+                    vexp = context.expand(v, strict=True)
+                    d[kexp] = "some" if _isclass(vexp, context) else "value"
+                elif not isinstance(v, str) or (
+                    context
+                    and kexp in context
+                    and not context.is_annotation_property(kexp)
+                ):
+                    d[kexp] = "value"
+            elif _isclass(v, context):
+                d[kexp] = "some"
         if d:
             restrictions[iri] = d
 
     return restrictions
 
 
-def update_classes(
+def update_restrictions(
     source: "Union[dict, list]",
     context: "Optional[Context]" = None,
     restrictions: "Optional[dict]" = None,
 ) -> "Union[dict, list]":
-    """Update documentation of classes, ensuring that they will be
-    correctly represented in OWL.
-
-    Only classes, i.e. resources of type `owl:Class` and `rdfs:Class`,
-    will be updated.
+    """Update `source`, ensuring that relations on and to classes
+    are correctly represented as restrictions in OWL.
 
     Arguments:
         source: Input documentation of one or more resources. This dict
             will be updated in-place. It is typically a dict returned by
             `told()`.
         context: Context object defining the keywords.
-        restrictions: A dict describing how properties of classes in
+        restrictions: An optional dict describing how properties in
             `source` should be mapped to restrictions.  The default is
             to call `infer_restriction_types()`.
 
@@ -600,8 +609,10 @@ def update_classes(
         propiri = context.expand(prop)
         if value is None or prop.startswith("@"):
             return
-        elif isinstance(value, dict) and _isclassdoc(value):
-            update_classes(value, context=context, restrictions=restrictions)
+        elif isinstance(value, dict):
+            update_restrictions(
+                value, context=context, restrictions=restrictions
+            )
         elif isinstance(value, list):
             for val in value:
                 addrestriction(source, prop, val)
@@ -637,13 +648,17 @@ def update_classes(
             }
             d[ctypes[ctype]] = int(n)
 
-        add(source, "subClassOf", d)
+        if _isclassdoc(source):
+            add(source, "subClassOf", d)
+        else:
+            add(source, "@type", d)
+
         if prop in source:  # Avoid removing prop more than once
             del source[prop]
 
         # Recursively update related calsses
         if restrictionType != "value" and isinstance(value, dict):
-            update_classes(value, context, restrictions)
+            update_restrictions(value, context, restrictions)
 
     # Local context
     context = get_context(context=context)
@@ -668,7 +683,7 @@ def update_classes(
         if isinstance(sources, dict):
             sources = [sources]
         for src in sources:
-            update_classes(src, context)
+            update_restrictions(src, context)
         return source
 
     # Ensure that source is only of type owl:Class
@@ -688,31 +703,6 @@ def update_classes(
         addrestriction(source, k, v)
 
     return source
-
-
-def update_individuals(
-    source: "Union[dict, list]",
-    context: "Optional[Context]" = None,
-    restrictions: "Optional[dict]" = None,
-) -> "Union[dict, list]":
-    """Update relations on individuals that have a class as object.
-
-    Only classes, i.e. resources of type `owl:Class` and `rdfs:Class`,
-    will be updated.
-
-    Arguments:
-        source: Input documentation of one or more resources. This dict
-            will be updated in-place. It is typically a dict returned by
-            `told()`.
-        context: Context object defining the keywords.
-        restrictions: A dict describing how properties of classes in
-            `source` should be mapped to restrictions.  The default is
-            to call `infer_restriction_types()`.
-
-    Returns:
-        The updated version of `source`.
-
-    """
 
 
 def save_extra_content(ts: Triplestore, source: dict) -> None:
