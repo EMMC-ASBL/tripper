@@ -9,7 +9,6 @@ import warnings
 from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
-from rdflib import Graph
 
 from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
@@ -441,7 +440,7 @@ class Context:
         doc: "Union[dict, list]",
         force: "bool" = False,
         baseiri: "Optional[str]" = None,
-    ) -> Graph:
+    ) -> "Triplestore":
         """Store JSON-LD document `doc` to triplestore `ts`.
 
         Arguments:
@@ -454,19 +453,18 @@ class Context:
                 resolve relative IRIs. (I.e. Not valid URLs).
 
         Returns:
-            The store RDFLIB Graph created from the document.
+            The Triplestore object created from the document.
 
         """
         base = baseiri if baseiri else "https://falseiri/"
 
-        g = Graph()
-
-        g.parse(data=self._todict(doc), format="json-ld", base=base)
+        ts2 = Triplestore(backend="rdflib")
+        ts2.parse(data=self._todict(doc), format="json-ld", base=base)
 
         # Check that no IRIs are in namespace "https://falseiri/".
         # If Force is True, issue a warning
         # If Force is False, raise an error
-        for s, p, o in g:
+        for s, p, o in ts2.triples():
             for term in (s, p, o):
                 if isinstance(term, str) and term.startswith(
                     "https://falseiri/"
@@ -480,7 +478,7 @@ class Context:
                     else:
                         raise NamespaceError(msg)
 
-        ts.parse(data=g.serialize(format="ntriples"), format="ntriples")
+        ts.parse(data=ts2.serialize(format="ntriples"), format="ntriples")
 
         if isinstance(doc, dict) and "@context" in doc:
             ctx = self.copy()
@@ -490,7 +488,7 @@ class Context:
         for prefix, ns in ctx.get_prefixes().items():
             if prefix not in ts.namespaces:
                 ts.bind(prefix, ns)
-        return g
+        return ts2
 
     def _todict(self, doc: "Union[dict, list]") -> dict:
         """Returns a shallow copy of doc as a dict with current
