@@ -125,10 +125,6 @@
       "@id": "dcterms:issued",
       "@type": "xsd:date"
     },
-    "subPropertyOf": {
-      "@id": "rdfs:subPropertyOf",
-      "@type": "@id"
-    },
     "theme": {
       "@id": "dcat:theme",
       "@type": "@id"
@@ -149,6 +145,10 @@
     },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",
+    "conceptualisation": {
+      "@id": "emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13",
+      "@language": "en"
+    },
     "conformance": {
       "@id": "ddoc:conformance",
       "@type": "@id"
@@ -161,11 +161,23 @@
       "@id": "rdfs:domain",
       "@type": "@id"
     },
+    "elucidation": {
+      "@id": "emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9",
+      "@language": "en"
+    },
+    "hiddenLabel": {
+      "@id": "skos:hiddenLabel",
+      "@language": "en"
+    },
     "isDefinedBy": {
       "@id": "rdfs:isDefinedBy",
       "@type": "@id"
     },
     "label": "rdfs:label",
+    "prefLabel": {
+      "@id": "skos:prefLabel",
+      "@language": "en"
+    },
     "range": {
       "@id": "rdfs:range",
       "@type": "@id"
@@ -177,6 +189,14 @@
     "statements": {
       "@id": "oteio:statement",
       "@type": "@json"
+    },
+    "subClassOf": {
+      "@id": "rdfs:subClassOf",
+      "@type": "@id"
+    },
+    "subPropertyOf": {
+      "@id": "rdfs:subPropertyOf",
+      "@type": "@id"
     },
     "usageNote": {
       "@id": "vann:usageNote",
@@ -333,10 +353,6 @@
       "@id": "spdx:checksumValue",
       "@type": "xsd:hexBinary"
     },
-    "prefLabel": {
-      "@id": "skos:prefLabel",
-      "@language": "en"
-    },
     "endpointDescription": {
       "@id": "dcat:endpointDescription",
       "@type": "@id"
@@ -383,30 +399,6 @@
     },
     "hasRole": {
       "@id": "dcat:hasRole",
-      "@type": "@id"
-    },
-    "altLabel": {
-      "@id": "skos:altLabel",
-      "@language": "en"
-    },
-    "conceptualisation": {
-      "@id": "emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13",
-      "@language": "en"
-    },
-    "elucidation": {
-      "@id": "emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9",
-      "@language": "en"
-    },
-    "hiddenLabel": {
-      "@id": "skos:hiddenLabel",
-      "@language": "en"
-    },
-    "subClassOf": {
-      "@id": "rdfs:subClassOf",
-      "@type": "@id"
-    },
-    "datatype": {
-      "@id": "ddoc:datatype",
       "@type": "@id"
     },
     "qualifiedCardinality": {
@@ -507,18 +499,6 @@
     },
     "ConformanceLevel": {
       "@id": "ddoc:ConformanceLevel",
-      "@type": "http://www.w3.org/2002/07/owl#Class"
-    },
-    "OWLClass": {
-      "@id": "owl:Class",
-      "@type": "http://www.w3.org/2002/07/owl#Class"
-    },
-    "Class": {
-      "@id": "rdfs:Class",
-      "@type": "http://www.w3.org/2002/07/owl#Class"
-    },
-    "GenericResource": {
-      "@id": "rdfs:Resource",
       "@type": "http://www.w3.org/2002/07/owl#Class"
     },
     "Restriction": {
