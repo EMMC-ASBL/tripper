@@ -199,6 +199,8 @@ def test_fetch():
     """Test `datadoc fetch` with Fuseki."""
     from dataset_paths import indir, outdir  # pylint: disable=import-error
 
+    pytest.importorskip("dlite")
+
     outfile = outdir / "sem.tif"
     outfile.unlink(missing_ok=True)
 

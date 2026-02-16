@@ -1,5 +1,6 @@
 """Workflow example"""
 
+import shutil
 import warnings
 from typing import TYPE_CHECKING
 
@@ -47,4 +48,7 @@ routes = mapping_routes(
 
 if isinstance(routes, MappingStep):
     print("Number of routes:", routes.number_of_routes())
-    routes.visualise(0, output="route.svg", format="svg")
+
+    # Only visualise routes if 'dot' is available
+    if shutil.which("dot"):
+        routes.visualise(0, output="route.svg", format="svg")
