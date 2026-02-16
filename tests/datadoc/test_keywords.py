@@ -80,7 +80,7 @@ def test_iter():
 
 def test_len():
     """Test __iter__() method."""
-    assert len(keywords) == 127
+    assert len(keywords) == 125
 
 
 def test_dir():
@@ -345,7 +345,7 @@ def test_classnames():
     """Test keywordnames() method."""
     classnames = keywords.classnames()
     assert "Dataset" in classnames
-    assert len(classnames) == 27
+    assert len(classnames) == 24
 
 
 def test_fromdicts():
@@ -749,5 +749,5 @@ def test__keywords_list():
     assert isinstance(themeset, set)
 
     kwset, clset, themeset = keywords._keywords_list(namespace_filter="ddoc")
-    assert len(kwset) == 4
-    assert len(clset) == 2
+    assert len(kwset) == 3
+    assert len(clset) == 1
