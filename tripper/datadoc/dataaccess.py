@@ -83,7 +83,7 @@ def save(
 
     """
     # pylint: disable=too-many-locals,too-many-branches,too-many-statements
-    # pylint: disable=import-outside-toplevel
+    # pylint: disable=import-outside-toplevel,import-error
     # Use the Protocol plugin system from DLite.  Should we move it to tripper?
     from dlite.protocol import Protocol
 
@@ -240,7 +240,7 @@ def load(
     Note:
         For now this requires DLite.
     """
-    # pylint: disable=import-outside-toplevel
+    # pylint: disable=import-outside-toplevel,import-error
     # Use the Protocol plugin system from DLite.  Should we move it to tripper?
     import dlite
     from dlite.protocol import Protocol
