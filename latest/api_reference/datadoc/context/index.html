@@ -2462,7 +2462,7 @@ Context        </code>
         <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Store JSON-LD document `doc` to triplestore `ts`.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2475,19 +2475,18 @@ Context        </code>
 <span class="sd">                resolve relative IRIs. (I.e. Not valid URLs).</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The store RDFLIB Graph created from the document.</span>
+<span class="sd">            The Triplestore object created from the document.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="s2">&quot;https://falseiri/&quot;</span>
 
-        <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-
-        <span class="n">g</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
+        <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+        <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
 
         <span class="c1"># Check that no IRIs are in namespace &quot;https://falseiri/&quot;.</span>
         <span class="c1"># If Force is True, issue a warning</span>
         <span class="c1"># If Force is False, raise an error</span>
-        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
                     <span class="s2">&quot;https://falseiri/&quot;</span>
@@ -2501,7 +2500,7 @@ Context        </code>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
             <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -2511,7 +2510,7 @@ Context        </code>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">g</span>
+        <span class="k">return</span> <span class="n">ts2</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_todict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a shallow copy of doc as a dict with current</span>
@@ -3545,8 +3544,8 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
   </thead>
   <tbody>
     <tr>
-      <td><code>Graph</code></td>
-      <td><p>The store RDFLIB Graph created from the document.</p></td>
+      <td><code>Triplestore</code></td>
+      <td><p>The Triplestore object created from the document.</p></td>
     </tr>
   </tbody>
 </table>
@@ -3558,7 +3557,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
     <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="n">force</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store JSON-LD document `doc` to triplestore `ts`.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3571,19 +3570,18 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The store RDFLIB Graph created from the document.</span>
+<span class="sd">        The Triplestore object created from the document.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="s2">&quot;https://falseiri/&quot;</span>
 
-    <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-
-    <span class="n">g</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+    <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
 
     <span class="c1"># Check that no IRIs are in namespace &quot;https://falseiri/&quot;.</span>
     <span class="c1"># If Force is True, issue a warning</span>
     <span class="c1"># If Force is False, raise an error</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
                 <span class="s2">&quot;https://falseiri/&quot;</span>
@@ -3597,7 +3595,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">ts2</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
         <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -3607,7 +3605,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">g</span>
+    <span class="k">return</span> <span class="n">ts2</span>
 </code></pre></div>
         </details>
     </div>
