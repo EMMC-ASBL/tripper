@@ -499,10 +499,10 @@ def test_update_restrictions():
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
-                # An class relating to a class.
+                # A class relating to a class.
                 # Should be converted to an existential restriction.
                 # Note that tripper in this case understands that ex:MyDevice
-                # is a class even when type is @type is commented out, because
+                # is a class even when @type is commented out, because
                 # of the `subClassOf` relation.
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
