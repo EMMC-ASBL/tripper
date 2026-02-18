@@ -408,19 +408,22 @@ def test_update_restrictions():
 
     ctx = get_context()
 
+    # Just a data property - nothing to update
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
     update_restrictions(r1, ctx)
     assert r1 == d1
 
+    # A class relating to a distribution individual.
+    # Should be converted to a value restriction.
     d2 = {
         "@context": {"ex": "http://example.com/ex#"},
-        "@id": "ex:myclass",
+        "@id": "ex:MyClass",
         "@type": "owl:Class",
         "subClassOf": "dcat:Dataset",
         "title": "About tripper",
         "distribution": {
-            "@type": ["owl:Class", "dcat:Distribution"],
+            "@type": "dcat:Distribution",
             "accessService": "ex:service",
         },
     }
@@ -431,36 +434,47 @@ def test_update_restrictions():
     assert {
         "rdf:type": "owl:Restriction",
         "owl:onProperty": DCAT.distribution,
-        "owl:someValuesFrom": {
-            "@type": "owl:Class",
+        "owl:hasValue": {
+            "@type": "dcat:Distribution",
             "accessService": "ex:service",
-            "subClassOf": DCAT.Distribution,
         },
     } in r2["subClassOf"]
 
-    r3 = deepcopy(d2)
-    restrictions = infer_restriction_types(r3, ctx)
-    restrictions["*"] = {"accessService": "exactly 1"}
-    update_restrictions(r3, ctx, restrictions=restrictions)
-    assert "dcat:Dataset" in r3["subClassOf"]
+    # A class relating to another class.
+    # Should be converted to a existential restriction.
+    d3 = {
+        "@id": "ex:Car",
+        "@type": "owl:Class",
+        "hasPart": "ex:Wheel",
+    }
+    r3 = deepcopy(d3)
     assert {
         "rdf:type": "owl:Restriction",
-        "owl:onProperty": DCAT.distribution,
-        "owl:someValuesFrom": {
-            "@type": "owl:Class",
-            "subClassOf": [
-                DCAT.Distribution,
-                {
-                    "rdf:type": "owl:Restriction",
-                    "owl:onProperty": DCAT.accessService,
-                    "owl:onClass": "ex:service",
-                    "owl:qualifiedCardinality": 1,
-                },
-            ],
+        "owl:onProperty": "http://www.w3.org/ns/dcat#distribution",
+        "owl:hasValue": {
+            "@type": "dcat:Distribution",
+            "accessService": "ex:service",
         },
-    } in r3["subClassOf"]
+    } in r2["subClassOf"]
 
-    d4 = {
+    # Now, use the restriction argument to day that we should convert
+    # `hasPart` relations to cardinality restriction in all classes.
+    # Should be converted to a cardinality restriction.
+    r4 = deepcopy(r3)
+    restrictions = infer_restriction_types(r4, ctx)
+    restrictions["*"] = {"hasPart": "exactly 1"}
+    update_restrictions(r4, ctx, restrictions=restrictions)
+    assert r4 == {
+        "@id": "ex:Car",
+        "@type": "owl:Class",
+        "subClassOf": {
+            "rdf:type": "owl:Restriction",
+            "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+            "owl:hasValue": "ex:Wheel",
+        },
+    }
+
+    d5 = {
         "@context": {
             "MeasuringInstrument": {
                 "@id": HUME.MeasuringInstrument,
@@ -469,17 +483,27 @@ def test_update_restrictions():
         },
         "@graph": [
             {
-                # Not inferred, since hume:MeasuringSystem is not in context
+                # An individial relating to a class.
+                # Not converted, since hume:MeasuringSystem is not in
+                # context (tripper therefore doesn't know that it is a
+                # class)
                 "@id": "ex:instr",
                 "@type": HUME.Device,
                 "isDefinedBy": HUME.MeasuringSystem,
             },
             {
+                # An individial relating to a class.
+                # Should be converted to an existential restriction.
                 "@id": "ex:instr2",
                 "@type": HUME.Device,
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
+                # An class relating to a class.
+                # Should be converted to an existential restriction.
+                # Note that tripper in this case understands that ex:MyDevice
+                # is a class even when type is @type is commented out, because
+                # of the `subClassOf` relation.
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
@@ -487,9 +511,9 @@ def test_update_restrictions():
             },
         ],
     }
-    r4 = deepcopy(d4)
-    update_restrictions(r4, ctx)
-    assert r4 == {
+    r5 = deepcopy(d5)
+    update_restrictions(r5, ctx)
+    assert r5 == {
         "@context": {
             "MeasuringInstrument": {
                 "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
