@@ -1814,7 +1814,7 @@ The default is to only make one attempt to access the dataset.</p></td>
 <span class="sd">    Note:</span>
 <span class="sd">        For now this requires DLite.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
     <span class="c1"># Use the Protocol plugin system from DLite.  Should we move it to tripper?</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
@@ -2057,7 +2057,7 @@ with the same id as <code>source</code>. Possible values are:
     <span class="c1"># pylint: disable=too-many-locals,too-many-branches,too-many-statements</span>
     <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="c1"># Use the Protocol plugin system from DLite.  Should we move it to tripper?</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>  <span class="c1"># pylint: disable=import-error</span>
 
     <span class="n">triples</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">save_dataset</span> <span class="o">=</span> <span class="n">save_distribution</span> <span class="o">=</span> <span class="kc">False</span>
