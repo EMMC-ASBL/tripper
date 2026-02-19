@@ -501,7 +501,7 @@ def infer_restriction_types(
           - Otherwise, don't add a restriction type for the property
             (assuming that it is an annotation property).
       - For object properties on individuals in `source`:
-          - If the value is a class, assume an existential restruction.
+          - If the value is a class, assume an existential restriction.
 
     Arguments:
         source: JSON-LD dict or list of JSON-LD dicts to analyse.
