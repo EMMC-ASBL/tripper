@@ -457,7 +457,7 @@ def test_update_restrictions():
         },
     } in r2["subClassOf"]
 
-    # Now, use the restriction argument to day that we should convert
+    # Now, use the restriction argument to specify that we should convert
     # `hasPart` relations to cardinality restriction in all classes.
     # Should be converted to a cardinality restriction.
     r4 = deepcopy(r3)
