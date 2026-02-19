@@ -485,9 +485,8 @@ def infer_restriction_types(
     source: "Union[dict, list]",
     context: "Optional[Context]" = None,
 ) -> dict:
-    """Return a dict that describes what type of restriction that
-    properties on classes or object properties on individuals that
-    relates to a class in `source` should be converted to.
+    """Return a dict that describes default restriction types used by
+    update_restrictions().
 
     The following algorithm is used:
       - For each property or each class in `source`:
