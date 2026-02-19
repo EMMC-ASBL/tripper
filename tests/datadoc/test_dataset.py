@@ -443,38 +443,50 @@ def test_update_restrictions():
     # A class relating to another class.
     # Should be converted to a existential restriction.
     d3 = {
+        "@context": {
+            # "ex": "http://example.com/ex#",
+            "ex:Car": {"@type": "owl:Class"},
+            "ex:Wheel": {"@type": "owl:Class"},
+        },
         "@id": "ex:Car",
         "@type": "owl:Class",
         "hasPart": "ex:Wheel",
     }
     r3 = deepcopy(d3)
-    assert {
+    update_restrictions(r3, ctx)
+    assert r3["subClassOf"] == {
         "rdf:type": "owl:Restriction",
-        "owl:onProperty": "http://www.w3.org/ns/dcat#distribution",
-        "owl:hasValue": {
-            "@type": "dcat:Distribution",
-            "accessService": "ex:service",
-        },
-    } in r2["subClassOf"]
+        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+        "owl:someValuesFrom": "ex:Wheel",
+    }
 
     # Now, use the restriction argument to specify that we should convert
     # `hasPart` relations to cardinality restriction in all classes.
     # Should be converted to a cardinality restriction.
-    r4 = deepcopy(r3)
+    r4 = deepcopy(d3)
     restrictions = infer_restriction_types(r4, ctx)
-    restrictions["*"] = {"hasPart": "exactly 1"}
+    restrictions["ex:Car"] = {"hasPart": "exactly 1"}
     update_restrictions(r4, ctx, restrictions=restrictions)
-    assert r4 == {
-        "@id": "ex:Car",
-        "@type": "owl:Class",
-        "subClassOf": {
-            "rdf:type": "owl:Restriction",
-            "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-            "owl:hasValue": "ex:Wheel",
-        },
+    assert r4["subClassOf"] == {
+        "rdf:type": "owl:Restriction",
+        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+        "owl:onClass": "ex:Wheel",
+        "owl:qualifiedCardinality": 1,
     }
 
-    d5 = {
+    # Same as above, but apply the restriction to all classes.
+    # Should be converted to a cardinality restriction.
+    r4 = deepcopy(d3)
+    restrictions = {"*": {"hasPart": "exactly 1"}}
+    update_restrictions(r4, ctx, restrictions=restrictions)
+    assert r4["subClassOf"] == {
+        "rdf:type": "owl:Restriction",
+        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+        "owl:onClass": "ex:Wheel",
+        "owl:qualifiedCardinality": 1,
+    }
+
+    d6 = {
         "@context": {
             "MeasuringInstrument": {
                 "@id": HUME.MeasuringInstrument,
@@ -502,8 +514,8 @@ def test_update_restrictions():
                 # A class relating to a class.
                 # Should be converted to an existential restriction.
                 # Note that tripper in this case understands that ex:MyDevice
-                # is a class even when @type is commented out, because
-                # of the `subClassOf` relation.
+                # is a class even when @type is commented out, because of the
+                # `subClassOf` relation.
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
@@ -511,9 +523,9 @@ def test_update_restrictions():
             },
         ],
     }
-    r5 = deepcopy(d5)
-    update_restrictions(r5, ctx)
-    assert r5 == {
+    r6 = deepcopy(d6)
+    update_restrictions(r6, ctx)
+    assert r6 == {
         "@context": {
             "MeasuringInstrument": {
                 "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
