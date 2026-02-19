@@ -332,7 +332,7 @@ def test_store():
 
     # Missing base IRI now fails - maybe more desirable than allowing to
     # provide a baseiri?
-    # store(ts, d5, baseiri="http://example.com/devices#")
+    store(ts, d5, baseiri="http://example.com/devices#")
 
 
 def test_infer_restriction_types():

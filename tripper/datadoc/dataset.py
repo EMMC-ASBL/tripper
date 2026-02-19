@@ -558,7 +558,7 @@ def infer_restriction_types(
         iri = (
             src["@id"]
             if src["@id"].startswith("_:")
-            else context.expand(src["@id"], strict=True)
+            else context.expand(src["@id"], strict=False)
         )
         d = {}
         for k, v in src.items():
