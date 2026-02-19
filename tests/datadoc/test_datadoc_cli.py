@@ -6,7 +6,6 @@ pytest.importorskip("yaml")
 pytest.importorskip("rdflib")
 pytest.importorskip("SPARQLWrapper")
 pytest.importorskip("pyld")
-pytest.importorskip("dlite")
 
 from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
     maincommand,
@@ -199,6 +198,8 @@ def test_find_csv():
 def test_fetch():
     """Test `datadoc fetch` with Fuseki."""
     from dataset_paths import indir, outdir  # pylint: disable=import-error
+
+    pytest.importorskip("dlite")
 
     outfile = outdir / "sem.tif"
     outfile.unlink(missing_ok=True)

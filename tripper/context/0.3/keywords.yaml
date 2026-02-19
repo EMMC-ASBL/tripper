@@ -552,7 +552,7 @@ resources:
 
       format:
         iri: dcterms:format
-        range: dcterms:MediaTypeOrExtent
+        #range: dcterms:MediaTypeOrExtent
         conformance: optional
         description: The file format of the Distribution.
         usageNote: dcat:mediaType SHOULD be used if the type of the distribution is defined by [IANA](https://www.w3.org/TR/vocab-dcat-3/#bib-iana-media-types).

@@ -37,7 +37,7 @@ dependencies = [
 units = [
     "pint>=0.21.1,<0.26; python_version<'3.9'",
     "pint>=0.24.1,<0.26; python_version>='3.9'",
-    "rdflib>=6.3.0,<7.0.0",
+    "rdflib>=6.3.0,<=7.6.0",
 ]
 mappings = [
     "tripper[units]",

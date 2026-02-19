@@ -21,6 +21,7 @@ from .namespace import (
     EURIO,
     FNO,
     FOAF,
+    HUME,
     IANA,
     MAP,
     ODRL,
@@ -72,6 +73,7 @@ __all__ = (
     "EURIO",  # EUropean Research Information Ontology
     "FNO",  # Function Ontology
     "FOAF",  # Friend of a Friend
+    "HUME",  # Human readable EMMO
     "IANA",  # IANA, registered media types
     "MAP",  # Mapping Ontology
     "ODRL",  # Open Digital Rights Language
