@@ -13,6 +13,7 @@
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix stat: <http://purl.org/adms/status/> .
 @prefix accr: <http://publications.europa.eu/resource/authority/access-right/> .
+@prefix dcatap: <http://data.europa.eu/r5r/> .
 @prefix avail: <http://publications.europa.eu/resource/authority/planned-availability/> .
 
 <https://w3id.org/emmo/application/datadoc> a owl:Ontology ;
