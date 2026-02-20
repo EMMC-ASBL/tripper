@@ -47,7 +47,10 @@
       "@id": "dcterms:contributor",
       "@type": "@id"
     },
-    "creationDate": "dcterms:created",
+    "creationDate": {
+      "@id": "dcterms:created",
+      "@type": "xsd:dateTime"
+    },
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
@@ -103,7 +106,7 @@
     },
     "modificationDate": {
       "@id": "dcterms:modified",
-      "@type": "xsd:date"
+      "@type": "xsd:dateTime"
     },
     "publisher": {
       "@id": "dcterms:publisher",
@@ -123,7 +126,7 @@
     },
     "releaseDate": {
       "@id": "dcterms:issued",
-      "@type": "xsd:date"
+      "@type": "xsd:dateTime"
     },
     "theme": {
       "@id": "dcat:theme",
