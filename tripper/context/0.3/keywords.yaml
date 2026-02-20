@@ -515,12 +515,10 @@ resources:
 
       availability:
         iri: dcatap:availability
-        range: rdfs:Literal
-        #datatype: ["xsd:date", "xsd:dateTime"]
-        # FIXME - this is not a sensible datatype for a duration
-        datatype: xsd:date
+        range: skos:Concept
         conformance: recommended
         description: An indication how long it is planned to keep the Distribution of the Dataset available.
+        usageNote: "Use one of the following: avail:AVAILABLE, avail:EXPERIMENTAL, avail:OP_DATPRO, avail:STABLE, avail:TEMPORARY."
 
       byteSize:
         iri: dcat:byteSize

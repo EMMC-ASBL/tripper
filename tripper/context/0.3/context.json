@@ -24,6 +24,7 @@
     "vann": "http://purl.org/vocab/vann/",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "avail": "http://publications.europa.eu/resource/authority/planned-availability/",
     "emmo": "https://w3id.org/emmo#",
     "oteio": "https://w3id.org/emmo/domain/oteio#",
     "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
@@ -296,7 +297,7 @@
     },
     "availability": {
       "@id": "dcatap:availability",
-      "@type": "xsd:date"
+      "@type": "@id"
     },
     "byteSize": {
       "@id": "dcat:byteSize",
