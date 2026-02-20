@@ -13,6 +13,8 @@
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix stat: <http://purl.org/adms/status/> .
 @prefix accr: <http://publications.europa.eu/resource/authority/access-right/> .
+@prefix dcatap: <http://data.europa.eu/r5r/> .
+@prefix avail: <http://publications.europa.eu/resource/authority/planned-availability/> .
 
 <https://w3id.org/emmo/application/datadoc> a owl:Ontology ;
     owl:versionIRI <https://w3id.org/emmo/application/datadoc/0.1> ;
@@ -134,3 +136,24 @@ accr:SENSITIVE a dcterms:RightsStatement ;
     skos:prefLabel "sensitive"@en ;
     rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
     skos:definition "Sensitive non-classified (SNC) information, information whose unauthorised disclosure could cause damage to the Commission or other interested parties such as businesses, companies, intellectual property or personal data but which is not EU classified information."@en .
+
+
+## Availability
+avail:AVAILABLE a dcatap:availability ;
+    skos:prefLabel "available"@en ;
+    skos:definition "Data is available for a few years, medium term planning."@en .
+
+avail:EXPERIMENTAL a dcatap:availability ;
+    skos:prefLabel "experimental"@en ;
+    skos:definition "Data is available on a trial basis for a short period, short term planning."@en .
+
+avail:OP_DATPRO a dcatap:availability ;
+    skos:prefLabel "Provisional data"@en .
+
+avail:STABLE a dcatap:availability ;
+    skos:prefLabel "stable"@en ;
+    skos:definition "Data will remain available in the long term."@en .
+
+avail:TEMPORARY a dcatap:availability ;
+    skos:prefLabel "temporary"@en ;
+    skos:definition "Data can disappear at any time, no planning."@en .

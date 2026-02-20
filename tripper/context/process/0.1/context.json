@@ -24,6 +24,7 @@
     "vann": "http://purl.org/vocab/vann/",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "avail": "http://publications.europa.eu/resource/authority/planned-availability/",
     "emmo": "https://w3id.org/emmo#",
     "oteio": "https://w3id.org/emmo/domain/oteio#",
     "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
@@ -47,7 +48,10 @@
       "@id": "dcterms:contributor",
       "@type": "@id"
     },
-    "creationDate": "dcterms:created",
+    "creationDate": {
+      "@id": "dcterms:created",
+      "@type": "xsd:dateTime"
+    },
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
@@ -103,7 +107,7 @@
     },
     "modificationDate": {
       "@id": "dcterms:modified",
-      "@type": "xsd:date"
+      "@type": "xsd:dateTime"
     },
     "publisher": {
       "@id": "dcterms:publisher",
@@ -123,7 +127,7 @@
     },
     "releaseDate": {
       "@id": "dcterms:issued",
-      "@type": "xsd:date"
+      "@type": "xsd:dateTime"
     },
     "theme": {
       "@id": "dcat:theme",
@@ -293,7 +297,7 @@
     },
     "availability": {
       "@id": "dcatap:availability",
-      "@type": "xsd:date"
+      "@type": "@id"
     },
     "byteSize": {
       "@id": "dcat:byteSize",
