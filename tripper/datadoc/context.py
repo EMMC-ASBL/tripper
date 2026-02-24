@@ -456,7 +456,8 @@ class Context:
             The Triplestore object created from the document.
 
         """
-        base = baseiri if baseiri else "https://falseiri/"
+        false_prefix = "https://falseiri/"
+        base = baseiri if baseiri else false_prefix
 
         ts2 = Triplestore(backend="rdflib")
         ts2.parse(data=self._todict(doc), format="json-ld", base=base)
@@ -465,13 +466,22 @@ class Context:
         # If Force is True, issue a warning
         # If Force is False, raise an error
         for s, p, o in ts2.triples():
-            for term in (s, p, o):
-                if isinstance(term, str) and term.startswith(
-                    "https://falseiri/"
-                ):
+            for pos, term in zip(
+                ("subject", "predicate", "object"), (s, p, o)
+            ):
+                if isinstance(term, str) and term.startswith(false_prefix):
+
+                    def _clean(t):
+                        if t.startswith(false_prefix):
+                            return t[len(false_prefix) :]
+                        return t
+
+                    cleaned_term = _clean(term)
                     msg = (
-                        f"Missing base iri for term: "
-                        f"'{term.lstrip('https://falseiri/')}'"
+                        f"Missing base iri for {pos}: "
+                        f"'{cleaned_term}'."
+                        f" Full triple: '{_clean(s)}' "
+                        f"'{_clean(p)}' '{_clean(o)}'"
                     )
                     if force:
                         warnings.warn(msg, NamespaceWarning)
