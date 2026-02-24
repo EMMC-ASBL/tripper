@@ -477,15 +477,11 @@ class Context:
                         return t
 
                     cleaned_term = _clean(term)
-                    cleaned_tuple = tuple(
-                        _clean(t) if isinstance(t, str) else t
-                        for t in (s, p, o)
-                    )
                     msg = (
                         f"Missing base iri for {pos}: "
                         f"'{cleaned_term}'."
-                        f" Full triple: '{cleaned_tuple[0]}' "
-                        f"'{cleaned_tuple[1]}' '{cleaned_tuple[2]}'"
+                        f" Full triple: '{_clean(s)}' "
+                        f"'{_clean(p)}' '{_clean(o)}'"
                     )
                     if force:
                         warnings.warn(msg, NamespaceWarning)
