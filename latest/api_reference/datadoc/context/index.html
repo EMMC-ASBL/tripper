@@ -2478,7 +2478,8 @@ Context        </code>
 <span class="sd">            The Triplestore object created from the document.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="s2">&quot;https://falseiri/&quot;</span>
+        <span class="n">false_prefix</span> <span class="o">=</span> <span class="s2">&quot;https://falseiri/&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="n">false_prefix</span>
 
         <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
         <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
@@ -2487,13 +2488,22 @@ Context        </code>
         <span class="c1"># If Force is True, issue a warning</span>
         <span class="c1"># If Force is False, raise an error</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-                    <span class="s2">&quot;https://falseiri/&quot;</span>
-                <span class="p">):</span>
+            <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="s2">&quot;predicate&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">),</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">false_prefix</span><span class="p">):</span>
+
+                    <span class="k">def</span><span class="w"> </span><span class="nf">_clean</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">false_prefix</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">false_prefix</span><span class="p">)</span> <span class="p">:]</span>
+                        <span class="k">return</span> <span class="n">t</span>
+
+                    <span class="n">cleaned_term</span> <span class="o">=</span> <span class="n">_clean</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Missing base iri for term: &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;https://falseiri/&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Missing base iri for </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">cleaned_term</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot; Full triple: &#39;</span><span class="si">{</span><span class="n">_clean</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">_clean</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &#39;</span><span class="si">{</span><span class="n">_clean</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
                         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">NamespaceWarning</span><span class="p">)</span>
@@ -3573,7 +3583,8 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">        The Triplestore object created from the document.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="s2">&quot;https://falseiri/&quot;</span>
+    <span class="n">false_prefix</span> <span class="o">=</span> <span class="s2">&quot;https://falseiri/&quot;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="n">false_prefix</span>
 
     <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
     <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
@@ -3582,13 +3593,22 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
     <span class="c1"># If Force is True, issue a warning</span>
     <span class="c1"># If Force is False, raise an error</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">triples</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-                <span class="s2">&quot;https://falseiri/&quot;</span>
-            <span class="p">):</span>
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">term</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="s2">&quot;predicate&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">),</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">term</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">false_prefix</span><span class="p">):</span>
+
+                <span class="k">def</span><span class="w"> </span><span class="nf">_clean</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">false_prefix</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">t</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">false_prefix</span><span class="p">)</span> <span class="p">:]</span>
+                    <span class="k">return</span> <span class="n">t</span>
+
+                <span class="n">cleaned_term</span> <span class="o">=</span> <span class="n">_clean</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Missing base iri for term: &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">term</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;https://falseiri/&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Missing base iri for </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">cleaned_term</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; Full triple: &#39;</span><span class="si">{</span><span class="n">_clean</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">_clean</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &#39;</span><span class="si">{</span><span class="n">_clean</span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">NamespaceWarning</span><span class="p">)</span>
