@@ -593,6 +593,7 @@ def test_datadoc():
     # Test load dict-representation of a dataset from the triplestore
     SEM = ts.namespaces["sem"]
     SEMDATA = ts.namespaces["semdata"]
+    ts.bind("par", "http://sintef.no/dlite/parser#")
     iri = SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"]
     d = acquire(ts, iri, use_sparql=False)
     assert d["@id"] == iri
@@ -722,6 +723,11 @@ def test_datadoc():
     # Get individual with given IRI
     assert search(ts, criteria={"@id": SEMDATA.SEM_cement_batch2}) == [
         SEMDATA.SEM_cement_batch2,
+    ]
+
+    # Search on criterion when the value is an individual
+    assert search(ts, criteria={"distribution.parser": "par:Hitachi"}) == [
+        SEMDATA["SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"],
     ]
 
     title = "Nested series of SEM images of cement batch2"
