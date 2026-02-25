@@ -184,9 +184,16 @@ def told(
     resources = keywords.data.resources
 
     if singlerepr:  # single-resource representation
-        d = descr
+        if isinstance(descr, list):
+            d = {"@context": context.get_context_dict()} if context else {}
+            d["@graph"] = descr  # type: ignore
+        elif context and "@context" not in descr:
+            d = {"@context": context.get_context_dict()}
+            d.update(descr)
+        else:
+            d = descr
     else:  # multi-resource representation
-        d = {}
+        d = {"@context": context.get_context_dict()} if context else {}
         graph = []
         for k, v in descr.items():  # type: ignore
             if k == "theme":
@@ -209,7 +216,7 @@ def told(
                 raise InvalidDatadocError(
                     f"Invalid keyword in root of multi-resource dict: {k}"
                 )
-        d["@graph"] = graph
+        d["@graph"] = graph  # type: ignore
 
     return _told(
         d,
