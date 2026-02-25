@@ -214,7 +214,7 @@ def told(
             elif k == "prefixes":
                 addcontext(v)
             elif k == "base":
-                addcontext({})
+                addcontext({})  # make sure that context is copied
                 context.base = v
             elif k in resources:
                 if isinstance(v, list):
