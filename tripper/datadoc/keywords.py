@@ -82,7 +82,7 @@ def get_keywords(
     strict: bool = False,
     redefine: str = "raise",
 ) -> "Keywords":
-    """A convenient function that returns a Context instance.
+    """A convenient function that returns a Keywords instance.
 
     Arguments:
         keywords: Optional existing keywords object.
@@ -102,6 +102,9 @@ def get_keywords(
               - "skip": Don't redefine existing keyword. Emits a
                 `RedefineKeywordWarning`.
               - "raise": Raise an RedefineError (default).
+
+    Returns:
+        Keywords instance.
     """
     if isinstance(keywords, Keywords):
         kw = keywords

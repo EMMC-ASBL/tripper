@@ -23,8 +23,9 @@ def test_told():
     # pylint: disable=too-many-statements
     from pathlib import Path
 
-    from tripper import DCAT, DCTERMS, RDF, Literal, Triplestore
+    from tripper import DCAT, DCTERMS, RDF, Triplestore
     from tripper.datadoc.dataset import store, told
+    from tripper.utils import en
 
     indir = Path(__file__).resolve().parent.parent / "input"
     prefixes = {"ex": "http://example.com/ex#"}
@@ -128,7 +129,7 @@ def test_told():
     store(ts, descrB, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     descrC = [
         {
@@ -153,7 +154,7 @@ def test_told():
     store(ts, descrC, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     # Multi-resource representation
     descrD = {
@@ -193,7 +194,7 @@ def test_told():
     store(ts, descrD, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
     assert ts.has(EX.b, RDF.type, DCAT.Dataset)
 

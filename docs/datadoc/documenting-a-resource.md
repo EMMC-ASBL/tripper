@@ -210,7 +210,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 ...         "gen": "http://sintef.no/dlite/generator#",
 ...     },
 ... )
->>> td.save(ts)
+>>> d = td.save(ts)
 
 ```
 
