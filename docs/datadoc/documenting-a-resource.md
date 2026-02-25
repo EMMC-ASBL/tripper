@@ -164,7 +164,7 @@ Saving [semdata.yaml] to a triplestore can e.g. be done with
 ...    ts,
 ...    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml"
 ... )
-{'@graph': [...], ...}
+{'@context': {...}, '@graph': [...], ...}
 
 ```
 
