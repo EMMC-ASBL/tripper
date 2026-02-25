@@ -330,7 +330,7 @@ def _told(
         elif k == "datamodel":
             add(d, "@type", v)
             d[k] = v
-        elif "." in k:
+        elif "." in k and ":" not in k:
             # Convert keys with dots to nested dicts
             keys = k.split(".")
             dct, val = {}, v
@@ -413,6 +413,7 @@ def store(
         prefixes=prefixes,
         default_theme=None,
     )
+
     doc = told(
         source,
         type=type,
