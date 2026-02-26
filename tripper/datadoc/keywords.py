@@ -1031,7 +1031,8 @@ class Keywords:
                     break
             else:
                 label = iriname(k)
-            resources[label] = d
+            for lbl in [label] if isinstance(label, str) else set(label):
+                resources[lbl] = d
             clslabels[d.iri] = label
 
         # Add properties
@@ -1149,7 +1150,7 @@ class Keywords:
             SELECT DISTINCT ?s WHERE {
               VALUES ?o {
                 owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty
-                rdf:Property
+                rdf:Property owl:Class
               }
               ?s a ?o .
             }
