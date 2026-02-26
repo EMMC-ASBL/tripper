@@ -25,6 +25,7 @@ def test_told():
 
     from tripper import DCAT, DCTERMS, RDF, Triplestore
     from tripper.datadoc.dataset import store, told
+    from tripper.datadoc.errors import InvalidDatadocError
     from tripper.utils import en
 
     indir = Path(__file__).resolve().parent.parent / "input"
@@ -197,6 +198,40 @@ def test_told():
     assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
     assert ts.has(EX.b, RDF.type, DCAT.Dataset)
+
+    # Both single-rep and multi-rep...
+    descrE = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrE)
+
+    # Single-rep with context
+    descrF = {
+        "@context": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    d7 = told(descrF)
+    assert "laz" in d7["@context"]
+    assert "ddoc" in d7["@context"]
+    assert d7["@id"] == "laz:data"
+
+    # Multi-rep with invalid root keyword
+    descrG = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "invalid": "???",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrG)
+
+    # Nested keyword
+    descrH = {
+        "@id": EX.data,
+        "distribution.downloadURL": "ftp://server.org/data.zip",
+    }
+    d8 = told(descrH)
+    assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
 
 
 def test_get_jsonld_context():

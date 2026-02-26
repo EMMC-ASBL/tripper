@@ -197,18 +197,6 @@ def save(
     with Protocol(scheme, location, options=";".join(options)) as pr:
         pr.save(data, id)
 
-    print()
-    print("==================== dataset =======================")
-    print(dataset)
-
-    print()
-    print("==================== distribution =======================")
-    print(distribution)
-
-    print()
-    print("==================== triples =======================")
-    print(triples)
-
     # Update triplestore
     ts.add_triples(triples)
     if save_dataset:
