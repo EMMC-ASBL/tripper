@@ -1060,11 +1060,11 @@ class Keywords:
                     else:
                         r = self.data.resources[domainname].copy()
                     resources[domainname] = r
-                    for lbl in [label] if isinstance(label, str) else label:
-                        r.keywords[lbl] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        r.keywords[l] = d
                 else:
-                    for lbl in [label] if isinstance(label, str) else label:
-                        resources[domainname].keywords[lbl] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        resources[domainname].keywords[l] = d
             if "range" in value:
                 _types = asseq(d.get("type", OWL.AnnotationProperty))
                 types = [expand_iri(t, p) for t in _types]
