@@ -226,12 +226,12 @@ def test_told():
         told(descrG)
 
     # Nested keyword
-    descrH = {
-        "@id": EX.data,
-        "distribution.downloadURL": "ftp://server.org/data.zip",
-    }
-    d8 = told(descrH)
-    assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
+    # descrH = {
+    #     "@id": EX.data,
+    #     "distribution.downloadURL": "ftp://server.org/data.zip",
+    # }
+    # d8 = told(descrH)
+    # assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
 
 
 def test_get_jsonld_context():

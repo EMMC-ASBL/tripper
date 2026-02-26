@@ -330,14 +330,19 @@ def _told(
         elif k == "datamodel":
             add(d, "@type", v)
             d[k] = v
-        elif "." in k and ":" not in k:
-            # Convert keys with dots to nested dicts
-            keys = k.split(".")
-            dct, val = {}, v
-            for key in reversed(keys[1:]):
-                dct[key] = val
-                dct, val = {}, dct
-            add(d, keys[0], val)
+        #
+        # The below works fine. It is commented out since it is doubtable
+        # whether it is a good idea to invent new shortcuts for json-ld.
+        #
+        # elif "." in k and "/" not in k:
+        #     # Convert keys with dots to nested dicts
+        #     keys = k.split(".")
+        #     dct, val = {}, v
+        #     for key in reversed(keys[1:]):
+        #         dct[key] = val
+        #         dct, val = {}, dct
+        #     add(d, keys[0], val)
+        #
         elif isinstance(v, (str, int, float, bool, None.__class__)):
             d[k] = v
         elif isinstance(v, list):
