@@ -1031,7 +1031,8 @@ class Keywords:
                     break
             else:
                 label = iriname(k)
-            resources[label] = d
+            for lbl in [label] if isinstance(label, str) else set(label):
+                resources[lbl] = d
             clslabels[d.iri] = label
 
         # Add properties
@@ -1060,9 +1061,11 @@ class Keywords:
                     else:
                         r = self.data.resources[domainname].copy()
                     resources[domainname] = r
-                    r.keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        r.keywords[l] = d
                 else:
-                    resources[domainname].keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        resources[domainname].keywords[l] = d
             if "range" in value:
                 _types = asseq(d.get("type", OWL.AnnotationProperty))
                 types = [expand_iri(t, p) for t in _types]
@@ -1147,7 +1150,7 @@ class Keywords:
             SELECT DISTINCT ?s WHERE {
               VALUES ?o {
                 owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty
-                rdf:Property
+                rdf:Property owl:Class
               }
               ?s a ?o .
             }
