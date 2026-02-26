@@ -1844,7 +1844,7 @@ Saving <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/m
 <span class="o">...</span>    <span class="n">ts</span><span class="p">,</span>
 <span class="o">...</span>    <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml&quot;</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;@graph&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;@context&#39;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> <span class="s1">&#39;@graph&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="documenting-as-table">Documenting as table<a class="headerlink" href="#documenting-as-table" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc">TableDoc</a> class can be used to document multiple resources as rows in a table.</p>
@@ -1892,7 +1892,7 @@ Nested fields may be specified as dot-separated keywords. For example, the table
 <span class="o">...</span>         <span class="s2">&quot;gen&quot;</span><span class="p">:</span> <span class="s2">&quot;http://sintef.no/dlite/generator#&quot;</span><span class="p">,</span>
 <span class="o">...</span>     <span class="p">},</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 </code></pre></div>
 
 

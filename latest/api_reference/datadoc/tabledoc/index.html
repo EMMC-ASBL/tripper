@@ -1999,8 +1999,11 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span> <span class="o">=</span> <span class="n">baseiri</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.</span>
+
+<span class="sd">        Returns a dict with the JSON-LD written to the triplestore.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
             <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="p">)</span>
@@ -2008,7 +2011,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
-        <span class="n">store</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">store</span><span class="p">(</span>
             <span class="n">ts</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(),</span>
             <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -2825,11 +2828,15 @@ formatting parameters.  For more details, see
     <div class="doc doc-contents ">
 
       <p>Save tabular datadocumentation to triplestore.</p>
+<p>Returns a dict with the JSON-LD written to the triplestore.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.</span>
+
+<span class="sd">    Returns a dict with the JSON-LD written to the triplestore.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
         <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="p">)</span>
@@ -2837,7 +2844,7 @@ formatting parameters.  For more details, see
     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
-    <span class="n">store</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">store</span><span class="p">(</span>
         <span class="n">ts</span><span class="p">,</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(),</span>
         <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>

@@ -6588,7 +6588,7 @@ keywords.typename("dcat:Dataset")
 
     <div class="doc doc-contents ">
 
-      <p>A convenient function that returns a Context instance.</p>
+      <p>A convenient function that returns a Keywords instance.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -6655,6 +6655,21 @@ keywords.  Should be one of the following strings:
       </tr>
   </tbody>
 </table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Keywords</code></td>
+      <td><p>Keywords instance.</p></td>
+    </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/keywords.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_keywords</span><span class="p">(</span>
@@ -6666,7 +6681,7 @@ keywords.  Should be one of the following strings:
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Keywords&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A convenient function that returns a Context instance.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A convenient function that returns a Keywords instance.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        keywords: Optional existing keywords object.</span>
@@ -6686,6 +6701,9 @@ keywords.  Should be one of the following strings:
 <span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
 <span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Keywords instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">Keywords</span><span class="p">):</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span>

@@ -2247,6 +2247,11 @@ Context        </code>
                     <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span>
                     <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">],</span>
                 <span class="p">}</span>
+            <span class="k">elif</span> <span class="s2">&quot;@language&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+                <span class="n">context</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;@language&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">context</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">context</span>
@@ -3029,6 +3034,11 @@ context.expand("Dataset")
             <span class="n">context</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span>
                 <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="s2">&quot;@language&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;@language&quot;</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">],</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">context</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
