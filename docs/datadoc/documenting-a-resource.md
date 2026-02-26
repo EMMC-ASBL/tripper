@@ -164,7 +164,7 @@ Saving [semdata.yaml] to a triplestore can e.g. be done with
 ...    ts,
 ...    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml"
 ... )
-{'@graph': [...], ...}
+{'@context': {...}, '@graph': [...], ...}
 
 ```
 
@@ -210,7 +210,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 ...         "gen": "http://sintef.no/dlite/generator#",
 ...     },
 ... )
->>> td.save(ts)
+>>> d = td.save(ts)
 
 ```
 

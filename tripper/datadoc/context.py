@@ -225,6 +225,11 @@ class Context:
                     "@id": info["@id"],
                     "@type": info["@type"],
                 }
+            elif "@language" in info:
+                context[name] = {
+                    "@id": info["@id"],
+                    "@language": info["@language"],
+                }
             else:
                 context[name] = info["@id"]
         return context

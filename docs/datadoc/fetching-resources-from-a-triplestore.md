@@ -9,7 +9,7 @@ For these examples there must be a triplestore instance available, poplated with
 >>> from tripper.datadoc import save_datadoc
 >>> ts = Triplestore(backend="rdflib")
 >>> save_datadoc(ts,"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml") # doctest: +ELLIPSIS
-{'@graph': [...], ...}
+{'@context': {...}, '@graph': [...], ...}
 
 ```
 

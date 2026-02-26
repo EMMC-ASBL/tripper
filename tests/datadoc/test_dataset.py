@@ -23,8 +23,10 @@ def test_told():
     # pylint: disable=too-many-statements
     from pathlib import Path
 
-    from tripper import DCAT, DCTERMS, RDF, Literal, Triplestore
+    from tripper import DCAT, DCTERMS, RDF, Triplestore
     from tripper.datadoc.dataset import store, told
+    from tripper.datadoc.errors import InvalidDatadocError
+    from tripper.utils import en
 
     indir = Path(__file__).resolve().parent.parent / "input"
     prefixes = {"ex": "http://example.com/ex#"}
@@ -128,7 +130,7 @@ def test_told():
     store(ts, descrB, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     descrC = [
         {
@@ -153,7 +155,7 @@ def test_told():
     store(ts, descrC, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     # Multi-resource representation
     descrD = {
@@ -193,9 +195,43 @@ def test_told():
     store(ts, descrD, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
     assert ts.has(EX.b, RDF.type, DCAT.Dataset)
+
+    # Both single-rep and multi-rep...
+    descrE = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrE)
+
+    # Single-rep with context
+    descrF = {
+        "@context": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    d7 = told(descrF)
+    assert "laz" in d7["@context"]
+    assert "ddoc" in d7["@context"]
+    assert d7["@id"] == "laz:data"
+
+    # Multi-rep with invalid root keyword
+    descrG = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "invalid": "???",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrG)
+
+    # Nested keyword
+    # descrH = {
+    #     "@id": EX.data,
+    #     "distribution.downloadURL": "ftp://server.org/data.zip",
+    # }
+    # d8 = told(descrH)
+    # assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
 
 
 def test_get_jsonld_context():
@@ -276,7 +312,7 @@ def test_get_shortnames():
 
 def test_store():
     """Test store()."""
-    from tripper import Triplestore
+    from tripper import DCTERMS, OWL, RDF, Literal, Triplestore
     from tripper.datadoc import acquire, store
     from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
     from tripper.errors import NamespaceError
@@ -333,6 +369,25 @@ def test_store():
     # Missing base IRI now fails - maybe more desirable than allowing to
     # provide a baseiri?
     store(ts, d5, baseiri="http://example.com/devices#")
+
+    # Custom language strings
+    d6 = {
+        "@context": {
+            "title_it": {
+                "@id": DCTERMS.title,
+                "@language": "it",
+            },
+        },
+        "@id": EX.greetingdata,
+        "title": "hi",
+        "title_it": "ciao",
+    }
+    store(ts, d6)
+    assert set(ts.triples(EX.greetingdata)) == {
+        (EX.greetingdata, RDF.type, OWL.NamedIndividual),
+        (EX.greetingdata, DCTERMS.title, Literal("hi", lang="en")),
+        (EX.greetingdata, DCTERMS.title, Literal("ciao", lang="it")),
+    }
 
 
 def test_infer_restriction_types():

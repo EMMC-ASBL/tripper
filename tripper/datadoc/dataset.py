@@ -160,7 +160,7 @@ def told(
     """
     single = "@id", "@type", "@graph"
     multi = "keywordfile", "prefixes", "base"
-    singlerepr = any(s in descr for s in single) or isinstance(descr, list)
+    singlerepr = isinstance(descr, list) or any(s in descr for s in single)
     multirepr = any(s in descr for s in multi)
     if singlerepr and multirepr:
         raise InvalidDatadocError(
@@ -174,6 +174,19 @@ def told(
         )
     else:
         keywords = get_keywords(keywords=keywords)
+    resources = keywords.data.resources
+
+    # Whether the context has been copied. Used within addcontext()
+    context_copied = False
+
+    def addcontext(d: dict):
+        """Make a copy of context (but only once) and add `d` to it."""
+        nonlocal context, context_copied
+        if context:
+            if not context_copied:
+                context = context.copy()
+            if d:
+                context.add_context(d)
 
     context = get_context(
         context=context,
@@ -181,22 +194,27 @@ def told(
         prefixes=prefixes,
         default_theme=None,
     )
-    resources = keywords.data.resources
+    if isinstance(descr, dict) and "@context" in descr:
+        addcontext(descr["@context"])
 
     if singlerepr:  # single-resource representation
-        d = descr
+        d = {"@context": context.get_context_dict()} if context else {}
+        if isinstance(descr, list):
+            d["@graph"] = descr  # type: ignore
+        else:
+            if "@context" in descr:
+                descr = descr.copy()
+                del descr["@context"]
+            d.update(descr)
     else:  # multi-resource representation
-        d = {}
         graph = []
         for k, v in descr.items():  # type: ignore
-            if k == "theme":
-                pass
-            elif k == "@context":
-                context.add_context(v)
-                d[k] = v
+            if k in ("@context", "theme"):
+                pass  # already handled
             elif k == "prefixes":
-                context.add_context(v)
+                addcontext(v)
             elif k == "base":
+                addcontext({})  # make sure that context is copied
                 context.base = v
             elif k in resources:
                 if isinstance(v, list):
@@ -209,13 +227,14 @@ def told(
                 raise InvalidDatadocError(
                     f"Invalid keyword in root of multi-resource dict: {k}"
                 )
-        d["@graph"] = graph
+        d = {"@context": context.get_context_dict()} if context else {}
+        d["@graph"] = graph  # type: ignore
 
     return _told(
         d,
         type=type,
         keywords=keywords,
-        prefixes=context.get_prefixes(),
+        prefixes=context.get_prefixes() if context else {},
         root=True,
         hasid=False,
     )
@@ -311,6 +330,19 @@ def _told(
         elif k == "datamodel":
             add(d, "@type", v)
             d[k] = v
+        #
+        # The below works fine. It is commented out since it is doubtable
+        # whether it is a good idea to invent new shortcuts for json-ld.
+        #
+        # elif "." in k and "/" not in k:
+        #     # Convert keys with dots to nested dicts
+        #     keys = k.split(".")
+        #     dct, val = {}, v
+        #     for key in reversed(keys[1:]):
+        #         dct[key] = val
+        #         dct, val = {}, dct
+        #     add(d, keys[0], val)
+        #
         elif isinstance(v, (str, int, float, bool, None.__class__)):
             d[k] = v
         elif isinstance(v, list):
@@ -386,6 +418,7 @@ def store(
         prefixes=prefixes,
         default_theme=None,
     )
+
     doc = told(
         source,
         type=type,
@@ -563,7 +596,7 @@ def infer_restriction_types(
         for k, v in src.items():
             if k.startswith("@") or k in all_ignored:
                 continue
-            kexp = context.expand(k, strict=True)
+            kexp = context.expand(k, strict=False)
             if _isclassdoc(src):
                 if isinstance(v, dict):
                     d[kexp] = "some" if _isclassdoc(v) else "value"
@@ -576,7 +609,7 @@ def infer_restriction_types(
                     and kexp in context
                     and not context.is_annotation_property(kexp)
                 ):
-                    vexp = context.expand(v, strict=True)
+                    vexp = context.expand(v, strict=False)
                     d[kexp] = "some" if _isclass(vexp, context) else "value"
                 elif not isinstance(v, str) or (
                     context
