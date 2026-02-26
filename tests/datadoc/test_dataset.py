@@ -312,7 +312,7 @@ def test_get_shortnames():
 
 def test_store():
     """Test store()."""
-    from tripper import Triplestore
+    from tripper import DCTERMS, OWL, RDF, Literal, Triplestore
     from tripper.datadoc import acquire, store
     from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
     from tripper.errors import NamespaceError
@@ -369,6 +369,25 @@ def test_store():
     # Missing base IRI now fails - maybe more desirable than allowing to
     # provide a baseiri?
     store(ts, d5, baseiri="http://example.com/devices#")
+
+    # Custom language strings
+    d6 = {
+        "@context": {
+            "title_it": {
+                "@id": DCTERMS.title,
+                "@language": "it",
+            },
+        },
+        "@id": EX.greetingdata,
+        "title": "hi",
+        "title_it": "ciao",
+    }
+    store(ts, d6)
+    assert set(ts.triples(EX.greetingdata)) == {
+        (EX.greetingdata, RDF.type, OWL.NamedIndividual),
+        (EX.greetingdata, DCTERMS.title, Literal("hi", lang="en")),
+        (EX.greetingdata, DCTERMS.title, Literal("ciao", lang="it")),
+    }
 
 
 def test_infer_restriction_types():
