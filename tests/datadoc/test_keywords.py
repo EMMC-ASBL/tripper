@@ -502,7 +502,6 @@ def test_load2():
         "hasChild",
         "hasName",
     }
-    print(kw.classnames())
     assert set(kw.classnames()) == {
         "Person",
         "Parent",
