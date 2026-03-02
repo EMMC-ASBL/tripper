@@ -502,12 +502,23 @@ def test_load2():
         "hasChild",
         "hasName",
     }
+    print(kw.classnames())
     assert set(kw.classnames()) == {
         "Person",
         "Parent",
         "Child",
         "Skill",
         "Resource",
+        "Age",
+        "Dauther",
+        "Father",
+        "Female",
+        "Male",
+        "Mother",
+        "Name",
+        "Property",
+        "Son",
+        "Weight",
     }
     d = kw["hasAge"]
     assert d.iri == "fam:hasAge"

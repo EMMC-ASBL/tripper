@@ -1153,6 +1153,7 @@ class Keywords:
                 rdf:Property owl:Class
               }
               ?s a ?o .
+              FILTER(isIRI(?s))
             }
             """
             iris = [iri[0] for iri in ts.query(query)]
