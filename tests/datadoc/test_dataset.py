@@ -1,6 +1,7 @@
 """Test the dataset module."""
 
 # pylint: disable=invalid-name,too-many-locals,duplicate-code
+# pylint: disable=too-many-lines
 
 import pytest
 
@@ -440,7 +441,7 @@ def test_infer_restriction_types():
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
-                "hasPart": HUME.MeasuringInstrument,
+                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
             },
         ],
     }
@@ -566,6 +567,13 @@ def test_update_restrictions():
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
+                # An individial relating to two classes and an individual.
+                # Should be converted to an existential restriction.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+            },
+            {
                 # A class relating to a class.
                 # Should be converted to an existential restriction.
                 # Note that tripper in this case understands that ex:MyDevice
@@ -574,54 +582,70 @@ def test_update_restrictions():
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
+                "label": "MyDevice",
                 "hasPart": HUME.MeasuringInstrument,
+            },
+            {
+                # A class relating to two classes
+                "@id": "ex:MyDevice2",
+                "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "label": "MyDevice2",
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice"],
             },
         ],
     }
     r6 = deepcopy(d6)
     update_restrictions(r6, ctx)
-    assert r6 == {
-        "@context": {
-            "MeasuringInstrument": {
-                "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
-                "@type": "owl:Class",
-            }
-        },
-        "@graph": [
+    res6 = {d["@id"]: d for d in r6["@graph"]}
+    assert res6["ex:instr"] == {
+        "@id": "ex:instr",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
+    }
+    assert res6["ex:instr2"] == {
+        "@id": "ex:instr2",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
             {
-                "@id": "ex:instr",
-                "@type": "https://w3id.org/emmo/hume#Device",
-                "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
-            },
-            {
-                "@id": "ex:instr2",
-                "@type": [
-                    "https://w3id.org/emmo/hume#Device",
-                    {
-                        "rdf:type": "owl:Restriction",
-                        "owl:onProperty": (
-                            "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
-                        ),
-                        "owl:someValuesFrom": (
-                            "https://w3id.org/emmo/hume#MeasuringInstrument"
-                        ),
-                    },
-                ],
-            },
-            {
-                "@id": "ex:MyDevice",
-                "subClassOf": [
-                    "https://w3id.org/emmo/hume#Device",
-                    {
-                        "rdf:type": "owl:Restriction",
-                        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-                        "owl:someValuesFrom": (
-                            "https://w3id.org/emmo/hume#MeasuringInstrument"
-                        ),
-                    },
-                ],
+                "rdf:type": "owl:Restriction",
+                "owl:onProperty": (
+                    "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
+                ),
+                "owl:someValuesFrom": (
+                    "https://w3id.org/emmo/hume#MeasuringInstrument"
+                ),
             },
         ],
+    }
+    assert res6["ex:instr3"] == {
+        "@id": "ex:instr3",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "rdf:type": "owl:Restriction",
+                "owl:onProperty": (
+                    "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
+                ),
+                "owl:someValuesFrom": (
+                    "https://w3id.org/emmo/hume#MeasuringInstrument"
+                ),
+            },
+        ],
+    }
+    assert res6["ex:MyDevice"] == {
+        "@id": "ex:MyDevice",
+        "subClassOf": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "rdf:type": "owl:Restriction",
+                "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+                "owl:someValuesFrom": (
+                    "https://w3id.org/emmo/hume#MeasuringInstrument"
+                ),
+            },
+        ],
+        "label": "MyDevice",
     }
 
 
