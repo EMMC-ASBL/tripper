@@ -708,6 +708,7 @@ def update_restrictions(
             update_restrictions(value, context, restrictions)
 
     # Local context
+
     context = get_context(context=context)
     if "@context" in source:
         context = context.copy()
@@ -717,8 +718,8 @@ def update_restrictions(
         restrictions = infer_restriction_types(source, context)
     else:
         restrictions = {
-            "*" if ckey == "*" else context.expand(ckey, strict=True): {
-                context.expand(pkey, strict=True): pval
+            "*" if ckey == "*" else context.expand(ckey, strict=False): {
+                context.expand(pkey, strict=False): pval
                 for pkey, pval in cval.items()
             }
             for ckey, cval in restrictions.items()
@@ -736,6 +737,7 @@ def update_restrictions(
     # Ensure that source is only of type owl:Class
     # Move all other types to subClassOf
     types = {context.expand(t): t for t in get(source, "@type")}
+
     if OWL.Class in types:
         for e, t in types.items():
             if e == OWL.Class:
