@@ -309,6 +309,10 @@ def _told(
         if not k.startswith("@") and k not in keywords:
             # pylint: disable=logging-fstring-interpolation
             logging.info(f"Property not in keywords: {k}")
+
+        if k == "subClassOf":
+            add(d, "@type", OWL.Class)
+
         if k in ("@context", "@id", "@type"):
             pass
         elif k == "@graph":
@@ -514,6 +518,35 @@ def _isclass(d, context):
     )
 
 
+def update_context(
+    source: "Union[dict, list]",
+    context: "Context",
+) -> None:
+    """Update `context` with information from `source`.
+
+    Currently this only adds classes defined in `source` to `context`.
+    """
+    sources = (
+        source
+        if isinstance(source, list)
+        else source["@graph"] if "@graph" in source else [source]
+    )
+    prefixes = context.get_prefixes()
+    for d in sources:
+        for k, v in d.items():
+            if k == "@graph" or isinstance(v, dict):
+                update_context(v, context)
+            elif k == "subClassOf":
+                context.add_context(
+                    {
+                        k: {
+                            "@id": expand_iri(k, prefixes, strict=True),
+                            "@type": OWL.Class,
+                        }
+                    }
+                )
+
+
 def infer_restriction_types(
     source: "Union[dict, list]",
     context: "Optional[Context]" = None,
@@ -708,7 +741,6 @@ def update_restrictions(
             update_restrictions(value, context, restrictions)
 
     # Local context
-
     context = get_context(context=context)
     if "@context" in source:
         context = context.copy()
@@ -737,7 +769,6 @@ def update_restrictions(
     # Ensure that source is only of type owl:Class
     # Move all other types to subClassOf
     types = {context.expand(t): t for t in get(source, "@type")}
-
     if OWL.Class in types:
         for e, t in types.items():
             if e == OWL.Class:
