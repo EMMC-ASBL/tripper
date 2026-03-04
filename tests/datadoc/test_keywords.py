@@ -508,6 +508,16 @@ def test_load2():
         "Child",
         "Skill",
         "Resource",
+        "Age",
+        "Dauther",
+        "Father",
+        "Female",
+        "Male",
+        "Mother",
+        "Name",
+        "Property",
+        "Son",
+        "Weight",
     }
     d = kw["hasAge"]
     assert d.iri == "fam:hasAge"
