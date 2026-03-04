@@ -3206,7 +3206,8 @@ Keywords        </code>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">iriname</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">resources</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+            <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                <span class="n">resources</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
             <span class="n">clslabels</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">iri</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
 
         <span class="c1"># Add properties</span>
@@ -3235,9 +3236,11 @@ Keywords        </code>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                     <span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
-                    <span class="n">r</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                        <span class="n">r</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+                        <span class="n">resources</span><span class="p">[</span><span class="n">domainname</span><span class="p">]</span><span class="o">.</span><span class="n">keywords</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
             <span class="k">if</span> <span class="s2">&quot;range&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">_types</span> <span class="o">=</span> <span class="n">asseq</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">AnnotationProperty</span><span class="p">))</span>
                 <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">expand_iri</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_types</span><span class="p">]</span>
@@ -3322,9 +3325,10 @@ Keywords        </code>
 <span class="s2">            SELECT DISTINCT ?s WHERE {</span>
 <span class="s2">              VALUES ?o {</span>
 <span class="s2">                owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty</span>
-<span class="s2">                rdf:Property</span>
+<span class="s2">                rdf:Property owl:Class</span>
 <span class="s2">              }</span>
 <span class="s2">              ?s a ?o .</span>
+<span class="s2">              FILTER(isIRI(?s))</span>
 <span class="s2">            }</span>
 <span class="s2">            &quot;&quot;&quot;</span>
             <span class="n">iris</span> <span class="o">=</span> <span class="p">[</span><span class="n">iri</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>

@@ -1410,6 +1410,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.update_context" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_context()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.dataset.update_restrictions" class="md-nav__link">
     <span class="md-ellipsis">
       update_restrictions()
@@ -2011,6 +2020,15 @@
   <a href="#tripper.datadoc.dataset.told" class="md-nav__link">
     <span class="md-ellipsis">
       told()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tripper.datadoc.dataset.update_context" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_context()
     </span>
   </a>
   
@@ -4375,6 +4393,58 @@ or included in the JSON-LD context.</p></td>
 
 
 
+<h2 id="tripper.datadoc.dataset.update_context" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_context</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.dataset.update_context" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Update <code>context</code> with information from <code>source</code>.</p>
+<p>Currently this only adds classes defined in <code>source</code> to <code>context</code>.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_context</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Context&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update `context` with information from `source`.</span>
+
+<span class="sd">    Currently this only adds classes defined in `source` to `context`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">source</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="k">else</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;@graph&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">prefixes</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">update_context</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">:</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="n">k</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                            <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">,</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 id="tripper.datadoc.dataset.update_restrictions" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">update_restrictions</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
@@ -4530,8 +4600,8 @@ to call <code>infer_restriction_types()</code>.</p></td>
         <span class="n">restrictions</span> <span class="o">=</span> <span class="n">infer_restriction_types</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">restrictions</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">ckey</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="k">else</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">ckey</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="p">{</span>
-                <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">pkey</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="n">pval</span>
+            <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">ckey</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span> <span class="k">else</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">ckey</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="p">{</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">pkey</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="n">pval</span>
                 <span class="k">for</span> <span class="n">pkey</span><span class="p">,</span> <span class="n">pval</span> <span class="ow">in</span> <span class="n">cval</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">}</span>
             <span class="k">for</span> <span class="n">ckey</span><span class="p">,</span> <span class="n">cval</span> <span class="ow">in</span> <span class="n">restrictions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
