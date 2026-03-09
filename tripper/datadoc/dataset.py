@@ -274,6 +274,28 @@ def _told(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
 
+    def _deduplicate_types(d):
+        """Remove semantically duplicated type values in ``d['@type']``.
+
+        Duplicates are detected by comparing expanded IRIs, so lexical
+        variants like ``owl:Class`` and ``http://.../owl#Class`` collapse.
+        """
+        if "@type" not in d:
+            return
+
+        uniq = {}
+        for t in get(d, "@type"):
+            expanded = expand(t) if isinstance(t, str) else t
+            if expanded not in uniq:
+                uniq[expanded] = t
+            elif isinstance(t, str) and isinstance(uniq[expanded], str):
+                # Prefer shorter lexical forms (typically prefixed IRIs).
+                if len(t) < len(uniq[expanded]):
+                    uniq[expanded] = t
+
+        values = list(uniq.values())
+        d["@type"] = values[0] if len(values) == 1 else values
+
     if isinstance(descr, str):
         return descr
 
@@ -356,6 +378,8 @@ def _told(
                 d[k] = v
             else:
                 d[k] = _told(v, torange(k), keywords, prefixes)
+
+    _deduplicate_types(d)
 
     return d
 
@@ -685,6 +709,12 @@ def update_restrictions(
         """Add restriction to `source`."""
         # pylint: disable=no-else-return
 
+        def as_iri_node(v):
+            """Return JSON-LD node object for IRI-like string values."""
+            if isinstance(v, str) and is_uri(v, require_netloc=False):
+                return {"@id": context.expand(v, strict=False)}
+            return v
+
         iri = context.expand(source["@id"]) if "@id" in source else "*"
         propiri = context.expand(prop)
         if value is None or prop.startswith("@"):
@@ -708,18 +738,20 @@ def update_restrictions(
             return
 
         d = {
-            "rdf:type": "owl:Restriction",
+            "@type": "owl:Restriction",
             # We expand here, since JSON-LD doesn't expand values.
-            "owl:onProperty": context.expand(prop, strict=True),
+            "owl:onProperty": {
+                "@id": context.expand(prop, strict=True),
+            },
         }
         if restrictionType == "value":
-            d["owl:hasValue"] = value
+            d["owl:hasValue"] = as_iri_node(value)
         elif restrictionType == "some":
-            d["owl:someValuesFrom"] = value
+            d["owl:someValuesFrom"] = as_iri_node(value)
         elif restrictionType == "only":
-            d["owl:allValuesFrom"] = value
+            d["owl:allValuesFrom"] = as_iri_node(value)
         else:
-            d["owl:onClass"] = value
+            d["owl:onClass"] = as_iri_node(value)
             ctype, n = restrictionType.split()
             ctypes = {
                 "exactly": "owl:qualifiedCardinality",
