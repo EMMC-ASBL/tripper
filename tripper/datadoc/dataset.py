@@ -675,12 +675,9 @@ def infer_restriction_types(
                 ):
                     vexp = context.expand(v, strict=False)
                     d[kexp] = "some" if _isclass(vexp, context) else "value"
-                elif not isinstance(v, str) or (
-                    context
-                    and kexp in context
-                    and not context.is_annotation_property(kexp)
-                ):
-                    d[kexp] = "value"
+                elif isinstance(v, list):
+                    if any(_isclass(e, context) for e in v):
+                        d[kexp] = "some"
             elif _isclass(v, context):
                 d[kexp] = "some"
         if d:

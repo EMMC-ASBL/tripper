@@ -404,6 +404,9 @@ def test_store():
 
 def test_update_context():
     """Test update_context()."""
+    # WORK-IN-PROGRESS
+    # pylint: disable=unused-variable,unused-import
+
     from tripper import HUME
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import told, update_context
@@ -460,7 +463,7 @@ def test_infer_restriction_types():
         "http://example.org#A": {
             DCTERMS.creator: "some",
             DCTERMS.hasPart: "value",
-            DCTERMS.issued: "value",
+            # DCTERMS.issued: "value",
         }
     }
 
