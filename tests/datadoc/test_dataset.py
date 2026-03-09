@@ -487,7 +487,7 @@ def test_update_restrictions():
     update_restrictions(r2, ctx)
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
-        "rdf:type": "owl:Restriction",
+        "@type": "owl:Restriction",
         "owl:onProperty": DCAT.distribution,
         "owl:hasValue": {
             "@type": "dcat:Distribution",
@@ -510,9 +510,9 @@ def test_update_restrictions():
     r3 = deepcopy(d3)
     update_restrictions(r3, ctx)
     assert r3["subClassOf"] == {
-        "rdf:type": "owl:Restriction",
+        "@type": "owl:Restriction",
         "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-        "owl:someValuesFrom": "ex:Wheel",
+        "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
     }
 
     # Now, use the restriction argument to specify that we should convert
@@ -523,9 +523,9 @@ def test_update_restrictions():
     restrictions["ex:Car"] = {"hasPart": "exactly 1"}
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
-        "rdf:type": "owl:Restriction",
+        "@type": "owl:Restriction",
         "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-        "owl:onClass": "ex:Wheel",
+        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
         "owl:qualifiedCardinality": 1,
     }
 
@@ -535,9 +535,9 @@ def test_update_restrictions():
     restrictions = {"*": {"hasPart": "exactly 1"}}
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
-        "rdf:type": "owl:Restriction",
+        "@type": "owl:Restriction",
         "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-        "owl:onClass": "ex:Wheel",
+        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
         "owl:qualifiedCardinality": 1,
     }
 
@@ -598,13 +598,15 @@ def test_update_restrictions():
                 "@type": [
                     "https://w3id.org/emmo/hume#Device",
                     {
-                        "rdf:type": "owl:Restriction",
+                        "@type": "owl:Restriction",
                         "owl:onProperty": (
                             "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
                         ),
-                        "owl:someValuesFrom": (
-                            "https://w3id.org/emmo/hume#MeasuringInstrument"
-                        ),
+                        "owl:someValuesFrom": {
+                            "@id": (
+                                "https://w3id.org/emmo/hume#MeasuringInstrument"
+                            )
+                        },
                     },
                 ],
             },
@@ -613,11 +615,13 @@ def test_update_restrictions():
                 "subClassOf": [
                     "https://w3id.org/emmo/hume#Device",
                     {
-                        "rdf:type": "owl:Restriction",
+                        "@type": "owl:Restriction",
                         "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-                        "owl:someValuesFrom": (
-                            "https://w3id.org/emmo/hume#MeasuringInstrument"
-                        ),
+                        "owl:someValuesFrom": {
+                            "@id": (
+                                "https://w3id.org/emmo/hume#MeasuringInstrument"
+                            )
+                        },
                     },
                 ],
             },
