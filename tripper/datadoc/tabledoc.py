@@ -100,8 +100,11 @@ class TableDoc:
         self.strip = strip
         self.baseiri = baseiri
 
-    def save(self, ts: Triplestore) -> None:
-        """Save tabular datadocumentation to triplestore."""
+    def save(self, ts: Triplestore) -> dict:
+        """Save tabular datadocumentation to triplestore.
+
+        Returns a dict with the JSON-LD written to the triplestore.
+        """
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
         )
@@ -109,7 +112,7 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        store(
+        return store(
             ts,
             self.asdicts(),
             type=self.type,

@@ -439,6 +439,8 @@ def test_backend_sparqlwrapper() -> None:
     from tripper import SKOS, Triplestore
     from tripper.errors import UnknownDatatypeWarning
 
+    SPARQLWrapper = pytest.importorskip("SPARQLWrapper")
+
     pytest.importorskip("SPARQLWrapper")
     ts = Triplestore(
         backend="sparqlwrapper",
@@ -457,6 +459,8 @@ def test_backend_sparqlwrapper() -> None:
                 pytest.skip(str(exc))
             else:
                 raise
+        except SPARQLWrapper.SPARQLExceptions.EndPointNotFound as exc:
+            pytest.skip(str(exc))
 
 
 @pytest.mark.skip(

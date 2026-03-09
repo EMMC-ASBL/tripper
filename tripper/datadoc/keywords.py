@@ -82,7 +82,7 @@ def get_keywords(
     strict: bool = False,
     redefine: str = "raise",
 ) -> "Keywords":
-    """A convenient function that returns a Context instance.
+    """A convenient function that returns a Keywords instance.
 
     Arguments:
         keywords: Optional existing keywords object.
@@ -102,6 +102,9 @@ def get_keywords(
               - "skip": Don't redefine existing keyword. Emits a
                 `RedefineKeywordWarning`.
               - "raise": Raise an RedefineError (default).
+
+    Returns:
+        Keywords instance.
     """
     if isinstance(keywords, Keywords):
         kw = keywords
@@ -1028,7 +1031,8 @@ class Keywords:
                     break
             else:
                 label = iriname(k)
-            resources[label] = d
+            for lbl in [label] if isinstance(label, str) else set(label):
+                resources[lbl] = d
             clslabels[d.iri] = label
 
         # Add properties
@@ -1057,9 +1061,11 @@ class Keywords:
                     else:
                         r = self.data.resources[domainname].copy()
                     resources[domainname] = r
-                    r.keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        r.keywords[l] = d
                 else:
-                    resources[domainname].keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        resources[domainname].keywords[l] = d
             if "range" in value:
                 _types = asseq(d.get("type", OWL.AnnotationProperty))
                 types = [expand_iri(t, p) for t in _types]
@@ -1144,9 +1150,10 @@ class Keywords:
             SELECT DISTINCT ?s WHERE {
               VALUES ?o {
                 owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty
-                rdf:Property
+                rdf:Property owl:Class
               }
               ?s a ?o .
+              FILTER(isIRI(?s))
             }
             """
             iris = [iri[0] for iri in ts.query(query)]
