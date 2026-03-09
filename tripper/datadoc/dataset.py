@@ -716,7 +716,9 @@ def update_restrictions(
         d = {
             "@type": "owl:Restriction",
             # We expand here, since JSON-LD doesn't expand values.
-            "owl:onProperty": context.expand(prop, strict=True),
+            "owl:onProperty": {
+                "@id": context.expand(prop, strict=True),
+            },
         }
         if restrictionType == "value":
             d["owl:hasValue"] = as_iri_node(value)

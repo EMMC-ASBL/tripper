@@ -488,7 +488,7 @@ def test_update_restrictions():
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
         "@type": "owl:Restriction",
-        "owl:onProperty": DCAT.distribution,
+        "owl:onProperty": {"@id": DCAT.distribution},
         "owl:hasValue": {
             "@type": "dcat:Distribution",
             "accessService": "ex:service",
@@ -511,7 +511,7 @@ def test_update_restrictions():
     update_restrictions(r3, ctx)
     assert r3["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
         "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
     }
 
@@ -524,7 +524,7 @@ def test_update_restrictions():
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
         "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
         "owl:qualifiedCardinality": 1,
     }
@@ -536,7 +536,7 @@ def test_update_restrictions():
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
         "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
         "owl:qualifiedCardinality": 1,
     }
@@ -599,9 +599,12 @@ def test_update_restrictions():
                     "https://w3id.org/emmo/hume#Device",
                     {
                         "@type": "owl:Restriction",
-                        "owl:onProperty": (
-                            "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
-                        ),
+                        "owl:onProperty": {
+                            "@id": (
+                                "http://www.w3.org/2000/01/rdf-schema#"
+                                "isDefinedBy"
+                            )
+                        },
                         "owl:someValuesFrom": {
                             "@id": (
                                 "https://w3id.org/emmo/hume#MeasuringInstrument"
@@ -616,7 +619,9 @@ def test_update_restrictions():
                     "https://w3id.org/emmo/hume#Device",
                     {
                         "@type": "owl:Restriction",
-                        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
+                        "owl:onProperty": {
+                            "@id": "http://purl.org/dc/terms/hasPart"
+                        },
                         "owl:someValuesFrom": {
                             "@id": (
                                 "https://w3id.org/emmo/hume#MeasuringInstrument"
