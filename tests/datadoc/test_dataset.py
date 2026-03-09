@@ -1,6 +1,6 @@
 """Test the dataset module."""
 
-# pylint: disable=invalid-name,too-many-locals,duplicate-code
+# pylint: disable=invalid-name,too-many-locals,duplicate-code,too-many-lines
 
 import pytest
 
@@ -216,6 +216,18 @@ def test_told():
     assert "laz" in d7["@context"]
     assert "ddoc" in d7["@context"]
     assert d7["@id"] == "laz:data"
+
+    # Ensure semantically equivalent @type values are deduplicated.
+    # This can happen for classes when both "owl:Class" and OWL.Class are
+    # introduced through different code paths (e.g. explicit @type and
+    # inferred class from subClassOf).
+    descrH = {
+        "@id": "ex:MyClass",
+        "@type": "owl:Class",
+        "subClassOf": "prov:Activity",
+    }
+    d8 = told(descrH)
+    assert d8["@type"] == "owl:Class"
 
     # Multi-rep with invalid root keyword
     descrG = {

@@ -274,6 +274,28 @@ def _told(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
 
+    def _deduplicate_types(d):
+        """Remove semantically duplicated type values in ``d['@type']``.
+
+        Duplicates are detected by comparing expanded IRIs, so lexical
+        variants like ``owl:Class`` and ``http://.../owl#Class`` collapse.
+        """
+        if "@type" not in d:
+            return
+
+        uniq = {}
+        for t in get(d, "@type"):
+            expanded = expand(t) if isinstance(t, str) else t
+            if expanded not in uniq:
+                uniq[expanded] = t
+            elif isinstance(t, str) and isinstance(uniq[expanded], str):
+                # Prefer shorter lexical forms (typically prefixed IRIs).
+                if len(t) < len(uniq[expanded]):
+                    uniq[expanded] = t
+
+        values = list(uniq.values())
+        d["@type"] = values[0] if len(values) == 1 else values
+
     if isinstance(descr, str):
         return descr
 
@@ -356,6 +378,8 @@ def _told(
                 d[k] = v
             else:
                 d[k] = _told(v, torange(k), keywords, prefixes)
+
+    _deduplicate_types(d)
 
     return d
 
