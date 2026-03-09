@@ -391,6 +391,40 @@ def test_store():
     }
 
 
+def test_update_context():
+    """Test update_context()."""
+    from tripper import HUME
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import told, update_context
+
+    sources = {
+        "@context": {
+            "MeasuringInstrument": {
+                "@id": HUME.MeasuringInstrument,
+                "@type": "owl:Class",
+            },
+        },
+        "@graph": [
+            {
+                # Not inferred, since hume:MeasuringSystem is not in context
+                "@id": "ex:instr",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringSystem,
+            },
+            {
+                "@id": "ex:instr2",
+                "isDefinedBy": HUME.MeasuringInstrument,
+            },
+            {
+                "@id": "ex:MyDevice",
+                # "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
+            },
+        ],
+    }
+
+
 def test_infer_restriction_types():
     """Test infer_restriction_types()."""
     from tripper import DCTERMS, HUME, RDFS, Namespace

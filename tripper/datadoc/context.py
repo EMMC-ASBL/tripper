@@ -207,8 +207,6 @@ class Context:
                     d[k] = rec(v)
             return d
 
-        print("***", rec(context))
-
         self.ctx = self.ld.process_context(self.ctx, rec(context), options={})
 
         # Clear caches
@@ -260,7 +258,7 @@ class Context:
         return prefixes
 
     def get_properties(self) -> dict:
-        """Return a dict mapping classes to IRIs."""
+        """Return a dict mapping property names to IRIs."""
         return {
             k: v["@id"]
             for k, v in self.ctx["mappings"].items()
@@ -269,8 +267,18 @@ class Context:
             and OWL.Class not in asseq(v.get("@type"))
         }
 
+    def get_object_properties(self) -> dict:
+        """Return a dict mapping object property names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and v.get("@type") == "@id"
+        }
+
     def get_classes(self) -> dict:
-        """Return a dict mapping classes to IRIs."""
+        """Return a dict mapping class names to IRIs."""
         return {
             k: v["@id"]
             for k, v in self.ctx["mappings"].items()

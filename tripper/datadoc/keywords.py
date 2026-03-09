@@ -23,7 +23,6 @@ import tripper
 from tripper import DDOC, OWL, RDF, RDFS, XSD, Triplestore
 from tripper.datadoc.errors import (
     DatadocValueError,
-    InconsistentKeywordError,
     InvalidDatadocError,
     InvalidKeywordError,
     MissingKeyError,
@@ -110,6 +109,50 @@ def get_keywords(
     # pylint: disable=import-outside-toplevel
     from tripper.datadoc.context import get_context
 
+    def from_context():
+        """Return a keywords dict from context."""
+        warnings.warn(
+            "Adding keywords from context - information may be lost. "
+            "Classes are added to the root and properties to 'Resource'."
+        )
+        prefixes = context.get_prefixes()
+        classes = context.get_classes()
+        properties = context.get_properties()
+        d = {}
+        if prefixes:
+            d["prefixes"] = prefixes
+        if classes:
+            d["resources"] = {
+                name: {"iri": iri} for name, iri in classes.items()
+            }
+        if properties:
+            props = {}
+            ctx = context.get_context_dict()
+            for name, iri in properties.items():
+                if ctx[name]["@type"] == "@id":
+                    props[name] = {"iri": iri}
+                else:
+                    props[name] = {
+                        "iri": iri,
+                        "range": "rdf:Literal",
+                        "datatype": ctx[name]["@type"],
+                    }
+            if "resources" not in d:
+                d["resources"] = {}
+            d["resources"]["Resource"] = {
+                "iri": "dcat:Resource",
+                "keywords": props,
+            }
+        return d
+
+    if context:
+        context = get_context(context)
+
+    # If keywords AND context is given, the "redefine" argument
+    # determine whether the context can overwrite the keywords.
+    #
+    # If only context is given, we create a default keywords (from
+    # theme) and overwrite it with the context.
     if keywords:
         if isinstance(keywords, Keywords):
             kw = keywords
@@ -123,62 +166,13 @@ def get_keywords(
                     strict=strict,
                     redefine=redefine,
                 )
-    elif context:
-        pass  # work-in-progress...
-
-    if isinstance(keywords, Keywords):
-        kw = keywords
+        if context:
+            kw.add(from_context(), redefine=redefine)
     else:
         kw = Keywords(theme=theme)
-        if keywords:
-            kw.add(
-                keywords,
-                format=format,
-                timeout=timeout,
-                strict=strict,
-                redefine=redefine,
-            )
+        if context:
+            kw.add(from_context(), redefine="allow")
 
-    if yamlfile:
-        warnings.warn(
-            "The `yamlfile` argument is deprecated. Use the `load_yaml()` or "
-            "`add()` methods instead.",
-            DeprecationWarning,
-        )
-        kw.load_yaml(
-            yamlfile, timeout=timeout, strict=strict, redefine=redefine
-        )
-
-    if context:
-        # Context is provided
-        context = get_context(context)
-        if keywords or yamlfile:
-            # If keywords or yamlfile are also provided, then we only
-            # add missing prefixes from context.
-            for prefix, ns in context.get_prefixes():
-                kw.add_prefix(prefix, ns, replace=False)
-        else:
-            # If keywords or yamlfile are not provided, overwrite
-            # prefixes.
-            # For now we raise an exception for inconsistent terms.
-            for prefix, ns in context.get_prefixes():
-                kw.add_prefix(prefix, ns, replace=True)
-            d = kw.get_context()
-            for name, iri in context.get_mappings().items():
-                if name in d and (
-                    (isinstance(d[name], str) and iri != d[name])
-                    or iri != d[name].get("@id")
-                ):
-                    # TODO: if this exception become a problem, we
-                    # could remove the inconsistent terms from
-                    # keywords.
-                    # However, this requires implementation of a
-                    # method(s) for removing properties and classes from
-                    # a Keywords object.
-                    raise InconsistentKeywordError(
-                        f"Inconsistent IRI for keyword '{name}' in context "
-                        f"({iri}) and keywords object ({d[name]})."
-                    )
     return kw
 
 
