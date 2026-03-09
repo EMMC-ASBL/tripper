@@ -665,29 +665,27 @@ def test_update_restrictions():
     }
     assert res6["ex:instr3"] == {
         # WRONG! Should be converted to restrictions
-        '@id': 'ex:instr3',
-        '@type': 'https://w3id.org/emmo/hume#Device',
-        'hasPart': [
-            'https://w3id.org/emmo/hume#MeasuringInstrument',
-            'MyDevice',
-            'ex:instr'
-        ]
+        "@id": "ex:instr3",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "hasPart": [
+            "https://w3id.org/emmo/hume#MeasuringInstrument",
+            "MyDevice",
+            "ex:instr",
+        ],
     }
     assert res6["ex:MyDevice"] == {
-        '@id': 'ex:MyDevice',
-        'subClassOf': [
-            'https://w3id.org/emmo/hume#Device',
+        "@id": "ex:MyDevice",
+        "subClassOf": [
+            "https://w3id.org/emmo/hume#Device",
             {
-                '@type': 'owl:Restriction',
-                'owl:onProperty': {
-                    '@id': 'http://purl.org/dc/terms/hasPart'
+                "@type": "owl:Restriction",
+                "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+                "owl:someValuesFrom": {
+                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument"
                 },
-                'owl:someValuesFrom': {
-                    '@id': 'https://w3id.org/emmo/hume#MeasuringInstrument'
-                }
-            }
+            },
         ],
-        'label': 'MyDevice'
+        "label": "MyDevice",
     }
 
 
