@@ -23,6 +23,7 @@ import tripper
 from tripper import DDOC, OWL, RDF, RDFS, XSD, Triplestore
 from tripper.datadoc.errors import (
     DatadocValueError,
+    InconsistentKeywordError,
     InvalidDatadocError,
     InvalidKeywordError,
     MissingKeyError,
@@ -47,6 +48,8 @@ from tripper.utils import (
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Any, Iterable, List, Optional, Set, Tuple, Union
+
+    from tripper.datadoc.context import ContextType
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", dict, IO, Path, str, Sequence]
@@ -77,7 +80,7 @@ def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
     format: "Optional[str]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-    yamlfile: "Optional[FileLoc]" = None,
+    context: "Optional[ContextType]" = None,
     timeout: float = 3,
     strict: bool = False,
     redefine: str = "raise",
@@ -89,9 +92,7 @@ def get_keywords(
         format: Format of input if `keywords` refer to a file that can be
             loaded.
         theme: IRI of one of more themes to load keywords for.
-        yamlfile: YAML file with keyword definitions to parse.  May also
-            be an URI in which case it will be accessed via HTTP GET.
-            Deprecated. Use the `load_yaml()` or `add()` methods instead.
+        context: Initialise from this Context instance.
         timeout: Timeout in case `yamlfile` is a URI.
         strict: Whether to raise an `InvalidKeywordError` exception if `d`
             contains an unknown key.
@@ -106,6 +107,25 @@ def get_keywords(
     Returns:
         Keywords instance.
     """
+    # pylint: disable=import-outside-toplevel
+    from tripper.datadoc.context import get_context
+
+    if keywords:
+        if isinstance(keywords, Keywords):
+            kw = keywords
+        else:
+            kw = Keywords(theme=theme)
+            if keywords:
+                kw.add(
+                    keywords,
+                    format=format,
+                    timeout=timeout,
+                    strict=strict,
+                    redefine=redefine,
+                )
+    elif context:
+        pass  # work-in-progress...
+
     if isinstance(keywords, Keywords):
         kw = keywords
     else:
@@ -129,6 +149,36 @@ def get_keywords(
             yamlfile, timeout=timeout, strict=strict, redefine=redefine
         )
 
+    if context:
+        # Context is provided
+        context = get_context(context)
+        if keywords or yamlfile:
+            # If keywords or yamlfile are also provided, then we only
+            # add missing prefixes from context.
+            for prefix, ns in context.get_prefixes():
+                kw.add_prefix(prefix, ns, replace=False)
+        else:
+            # If keywords or yamlfile are not provided, overwrite
+            # prefixes.
+            # For now we raise an exception for inconsistent terms.
+            for prefix, ns in context.get_prefixes():
+                kw.add_prefix(prefix, ns, replace=True)
+            d = kw.get_context()
+            for name, iri in context.get_mappings().items():
+                if name in d and (
+                    (isinstance(d[name], str) and iri != d[name])
+                    or iri != d[name].get("@id")
+                ):
+                    # TODO: if this exception become a problem, we
+                    # could remove the inconsistent terms from
+                    # keywords.
+                    # However, this requires implementation of a
+                    # method(s) for removing properties and classes from
+                    # a Keywords object.
+                    raise InconsistentKeywordError(
+                        f"Inconsistent IRI for keyword '{name}' in context "
+                        f"({iri}) and keywords object ({d[name]})."
+                    )
     return kw
 
 

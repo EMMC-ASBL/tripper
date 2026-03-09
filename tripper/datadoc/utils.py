@@ -184,7 +184,7 @@ def get(
 
 def asseq(value: "Union[str, Sequence]") -> "Sequence":
     """Returns a string or sequence as an iterable."""
-    return [value] if isinstance(value, str) else value
+    return [value] if isinstance(value, str) else value if value else []
 
 
 def iriname(value: str) -> str:

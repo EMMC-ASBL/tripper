@@ -12,6 +12,7 @@ from pyld import jsonld
 
 from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
+from tripper.datadoc.utils import asseq
 from tripper.errors import NamespaceError, NamespaceWarning
 from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
@@ -75,6 +76,7 @@ def get_context(
         )
     if prefixes:
         context.add_context({k: str(v) for k, v in prefixes.items()})
+
     return context
 
 
@@ -205,6 +207,8 @@ class Context:
                     d[k] = rec(v)
             return d
 
+        print("***", rec(context))
+
         self.ctx = self.ld.process_context(self.ctx, rec(context), options={})
 
         # Clear caches
@@ -254,6 +258,26 @@ class Context:
             if v.get("_prefix") and "@id" in v:
                 prefixes[k] = v["@id"]
         return prefixes
+
+    def get_properties(self) -> dict:
+        """Return a dict mapping classes to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and OWL.Class not in asseq(v.get("@type"))
+        }
+
+    def get_classes(self) -> dict:
+        """Return a dict mapping classes to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and OWL.Class in asseq(v.get("@type"))
+        }
 
     def sync_prefixes(
         self, ts: Triplestore, update: "Optional[bool]" = None

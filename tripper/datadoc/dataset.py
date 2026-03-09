@@ -158,6 +158,8 @@ def told(
         Dict with an updated copy of `descr` as valid JSON-LD.
 
     """
+    # pylint: disable=too-many-statements
+
     single = "@id", "@type", "@graph"
     multi = "keywordfile", "prefixes", "base"
     singlerepr = isinstance(descr, list) or any(s in descr for s in single)
@@ -174,6 +176,10 @@ def told(
         )
     else:
         keywords = get_keywords(keywords=keywords)
+
+    if prefixes:
+        keywords.add(prefixes, redefine="allow")
+
     resources = keywords.data.resources
 
     # Whether the context has been copied. Used within addcontext()
@@ -421,6 +427,7 @@ def store(
         context=context,
         prefixes=prefixes,
         default_theme=None,
+        copy=True,  # we are calling update_context() below
     )
 
     doc = told(
@@ -430,6 +437,7 @@ def store(
         context=context,
         prefixes=prefixes,
     )
+    update_context(doc, context)
 
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
