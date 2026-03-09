@@ -563,7 +563,6 @@ def update_context(
         if isinstance(source, list)
         else source["@graph"] if "@graph" in source else [source]
     )
-    prefixes = context.get_prefixes()
     for d in sources:
         for k, v in d.items():
             if k == "@graph" or isinstance(v, dict):
@@ -572,7 +571,7 @@ def update_context(
                 context.add_context(
                     {
                         k: {
-                            "@id": expand_iri(k, prefixes, strict=True),
+                            "@id": context.expand(k, strict=True),
                             "@type": OWL.Class,
                         }
                     }

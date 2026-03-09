@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
 
+##
+
 try:
     from ontopy.ontology import Ontology, _unabbreviate, get_ontology
 except ImportError as exc:
