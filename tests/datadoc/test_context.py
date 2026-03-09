@@ -94,6 +94,22 @@ def test_get_prefixes():
     assert "mediaType" not in prefixes
 
 
+def test_get_properties():
+    """Test get_prefixes() method."""
+    properties = ctx.get_properties()
+    assert "adms" not in properties
+    assert properties["mediaType"] == "http://www.w3.org/ns/dcat#mediaType"
+    assert "Document" not in properties
+
+
+def test_get_classes():
+    """Test get_prefixes() method."""
+    classes = ctx.get_classes()
+    assert "adms" not in classes
+    assert "mediaType" not in classes
+    assert classes["Document"] == "http://xmlns.com/foaf/0.1/Document"
+
+
 def test_sync_prefixes():
     """Test sync_prefixes() method."""
     from tripper import Triplestore

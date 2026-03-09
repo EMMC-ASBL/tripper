@@ -70,7 +70,7 @@ resources:
       creationDate:
         iri: dcterms:created
         range: rdfs:Literal
-        #range: xsd:dateTime
+        datatype: xsd:dateTime
         conformance: optional
         description: Date of creation
 
@@ -82,7 +82,7 @@ resources:
 
       curationDate:
         iri: ddoc:curationDate
-        range: xsd:date
+        range: xsd:dateTime
         description: Date of curation.
 
       curator:
@@ -187,7 +187,7 @@ resources:
       modificationDate:
         iri: dcterms:modified
         range: rdfs:Literal
-        datatype: xsd:date
+        datatype: xsd:dateTime
         conformance: optional
         description: The most recent date on which the resource was changed or modified.
 
@@ -218,7 +218,7 @@ resources:
       releaseDate:
         iri: dcterms:issued
         range: rdfs:Literal
-        datatype: xsd:date
+        datatype: xsd:dateTime
         conformance: optional
         description: The date of formal issuance (e.g., publication) of the resource.
 
@@ -515,11 +515,10 @@ resources:
 
       availability:
         iri: dcatap:availability
-        range: rdfs:Literal
-        #datatype: ["xsd:date", "xsd:dateTime"]
-        datatype: xsd:date
+        range: skos:Concept
         conformance: recommended
         description: An indication how long it is planned to keep the Distribution of the Dataset available.
+        usageNote: "Use one of the following: avail:AVAILABLE, avail:EXPERIMENTAL, avail:OP_DATPRO, avail:STABLE, avail:TEMPORARY."
 
       byteSize:
         iri: dcat:byteSize

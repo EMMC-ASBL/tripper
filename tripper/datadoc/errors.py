@@ -50,6 +50,10 @@ class ParseError(TripperError):
     """Error when parsing a file."""
 
 
+class InconsistentKeywordError(DatadocValueError):
+    """Inconsistent keyword."""
+
+
 # ==========
 # Warnings
 # ==========

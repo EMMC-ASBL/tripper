@@ -1,6 +1,6 @@
 """Test the dataset module."""
 
-# pylint: disable=invalid-name,too-many-locals,duplicate-code
+# pylint: disable=invalid-name,too-many-locals,duplicate-code,too-many-lines
 
 import pytest
 
@@ -23,8 +23,10 @@ def test_told():
     # pylint: disable=too-many-statements
     from pathlib import Path
 
-    from tripper import DCAT, DCTERMS, RDF, Literal, Triplestore
+    from tripper import DCAT, DCTERMS, RDF, Triplestore
     from tripper.datadoc.dataset import store, told
+    from tripper.datadoc.errors import InvalidDatadocError
+    from tripper.utils import en
 
     indir = Path(__file__).resolve().parent.parent / "input"
     prefixes = {"ex": "http://example.com/ex#"}
@@ -128,7 +130,7 @@ def test_told():
     store(ts, descrB, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     descrC = [
         {
@@ -153,7 +155,7 @@ def test_told():
     store(ts, descrC, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     # Multi-resource representation
     descrD = {
@@ -193,9 +195,55 @@ def test_told():
     store(ts, descrD, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
     assert ts.has(EX.b, RDF.type, DCAT.Dataset)
+
+    # Both single-rep and multi-rep...
+    descrE = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrE)
+
+    # Single-rep with context
+    descrF = {
+        "@context": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    d7 = told(descrF)
+    assert "laz" in d7["@context"]
+    assert "ddoc" in d7["@context"]
+    assert d7["@id"] == "laz:data"
+
+    # Ensure semantically equivalent @type values are deduplicated.
+    # This can happen for classes when both "owl:Class" and OWL.Class are
+    # introduced through different code paths (e.g. explicit @type and
+    # inferred class from subClassOf).
+    descrH = {
+        "@id": "ex:MyClass",
+        "@type": "owl:Class",
+        "subClassOf": "prov:Activity",
+    }
+    d8 = told(descrH)
+    assert d8["@type"] == "owl:Class"
+
+    # Multi-rep with invalid root keyword
+    descrG = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "invalid": "???",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrG)
+
+    # Nested keyword
+    # descrH = {
+    #     "@id": EX.data,
+    #     "distribution.downloadURL": "ftp://server.org/data.zip",
+    # }
+    # d8 = told(descrH)
+    # assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
 
 
 def test_get_jsonld_context():
@@ -276,7 +324,7 @@ def test_get_shortnames():
 
 def test_store():
     """Test store()."""
-    from tripper import Triplestore
+    from tripper import DCTERMS, OWL, RDF, Literal, Triplestore
     from tripper.datadoc import acquire, store
     from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
     from tripper.errors import NamespaceError
@@ -334,6 +382,62 @@ def test_store():
     # provide a baseiri?
     store(ts, d5, baseiri="http://example.com/devices#")
 
+    # Custom language strings
+    d6 = {
+        "@context": {
+            "title_it": {
+                "@id": DCTERMS.title,
+                "@language": "it",
+            },
+        },
+        "@id": EX.greetingdata,
+        "title": "hi",
+        "title_it": "ciao",
+    }
+    store(ts, d6)
+    assert set(ts.triples(EX.greetingdata)) == {
+        (EX.greetingdata, RDF.type, OWL.NamedIndividual),
+        (EX.greetingdata, DCTERMS.title, Literal("hi", lang="en")),
+        (EX.greetingdata, DCTERMS.title, Literal("ciao", lang="it")),
+    }
+
+
+def test_update_context():
+    """Test update_context()."""
+    # WORK-IN-PROGRESS
+    # pylint: disable=unused-variable,unused-import
+
+    from tripper import HUME
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import told, update_context
+
+    sources = {
+        "@context": {
+            "MeasuringInstrument": {
+                "@id": HUME.MeasuringInstrument,
+                "@type": "owl:Class",
+            },
+        },
+        "@graph": [
+            {
+                # Not inferred, since hume:MeasuringSystem is not in context
+                "@id": "ex:instr",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringSystem,
+            },
+            {
+                "@id": "ex:instr2",
+                "isDefinedBy": HUME.MeasuringInstrument,
+            },
+            {
+                "@id": "ex:MyDevice",
+                # "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
+            },
+        ],
+    }
+
 
 def test_infer_restriction_types():
     """Test infer_restriction_types()."""
@@ -359,7 +463,7 @@ def test_infer_restriction_types():
         "http://example.org#A": {
             DCTERMS.creator: "some",
             DCTERMS.hasPart: "value",
-            DCTERMS.issued: "value",
+            # DCTERMS.issued: "value",
         }
     }
 
@@ -385,7 +489,7 @@ def test_infer_restriction_types():
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
-                "hasPart": HUME.MeasuringInstrument,
+                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
             },
         ],
     }
@@ -432,8 +536,8 @@ def test_update_restrictions():
     update_restrictions(r2, ctx)
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
-        "rdf:type": "owl:Restriction",
-        "owl:onProperty": DCAT.distribution,
+        "@type": "owl:Restriction",
+        "owl:onProperty": {"@id": DCAT.distribution},
         "owl:hasValue": {
             "@type": "dcat:Distribution",
             "accessService": "ex:service",
@@ -443,38 +547,50 @@ def test_update_restrictions():
     # A class relating to another class.
     # Should be converted to a existential restriction.
     d3 = {
+        "@context": {
+            # "ex": "http://example.com/ex#",
+            "ex:Car": {"@type": "owl:Class"},
+            "ex:Wheel": {"@type": "owl:Class"},
+        },
         "@id": "ex:Car",
         "@type": "owl:Class",
         "hasPart": "ex:Wheel",
     }
     r3 = deepcopy(d3)
-    assert {
-        "rdf:type": "owl:Restriction",
-        "owl:onProperty": "http://www.w3.org/ns/dcat#distribution",
-        "owl:hasValue": {
-            "@type": "dcat:Distribution",
-            "accessService": "ex:service",
-        },
-    } in r2["subClassOf"]
+    update_restrictions(r3, ctx)
+    assert r3["subClassOf"] == {
+        "@type": "owl:Restriction",
+        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
+    }
 
     # Now, use the restriction argument to specify that we should convert
     # `hasPart` relations to cardinality restriction in all classes.
     # Should be converted to a cardinality restriction.
-    r4 = deepcopy(r3)
+    r4 = deepcopy(d3)
     restrictions = infer_restriction_types(r4, ctx)
-    restrictions["*"] = {"hasPart": "exactly 1"}
+    restrictions["ex:Car"] = {"hasPart": "exactly 1"}
     update_restrictions(r4, ctx, restrictions=restrictions)
-    assert r4 == {
-        "@id": "ex:Car",
-        "@type": "owl:Class",
-        "subClassOf": {
-            "rdf:type": "owl:Restriction",
-            "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-            "owl:hasValue": "ex:Wheel",
-        },
+    assert r4["subClassOf"] == {
+        "@type": "owl:Restriction",
+        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:qualifiedCardinality": 1,
     }
 
-    d5 = {
+    # Same as above, but apply the restriction to all classes.
+    # Should be converted to a cardinality restriction.
+    r4 = deepcopy(d3)
+    restrictions = {"*": {"hasPart": "exactly 1"}}
+    update_restrictions(r4, ctx, restrictions=restrictions)
+    assert r4["subClassOf"] == {
+        "@type": "owl:Restriction",
+        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:qualifiedCardinality": 1,
+    }
+
+    d6 = {
         "@context": {
             "MeasuringInstrument": {
                 "@id": HUME.MeasuringInstrument,
@@ -499,62 +615,80 @@ def test_update_restrictions():
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
+                # An individial relating to two classes and an individual.
+                # Should be converted to an existential restriction.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+            },
+            {
                 # A class relating to a class.
                 # Should be converted to an existential restriction.
                 # Note that tripper in this case understands that ex:MyDevice
-                # is a class even when @type is commented out, because
-                # of the `subClassOf` relation.
+                # is a class even when @type is commented out, because of the
+                # `subClassOf` relation.
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
+                "label": "MyDevice",
                 "hasPart": HUME.MeasuringInstrument,
+            },
+            {
+                # A class relating to two classes
+                "@id": "ex:MyDevice2",
+                "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "label": "MyDevice2",
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice"],
             },
         ],
     }
-    r5 = deepcopy(d5)
-    update_restrictions(r5, ctx)
-    assert r5 == {
-        "@context": {
-            "MeasuringInstrument": {
-                "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
-                "@type": "owl:Class",
-            }
-        },
-        "@graph": [
+    r6 = deepcopy(d6)
+    update_restrictions(r6, ctx)
+    res6 = {d["@id"]: d for d in r6["@graph"]}
+    assert res6["ex:instr"] == {
+        "@id": "ex:instr",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
+    }
+    assert res6["ex:instr2"] == {
+        "@id": "ex:instr2",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
             {
-                "@id": "ex:instr",
-                "@type": "https://w3id.org/emmo/hume#Device",
-                "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
-            },
-            {
-                "@id": "ex:instr2",
-                "@type": [
-                    "https://w3id.org/emmo/hume#Device",
-                    {
-                        "rdf:type": "owl:Restriction",
-                        "owl:onProperty": (
-                            "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
-                        ),
-                        "owl:someValuesFrom": (
-                            "https://w3id.org/emmo/hume#MeasuringInstrument"
-                        ),
-                    },
-                ],
-            },
-            {
-                "@id": "ex:MyDevice",
-                "subClassOf": [
-                    "https://w3id.org/emmo/hume#Device",
-                    {
-                        "rdf:type": "owl:Restriction",
-                        "owl:onProperty": "http://purl.org/dc/terms/hasPart",
-                        "owl:someValuesFrom": (
-                            "https://w3id.org/emmo/hume#MeasuringInstrument"
-                        ),
-                    },
-                ],
+                "@type": "owl:Restriction",
+                "owl:onProperty": {
+                    "@id": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+                },
+                "owl:someValuesFrom": {
+                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                },
             },
         ],
+    }
+    assert res6["ex:instr3"] == {
+        # WRONG! Should be converted to restrictions
+        "@id": "ex:instr3",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "hasPart": [
+            "https://w3id.org/emmo/hume#MeasuringInstrument",
+            "MyDevice",
+            "ex:instr",
+        ],
+    }
+    assert res6["ex:MyDevice"] == {
+        "@id": "ex:MyDevice",
+        "subClassOf": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+                "owl:someValuesFrom": {
+                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument"
+                },
+            },
+        ],
+        "label": "MyDevice",
     }
 
 

@@ -48,6 +48,8 @@ from tripper.utils import (
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Any, Iterable, List, Optional, Set, Tuple, Union
 
+    from tripper.datadoc.context import ContextType
+
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", dict, IO, Path, str, Sequence]
 
@@ -77,21 +79,19 @@ def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
     format: "Optional[str]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-    yamlfile: "Optional[FileLoc]" = None,
+    context: "Optional[ContextType]" = None,
     timeout: float = 3,
     strict: bool = False,
     redefine: str = "raise",
 ) -> "Keywords":
-    """A convenient function that returns a Context instance.
+    """A convenient function that returns a Keywords instance.
 
     Arguments:
         keywords: Optional existing keywords object.
         format: Format of input if `keywords` refer to a file that can be
             loaded.
         theme: IRI of one of more themes to load keywords for.
-        yamlfile: YAML file with keyword definitions to parse.  May also
-            be an URI in which case it will be accessed via HTTP GET.
-            Deprecated. Use the `load_yaml()` or `add()` methods instead.
+        context: Initialise from this Context instance.
         timeout: Timeout in case `yamlfile` is a URI.
         strict: Whether to raise an `InvalidKeywordError` exception if `d`
             contains an unknown key.
@@ -102,29 +102,76 @@ def get_keywords(
               - "skip": Don't redefine existing keyword. Emits a
                 `RedefineKeywordWarning`.
               - "raise": Raise an RedefineError (default).
+
+    Returns:
+        Keywords instance.
     """
-    if isinstance(keywords, Keywords):
-        kw = keywords
+    # pylint: disable=import-outside-toplevel
+    from tripper.datadoc.context import get_context
+
+    def from_context():
+        """Return a keywords dict from context."""
+        warnings.warn(
+            "Adding keywords from context - information may be lost. "
+            "Classes are added to the root and properties to 'Resource'."
+        )
+        prefixes = context.get_prefixes()
+        classes = context.get_classes()
+        properties = context.get_properties()
+        d = {}
+        if prefixes:
+            d["prefixes"] = prefixes
+        if classes:
+            d["resources"] = {
+                name: {"iri": iri} for name, iri in classes.items()
+            }
+        if properties:
+            props = {}
+            ctx = context.get_context_dict()
+            for name, iri in properties.items():
+                if ctx[name]["@type"] == "@id":
+                    props[name] = {"iri": iri}
+                else:
+                    props[name] = {
+                        "iri": iri,
+                        "range": "rdf:Literal",
+                        "datatype": ctx[name]["@type"],
+                    }
+            if "resources" not in d:
+                d["resources"] = {}
+            d["resources"]["Resource"] = {
+                "iri": "dcat:Resource",
+                "keywords": props,
+            }
+        return d
+
+    if context:
+        context = get_context(context)
+
+    # If keywords AND context is given, the "redefine" argument
+    # determine whether the context can overwrite the keywords.
+    #
+    # If only context is given, we create a default keywords (from
+    # theme) and overwrite it with the context.
+    if keywords:
+        if isinstance(keywords, Keywords):
+            kw = keywords
+        else:
+            kw = Keywords(theme=theme)
+            if keywords:
+                kw.add(
+                    keywords,
+                    format=format,
+                    timeout=timeout,
+                    strict=strict,
+                    redefine=redefine,
+                )
+        if context:
+            kw.add(from_context(), redefine=redefine)
     else:
         kw = Keywords(theme=theme)
-        if keywords:
-            kw.add(
-                keywords,
-                format=format,
-                timeout=timeout,
-                strict=strict,
-                redefine=redefine,
-            )
-
-    if yamlfile:
-        warnings.warn(
-            "The `yamlfile` argument is deprecated. Use the `load_yaml()` or "
-            "`add()` methods instead.",
-            DeprecationWarning,
-        )
-        kw.load_yaml(
-            yamlfile, timeout=timeout, strict=strict, redefine=redefine
-        )
+        if context:
+            kw.add(from_context(), redefine="allow")
 
     return kw
 
@@ -1028,7 +1075,8 @@ class Keywords:
                     break
             else:
                 label = iriname(k)
-            resources[label] = d
+            for lbl in [label] if isinstance(label, str) else set(label):
+                resources[lbl] = d
             clslabels[d.iri] = label
 
         # Add properties
@@ -1057,9 +1105,11 @@ class Keywords:
                     else:
                         r = self.data.resources[domainname].copy()
                     resources[domainname] = r
-                    r.keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        r.keywords[l] = d
                 else:
-                    resources[domainname].keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        resources[domainname].keywords[l] = d
             if "range" in value:
                 _types = asseq(d.get("type", OWL.AnnotationProperty))
                 types = [expand_iri(t, p) for t in _types]
@@ -1144,9 +1194,10 @@ class Keywords:
             SELECT DISTINCT ?s WHERE {
               VALUES ?o {
                 owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty
-                rdf:Property
+                rdf:Property owl:Class
               }
               ?s a ?o .
+              FILTER(isIRI(?s))
             }
             """
             iris = [iri[0] for iri in ts.query(query)]

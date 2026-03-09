@@ -12,6 +12,7 @@ from pyld import jsonld
 
 from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
+from tripper.datadoc.utils import asseq
 from tripper.errors import NamespaceError, NamespaceWarning
 from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
@@ -75,6 +76,7 @@ def get_context(
         )
     if prefixes:
         context.add_context({k: str(v) for k, v in prefixes.items()})
+
     return context
 
 
@@ -225,6 +227,11 @@ class Context:
                     "@id": info["@id"],
                     "@type": info["@type"],
                 }
+            elif "@language" in info:
+                context[name] = {
+                    "@id": info["@id"],
+                    "@language": info["@language"],
+                }
             else:
                 context[name] = info["@id"]
         return context
@@ -249,6 +256,36 @@ class Context:
             if v.get("_prefix") and "@id" in v:
                 prefixes[k] = v["@id"]
         return prefixes
+
+    def get_properties(self) -> dict:
+        """Return a dict mapping property names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and OWL.Class not in asseq(v.get("@type"))
+        }
+
+    def get_object_properties(self) -> dict:
+        """Return a dict mapping object property names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and v.get("@type") == "@id"
+        }
+
+    def get_classes(self) -> dict:
+        """Return a dict mapping class names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and OWL.Class in asseq(v.get("@type"))
+        }
 
     def sync_prefixes(
         self, ts: Triplestore, update: "Optional[bool]" = None
@@ -456,7 +493,8 @@ class Context:
             The Triplestore object created from the document.
 
         """
-        base = baseiri if baseiri else "https://falseiri/"
+        false_prefix = "https://falseiri/"
+        base = baseiri if baseiri else false_prefix
 
         ts2 = Triplestore(backend="rdflib")
         ts2.parse(data=self._todict(doc), format="json-ld", base=base)
@@ -465,13 +503,22 @@ class Context:
         # If Force is True, issue a warning
         # If Force is False, raise an error
         for s, p, o in ts2.triples():
-            for term in (s, p, o):
-                if isinstance(term, str) and term.startswith(
-                    "https://falseiri/"
-                ):
+            for pos, term in zip(
+                ("subject", "predicate", "object"), (s, p, o)
+            ):
+                if isinstance(term, str) and term.startswith(false_prefix):
+
+                    def _clean(t):
+                        if t.startswith(false_prefix):
+                            return t[len(false_prefix) :]
+                        return t
+
+                    cleaned_term = _clean(term)
                     msg = (
-                        f"Missing base iri for term: "
-                        f"'{term.lstrip('https://falseiri/')}'"
+                        f"Missing base iri for {pos}: "
+                        f"'{cleaned_term}'."
+                        f" Full triple: '{_clean(s)}' "
+                        f"'{_clean(p)}' '{_clean(o)}'"
                     )
                     if force:
                         warnings.warn(msg, NamespaceWarning)
