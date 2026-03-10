@@ -41,6 +41,8 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pyld import jsonld
+
 from tripper import (
     OWL,
     RDF,
@@ -58,7 +60,8 @@ from tripper.datadoc.errors import (
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
-from tripper.datadoc.utils import add, asseq, get, iriname
+from tripper.datadoc.utils import add, asseq, get, getlabel, iriname
+from tripper.errors import NamespaceError
 from tripper.utils import (
     AttrDict,
     as_python,
@@ -558,22 +561,42 @@ def update_context(
 
     Currently this only adds classes defined in `source` to `context`.
     """
+    subclassof = (RDFS.subClassOf, "rdfs:subClassOf", "subClassOf")
+
+    if isinstance(source, dict) and "@context" in source:
+        context.add_context(source["@context"])
+
     sources = (
         source
         if isinstance(source, list)
         else source["@graph"] if "@graph" in source else [source]
     )
+
     for d in sources:
-        for k, v in d.items():
-            if k == "@graph" or isinstance(v, dict):
-                update_context(v, context)
-            elif k == "subClassOf":
+        if not isinstance(d, dict):
+            continue
+        if "@id" in d:
+            try:
+                iri = context.expand(d["@id"], strict=True)
+            except NamespaceError:
+                continue
+            label = getlabel(d)
+            if "/" in label:
+                continue  # do not add IDs with slash to context
+            superclasses = [d[s] for s in subclassof if s in d]
+            if "@type" in d:
+                try:
+                    context.add_context(
+                        {label: {"@id": iri, "@type": d["@type"]}}
+                    )
+                except jsonld.JsonLdError:
+                    continue
+            elif superclasses:
+                supercl = context.expand(superclasses[0], strict=True)
                 context.add_context(
                     {
-                        k: {
-                            "@id": context.expand(k, strict=True),
-                            "@type": OWL.Class,
-                        }
+                        label: {"@id": iri, "@type": OWL.Class},
+                        iriname(supercl): {"@id": supercl, "@type": OWL.Class},
                     }
                 )
 
