@@ -17,7 +17,7 @@ def test_get_keywords():
     from dataset_paths import testdir  # pylint: disable=import-error
 
     from tripper import DDOC
-    from tripper.datadoc import get_keywords
+    from tripper.datadoc import get_context, get_keywords
 
     kw1 = get_keywords()
     assert kw1.data == keywords.data
@@ -64,6 +64,23 @@ def test_get_keywords():
     kw6.load_yaml(testdir / "input" / "custom_keywords.yaml")
     assert kw6.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert "batchNumber" in kw6
+
+    kw7 = get_keywords(theme=None)
+    assert len(kw7) == 0
+    kw7.add({"resources": {"MyClass": {"iri": "http://example.com/MyClass"}}})
+    assert len(kw7) == 0  # no keywords (properties)
+
+    ctx = get_context(default_theme=None)
+    ctx.add_context({"ex": "http://example.com/"})
+    kw8 = get_keywords(kw7, context=ctx, theme=None)
+    assert len(kw8) == 0  # no keywords (properties)
+    assert kw8.get_prefixes()["ex"] == "http://example.com/"
+    assert kw8.classnames() == ["MyClass"]
+
+    kw9 = get_keywords(context=ctx, theme=None)
+    assert len(kw9) == 0  # no keywords (properties)
+    assert kw9.get_prefixes()["ex"] == "http://example.com/"
+    assert kw9.classnames() == []
 
 
 def test_iter():

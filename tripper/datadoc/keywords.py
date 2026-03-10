@@ -153,7 +153,7 @@ def get_keywords(
     #
     # If only context is given, we create a default keywords (from
     # theme) and overwrite it with the context.
-    if keywords:
+    if keywords is not None:
         if isinstance(keywords, Keywords):
             kw = keywords
         else:
@@ -166,11 +166,11 @@ def get_keywords(
                     strict=strict,
                     redefine=redefine,
                 )
-        if context:
+        if context is not None:
             kw.add(from_context(), redefine=redefine)
     else:
         kw = Keywords(theme=theme)
-        if context:
+        if context is not None:
             kw.add(from_context(), redefine="allow")
 
     return kw

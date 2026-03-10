@@ -95,11 +95,22 @@ def test_get_prefixes():
 
 
 def test_get_properties():
-    """Test get_prefixes() method."""
+    """Test get_properties() method."""
     properties = ctx.get_properties()
-    assert "adms" not in properties
+    assert "adms" not in properties  # prefix is not a property
+    assert "Document" not in properties  # class is not a property
     assert properties["mediaType"] == "http://www.w3.org/ns/dcat#mediaType"
-    assert "Document" not in properties
+
+
+def test_get_object_properties():
+    """Test get_object_properties() method."""
+    from tripper import DCTERMS
+
+    objprop = ctx.get_object_properties()
+    assert "adms" not in objprop  # prefix is not an object property
+    assert "Document" not in objprop  # class is not an object property
+    assert "title" not in objprop  # annotation is not an object property
+    assert objprop["hasPart"] == DCTERMS.hasPart
 
 
 def test_get_classes():
