@@ -116,6 +116,7 @@ def test_iriname():
 
 def test_getlabel():
     """Test utility function getlabel()."""
+    from tripper import SKOS
     from tripper.datadoc.errors import InvalidDatadocError
     from tripper.datadoc.utils import getlabel
 
@@ -124,5 +125,19 @@ def test_getlabel():
     assert getlabel({"@id": "ex:A", "rdfs:label": "a"}) == "a"
     assert getlabel({"@id": "ex:A"}, default="a") == "a"
     assert getlabel({"@id": "ex:A"}) == "A"
+
+    # Check for precedence of labels
+    assert (
+        getlabel({"@id": "ex:A", "rdfs:label": "a", "prefLabel": "b"}) == "a"
+    )
+    assert (
+        getlabel({"@id": "ex:A", "rdfs:label": "a", "skos:prefLabel": "b"})
+        == "b"
+    )
+    assert (
+        getlabel({"@id": "ex:A", "rdfs:label": "a", SKOS.prefLabel: "b"})
+        == "b"
+    )
+
     with pytest.raises(InvalidDatadocError):
         getlabel({"x": "ex:A"})

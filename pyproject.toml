@@ -144,8 +144,11 @@ addopts = """-rs --cov=tripper --cov-report=term \
     """
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
+    "ignore:ConjunctiveGraph.*:DeprecationWarning",  # in pyld
+    "ignore:builtin type SwigPy.*:DeprecationWarning",  # in pyld
     "ignore:::tripper.literal:243",  # Ignore warning in doctest
 ]
+
 
 [tool.setuptools.package-data]
 "tripper.context" = ["*.json", "*.yaml"]

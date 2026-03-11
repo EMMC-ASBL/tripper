@@ -86,6 +86,8 @@ def test_get_keywords():
         }
     )
 
+    # Test `context` argument to get_keywords(). Ignore expected
+    # warnings about loss of information
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=TripperWarning)
 
@@ -189,7 +191,11 @@ def test_load_yaml():
     """
     from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper.datadoc.errors import ParseError
+    from tripper.datadoc.errors import (
+        ParseError,
+        RedefineKeywordWarning,
+        SkipRedefineKeywordWarning,
+    )
 
     kw = keywords.copy()
 
@@ -229,10 +235,12 @@ def test_load_yaml():
     # keywords are unchanged by failures
     # assert kw == keywords
 
-    kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="skip")
+    with pytest.warns(SkipRedefineKeywordWarning):
+        kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="skip")
     assert kw["title"].iri == "dcterms:title"
 
-    kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="allow")
+    with pytest.warns(RedefineKeywordWarning):
+        kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="allow")
     assert kw["title"].iri == "myonto:a"
 
     kw.load_yaml(indir / "valid_keywords.yaml")
@@ -519,6 +527,7 @@ def test_load2():
 
     from tripper import Triplestore
     from tripper.datadoc import get_keywords
+    from tripper.datadoc.errors import RedefineKeywordWarning
     from tripper.utils import AttrDict
 
     ts = Triplestore("rdflib")
@@ -573,7 +582,8 @@ def test_load2():
     # Create a new Keywords object with
     # default keywords and load from the triplestore
     kw2 = get_keywords()
-    kw2.load_rdf(ts, redefine="allow")
+    with pytest.warns(RedefineKeywordWarning):
+        kw2.load_rdf(ts, redefine="allow")
 
     # Ensure that the specified keywords are in kw2
     assert not {

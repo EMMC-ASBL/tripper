@@ -205,7 +205,8 @@ def iriname(value: str) -> str:
 def getlabel(d: dict, default: "Optional[str]" = None) -> str:
     """Return label from a JSON-LD dict `d`.
 
-    Any of the following keys in `d` will be interpreted as a label:
+    Any of the following keys in `d` (listed in the order of
+    precedense, from high to low) will be interpreted as a label:
     - skos:prefLabel
     - rdfs:label
     - prefLabel
@@ -221,6 +222,8 @@ def getlabel(d: dict, default: "Optional[str]" = None) -> str:
 
     """
     labels = (
+        # The order is by purpose. prefLabel has precedense over label.
+        # But qualified IRIs has precedence over keywords.
         SKOS.prefLabel,
         "skos:prefLabel",
         RDFS.label,

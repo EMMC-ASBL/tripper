@@ -416,6 +416,7 @@ def test_update_context():
         },
         "@graph": [
             {
+                # Instances are not added to context
                 "@id": "ex:instr",
                 "@type": "hume:Device",
             },
@@ -433,9 +434,14 @@ def test_update_context():
     context = get_context(default_theme=None)
     update_context(sources, context)
     c = context.get_context_dict()
-    assert c["instr"] == {"@id": EX.instr, "@type": HUME.Device}
+    assert "instr" not in c
+    assert "instr2" not in c
+    assert "MyDevice" in c
     assert c["MyDevice"] == {"@id": EX.MyDevice, "@type": OWL.Class}
     assert c["Device"] == {"@id": HUME.Device, "@type": OWL.Class}
+
+    # TODO: add tests for what happens if there is mismatch between
+    # previously added context and updated_context...
 
 
 def test_infer_restriction_types():
@@ -657,6 +663,9 @@ if 1:
                 "label": "MyDevice2",
                 "hasPart": [HUME.MeasuringInstrument, "MyDevice"],
             },
+            # TODO: for completeness, add tests for individual
+            # relating to one individual and individual related to a
+            # list of individuals
         ],
     }
     r6 = deepcopy(d6)
