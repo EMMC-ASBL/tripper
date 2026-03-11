@@ -576,6 +576,8 @@ def update_context(
         if not isinstance(d, dict):
             continue
         if "@id" in d:
+            if d["@id"] in context:
+                continue
             try:
                 iri = context.expand(d["@id"], strict=True)
             except NamespaceError:
@@ -644,7 +646,7 @@ def infer_restriction_types(
           - "exactly <N>": exact cardinality restriction
           - "min <N>": minimum cardinality restriction
           - "max <N>": maximum cardinality restriction
-          - "value": value restriction
+          - "value": value restriction (ignored)
 
         where `<N>` is a positive integer.
 
@@ -701,6 +703,9 @@ def infer_restriction_types(
                 elif isinstance(v, list):
                     if any(_isclass(e, context) for e in v):
                         d[kexp] = "some"
+            elif isinstance(v, list):
+                if any(_isclass(e, context) for e in v):
+                    d[kexp] = "some"
             elif _isclass(v, context):
                 d[kexp] = "some"
         if d:
@@ -732,15 +737,22 @@ def update_restrictions(
     """
     # pylint: disable=too-many-statements
 
+    def asiri(v, strict=False):
+        """Return `v` as prefixed IRI(s)."""
+        if isinstance(v, str):
+            # return {"@id": context.expand(v, strict=False)}
+            return context.prefixed(v, strict=strict)
+        elif isinstance(v, list):
+            return [asiri(e) for e in v]
+        return v
+
     def addrestriction(source, prop, value):
         """Add restriction to `source`."""
         # pylint: disable=no-else-return
 
-        def as_iri_node(v):
-            """Return JSON-LD node object for IRI-like string values."""
-            if isinstance(v, str) and is_uri(v, require_netloc=False):
-                return {"@id": context.expand(v, strict=False)}
-            return v
+        print()
+        print("*** addrestriction:", prop, value)
+        print(source)
 
         iri = context.expand(source["@id"]) if "@id" in source else "*"
         propiri = context.expand(prop)
@@ -767,18 +779,20 @@ def update_restrictions(
         d = {
             "@type": "owl:Restriction",
             # We expand here, since JSON-LD doesn't expand values.
-            "owl:onProperty": {
-                "@id": context.expand(prop, strict=True),
-            },
+            "owl:onProperty": asiri(prop, strict=True),
+            # "owl:onProperty": {
+            #     "@id": context.expand(prop, strict=True),
+            # },
         }
         if restrictionType == "value":
-            d["owl:hasValue"] = as_iri_node(value)
+            d["owl:hasValue"] = asiri(value)
         elif restrictionType == "some":
-            d["owl:someValuesFrom"] = as_iri_node(value)
+            d["owl:someValuesFrom"] = asiri(value)
         elif restrictionType == "only":
-            d["owl:allValuesFrom"] = as_iri_node(value)
+            d["owl:allValuesFrom"] = asiri(value)
         else:
-            d["owl:onClass"] = as_iri_node(value)
+            # d["owl:onClass"] = as_iri_node(value)
+            d["owl:onClass"] = value
             ctype, n = restrictionType.split()
             ctypes = {
                 "exactly": "owl:qualifiedCardinality",
@@ -815,6 +829,11 @@ def update_restrictions(
             }
             for ckey, cval in restrictions.items()
         }
+
+    print()
+    print("=== restrictions:")
+    print(restrictions)
+    print()
 
     # Handle lists and graphs
     if isinstance(source, list) or "@graph" in source:

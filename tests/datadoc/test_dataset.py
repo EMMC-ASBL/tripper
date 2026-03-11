@@ -485,6 +485,12 @@ def test_infer_restriction_types():
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
+                # An individial relating to two classes and an individual.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+            },
+            {
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
@@ -494,21 +500,24 @@ def test_infer_restriction_types():
     }
     assert infer_restriction_types(sources, ctx) == {
         EX.instr2: {RDFS.isDefinedBy: "some"},
+        EX.instr3: {DCTERMS.hasPart: "some"},
         EX.MyDevice: {DCTERMS.hasPart: "some"},
     }
 
 
-def test_update_restrictions():
+if 1:
+    # def test_update_restrictions():
     """Test update_restrictions()."""
     from copy import deepcopy
 
-    from tripper import DCAT, HUME
+    from tripper import DCAT, DCTERMS, HUME, Namespace
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import (
         infer_restriction_types,
         update_restrictions,
     )
 
+    EX = Namespace("http://example.org#")
     ctx = get_context()
 
     # Just a data property - nothing to update
@@ -536,7 +545,8 @@ def test_update_restrictions():
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": DCAT.distribution},
+        # "owl:onProperty": {"@id": DCAT.distribution},  # Unnessesary nesting!
+        "owl:onProperty": "dcat:distribution",
         "owl:hasValue": {
             "@type": "dcat:Distribution",
             "accessService": "ex:service",
@@ -559,8 +569,10 @@ def test_update_restrictions():
     update_restrictions(r3, ctx)
     assert r3["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-        "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:someValuesFrom": "ex:Wheel",
     }
 
     # Now, use the restriction argument to specify that we should convert
@@ -572,8 +584,10 @@ def test_update_restrictions():
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:onClass": "ex:Wheel",
         "owl:qualifiedCardinality": 1,
     }
 
@@ -584,13 +598,16 @@ def test_update_restrictions():
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:onClass": "ex:Wheel",
         "owl:qualifiedCardinality": 1,
     }
 
     d6 = {
         "@context": {
+            "hume": str(HUME),
             "MeasuringInstrument": {
                 "@id": HUME.MeasuringInstrument,
                 "@type": "owl:Class",
@@ -645,46 +662,54 @@ def test_update_restrictions():
     r6 = deepcopy(d6)
     update_restrictions(r6, ctx)
     res6 = {d["@id"]: d for d in r6["@graph"]}
-    assert res6["ex:instr"] == {
+    assert res6["ex:instr"] == {  # Expect: no conversion
         "@id": "ex:instr",
         "@type": "https://w3id.org/emmo/hume#Device",
         "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
     }
-    assert res6["ex:instr2"] == {
+    assert res6["ex:instr2"] == {  # Expect: existential restriction
         "@id": "ex:instr2",
         "@type": [
             "https://w3id.org/emmo/hume#Device",
             {
                 "@type": "owl:Restriction",
-                "owl:onProperty": {
-                    "@id": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
-                },
-                "owl:someValuesFrom": {
-                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
-                },
+                "owl:onProperty": "rdfs:isDefinedBy",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
             },
         ],
     }
-    assert res6["ex:instr3"] == {
+    assert res6["ex:instr3"] == {  # Expect: existential restriction
         # WRONG! Should be converted to restrictions
         "@id": "ex:instr3",
-        "@type": "https://w3id.org/emmo/hume#Device",
-        "hasPart": [
-            "https://w3id.org/emmo/hume#MeasuringInstrument",
-            "MyDevice",
-            "ex:instr",
+        # "@type": "https://w3id.org/emmo/hume#Device",
+        # "hasPart": [
+        #    "https://w3id.org/emmo/hume#MeasuringInstrument",
+        #    "MyDevice",
+        #    "ex:instr",
+        # ],
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
+            },
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "ex:MyDevice",
+            },
         ],
+        "hasPart": "ex:instr",
     }
-    assert res6["ex:MyDevice"] == {
+    assert res6["ex:MyDevice"] == {  # Expect: existential restriction
         "@id": "ex:MyDevice",
         "subClassOf": [
             "https://w3id.org/emmo/hume#Device",
             {
                 "@type": "owl:Restriction",
-                "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-                "owl:someValuesFrom": {
-                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument"
-                },
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
             },
         ],
         "label": "MyDevice",
