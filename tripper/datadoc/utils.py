@@ -3,6 +3,9 @@
 import re
 from typing import TYPE_CHECKING, Mapping, Sequence
 
+from tripper.datadoc.errors import InvalidDatadocError
+from tripper.namespace import RDFS, SKOS
+
 if TYPE_CHECKING:  # pragma: no cover
     from typing import Any, Iterable, Optional, Union
 
@@ -193,7 +196,43 @@ def iriname(value: str) -> str:
     """
     if ":" not in value:
         return value
-    m = re.search("[:/#]([a-zA-Z_][a-zA-Z0-9_.+-]*)$", value)
+    m = re.search("[:/#]([a-zA-Z_][a-zA-Z0-9_./+-]*)$", value)
     if not m or not m.groups():
         raise ValueError(f"Cannot infer name of IRI: {value}")
     return m.groups()[0]
+
+
+def getlabel(d: dict, default: "Optional[str]" = None) -> str:
+    """Return label from a JSON-LD dict `d`.
+
+    Any of the following keys in `d` will be interpreted as a label:
+    - skos:prefLabel
+    - rdfs:label
+    - prefLabel
+    - label
+
+    If `d` has none of the above keys and `default` is not None,
+    `default` is returned. Otherwise `iriname(d["@id"])` is returned.
+
+    Example:
+
+    >>> getlabel({"@id": "ex:A", "label": "a"})
+    'a'
+
+    """
+    labels = (
+        SKOS.prefLabel,
+        "skos:prefLabel",
+        RDFS.label,
+        "rdfs:label",
+        "prefLabel",
+        "label",
+    )
+    for label in labels:
+        if label in d:
+            return d[label]
+    if default:
+        return default
+    if "@id" in d:
+        return iriname(d["@id"])
+    raise InvalidDatadocError(f"Cannot infer label from JSON-LD dict: {d}")

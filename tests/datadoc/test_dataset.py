@@ -404,39 +404,38 @@ def test_store():
 
 def test_update_context():
     """Test update_context()."""
-    # WORK-IN-PROGRESS
-    # pylint: disable=unused-variable,unused-import
-
-    from tripper import HUME
+    from tripper import HUME, OWL, Namespace
     from tripper.datadoc import get_context
-    from tripper.datadoc.dataset import told, update_context
+    from tripper.datadoc.dataset import update_context
 
+    EX = Namespace("http://example.com/")
     sources = {
         "@context": {
-            "MeasuringInstrument": {
-                "@id": HUME.MeasuringInstrument,
-                "@type": "owl:Class",
-            },
+            "ex": str(EX),
+            "hume": str(HUME),
         },
         "@graph": [
             {
-                # Not inferred, since hume:MeasuringSystem is not in context
                 "@id": "ex:instr",
-                "@type": HUME.Device,
-                "isDefinedBy": HUME.MeasuringSystem,
+                "@type": "hume:Device",
             },
             {
+                # Not added to context, since there is no @type
                 "@id": "ex:instr2",
-                "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
                 "@id": "ex:MyDevice",
-                # "@type": "owl:Class",
-                "subClassOf": HUME.Device,
-                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
+                "skos:prefLabel": "MyDevice",
+                "subClassOf": "hume:Device",
             },
         ],
     }
+    context = get_context(default_theme=None)
+    update_context(sources, context)
+    c = context.get_context_dict()
+    assert c["instr"] == {"@id": EX.instr, "@type": HUME.Device}
+    assert c["MyDevice"] == {"@id": EX.MyDevice, "@type": OWL.Class}
+    assert c["Device"] == {"@id": HUME.Device, "@type": OWL.Class}
 
 
 def test_infer_restriction_types():

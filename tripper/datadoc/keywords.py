@@ -34,6 +34,7 @@ from tripper.datadoc.errors import (
     SkipRedefineKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
+from tripper.errors import TripperWarning
 from tripper.utils import (
     AttrDict,
     expand_iri,
@@ -113,7 +114,9 @@ def get_keywords(
         """Return a keywords dict from context."""
         warnings.warn(
             "Adding keywords from context - information may be lost. "
-            "Classes are added to the root and properties to 'Resource'."
+            "Classes are added to the root and properties to 'Resource'.",
+            category=TripperWarning,
+            stacklevel=3,
         )
         prefixes = context.get_prefixes()
         classes = context.get_classes()
@@ -153,7 +156,7 @@ def get_keywords(
     #
     # If only context is given, we create a default keywords (from
     # theme) and overwrite it with the context.
-    if keywords:
+    if keywords is not None:
         if isinstance(keywords, Keywords):
             kw = keywords
         else:
@@ -166,11 +169,11 @@ def get_keywords(
                     strict=strict,
                     redefine=redefine,
                 )
-        if context:
+        if context is not None:
             kw.add(from_context(), redefine=redefine)
     else:
         kw = Keywords(theme=theme)
-        if context:
+        if context is not None:
             kw.add(from_context(), redefine="allow")
 
     return kw
@@ -616,6 +619,9 @@ class Keywords:
                 key = prefix_iri(val["iri"], prefixes)
                 if len(val) > 1 or key not in iridefs:
                     iridefs[key] = val
+                expkey = expand_iri(val["iri"], prefixes)
+                if len(val) > 1 or expkey not in iridefs:
+                    iridefs[expkey] = val
 
         # Resources
         for cls, defs in d.get("resources", AttrDict()).items():

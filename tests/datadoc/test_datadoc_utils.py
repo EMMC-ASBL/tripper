@@ -112,3 +112,17 @@ def test_iriname():
     assert iriname("abc") == "abc"
     assert iriname("rdf:JSON") == "JSON"
     assert iriname("https://w3id.org/emmo#Ampere") == "Ampere"
+
+
+def test_getlabel():
+    """Test utility function getlabel()."""
+    from tripper.datadoc.errors import InvalidDatadocError
+    from tripper.datadoc.utils import getlabel
+
+    assert getlabel({"@id": "ex:A", "prefLabel": "a"}) == "a"
+    assert getlabel({"@id": "ex:A", "label": "a"}) == "a"
+    assert getlabel({"@id": "ex:A", "rdfs:label": "a"}) == "a"
+    assert getlabel({"@id": "ex:A"}, default="a") == "a"
+    assert getlabel({"@id": "ex:A"}) == "A"
+    with pytest.raises(InvalidDatadocError):
+        getlabel({"x": "ex:A"})

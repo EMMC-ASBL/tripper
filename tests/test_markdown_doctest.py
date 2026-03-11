@@ -11,6 +11,9 @@ pytest.importorskip("pint")
 pytest.importorskip("pyld")
 
 
+@pytest.mark.filterwarnings(
+    "ignore:ConjunctiveGraph.*|builtin type SwigPy.*:DeprecationWarning"
+)
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_markdown_doctest():
     """Runs doctest on all markdown files in the docs/ folder."""
