@@ -41,8 +41,6 @@ import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyld import jsonld
-
 from tripper import (
     OWL,
     RDF,
@@ -584,13 +582,8 @@ def update_context(
             if "/" in label:
                 continue  # do not add IDs with slash to context
             superclasses = [d[s] for s in subclassof if s in d]
-            if "@type" in d:
-                try:
-                    context.add_context(
-                        {label: {"@id": iri, "@type": d["@type"]}}
-                    )
-                except jsonld.JsonLdError:
-                    continue
+            if d.get("@type") in (OWL.Class, "owl:Class"):
+                context.add_context({label: {"@id": iri, "@type": d["@type"]}})
             elif superclasses:
                 supercl = context.expand(superclasses[0], strict=True)
                 context.add_context(

@@ -76,7 +76,6 @@ def get_context(
         )
     if prefixes:
         context.add_context({k: str(v) for k, v in prefixes.items()})
-
     return context
 
 

@@ -86,6 +86,8 @@ def test_get_keywords():
         }
     )
 
+    # Test `context` argument to get_keywords(). Ignore expected
+    # warnings about loss of information
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=TripperWarning)
 

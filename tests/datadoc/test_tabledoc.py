@@ -5,9 +5,6 @@ import pytest
 pytest.importorskip("pyld")
 
 
-@pytest.mark.filterwarnings(
-    "ignore:ConjunctiveGraph.*|builtin type SwigPy.*:DeprecationWarning"
-)
 def test_asdicts():
     """Test the asdicts() method."""
 
@@ -116,7 +113,6 @@ def test_fromdicts():
     ]
 
 
-@pytest.mark.filterwarnings("ignore:ConjunctiveGraph.*:DeprecationWarning")
 def test_csv():
     """Test parsing a csv file."""
     import io
