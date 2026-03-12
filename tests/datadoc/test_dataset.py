@@ -511,12 +511,11 @@ def test_infer_restriction_types():
     }
 
 
-if 1:
-    # def test_update_restrictions():
+def test_update_restrictions():
     """Test update_restrictions()."""
     from copy import deepcopy
 
-    from tripper import DCAT, DCTERMS, HUME, Namespace
+    from tripper import HUME, Namespace
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import (
         infer_restriction_types,
@@ -527,7 +526,6 @@ if 1:
     EX = Namespace("http://example.org#")
     ctx = get_context()
 
-if 0:
     # Just a data property - nothing to update
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
@@ -613,9 +611,9 @@ if 0:
         "owl:qualifiedCardinality": 1,
     }
 
-if 1:
     d6 = {
         "@context": {
+            "ex": str(EX),
             "hume": str(HUME),
             "MeasuringInstrument": {
                 "@id": HUME.MeasuringInstrument,
@@ -644,7 +642,11 @@ if 1:
                 # Should be converted to an existential restriction.
                 "@id": "ex:instr3",
                 "@type": HUME.Device,
-                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+                "hasPart": [
+                    HUME.MeasuringInstrument,
+                    "ex:MyDevice",
+                    "ex:instr",
+                ],
             },
             {
                 # A class relating to a class.
@@ -691,15 +693,8 @@ if 1:
             },
         ],
     }
-    assert res6["ex:instr3"] == {  # Expect: existential restriction
-        # WRONG! Should be converted to restrictions
+    assert res6["ex:instr3"] == {
         "@id": "ex:instr3",
-        # "@type": "https://w3id.org/emmo/hume#Device",
-        # "hasPart": [
-        #    "https://w3id.org/emmo/hume#MeasuringInstrument",
-        #    "MyDevice",
-        #    "ex:instr",
-        # ],
         "@type": [
             "https://w3id.org/emmo/hume#Device",
             {
@@ -715,7 +710,7 @@ if 1:
         ],
         "hasPart": "ex:instr",
     }
-    assert res6["ex:MyDevice"] == {  # Expect: existential restriction
+    assert res6["ex:MyDevice"] == {
         "@id": "ex:MyDevice",
         "subClassOf": [
             "https://w3id.org/emmo/hume#Device",

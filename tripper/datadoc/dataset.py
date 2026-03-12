@@ -745,11 +745,6 @@ def update_restrictions(
         """Add restriction to `source`."""
         # pylint: disable=no-else-return
 
-        print()
-        print("*** addrestriction:", source.get("@id"), prop)
-        print(value)
-        print(source)
-
         iri = context.expand(source["@id"]) if "@id" in source else "*"
         propiri = context.expand(prop)
         if value is None or prop.startswith("@"):
@@ -776,7 +771,6 @@ def update_restrictions(
             "owl:onProperty": asiri(prop, strict=True),
         }
         if _isclass(value, context):
-            print("  * iscls:", value)
             if restrictionType == "only":
                 d["owl:allValuesFrom"] = asiri(value)
             elif restrictionType.startswith(("exactly", "min", "max")):
@@ -817,11 +811,6 @@ def update_restrictions(
             }
             for ckey, cval in restrictions.items()
         }
-
-    print()
-    print("=== restrictions:")
-    print(restrictions)
-    print()
 
     # Handle lists and graphs
     if isinstance(source, list) or "@graph" in source:
