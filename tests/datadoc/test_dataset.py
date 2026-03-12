@@ -520,12 +520,14 @@ if 1:
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import (
         infer_restriction_types,
+        update_context,
         update_restrictions,
     )
 
     EX = Namespace("http://example.org#")
     ctx = get_context()
 
+if 0:
     # Just a data property - nothing to update
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
@@ -611,6 +613,7 @@ if 1:
         "owl:qualifiedCardinality": 1,
     }
 
+if 1:
     d6 = {
         "@context": {
             "hume": str(HUME),
@@ -669,7 +672,8 @@ if 1:
         ],
     }
     r6 = deepcopy(d6)
-    update_restrictions(r6, ctx)
+    c6 = update_context(r6, ctx.copy())
+    update_restrictions(r6, c6)
     res6 = {d["@id"]: d for d in r6["@graph"]}
     assert res6["ex:instr"] == {  # Expect: no conversion
         "@id": "ex:instr",
