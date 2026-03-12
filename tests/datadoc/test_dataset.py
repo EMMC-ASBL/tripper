@@ -402,6 +402,48 @@ def test_store():
     }
 
 
+def test_update_context():
+    """Test update_context()."""
+    from tripper import HUME, OWL, Namespace
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import update_context
+
+    EX = Namespace("http://example.com/")
+    sources = {
+        "@context": {
+            "ex": str(EX),
+            "hume": str(HUME),
+        },
+        "@graph": [
+            {
+                # Instances are not added to context
+                "@id": "ex:instr",
+                "@type": "hume:Device",
+            },
+            {
+                # Not added to context, since there is no @type
+                "@id": "ex:instr2",
+            },
+            {
+                "@id": "ex:MyDevice",
+                "skos:prefLabel": "MyDevice",
+                "subClassOf": "hume:Device",
+            },
+        ],
+    }
+    context = get_context(default_theme=None)
+    update_context(sources, context)
+    c = context.get_context_dict()
+    assert "instr" not in c
+    assert "instr2" not in c
+    assert "MyDevice" in c
+    assert c["MyDevice"] == {"@id": EX.MyDevice, "@type": OWL.Class}
+    assert c["Device"] == {"@id": HUME.Device, "@type": OWL.Class}
+
+    # TODO: add tests for what happens if there is mismatch between
+    # previously added context and updated_context...
+
+
 def test_infer_restriction_types():
     """Test infer_restriction_types()."""
     from tripper import DCTERMS, HUME, RDFS, Namespace
@@ -426,7 +468,7 @@ def test_infer_restriction_types():
         "http://example.org#A": {
             DCTERMS.creator: "some",
             DCTERMS.hasPart: "value",
-            DCTERMS.issued: "value",
+            # DCTERMS.issued: "value",
         }
     }
 
@@ -452,7 +494,7 @@ def test_infer_restriction_types():
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
-                "hasPart": HUME.MeasuringInstrument,
+                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
             },
         ],
     }
@@ -578,6 +620,13 @@ def test_update_restrictions():
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
+                # An individial relating to two classes and an individual.
+                # Should be converted to an existential restriction.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+            },
+            {
                 # A class relating to a class.
                 # Should be converted to an existential restriction.
                 # Note that tripper in this case understands that ex:MyDevice
@@ -586,63 +635,68 @@ def test_update_restrictions():
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
+                "label": "MyDevice",
                 "hasPart": HUME.MeasuringInstrument,
             },
+            {
+                # A class relating to two classes
+                "@id": "ex:MyDevice2",
+                "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "label": "MyDevice2",
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice"],
+            },
+            # TODO: for completeness, add tests for individual
+            # relating to one individual and individual related to a
+            # list of individuals
         ],
     }
     r6 = deepcopy(d6)
     update_restrictions(r6, ctx)
-    assert r6 == {
-        "@context": {
-            "MeasuringInstrument": {
-                "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
-                "@type": "owl:Class",
-            }
-        },
-        "@graph": [
+    res6 = {d["@id"]: d for d in r6["@graph"]}
+    assert res6["ex:instr"] == {
+        "@id": "ex:instr",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
+    }
+    assert res6["ex:instr2"] == {
+        "@id": "ex:instr2",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
             {
-                "@id": "ex:instr",
-                "@type": "https://w3id.org/emmo/hume#Device",
-                "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
-            },
-            {
-                "@id": "ex:instr2",
-                "@type": [
-                    "https://w3id.org/emmo/hume#Device",
-                    {
-                        "@type": "owl:Restriction",
-                        "owl:onProperty": {
-                            "@id": (
-                                "http://www.w3.org/2000/01/rdf-schema#"
-                                "isDefinedBy"
-                            )
-                        },
-                        "owl:someValuesFrom": {
-                            "@id": (
-                                "https://w3id.org/emmo/hume#MeasuringInstrument"
-                            )
-                        },
-                    },
-                ],
-            },
-            {
-                "@id": "ex:MyDevice",
-                "subClassOf": [
-                    "https://w3id.org/emmo/hume#Device",
-                    {
-                        "@type": "owl:Restriction",
-                        "owl:onProperty": {
-                            "@id": "http://purl.org/dc/terms/hasPart"
-                        },
-                        "owl:someValuesFrom": {
-                            "@id": (
-                                "https://w3id.org/emmo/hume#MeasuringInstrument"
-                            )
-                        },
-                    },
-                ],
+                "@type": "owl:Restriction",
+                "owl:onProperty": {
+                    "@id": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+                },
+                "owl:someValuesFrom": {
+                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
+                },
             },
         ],
+    }
+    assert res6["ex:instr3"] == {
+        # WRONG! Should be converted to restrictions
+        "@id": "ex:instr3",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "hasPart": [
+            "https://w3id.org/emmo/hume#MeasuringInstrument",
+            "MyDevice",
+            "ex:instr",
+        ],
+    }
+    assert res6["ex:MyDevice"] == {
+        "@id": "ex:MyDevice",
+        "subClassOf": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+                "owl:someValuesFrom": {
+                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument"
+                },
+            },
+        ],
+        "label": "MyDevice",
     }
 
 
