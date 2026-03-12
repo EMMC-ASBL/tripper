@@ -1372,6 +1372,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.utils.getlabel" class="md-nav__link">
+    <span class="md-ellipsis">
+      getlabel()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.utils.iriname" class="md-nav__link">
     <span class="md-ellipsis">
       iriname()
@@ -1720,6 +1729,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.datadoc.utils.getlabel" class="md-nav__link">
+    <span class="md-ellipsis">
+      getlabel()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.datadoc.utils.iriname" class="md-nav__link">
     <span class="md-ellipsis">
       iriname()
@@ -1940,7 +1958,7 @@ to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict 
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asseq</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Sequence&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string or sequence as an iterable.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="p">[]</span>
 </code></pre></div>
         </details>
     </div>
@@ -1998,6 +2016,86 @@ to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict 
 
 
 
+<h2 id="tripper.datadoc.utils.getlabel" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.utils.getlabel" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Return label from a JSON-LD dict <code>d</code>.</p>
+<p>Any of the following keys in <code>d</code> (listed in the order of
+precedense, from high to low) will be interpreted as a label:
+- skos:prefLabel
+- rdfs:label
+- prefLabel
+- label</p>
+<p>If <code>d</code> has none of the above keys and <code>default</code> is not None,
+<code>default</code> is returned. Otherwise <code>iriname(d["@id"])</code> is returned.</p>
+
+<p><strong>Examples:</strong></p>
+    
+      <blockquote>
+<blockquote>
+<blockquote>
+<p>getlabel({"@id": "ex:A", "label": "a"})
+'a'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return label from a JSON-LD dict `d`.</span>
+
+<span class="sd">    Any of the following keys in `d` (listed in the order of</span>
+<span class="sd">    precedense, from high to low) will be interpreted as a label:</span>
+<span class="sd">    - skos:prefLabel</span>
+<span class="sd">    - rdfs:label</span>
+<span class="sd">    - prefLabel</span>
+<span class="sd">    - label</span>
+
+<span class="sd">    If `d` has none of the above keys and `default` is not None,</span>
+<span class="sd">    `default` is returned. Otherwise `iriname(d[&quot;@id&quot;])` is returned.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; getlabel({&quot;@id&quot;: &quot;ex:A&quot;, &quot;label&quot;: &quot;a&quot;})</span>
+<span class="sd">    &#39;a&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="c1"># The order is by purpose. prefLabel has precedense over label.</span>
+        <span class="c1"># But qualified IRIs has precedence over keywords.</span>
+        <span class="n">SKOS</span><span class="o">.</span><span class="n">prefLabel</span><span class="p">,</span>
+        <span class="s2">&quot;skos:prefLabel&quot;</span><span class="p">,</span>
+        <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+        <span class="s2">&quot;rdfs:label&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;prefLabel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;label&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">iriname</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">])</span>
+    <span class="k">raise</span> <span class="n">InvalidDatadocError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot infer label from JSON-LD dict: </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
 <h2 id="tripper.datadoc.utils.iriname" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">iriname</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code>
 
@@ -2017,7 +2115,7 @@ If value has no ":", it is returned as-is.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">value</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;[:/#]([a-zA-Z_][a-zA-Z0-9_.+-]*)$&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;[:/#]([a-zA-Z_][a-zA-Z0-9_./+-]*)$&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot infer name of IRI: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>

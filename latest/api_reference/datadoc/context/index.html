@@ -1257,6 +1257,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.get_classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_classes()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.context.Context.get_context_dict" class="md-nav__link">
     <span class="md-ellipsis">
       get_context_dict()
@@ -1275,9 +1284,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.get_object_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_object_properties()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.context.Context.get_prefixes" class="md-nav__link">
     <span class="md-ellipsis">
       get_prefixes()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.get_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_properties()
     </span>
   </a>
   
@@ -1916,6 +1943,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.get_classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_classes()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.context.Context.get_context_dict" class="md-nav__link">
     <span class="md-ellipsis">
       get_context_dict()
@@ -1934,9 +1970,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.get_object_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_object_properties()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tripper.datadoc.context.Context.get_prefixes" class="md-nav__link">
     <span class="md-ellipsis">
       get_prefixes()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.datadoc.context.Context.get_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_properties()
     </span>
   </a>
   
@@ -2276,6 +2330,36 @@ Context        </code>
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                 <span class="n">prefixes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">prefixes</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dict mapping property names to IRIs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+            <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+            <span class="ow">and</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">asseq</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">))</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_object_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dict mapping object property names to IRIs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+            <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+            <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dict mapping class names to IRIs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+            <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+            <span class="ow">and</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="ow">in</span> <span class="n">asseq</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">))</span>
+        <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">sync_prefixes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
@@ -3010,6 +3094,39 @@ context.expand("Dataset")
 
 
 
+<h3 id="tripper.datadoc.context.Context.get_classes" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.context.Context.get_classes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a dict mapping class names to IRIs.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a dict mapping class names to IRIs.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+        <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+        <span class="ow">and</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="ow">in</span> <span class="n">asseq</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">))</span>
+    <span class="p">}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="tripper.datadoc.context.Context.get_context_dict" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">get_context_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
@@ -3086,6 +3203,39 @@ context.expand("Dataset")
 
 
 
+<h3 id="tripper.datadoc.context.Context.get_object_properties" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_object_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.context.Context.get_object_properties" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a dict mapping object property names to IRIs.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_object_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a dict mapping object property names to IRIs.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+        <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+        <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span>
+    <span class="p">}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="tripper.datadoc.context.Context.get_prefixes" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">get_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
@@ -3106,6 +3256,39 @@ context.expand("Dataset")
         <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
             <span class="n">prefixes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">prefixes</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="tripper.datadoc.context.Context.get_properties" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+<a href="#tripper.datadoc.context.Context.get_properties" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Return a dict mapping property names to IRIs.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/datadoc/context.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a dict mapping property names to IRIs.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;mappings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+        <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_prefix&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+        <span class="ow">and</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">asseq</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">))</span>
+    <span class="p">}</span>
 </code></pre></div>
         </details>
     </div>

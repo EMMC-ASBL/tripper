@@ -3039,12 +3039,9 @@ types. For example</code></td>
                 <span class="p">):</span>
                     <span class="n">vexp</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                     <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span> <span class="k">if</span> <span class="n">_isclass</span><span class="p">(</span><span class="n">vexp</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;value&quot;</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-                    <span class="n">context</span>
-                    <span class="ow">and</span> <span class="n">kexp</span> <span class="ow">in</span> <span class="n">context</span>
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">is_annotation_property</span><span class="p">(</span><span class="n">kexp</span><span class="p">)</span>
-                <span class="p">):</span>
-                    <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">_isclass</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">):</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span>
             <span class="k">elif</span> <span class="n">_isclass</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span>
         <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
@@ -4131,6 +4128,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
         <span class="n">default_theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># we are calling update_context() below</span>
     <span class="p">)</span>
 
     <span class="n">doc</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
@@ -4140,6 +4138,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">update_context</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
     <span class="n">docs</span> <span class="o">=</span> <span class="n">doc</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@graph&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">doc</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
@@ -4301,6 +4300,8 @@ or included in the JSON-LD context.</p></td>
 <span class="sd">        Dict with an updated copy of `descr` as valid JSON-LD.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=too-many-statements</span>
+
     <span class="n">single</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="s2">&quot;@graph&quot;</span>
     <span class="n">multi</span> <span class="o">=</span> <span class="s2">&quot;keywordfile&quot;</span><span class="p">,</span> <span class="s2">&quot;prefixes&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span>
     <span class="n">singlerepr</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="ow">in</span> <span class="n">descr</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">single</span><span class="p">)</span>
@@ -4317,6 +4318,10 @@ or included in the JSON-LD context.</p></td>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
+        <span class="n">keywords</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
+
     <span class="n">resources</span> <span class="o">=</span> <span class="n">keywords</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">resources</span>
 
     <span class="c1"># Whether the context has been copied. Used within addcontext()</span>
@@ -4414,23 +4419,37 @@ or included in the JSON-LD context.</p></td>
 
 <span class="sd">    Currently this only adds classes defined in `source` to `context`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">subclassof</span> <span class="o">=</span> <span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;@context&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">])</span>
+
     <span class="n">sources</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">source</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
         <span class="k">else</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;@graph&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">prefixes</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
+
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@graph&quot;</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">update_context</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">iri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">NamespaceError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># do not add IDs with slash to context</span>
+            <span class="n">superclasses</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subclassof</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">,</span> <span class="s2">&quot;owl:Class&quot;</span><span class="p">):</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]}})</span>
+            <span class="k">elif</span> <span class="n">superclasses</span><span class="p">:</span>
+                <span class="n">supercl</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">superclasses</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="n">k</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                            <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">,</span>
-                        <span class="p">}</span>
+                        <span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">},</span>
+                        <span class="n">iriname</span><span class="p">(</span><span class="n">supercl</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">supercl</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">},</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
 </code></pre></div>

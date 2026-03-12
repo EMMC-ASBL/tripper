@@ -2747,6 +2747,9 @@ Keywords        </code>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">prefix_iri</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">],</span> <span class="n">prefixes</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">iridefs</span><span class="p">:</span>
                     <span class="n">iridefs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="n">expkey</span> <span class="o">=</span> <span class="n">expand_iri</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="s2">&quot;iri&quot;</span><span class="p">],</span> <span class="n">prefixes</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">expkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">iridefs</span><span class="p">:</span>
+                    <span class="n">iridefs</span><span class="p">[</span><span class="n">expkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
         <span class="c1"># Resources</span>
         <span class="k">for</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">defs</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="n">AttrDict</span><span class="p">())</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -6585,7 +6588,7 @@ keywords.typename("dcat:Dataset")
 
 
 <h2 id="tripper.datadoc.keywords.get_keywords" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">yamlfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.keywords.get_keywords" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -6625,11 +6628,9 @@ loaded.</p></td>
         <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
-        <td><code>yamlfile</code></td>
-        <td><code>Optional[FileLoc]</code></td>
-        <td><p>YAML file with keyword definitions to parse.  May also
-be an URI in which case it will be accessed via HTTP GET.
-Deprecated. Use the <code>load_yaml()</code> or <code>add()</code> methods instead.</p></td>
+        <td><code>context</code></td>
+        <td><code>Optional[ContextType]</code></td>
+        <td><p>Initialise from this Context instance.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -6680,7 +6681,7 @@ keywords.  Should be one of the following strings:
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
-    <span class="n">yamlfile</span><span class="p">:</span> <span class="s2">&quot;Optional[FileLoc]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
@@ -6692,9 +6693,7 @@ keywords.  Should be one of the following strings:
 <span class="sd">        format: Format of input if `keywords` refer to a file that can be</span>
 <span class="sd">            loaded.</span>
 <span class="sd">        theme: IRI of one of more themes to load keywords for.</span>
-<span class="sd">        yamlfile: YAML file with keyword definitions to parse.  May also</span>
-<span class="sd">            be an URI in which case it will be accessed via HTTP GET.</span>
-<span class="sd">            Deprecated. Use the `load_yaml()` or `add()` methods instead.</span>
+<span class="sd">        context: Initialise from this Context instance.</span>
 <span class="sd">        timeout: Timeout in case `yamlfile` is a URI.</span>
 <span class="sd">        strict: Whether to raise an `InvalidKeywordError` exception if `d`</span>
 <span class="sd">            contains an unknown key.</span>
@@ -6709,28 +6708,74 @@ keywords.  Should be one of the following strings:
 <span class="sd">    Returns:</span>
 <span class="sd">        Keywords instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">Keywords</span><span class="p">):</span>
-        <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span>
+    <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_context</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a keywords dict from context.&quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Adding keywords from context - information may be lost. &quot;</span>
+            <span class="s2">&quot;Classes are added to the root and properties to &#39;Resource&#39;.&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">TripperWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">prefixes</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_classes</span><span class="p">()</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_properties</span><span class="p">()</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;prefixes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefixes</span>
+        <span class="k">if</span> <span class="n">classes</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;iri&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="k">if</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">ctx</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
+                    <span class="n">props</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;iri&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">props</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;iri&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span>
+                        <span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="s2">&quot;rdf:Literal&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;datatype&quot;</span><span class="p">:</span> <span class="n">ctx</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;@type&quot;</span><span class="p">],</span>
+                    <span class="p">}</span>
+            <span class="k">if</span> <span class="s2">&quot;resources&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;resources&quot;</span><span class="p">][</span><span class="s2">&quot;Resource&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;iri&quot;</span><span class="p">:</span> <span class="s2">&quot;dcat:Resource&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;keywords&quot;</span><span class="p">:</span> <span class="n">props</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+
+    <span class="c1"># If keywords AND context is given, the &quot;redefine&quot; argument</span>
+    <span class="c1"># determine whether the context can overwrite the keywords.</span>
+    <span class="c1">#</span>
+    <span class="c1"># If only context is given, we create a default keywords (from</span>
+    <span class="c1"># theme) and overwrite it with the context.</span>
+    <span class="k">if</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">Keywords</span><span class="p">):</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="n">keywords</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kw</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
+                <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="n">keywords</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                    <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+                    <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">from_context</span><span class="p">(),</span> <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="n">Keywords</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">keywords</span><span class="p">:</span>
-            <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="n">keywords</span><span class="p">,</span>
-                <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-                <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
-                <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span><span class="p">,</span>
-            <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">yamlfile</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;The `yamlfile` argument is deprecated. Use the `load_yaml()` or &quot;</span>
-            <span class="s2">&quot;`add()` methods instead.&quot;</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">kw</span><span class="o">.</span><span class="n">load_yaml</span><span class="p">(</span>
-            <span class="n">yamlfile</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="n">redefine</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">from_context</span><span class="p">(),</span> <span class="n">redefine</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">kw</span>
 </code></pre></div>
