@@ -404,7 +404,7 @@ def test_store():
 
 def test_update_context():
     """Test update_context()."""
-    from tripper import HUME, OWL, Namespace
+    from tripper import HUME, OWL, SKOS, Namespace
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import update_context
 
@@ -425,9 +425,17 @@ def test_update_context():
                 "@id": "ex:instr2",
             },
             {
+                # Add both ex:MyDevice and hume:Device to context
                 "@id": "ex:MyDevice",
                 "skos:prefLabel": "MyDevice",
                 "subClassOf": "hume:Device",
+            },
+            {
+                # Check for full IRI
+                "@id": EX.MyClass,
+                "@type": OWL.Class,
+                SKOS.prefLabel: "MyClass",
+                HUME.hasPart: EX.MyDevice,
             },
         ],
     }
@@ -439,6 +447,7 @@ def test_update_context():
     assert "MyDevice" in c
     assert c["MyDevice"] == {"@id": EX.MyDevice, "@type": OWL.Class}
     assert c["Device"] == {"@id": HUME.Device, "@type": OWL.Class}
+    assert c["MyClass"] == {"@id": EX.MyClass, "@type": OWL.Class}
 
     # TODO: add tests for what happens if there is mismatch between
     # previously added context and updated_context...
