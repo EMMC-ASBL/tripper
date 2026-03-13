@@ -219,7 +219,10 @@ def iriname(value: str) -> str:
         name = value.rsplit("/", 1)[1]
 
     if not _NAME_RE.fullmatch(name):
-        raise ValueError(f"Cannot infer name of IRI: {value}")
+        raise ValueError(
+            f"Cannot infer name of IRI: {value} (getting invalid name "
+            f"'{name}')"
+        )
 
     return name
 

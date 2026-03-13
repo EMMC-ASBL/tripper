@@ -578,7 +578,10 @@ def update_context(
                 iri = context.expand(d["@id"], strict=True)
             except NamespaceError:
                 continue
-            label = getlabel(d)
+            try:
+                label = getlabel(d)
+            except ValueError:
+                continue  # ignore invalid labels
             if "/" in label:
                 continue  # do not add IDs with slash to context
             superclasses = [d[s] for s in subclassof if s in d]
