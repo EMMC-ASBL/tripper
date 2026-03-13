@@ -213,7 +213,7 @@ def iriname(value: str) -> str:
         name = value
     elif "#" in value:
         name = value.rsplit("#", 1)[1]
-    elif not value.startswith(("http://", "https://")):
+    elif not re.match("^[a-zA-Z][a-zA-Z0-9+.-]*://", value):
         name = value.rsplit(":", 1)[1]
     else:
         name = value.rsplit("/", 1)[1]
