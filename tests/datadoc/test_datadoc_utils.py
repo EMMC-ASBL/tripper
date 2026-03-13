@@ -129,9 +129,7 @@ def test_iriname():
     )
     assert iriname("http://example.com/data#aa/bb/cc.txt") == "aa/bb/cc.txt"
     assert iriname("http://example.com/data/aa/bb/cc.txt") == "cc.txt"
-    assert (
-        iriname("file://hostname.sintef.no/absolute/path/cc.txt") == "cc.txt"
-    )
+    assert iriname("file://hostname/absolute/path/cc.txt") == "cc.txt"
     assert iriname("file:///absolute/path/cc.txt") == "cc.txt"
 
 
