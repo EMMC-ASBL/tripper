@@ -112,6 +112,21 @@ def test_iriname():
     assert iriname("abc") == "abc"
     assert iriname("rdf:JSON") == "JSON"
     assert iriname("https://w3id.org/emmo#Ampere") == "Ampere"
+    assert iriname("http://purl.org/dc/terms/abstract") == "abstract"
+    assert iriname("term/without/doubledot") == "term/without/doubledot"
+    assert (
+        iriname(
+            "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+        )
+        == "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+    )
+    assert (
+        iriname(
+            "https://semdata.data#"
+            "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+        )
+        == "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+    )
 
 
 def test_getlabel():
