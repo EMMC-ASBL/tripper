@@ -205,9 +205,9 @@ def iriname(value: str) -> str:
 
     Raises:
         ValueError: If the inferred name is empty or is invalid.
-        Valid names
-        - start with A-Z, a-z or _
-        - the rest may in addition contain 0-9, ., +, -, or /
+            Valid names
+            - start with A-Z, a-z or _
+            - the rest may in addition contain 0-9, ., +, -, or /
     """
     if ":" not in value:
         name = value

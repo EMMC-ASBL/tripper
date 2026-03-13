@@ -127,6 +127,10 @@ def test_iriname():
         )
         == "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
     )
+    assert iriname("http://example.com/data#aa/bb/cc.txt") == "aa/bb/cc.txt"
+    assert iriname("http://example.com/data/aa/bb/cc.txt") == "cc.txt"
+    assert iriname("file://hostname/absolute/path/cc.txt") == "cc.txt"
+    assert iriname("file:///absolute/path/cc.txt") == "cc.txt"
 
 
 def test_getlabel():
