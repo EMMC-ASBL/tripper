@@ -574,24 +574,32 @@ def update_context(
         if not isinstance(d, dict):
             continue
         if "@id" in d:
-            try:
-                iri = context.expand(d["@id"], strict=True)
-            except NamespaceError:
-                continue
-            label = getlabel(d)
-            if "/" in label:
-                continue  # do not add IDs with slash to context
-            superclasses = [d[s] for s in subclassof if s in d]
-            if d.get("@type") in (OWL.Class, "owl:Class"):
-                context.add_context({label: {"@id": iri, "@type": d["@type"]}})
-            elif superclasses:
-                supercl = context.expand(superclasses[0], strict=True)
-                context.add_context(
-                    {
-                        label: {"@id": iri, "@type": OWL.Class},
-                        iriname(supercl): {"@id": supercl, "@type": OWL.Class},
-                    }
-                )
+            seq = asseq(d.get("@type"))
+            isclass = OWL.Class in seq or "owl:Class" in seq
+            if isclass or "subClassOf" in d or "rdfs:subClassOf" in d:
+                try:
+                    iri = context.expand(d["@id"], strict=True)
+                except NamespaceError:
+                    continue
+                label = getlabel(d)
+                if "/" in label:
+                    continue  # do not add IDs with slash to context
+                superclasses = [d[s] for s in subclassof if s in d]
+                if isclass:
+                    context.add_context(
+                        {label: {"@id": iri, "@type": d["@type"]}}
+                    )
+                elif superclasses:
+                    supercl = context.expand(superclasses[0], strict=True)
+                    context.add_context(
+                        {
+                            label: {"@id": iri, "@type": OWL.Class},
+                            iriname(supercl): {
+                                "@id": supercl,
+                                "@type": OWL.Class,
+                            },
+                        }
+                    )
 
 
 def infer_restriction_types(
