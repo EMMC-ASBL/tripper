@@ -185,21 +185,46 @@ def get(
     return value
 
 
-def asseq(value: "Union[str, Sequence]") -> "Sequence":
+def asseq(value: "Union[str, Sequence, None]") -> "Sequence":
     """Returns a string or sequence as an iterable."""
     return [value] if isinstance(value, str) else value if value else []
 
 
+_NAME_RE = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_./+-]*$")
+
+
 def iriname(value: str) -> str:
     """Return the name part of an IRI or CURIE.
-    If value has no ":", it is returned as-is.
+
+    Rules:
+    - If value has no ":", return it as-is.
+    - If value contains "#", return everything after the last "#".
+    - If value does not start with http:// or https://, return
+      everything after the last ":".
+    - Otherwise, return everything after the last "/".
+
+    Raises:
+        ValueError: If the inferred name is empty or is invalid.
+            Valid names
+            - start with A-Z, a-z or _
+            - the rest may in addition contain 0-9, ., +, -, or /
     """
     if ":" not in value:
-        return value
-    m = re.search("[:/#]([a-zA-Z_][a-zA-Z0-9_./+-]*)$", value)
-    if not m or not m.groups():
-        raise ValueError(f"Cannot infer name of IRI: {value}")
-    return m.groups()[0]
+        name = value
+    elif "#" in value:
+        name = value.rsplit("#", 1)[1]
+    elif not re.match("^[a-zA-Z][a-zA-Z0-9+.-]*://", value):
+        name = value.rsplit(":", 1)[1]
+    else:
+        name = value.rsplit("/", 1)[1]
+
+    if not _NAME_RE.fullmatch(name):
+        raise ValueError(
+            f"Cannot infer name of IRI: {value} (getting invalid name "
+            f"'{name}')"
+        )
+
+    return name
 
 
 def getlabel(d: dict, default: "Optional[str]" = None) -> str:
