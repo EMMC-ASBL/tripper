@@ -206,7 +206,13 @@ class Context:
                     d[k] = rec(v)
             return d
 
-        self.ctx = self.ld.process_context(self.ctx, rec(context), options={})
+        try:
+            self.ctx = self.ld.process_context(
+                self.ctx, rec(context), options={}
+            )
+        except jsonld.JsonLdError:  # pylint: disable=try-except-raise
+            # TODO: convert error message to something more readable
+            raise
 
         # Clear caches
         self._expanded.clear()
