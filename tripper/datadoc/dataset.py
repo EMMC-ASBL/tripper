@@ -574,9 +574,9 @@ def update_context(
         if not isinstance(d, dict):
             continue
         if "@id" in d:
-            if ("@type" in d and d["@type"] in (OWL.Class, "owl:Class")) or (
-                "subClassOf" in d
-            ):
+            seq = asseq(d.get("@type"))
+            isclass = OWL.Class in seq or "owl:Class" in seq
+            if isclass or "subClassOf" in d or "rdfs:subClassOf" in d:
                 try:
                     iri = context.expand(d["@id"], strict=True)
                 except NamespaceError:
@@ -585,7 +585,7 @@ def update_context(
                 if "/" in label:
                     continue  # do not add IDs with slash to context
                 superclasses = [d[s] for s in subclassof if s in d]
-                if d.get("@type") in (OWL.Class, "owl:Class"):
+                if isclass:
                     context.add_context(
                         {label: {"@id": iri, "@type": d["@type"]}}
                     )
