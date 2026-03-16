@@ -4434,24 +4434,32 @@ or included in the JSON-LD context.</p></td>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">iri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">NamespaceError</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
-                <span class="k">continue</span>  <span class="c1"># do not add IDs with slash to context</span>
-            <span class="n">superclasses</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subclassof</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">,</span> <span class="s2">&quot;owl:Class&quot;</span><span class="p">):</span>
-                <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]}})</span>
-            <span class="k">elif</span> <span class="n">superclasses</span><span class="p">:</span>
-                <span class="n">supercl</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">superclasses</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">},</span>
-                        <span class="n">iriname</span><span class="p">(</span><span class="n">supercl</span><span class="p">):</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">supercl</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">},</span>
-                    <span class="p">}</span>
-                <span class="p">)</span>
+            <span class="n">seq</span> <span class="o">=</span> <span class="n">asseq</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">))</span>
+            <span class="n">isclass</span> <span class="o">=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span> <span class="ow">in</span> <span class="n">seq</span> <span class="ow">or</span> <span class="s2">&quot;owl:Class&quot;</span> <span class="ow">in</span> <span class="n">seq</span>
+            <span class="k">if</span> <span class="n">isclass</span> <span class="ow">or</span> <span class="s2">&quot;subClassOf&quot;</span> <span class="ow">in</span> <span class="n">d</span> <span class="ow">or</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">iri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">NamespaceError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+                    <span class="k">continue</span>  <span class="c1"># do not add IDs with slash to context</span>
+                <span class="n">superclasses</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subclassof</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">d</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">isclass</span><span class="p">:</span>
+                    <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
+                        <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]}}</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">superclasses</span><span class="p">:</span>
+                    <span class="n">supercl</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">superclasses</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
+                        <span class="p">{</span>
+                            <span class="n">label</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">iri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">},</span>
+                            <span class="n">iriname</span><span class="p">(</span><span class="n">supercl</span><span class="p">):</span> <span class="p">{</span>
+                                <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">supercl</span><span class="p">,</span>
+                                <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">,</span>
+                            <span class="p">},</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
