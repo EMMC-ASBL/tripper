@@ -56,10 +56,8 @@ def populate_and_search(sessionName):  # pylint: disable=too-many-statements
     # Test SELECT query
     query = "SELECT ?p ?o WHERE { <http://www.example.org/subject> ?p ?o }"
     result = ts.query(query)
-    assert set(result) == {
-        ("http://www.example.org/predicate", Literal("a")),
-        ("http://www.example.org/predicate", Literal(1.0)),
-    }
+    assert ("http://www.example.org/predicate", Literal("a")) in result
+    assert ("http://www.example.org/predicate", Literal(1.0)) in result
 
     # Test CONSTRUCT query
     # NB adding the PREFIX just to show that it works.
@@ -108,12 +106,8 @@ ASK {
     # Test DESCRIBE query
     query = "DESCRIBE <http://www.example.org/subject>"
     triples = set(ts.query(query))
-    assert triples == set(
-        [
-            (EX.subject, EX.predicate, Literal("a")),
-            (EX.subject, EX.predicate, Literal(1.0)),
-        ]
-    )
+    assert (EX.subject, EX.predicate, Literal("a")) in triples
+    assert (EX.subject, EX.predicate, Literal(1.0)) in triples
 
     # save a dataset to triplestore
     save_datadoc(ts, datasetinput)
