@@ -147,6 +147,10 @@
       "@id": "dcterms:abstract",
       "@language": "en"
     },
+    "altLabel": {
+      "@id": "skos:altLabel",
+      "@language": "en"
+    },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",
     "conceptualisation": {
@@ -177,7 +181,10 @@
       "@id": "rdfs:isDefinedBy",
       "@type": "@id"
     },
-    "label": "rdfs:label",
+    "label": {
+      "@id": "rdfs:label",
+      "@language": "en"
+    },
     "prefLabel": {
       "@id": "skos:prefLabel",
       "@language": "en"

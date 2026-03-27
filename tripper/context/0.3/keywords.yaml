@@ -248,6 +248,12 @@ resources:
         datatype: rdf:langString
         description: A summary of the resource.
 
+      altLabel:
+        iri: skos:altLabel
+        range: rdfs:Literal
+        datatype: rdf:langString
+        description: An alternative label of the concept.
+
       bibliographicCitation:
         iri: dcterms:bibliographicCitation
         range: rdfs:Literal
@@ -302,6 +308,7 @@ resources:
       label:
         iri: rdfs:label
         range: rdfs:Literal
+        datatype: rdf:langString
         description: "Provides a human-readable version of a resource's name."
 
       prefLabel:
