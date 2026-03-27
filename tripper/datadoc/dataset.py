@@ -554,10 +554,12 @@ def _isclass(d, context):
 def update_context(
     source: "Union[dict, list]",
     context: "Context",
-) -> None:
+) -> "Context":
     """Update `context` with information from `source`.
 
     Currently this only adds classes defined in `source` to `context`.
+
+    Returns the updated context.
     """
     subclassof = (RDFS.subClassOf, "rdfs:subClassOf", "subClassOf")
 
@@ -645,7 +647,7 @@ def infer_restriction_types(
           - "exactly <N>": exact cardinality restriction
           - "min <N>": minimum cardinality restriction
           - "max <N>": maximum cardinality restriction
-          - "value": value restriction
+          - "value": value restriction (ignored)
 
         where `<N>` is a positive integer.
 
@@ -702,6 +704,9 @@ def infer_restriction_types(
                 elif isinstance(v, list):
                     if any(_isclass(e, context) for e in v):
                         d[kexp] = "some"
+            elif isinstance(v, list):
+                if any(_isclass(e, context) for e in v):
+                    d[kexp] = "some"
             elif _isclass(v, context):
                 d[kexp] = "some"
         if d:
@@ -733,24 +738,24 @@ def update_restrictions(
     """
     # pylint: disable=too-many-statements
 
+    def asiri(v, strict=False):
+        """Return `v` as prefixed IRI(s)."""
+        if isinstance(v, str):
+            return context.prefixed(v, strict=strict)
+        if isinstance(v, list):
+            return [asiri(e, strict=strict) for e in v]
+        return v
+
     def addrestriction(source, prop, value):
         """Add restriction to `source`."""
         # pylint: disable=no-else-return
-
-        def as_iri_node(v):
-            """Return JSON-LD node object for IRI-like string values."""
-            if isinstance(v, str) and is_uri(v, require_netloc=False):
-                return {"@id": context.expand(v, strict=False)}
-            return v
 
         iri = context.expand(source["@id"]) if "@id" in source else "*"
         propiri = context.expand(prop)
         if value is None or prop.startswith("@"):
             return
         elif isinstance(value, dict):
-            update_restrictions(
-                value, context=context, restrictions=restrictions
-            )
+            update_restrictions(value, context, restrictions)
         elif isinstance(value, list):
             for val in value:
                 addrestriction(source, prop, val)
@@ -768,37 +773,32 @@ def update_restrictions(
         d = {
             "@type": "owl:Restriction",
             # We expand here, since JSON-LD doesn't expand values.
-            "owl:onProperty": {
-                "@id": context.expand(prop, strict=True),
-            },
+            "owl:onProperty": asiri(prop, strict=True),
         }
-        if restrictionType == "value":
-            d["owl:hasValue"] = as_iri_node(value)
-        elif restrictionType == "some":
-            d["owl:someValuesFrom"] = as_iri_node(value)
-        elif restrictionType == "only":
-            d["owl:allValuesFrom"] = as_iri_node(value)
+        if _isclass(value, context):
+            if restrictionType == "only":
+                d["owl:allValuesFrom"] = asiri(value)
+            elif restrictionType.startswith(("exactly", "min", "max")):
+                d["owl:onClass"] = asiri(value)
+                ctype, n = restrictionType.split()
+                ctypes = {
+                    "exactly": "owl:qualifiedCardinality",
+                    "min": "owl:minQualifiedCardinality",
+                    "max": "owl:maxQualifiedCardinality",
+                }
+                d[ctypes[ctype]] = int(n)
+            else:  # default: some
+                d["owl:someValuesFrom"] = asiri(value)
+        elif _isclass(source, context):
+            d["owl:hasValue"] = asiri(value)
         else:
-            d["owl:onClass"] = as_iri_node(value)
-            ctype, n = restrictionType.split()
-            ctypes = {
-                "exactly": "owl:qualifiedCardinality",
-                "min": "owl:minQualifiedCardinality",
-                "max": "owl:maxQualifiedCardinality",
-            }
-            d[ctypes[ctype]] = int(n)
+            add(source, prop, value)
+            return
 
-        if _isclassdoc(source):
-            add(source, "subClassOf", d)
-        else:
-            add(source, "@type", d)
-
+        # Replace source[prop] with restriction
         if prop in source:  # Avoid removing prop more than once
             del source[prop]
-
-        # Recursively update related calsses
-        if restrictionType != "value" and isinstance(value, dict):
-            update_restrictions(value, context, restrictions)
+        add(source, "subClassOf" if _isclassdoc(source) else "@type", d)
 
     # Local context
     context = get_context(context=context)
