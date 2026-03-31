@@ -360,9 +360,6 @@ def _told(
                 for i, spo in enumerate(descr[k])
             ]
             add(d, k, [tuple(t) for t in lst])
-        elif k == "datamodel":
-            add(d, "@type", v)
-            d[k] = v
         #
         # The below works fine. It is commented out since it is doubtable
         # whether it is a good idea to invent new shortcuts for json-ld.
