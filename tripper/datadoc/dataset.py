@@ -360,6 +360,9 @@ def _told(
                 for i, spo in enumerate(descr[k])
             ]
             add(d, k, [tuple(t) for t in lst])
+        elif k == "@datamodel":
+            add(d, "@type", v)
+            d[k] = v
         #
         # The below works fine. It is commented out since it is doubtable
         # whether it is a good idea to invent new shortcuts for json-ld.
@@ -864,9 +867,9 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
 
     # Save data models
     datamodels = {
-        d["@id"]: d["datamodel"]
+        d["@id"]: d["@datamodel"]
         for d in source.get("Dataset", ())
-        if "datamodel" in d
+        if "@datamodel" in d
     }
     try:
         # pylint: disable=import-outside-toplevel
@@ -1452,7 +1455,7 @@ def get_partial_pipeline(
 
         conf = gen.get("configuration")
         if gen.generatorType == "application/vnd.dlite-generate":
-            conf.setdefault("datamodel", dct.get("datamodel"))
+            conf.setdefault("@datamodel", dct.get("@datamodel"))
 
         function = client.create_function(
             functionType=gen.generatorType,
