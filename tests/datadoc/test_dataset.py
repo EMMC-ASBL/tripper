@@ -23,7 +23,7 @@ def test_told():
     # pylint: disable=too-many-statements
     from pathlib import Path
 
-    from tripper import DCAT, DCTERMS, RDF, Triplestore
+    from tripper import DCAT, DCTERMS, OWL, RDF, RDFS, Triplestore
     from tripper.datadoc.dataset import store, told
     from tripper.datadoc.errors import InvalidDatadocError
     from tripper.utils import en
@@ -228,6 +228,27 @@ def test_told():
     }
     d8 = told(descrH)
     assert d8["@type"] == "owl:Class"
+
+    # A dataset type should remain a class and use datamodel as subclass.
+    descrI = {
+        "@id": "ex:TechnicalDataset",
+        "@type": "owl:Class",
+        "title": "Technical dataset type",
+        "datamodel": "ex:BaseDataModel",
+    }
+    d9 = told(descrI)
+    assert d9["@id"] == "ex:TechnicalDataset"
+    assert d9["@type"] == "owl:Class"
+    assert d9["datamodel"] == "ex:BaseDataModel"
+    assert d9["subClassOf"] == "ex:BaseDataModel"
+
+    # Test store() on descrI
+    ts.remove()
+    store(ts, descrI, prefixes=prefixes)
+    EX = ts.namespaces["ex"]
+    assert ts.has(EX.TechnicalDataset, RDF.type, OWL.Class)
+    assert ts.has(EX.TechnicalDataset, RDFS.subClassOf, EX.BaseDataModel)
+    assert not ts.has(EX.TechnicalDataset, RDF.type, EX.BaseDataModel)
 
     # Multi-rep with invalid root keyword
     descrG = {

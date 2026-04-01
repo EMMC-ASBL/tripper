@@ -361,8 +361,19 @@ def _told(
             ]
             add(d, k, [tuple(t) for t in lst])
         elif k == "datamodel":
-            add(d, "@type", v)
+            # Check if d is is of type @type owl:Class, if not, add the
+            # datamodel as a @type. Otherwise, the datamodel will be
+            # added as a subclass of the class.
+            is_class = OWL.Class in {
+                expand(t) if isinstance(t, str) else t
+                for t in asseq(get(d, "@type", ()))
+            }
+            if is_class:
+                add(d, "subClassOf", v)
+            else:
+                add(d, "@type", v)
             d[k] = v
+
         #
         # The below works fine. It is commented out since it is doubtable
         # whether it is a good idea to invent new shortcuts for json-ld.
