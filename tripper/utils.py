@@ -15,7 +15,7 @@ import warnings
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import IO, TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, cast
 
 from tripper.errors import NamespaceError
 from tripper.literal import Literal
@@ -517,7 +517,7 @@ def parse_literal(literal: "Any") -> "Any":
                         break
                 else:
                     assert False, "should never be reached"  # nosec
-            return Literal(literal, lang=lang, datatype=datatype)
+            return Literal(cast(Any, literal), lang=lang, datatype=datatype)
         raise TypeError(f"unsupported literal type: {type(literal)}")
 
     if hasattr(literal, "n3") and callable(literal.n3):
@@ -834,7 +834,7 @@ def substitute_query(
         for k, v in iris.items():
             expanded = expand_iri(v, prefixes=prefixes)
             quoted = urllib.parse.quote(expanded, safe=safe)
-            q1, q2 = iriquote if iriquote else ("", "")  # type: ignore[misc]
+            q1, q2 = (iriquote[0], iriquote[1]) if iriquote else ("", "")
             mapping[k] = f"{q1}{quoted}{q2}"
 
     if literals:
