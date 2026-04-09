@@ -331,8 +331,8 @@ def test_save_table():
             "Access Rights may include information regarding access or "
             "restrictions based on privacy, security, or other policies. "
             "The following preferred Rights Statement individuals are "
-            "defined: `accr:PUBLIC`, `accr:NON_PUBLIC`, `accr:CONFIDENTIAL`, "
-            "`accr:RESTRICTED`, `accr:SENSITIVE`",
+            "defined: `rights:PUBLIC`, `rights:NON_PUBLIC`, "
+            "`rights:CONFIDENTIAL`, `rights:RESTRICTED`, `rights:SENSITIVE`",
         ),
         ("theme", "ddoc:datadoc"),
     ]
