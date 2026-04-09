@@ -360,9 +360,6 @@ def _told(
                 for i, spo in enumerate(descr[k])
             ]
             add(d, k, [tuple(t) for t in lst])
-        elif k == "datamodel":
-            add(d, "@type", v)
-            d[k] = v
         #
         # The below works fine. It is commented out since it is doubtable
         # whether it is a good idea to invent new shortcuts for json-ld.
@@ -444,7 +441,7 @@ def store(
 
     References:
     [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/
-    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
+    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json
     """
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
@@ -851,69 +848,18 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
 
     Currently, this includes:
     - statements and mappings
-    - data models (require that DLite is installed)
 
     Arguments:
         ts: Triplestore to load data from.
         source: Dict in multi-resource format.
 
     """
-    import requests
 
     # Save statements and mappings
     statements = get_values(source, "statements")
     statements.extend(get_values(source, "mappings"))
     if statements:
         ts.add_triples(statements)
-
-    # Save data models
-    datamodels = {
-        d["@id"]: d["datamodel"]
-        for d in source.get("Dataset", ())
-        if "datamodel" in d
-    }
-    try:
-        # pylint: disable=import-outside-toplevel
-        import dlite
-        from dlite.dataset import add_dataset
-    except ModuleNotFoundError:
-        if datamodels:
-            warnings.warn(
-                "dlite is not installed - data models will not be added to "
-                "the triplestore"
-            )
-    else:
-        for url in get_values(source, "datamodelStorage"):
-            dlite.storage_path.append(url)
-
-        for iri, uri in datamodels.items():
-            ok = False
-            r = requests.get(uri, timeout=3)
-            if r.ok:
-                content = (
-                    r.content.decode()
-                    if isinstance(r.content, bytes)
-                    else str(r.content)
-                )
-                dm = dlite.Instance.from_json(content)
-                add_dataset(ts, dm)
-                ok = True
-            else:
-                try:
-                    dm = dlite.get_instance(uri)
-                except (
-                    dlite.DLiteMissingInstanceError  # pylint: disable=no-member
-                ):
-                    # __FIXME__: check session whether to warn or re-raise
-                    warnings.warn(f"cannot load datamodel: {uri}")
-                else:
-                    add_dataset(ts, dm)
-                    ok = True
-
-            if ok:
-                # Make our dataset an individual of the new dataset subclass
-                # that we have created by serialising the datamodel
-                ts.add((iri, RDF.type, uri))
 
 
 def acquire(
@@ -1348,6 +1294,8 @@ def get_partial_pipeline(
 ) -> bytes:
     """Returns a OTELib partial pipeline.
 
+    Note: This method is outdated and will be removed.
+
     Arguments:
         ts: Triplestore to load data from.
         client: OTELib client to create pipeline with.
@@ -1432,7 +1380,7 @@ def get_partial_pipeline(
     if statements:
         mapping = client.create_mapping(
             mappingType="triples",
-            # The OTEAPI datamodels stupidly strict, requireing us
+            # The OTEAPI datamodels very strict, requireing us
             # to cast the data ts.namespaces and statements
             prefixes={k: str(v) for k, v in ts.namespaces.items()},
             triples=[tuple(t) for t in statements],

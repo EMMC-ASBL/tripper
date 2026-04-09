@@ -764,7 +764,6 @@ def test_datadoc():
         DCAT.Resource,
         EMMO.Dataset,
         SEM.SEMImage,
-        "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
     }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == (
