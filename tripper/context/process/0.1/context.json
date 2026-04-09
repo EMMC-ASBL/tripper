@@ -2,7 +2,7 @@
   "@context": {
     "@version": 1.1,
     "ddoc": "https://w3id.org/emmo/application/datadoc#",
-    "accr": "http://publications.europa.eu/resource/authority/access-right/",
+    "rights": "http://publications.europa.eu/resource/authority/access-right/",
     "adms": "http://www.w3.org/ns/adms#",
     "dcat": "http://www.w3.org/ns/dcat#",
     "dcatap": "http://data.europa.eu/r5r/",
@@ -147,6 +147,10 @@
       "@id": "dcterms:abstract",
       "@language": "en"
     },
+    "altLabel": {
+      "@id": "skos:altLabel",
+      "@language": "en"
+    },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",
     "conceptualisation": {
@@ -177,7 +181,10 @@
       "@id": "rdfs:isDefinedBy",
       "@type": "@id"
     },
-    "label": "rdfs:label",
+    "label": {
+      "@id": "rdfs:label",
+      "@language": "en"
+    },
     "prefLabel": {
       "@id": "skos:prefLabel",
       "@language": "en"
