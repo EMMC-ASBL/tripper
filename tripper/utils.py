@@ -15,7 +15,7 @@ import warnings
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, cast
+from typing import IO, TYPE_CHECKING, Any, cast
 
 from tripper.errors import NamespaceError
 from tripper.literal import Literal
@@ -29,7 +29,6 @@ except ImportError:
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
-        Any,
         Callable,
         Generator,
         Iterable,
