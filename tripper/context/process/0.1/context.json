@@ -2,7 +2,7 @@
   "@context": {
     "@version": 1.1,
     "ddoc": "https://w3id.org/emmo/application/datadoc#",
-    "accr": "http://publications.europa.eu/resource/authority/access-right/",
+    "rights": "http://publications.europa.eu/resource/authority/access-right/",
     "adms": "http://www.w3.org/ns/adms#",
     "dcat": "http://www.w3.org/ns/dcat#",
     "dcatap": "http://data.europa.eu/r5r/",
@@ -24,6 +24,7 @@
     "vann": "http://purl.org/vocab/vann/",
     "vcard": "http://www.w3.org/2006/vcard/ns#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "avail": "http://publications.europa.eu/resource/authority/planned-availability/",
     "emmo": "https://w3id.org/emmo#",
     "oteio": "https://w3id.org/emmo/domain/oteio#",
     "chameo": "https://w3id.org/emmo/domain/characterisation-methodology/chameo#",
@@ -47,6 +48,10 @@
       "@id": "dcterms:contributor",
       "@type": "@id"
     },
+    "creationDate": {
+      "@id": "dcterms:created",
+      "@type": "xsd:dateTime"
+    },
     "creator": {
       "@id": "dcterms:creator",
       "@type": "@id"
@@ -58,6 +63,10 @@
     "curator": {
       "@id": "ddoc:curator",
       "@type": "@id"
+    },
+    "definition": {
+      "@id": "skos:definition",
+      "@language": "en"
     },
     "description": {
       "@id": "dcterms:description",
@@ -98,7 +107,7 @@
     },
     "modificationDate": {
       "@id": "dcterms:modified",
-      "@type": "xsd:date"
+      "@type": "xsd:dateTime"
     },
     "publisher": {
       "@id": "dcterms:publisher",
@@ -118,11 +127,7 @@
     },
     "releaseDate": {
       "@id": "dcterms:issued",
-      "@type": "xsd:date"
-    },
-    "subPropertyOf": {
-      "@id": "rdfs:subPropertyOf",
-      "@type": "@id"
+      "@type": "xsd:dateTime"
     },
     "theme": {
       "@id": "dcat:theme",
@@ -142,8 +147,16 @@
       "@id": "dcterms:abstract",
       "@language": "en"
     },
+    "altLabel": {
+      "@id": "skos:altLabel",
+      "@language": "en"
+    },
     "bibliographicCitation": "dcterms:bibliographicCitation",
     "comment": "rdfs:comment",
+    "conceptualisation": {
+      "@id": "emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13",
+      "@language": "en"
+    },
     "conformance": {
       "@id": "ddoc:conformance",
       "@type": "@id"
@@ -156,11 +169,26 @@
       "@id": "rdfs:domain",
       "@type": "@id"
     },
+    "elucidation": {
+      "@id": "emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9",
+      "@language": "en"
+    },
+    "hiddenLabel": {
+      "@id": "skos:hiddenLabel",
+      "@language": "en"
+    },
     "isDefinedBy": {
       "@id": "rdfs:isDefinedBy",
       "@type": "@id"
     },
-    "label": "rdfs:label",
+    "label": {
+      "@id": "rdfs:label",
+      "@language": "en"
+    },
+    "prefLabel": {
+      "@id": "skos:prefLabel",
+      "@language": "en"
+    },
     "range": {
       "@id": "rdfs:range",
       "@type": "@id"
@@ -172,6 +200,14 @@
     "statements": {
       "@id": "oteio:statement",
       "@type": "@json"
+    },
+    "subClassOf": {
+      "@id": "rdfs:subClassOf",
+      "@type": "@id"
+    },
+    "subPropertyOf": {
+      "@id": "rdfs:subPropertyOf",
+      "@type": "@id"
     },
     "usageNote": {
       "@id": "vann:usageNote",
@@ -268,7 +304,7 @@
     },
     "availability": {
       "@id": "dcatap:availability",
-      "@type": "xsd:date"
+      "@type": "@id"
     },
     "byteSize": {
       "@id": "dcat:byteSize",
@@ -286,10 +322,7 @@
       "@id": "dcat:downloadURL",
       "@type": "xsd:anyURI"
     },
-    "format": {
-      "@id": "dcterms:format",
-      "@type": "@id"
-    },
+    "format": "dcterms:format",
     "generator": {
       "@id": "oteio:generator",
       "@type": "@id"
@@ -327,10 +360,6 @@
     "checksumValue": {
       "@id": "spdx:checksumValue",
       "@type": "xsd:hexBinary"
-    },
-    "prefLabel": {
-      "@id": "skos:prefLabel",
-      "@language": "en"
     },
     "endpointDescription": {
       "@id": "dcat:endpointDescription",
@@ -378,30 +407,6 @@
     },
     "hasRole": {
       "@id": "dcat:hasRole",
-      "@type": "@id"
-    },
-    "altLabel": {
-      "@id": "skos:altLabel",
-      "@language": "en"
-    },
-    "conceptualisation": {
-      "@id": "emmo:EMMO_31252f35_c767_4b97_a877_1235076c3e13",
-      "@language": "en"
-    },
-    "elucidation": {
-      "@id": "emmo:EMMO_967080e5_2f42_4eb2_a3a9_c58143e835f9",
-      "@language": "en"
-    },
-    "hiddenLabel": {
-      "@id": "skos:hiddenLabel",
-      "@language": "en"
-    },
-    "subClassOf": {
-      "@id": "rdfs:subClassOf",
-      "@type": "@id"
-    },
-    "datatype": {
-      "@id": "ddoc:datatype",
       "@type": "@id"
     },
     "qualifiedCardinality": {
@@ -502,18 +507,6 @@
     },
     "ConformanceLevel": {
       "@id": "ddoc:ConformanceLevel",
-      "@type": "http://www.w3.org/2002/07/owl#Class"
-    },
-    "OWLClass": {
-      "@id": "owl:Class",
-      "@type": "http://www.w3.org/2002/07/owl#Class"
-    },
-    "Class": {
-      "@id": "rdfs:Class",
-      "@type": "http://www.w3.org/2002/07/owl#Class"
-    },
-    "GenericResource": {
-      "@id": "rdfs:Resource",
       "@type": "http://www.w3.org/2002/07/owl#Class"
     },
     "Restriction": {

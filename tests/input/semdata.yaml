@@ -9,6 +9,7 @@ prefixes:
   dm: http://onto-ns.com/meta/characterisation/0.1/SEMImage#
   par: http://sintef.no/dlite/parser#
   gen: http://sintef.no/dlite/generator#
+  iana: https://www.iana.org/assignments/media-types/
 
 
 # List of documented datasets
@@ -38,7 +39,7 @@ Dataset:
     distribution:
       #downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001.tif
       downloadURL: https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif
-      mediaType: http://www.iana.org/assignments/media-types/image/tiff
+      mediaType: iana:image/tiff
       parser: par:sem_hitachi
       # Note: generator is only used for data sinks. It is commented out here
       # because we are documenting a data source
@@ -57,7 +58,7 @@ Dataset:
 
     distribution:
       downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2/77600-23-001
-      mediaType: inode/directory
+      mediaType: iana:inode/directory
 
   - "@id": semdata:SEM_cement_batch2
     "@type": sem:SEMImageSeries
@@ -71,7 +72,7 @@ Dataset:
 
     distribution:
       downloadURL: sftp://nas.aimen.es/P_MATCHMAKER_SHARE_SINTEF/SEM_cement_batch2
-      mediaType: inode/directory
+      mediaType: iana:inode/directory
 
 
 Parser:

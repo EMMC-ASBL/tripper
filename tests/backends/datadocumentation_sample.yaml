@@ -7,6 +7,8 @@ Dataset:
     name: Tripper-team
   contactPoint:
     hasName: Tripper-team
-  distribution.accessURL: https://onto-ns.com/datasets/our_nice_dataset
-  distribution.mediaType: application/hdf5
-  distribution.format: HDF5
+  distribution:
+    "@type": dcat:Distribution
+    accessURL: https://onto-ns.com/datasets/our_nice_dataset
+    mediaType: iana:application/hdf5
+    format: HDF5

@@ -4,11 +4,12 @@ theme: ddoc:process
 
 prefixes:
   ex: "http://example.org#"
+  emmo: "https://w3id.org/emmo#"
 
 Computation:
   "@id": ex:MySimulation
   "@type": owl:Class
-  subClassOf: PhysicsBasedSimulation
+  subClassOf: emmo:PhysicsBasedSimulation
   prefLabel: MySimulation
   elucidation: A simulation using my physics-based materials models.
   isParticipatedBy:

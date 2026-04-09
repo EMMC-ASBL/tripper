@@ -1,11 +1,12 @@
 """Test the Keywords class."""
 
+# pylint: disable=too-many-statements,wrong-import-position
+
 import pytest
 
 pytest.importorskip("yaml")
 pytest.importorskip("pyld")
 
-# pylint: disable=wrong-import-position
 from tripper.datadoc import Keywords
 
 # A fixture used by all the tests
@@ -14,10 +15,13 @@ keywords = Keywords()
 
 def test_get_keywords():
     """Test get_keywords() function."""
+    import warnings
+
     from dataset_paths import testdir  # pylint: disable=import-error
 
-    from tripper import DDOC
-    from tripper.datadoc import get_keywords
+    from tripper import DDOC, OWL, XSD
+    from tripper.datadoc import get_context, get_keywords
+    from tripper.errors import TripperWarning
 
     kw1 = get_keywords()
     assert kw1.data == keywords.data
@@ -50,7 +54,8 @@ def test_get_keywords():
     assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert len(kw4.keywords) > len(kw1.keywords)
 
-    kw5 = get_keywords(yamlfile=testdir / "input" / "custom_keywords.yaml")
+    kw5 = get_keywords()
+    kw5.load_yaml(testdir / "input" / "custom_keywords.yaml")
     assert set(kw5.data.keys()) == {
         "prefixes",
         "theme",
@@ -59,11 +64,42 @@ def test_get_keywords():
     assert kw5.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert len(kw5.keywords) > len(kw1.keywords)
 
-    kw6 = get_keywords(
-        kw4, yamlfile=testdir / "input" / "custom_keywords.yaml"
-    )
-    assert kw4.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
+    kw6 = get_keywords(kw4)
+    kw6.load_yaml(testdir / "input" / "custom_keywords.yaml")
+    assert kw6.data.theme == ["ddoc:datadoc", "ddoc:prefixes", "ddoc:process"]
     assert "batchNumber" in kw6
+
+    kw7 = get_keywords(theme=None)
+    assert len(kw7) == 0
+    kw7.add({"resources": {"MyClass": {"iri": "http://example.com/MyClass"}}})
+    assert len(kw7) == 0  # no properties in keywords
+
+    ctx = get_context(default_theme=None)
+    ctx.add_context(
+        {
+            "ex": "http://example.com/",
+            "owl": str(OWL),
+            "xsd": str(XSD),
+            "objprop": {"@id": "ex:objprop", "@type": "@id"},
+            "dataprop": {"@id": "ex:dataprop", "@type": "xsd:string"},
+            "cls": {"@id": "ex:cls", "@type": "owl:Class"},
+        }
+    )
+
+    # Test `context` argument to get_keywords(). Ignore expected
+    # warnings about loss of information
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=TripperWarning)
+
+        kw8 = get_keywords(kw7, context=ctx, theme=None)
+        assert len(kw8) == 2  # 2 properties in keywords
+        assert kw8.get_prefixes()["ex"] == "http://example.com/"
+        assert set(kw8.classnames()) == {"Resource", "MyClass", "cls"}
+
+        kw9 = get_keywords(context=ctx, theme=None)
+        assert len(kw9) == 2
+        assert kw9.get_prefixes()["ex"] == "http://example.com/"
+        assert set(kw9.classnames()) == {"Resource", "cls"}
 
 
 def test_iter():
@@ -80,7 +116,7 @@ def test_iter():
 
 def test_len():
     """Test __iter__() method."""
-    assert len(keywords) == 125
+    assert len(keywords) == 126
 
 
 def test_dir():
@@ -155,7 +191,11 @@ def test_load_yaml():
     """
     from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper.datadoc.errors import ParseError
+    from tripper.datadoc.errors import (
+        ParseError,
+        RedefineKeywordWarning,
+        SkipRedefineKeywordWarning,
+    )
 
     kw = keywords.copy()
 
@@ -195,10 +235,12 @@ def test_load_yaml():
     # keywords are unchanged by failures
     # assert kw == keywords
 
-    kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="skip")
+    with pytest.warns(SkipRedefineKeywordWarning):
+        kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="skip")
     assert kw["title"].iri == "dcterms:title"
 
-    kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="allow")
+    with pytest.warns(RedefineKeywordWarning):
+        kw.load_yaml(indir / "invalid_keywords9.yaml", redefine="allow")
     assert kw["title"].iri == "myonto:a"
 
     kw.load_yaml(indir / "valid_keywords.yaml")
@@ -289,8 +331,8 @@ def test_save_table():
             "Access Rights may include information regarding access or "
             "restrictions based on privacy, security, or other policies. "
             "The following preferred Rights Statement individuals are "
-            "defined: `accr:PUBLIC`, `accr:NON_PUBLIC`, `accr:CONFIDENTIAL`, "
-            "`accr:RESTRICTED`, `accr:SENSITIVE`",
+            "defined: `rights:PUBLIC`, `rights:NON_PUBLIC`, "
+            "`rights:CONFIDENTIAL`, `rights:RESTRICTED`, `rights:SENSITIVE`",
         ),
         ("theme", "ddoc:datadoc"),
     ]
@@ -345,7 +387,7 @@ def test_classnames():
     """Test keywordnames() method."""
     classnames = keywords.classnames()
     assert "Dataset" in classnames
-    assert len(classnames) == 27
+    assert len(classnames) == 24
 
 
 def test_fromdicts():
@@ -485,6 +527,7 @@ def test_load2():
 
     from tripper import Triplestore
     from tripper.datadoc import get_keywords
+    from tripper.datadoc.errors import RedefineKeywordWarning
     from tripper.utils import AttrDict
 
     ts = Triplestore("rdflib")
@@ -508,6 +551,16 @@ def test_load2():
         "Child",
         "Skill",
         "Resource",
+        "Age",
+        "Dauther",
+        "Father",
+        "Female",
+        "Male",
+        "Mother",
+        "Name",
+        "Property",
+        "Son",
+        "Weight",
     }
     d = kw["hasAge"]
     assert d.iri == "fam:hasAge"
@@ -519,7 +572,7 @@ def test_load2():
         "type": "owl:AnnotationProperty",
         "domain": "rdfs:Resource",
         "range": "rdfs:Literal",
-        "comment": "Name.",
+        "description": "Name.",
         "name": "hasName",
     }
 
@@ -529,7 +582,8 @@ def test_load2():
     # Create a new Keywords object with
     # default keywords and load from the triplestore
     kw2 = get_keywords()
-    kw2.load_rdf(ts, redefine="allow")
+    with pytest.warns(RedefineKeywordWarning):
+        kw2.load_rdf(ts, redefine="allow")
 
     # Ensure that the specified keywords are in kw2
     assert not {
@@ -556,7 +610,7 @@ def test_load2():
         "type": "owl:AnnotationProperty",
         "domain": ["dcat:Resource", "rdfs:Resource"],
         "range": "rdfs:Literal",
-        "comment": "Name.",
+        "description": "Name.",
         "name": "hasName",
     }
 
@@ -749,5 +803,5 @@ def test__keywords_list():
     assert isinstance(themeset, set)
 
     kwset, clset, themeset = keywords._keywords_list(namespace_filter="ddoc")
-    assert len(kwset) == 4
-    assert len(clset) == 2
+    assert len(kwset) == 3
+    assert len(clset) == 1

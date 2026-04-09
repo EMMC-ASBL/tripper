@@ -46,18 +46,15 @@ def test_sparql_construct():
 
     from tripper import Triplestore
 
-    data = dedent(
-        """
+    data = dedent("""
         @prefix  foaf:  <http://xmlns.com/foaf/0.1/> .
 
         _:a foaf:givenname   "Alice" .
         _:a foaf:family_name "Hacker" .
         _:b foaf:firstname   "Bob" .
         _:b foaf:surname     "Hacker" .
-        """
-    )
-    query = dedent(
-        """
+        """)
+    query = dedent("""
         PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
         PREFIX vcard:   <http://www.w3.org/2001/vcard-rdf/3.0#>
 
@@ -70,8 +67,7 @@ def test_sparql_construct():
           { ?x foaf:firstname ?gname } UNION  { ?x foaf:givenname   ?gname } .
           { ?x foaf:surname   ?fname } UNION  { ?x foaf:family_name ?fname } .
         }
-        """
-    )
+        """)
     ts = Triplestore("rdflib")
     ts.parse(data=data)
     VCARD = ts.bind("vcard", "http://www.w3.org/2001/vcard-rdf/3.0#")
@@ -96,8 +92,7 @@ def test_sparql_select2():
 
     from tripper import Literal, Triplestore
 
-    data = dedent(
-        """
+    data = dedent("""
         @prefix  :  <http://persons.com#> .
         @prefix  foaf:  <http://xmlns.com/foaf/0.1/> .
 
@@ -109,10 +104,8 @@ def test_sparql_select2():
 
         :clare     foaf:name   "Clare" .
         :clare     foaf:nick   "CT" .
-        """
-    )
-    query = dedent(
-        """
+        """)
+    query = dedent("""
         PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
         SELECT ?nameX ?nameY ?nickY
         WHERE
@@ -121,8 +114,7 @@ def test_sparql_select2():
             ?y foaf:name ?nameY .
             OPTIONAL { ?y foaf:nick ?nickY }
           }
-        """
-    )
+        """)
     ts = Triplestore("rdflib")
     ts.parse(data=data)
     r = ts.query(query)
@@ -145,22 +137,18 @@ def test_sparql_construct2():
     # Load pre-inferred EMMO
     ts = Triplestore("rdflib")
 
-    data = dedent(
-        """
+    data = dedent("""
         @prefix  foaf:  <http://xmlns.com/foaf/0.1/> .
 
         _:a    foaf:name   "Alice" .
         _:a    foaf:mbox   <mailto:alice@example.org> .
-        """
-    )
-    query = dedent(
-        """
+        """)
+    query = dedent("""
         PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
         PREFIX vcard:   <http://www.w3.org/2001/vcard-rdf/3.0#>
         CONSTRUCT   { <http://example.org/person#Alice> vcard:FN ?name }
         WHERE       { ?x foaf:name ?name }
-        """
-    )
+        """)
     ts = Triplestore("rdflib")
     ts.parse(data=data)
     r = ts.query(query)
@@ -186,8 +174,7 @@ def test_sparql_ask():
     # Load pre-inferred EMMO
     ts = Triplestore("rdflib")
 
-    data = dedent(
-        """
+    data = dedent("""
         @prefix foaf:       <http://xmlns.com/foaf/0.1/> .
 
         _:a  foaf:name       "Alice" .
@@ -195,14 +182,11 @@ def test_sparql_ask():
 
         _:b  foaf:name       "Bob" .
         _:b  foaf:mbox       <mailto:bob@work.example> .
-        """
-    )
-    query = dedent(
-        """
+        """)
+    query = dedent("""
         PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
         ASK  { ?x foaf:name  "Alice" }
-        """
-    )
+        """)
     ts = Triplestore("rdflib")
     ts.parse(data=data)
     r = ts.query(query)
@@ -221,8 +205,7 @@ def test_sparql_describe():
     # Load pre-inferred EMMO
     ts = Triplestore("rdflib")
 
-    data = dedent(
-        """
+    data = dedent("""
         @prefix foaf:   <http://xmlns.com/foaf/0.1/> .
         @prefix vcard:  <http://www.w3.org/2001/vcard-rdf/3.0> .
         @prefix exOrg:  <http://org.example.com/employees#> .
@@ -234,15 +217,12 @@ def test_sparql_describe():
             foaf:mbox_sha1sum   "ABCD1234" .
 
         foaf:mbox_sha1sum  rdf:type  owl:InverseFunctionalProperty .
-        """
-    )
-    query = dedent(
-        """
+        """)
+    query = dedent("""
         PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
         DESCRIBE ?x
         WHERE    { ?x foaf:mbox_sha1sum "ABCD1234" }
-        """
-    )
+        """)
     ts = Triplestore("rdflib")
     ts.parse(data=data)
     r = ts.query(query)

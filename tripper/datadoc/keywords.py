@@ -34,6 +34,7 @@ from tripper.datadoc.errors import (
     SkipRedefineKeywordWarning,
 )
 from tripper.datadoc.utils import add, asseq, iriname, merge
+from tripper.errors import TripperWarning
 from tripper.utils import (
     AttrDict,
     expand_iri,
@@ -47,6 +48,8 @@ from tripper.utils import (
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Any, Iterable, List, Optional, Set, Tuple, Union
+
+    from tripper.datadoc.context import ContextType
 
     FileLoc = Union[Path, str]
     KeywordsType = Union["Keywords", dict, IO, Path, str, Sequence]
@@ -77,21 +80,19 @@ def get_keywords(
     keywords: "Optional[KeywordsType]" = None,
     format: "Optional[str]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
-    yamlfile: "Optional[FileLoc]" = None,
+    context: "Optional[ContextType]" = None,
     timeout: float = 3,
     strict: bool = False,
     redefine: str = "raise",
 ) -> "Keywords":
-    """A convenient function that returns a Context instance.
+    """A convenient function that returns a Keywords instance.
 
     Arguments:
         keywords: Optional existing keywords object.
         format: Format of input if `keywords` refer to a file that can be
             loaded.
         theme: IRI of one of more themes to load keywords for.
-        yamlfile: YAML file with keyword definitions to parse.  May also
-            be an URI in which case it will be accessed via HTTP GET.
-            Deprecated. Use the `add_yaml()` or `add()` methods instead.
+        context: Initialise from this Context instance.
         timeout: Timeout in case `yamlfile` is a URI.
         strict: Whether to raise an `InvalidKeywordError` exception if `d`
             contains an unknown key.
@@ -102,33 +103,78 @@ def get_keywords(
               - "skip": Don't redefine existing keyword. Emits a
                 `RedefineKeywordWarning`.
               - "raise": Raise an RedefineError (default).
+
+    Returns:
+        Keywords instance.
     """
-    if isinstance(keywords, Keywords):
-        kw = keywords
-        if theme:
-            kw.add_theme(
-                theme, timeout=timeout, strict=strict, redefine=redefine
-            )
+    # pylint: disable=import-outside-toplevel
+    from tripper.datadoc.context import get_context
+
+    def from_context():
+        """Return a keywords dict from context."""
+        warnings.warn(
+            "Adding keywords from context - information may be lost. "
+            "Classes are added to the root and properties to 'Resource'.",
+            category=TripperWarning,
+            stacklevel=3,
+        )
+        prefixes = context.get_prefixes()
+        classes = context.get_classes()
+        properties = context.get_properties()
+        d = {}
+        if prefixes:
+            d["prefixes"] = prefixes
+        if classes:
+            d["resources"] = {
+                name: {"iri": iri} for name, iri in classes.items()
+            }
+        if properties:
+            props = {}
+            ctx = context.get_context_dict()
+            for name, iri in properties.items():
+                if ctx[name]["@type"] == "@id":
+                    props[name] = {"iri": iri}
+                else:
+                    props[name] = {
+                        "iri": iri,
+                        "range": "rdf:Literal",
+                        "datatype": ctx[name]["@type"],
+                    }
+            if "resources" not in d:
+                d["resources"] = {}
+            d["resources"]["Resource"] = {
+                "iri": "dcat:Resource",
+                "keywords": props,
+            }
+        return d
+
+    if context:
+        context = get_context(context)
+
+    # If keywords AND context is given, the "redefine" argument
+    # determine whether the context can overwrite the keywords.
+    #
+    # If only context is given, we create a default keywords (from
+    # theme) and overwrite it with the context.
+    if keywords is not None:
+        if isinstance(keywords, Keywords):
+            kw = keywords
+        else:
+            kw = Keywords(theme=theme)
+            if keywords:
+                kw.add(
+                    keywords,
+                    format=format,
+                    timeout=timeout,
+                    strict=strict,
+                    redefine=redefine,
+                )
+        if context is not None:
+            kw.add(from_context(), redefine=redefine)
     else:
         kw = Keywords(theme=theme)
-        if keywords:
-            kw.add(
-                keywords,
-                format=format,
-                timeout=timeout,
-                strict=strict,
-                redefine=redefine,
-            )
-
-    if yamlfile:
-        warnings.warn(
-            "The `yamlfile` argument is deprecated. Use the `add_yaml()` or "
-            "`add()` methods instead.",
-            DeprecationWarning,
-        )
-        kw.load_yaml(
-            yamlfile, timeout=timeout, strict=strict, redefine=redefine
-        )
+        if context is not None:
+            kw.add(from_context(), redefine="allow")
 
     return kw
 
@@ -163,7 +209,7 @@ class Keywords:
             theme: IRI of one of more themes to load keywords for.
             yamlfile: A YAML file with keyword definitions to parse.  May also
                 be an URI in which case it will be accessed via HTTP GET.
-                Deprecated. Use the `add_yaml()` or `add()` methods instead.
+                Deprecated. Use the `load_yaml()` or `add()` methods instead.
             timeout: Timeout in case `yamlfile` is a URI.
 
         Attributes:
@@ -185,12 +231,30 @@ class Keywords:
         # Themes and files that has been parsed
         self.parsed: "set" = set()
 
+        # Used for parsing dicts. Maps any of the elements in the
+        # value to the key (with highest precedence first).
+        self.input_mappings = {
+            "label": ["skos:prefLabel", "rdfs:label"],
+            "description": [
+                # TODO: Uncomment when EMMO has changed annotations to
+                # human readable IRIs
+                # "emmo:elucidation",
+                "skos:definition",
+                "dcterms:description",
+                "rdfs:comment",
+            ],
+            "usageNote": ["vann:usageNote", "skos:scopeNote"],
+            "unit": ["ddoc:unitSymbol"],
+            "subPropertyOf": ["rdfs:subPropertyOf"],
+            "inverseOf": ["owl:inverseOf"],
+        }
+
         if theme:
             self.add_theme(theme)
 
         if yamlfile:
             warnings.warn(
-                "The `yamlfile` argument is deprecated. Use the `add_yaml()` "
+                "The `yamlfile` argument is deprecated. Use the `load_yaml()` "
                 "or `add()` methods instead.",
                 DeprecationWarning,
             )
@@ -555,6 +619,9 @@ class Keywords:
                 key = prefix_iri(val["iri"], prefixes)
                 if len(val) > 1 or key not in iridefs:
                     iridefs[key] = val
+                expkey = expand_iri(val["iri"], prefixes)
+                if len(val) > 1 or expkey not in iridefs:
+                    iridefs[expkey] = val
 
         # Resources
         for cls, defs in d.get("resources", AttrDict()).items():
@@ -649,11 +716,12 @@ class Keywords:
                                 SkipRedefineKeywordWarning,
                             )
                         elif redefine == "allow":
-                            warnings.warn(
-                                f"Redefining keyword '{keyword}' from "
-                                f"'{oldiri}' to '{value.iri}'.",
-                                RedefineKeywordWarning,
-                            )
+                            if oldiri != value.iri:
+                                warnings.warn(
+                                    f"Redefining keyword '{keyword}' from "
+                                    f"'{oldiri}' to '{value.iri}'.",
+                                    RedefineKeywordWarning,
+                                )
                         else:
                             raise ValueError(
                                 "Invalid value of `redefine` "
@@ -817,6 +885,7 @@ class Keywords:
             "prefixed": None,
             "expanded": self.expanded,
         }
+        # TODO: use `self.input_mappings` instead
         maps = {
             "subPropertyOf": "rdfs:subPropertyOf",
             "unit": "ddoc:unitSymbol",
@@ -983,19 +1052,37 @@ class Keywords:
         data.resources = AttrDict()
         resources = data.resources
 
+        # Expand input mappings
+        input_mappings = {}
+        for key, maps in self.input_mappings.items():
+            s = []
+            for m in maps:
+                s.append(self.expanded(m, strict=False))
+                s.append(self.prefixed(m, strict=False))
+                s.append(iriname(m))
+            input_mappings[key] = s
+
         # Add classes
         clslabels = {}
         for k, v in classes.items():
             d = AttrDict(iri=prefix_iri(k, p))
-            for kk, vv in v.items():
-                if kk in ("description", "usageNote"):
-                    d[kk] = vv
-                if kk == "subClassOf":
-                    if isinstance(vv, str):
-                        d[kk] = to_prefixed(vv, p, strict=True)
+            for key, maps in input_mappings.items():
+                for m in maps:
+                    if m in v:
+                        d[key] = v[m]
+                        break
+            if "subClassOf" in v and isinstance(v["subClassOf"], str):
+                d["subClassOf"] = to_prefixed(v["subClassOf"], p, strict=True)
             d.setdefault("keywords", AttrDict())
-            label = v["label"] if "label" in v else iriname(k)
-            resources[label] = d
+            # label = d.pop("label") if "label" in d else iriname(k)
+            for key in d:
+                if key in input_mappings["label"]:
+                    label = d.pop(key)
+                    break
+            else:
+                label = iriname(k)
+            for lbl in [label] if isinstance(label, str) else set(label):
+                resources[lbl] = d
             clslabels[d.iri] = label
 
         # Add properties
@@ -1024,9 +1111,11 @@ class Keywords:
                     else:
                         r = self.data.resources[domainname].copy()
                     resources[domainname] = r
-                    r.keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        r.keywords[l] = d
                 else:
-                    resources[domainname].keywords[label] = d
+                    for l in [label] if isinstance(label, str) else set(label):
+                        resources[domainname].keywords[l] = d
             if "range" in value:
                 _types = asseq(d.get("type", OWL.AnnotationProperty))
                 types = [expand_iri(t, p) for t in _types]
@@ -1041,15 +1130,11 @@ class Keywords:
                 # TODO: Define if we accept missing datatype for literals
             if "conformance" in value:
                 d.conformance = CONFORMANCE_MAPS[value["conformance"]]
-            if "unitSymbol" in value:
-                d.unit = value["unitSymbol"]
-            for k, v in value.items():
-                if (
-                    k not in ("@id", "@type", "domain", "label", "name")
-                    and k not in d
-                ):
-                    d[k] = v
-
+            for key, maps in input_mappings.items():
+                for m in maps:
+                    if key != "label" and m in value:
+                        d.setdefault(key, value[m])
+                        break
         return data
 
     def missing_keywords(
@@ -1115,9 +1200,10 @@ class Keywords:
             SELECT DISTINCT ?s WHERE {
               VALUES ?o {
                 owl:DatatypeProperty owl:ObjectProperty owl:AnnotationProperty
-                rdf:Property
+                rdf:Property owl:Class
               }
               ?s a ?o .
+              FILTER(isIRI(?s))
             }
             """
             iris = [iri[0] for iri in ts.query(query)]
@@ -1126,19 +1212,9 @@ class Keywords:
         for prefix, ns in ts.namespaces.items():
             self.add_prefix(prefix, ns)
 
-        # Maps JSON-LD key name to keyword
-        names = {
-            DDOC.unitSymbol: "unit",
-            "ddoc:unitSymbol": "unit",
-        }
-
-        dicts = []
-        for iri in iris:
-            d = AttrDict()
-            for k, v in acquire(ts, iri, context=context).items():
-                d[names.get(k, k)] = v
-            dicts.append(d)
-
+        dicts = [
+            AttrDict(acquire(ts, iri, context=context).items()) for iri in iris
+        ]
         dct = {expand_iri(d["@id"], prefixes): d for d in dicts}
 
         # FIXME: Add domain and range to returned dicts
@@ -1321,6 +1397,8 @@ class Keywords:
     def shortname(self, iri: str) -> str:
         """Return the short name of `iri`.
 
+        If `strict` is False, return last component of the expanded IRI.
+
         Example:
 
         >>> keywords = Keywords()
@@ -1336,6 +1414,9 @@ class Keywords:
         for k, v in self.data.resources.items():
             if expanded == self.expanded(v.iri):
                 return k
+            for kk, vv in v.keywords.items():
+                if expanded == self.expanded(vv.iri):
+                    return kk
         raise InvalidKeywordError(iri)
 
     def prefixed(self, name: str, strict: bool = True) -> str:
@@ -1449,7 +1530,7 @@ class Keywords:
         for k, v in resources.items():
             ctx.setdefault(
                 k,
-                {  # type:ignore
+                {  # type: ignore
                     "@id": v.iri,
                     "@type": OWL.Class,
                 },
@@ -1635,6 +1716,10 @@ class Keywords:
             keywords: Sequence of keywords to include.
             classes: Include keywords that have these classes in their domain.
             themes: Include keywords for these themes.
+            namespace_filter: A prefix, namespace or a sequence of these.
+                Keep only keywords within this namespace.
+                It is important that the namespace(s) are defined with
+                prefixes in the Keywords object.
             explanation: Whether to include explanation of columns labels.
             special: Whether to generate documentation of special
                 JSON-LD keywords.
@@ -1822,7 +1907,7 @@ class Keywords:
         return lines
 
 
-def main(argv=None):
+def main(argv=None):  # pylint: disable=too-many-statements
     """Main function providing CLI access to keywords."""
     import argparse  # pylint: disable=import-outside-toplevel
 
@@ -1873,20 +1958,20 @@ def main(argv=None):
         help="How to handle redifinition of existing keywords.",
     )
     parser.add_argument(
-        "--context",
+        "--write-context",
+        "--write-json",
         "-c",
         metavar="FILENAME",
         help="Generate JSON-LD context file.",
     )
     parser.add_argument(
-        "--keywords",
-        "--markdown",
+        "--write-kw-md",
         "-k",
         metavar="FILENAME",
         help="Generate keywords Markdown documentation.",
     )
     parser.add_argument(
-        "--yaml",
+        "--write-kw-yaml",
         "-y",
         metavar="FILENAME",
         help="Generate keywords YAML file.",
@@ -1912,9 +1997,12 @@ def main(argv=None):
             "Keep only keywords with IRIs in "
             "the namespace "
             "provided by this option.  Can be provided more that once. "
-            "To be used with the --keywords option. "
+            "To be used with the --write-kw-md option. "
             "A namespace can be specified by its full IRI or by a pre-defined "
             "prefix."
+            "Note that the namespace must be defined with a prefix. "
+            "If missing,"
+            "it can be added with --prefix."
         ),
     )
     parser.add_argument(
@@ -1922,7 +2010,7 @@ def main(argv=None):
         metavar="KW1,KW2,...",
         help=(
             "Comma-separated list of keywords to include in generated table. "
-            "Implies --keywords."
+            "Implies --write-kw-md."
         ),
     )
     parser.add_argument(
@@ -1931,7 +2019,7 @@ def main(argv=None):
         help=(
             "Generate keywords Markdown documentation for any keywords who's "
             "domain is in the comma-separated list CLASSES. "
-            "Implies --keywords."
+            "Implies --write-kw-md."
         ),
     )
     parser.add_argument(
@@ -1940,19 +2028,39 @@ def main(argv=None):
         help=(
             "Generate keywords Markdown documentation for any keywords that "
             "belong to one of the themes in the comma-separated list THEMES. "
-            "Implies --keywords."
+            "Implies --write-kw-md, --write-kw-json or --write-kw-yaml."
         ),
     )
     parser.add_argument(
-        "--prefixes",
-        "-p",
+        "--write-prefixes",
+        "-w",
         metavar="FILENAME",
-        help="Generate prefixes Markdown documentation.",
+        help="Write prefixes Markdown file.",
     )
+    parser.add_argument(
+        "--prefix",
+        "-p",
+        metavar="PREFIX:NAMESPACE",
+        default=[],
+        action="append",
+        help="Add the prefix given as tuple PREFIX=NAMESPACE, "
+        "can be used multiple times.",
+    )
+
     parser.add_argument(
         "--list-themes",
         action="store_true",
         help="List installed themes and exit.",
+    )
+    parser.add_argument(
+        "--set-prefix",
+        "-P",
+        metavar="PREFIX:NAMESPACE",
+        action="append",
+        help=(
+            "Set perfix. This option may be given more than once. "
+            "It can be used as a workaround for PrefixMismatchError."
+        ),
     )
 
     args = parser.parse_args(argv)
@@ -1974,18 +2082,33 @@ def main(argv=None):
 
     kw = Keywords(theme=default_theme)
 
+    if args.prefix:
+        for p in asseq(args.prefix):
+            if ":" not in p:
+                parser.error(
+                    f"Invalid prefix definition '{p}'. Must be of the "
+                    "form PREFIX:NAMESPACE."
+                )
+            prefix, namespace = p.split(":", 1)
+            kw.add_prefix(prefix, namespace, replace=True)
+
     for theme in args.theme[1:]:
         if theme:
             kw.add_theme(theme, strict=args.strict, redefine=args.redefine)
 
+    if args.set_prefix:
+        for s in args.set_prefix:
+            prefix, ns = s.split(":", 1)
+            kw.data.prefixes[prefix] = ns
+
     kw.add(args.input, args.format, strict=args.strict, redefine=args.redefine)
 
-    if args.context:
-        kw.save_context(args.context)
+    if args.write_context:
+        kw.save_context(args.write_context)
 
-    if args.keywords or args.kw or args.classes or args.themes:
+    if args.write_kw_md or args.kw or args.classes or args.themes:
         kw.save_markdown(
-            args.keywords,
+            args.write_kw_md,
             keywords=args.kw.split(",") if args.kw else None,
             classes=args.classes.split(",") if args.classes else None,
             themes=args.themes.split(",") if args.themes else None,
@@ -1994,11 +2117,13 @@ def main(argv=None):
             namespace_filter=args.namespace_filter,
         )
 
-    if args.prefixes:
-        kw.save_markdown_prefixes(args.prefixes)
+    if args.write_prefixes:
+        kw.save_markdown_prefixes(args.write_prefixes)
 
-    if args.yaml:
-        kw.save_yaml(args.yaml, namespace_filter=args.namespace_filter)
+    if args.write_kw_yaml:
+        kw.save_yaml(
+            args.write_kw_yaml, namespace_filter=args.namespace_filter
+        )
 
 
 if __name__ == "__main__":

@@ -61,7 +61,8 @@ class TableDoc:
               - "skip": Don't redefine existing keyword. Emits a
                 `RedefineKeywordWarning`.
               - "raise": Raise an RedefineError (default).
-
+        baseiri: If given, it will be used as a base iri to
+            resolve relative IRIs. (I.e. Not valid URLs).
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
@@ -79,6 +80,7 @@ class TableDoc:
         strip: bool = True,
         strict: bool = False,
         redefine: str = "raise",
+        baseiri: "Optional[str]" = None,
     ) -> None:
         self.header = list(header)
         self.data = [list(row) for row in data]
@@ -92,12 +94,17 @@ class TableDoc:
         self.context = get_context(
             context=context,
             keywords=self.keywords,
+            default_theme=None,
             prefixes=prefixes,
         )
         self.strip = strip
+        self.baseiri = baseiri
 
-    def save(self, ts: Triplestore) -> None:
-        """Save tabular datadocumentation to triplestore."""
+    def save(self, ts: Triplestore) -> dict:
+        """Save tabular datadocumentation to triplestore.
+
+        Returns a dict with the JSON-LD written to the triplestore.
+        """
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
         )
@@ -105,7 +112,14 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        store(ts, self.asdicts(), type=self.type, context=self.context)
+        return store(
+            ts,
+            self.asdicts(),
+            type=self.type,
+            keywords=self.keywords,
+            context=self.context,
+            baseiri=self.baseiri,
+        )
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
@@ -247,6 +261,7 @@ class TableDoc:
         dialect: "Optional[Union[csv.Dialect, str]]" = None,
         strict: bool = False,
         redefine: str = "raise",
+        baseiri: "Optional[str]" = None,
         **kwargs,
     ) -> "TableDoc":
         # pylint: disable=line-too-long
@@ -277,6 +292,8 @@ class TableDoc:
                   - "skip": Don't redefine existing keyword. Emits a
                     `RedefineKeywordWarning`.
                   - "raise": Raise an RedefineError (default).
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
             kwargs: Additional keyword arguments overriding individual
                 formatting parameters.  For more details, see
                 [Dialects and Formatting Parameters].
@@ -320,6 +337,7 @@ class TableDoc:
             prefixes=prefixes,
             strict=strict,
             redefine=redefine,
+            baseiri=baseiri,
         )
 
     def write_csv(

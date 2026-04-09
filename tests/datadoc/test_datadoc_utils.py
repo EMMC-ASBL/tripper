@@ -112,3 +112,51 @@ def test_iriname():
     assert iriname("abc") == "abc"
     assert iriname("rdf:JSON") == "JSON"
     assert iriname("https://w3id.org/emmo#Ampere") == "Ampere"
+    assert iriname("http://purl.org/dc/terms/abstract") == "abstract"
+    assert iriname("term/without/doubledot") == "term/without/doubledot"
+    assert (
+        iriname(
+            "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+        )
+        == "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+    )
+    assert (
+        iriname(
+            "https://semdata.data#"
+            "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+        )
+        == "SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+    )
+    assert iriname("http://example.com/data#aa/bb/cc.txt") == "aa/bb/cc.txt"
+    assert iriname("http://example.com/data/aa/bb/cc.txt") == "cc.txt"
+    assert iriname("file://hostname/absolute/path/cc.txt") == "cc.txt"
+    assert iriname("file:///absolute/path/cc.txt") == "cc.txt"
+
+
+def test_getlabel():
+    """Test utility function getlabel()."""
+    from tripper import SKOS
+    from tripper.datadoc.errors import InvalidDatadocError
+    from tripper.datadoc.utils import getlabel
+
+    assert getlabel({"@id": "ex:A", "prefLabel": "a"}) == "a"
+    assert getlabel({"@id": "ex:A", "label": "a"}) == "a"
+    assert getlabel({"@id": "ex:A", "rdfs:label": "a"}) == "a"
+    assert getlabel({"@id": "ex:A"}, default="a") == "a"
+    assert getlabel({"@id": "ex:A"}) == "A"
+
+    # Check for precedence of labels
+    assert (
+        getlabel({"@id": "ex:A", "rdfs:label": "a", "prefLabel": "b"}) == "a"
+    )
+    assert (
+        getlabel({"@id": "ex:A", "rdfs:label": "a", "skos:prefLabel": "b"})
+        == "b"
+    )
+    assert (
+        getlabel({"@id": "ex:A", "rdfs:label": "a", SKOS.prefLabel: "b"})
+        == "b"
+    )
+
+    with pytest.raises(InvalidDatadocError):
+        getlabel({"x": "ex:A"})
