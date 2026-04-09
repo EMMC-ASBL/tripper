@@ -41,7 +41,7 @@ resources:
         range: dcterms:RightsStatement
         conformance: optional
         description: Information about who can access the resource or an indication of its security status.
-        usageNote: "Access Rights may include information regarding access or restrictions based on privacy, security, or other policies. The following preferred Rights Statement individuals are defined: `accr:PUBLIC`, `accr:NON_PUBLIC`, `accr:CONFIDENTIAL`, `accr:RESTRICTED`, `accr:SENSITIVE`"
+        usageNote: "Access Rights may include information regarding access or restrictions based on privacy, security, or other policies. The following preferred Rights Statement individuals are defined: `rights:PUBLIC`, `rights:NON_PUBLIC`, `rights:CONFIDENTIAL`, `rights:RESTRICTED`, `rights:SENSITIVE`"
 
       applicableLegislation:
         iri: dcatap:applicableLegislation
@@ -840,7 +840,7 @@ resources:
   RightsStatement:
     iri: dcterms:RightsStatement
     description: A statement about the intellectual property rights (IPR) held in or over a resource, a legal document giving official permission to do something with a resource, or a statement about access rights.
-    usageNote: "EU pre-defines the following individuals: accr:PUBLIC, accr:NON_PUBLIC, accr:CONFIDENTIAL, accr:RESTRICTED, accr:SENSITIVE."
+    usageNote: "EU pre-defines the following individuals: rights:PUBLIC, rights:NON_PUBLIC, rights:CONFIDENTIAL, rights:RESTRICTED, rights:SENSITIVE."
 
   LegalResource:
     iri: eli:LegalResource
