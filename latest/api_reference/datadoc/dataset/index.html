@@ -2463,6 +2463,7 @@ or a sequence of strings and dicts.</p></td>
     <div class="doc doc-contents ">
 
       <p>Returns a OTELib partial pipeline.</p>
+<p>Note: This method is outdated and will be removed.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -2563,6 +2564,8 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a OTELib partial pipeline.</span>
 
+<span class="sd">    Note: This method is outdated and will be removed.</span>
+
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to load data from.</span>
 <span class="sd">        client: OTELib client to create pipeline with.</span>
@@ -2647,7 +2650,7 @@ Defaults to <code>ts.prefer_sparql</code>.</p></td>
     <span class="k">if</span> <span class="n">statements</span><span class="p">:</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_mapping</span><span class="p">(</span>
             <span class="n">mappingType</span><span class="o">=</span><span class="s2">&quot;triples&quot;</span><span class="p">,</span>
-            <span class="c1"># The OTEAPI datamodels stupidly strict, requireing us</span>
+            <span class="c1"># The OTEAPI datamodels very strict, requireing us</span>
             <span class="c1"># to cast the data ts.namespaces and statements</span>
             <span class="n">prefixes</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
             <span class="n">triples</span><span class="o">=</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">statements</span><span class="p">],</span>
@@ -3511,8 +3514,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
       <p>Save extra content in <code>source</code> to the triplestore.</p>
 <p>Currently, this includes:
-- statements and mappings
-- data models (require that DLite is installed)</p>
+- statements and mappings</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -3546,69 +3548,18 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
 <span class="sd">    Currently, this includes:</span>
 <span class="sd">    - statements and mappings</span>
-<span class="sd">    - data models (require that DLite is installed)</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to load data from.</span>
 <span class="sd">        source: Dict in multi-resource format.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
     <span class="c1"># Save statements and mappings</span>
     <span class="n">statements</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;statements&quot;</span><span class="p">)</span>
     <span class="n">statements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_values</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;mappings&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">statements</span><span class="p">:</span>
         <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">statements</span><span class="p">)</span>
-
-    <span class="c1"># Save data models</span>
-    <span class="n">datamodels</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;datamodel&quot;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Dataset&quot;</span><span class="p">,</span> <span class="p">())</span>
-        <span class="k">if</span> <span class="s2">&quot;datamodel&quot;</span> <span class="ow">in</span> <span class="n">d</span>
-    <span class="p">}</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># pylint: disable=import-outside-toplevel</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_dataset</span>
-    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">datamodels</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;dlite is not installed - data models will not be added to &quot;</span>
-                <span class="s2">&quot;the triplestore&quot;</span>
-            <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">get_values</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;datamodelStorage&quot;</span><span class="p">):</span>
-            <span class="n">dlite</span><span class="o">.</span><span class="n">storage_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">iri</span><span class="p">,</span> <span class="n">uri</span> <span class="ow">in</span> <span class="n">datamodels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">ok</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-                <span class="n">content</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">dm</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">Instance</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-                <span class="n">add_dataset</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
-                <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">dm</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-                <span class="k">except</span> <span class="p">(</span>
-                    <span class="n">dlite</span><span class="o">.</span><span class="n">DLiteMissingInstanceError</span>  <span class="c1"># pylint: disable=no-member</span>
-                <span class="p">):</span>
-                    <span class="c1"># __FIXME__: check session whether to warn or re-raise</span>
-                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cannot load datamodel: </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">add_dataset</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span>
-                    <span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="k">if</span> <span class="n">ok</span><span class="p">:</span>
-                <span class="c1"># Make our dataset an individual of the new dataset subclass</span>
-                <span class="c1"># that we have created by serialising the datamodel</span>
-                <span class="n">ts</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">uri</span><span class="p">))</span>
 </code></pre></div>
         </details>
     </div>
@@ -4120,7 +4071,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 
 <span class="sd">    References:</span>
 <span class="sd">    [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/</span>
-<span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json</span>
+<span class="sd">    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
