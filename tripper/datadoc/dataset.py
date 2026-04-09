@@ -602,6 +602,7 @@ def update_context(
                             },
                         }
                     )
+    return context
 
 
 def infer_restriction_types(
