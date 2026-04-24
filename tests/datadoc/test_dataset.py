@@ -404,7 +404,7 @@ def test_store():
 
 def test_update_context():
     """Test update_context()."""
-    from tripper import HUME, OWL, Namespace
+    from tripper import HUME, OWL, SKOS, Namespace
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import update_context
 
@@ -425,9 +425,17 @@ def test_update_context():
                 "@id": "ex:instr2",
             },
             {
+                # Add both ex:MyDevice and hume:Device to context
                 "@id": "ex:MyDevice",
                 "skos:prefLabel": "MyDevice",
                 "subClassOf": "hume:Device",
+            },
+            {
+                # Check for full IRI
+                "@id": EX.MyClass,
+                "@type": OWL.Class,
+                SKOS.prefLabel: "MyClass",
+                HUME.hasPart: EX.MyDevice,
             },
         ],
     }
@@ -439,6 +447,7 @@ def test_update_context():
     assert "MyDevice" in c
     assert c["MyDevice"] == {"@id": EX.MyDevice, "@type": OWL.Class}
     assert c["Device"] == {"@id": HUME.Device, "@type": OWL.Class}
+    assert c["MyClass"] == {"@id": EX.MyClass, "@type": OWL.Class}
 
     # TODO: add tests for what happens if there is mismatch between
     # previously added context and updated_context...
@@ -491,6 +500,12 @@ def test_infer_restriction_types():
                 "isDefinedBy": HUME.MeasuringInstrument,
             },
             {
+                # An individial relating to two classes and an individual.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+            },
+            {
                 "@id": "ex:MyDevice",
                 # "@type": "owl:Class",
                 "subClassOf": HUME.Device,
@@ -500,6 +515,7 @@ def test_infer_restriction_types():
     }
     assert infer_restriction_types(sources, ctx) == {
         EX.instr2: {RDFS.isDefinedBy: "some"},
+        EX.instr3: {DCTERMS.hasPart: "some"},
         EX.MyDevice: {DCTERMS.hasPart: "some"},
     }
 
@@ -508,13 +524,15 @@ def test_update_restrictions():
     """Test update_restrictions()."""
     from copy import deepcopy
 
-    from tripper import DCAT, HUME
+    from tripper import HUME, Namespace
     from tripper.datadoc import get_context
     from tripper.datadoc.dataset import (
         infer_restriction_types,
+        update_context,
         update_restrictions,
     )
 
+    EX = Namespace("http://example.org#")
     ctx = get_context()
 
     # Just a data property - nothing to update
@@ -542,7 +560,8 @@ def test_update_restrictions():
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": DCAT.distribution},
+        # "owl:onProperty": {"@id": DCAT.distribution},  # Unnessesary nesting!
+        "owl:onProperty": "dcat:distribution",
         "owl:hasValue": {
             "@type": "dcat:Distribution",
             "accessService": "ex:service",
@@ -565,8 +584,10 @@ def test_update_restrictions():
     update_restrictions(r3, ctx)
     assert r3["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-        "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:someValuesFrom": "ex:Wheel",
     }
 
     # Now, use the restriction argument to specify that we should convert
@@ -578,8 +599,10 @@ def test_update_restrictions():
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:onClass": "ex:Wheel",
         "owl:qualifiedCardinality": 1,
     }
 
@@ -590,13 +613,17 @@ def test_update_restrictions():
     update_restrictions(r4, ctx, restrictions=restrictions)
     assert r4["subClassOf"] == {
         "@type": "owl:Restriction",
-        "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-        "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:onClass": "ex:Wheel",
         "owl:qualifiedCardinality": 1,
     }
 
     d6 = {
         "@context": {
+            "ex": str(EX),
+            "hume": str(HUME),
             "MeasuringInstrument": {
                 "@id": HUME.MeasuringInstrument,
                 "@type": "owl:Class",
@@ -624,7 +651,11 @@ def test_update_restrictions():
                 # Should be converted to an existential restriction.
                 "@id": "ex:instr3",
                 "@type": HUME.Device,
-                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+                "hasPart": [
+                    HUME.MeasuringInstrument,
+                    "ex:MyDevice",
+                    "ex:instr",
+                ],
             },
             {
                 # A class relating to a class.
@@ -652,37 +683,41 @@ def test_update_restrictions():
         ],
     }
     r6 = deepcopy(d6)
-    update_restrictions(r6, ctx)
+    c6 = update_context(r6, ctx.copy())
+    update_restrictions(r6, c6)
     res6 = {d["@id"]: d for d in r6["@graph"]}
-    assert res6["ex:instr"] == {
+    assert res6["ex:instr"] == {  # Expect: no conversion
         "@id": "ex:instr",
         "@type": "https://w3id.org/emmo/hume#Device",
         "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
     }
-    assert res6["ex:instr2"] == {
+    assert res6["ex:instr2"] == {  # Expect: existential restriction
         "@id": "ex:instr2",
         "@type": [
             "https://w3id.org/emmo/hume#Device",
             {
                 "@type": "owl:Restriction",
-                "owl:onProperty": {
-                    "@id": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
-                },
-                "owl:someValuesFrom": {
-                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument",
-                },
+                "owl:onProperty": "rdfs:isDefinedBy",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
             },
         ],
     }
     assert res6["ex:instr3"] == {
-        # WRONG! Should be converted to restrictions
         "@id": "ex:instr3",
-        "@type": "https://w3id.org/emmo/hume#Device",
-        "hasPart": [
-            "https://w3id.org/emmo/hume#MeasuringInstrument",
-            "MyDevice",
-            "ex:instr",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
+            },
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "ex:MyDevice",
+            },
         ],
+        "hasPart": "ex:instr",
     }
     assert res6["ex:MyDevice"] == {
         "@id": "ex:MyDevice",
@@ -690,10 +725,8 @@ def test_update_restrictions():
             "https://w3id.org/emmo/hume#Device",
             {
                 "@type": "owl:Restriction",
-                "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
-                "owl:someValuesFrom": {
-                    "@id": "https://w3id.org/emmo/hume#MeasuringInstrument"
-                },
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
             },
         ],
         "label": "MyDevice",
