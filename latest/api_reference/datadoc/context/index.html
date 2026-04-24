@@ -2281,7 +2281,13 @@ Context        </code>
                     <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">d</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">rec</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">rec</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{}</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdError</span><span class="p">:</span>  <span class="c1"># pylint: disable=try-except-raise</span>
+            <span class="c1"># TODO: convert error message to something more readable</span>
+            <span class="k">raise</span>
 
         <span class="c1"># Clear caches</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -2921,7 +2927,13 @@ Context        </code>
                 <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">rec</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="n">rec</span><span class="p">(</span><span class="n">context</span><span class="p">),</span> <span class="n">options</span><span class="o">=</span><span class="p">{}</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">jsonld</span><span class="o">.</span><span class="n">JsonLdError</span><span class="p">:</span>  <span class="c1"># pylint: disable=try-except-raise</span>
+        <span class="c1"># TODO: convert error message to something more readable</span>
+        <span class="k">raise</span>
 
     <span class="c1"># Clear caches</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>

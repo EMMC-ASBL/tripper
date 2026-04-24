@@ -2938,7 +2938,7 @@ types. For example</code></td>
   - "exactly <N>": exact cardinality restriction
   - "min <N>": minimum cardinality restriction
   - "max <N>": maximum cardinality restriction
-  - "value": value restriction</p>
+  - "value": value restriction (ignored)</p>
 <p>where <code>&lt;N&gt;</code> is a positive integer.</p></td>
     </tr>
   </tbody>
@@ -2988,7 +2988,7 @@ types. For example</code></td>
 <span class="sd">          - &quot;exactly &lt;N&gt;&quot;: exact cardinality restriction</span>
 <span class="sd">          - &quot;min &lt;N&gt;&quot;: minimum cardinality restriction</span>
 <span class="sd">          - &quot;max &lt;N&gt;&quot;: maximum cardinality restriction</span>
-<span class="sd">          - &quot;value&quot;: value restriction</span>
+<span class="sd">          - &quot;value&quot;: value restriction (ignored)</span>
 
 <span class="sd">        where `&lt;N&gt;` is a positive integer.</span>
 
@@ -3045,6 +3045,9 @@ types. For example</code></td>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">_isclass</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">):</span>
                         <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">_isclass</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span>
             <span class="k">elif</span> <span class="n">_isclass</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">kexp</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;some&quot;</span>
         <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
@@ -4359,16 +4362,19 @@ or included in the JSON-LD context.</p></td>
 
       <p>Update <code>context</code> with information from <code>source</code>.</p>
 <p>Currently this only adds classes defined in <code>source</code> to <code>context</code>.</p>
+<p>Returns the updated context.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_context</span><span class="p">(</span>
     <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Context&quot;</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Context&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update `context` with information from `source`.</span>
 
 <span class="sd">    Currently this only adds classes defined in `source` to `context`.</span>
+
+<span class="sd">    Returns the updated context.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">subclassof</span> <span class="o">=</span> <span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">)</span>
 
@@ -4411,6 +4417,7 @@ or included in the JSON-LD context.</p></td>
                             <span class="p">},</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
+    <span class="k">return</span> <span class="n">context</span>
 </code></pre></div>
         </details>
     </div>
@@ -4509,24 +4516,24 @@ to call <code>infer_restriction_types()</code>.</p></td>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=too-many-statements</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">asiri</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return `v` as prefixed IRI(s).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">prefixed</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">asiri</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">v</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add restriction to `source`.&quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=no-else-return</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">as_iri_node</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Return JSON-LD node object for IRI-like string values.&quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_uri</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">require_netloc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
-            <span class="k">return</span> <span class="n">v</span>
 
         <span class="n">iri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="k">else</span> <span class="s2">&quot;*&quot;</span>
         <span class="n">propiri</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">prop</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
             <span class="k">return</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">update_restrictions</span><span class="p">(</span>
-                <span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span>
-            <span class="p">)</span>
+            <span class="n">update_restrictions</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
@@ -4544,37 +4551,32 @@ to call <code>infer_restriction_types()</code>.</p></td>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:Restriction&quot;</span><span class="p">,</span>
             <span class="c1"># We expand here, since JSON-LD doesn&#39;t expand values.</span>
-            <span class="s2">&quot;owl:onProperty&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">context</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-            <span class="p">},</span>
+            <span class="s2">&quot;owl:onProperty&quot;</span><span class="p">:</span> <span class="n">asiri</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:hasValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_iri_node</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;some&quot;</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:someValuesFrom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_iri_node</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:allValuesFrom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_iri_node</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_isclass</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">==</span> <span class="s2">&quot;only&quot;</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:allValuesFrom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asiri</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">restrictionType</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;exactly&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">)):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:onClass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asiri</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">ctype</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">restrictionType</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">ctypes</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;exactly&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:qualifiedCardinality&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:minQualifiedCardinality&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:maxQualifiedCardinality&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">ctypes</span><span class="p">[</span><span class="n">ctype</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># default: some</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:someValuesFrom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asiri</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_isclass</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:hasValue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asiri</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;owl:onClass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">as_iri_node</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="n">ctype</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">restrictionType</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="n">ctypes</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;exactly&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:qualifiedCardinality&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:minQualifiedCardinality&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="s2">&quot;owl:maxQualifiedCardinality&quot;</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="n">d</span><span class="p">[</span><span class="n">ctypes</span><span class="p">[</span><span class="n">ctype</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">_isclassdoc</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
-            <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-
+        <span class="c1"># Replace source[prop] with restriction</span>
         <span class="k">if</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>  <span class="c1"># Avoid removing prop more than once</span>
             <span class="k">del</span> <span class="n">source</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
-
-        <span class="c1"># Recursively update related calsses</span>
-        <span class="k">if</span> <span class="n">restrictionType</span> <span class="o">!=</span> <span class="s2">&quot;value&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">update_restrictions</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="p">)</span>
+        <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span> <span class="k">if</span> <span class="n">_isclassdoc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
     <span class="c1"># Local context</span>
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
