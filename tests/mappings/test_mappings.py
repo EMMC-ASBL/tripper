@@ -43,15 +43,12 @@ def test_mappings():
         "http://onto-ns.com/meta/0.1/Substance#molecule_energy"
     )
     assert routes.cost == 2.0
-    assert (
-        routes.visualise(0).strip()
-        == """
+    assert routes.visualise(0).strip() == """
 digraph G {
   "mol:groundstate_energy" -> "chem:GroundStateEnergy" [label="mapsTo"];
   "chem:GroundStateEnergy" -> "sub:molecule_energy" [label="inverse(mapsTo)"];
 }
 """.strip()
-    )
 
     # Commented out, to avoid dependencies of Graphviz
     # routes.visualise(0, output="graph.png", format="png", dot="dot")

@@ -5,18 +5,21 @@
 import json
 import os
 import re
+import warnings
 from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
 
-from tripper import RDF, Triplestore
+from tripper import OWL, RDF, RDFS, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
-from tripper.datadoc.keywords import Keywords
-from tripper.errors import NamespaceError
-from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile
+from tripper.datadoc.utils import asseq
+from tripper.errors import NamespaceError, NamespaceWarning
+from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
+
+    from tripper.datadoc.keywords import Keywords
 
     # Possible types for a JSON-LD context
     ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
@@ -25,7 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def get_context(
     context: "Optional[ContextType]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = None,
-    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+    default_theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     processingMode: str = "json-ld-1.1",
@@ -54,13 +57,14 @@ def get_context(
     Returns:
         Context object.
     """
+    # pylint: disable=import-outside-toplevel
+    from tripper.datadoc.keywords import get_keywords
+
     if isinstance(context, Context):
         if copy:
             context = context.copy()
         if keywords or theme:
-            kw = keywords.copy() if keywords else Keywords()
-            if theme:
-                kw.add_theme(theme)
+            kw = get_keywords(keywords=keywords, theme=theme)
             context.add_context(kw.get_context())
     else:
         context = Context(
@@ -71,7 +75,7 @@ def get_context(
             timeout=timeout,
         )
     if prefixes:
-        context.add_context(prefixes)
+        context.add_context({k: str(v) for k, v in prefixes.items()})
     return context
 
 
@@ -81,7 +85,7 @@ class Context:
     def __init__(
         self,
         context: "Optional[ContextType]" = None,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[Keywords]" = None,
         processingMode: str = "json-ld-1.1",
         timeout: float = 3,
@@ -102,6 +106,9 @@ class Context:
             timeout: Timeout when accessing remote files.
 
         """
+        # pylint: disable=import-outside-toplevel
+        from tripper.datadoc.keywords import Keywords
+
         self.ld = jsonld.JsonLdProcessor()
         self.ctx = self.ld._get_initial_context(
             options={"processingMode": processingMode}
@@ -111,7 +118,7 @@ class Context:
         self._prefixed: dict = {}
         self._shortnamed: dict = {}
 
-        if keywords:
+        if keywords is not None:
             if theme:
                 keywords.add_theme(theme)
             self.add_context(keywords.get_context())
@@ -147,7 +154,7 @@ class Context:
 
     def copy(self) -> "Context":
         """Return a copy of this context."""
-        copy = Context()
+        copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
         return copy
 
@@ -199,7 +206,13 @@ class Context:
                     d[k] = rec(v)
             return d
 
-        self.ctx = self.ld.process_context(self.ctx, rec(context), options={})
+        try:
+            self.ctx = self.ld.process_context(
+                self.ctx, rec(context), options={}
+            )
+        except jsonld.JsonLdError:  # pylint: disable=try-except-raise
+            # TODO: convert error message to something more readable
+            raise
 
         # Clear caches
         self._expanded.clear()
@@ -219,6 +232,11 @@ class Context:
                     "@id": info["@id"],
                     "@type": info["@type"],
                 }
+            elif "@language" in info:
+                context[name] = {
+                    "@id": info["@id"],
+                    "@language": info["@language"],
+                }
             else:
                 context[name] = info["@id"]
         return context
@@ -237,11 +255,42 @@ class Context:
 
     def get_prefixes(self) -> dict:
         """Return a dict mapping prefixes to IRIs."""
+
         prefixes = {"": self.base} if self.base else {}
         for k, v in self.ctx["mappings"].items():
             if v.get("_prefix") and "@id" in v:
                 prefixes[k] = v["@id"]
         return prefixes
+
+    def get_properties(self) -> dict:
+        """Return a dict mapping property names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and OWL.Class not in asseq(v.get("@type"))
+        }
+
+    def get_object_properties(self) -> dict:
+        """Return a dict mapping object property names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and v.get("@type") == "@id"
+        }
+
+    def get_classes(self) -> dict:
+        """Return a dict mapping class names to IRIs."""
+        return {
+            k: v["@id"]
+            for k, v in self.ctx["mappings"].items()
+            if "@id" in v
+            and v.get("_prefix") is False
+            and OWL.Class in asseq(v.get("@type"))
+        }
 
     def sync_prefixes(
         self, ts: Triplestore, update: "Optional[bool]" = None
@@ -258,7 +307,6 @@ class Context:
         """
         ns1 = self.get_prefixes().copy()
         ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}
-
         if update is None:
             mismatch = [
                 p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]
@@ -308,19 +356,16 @@ class Context:
         # Check ctx
         if name in self.ctx["mappings"]:
             return self.ctx["mappings"][name]["@id"]
+        # Check if name is already expanded
+        if re.match(MATCH_IRI, name):
+            return name
         # Check if prefixed
         if re.match(MATCH_PREFIXED_IRI, name):
             prefix, shortname = name.split(":", 1)
             prefixes = self.get_prefixes()
             if prefix in prefixes:
-                expanded = f"{prefixes[prefix]}{shortname}"
-                self._create_caches()
-                self._update_caches(shortname, name, expanded)
-                return expanded
-        # Check if name is already expanded
-        if re.match(MATCH_IRI, name):
-            return name
-        # Cannot expand
+                return f"{prefixes[prefix]}{shortname}"
+        # Name not defined in context
         if strict:
             raise NamespaceError(f"cannot expand: {name}")
         return name
@@ -378,6 +423,51 @@ class Context:
         """Return wheter `name` is an object property that refers to a node."""
         return self.getdef(name).get("@type") == "@id"
 
+    def is_object_property(self, name: str) -> bool:
+        """Whether `name` appears to be an object property or not."""
+        if (
+            name
+            in (
+                "type",
+                "rdf:type",
+                RDF.type,
+                "subClassOf",
+                "rdfs:subClassOf",
+                RDFS.subClassOf,
+                "subPropertyOf",
+                "rdfs:subPropertyOf",
+                RDFS.subPropertyOf,
+            )
+            or name not in self
+        ):
+            return False
+        return self.getdef(name).get("@type") == "@id"
+
+    def is_data_property(self, name: str) -> bool:
+        """Returns whether `name` appears to be a data property."""
+        if name not in self or (
+            self.is_object_property(name)
+            or self.is_annotation_property(name)
+            or self.is_class(name)
+        ):
+            return False
+        type = self.getdef(name).get("@type")
+        return bool(type) and type not in ("@id", RDFS.Class, OWL.Class)
+
+    def is_annotation_property(self, name: str) -> bool:
+        """Returns whether `name` appears to be an annotation property."""
+        if name not in self:
+            return False
+        d = self.getdef(name)
+        return "@type" not in d or "@language" in d
+
+    def is_class(self, name: str) -> bool:
+        """Returns whether `name` appears to be a class."""
+        return name in self and self.getdef(name).get("@type") in (
+            RDFS.Class,
+            OWL.Class,
+        )
+
     def expanddoc(self, doc: "Union[dict, list]") -> list:
         """Return expanded JSON-LD document `doc`."""
         return self.ld.expand(self._todict(doc), options={})
@@ -386,12 +476,61 @@ class Context:
         """Return compacted JSON-LD document `doc`."""
         return self.ld.compact(doc, self.get_context_dict(), options={})
 
-    def to_triplestore(self, ts, doc: "Union[dict, list]"):
-        """Store JSON-LD document `doc` to triplestore `ts`."""
-        nt = jsonld.to_rdf(
-            self._todict(doc), options={"format": "application/n-quads"}
-        )
-        ts.parse(data=nt, format="ntriples")
+    def to_triplestore(
+        self,
+        ts,
+        doc: "Union[dict, list]",
+        force: "bool" = False,
+        baseiri: "Optional[str]" = None,
+    ) -> "Triplestore":
+        """Store JSON-LD document `doc` to triplestore `ts`.
+
+        Arguments:
+            ts: Triplestore to store to.
+            doc: JSON-LD document to store, as a dict or list of dicts.
+            force: If True, store document even if it contains invalid terms.
+                Incomplete IRIs will be stored with namespace
+                "http://falseiri/", unless baseiri is given.
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
+
+        Returns:
+            The Triplestore object created from the document.
+
+        """
+        false_prefix = "https://falseiri/"
+        base = baseiri if baseiri else false_prefix
+
+        ts2 = Triplestore(backend="rdflib")
+        ts2.parse(data=self._todict(doc), format="json-ld", base=base)
+
+        # Check that no IRIs are in namespace "https://falseiri/".
+        # If Force is True, issue a warning
+        # If Force is False, raise an error
+        for s, p, o in ts2.triples():
+            for pos, term in zip(
+                ("subject", "predicate", "object"), (s, p, o)
+            ):
+                if isinstance(term, str) and term.startswith(false_prefix):
+
+                    def _clean(t):
+                        if t.startswith(false_prefix):
+                            return t[len(false_prefix) :]
+                        return t
+
+                    cleaned_term = _clean(term)
+                    msg = (
+                        f"Missing base iri for {pos}: "
+                        f"'{cleaned_term}'."
+                        f" Full triple: '{_clean(s)}' "
+                        f"'{_clean(p)}' '{_clean(o)}'"
+                    )
+                    if force:
+                        warnings.warn(msg, NamespaceWarning)
+                    else:
+                        raise NamespaceError(msg)
+
+        ts.parse(data=ts2.serialize(format="ntriples"), format="ntriples")
 
         if isinstance(doc, dict) and "@context" in doc:
             ctx = self.copy()
@@ -401,6 +540,7 @@ class Context:
         for prefix, ns in ctx.get_prefixes().items():
             if prefix not in ts.namespaces:
                 ts.bind(prefix, ns)
+        return ts2
 
     def _todict(self, doc: "Union[dict, list]") -> dict:
         """Returns a shallow copy of doc as a dict with current
@@ -436,14 +576,9 @@ class Context:
         self._shortnamed[RDF.type] = "@type"
         self._shortnamed["rdf:type"] = "@type"
         self._shortnamed["@type"] = "@type"
-        self._expanded.update(mappings)
-        self._expanded.update((v, v) for v in mappings.values())
         for key, expanded in mappings.items():
-            for prefix, ns in prefixes.items():
-                if expanded.startswith(ns):
-                    prefixed = f"{prefix}:{key}"
-                    self._update_caches(key, prefixed, expanded)
-                    break
+            prefixed = prefix_iri(expanded, prefixes)
+            self._update_caches(key, prefixed, expanded)
 
     def _update_caches(self, shortname, prefixed, expanded):
         self._expanded[shortname] = expanded

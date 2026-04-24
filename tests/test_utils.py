@@ -11,13 +11,10 @@ def test_AttrDict():
 
     d = AttrDict(a=1, b=2)
     assert d.a == 1
-    assert (
-        repr(d)
-        == """AttrDict({
+    assert repr(d) == """AttrDict({
   'a': 1,
   'b': 2,
 })"""
-    )
     assert repr(AttrDict()) == "AttrDict()"
 
     with pytest.raises(KeyError):
@@ -104,6 +101,7 @@ def test_recursive_update():
 
 def test_openfile():
     """Test openfile()."""
+    # pylint: disable=no-member
     from paths import indir
 
     from tripper.utils import openfile
@@ -115,6 +113,9 @@ def test_openfile():
         assert f.read().strip() == "Example file."
 
     with openfile(f"file://{indir}/openfile.txt") as f:
+        assert f.read().strip() == "Example file."
+
+    with openfile(open(indir / "openfile.txt", encoding="utf-8")) as f:
         assert f.read().strip() == "Example file."
 
     with pytest.raises(IOError):
@@ -132,7 +133,7 @@ def test_openfile_http():
         "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/"
         "master/tests/input/openfile.txt"
     ) as f:
-        assert f.read().strip() == "Example file."
+        assert f.read().strip() == "Example file."  # pylint: disable=no-member
 
 
 def infer_IRIs():
@@ -140,7 +141,6 @@ def infer_IRIs():
     from tripper import RDFS
     from tripper.utils import infer_iri
 
-    # Test infer_iri()
     assert infer_iri(RDFS.subClassOf) == RDFS.subClassOf
 
 
@@ -538,7 +538,7 @@ def test_prefix_iri():
     assert prefix_iri(RDF.type, prefixes) == "rdf:type"
     assert prefix_iri("xxx", prefixes) == "xxx"
     with pytest.raises(NamespaceError):
-        prefix_iri("xxx", prefixes, require_prefixed=True)
+        prefix_iri("xxx", prefixes, strict=True)
 
 
 def test_substitute_query():
@@ -590,7 +590,7 @@ def test_get_entry_points():
     from tripper.utils import get_entry_points
 
     for ep in get_entry_points("tripper.keywords"):
-        if ep.value == "ddoc:default":
+        if ep.value == "ddoc:datadoc":
             break
     else:
         raise RuntimeError(

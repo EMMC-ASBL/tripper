@@ -806,7 +806,7 @@ def mapping_routes(
             to a list of `(function_iri, [input_iris, ...])` tuples.
         default_costs: A dict providing default costs of different types
             of mapping steps ("function", "mapsTo", "instanceOf",
-            "subclassOf", and "value").  These costs can be overridden with
+            "subClassOf", and "value").  These costs can be overridden with
             'hasCost' relations in the ontology.
         value_class: Optional `Value` subclass to use instead of `Value` when
             creating the returned mapping route.

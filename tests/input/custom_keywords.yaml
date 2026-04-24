@@ -28,3 +28,17 @@ resources:
         range: rdfs:Literal
         datatype: xsd:integer
         description: An integer number referring to the number of a batch that the sample is taken from.
+
+      sampleWeight:
+        iri: myonto:sampleWeight
+        range: rdfs:Literal
+        datatype: xsd:double
+        unit: g
+        inverseOf: myonto:isWeightOf
+        description: Weight of a sample.
+
+      responsible:
+        iri: myonto:isResponsibleFor
+        range: chameo:Sample
+        inverse: true
+        description: Weight of a sample.

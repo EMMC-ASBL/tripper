@@ -1,0 +1,159 @@
+@prefix : <https://w3id.org/emmo/application/datadoc#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix bibo: <http://purl.org/ontology/bibo/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix emmo: <https://w3id.org/emmo#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix stat: <http://purl.org/adms/status/> .
+@prefix rights: <http://publications.europa.eu/resource/authority/access-right/> .
+@prefix dcatap: <http://data.europa.eu/r5r/> .
+@prefix avail: <http://publications.europa.eu/resource/authority/planned-availability/> .
+
+<https://w3id.org/emmo/application/datadoc> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/emmo/application/datadoc/0.1> ;
+    dcterms:title "Data documentation ontology" ;
+    dcterms:publisher emmo:EMMC_ASBL ;
+    vann:preferredNamespacePrefix "ddoc" ;
+    vann:preferredNamespaceUri "https://w3id.org/emmo/application/datadoc#" ;
+    owl:priorVersion "0.0.0" ;
+    owl:versionInfo "0.0.1" .
+
+
+:datatype a owl:ObjectProperty ;
+    rdfs:label "datatype"@en ;
+    #rdfs:subPropertyOf ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range rdfs:Datatype ;
+    dcterms:description "A datatype for annotations and data properties."@en .
+
+
+:unitSymbol a owl:AnnotationProperty ;
+    rdfs:label "unitSymbol"@en ;
+    #rdfs:subPropertyOf ;
+    rdfs:domain dcat:Resource ;
+    rdfs:range xsd:string ;
+    dcterms:description "A SI unit associated to a property."@en ;
+    vann:usageNote "The unit should be written with standard SI unit symbols.  Examples: As, μm, J, m/s²"@en .
+
+
+:conformance rdf:type owl:ObjectProperty ;
+    rdfs:label "conformance"@en ;
+    rdfs:domain dcat:Resource ;
+    rdfs:range :ConformanceLevel ;
+    dcterms:description "Whether the annotation is mandatory, recommended or optional."@en ;
+    vann:usageNote "It MUST take one of the values 'ddoc:mandatory', 'ddoc:recommended' or 'ddoc:optional'."@en ;
+    rdfs:isDefinedBy <https://w3id.org/emmo/application/datadoc> .
+
+
+### Classes
+:ConformanceLevel a owl:Class ;
+    rdfs:label "ConformanceLevel"@en ;
+    dcterms:description "The class of conformance levels. Includes the following individuals: `ddoc:mandatory`, `ddoc:recommended` and `ddoc:optional`."@en ;
+    owl:oneOf ( :mandatory :optional :recommended ) .
+
+
+### Conformance individuals
+:mandatory a :ConformanceLevel ;
+    rdfs:label "mandatory"@en .
+
+:optional a :ConformanceLevel ;
+    rdfs:label "optional"@en .
+
+:recommended a :ConformanceLevel ;
+    rdfs:label "recommended"@en .
+
+
+### Theme individuals
+:datadoc a skos:Concept ;
+    rdfs:label "datadoc"@en ;
+    dcterms:description "Basic data documentation."@en ;
+    vann:usageNote "Intended to be used as a theme individual for basic data documentation."@en .
+
+:process a skos:Concept ;
+    rdfs:label "process"@en ;
+    dcterms:description "Basic documentation of processes."@en ;
+    vann:usageNote "Intended to be used as a theme individual for basic documentation of processes."@en .
+
+
+### Status individuals
+
+# Note: Individuals should normally be lowercase.
+# However, these individuals are defined externally, so we can't change them.
+stat:Completed a skos:Concept ;
+    skos:notation "Completed" ;
+    skos:prefLabel "Completed"@en ;
+    skos:inScheme <http://purl.org/adms/status/1.0> .
+
+stat:Deprecated a skos:Concept ;
+    skos:notation "Deprecated" ;
+    skos:prefLabel "Deprecated"@en ;
+    skos:inScheme <http://purl.org/adms/status/1.0> .
+
+stat:UnderDevelopment a skos:Concept ;
+    skos:notation "UnderDevelopment" ;
+    skos:prefLabel "UnderDevelopment"@en ;
+    skos:inScheme <http://purl.org/adms/status/1.0> .
+
+stat:Withdrawn a skos:Concept ;
+    skos:notation "Withdrawn" ;
+    skos:prefLabel "Withdrawn"@en ;
+    skos:inScheme <http://purl.org/adms/status/1.0> .
+
+
+### Rights statements individuals
+rights:PUBLIC a dcterms:RightsStatement ;
+    skos:prefLabel "public"@en ;
+    rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
+    skos:definition "Publicly accessible by everyone."@en ;
+    vann:usageNote "Permissible obstacles include registration and request for API keys, as long as anyone can request such registration and/or API keys."@en .
+
+rights:NON_PUBLIC a dcterms:RightsStatement ;
+    skos:prefLabel "non-public"@en ;
+    rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
+    skos:definition "Not publicly accessible for privacy, security or other reasons."@en ;
+    vann:usageNote "This category may include resources that contain sensitive or personal information."@en .
+
+rights:CONFIDENTIAL a dcterms:RightsStatement ;
+    skos:prefLabel "confidential"@en ;
+    rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
+    skos:definition "Information that is not disclosed."@en ;
+    vann:usageNote "Disclosure of this data could cause damage to interested parties such as public administrations and businesses. It may refer to personal and professional information as well as to information in the context of business, commerce or trade."@en .
+
+rights:RESTRICTED a dcterms:RightsStatement ;
+    skos:prefLabel "restricted"@en ;
+    rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
+    skos:definition "Only available under certain conditions."@en ;
+    vann:usageNote "This category may include resources that require payment, resources shared under non-disclosure agreements, resources for which the publisher or owner has not yet decided if they can be publicly released."@en .
+
+rights:SENSITIVE a dcterms:RightsStatement ;
+    skos:prefLabel "sensitive"@en ;
+    rdfs:isDefinedBy <https://op.europa.eu/en/web/eu-vocabularies/concept-scheme/-/resource?uri=http://publications.europa.eu/resource/authority/access-right> ;
+    skos:definition "Sensitive non-classified (SNC) information, information whose unauthorised disclosure could cause damage to the Commission or other interested parties such as businesses, companies, intellectual property or personal data but which is not EU classified information."@en .
+
+
+## Availability
+avail:AVAILABLE a dcatap:availability ;
+    skos:prefLabel "available"@en ;
+    skos:definition "Data is available for a few years, medium term planning."@en .
+
+avail:EXPERIMENTAL a dcatap:availability ;
+    skos:prefLabel "experimental"@en ;
+    skos:definition "Data is available on a trial basis for a short period, short term planning."@en .
+
+avail:OP_DATPRO a dcatap:availability ;
+    skos:prefLabel "Provisional data"@en .
+
+avail:STABLE a dcatap:availability ;
+    skos:prefLabel "stable"@en ;
+    skos:definition "Data will remain available in the long term."@en .
+
+avail:TEMPORARY a dcatap:availability ;
+    skos:prefLabel "temporary"@en ;
+    skos:definition "Data can disappear at any time, no planning."@en .

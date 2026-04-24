@@ -1,0 +1,16 @@
+# Missing keyword IRI
+---
+basedOn: "ddoc:datadoc"
+
+prefixes:
+  kb: "http://example.com/kb#"
+  myonto: "http://example.com/myonto#"
+
+
+resources:
+  A:
+    iri: myonto:A
+    subClassOf: dcat:Resource
+    keywords:
+      description:
+        range: myonto:B

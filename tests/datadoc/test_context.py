@@ -94,6 +94,33 @@ def test_get_prefixes():
     assert "mediaType" not in prefixes
 
 
+def test_get_properties():
+    """Test get_properties() method."""
+    properties = ctx.get_properties()
+    assert "adms" not in properties  # prefix is not a property
+    assert "Document" not in properties  # class is not a property
+    assert properties["mediaType"] == "http://www.w3.org/ns/dcat#mediaType"
+
+
+def test_get_object_properties():
+    """Test get_object_properties() method."""
+    from tripper import DCTERMS
+
+    objprop = ctx.get_object_properties()
+    assert "adms" not in objprop  # prefix is not an object property
+    assert "Document" not in objprop  # class is not an object property
+    assert "title" not in objprop  # annotation is not an object property
+    assert objprop["hasPart"] == DCTERMS.hasPart
+
+
+def test_get_classes():
+    """Test get_prefixes() method."""
+    classes = ctx.get_classes()
+    assert "adms" not in classes
+    assert "mediaType" not in classes
+    assert classes["Document"] == "http://xmlns.com/foaf/0.1/Document"
+
+
 def test_sync_prefixes():
     """Test sync_prefixes() method."""
     from tripper import Triplestore
@@ -189,6 +216,46 @@ def test_isref():
     """Test isref() method."""
     assert ctx.isref("dcat:distribution") is True
     assert ctx.isref("dcterms:title") is False
+
+
+def test_is_object_property():
+    """Test is_object_property() method."""
+    assert ctx.is_object_property("dcat:theme")
+    assert not ctx.is_object_property("dcterms:issued")
+    assert not ctx.is_object_property("dcterms:title")
+    assert not ctx.is_object_property("foaf:Agent")
+    assert not ctx.is_object_property("rdfs:subClassOf")
+    assert not ctx.is_object_property("rdfs:subPropertyOf")
+
+
+def test_is_data_property():
+    """Test is_data_property() method."""
+    assert not ctx.is_data_property("dcat:theme")
+    assert ctx.is_data_property("dcterms:issued")
+    assert not ctx.is_data_property("dcterms:title")
+    assert not ctx.is_data_property("foaf:Agent")
+    assert not ctx.is_data_property("rdfs:subClassOf")
+    assert not ctx.is_data_property("rdfs:subPropertyOf")
+
+
+def test_is_annotation_property():
+    """Test is_annotation_property() method."""
+    assert not ctx.is_annotation_property("dcat:theme")
+    assert not ctx.is_annotation_property("dcterms:issued")
+    assert ctx.is_annotation_property("dcterms:title")
+    assert not ctx.is_annotation_property("foaf:Agent")
+    assert not ctx.is_annotation_property("rdfs:subClassOf")
+    assert not ctx.is_annotation_property("rdfs:subPropertyOf")
+
+
+def test_is_class():
+    """Test is_class() method."""
+    assert not ctx.is_class("dcat:theme")
+    assert not ctx.is_class("dcterms:issued")
+    assert not ctx.is_class("dcterms:title")
+    assert ctx.is_class("foaf:Agent")
+    assert not ctx.is_class("rdfs:subClassOf")
+    assert not ctx.is_class("rdfs:subPropertyOf")
 
 
 def test_to_triplestore():

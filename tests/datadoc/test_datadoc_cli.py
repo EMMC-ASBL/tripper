@@ -86,6 +86,7 @@ def test_add():
         f"--config={indir/'session.yaml'}",
         "add",
         f"--context={indir/'semdata-context.json'}",
+        "--type=dcat:Dataset",
         f"--dump={outdir/'semdata.ttl'}",
         f"{indir/'semdata.csv'}",
     ]
@@ -197,6 +198,8 @@ def test_find_csv():
 def test_fetch():
     """Test `datadoc fetch` with Fuseki."""
     from dataset_paths import indir, outdir  # pylint: disable=import-error
+
+    pytest.importorskip("dlite")
 
     outfile = outdir / "sem.tif"
     outfile.unlink(missing_ok=True)

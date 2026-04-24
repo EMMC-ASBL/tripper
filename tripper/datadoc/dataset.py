@@ -33,6 +33,7 @@ from __future__ import annotations
 
 # pylint: disable=invalid-name,redefined-builtin,import-outside-toplevel
 # pylint: disable=too-many-branches
+# pylint: disable=logging-not-lazy,logging-fstring-interpolation
 import json
 import logging
 import re
@@ -43,13 +44,13 @@ from typing import TYPE_CHECKING
 from tripper import (
     OWL,
     RDF,
+    RDFS,
     Literal,
     Namespace,
     Triplestore,
 )
 from tripper.datadoc.context import Context, get_context
-from tripper.datadoc.dictutils import add, get
-from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKeywordWarning,
+from tripper.datadoc.errors import (
     InvalidDatadocError,
     IRIExistsError,
     IRIExistsWarning,
@@ -57,10 +58,13 @@ from tripper.datadoc.errors import (  # MissingKeywordsClassWarning,; UnknownKey
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
+from tripper.datadoc.utils import add, asseq, get, getlabel, iriname
+from tripper.errors import NamespaceError
 from tripper.utils import (
     AttrDict,
     as_python,
     expand_iri,
+    is_uri,
     openfile,
     parse_literal,
     prefix_iri,
@@ -78,6 +82,7 @@ if TYPE_CHECKING:  # pragma: no cover
         Union,
     )
 
+    from tripper.datadoc.context import ContextType
     from tripper.datadoc.keywords import FileLoc
     from tripper.utils import Triple
 
@@ -105,7 +110,7 @@ def _get_range(keyword: str, keywords: "Optional[Keywords]" = None):
 
     If `keywords` is None, the keywords for the default theme are used.
     """
-    keywords = get_keywords(keywords)
+    keywords = get_keywords(keywords=keywords)
     return keywords[keyword].range
 
 
@@ -154,42 +159,69 @@ def told(
         Dict with an updated copy of `descr` as valid JSON-LD.
 
     """
+    # pylint: disable=too-many-statements
+
     single = "@id", "@type", "@graph"
-    multi = "theme", "keywordfile", "prefixes", "base"
-    singlerepr = any(s in descr for s in single) or isinstance(descr, list)
+    multi = "keywordfile", "prefixes", "base"
+    singlerepr = isinstance(descr, list) or any(s in descr for s in single)
     multirepr = any(s in descr for s in multi)
     if singlerepr and multirepr:
         raise InvalidDatadocError(
             "invalid mixture of single- and multi-resource dict"
         )
-    if not singlerepr:
+
+    if not singlerepr and "theme" in descr:
         keywords = get_keywords(
             keywords=keywords,
-            theme=descr.get("theme", "ddoc:default"),  # type: ignore
-            yamlfile=descr.get("keywordfile"),  # type: ignore
+            theme=descr["theme"],  # type: ignore
         )
     else:
         keywords = get_keywords(keywords=keywords)
 
-    context = get_context(
-        context=context, keywords=keywords, prefixes=prefixes
-    )
+    if prefixes:
+        keywords.add(prefixes, redefine="allow")
+
     resources = keywords.data.resources
 
+    # Whether the context has been copied. Used within addcontext()
+    context_copied = False
+
+    def addcontext(d: dict):
+        """Make a copy of context (but only once) and add `d` to it."""
+        nonlocal context, context_copied
+        if context:
+            if not context_copied:
+                context = context.copy()
+            if d:
+                context.add_context(d)
+
+    context = get_context(
+        context=context,
+        keywords=keywords,
+        prefixes=prefixes,
+        default_theme=None,
+    )
+    if isinstance(descr, dict) and "@context" in descr:
+        addcontext(descr["@context"])
+
     if singlerepr:  # single-resource representation
-        d = descr
+        d = {"@context": context.get_context_dict()} if context else {}
+        if isinstance(descr, list):
+            d["@graph"] = descr  # type: ignore
+        else:
+            if "@context" in descr:
+                descr = descr.copy()
+                del descr["@context"]
+            d.update(descr)
     else:  # multi-resource representation
-        d = {}
         graph = []
         for k, v in descr.items():  # type: ignore
-            if k == "theme":
-                pass
-            elif k == "@context":
-                context.add_context(v)
-                d[k] = v
+            if k in ("@context", "theme"):
+                pass  # already handled
             elif k == "prefixes":
-                context.add_context(v)
+                addcontext(v)
             elif k == "base":
+                addcontext({})  # make sure that context is copied
                 context.base = v
             elif k in resources:
                 if isinstance(v, list):
@@ -202,13 +234,14 @@ def told(
                 raise InvalidDatadocError(
                     f"Invalid keyword in root of multi-resource dict: {k}"
                 )
-        d["@graph"] = graph
+        d = {"@context": context.get_context_dict()} if context else {}
+        d["@graph"] = graph  # type: ignore
 
     return _told(
         d,
         type=type,
         keywords=keywords,
-        prefixes=context.get_prefixes(),
+        prefixes=context.get_prefixes() if context else {},
         root=True,
         hasid=False,
     )
@@ -248,6 +281,28 @@ def _told(
                     f"Class not in keywords: {', '.join(missing)}",
                 )
 
+    def _deduplicate_types(d):
+        """Remove semantically duplicated type values in ``d['@type']``.
+
+        Duplicates are detected by comparing expanded IRIs, so lexical
+        variants like ``owl:Class`` and ``http://.../owl#Class`` collapse.
+        """
+        if "@type" not in d:
+            return
+
+        uniq = {}
+        for t in get(d, "@type"):
+            expanded = expand(t) if isinstance(t, str) else t
+            if expanded not in uniq:
+                uniq[expanded] = t
+            elif isinstance(t, str) and isinstance(uniq[expanded], str):
+                # Prefer shorter lexical forms (typically prefixed IRIs).
+                if len(t) < len(uniq[expanded]):
+                    uniq[expanded] = t
+
+        values = list(uniq.values())
+        d["@type"] = values[0] if len(values) == 1 else values
+
     if isinstance(descr, str):
         return descr
 
@@ -271,6 +326,7 @@ def _told(
     for k in "@context", "@id":
         if k in descr:
             d[k] = descr[k]
+
     if "@type" in descr:
         addsuperclasses(d, descr["@type"])
     if type:
@@ -282,6 +338,10 @@ def _told(
         if not k.startswith("@") and k not in keywords:
             # pylint: disable=logging-fstring-interpolation
             logging.info(f"Property not in keywords: {k}")
+
+        if k == "subClassOf":
+            add(d, "@type", OWL.Class)
+
         if k in ("@context", "@id", "@type"):
             pass
         elif k == "@graph":
@@ -300,9 +360,19 @@ def _told(
                 for i, spo in enumerate(descr[k])
             ]
             add(d, k, [tuple(t) for t in lst])
-        elif k == "datamodel":
-            add(d, "@type", v)
-            d[k] = v
+        #
+        # The below works fine. It is commented out since it is doubtable
+        # whether it is a good idea to invent new shortcuts for json-ld.
+        #
+        # elif "." in k and "/" not in k:
+        #     # Convert keys with dots to nested dicts
+        #     keys = k.split(".")
+        #     dct, val = {}, v
+        #     for key in reversed(keys[1:]):
+        #         dct[key] = val
+        #         dct, val = {}, dct
+        #     add(d, keys[0], val)
+        #
         elif isinstance(v, (str, int, float, bool, None.__class__)):
             d[k] = v
         elif isinstance(v, list):
@@ -313,6 +383,8 @@ def _told(
             else:
                 d[k] = _told(v, torange(k), keywords, prefixes)
 
+    _deduplicate_types(d)
+
     return d
 
 
@@ -321,10 +393,12 @@ def store(
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
     keywords: "Optional[Keywords]" = None,
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
-    restrictions: "Collection" = (),
+    restrictions: "Optional[dict]" = None,
+    baseiri: "Optional[str]" = None,
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -336,6 +410,7 @@ def store(
             defined in `keywords`.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
+        theme: IRI of one of more themes to load keywords for.
         context: Context object defining keywords in addition to those defined
             in the default [JSON-LD context].
             Complementing the `keywords` argument.
@@ -351,8 +426,11 @@ def store(
               is unwanted, merge manually and use "overwrite".
             - "ignore": If the IRI of `source` already exists, do nothing but
               issueing an `IRIExistsWarning`.
-        restrictions: Collection of additional keywords that shuld be
-            converted to value restrictions.
+        restrictions: A dict describing how properties of classes in
+            `source` should be mapped to restrictions.  The default is
+            to call `infer_restriction_types()`.
+        baseiri: If given, it will be used as a base iri to
+            resolve relative IRIs. (I.e. Not valid URLs).
 
     Returns:
         A copy of `source` updated to valid JSON-LD.
@@ -363,16 +441,17 @@ def store(
 
     References:
     [default keywords]: https://emmc-asbl.github.io/tripper/latest/datadoc/keywords/
-    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/oteapi-dlite/refs/heads/rdf-serialisation/oteapi_dlite/context/0.3/context.json
+    [JSON-LD context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json
     """
-    if isinstance(source, dict):
-        theme = source.get("theme", "ddoc:default")
-    else:
-        theme = "ddoc:default"
     keywords = get_keywords(keywords, theme=theme)
     context = get_context(
-        keywords=keywords, context=context, prefixes=prefixes
+        keywords=keywords,
+        context=context,
+        prefixes=prefixes,
+        default_theme=None,
+        copy=True,  # we are calling update_context() below
     )
+
     doc = told(
         source,
         type=type,
@@ -380,6 +459,8 @@ def store(
         context=context,
         prefixes=prefixes,
     )
+    update_context(doc, context)
+
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
         iri = d["@id"]
@@ -401,18 +482,18 @@ def store(
                 )
 
     context.sync_prefixes(ts)
-    update_classes(doc, context=context, restrictions=restrictions)
+
+    update_restrictions(doc, context=context, restrictions=restrictions)
     # add(doc, "@context", context.get_context_dict())
 
     # Validate
     # TODO: reenable validation
     # validate(doc, type=type, keywords=keywords)
 
-    context.to_triplestore(ts, doc)
+    context.to_triplestore(ts, doc, baseiri=baseiri)
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
-
     return doc
 
 
@@ -427,7 +508,7 @@ def save_dict(
     # The unnecessary strictness of the "build documentation" CI enforces us
     # to add a `restrictions` argument to save_dict(), although this argument
     # came after that save_dict() was renamed.
-    restrictions: "Collection" = (),
+    restrictions: "Optional[dict]" = None,
 ) -> dict:
     """This function is deprecated. Use store() instead."""
     warnings.warn(
@@ -448,88 +529,291 @@ def save_dict(
     )
 
 
-def update_classes(
+def _isclassdoc(d):
+    """Help function. Return true if `d` documents a class."""
+    return (
+        any(t in ("owl:Class", OWL.Class) for t in asseq(d.get("@type", ())))
+        or "subClassOf" in d
+        or "rdfs:subClassOf" in d
+        or RDFS.subClassOf in d
+    )
+
+
+def _isclass(d, context):
+    """Help function. Return true if `d` documents a class or is a class IRI."""
+    return (
+        context.is_class(d)
+        if isinstance(d, str)
+        else _isclassdoc(d) if isinstance(d, dict) else False
+    )
+
+
+def update_context(
+    source: "Union[dict, list]",
+    context: "Context",
+) -> "Context":
+    """Update `context` with information from `source`.
+
+    Currently this only adds classes defined in `source` to `context`.
+
+    Returns the updated context.
+    """
+    subclassof = (RDFS.subClassOf, "rdfs:subClassOf", "subClassOf")
+
+    if isinstance(source, dict) and "@context" in source:
+        context.add_context(source["@context"])
+
+    sources = (
+        source
+        if isinstance(source, list)
+        else source["@graph"] if "@graph" in source else [source]
+    )
+
+    for d in sources:
+        if not isinstance(d, dict):
+            continue
+        if "@id" in d:
+            seq = asseq(d.get("@type"))
+            isclass = OWL.Class in seq or "owl:Class" in seq
+            if isclass or "subClassOf" in d or "rdfs:subClassOf" in d:
+                try:
+                    iri = context.expand(d["@id"], strict=True)
+                except NamespaceError:
+                    continue
+                label = getlabel(d)
+                if "/" in label:
+                    continue  # do not add IDs with slash to context
+                superclasses = [d[s] for s in subclassof if s in d]
+                if isclass:
+                    context.add_context(
+                        {label: {"@id": iri, "@type": d["@type"]}}
+                    )
+                elif superclasses:
+                    supercl = context.expand(superclasses[0], strict=True)
+                    context.add_context(
+                        {
+                            label: {"@id": iri, "@type": OWL.Class},
+                            iriname(supercl): {
+                                "@id": supercl,
+                                "@type": OWL.Class,
+                            },
+                        }
+                    )
+    return context
+
+
+def infer_restriction_types(
     source: "Union[dict, list]",
     context: "Optional[Context]" = None,
-    restrictions: "Collection" = (),
+) -> dict:
+    """Return a dict that describes default restriction types used by
+    update_restrictions().
+
+    The following algorithm is used:
+      - For each property or each class in `source`:
+          - If the value is a class, assume an existential
+            restriction.
+          - Otherwise, if the value is an IRI (to presumably an
+            individual), assume a value restriction.
+          - Otherwise, if the value is a literal with no language
+            specification, (indicating a data property) assume a value
+            restriction.
+          - Otherwise, don't add a restriction type for the property
+            (assuming that it is an annotation property).
+      - For object properties on individuals in `source`:
+          - If the value is a class, assume an existential restriction.
+
+    Arguments:
+        source: JSON-LD dict or list of JSON-LD dicts to analyse.
+        context: Optional JSON-LD context object used for providing
+            hints about classes and relation types.
+
+    Returns:
+        A dict that maps the IRIs or classes/individuals in `source`
+        to dicts that associate property IRIs to restriction
+        types. For example:
+
+            {
+              "ClassA": {"prop1": "some", "prop2": "value"},
+              "ClassB": {"prop3": "only"},
+              "indv": {"prop4": "some"},
+            }
+
+        The following restriction types are supported:
+          - "some": existential restriction
+          - "only": universal restriction
+          - "exactly <N>": exact cardinality restriction
+          - "min <N>": minimum cardinality restriction
+          - "max <N>": maximum cardinality restriction
+          - "value": value restriction (ignored)
+
+        where `<N>` is a positive integer.
+
+    """
+    # pylint: disable=unused-argument
+
+    context = get_context(context=context)
+    if isinstance(source, dict) and "@context" in source:
+        context = context.copy()
+        context.add_context(source["@context"])
+
+    if isinstance(source, dict):
+        source = source["@graph"] if "@graph" in source else [source]
+
+    ignored = (
+        "rdfs:subClassOf",
+        "rdfs:range",
+        "rdfs:domain",
+    )
+    all_ignored = set()
+    for term in ignored:
+        all_ignored.add(iriname(term))
+        all_ignored.add(term)
+        all_ignored.add(context.expand(term, strict=False))
+
+    restrictions: dict = {}
+    for src in source:
+        if not "@id" in src:
+            continue
+        iri = (
+            src["@id"]
+            if src["@id"].startswith("_:")
+            else context.expand(src["@id"], strict=False)
+        )
+        d = {}
+        for k, v in src.items():
+            if k.startswith("@") or k in all_ignored:
+                continue
+            kexp = context.expand(k, strict=False)
+            if _isclassdoc(src):
+                if isinstance(v, dict):
+                    d[kexp] = "some" if _isclassdoc(v) else "value"
+                    dct = infer_restriction_types(v, context=context)
+                    dct.update(restrictions)
+                    restrictions.update(dct)
+                elif isinstance(v, str) and (
+                    is_uri(v, require_netloc=False)
+                    and context
+                    and kexp in context
+                    and not context.is_annotation_property(kexp)
+                ):
+                    vexp = context.expand(v, strict=False)
+                    d[kexp] = "some" if _isclass(vexp, context) else "value"
+                elif isinstance(v, list):
+                    if any(_isclass(e, context) for e in v):
+                        d[kexp] = "some"
+            elif isinstance(v, list):
+                if any(_isclass(e, context) for e in v):
+                    d[kexp] = "some"
+            elif _isclass(v, context):
+                d[kexp] = "some"
+        if d:
+            restrictions[iri] = d
+
+    return restrictions
+
+
+def update_restrictions(
+    source: "Union[dict, list]",
+    context: "Optional[Context]" = None,
+    restrictions: "Optional[dict]" = None,
 ) -> "Union[dict, list]":
-    """Update documentation of classes, ensuring that they will be
-    correctly represented in RDF.
-
-    Only resources of type `owl:Class` will be updated.
-
-    If a resource has type `owl:Class`, all other types it has will be
-    moved to the `subClassOf` keyword.
-
-    By default, only object properties who's value is either a class
-    or has a `restrictionType` key are converted to restrictions. Use
-    the `restrictions` argument to convert other keywords as well to
-    restrictions.
+    """Update `source`, ensuring that relations on and to classes
+    are correctly represented as restrictions in OWL.
 
     Arguments:
         source: Input documentation of one or more resources. This dict
             will be updated in-place. It is typically a dict returned by
             `told()`.
         context: Context object defining the keywords.
-        restrictions: Collection of additional keywords that shuld be
-            converted to value restrictions.
+        restrictions: An optional dict describing how properties in
+            `source` should be mapped to restrictions.  The default is
+            to call `infer_restriction_types()`.
 
     Returns:
         The updated version of `source`.
 
     """
+    # pylint: disable=too-many-statements
+
+    def asiri(v, strict=False):
+        """Return `v` as prefixed IRI(s)."""
+        if isinstance(v, str):
+            return context.prefixed(v, strict=strict)
+        if isinstance(v, list):
+            return [asiri(e, strict=strict) for e in v]
+        return v
 
     def addrestriction(source, prop, value):
         """Add restriction to `source`."""
         # pylint: disable=no-else-return
+
+        iri = context.expand(source["@id"]) if "@id" in source else "*"
+        propiri = context.expand(prop)
         if value is None or prop.startswith("@"):
             return
-        elif restrictions and context.expand(prop) in restrictions:
-            restrictionType = "value"
-        elif isinstance(value, dict) and (
-            "restrictionType" in value
-            or any(context.expand(s) == OWL.Class for s in get(value, "@type"))
-        ):
-            restrictionType = value.pop("restrictionType", "some")
-            update_classes(value, context=context, restrictions=restrictions)
+        elif isinstance(value, dict):
+            update_restrictions(value, context, restrictions)
         elif isinstance(value, list):
             for val in value:
                 addrestriction(source, prop, val)
             return
-        else:
+
+        restrictionType = None
+        if iri in restrictions:
+            restrictionType = restrictions[iri].get(propiri)
+        elif "*" in restrictions:
+            restrictionType = restrictions["*"].get(propiri)
+
+        if not restrictionType:
             return
 
         d = {
-            "rdf:type": "owl:Restriction",
+            "@type": "owl:Restriction",
             # We expand here, since JSON-LD doesn't expand values.
-            "owl:onProperty": context.expand(prop, strict=True),
+            "owl:onProperty": asiri(prop, strict=True),
         }
-        if restrictionType == "value":
-            d["owl:hasValue"] = value
-        elif restrictionType == "some":
-            d["owl:someValuesFrom"] = value
-        elif restrictionType == "only":
-            d["owl:allValuesFrom"] = value
+        if _isclass(value, context):
+            if restrictionType == "only":
+                d["owl:allValuesFrom"] = asiri(value)
+            elif restrictionType.startswith(("exactly", "min", "max")):
+                d["owl:onClass"] = asiri(value)
+                ctype, n = restrictionType.split()
+                ctypes = {
+                    "exactly": "owl:qualifiedCardinality",
+                    "min": "owl:minQualifiedCardinality",
+                    "max": "owl:maxQualifiedCardinality",
+                }
+                d[ctypes[ctype]] = int(n)
+            else:  # default: some
+                d["owl:someValuesFrom"] = asiri(value)
+        elif _isclass(source, context):
+            d["owl:hasValue"] = asiri(value)
         else:
-            d["owl:onClass"] = value
-            ctype, n = restrictionType.split()
-            ctypes = {
-                "exactly": "owl:qualifiedCardinality",
-                "min": "owl:minQualifiedCardinality",
-                "max": "owl:maxQualifiedCardinality",
-            }
-            d[ctypes[ctype]] = int(n)
+            add(source, prop, value)
+            return
 
-        add(source, "subClassOf", d)
+        # Replace source[prop] with restriction
         if prop in source:  # Avoid removing prop more than once
             del source[prop]
-
-        if restrictionType != "value":  # Recursively update related calsses
-            update_classes(value, context, restrictions)
+        add(source, "subClassOf" if _isclassdoc(source) else "@type", d)
 
     # Local context
-    context = get_context(context=context, copy=True)
-    restrictions = {context.expand(s, strict=True) for s in restrictions}
+    context = get_context(context=context)
+    if "@context" in source:
+        context = context.copy()
+        context.add_context(source["@context"])  # type: ignore
+
+    if restrictions is None:
+        restrictions = infer_restriction_types(source, context)
+    else:
+        restrictions = {
+            "*" if ckey == "*" else context.expand(ckey, strict=False): {
+                context.expand(pkey, strict=False): pval
+                for pkey, pval in cval.items()
+            }
+            for ckey, cval in restrictions.items()
+        }
 
     # Handle lists and graphs
     if isinstance(source, list) or "@graph" in source:
@@ -537,12 +821,8 @@ def update_classes(
         if isinstance(sources, dict):
             sources = [sources]
         for src in sources:
-            update_classes(src, context)
+            update_restrictions(src, context)
         return source
-
-    # Update local context
-    if "@context" in source:
-        context.add_context(source["@context"])
 
     # Ensure that source is only of type owl:Class
     # Move all other types to subClassOf
@@ -568,14 +848,12 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
 
     Currently, this includes:
     - statements and mappings
-    - data models (require that DLite is installed)
 
     Arguments:
         ts: Triplestore to load data from.
         source: Dict in multi-resource format.
 
     """
-    import requests
 
     # Save statements and mappings
     statements = get_values(source, "statements")
@@ -583,61 +861,12 @@ def save_extra_content(ts: Triplestore, source: dict) -> None:
     if statements:
         ts.add_triples(statements)
 
-    # Save data models
-    datamodels = {
-        d["@id"]: d["datamodel"]
-        for d in source.get("Dataset", ())
-        if "datamodel" in d
-    }
-    try:
-        # pylint: disable=import-outside-toplevel
-        import dlite
-        from dlite.dataset import add_dataset
-    except ModuleNotFoundError:
-        if datamodels:
-            warnings.warn(
-                "dlite is not installed - data models will not be added to "
-                "the triplestore"
-            )
-    else:
-        for url in get_values(source, "datamodelStorage"):
-            dlite.storage_path.append(url)
-
-        for iri, uri in datamodels.items():
-            ok = False
-            r = requests.get(uri, timeout=3)
-            if r.ok:
-                content = (
-                    r.content.decode()
-                    if isinstance(r.content, bytes)
-                    else str(r.content)
-                )
-                dm = dlite.Instance.from_json(content)
-                add_dataset(ts, dm)
-                ok = True
-            else:
-                try:
-                    dm = dlite.get_instance(uri)
-                except (
-                    dlite.DLiteMissingInstanceError  # pylint: disable=no-member
-                ):
-                    # __FIXME__: check session whether to warn or re-raise
-                    warnings.warn(f"cannot load datamodel: {uri}")
-                else:
-                    add_dataset(ts, dm)
-                    ok = True
-
-            if ok:
-                # Make our dataset an individual of the new dataset subclass
-                # that we have created by serialising the datamodel
-                ts.add((iri, RDF.type, uri))
-
 
 def acquire(
     ts: Triplestore,
     iri: str,
     use_sparql: "Optional[bool]" = None,
-    context: "Optional[Context]" = None,
+    context: "Optional[ContextType]" = None,
 ) -> dict:
     """Load description of a resource from the triplestore.
 
@@ -652,6 +881,8 @@ def acquire(
     Returns:
         Dict describing the resource identified by `iri`.
     """
+    context = get_context(context, theme=None)
+
     if use_sparql is None:
         use_sparql = ts.prefer_sparql
     if use_sparql:
@@ -667,7 +898,13 @@ def acquire(
                 val = [val]
             for v in val:
                 if key != "@id" and isinstance(v, str) and v.startswith("_:"):
-                    add(d, key, acquire(ts, iri=v, use_sparql=use_sparql))
+                    add(
+                        d,
+                        key,
+                        acquire(
+                            ts, iri=v, context=context, use_sparql=use_sparql
+                        ),
+                    )
                 else:
                     add(d, key, v)
 
@@ -915,6 +1152,7 @@ def save_datadoc(
     file_or_dict: "Union[str, Path, dict]",
     keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
+    baseiri: "Optional[str]" = None,
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -928,6 +1166,8 @@ def save_datadoc(
             `keywordfile` keys in the YAML file.
         context: Optional Context object with mappings. By default it is
             inferred from `keywords`.
+        baseiri: If given, it will be used as a base iri to
+            resolve relative IRIs. (I.e. Not valid URLs).
 
     Returns:
         Dict-representation of the loaded dataset.
@@ -940,7 +1180,13 @@ def save_datadoc(
         with openfile(file_or_dict, mode="rt", encoding="utf-8") as f:
             d = yaml.safe_load(f)
 
-    return store(ts, d, keywords=keywords, context=context)
+    if "theme" in d:
+        keywords = get_keywords(keywords, theme=d["theme"])
+        context = get_context(
+            keywords=keywords, context=context, theme=d["theme"]
+        )
+
+    return store(ts, d, keywords=keywords, context=context, baseiri=baseiri)
 
 
 def validate(
@@ -976,8 +1222,11 @@ def validate(
     def check_keyword(keyword, type):
         """Check that the resource type `type` has keyword `keyword`."""
         typename = keywords.typename(type)
-        name = keywords.keywordname(keyword)
-        if name in resources[typename].keywords:
+        name = keywords.shortname(keyword)
+        if (
+            "keywords" in resources[typename]
+            and name in resources[typename].keywords
+        ):
             return True
         if "subClassOf" in resources[typename]:
             subclass = resources[typename].subClassOf
@@ -1021,7 +1270,7 @@ def validate(
         for k in dct:
             if not k.startswith("@"):
                 if not check_keyword(k, typename):
-                    warnings.warn(
+                    logger.info(
                         f"unexpected keyword '{k}' provided for type: '{type}'"
                     )
 
@@ -1044,6 +1293,8 @@ def get_partial_pipeline(
     use_sparql: "Optional[bool]" = None,
 ) -> bytes:
     """Returns a OTELib partial pipeline.
+
+    Note: This method is outdated and will be removed.
 
     Arguments:
         ts: Triplestore to load data from.
@@ -1068,7 +1319,7 @@ def get_partial_pipeline(
         OTELib partial pipeline.
     """
     # pylint: disable=too-many-branches,too-many-locals
-    context = get_context(context=context, theme="ddoc:default")
+    context = get_context(context=context, theme="ddoc:datadoc")
 
     dct = acquire(ts, iri, use_sparql=use_sparql)
 
@@ -1110,8 +1361,10 @@ def get_partial_pipeline(
 
     mediaType = distr.get("mediaType")
     mediaTypeShort = (
-        mediaType[44:]
-        if mediaType.startswith("http://www.iana.org/assignments/media-types/")
+        mediaType[45:]
+        if mediaType.startswith(
+            "https://www.iana.org/assignments/media-types/"
+        )
         else mediaType
     )
     dataresource = client.create_dataresource(
@@ -1127,7 +1380,7 @@ def get_partial_pipeline(
     if statements:
         mapping = client.create_mapping(
             mappingType="triples",
-            # The OTEAPI datamodels stupidly strict, requireing us
+            # The OTEAPI datamodels very strict, requireing us
             # to cast the data ts.namespaces and statements
             prefixes={k: str(v) for k, v in ts.namespaces.items()},
             triples=[tuple(t) for t in statements],

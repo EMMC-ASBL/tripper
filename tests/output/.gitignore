@@ -5,6 +5,8 @@
 *.png
 *.tiff
 *.csv
+*.md
+*.yaml
 context.json
 keywords.md
 prefixes.md

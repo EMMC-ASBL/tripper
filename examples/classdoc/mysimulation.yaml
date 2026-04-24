@@ -2,10 +2,14 @@
 
 theme: ddoc:process
 
+prefixes:
+  ex: "http://example.org#"
+  emmo: "https://w3id.org/emmo#"
+
 Computation:
   "@id": ex:MySimulation
   "@type": owl:Class
-  subClassOf: PhysicsBasedSimulation
+  subClassOf: emmo:PhysicsBasedSimulation
   prefLabel: MySimulation
   elucidation: A simulation using my physics-based materials models.
   isParticipatedBy:
@@ -19,7 +23,6 @@ Computation:
     - "@id": ex:MyInputDataset
       "@type": owl:Class
       subClassOf: ["dcat:Dataset", "emmo:Dataset"]
-      restrictionType: exactly 1  # defaults to "some"
       prefLabel: MyInputDataset
       elucidation: My input dataset.
       distribution:
@@ -31,7 +34,6 @@ Computation:
     - "@id": ex:MyOutputDataset
       "@type": owl:Class
       subClassOf: ["dcat:Dataset", "emmo:Dataset"]
-      restrictionType: exactly 1  # defaults to "some"
       prefLabel: MyOutputDataset
       elucidation: My output dataset.
       distribution:

@@ -282,8 +282,13 @@ def test_availability():
     from tripper.triplestore import Triplestore
 
     ts = Triplestore("rdflib")
-    with pytest.raises(ValueError):
-        ts.available()
+    assert ts.is_available()
+
+    ts = Triplestore(
+        "sparqlwrapper",
+        base_iri="http://example.no:3030/norepo",
+    )
+    assert not ts.is_available()
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
@@ -434,6 +439,8 @@ def test_backend_sparqlwrapper() -> None:
     from tripper import SKOS, Triplestore
     from tripper.errors import UnknownDatatypeWarning
 
+    SPARQLWrapper = pytest.importorskip("SPARQLWrapper")
+
     pytest.importorskip("SPARQLWrapper")
     ts = Triplestore(
         backend="sparqlwrapper",
@@ -452,6 +459,8 @@ def test_backend_sparqlwrapper() -> None:
                 pytest.skip(str(exc))
             else:
                 raise
+        except SPARQLWrapper.SPARQLExceptions.EndPointNotFound as exc:
+            pytest.skip(str(exc))
 
 
 @pytest.mark.skip(

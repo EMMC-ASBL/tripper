@@ -1,6 +1,6 @@
 """Test the dataset module."""
 
-# pylint: disable=invalid-name,too-many-locals,duplicate-code
+# pylint: disable=invalid-name,too-many-locals,duplicate-code,too-many-lines
 
 import pytest
 
@@ -23,8 +23,10 @@ def test_told():
     # pylint: disable=too-many-statements
     from pathlib import Path
 
-    from tripper import DCAT, DCTERMS, OWL, RDF, Literal, Triplestore
+    from tripper import DCAT, DCTERMS, RDF, Triplestore
     from tripper.datadoc.dataset import store, told
+    from tripper.datadoc.errors import InvalidDatadocError
+    from tripper.utils import en
 
     indir = Path(__file__).resolve().parent.parent / "input"
     prefixes = {"ex": "http://example.com/ex#"}
@@ -128,7 +130,7 @@ def test_told():
     store(ts, descrB, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     descrC = [
         {
@@ -150,18 +152,19 @@ def test_told():
 
     # Test store() on descrC
     ts.remove()
-    store(ts, descrB, prefixes=prefixes)
+    store(ts, descrC, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
 
     # Multi-resource representation
     descrD = {
         "prefixes": prefixes,
         "base": "http://base.com#",
+        # "theme": "ddoc:datadoc",
         "Dataset": [
             {
-                "@id": "a",
+                "@id": "ex:a",
                 "@type": "ex:A",
                 "title": "Dataset a",
                 "distribution": {
@@ -170,7 +173,7 @@ def test_told():
                 },
             },
             {
-                "@id": "b",
+                "@id": "ex:b",
                 "title": "Dataset b",
             },
         ],
@@ -187,14 +190,60 @@ def test_told():
         "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
     ]
 
-    # Test store() on descrC
+    # Test store() on descrD
     ts.remove()
-    store(ts, descrB, prefixes=prefixes)
+    store(ts, descrD, prefixes=prefixes)
     EX = ts.namespaces["ex"]  # store() adds the namespace to `ts`
     assert ts.has(EX.a, DCAT.distribution)
-    assert ts.has(EX.a, DCTERMS.title, Literal("Dataset a"))
+    assert ts.has(EX.a, DCTERMS.title, en("Dataset a"))
     assert ts.has(EX.a, RDF.type, EX.A)
-    assert ts.has(EX.b, RDF.type, OWL.NamedIndividual)
+    assert ts.has(EX.b, RDF.type, DCAT.Dataset)
+
+    # Both single-rep and multi-rep...
+    descrE = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrE)
+
+    # Single-rep with context
+    descrF = {
+        "@context": {"laz": "http://lazarus.org/reincarnated/data"},
+        "@id": "laz:data",
+    }
+    d7 = told(descrF)
+    assert "laz" in d7["@context"]
+    assert "ddoc" in d7["@context"]
+    assert d7["@id"] == "laz:data"
+
+    # Ensure semantically equivalent @type values are deduplicated.
+    # This can happen for classes when both "owl:Class" and OWL.Class are
+    # introduced through different code paths (e.g. explicit @type and
+    # inferred class from subClassOf).
+    descrH = {
+        "@id": "ex:MyClass",
+        "@type": "owl:Class",
+        "subClassOf": "prov:Activity",
+    }
+    d8 = told(descrH)
+    assert d8["@type"] == "owl:Class"
+
+    # Multi-rep with invalid root keyword
+    descrG = {
+        "prefixes": {"laz": "http://lazarus.org/reincarnated/data"},
+        "invalid": "???",
+    }
+    with pytest.raises(InvalidDatadocError):
+        told(descrG)
+
+    # Nested keyword
+    # descrH = {
+    #     "@id": EX.data,
+    #     "distribution.downloadURL": "ftp://server.org/data.zip",
+    # }
+    # d8 = told(descrH)
+    # assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
 
 
 def test_get_jsonld_context():
@@ -212,7 +261,7 @@ def test_get_jsonld_context():
         assert isinstance(context, dict)
         assert len(context) > 80
         assert context["@version"] == 1.1
-        assert context["status"] == "adms:status"
+        assert context["title"] == {"@id": "dcterms:title", "@language": "en"}
 
         # Test online context. It should equal context on disk.
         # However, since they are updated asynchronously, we do not test for
@@ -221,7 +270,10 @@ def test_get_jsonld_context():
         assert isinstance(online_context, dict)
         assert len(online_context) > 80
         assert online_context["@version"] == 1.1
-        assert online_context["status"] == "adms:status"
+        assert online_context["title"] == {
+            "@id": "dcterms:title",
+            "@language": "en",
+        }
 
         # Test context argument
         context2 = get_jsonld_context(context=CONTEXT_URL, fromfile=False)
@@ -272,9 +324,10 @@ def test_get_shortnames():
 
 def test_store():
     """Test store()."""
-    from tripper import Triplestore
+    from tripper import DCTERMS, OWL, RDF, Literal, Triplestore
     from tripper.datadoc import acquire, store
     from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
+    from tripper.errors import NamespaceError
 
     ts = Triplestore("rdflib")
     EX = ts.bind("ex", "http://example.com/ex#")
@@ -286,12 +339,11 @@ def test_store():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }
     store(ts, d, type="Dataset")
-    print(ts.serialize())
 
     with pytest.raises(IRIExistsError):
         store(ts, d, type="Dataset")
@@ -317,61 +369,368 @@ def test_store():
     with pytest.raises(ValueError):
         store(ts, d, type="Dataset", method="invalid_method_name")
 
+    # Test baseiri
+    d5 = {
+        "@id": "myInstrument",
+        "@type": EX.Instrument,
+        "title": "My super duper exiting instrument.",
+    }
+    with pytest.raises(NamespaceError):
+        store(ts, d5)
 
-def test_update_classes():
-    """Test update_classes()."""
+    # Missing base IRI now fails - maybe more desirable than allowing to
+    # provide a baseiri?
+    store(ts, d5, baseiri="http://example.com/devices#")
+
+    # Custom language strings
+    d6 = {
+        "@context": {
+            "title_it": {
+                "@id": DCTERMS.title,
+                "@language": "it",
+            },
+        },
+        "@id": EX.greetingdata,
+        "title": "hi",
+        "title_it": "ciao",
+    }
+    store(ts, d6)
+    assert set(ts.triples(EX.greetingdata)) == {
+        (EX.greetingdata, RDF.type, OWL.NamedIndividual),
+        (EX.greetingdata, DCTERMS.title, Literal("hi", lang="en")),
+        (EX.greetingdata, DCTERMS.title, Literal("ciao", lang="it")),
+    }
+
+
+def test_update_context():
+    """Test update_context()."""
+    from tripper import HUME, OWL, SKOS, Namespace
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import update_context
+
+    EX = Namespace("http://example.com/")
+    sources = {
+        "@context": {
+            "ex": str(EX),
+            "hume": str(HUME),
+        },
+        "@graph": [
+            {
+                # Instances are not added to context
+                "@id": "ex:instr",
+                "@type": "hume:Device",
+            },
+            {
+                # Not added to context, since there is no @type
+                "@id": "ex:instr2",
+            },
+            {
+                # Add both ex:MyDevice and hume:Device to context
+                "@id": "ex:MyDevice",
+                "skos:prefLabel": "MyDevice",
+                "subClassOf": "hume:Device",
+            },
+            {
+                # Check for full IRI
+                "@id": EX.MyClass,
+                "@type": OWL.Class,
+                SKOS.prefLabel: "MyClass",
+                HUME.hasPart: EX.MyDevice,
+            },
+        ],
+    }
+    context = get_context(default_theme=None)
+    update_context(sources, context)
+    c = context.get_context_dict()
+    assert "instr" not in c
+    assert "instr2" not in c
+    assert "MyDevice" in c
+    assert c["MyDevice"] == {"@id": EX.MyDevice, "@type": OWL.Class}
+    assert c["Device"] == {"@id": HUME.Device, "@type": OWL.Class}
+    assert c["MyClass"] == {"@id": EX.MyClass, "@type": OWL.Class}
+
+    # TODO: add tests for what happens if there is mismatch between
+    # previously added context and updated_context...
+
+
+def test_infer_restriction_types():
+    """Test infer_restriction_types()."""
+    from tripper import DCTERMS, HUME, RDFS, Namespace
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import infer_restriction_types
+
+    EX = Namespace("http://example.org#")
+    ctx = get_context()
+    ctx.add_context({"ex": str(EX)})
+
+    source = {
+        "@id": "ex:A",
+        "@type": "owl:Class",
+        "description": "Description of class A.",
+        "creator": "foaf:Agent",
+        "hasPart": "ex:some_part",
+        "version": "0.1",
+        "label": "A",
+        "releaseDate": "2025-11-25",
+    }
+    assert infer_restriction_types(source, ctx) == {
+        "http://example.org#A": {
+            DCTERMS.creator: "some",
+            DCTERMS.hasPart: "value",
+            # DCTERMS.issued: "value",
+        }
+    }
+
+    sources = {
+        "@context": {
+            "MeasuringInstrument": {
+                "@id": HUME.MeasuringInstrument,
+                "@type": "owl:Class",
+            },
+        },
+        "@graph": [
+            {
+                # Not inferred, since hume:MeasuringSystem is not in context
+                "@id": "ex:instr",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringSystem,
+            },
+            {
+                "@id": "ex:instr2",
+                "isDefinedBy": HUME.MeasuringInstrument,
+            },
+            {
+                # An individial relating to two classes and an individual.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice", "ex:instr"],
+            },
+            {
+                "@id": "ex:MyDevice",
+                # "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "hasPart": [HUME.MeasuringInstrument, "ex:MyDevice"],
+            },
+        ],
+    }
+    assert infer_restriction_types(sources, ctx) == {
+        EX.instr2: {RDFS.isDefinedBy: "some"},
+        EX.instr3: {DCTERMS.hasPart: "some"},
+        EX.MyDevice: {DCTERMS.hasPart: "some"},
+    }
+
+
+def test_update_restrictions():
+    """Test update_restrictions()."""
     from copy import deepcopy
 
-    from tripper import DCAT
-    from tripper.datadoc.dataset import update_classes
+    from tripper import HUME, Namespace
+    from tripper.datadoc import get_context
+    from tripper.datadoc.dataset import (
+        infer_restriction_types,
+        update_context,
+        update_restrictions,
+    )
 
+    EX = Namespace("http://example.org#")
+    ctx = get_context()
+
+    # Just a data property - nothing to update
     d1 = {"title": "About tripper"}
     r1 = d1.copy()
-    update_classes(r1)
+    update_restrictions(r1, ctx)
     assert r1 == d1
 
+    # A class relating to a distribution individual.
+    # Should be converted to a value restriction.
     d2 = {
         "@context": {"ex": "http://example.com/ex#"},
-        "@id": "ex:myclass",
+        "@id": "ex:MyClass",
         "@type": "owl:Class",
         "subClassOf": "dcat:Dataset",
         "title": "About tripper",
         "distribution": {
-            "@type": ["owl:Class", "dcat:Distribution"],
+            "@type": "dcat:Distribution",
             "accessService": "ex:service",
         },
     }
+    ctx.add_context(d2)
     r2 = deepcopy(d2)
-    update_classes(r2)
+    update_restrictions(r2, ctx)
     assert "dcat:Dataset" in r2["subClassOf"]
     assert {
-        "rdf:type": "owl:Restriction",
-        "owl:onProperty": DCAT.distribution,
-        "owl:someValuesFrom": {
-            "@type": "owl:Class",
+        "@type": "owl:Restriction",
+        # "owl:onProperty": {"@id": DCAT.distribution},  # Unnessesary nesting!
+        "owl:onProperty": "dcat:distribution",
+        "owl:hasValue": {
+            "@type": "dcat:Distribution",
             "accessService": "ex:service",
-            "subClassOf": DCAT.Distribution,
         },
     } in r2["subClassOf"]
 
-    r3 = deepcopy(d2)
-    update_classes(r3, restrictions=("accessService",))
-    assert "dcat:Dataset" in r3["subClassOf"]
-    assert {
-        "rdf:type": "owl:Restriction",
-        "owl:onProperty": DCAT.distribution,
-        "owl:someValuesFrom": {
-            "@type": "owl:Class",
-            "subClassOf": [
-                DCAT.Distribution,
-                {
-                    "rdf:type": "owl:Restriction",
-                    "owl:onProperty": DCAT.accessService,
-                    "owl:hasValue": "ex:service",
-                },
-            ],
+    # A class relating to another class.
+    # Should be converted to a existential restriction.
+    d3 = {
+        "@context": {
+            # "ex": "http://example.com/ex#",
+            "ex:Car": {"@type": "owl:Class"},
+            "ex:Wheel": {"@type": "owl:Class"},
         },
-    } in r3["subClassOf"]
+        "@id": "ex:Car",
+        "@type": "owl:Class",
+        "hasPart": "ex:Wheel",
+    }
+    r3 = deepcopy(d3)
+    update_restrictions(r3, ctx)
+    assert r3["subClassOf"] == {
+        "@type": "owl:Restriction",
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:someValuesFrom": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:someValuesFrom": "ex:Wheel",
+    }
+
+    # Now, use the restriction argument to specify that we should convert
+    # `hasPart` relations to cardinality restriction in all classes.
+    # Should be converted to a cardinality restriction.
+    r4 = deepcopy(d3)
+    restrictions = infer_restriction_types(r4, ctx)
+    restrictions["ex:Car"] = {"hasPart": "exactly 1"}
+    update_restrictions(r4, ctx, restrictions=restrictions)
+    assert r4["subClassOf"] == {
+        "@type": "owl:Restriction",
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:onClass": "ex:Wheel",
+        "owl:qualifiedCardinality": 1,
+    }
+
+    # Same as above, but apply the restriction to all classes.
+    # Should be converted to a cardinality restriction.
+    r4 = deepcopy(d3)
+    restrictions = {"*": {"hasPart": "exactly 1"}}
+    update_restrictions(r4, ctx, restrictions=restrictions)
+    assert r4["subClassOf"] == {
+        "@type": "owl:Restriction",
+        # "owl:onProperty": {"@id": "http://purl.org/dc/terms/hasPart"},
+        # "owl:onClass": {"@id": "http://example.com/ex#Wheel"},
+        "owl:onProperty": "dcterms:hasPart",
+        "owl:onClass": "ex:Wheel",
+        "owl:qualifiedCardinality": 1,
+    }
+
+    d6 = {
+        "@context": {
+            "ex": str(EX),
+            "hume": str(HUME),
+            "MeasuringInstrument": {
+                "@id": HUME.MeasuringInstrument,
+                "@type": "owl:Class",
+            },
+        },
+        "@graph": [
+            {
+                # An individial relating to a class.
+                # Not converted, since hume:MeasuringSystem is not in
+                # context (tripper therefore doesn't know that it is a
+                # class)
+                "@id": "ex:instr",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringSystem,
+            },
+            {
+                # An individial relating to a class.
+                # Should be converted to an existential restriction.
+                "@id": "ex:instr2",
+                "@type": HUME.Device,
+                "isDefinedBy": HUME.MeasuringInstrument,
+            },
+            {
+                # An individial relating to two classes and an individual.
+                # Should be converted to an existential restriction.
+                "@id": "ex:instr3",
+                "@type": HUME.Device,
+                "hasPart": [
+                    HUME.MeasuringInstrument,
+                    "ex:MyDevice",
+                    "ex:instr",
+                ],
+            },
+            {
+                # A class relating to a class.
+                # Should be converted to an existential restriction.
+                # Note that tripper in this case understands that ex:MyDevice
+                # is a class even when @type is commented out, because of the
+                # `subClassOf` relation.
+                "@id": "ex:MyDevice",
+                # "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "label": "MyDevice",
+                "hasPart": HUME.MeasuringInstrument,
+            },
+            {
+                # A class relating to two classes
+                "@id": "ex:MyDevice2",
+                "@type": "owl:Class",
+                "subClassOf": HUME.Device,
+                "label": "MyDevice2",
+                "hasPart": [HUME.MeasuringInstrument, "MyDevice"],
+            },
+            # TODO: for completeness, add tests for individual
+            # relating to one individual and individual related to a
+            # list of individuals
+        ],
+    }
+    r6 = deepcopy(d6)
+    c6 = update_context(r6, ctx.copy())
+    update_restrictions(r6, c6)
+    res6 = {d["@id"]: d for d in r6["@graph"]}
+    assert res6["ex:instr"] == {  # Expect: no conversion
+        "@id": "ex:instr",
+        "@type": "https://w3id.org/emmo/hume#Device",
+        "isDefinedBy": "https://w3id.org/emmo/hume#MeasuringSystem",
+    }
+    assert res6["ex:instr2"] == {  # Expect: existential restriction
+        "@id": "ex:instr2",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "rdfs:isDefinedBy",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
+            },
+        ],
+    }
+    assert res6["ex:instr3"] == {
+        "@id": "ex:instr3",
+        "@type": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
+            },
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "ex:MyDevice",
+            },
+        ],
+        "hasPart": "ex:instr",
+    }
+    assert res6["ex:MyDevice"] == {
+        "@id": "ex:MyDevice",
+        "subClassOf": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
+            },
+        ],
+        "label": "MyDevice",
+    }
 
 
 def test_datadoc():
@@ -406,11 +765,10 @@ def test_datadoc():
         DCAT.Resource,
         EMMO.Dataset,
         SEM.SEMImage,
-        "http://onto-ns.com/meta/matchmaker/0.2/SEMImage",
     }
     assert d.inSeries == SEMDATA["SEM_cement_batch2/77600-23-001"]
     assert d.distribution.mediaType == (
-        "http://www.iana.org/assignments/media-types/image/tiff"
+        "https://www.iana.org/assignments/media-types/image/tiff"
     )
 
     assert not acquire(ts, "non-existing")
@@ -448,7 +806,7 @@ def test_datadoc():
         source={
             "@id": SEMDATA.newdistr,
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/plain"
+                "https://www.iana.org/assignments/media-types/text/plain"
             ),
         },
         type="Distribution",
@@ -458,7 +816,7 @@ def test_datadoc():
     assert newdistr["@type"] == [DCAT.Distribution, DCAT.Resource]
     assert (
         newdistr.mediaType
-        == "http://www.iana.org/assignments/media-types/text/plain"
+        == "https://www.iana.org/assignments/media-types/text/plain"
     )
 
     # Test load updated distribution
@@ -585,7 +943,7 @@ def test_validate():
     d = {
         "@id": EX.data,
         "@type": EX.MyData,
-        "creator": {"name": "John Doe"},
+        "creator": {"@id": "John Doe"},
         "title": "Special data",
         "description": "My dataset with some special data ...",
         "theme": "ex:Data",
@@ -603,9 +961,34 @@ def test_validate():
         validate(d3)
 
 
+def test_validate_class():
+    """Test validate datadoc dict describing a class."""
+    from tripper import DCAT, EMMO, OWL, Triplestore
+    from tripper.datadoc import validate
+
+    # from tripper.datadoc.errors import ValidateError
+
+    ts = Triplestore("rdflib")
+    EX = ts.bind("ex", "http://example.com/ex#")
+
+    d = {
+        "@id": EX.MyDataCollection,
+        "@type": OWL.Class,
+        "subClassOf": [DCAT.DatasetSeries, EMMO.Dataset],
+        "hasPart": [DCAT.Dataset, EMMO.Dataset],
+        "creator": {"name": "John Doe"},
+        "title": "Data Collection",
+        "description": "My collection of specialised datasets.",
+        "theme": "ex:Data",
+    }
+    validate(d)
+
+    # TODO: Add more tests with invalid input
+
+
 def test_pipeline():
     """Test creating OTEAPI pipeline."""
-    pytest.skip()
+    pytest.skip("Skip broken OTEAPI")
 
     from tripper import Triplestore
 
@@ -640,23 +1023,41 @@ def test_pipeline():
 
 def test_fuseki():
     """Test save and load dataset with Fuseki."""
-    import os
+    from dataset_paths import indir  # pylint: disable=import-error
 
-    from tripper import Triplestore
+    from tripper import Session
+    from tripper.datadoc import acquire, delete, store
 
-    host = os.getenv("TRIPLESTORE_HOST", "localhost")
-    port = os.getenv("TRIPLESTORE_PORT", "3030")
-    fuseki_args = {
-        "backend": "fusekix",
-        "base_iri": "http://example.com/ontology#",
-        "triplestore_url": f"http://{host}:{port}",
-        "database": "openmodel",
-    }
-    try:
-        ts = Triplestore(**fuseki_args)
-    except ModuleNotFoundError:
+    session = Session(indir / "session.yaml")
+    ts = session.get_triplestore("FusekiTest")
+    if not ts.is_available():
         pytest.skip("Cannot connect to Fuseki server")
-    ts.remove_database(**fuseki_args)
+
+    EX = ts.bind("ex", "http://example.com/ex#")
+    d = {
+        "@id": EX.exdata,
+        "@type": EX.ExData,
+        "creator": {"name": "John Doe"},
+        "inSeries": EX.series,
+        "distribution": {
+            "downloadURL": "http://example.com/downloads/exdata.csv",
+            "mediaType": (
+                "https://www.iana.org/assignments/media-types/text/csv"
+            ),
+        },
+    }
+
+    if ts.has(EX.exdata):
+        delete(ts, criteria={"@id": EX.exdata})
+
+    store(ts, d)
+    d2 = acquire(ts, EX.exdata)
+    assert d2["@id"] == d["@id"]
+    assert d2["@type"] == d["@type"]
+    assert d2.creator.name == d["creator"]["name"]
+    assert d2.inSeries == d["inSeries"]
+    assert d2.distribution.downloadURL == d["distribution"]["downloadURL"]
+    assert d2.distribution.mediaType == d["distribution"]["mediaType"]
 
 
 def test_deprecated():
@@ -674,13 +1075,12 @@ def test_deprecated():
         "distribution": {
             "downloadURL": "http://example.com/downloads/exdata.csv",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/text/csv"
+                "https://www.iana.org/assignments/media-types/text/csv"
             ),
         },
     }
     with pytest.warns(DeprecationWarning):
         save_dict(ts, d, type="Dataset")
-    print(ts.serialize())
 
     with pytest.warns(DeprecationWarning):
         d2 = load_dict(ts, EX.exdata)

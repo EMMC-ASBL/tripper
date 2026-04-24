@@ -41,18 +41,25 @@ def test_save_and_load():
                     "master/tests/input/77600-23-001_5kV_400x_m001.tif"
                 ),
                 "mediaType": (
-                    "http://www.iana.org/assignments/media-types/image/tiff"
+                    "https://www.iana.org/assignments/media-types/image/tiff"
                 ),
             },
         },
         type="Dataset",
     )
     newdistr = acquire(ts, SEMDATA.img1)
-    assert newdistr["@type"] == [DCAT.Dataset, DCAT.Resource, EMMO.Dataset]
-    assert newdistr.distribution["@type"] == [DCAT.Distribution, DCAT.Resource]
+    assert set(newdistr["@type"]) == {
+        DCAT.Dataset,
+        DCAT.Resource,
+        EMMO.Dataset,
+    }
+    assert set(newdistr.distribution["@type"]) == {
+        DCAT.Distribution,
+        DCAT.Resource,
+    }
     assert (
         newdistr.distribution.mediaType
-        == "http://www.iana.org/assignments/media-types/image/tiff"
+        == "https://www.iana.org/assignments/media-types/image/tiff"
     )
 
     store(
@@ -108,7 +115,7 @@ def test_save_and_load():
             "@id": SEMDATA.newdistr2,
             "downloadURL": f"file:{newfile2}",
             "mediaType": (
-                "http://www.iana.org/assignments/media-types/image/png"
+                "https://www.iana.org/assignments/media-types/image/png"
             ),
             "generator": GEN.sem_hitachi,
             "parser": PARSER.sem_hitachi,

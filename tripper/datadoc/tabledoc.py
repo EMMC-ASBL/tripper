@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 from tripper import Triplestore
 from tripper.datadoc.context import get_context
 from tripper.datadoc.dataset import store, told
-from tripper.datadoc.dictutils import addnested
 from tripper.datadoc.keywords import get_keywords
+from tripper.datadoc.utils import addnested, stripnested
 from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
@@ -40,8 +40,7 @@ class TableDoc:
         type: Type of data to save (applies to all rows).  Should
             either be one of the pre-defined names: "dataset",
             "distribution", "accessService", "parser" and "generator"
-            or an IRI to a class in an ontology.  Defaults to
-            "dataset".
+            or an IRI to a class in an ontology.
         theme: Name of one of more themes to load keywords for.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
@@ -53,33 +52,59 @@ class TableDoc:
         prefixes: Dict with prefixes in addition to those included in the
             JSON-LD context.  Should map namespace prefixes to IRIs.
         strip: Whether to strip leading and trailing whitespaces from cells.
-
+        strict: Whether to raise an `InvalidKeywordError` exception if `d`
+            contains an unknown key.
+        redefine: Determine how to handle redefinition of existing
+            keywords.  Should be one of the following strings:
+              - "allow": Allow redefining a keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "skip": Don't redefine existing keyword. Emits a
+                `RedefineKeywordWarning`.
+              - "raise": Raise an RedefineError (default).
+        baseiri: If given, it will be used as a base iri to
+            resolve relative IRIs. (I.e. Not valid URLs).
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
+    # pylint: disable=too-many-arguments
 
     def __init__(
         self,
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
-        type: "Optional[str]" = "Dataset",
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:default",
+        type: "Optional[str]" = None,
+        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         strip: bool = True,
-    ):
+        strict: bool = False,
+        redefine: str = "raise",
+        baseiri: "Optional[str]" = None,
+    ) -> None:
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
-        self.keywords = get_keywords(keywords=keywords, theme=theme)
+        self.keywords = get_keywords(
+            keywords=keywords,
+            theme=theme,
+            strict=strict,
+            redefine=redefine,
+        )
         self.context = get_context(
-            context=context, keywords=self.keywords, prefixes=prefixes
+            context=context,
+            keywords=self.keywords,
+            default_theme=None,
+            prefixes=prefixes,
         )
         self.strip = strip
+        self.baseiri = baseiri
 
-    def save(self, ts: Triplestore) -> None:
-        """Save tabular datadocumentation to triplestore."""
+    def save(self, ts: Triplestore) -> dict:
+        """Save tabular datadocumentation to triplestore.
+
+        Returns a dict with the JSON-LD written to the triplestore.
+        """
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
         )
@@ -87,7 +112,14 @@ class TableDoc:
         for prefix, ns in self.context.get_prefixes().items():
             ts.bind(prefix, ns)
 
-        store(ts, self.asdicts(), type=self.type, context=self.context)
+        return store(
+            ts,
+            self.asdicts(),
+            type=self.type,
+            keywords=self.keywords,
+            context=self.context,
+            baseiri=self.baseiri,
+        )
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
@@ -100,14 +132,15 @@ class TableDoc:
 
                     # Convert cell value to correct Python type
                     if not colname.startswith("@"):
-                        df = self.context.getdef(colname.split(".")[-1])
+                        leafname = colname.split(".")[-1]
+                        df = self.context.getdef(leafname.split("[")[0])
                         if "@type" in df and df["@type"] != "@id":
                             cell = Literal(cell, datatype=df["@type"]).value
 
                     addnested(
                         d, colname.strip() if self.strip else colname, cell
                     )
-            results.append(d)
+            results.append(stripnested(d))
         ld = told(
             results,
             type=self.type,
@@ -120,7 +153,7 @@ class TableDoc:
     @staticmethod
     def fromdicts(
         dicts: "Sequence[dict]",
-        type: "Optional[str]" = "Dataset",
+        type: "Optional[str]" = None,
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
@@ -134,7 +167,6 @@ class TableDoc:
                 either be one of the pre-defined names: "Dataset",
                 "Distribution", "AccessService", "Parser" and
                 "Generator" or an IRI to a class in an ontology.
-                Defaults to "Dataset".
             keywords: Keywords object with additional keywords definitions.
                 If not provided, only default keywords are considered.
             context: Additional user-defined context that should be
@@ -170,47 +202,46 @@ class TableDoc:
                 else:
                     headdict[prefix + k] = True
 
+        def tolist(v, mult, pad=None):
+            """Return `v` as a list of length `mult` with given padding."""
+            if isinstance(v, list):
+                return v + [pad] * (mult - len(v))
+            return [v] + [pad] * (mult - 1)
+
         # Assign the headdict
         for d in dicts:
             addheaddict(d)
 
         header = list(headdict)
 
-        # Column multiplicity
+        # Calculate multiplicity of each header label
         mult = [1] * len(header)
+        for dct in dicts:
+            for i, head in enumerate(header):
+                if head in dct and isinstance(dct[head], list):
+                    mult[i] = max(mult[i], len(dct[head]))
 
-        # Assign table data. Nested dicts are accounted for
+        # Assign table data. Multiplicity and nested dicts are accounted for
         data = []
         for dct in dicts:
             row = []
-            for i, head in enumerate(header):
+            for head, m in zip(header, mult):
                 if head in dct:
-                    row.append(dct[head])
+                    row.extend(tolist(dct[head], m))
                 else:
                     d = dct
                     for key in head.split("."):
                         d = d.get(key, {})
-                    row.append(d if d != {} else None)
-                if isinstance(row[-1], list):  # added value is a list
-                    mult[i] = len(row[-1])  # update column multiplicity
+                    row.extend(tolist(d if d != {} else None, m))
             data.append(row)
 
-        # Expand table with multiplicated columns
-        if max(mult) > 1:
-            exp_header = []
-            for h, m in zip(header, mult):
-                exp_header.extend([h] * m)
-
-            exp_data = []
-            for row in data:
-                r = []
-                for h, v in zip(header, row):
-                    r.extend(v if isinstance(v, list) else [v])
-                exp_data.append(r)
-            header, data = exp_header, exp_data
+        # New multiplied header
+        newheader = []
+        for head, m in zip(header, mult):
+            newheader.extend(tolist(head, m, head))
 
         return TableDoc(
-            header=header,
+            header=newheader,
             data=data,
             type=type,
             keywords=keywords,
@@ -222,12 +253,15 @@ class TableDoc:
     @staticmethod
     def parse_csv(
         csvfile: "Union[Iterable[str], Path, str]",
-        type: "Optional[str]" = "Dataset",
+        type: "Optional[str]" = None,
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
         encoding: str = "utf-8",
         dialect: "Optional[Union[csv.Dialect, str]]" = None,
+        strict: bool = False,
+        redefine: str = "raise",
+        baseiri: "Optional[str]" = None,
         **kwargs,
     ) -> "TableDoc":
         # pylint: disable=line-too-long
@@ -238,8 +272,7 @@ class TableDoc:
             type: Type of data to save (applies to all rows).  Should
                 either be one of the pre-defined names: "Dataset",
                 "Distribution", "AccessService", "Parser" and "Generator"
-                or an IRI to a class in an ontology.  Defaults to
-                "Dataset".
+                or an IRI to a class in an ontology.
             keywords: Keywords object with additional keywords definitions.
                 If not provided, only default keywords are considered.
             context: Dict with user-defined JSON-LD context.
@@ -250,6 +283,17 @@ class TableDoc:
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
             kwargs: Additional keyword arguments overriding individual
                 formatting parameters.  For more details, see
                 [Dialects and Formatting Parameters].
@@ -291,6 +335,9 @@ class TableDoc:
             keywords=keywords,
             context=context,
             prefixes=prefixes,
+            strict=strict,
+            redefine=redefine,
+            baseiri=baseiri,
         )
 
     def write_csv(
@@ -344,6 +391,33 @@ class TableDoc:
                 write(f)
         else:
             write(csvfile)
+
+    def unique_header(self):
+        """Return the header with brackets appended to duplicated labels
+        to make them unique.
+
+        For example, the header
+
+            ["@id", "@type", "@type", "part.name", "part.name"]
+
+        "distribution.downloadURL",
+
+        would be renamed to
+
+            ["@id", "@type[1]", "@type[2]", "part[1].name", "part[2].name"]
+
+        """
+        new = []
+        seen = {}
+        for h in self.header:
+            if self.header.count(h) == 1:
+                new.append(h)
+            else:
+                head, tail = h.split(".", 1) if "." in h else (h, None)
+                n = seen[head] + 1 if head in seen else 1
+                seen[head] = n
+                new.append(f"{head}[{n}].{tail}" if tail else f"{head}[{n}]")
+        return new
 
 
 def csvsniff(sample):

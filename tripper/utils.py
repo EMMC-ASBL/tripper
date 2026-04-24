@@ -4,6 +4,7 @@
 import datetime
 import hashlib
 import inspect
+import io
 import random
 import re
 import string
@@ -12,8 +13,9 @@ import tempfile
 import urllib
 import warnings
 from contextlib import contextmanager
+from copy import deepcopy
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, Any, cast
 
 from tripper.errors import NamespaceError
 from tripper.literal import Literal
@@ -27,10 +29,10 @@ except ImportError:
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import (
-        Any,
         Callable,
         Generator,
         Iterable,
+        Iterator,
         List,
         Optional,
         Tuple,
@@ -60,6 +62,8 @@ __all__ = (
     "parse_object",
     "as_python",
     "is_uri",
+    "is_curie",
+    # "is_iri",
     "check_function",
     "random_string",
     "extend_namespace",
@@ -74,7 +78,7 @@ MATCH_PREFIXED_IRI = re.compile(
     r"^([a-z0-9]*):([a-zA-Z_]([a-zA-Z0-9_/+-]*[a-zA-Z0-9_+-])?)$"
 )
 MATCH_IRI = re.compile(
-    "^([a-z0-9]*)://([a-zA-Z0-9.-]+)((/[a-zA-Z0-9_+-]+)+)[#/]([a-zA-Z0-9_+-]+)$"
+    "^([a-z0-9]*)://([a-zA-Z0-9.-]+)((/[a-zA-Z0-9_+-]+)*)[#/]([a-zA-Z0-9_+-]+)$"
 )
 
 
@@ -100,11 +104,14 @@ class AttrDict(dict):
     def __dir__(self):
         return dict.__dir__(self) + list(self.keys())
 
-    def __getstate__(self):
+    def __getstate__(self):  # For pickle support
         return dict(self)
 
-    def __setstate__(self, state):
+    def __setstate__(self, state):  # For pickle support
         pass
+
+    def __deepcopy__(self, memo):  # For supporting deepcopy
+        return AttrDict((k, deepcopy(v, memo)) for k, v in self.items())
 
     def _pprint(self, obj=None, indent=0):
         """Help method for pretty printing."""
@@ -119,6 +126,10 @@ class AttrDict(dict):
             s.append(f"{' '*n}{k!r}: {val},")
         s.append(" " * indent + "})")
         return "\n".join(s)
+
+    def copy(self):
+        """Return a shallow copy of self."""
+        return AttrDict(self)
 
 
 def _rec(d, other, append, cls):
@@ -239,14 +250,14 @@ def recursive_update(
 
 @contextmanager
 def openfile(
-    url: "Union[str, Path]", mode: str = "rt", timeout: float = 3, **kwargs
-) -> "Generator":
+    url: "Union[str, Path, IO]", mode: str = "rt", timeout: float = 3, **kwargs
+) -> "Iterator[IO]":
     """Like open(), but allows opening remote files using HTTP GET requests.
 
     Should always be used in a with-statement.
 
     Arguments:
-        url: File path or URL to open.
+        url: File path, URL or stream to open.
         mode: See `mode` argument of open().
         timeout: Timeout for accessing the file in seconds.
         kwargs: Additional passed to open().
@@ -255,6 +266,10 @@ def openfile(
         A stream object returned by open().
 
     """
+    if isinstance(url, (IO, io.IOBase)):
+        yield url
+        return
+
     url = str(url)
     u = url.lower()
     tmpfile = False
@@ -282,7 +297,7 @@ def openfile(
     try:
         # pylint: disable=unspecified-encoding
         f = open(fname, mode=mode, **kwargs)  # type: ignore
-        yield f
+        yield f  # type: ignore
     finally:
         if f is not None:
             f.close()
@@ -501,7 +516,7 @@ def parse_literal(literal: "Any") -> "Any":
                         break
                 else:
                     assert False, "should never be reached"  # nosec
-            return Literal(literal, lang=lang, datatype=datatype)
+            return Literal(cast(Any, literal), lang=lang, datatype=datatype)
         raise TypeError(f"unsupported literal type: {type(literal)}")
 
     if hasattr(literal, "n3") and callable(literal.n3):
@@ -629,9 +644,9 @@ def is_uri(
     Arguments:
         uri: URI to validate.
         require_netloc: Whether to require `uri` to contain a network location.
-            Setting this to false, will exclude URNs, which in are valid URIs.
-            However, in most practical cases, you would expect the URI to
-            contain a network location.
+            Setting this to true will exclude URNs (although they are valid
+            URIs). However, in most practical cases, you would expect the URI
+            to contain a network location.
         allow_unescaped: Whether to allow `uri` to contain unescaped special
             characters. Any character not in `safe` except for letters, digits
             and '_.-' are considered to be special.
@@ -745,14 +760,12 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     return iri
 
 
-def prefix_iri(
-    iri: str, prefixes: dict, require_prefixed: bool = False
-) -> str:
+def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     """Return prefixed IRI.
 
     This is the reverse of expand_iri().
 
-    If `require_prefixed` is true, a NamespaceError exception is raised
+    If `strict` is true, a NamespaceError exception is raised
     if no prefix can be found.
 
     """
@@ -760,7 +773,7 @@ def prefix_iri(
         for prefix, ns in prefixes.items():
             if iri.startswith(str(ns)):
                 return f"{prefix}:{iri[len(str(ns)):]}"
-        if require_prefixed:
+        if strict:
             raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
 
@@ -820,7 +833,7 @@ def substitute_query(
         for k, v in iris.items():
             expanded = expand_iri(v, prefixes=prefixes)
             quoted = urllib.parse.quote(expanded, safe=safe)
-            q1, q2 = iriquote if iriquote else ("", "")  # type: ignore[misc]
+            q1, q2 = (iriquote[0], iriquote[1]) if iriquote else ("", "")
             mapping[k] = f"{q1}{quoted}{q2}"
 
     if literals:
@@ -883,7 +896,11 @@ def check_service_availability(
 
     import requests  # pylint: disable=import-outside-toplevel
 
+    # Interval should never be larger than timeout
+    interval = min(interval, timeout)
+
     start_time = time.time()
+
     while True:
         try:
             response = requests.get(url, timeout=timeout)

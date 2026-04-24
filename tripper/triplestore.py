@@ -136,7 +136,7 @@ class Triplestore:
         base_iri: "Optional[str]" = None,
         database: "Optional[str]" = None,
         package: "Optional[str]" = None,
-        check_url: "Optional[str]" = None,
+        check_url: "Optional[str]" = None,  # Deprecated
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
@@ -162,8 +162,9 @@ class Triplestore:
                 supports it).
             package: Required when `backend` is a relative module.  In that
                 case, it is relative to `package`.
-            check_url: A URL to use for checking that the backend is available.
-                Defaults to `base_iri`.
+            check_url: Deprecated. A URL for checking whether the backend
+                is available. Use the optional keyword argument `check_iri`
+                instead. Defaults to `base_iri`.
             kwargs: Keyword arguments passed to the backend's __init__()
                 method.
 
@@ -175,7 +176,6 @@ class Triplestore:
             namespaces: Dict mapping namespace prefixes to IRIs.
             package: Name of Python package if the backend is implemented as
                 a relative module. Assigned to the `package` argument.
-            check_url: The value of the `check_url` argument.
 
         Notes:
             If the backend establishes a connection that should be closed
@@ -189,6 +189,15 @@ class Triplestore:
             This ensures that the connection is automatically closed when the
             context manager exits.
         """
+        if check_url:
+            warnings.warn(
+                "Argument `check_url` is deprecated. It defaults to "
+                "`base_iri` and is rarely needed.  If needed, `check_iri` "
+                "instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         backend_name = backend.rsplit(".", 1)[-1]
         module = self._load_backend(backend, package)
         cls = getattr(module, f"{backend_name.title()}Strategy")
@@ -198,7 +207,7 @@ class Triplestore:
         self.backend_name = backend_name
         self.database = database
         self.package = package
-        self.check_url = check_url if check_url else base_iri
+        self.check_url = check_url if check_url else base_iri  # Deprecated
         self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
 
@@ -582,6 +591,23 @@ class Triplestore:
 
         self.namespaces[prefix] = ns
         return ns
+
+    def is_available(self, timeout: float = 5, interval: float = 1) -> bool:
+        """Checks if the backend is available.
+
+        Arguments:
+            timeout: Total time in seconds to wait for a response.
+            interval: Internal time interval in seconds between checking if
+                the service has responded.
+
+        Returns:
+            Returns true if the backend is available.
+        """
+        if hasattr(self.backend, "is_available"):
+            return self.backend.is_available(
+                timeout=timeout, interval=interval
+            )
+        return True
 
     @classmethod
     def create_database(cls, backend: str, database: str, **kwargs):
@@ -1085,6 +1111,12 @@ class Triplestore:
             otherwise false is returned.
 
         """
+        warnings.warn(
+            "Method `Triplestore.available()` is deprecated. "
+            "Use `Triplestore.is_available()` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         if self.check_url is None:
             raise ValueError(
                 "`check_url` must be assigned before calling available()"

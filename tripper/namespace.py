@@ -47,11 +47,14 @@ class Namespace:
         triplestore_url: Deprecated. Use the `triplestore` argument instead.
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     __slots__ = (
         "_iri",  # Ontology IRI
         "_label_annotations",  # Recognised annotations for labels
         "_check",  # Whether to check that IRIs exists
         "_iris",  # Dict mapping labels to IRIs
+        "_reviris",  # Dict mapping IRIs to labels. The reverse of `_iris`
         "_reload",  # Whether to reload
         "_triplestore",  # Triplestore for label lookup and checking
         "_format",  # Format to use when loading from a triplestore
@@ -104,6 +107,7 @@ class Namespace:
         )
         self._check = bool(check)
         self._iris: "Optional[dict]" = {} if need_triplestore else None
+        self._reviris: "dict" = {}
         self._reload = reload
         self._triplestore = triplestore
         self._format = format
@@ -159,6 +163,9 @@ class Namespace:
             for s in ts.subjects()
             if s.startswith(iri)
         )
+        # Clear _reviris, such that the dict will be regenerated next time
+        # it is needed
+        self._reviris.clear()
 
     def _get_labels(self, iri):
         """Return annotation labels corresponding to the given IRI."""
@@ -290,6 +297,58 @@ class Namespace:
             names += list(self._iris.keys())
         return names
 
+    def __neg__(self):
+        """The negation operator (-) is a short-hand for returning the base
+        iri with any trailing slash or hash stripped off.
+
+        Examples:
+
+        >>> from tripper import OWL
+        >>> -OWL
+        'http://www.w3.org/2002/07/owl'
+
+        """
+        return self._iri.rstrip("/#")
+
+    def __pos__(self):
+        """The positive operator (+) is a short-hand for returning the base
+        iri.
+
+        Examples:
+
+        >>> from tripper import OWL
+        >>> +OWL
+        'http://www.w3.org/2002/07/owl#'
+
+        """
+        return self._iri
+
+    def __call__(self, iri):
+        """Returns the name or label associated with the given iri."""
+        if not iri.startswith(self._iri):
+            raise NamespaceError(
+                f"IRI '{iri}' is not in namespace '{self._iri}'"
+            )
+        if self._iris is None:
+            return iri[len(self._iri) :]
+        if not self._reviris:
+            if not self._iris:
+                self._update_iris(
+                    triplestore=self._triplestore,
+                    reload=self._reload,
+                    format=self._format,
+                )
+            self._reviris = {
+                iri: label for label, iri in reversed(self._iris.items())
+            }
+        if iri not in self._reviris:
+            cachefile = self._get_cachefile()
+            raise NoSuchIRIError(
+                f"{iri}\n"
+                f"Maybe you have to remove the cache file: {cachefile}"
+            )
+        return self._reviris[iri]
+
 
 def get_cachedir(create=True) -> Path:
     """Returns cross-platform path to tripper cache directory.
@@ -336,6 +395,7 @@ ELI = Namespace("http://data.europa.eu/eli/ontology#")
 EURIO = Namespace("http://data.europa.eu/s66#")
 FNO = Namespace("https://w3id.org/function/ontology#")
 FOAF = Namespace("http://xmlns.com/foaf/0.1/")
+HUME = Namespace("https://w3id.org/emmo/hume#")
 IANA = Namespace("https://www.iana.org/assignments/media-types/")
 LOCN = Namespace("http://www.w3.org/ns/locn#")
 ODRL = Namespace("http://www.w3.org/ns/odrl/2/")

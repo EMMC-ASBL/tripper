@@ -21,6 +21,7 @@ from .namespace import (
     EURIO,
     FNO,
     FOAF,
+    HUME,
     IANA,
     MAP,
     ODRL,
@@ -42,7 +43,7 @@ from .session import Session
 from .triplestore import Triplestore, backend_packages
 from .triplestore_extend import Tripper
 
-__version__ = "0.4.3"
+__version__ = "0.5.0"
 
 # Pre-defined namespaces
 EMMO = Namespace(
@@ -72,6 +73,7 @@ __all__ = (
     "EURIO",  # EUropean Research Information Ontology
     "FNO",  # Function Ontology
     "FOAF",  # Friend of a Friend
+    "HUME",  # Human readable EMMO
     "IANA",  # IANA, registered media types
     "MAP",  # Mapping Ontology
     "ODRL",  # Open Digital Rights Language

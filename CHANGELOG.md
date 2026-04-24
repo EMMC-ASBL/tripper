@@ -1,5 +1,50 @@
 # Changelog
 
+## [v0.5.0](https://github.com/EMMC-ASBL/tripper/tree/v0.5.0) (2025-11-22)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.3...v0.5.0)
+
+**Closed issues:**
+
+- Add functions for storing/loading namespace prefixes and URIs to/from the KB [\#441](https://github.com/EMMC-ASBL/tripper/issues/441)
+- Several tests are never run because of error in importsatetemtn fpr pyld [\#427](https://github.com/EMMC-ASBL/tripper/issues/427)
+- Fix the safety workflow by creating a Safety account and add a key to the workflow [\#423](https://github.com/EMMC-ASBL/tripper/issues/423)
+- Add methods to the Keywords class for adding new prefixes [\#422](https://github.com/EMMC-ASBL/tripper/issues/422)
+- Why is the test wit the ontopy backend skipped? [\#334](https://github.com/EMMC-ASBL/tripper/issues/334)
+
+**Merged pull requests:**
+
+- Fixed some bugs in Keywords  [\#473](https://github.com/EMMC-ASBL/tripper/pull/473) ([jesper-friis](https://github.com/jesper-friis))
+- Added missing keywords [\#470](https://github.com/EMMC-ASBL/tripper/pull/470) ([jesper-friis](https://github.com/jesper-friis))
+- Update keywords [\#469](https://github.com/EMMC-ASBL/tripper/pull/469) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#468](https://github.com/EMMC-ASBL/tripper/pull/468) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Remove default type for TableDoc [\#466](https://github.com/EMMC-ASBL/tripper/pull/466) ([jesper-friis](https://github.com/jesper-friis))
+- Allow keyword redefinition [\#465](https://github.com/EMMC-ASBL/tripper/pull/465) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#464](https://github.com/EMMC-ASBL/tripper/pull/464) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Improved error message and fixed minor issue when reading data from PINK. [\#463](https://github.com/EMMC-ASBL/tripper/pull/463) ([jesper-friis](https://github.com/jesper-friis))
+- Ensure that SPARQL queries with the rdflib backend behaves similar to sparqlwrapper [\#456](https://github.com/EMMC-ASBL/tripper/pull/456) ([jesper-friis](https://github.com/jesper-friis))
+- Changed `check_url` to default to `base_iri` [\#455](https://github.com/EMMC-ASBL/tripper/pull/455) ([jesper-friis](https://github.com/jesper-friis))
+- Fixed some issues with sparql backend [\#453](https://github.com/EMMC-ASBL/tripper/pull/453) ([jesper-friis](https://github.com/jesper-friis))
+- Generate keywords file [\#451](https://github.com/EMMC-ASBL/tripper/pull/451) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#450](https://github.com/EMMC-ASBL/tripper/pull/450) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added keyring tip [\#449](https://github.com/EMMC-ASBL/tripper/pull/449) ([jesper-friis](https://github.com/jesper-friis))
+- Fix deprecation warnings [\#448](https://github.com/EMMC-ASBL/tripper/pull/448) ([jesper-friis](https://github.com/jesper-friis))
+- Test against latest Python 3.14 instead of release candidate rc2 [\#447](https://github.com/EMMC-ASBL/tripper/pull/447) ([jesper-friis](https://github.com/jesper-friis))
+- Restore formatting [\#446](https://github.com/EMMC-ASBL/tripper/pull/446) ([jesper-friis](https://github.com/jesper-friis))
+- Fix formatting2 [\#445](https://github.com/EMMC-ASBL/tripper/pull/445) ([jesper-friis](https://github.com/jesper-friis))
+- Store prefixes to triplestore [\#443](https://github.com/EMMC-ASBL/tripper/pull/443) ([jesper-friis](https://github.com/jesper-friis))
+- Clean up keywords [\#442](https://github.com/EMMC-ASBL/tripper/pull/442) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#439](https://github.com/EMMC-ASBL/tripper/pull/439) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added available\(\) method and check\_url to argument to Triplestore [\#437](https://github.com/EMMC-ASBL/tripper/pull/437) ([jesper-friis](https://github.com/jesper-friis))
+- Added substitute\_query\(\) function [\#434](https://github.com/EMMC-ASBL/tripper/pull/434) ([jesper-friis](https://github.com/jesper-friis))
+- Fixed minor bugs in keywords.py [\#432](https://github.com/EMMC-ASBL/tripper/pull/432) ([jesper-friis](https://github.com/jesper-friis))
+- Fix linting warnings for bound prefixes [\#431](https://github.com/EMMC-ASBL/tripper/pull/431) ([nameloCmaS](https://github.com/nameloCmaS))
+- Corrected importorskip for PyLD \(corrected to pyld\) [\#428](https://github.com/EMMC-ASBL/tripper/pull/428) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#426](https://github.com/EMMC-ASBL/tripper/pull/426) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added add\_prefix\(\) method to keywords module. [\#424](https://github.com/EMMC-ASBL/tripper/pull/424) ([jesper-friis](https://github.com/jesper-friis))
+- Changed pypi status to production [\#418](https://github.com/EMMC-ASBL/tripper/pull/418) ([jesper-friis](https://github.com/jesper-friis))
+- Updated figure with basic relations [\#417](https://github.com/EMMC-ASBL/tripper/pull/417) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.4.3](https://github.com/EMMC-ASBL/tripper/tree/v0.4.3) (2025-08-19)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.2...v0.4.3)

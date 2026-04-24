@@ -1,0 +1,17 @@
+# Missing class IRI
+---
+basedOn: "ddoc:datadoc"
+
+prefixes:
+  kb: "http://example.com/kb#"
+  myonto: "http://example.com/myonto#"
+
+
+resources:
+  A:
+    # iri: myonto:A  # MissingKeyError
+    subClassOf: dcat:Resource
+    keywords:
+      description:
+        iri: myonto:description
+        range: myonto:B
