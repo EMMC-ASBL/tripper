@@ -286,6 +286,7 @@ The consequence is **silent**: for scalar string values a `"value"` restriction 
 
 After parsing the table that defines your classes, call [`update_context()`][update_context()] with its output before parsing tables that reference those classes:
 
+
 ```python
 from tripper.datadoc import get_context, TableDoc
 from tripper.datadoc.dataset import update_context
@@ -320,6 +321,7 @@ If you chain more than two tables, repeat the `update_context()` call after each
 [predefined prefixes]: prefixes.md
 [predefined keywords]: keywords.md
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
+[update_context()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.update_context
 [store()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.store
 [told()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.told
 [save_datadoc()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.save_datadoc
