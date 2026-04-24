@@ -731,6 +731,24 @@ def test_update_restrictions():
         ],
         "label": "MyDevice",
     }
+    assert res6["ex:MyDevice2"] == {
+        "@id": "ex:MyDevice2",
+        "@type": "owl:Class",
+        "subClassOf": [
+            "https://w3id.org/emmo/hume#Device",
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "hume:MeasuringInstrument",
+            },
+            {
+                "@type": "owl:Restriction",
+                "owl:onProperty": "dcterms:hasPart",
+                "owl:someValuesFrom": "ex:MyDevice",
+            },
+        ],
+        "label": "MyDevice2",
+    }
 
 
 def test_datadoc():
