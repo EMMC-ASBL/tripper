@@ -557,6 +557,25 @@ def update_context(
     Currently this only adds classes defined in `source` to `context`.
 
     Returns the updated context.
+
+    Note:
+        When parsing multiple sources that cross-reference each other's
+        classes (e.g. multiple `TableDoc.parse_csv()` calls where one
+        table references classes defined in another), call
+        `update_context(result.asdicts(), context)` after each parse and
+        **before** parsing the next source.  If you skip this step,
+        classes from earlier sources are unknown when
+        `infer_restriction_types()` processes later sources, causing
+        object properties whose values are those classes to silently
+        receive no restriction type (i.e. plain triples instead of
+        ``owl:Restriction``).
+
+        Example::
+
+            context = get_context(...)
+            classes = TableDoc.parse_csv("classes.csv", context=context)
+            update_context(classes.asdicts(), context)  # register classes
+            resources = TableDoc.parse_csv("resources.csv", context=context)
     """
     subclassof = (RDFS.subClassOf, "rdfs:subClassOf", "subClassOf")
 
@@ -648,6 +667,18 @@ def infer_restriction_types(
           - "value": value restriction (ignored)
 
         where `<N>` is a positive integer.
+
+    Note:
+        Class recognition is based solely on what is registered in the
+        provided `context`.  If a property value refers to a class that
+        was defined in a *different* source (e.g. parsed from a separate
+        CSV file), that class will **not** be recognised unless
+        `update_context()` was called with the earlier source's output
+        before this function runs.  The consequence of missing context is
+        silent: for scalar string values the property gets a ``"value"``
+        restriction, but for **list-valued** properties no restriction
+        type is inferred at all, resulting in plain triples instead of
+        ``owl:Restriction`` nodes in the output graph.
 
     """
     # pylint: disable=unused-argument

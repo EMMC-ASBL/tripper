@@ -214,6 +214,10 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 
 ```
 
+> **Note**: If you parse multiple CSV files that cross-reference each other's classes (e.g. a table of dataset types referenced as `hasInput`/`hasOutput` in a computations table), you must call `update_context()` with the first table's output before parsing the next table.
+> Without this step, object properties whose values are classes defined in a previously parsed table will silently produce plain triples instead of `owl:Restriction` nodes.
+> See [Multi-table workflows] for details and a worked example.
+
 
 [tripper.datadoc]: https://emmc-asbl.github.io/tripper/latest/datadoc/introduction
 [DCAT vocabulary]: https://www.w3.org/TR/vocab-dcat-3/
@@ -235,6 +239,7 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 [save_datadoc()]:
 ../api_reference/datadoc/dataset.md/#tripper.datadoc.dataset.save_datadoc
 [TableDoc]: ../api_reference/datadoc/tabledoc.md/#tripper.datadoc.tabledoc.TableDoc
+[Multi-table workflows]: customisation.md#multi-table-workflows
 [semdata.yaml]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml
 [semdata.csv]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv
 
