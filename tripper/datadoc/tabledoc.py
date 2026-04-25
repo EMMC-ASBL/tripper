@@ -66,7 +66,7 @@ class TableDoc:
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-instance-attributes
 
     def __init__(
         self,
