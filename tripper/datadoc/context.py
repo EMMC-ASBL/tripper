@@ -63,7 +63,7 @@ def get_context(
     if isinstance(context, Context):
         if copy:
             context = context.copy()
-        #if keywords or theme:
+        # if keywords or theme:
         #    kw = get_keywords(keywords=keywords, theme=theme)
         #    context.add_context(kw.get_context())
     else:
