@@ -63,9 +63,9 @@ def get_context(
     if isinstance(context, Context):
         if copy:
             context = context.copy()
-        if keywords or theme:
-            kw = get_keywords(keywords=keywords, theme=theme)
-            context.add_context(kw.get_context())
+        #if keywords or theme:
+        #    kw = get_keywords(keywords=keywords, theme=theme)
+        #    context.add_context(kw.get_context())
     else:
         context = Context(
             context=context,
@@ -76,6 +76,7 @@ def get_context(
         )
     if prefixes:
         context.add_context({k: str(v) for k, v in prefixes.items()})
+
     return context
 
 
@@ -413,6 +414,16 @@ class Context:
         if strict:
             raise NamespaceError(f"no short name for: {name}")
         return name
+
+    def type(self, name: str, default=None) -> str:
+        """Return the JSON-LD type of `name`.
+
+        If `name` has no type, return `default`.
+        """
+        try:
+            return self.getdef(name).get("@type", default)
+        except NamespaceError:
+            return default
 
     def getdef(self, name: str) -> dict:
         """Return JSON-LD definition of `name`."""
