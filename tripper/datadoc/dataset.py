@@ -130,7 +130,7 @@ def show(obj, indent=2) -> None:
 def told(
     descr: "Union[dict, list]",
     type: "Optional[str]" = None,
-    theme: "Optional[str]" = "ddoc:datadoc",
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
