@@ -268,8 +268,8 @@ def test_csvsniff():
     assert dialect.lineterminator == "\n"
     assert dialect.quotechar == "'"
 
-if 1:
-#def test_csv_keywords():
+
+def test_csv_keywords():
     """Test load CSV with custom keywords file."""
     from dataset_paths import indir  # pylint: disable=import-error
 
