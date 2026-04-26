@@ -420,6 +420,8 @@ class Context:
         If `name` has no type, return `default`.
 
         Examples:
+
+        >>> context = Context()
         >>> context.type("creator")  # object property
         '@id'
 
@@ -442,7 +444,6 @@ class Context:
             return self.getdef(name).get("@type", RDF.PlainLiteral)
         except NamespaceError:
             return default
-
 
     def getdef(self, name: str) -> dict:
         """Return JSON-LD definition of `name`."""
