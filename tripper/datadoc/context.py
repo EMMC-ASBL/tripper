@@ -443,7 +443,6 @@ class Context:
         except NamespaceError:
             return default
 
-
     def getdef(self, name: str) -> dict:
         """Return JSON-LD definition of `name`."""
         shortname = self.shortname(name)
