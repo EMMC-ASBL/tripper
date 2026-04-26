@@ -82,6 +82,7 @@ pre-commit = [
 ]
 dev = [
     "tripper[pre-commit,docs]",
+    "virtualenvwrapper>=4.0.0",
 ]
 
 [project.urls]
