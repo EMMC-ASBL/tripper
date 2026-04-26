@@ -418,11 +418,31 @@ class Context:
         """Return the JSON-LD type of `name`.
 
         If `name` has no type, return `default`.
+
+        Examples:
+        >>> context.type("creator")  # object property
+        '@id'
+
+        >>> context.type("creationDate")  # data property
+        'http://www.w3.org/2001/XMLSchema#dateTime'
+
+        >>> context.type("format")  # annotation property
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral'
+
+        >>> context.type("Document")  # class
+        'http://www.w3.org/2002/07/owl#Class'
+
+        >>> context.type("some-individual")  # not in context
+
+        >>> context.type("some-individual", OWL.NamedIndividual)
+        'http://www.w3.org/2002/07/owl#NamedIndividual'
+
         """
         try:
-            return self.getdef(name).get("@type", default)
+            return self.getdef(name).get("@type", RDF.PlainLiteral)
         except NamespaceError:
             return default
+
 
     def getdef(self, name: str) -> dict:
         """Return JSON-LD definition of `name`."""

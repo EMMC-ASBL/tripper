@@ -180,6 +180,19 @@ def test_shortname():
         ctx.prefixed("non-existing")
 
 
+def test_type():
+    """Test type() method."""
+    from tripper import OWL, RDF, XSD
+
+    assert ctx.type("mediaType") == "@id"
+    assert ctx.type("creationDate")  == XSD.dateTime
+    assert ctx.type("Document") == OWL.Class
+    assert ctx.type("format") == RDF.PlainLiteral
+    assert not ctx.type("some-individual")   # not in context
+    assert ctx.type(
+        "some-individual", OWL.NamedIndividual
+    ) == OWL.NamedIndividual
+
 def test_expanddoc_compactdoc():
     """Test expanddoc() method."""
     doc = {
