@@ -1,0 +1,20 @@
+{
+  "@context": [
+    "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json",
+    {
+      "sem": "https://w3id.org/emmo/domain/sem/0.1#",
+      "semdata": "https://he-matchmaker.eu/data/sem/",
+      "sample": "https://he-matchmaker.eu/sample/",
+      "mat": "https://he-matchmaker.eu/material/",
+      "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
+      "par": "http://sintef.no/dlite/parser#",
+      "gen": "http://sintef.no/dlite/generator#",
+      "micro": "https://w3id.org/emmo/domain/microstructure/0.3#",
+
+      "fromSample": {
+        "@id": "micro:fromSample",
+        "@type": "@id"
+      }
+    }
+  ]
+}
