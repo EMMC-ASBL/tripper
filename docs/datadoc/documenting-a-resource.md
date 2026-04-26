@@ -174,7 +174,58 @@ Documenting as table
 The [TableDoc] class can be used to document multiple resources as rows in a table.
 
 The table must have a header row with defined keywords (either [predefined][predefined keywords] or provided with a custom context).
-Nested fields may be specified as dot-separated keywords. For example, the table
+Tripper allow to have multiple columns with the same keyword in the header.
+Nested fields may be specified as dot-separated keywords.
+Ex: `distribution.downloadURL`.
+
+The header keyword(s) may be followed by an optional square bracket with the following syntax (inspired by URL options):
+
+    name[label?var1=value1&var2=value2]
+
+where
+- `name`: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context.
+  The only formal requirement is that is cannot contain a begin brace ([), but it might be wise to be more strict.
+- `label`: is a label for the column.
+  It is used to make the column unique or to group related columns.
+  The only formal requirement is that is cannot contain a question mark (?), but it probably wise to be more strict.
+  A digit should be allowed.
+- `key`: a key identifying an option for the column.
+  Should be a valid C or Python identifier (regex: `[_a-zA-Z][_a-zA-Z0-9]*`).
+- `value`: the value of a key.
+  Should not contain (unescaped) ampersand (&) or end braces (]).
+
+Currently recognised keys:
+- **`unit`**: A unit symbol. All numbers in this column has this unit.
+- **`sep`**: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.
+
+
+### Examples of use cases
+
+Ensure that columns are unique (e.g. for use with pandas):
+
+| @id | @type[1] | @type[2] |
+|-----|----------|----------|
+
+Grouping of columns (e.g. for DLite datamodels):
+
+| @id | @type | distribution[1].downloadURL | distribution[1].mediaType | distribution[2].accessURL |
+|-----|-------|-----------------------------|---------------------------|---------------------------|
+
+Specifying unit:
+
+| @id          | @type       | length[?unit=m] |
+|--------------|-------------|-----------------|
+| ex:my_length | emmo:Length | 3.2             |
+
+Specifying a separator:
+
+| @id       | @type        | keyword[?sep=;]    |
+|-----------|--------------|--------------------|
+| ex:mydata | emmo:Dataset | geology;stone;cave |
+
+
+### Complete example
+For example, the table
 
 | @id | distribution.downloadURL |
 | --- | ------------------------ |

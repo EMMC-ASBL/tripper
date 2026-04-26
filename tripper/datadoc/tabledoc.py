@@ -123,23 +123,18 @@ class TableDoc:
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
+        # Parse column headers. Follow the syntax defined in
+        # https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table
+        columns = [
+            Column(head, context=self.context, strip=self.strip)
+            for head in self.header
+        ]
         results = []
         for row in self.data:
             d = AttrDict()
-            for i, colname in enumerate(self.header):
+            for i, col in enumerate(columns):
                 cell = row[i].strip() if row[i] and self.strip else row[i]
-                if cell:
-
-                    # Convert cell value to correct Python type
-                    if not colname.startswith("@"):
-                        leafname = colname.split(".")[-1]
-                        df = self.context.getdef(leafname.split("[")[0])
-                        if "@type" in df and df["@type"] != "@id":
-                            cell = Literal(cell, datatype=df["@type"]).value
-
-                    addnested(
-                        d, colname.strip() if self.strip else colname, cell
-                    )
+                col.add(d, cell)
             results.append(stripnested(d))
         ld = told(
             results,
@@ -392,6 +387,102 @@ class TableDoc:
         else:
             write(csvfile)
 
+    @staticmethod
+    def parse_excel(
+        excelfile: "Union[Path, str]",
+        sheet: "Union[str, int]" = 0,
+        cellrange: "Optional[str]" = None,
+        type: "Optional[str]" = None,
+        keywords: "Optional[KeywordsType]" = None,
+        context: "Optional[ContextType]" = None,
+        prefixes: "Optional[dict]" = None,
+        strip: bool = True,
+        strict: bool = False,
+        redefine: str = "raise",
+        baseiri: "Optional[str]" = None,
+    ) -> "TableDoc":
+        # pylint: disable=line-too-long
+        """Parse a csv file using the standard library csv module.
+
+        Arguments:
+            excelfile: Name of Excel file to parse.
+            sheet: Sheet name or number to load.
+            cellrange: Cell range to load. Examples: "A1:C4", "A:C", "1:4".
+                The default is to read all cells.
+            type: Type of data to save (applies to all rows).  Should
+                either be one of the pre-defined names: "Dataset",
+                "Distribution", "AccessService", "Parser" and "Generator"
+                or an IRI to a class in an ontology.
+            keywords: Keywords object with additional keywords definitions.
+                If not provided, only default keywords are considered.
+            context: Dict with user-defined JSON-LD context.
+            prefixes: Dict with prefixes in addition to those included in the
+                JSON-LD context.  Should map namespace prefixes to IRIs.
+            encoding: The encoding of the csv file.  Note that Excel may
+                encode as "ISO-8859" (which was commonly used in the 1990th).
+            dialect: A subclass of csv.Dialect, or the name of the dialect,
+                specifying how the `csvfile` is formatted.  For more details,
+                see [Dialects and Formatting Parameters].
+            strip: Whether to strip leading and trailing whitespaces from cells.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
+            kwargs: Additional keyword arguments overriding individual
+                formatting parameters.  For more details, see
+                [Dialects and Formatting Parameters].
+
+        Returns:
+            New TableDoc instance.
+
+        """
+        # pylint: disable=import-outside-toplevel
+        from openpyxl import load_workbook
+
+        wb = load_workbook(
+            excelfile,
+            read_only=True,
+            keep_vba=False,
+            data_only=True,
+            keep_links=False,
+            rich_text=False,
+        )
+        # Get worksheet
+        ws = wb[wb.sheetnames[sheet] if isinstance(sheet, int) else sheet]
+
+        # Get cell range
+        if cellrange:
+            cr = ws[cellrange]
+        else:
+            # Find first non-empty rows and columns
+            nrows = next((i for i, r in enumerate(ws.values) if not r[0]), 0)
+            ncols = next(
+                (i for i, v in enumerate(next(ws.values)) if not v), 0
+            )
+            cr = ws.iter_rows(max_row=nrows, max_col=ncols)
+
+        table = [[cell.value for cell in row] for row in cr]
+
+        return TableDoc(
+            header=table[0],
+            data=table[1:],
+            type=type,
+            keywords=keywords,
+            context=context,
+            prefixes=prefixes,
+            strip=strip,
+            strict=strict,
+            redefine=redefine,
+            baseiri=baseiri,
+        )
+
     def unique_header(self):
         """Return the header with brackets appended to duplicated labels
         to make them unique.
@@ -483,3 +574,70 @@ def csvsniff(sample):
         strict = False  # be permissive on malformed csv input
 
     return dialect
+
+
+class Column:
+    """Help class representing a column."""
+
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, head, context=None, strip=True):
+        # pylint: disable=line-too-long
+        """Initialise a column opject.
+
+        Arguments:
+            head: Column header. For the allowed syntax of the header label
+                `head`, see https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table
+            context: Optional context. Used for deriving datatype.
+            strip: Whether to strip white spaces from `head`.
+
+        """
+        if strip:
+            head = head.strip()
+
+        fields = re.findall(r"([^.\[]+)(\[([^\]]*)\])?", head)
+        label = fields[0][2].split("?", 1)[0]
+        spec = fields[-1][2].split("?", 1)
+
+        options = {}
+        if len(spec) == 2:
+            for opt in spec[1].split("&"):
+                k, v = opt.split("=", 1)
+                options[k] = v
+
+        datatype = None
+        leafname = fields[-1][0]
+        if context and not leafname.startswith("@"):
+            df = context.getdef(leafname)
+            if "@type" in df and df["@type"] != "@id":
+                datatype = df["@type"]
+
+        self.head = head
+        self.context = context
+        self.strip = strip
+        self.names = [f[0] for f in fields]
+        self.label = label
+        self.options = options
+        self.datatype = datatype
+
+    def add(self, d, cell):
+        """Add cell value to dict `d`."""
+        if not cell:
+            return
+        if "sep" in self.options:
+            vals = cell.split(self.options["sep"])
+        else:
+            vals = [cell]
+
+        for v in vals:
+            val = (
+                Literal(v, datatype=self.datatype).value
+                if self.datatype
+                else v
+            )
+            # if "unit" in self.options:
+            #    val = {
+            #        "value": val,
+            #        "unit": self.unit,
+            #    }
+            addnested(d, self.head, val)
