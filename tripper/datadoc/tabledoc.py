@@ -418,11 +418,6 @@ class TableDoc:
             context: Dict with user-defined JSON-LD context.
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
-            encoding: The encoding of the csv file.  Note that Excel may
-                encode as "ISO-8859" (which was commonly used in the 1990th).
-            dialect: A subclass of csv.Dialect, or the name of the dialect,
-                specifying how the `csvfile` is formatted.  For more details,
-                see [Dialects and Formatting Parameters].
             strip: Whether to strip leading and trailing whitespaces from cells.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
@@ -435,9 +430,6 @@ class TableDoc:
                   - "raise": Raise an RedefineError (default).
             baseiri: If given, it will be used as a base iri to
                 resolve relative IRIs. (I.e. Not valid URLs).
-            kwargs: Additional keyword arguments overriding individual
-                formatting parameters.  For more details, see
-                [Dialects and Formatting Parameters].
 
         Returns:
             New TableDoc instance.
