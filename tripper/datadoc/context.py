@@ -57,15 +57,15 @@ def get_context(
     Returns:
         Context object.
     """
-    # pylint: disable=import-outside-toplevel
-    from tripper.datadoc.keywords import get_keywords
-
     if isinstance(context, Context):
         if copy:
             context = context.copy()
-        if keywords or theme:
-            kw = get_keywords(keywords=keywords, theme=theme)
-            context.add_context(kw.get_context())
+        # if keywords or theme:
+        #    # pylint: disable=import-outside-toplevel
+        #    from tripper.datadoc.keywords import get_keywords
+        #
+        #    kw = get_keywords(keywords=keywords, theme=theme)
+        #    context.add_context(kw.get_context())
     else:
         context = Context(
             context=context,
@@ -413,6 +413,37 @@ class Context:
         if strict:
             raise NamespaceError(f"no short name for: {name}")
         return name
+
+    def type(self, name: str, default=None) -> str:
+        """Return the JSON-LD type of `name`.
+
+        If `name` has no type, return `default`.
+
+        Examples:
+
+        >>> context = Context()
+        >>> context.type("creator")  # object property
+        '@id'
+
+        >>> context.type("creationDate")  # data property
+        'http://www.w3.org/2001/XMLSchema#dateTime'
+
+        >>> context.type("format")  # annotation property
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral'
+
+        >>> context.type("Document")  # class
+        'http://www.w3.org/2002/07/owl#Class'
+
+        >>> context.type("some-individual")  # not in context
+
+        >>> context.type("some-individual", OWL.NamedIndividual)
+        'http://www.w3.org/2002/07/owl#NamedIndividual'
+
+        """
+        try:
+            return self.getdef(name).get("@type", RDF.PlainLiteral)
+        except NamespaceError:
+            return default
 
     def getdef(self, name: str) -> dict:
         """Return JSON-LD definition of `name`."""

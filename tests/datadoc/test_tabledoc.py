@@ -314,8 +314,8 @@ def test_csv_keywords():
     batch1 = td.asdicts()[0]
     assert batch1["@type"] == [
         "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        # "dcat:Resource",
+        # "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
         "myonto:Batch",
     ]
     assert batch1["batchNumber"] == 1

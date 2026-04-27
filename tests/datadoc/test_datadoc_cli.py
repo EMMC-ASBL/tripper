@@ -85,7 +85,7 @@ def test_add():
         "--triplestore=FusekiTest",
         f"--config={indir/'session.yaml'}",
         "add",
-        f"--context={indir/'semdata-context.json'}",
+        f"--context={indir/'semdata-context-ext.json'}",
         "--type=dcat:Dataset",
         f"--dump={outdir/'semdata.ttl'}",
         f"{indir/'semdata.csv'}",
