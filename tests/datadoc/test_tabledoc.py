@@ -14,7 +14,7 @@ def test_asdicts():
     from tripper.datadoc import TableDoc
 
     td = TableDoc(
-        header=[
+        headers=[
             "@id",
             "@type",
             "@type",
@@ -106,7 +106,7 @@ def test_fromdicts():
     ]
     td = TableDoc.fromdicts(dicts)
 
-    assert td.header == ["@id", "label", "distribution.downloadURL"]
+    assert td.headers == ["@id", "label", "distribution.downloadURL"]
     assert td.data == [
         [EX.data1, "data1", None],
         [EX.data2, None, "http://example.com/data2"],
@@ -172,7 +172,7 @@ def test_csv():
                 "gen": "http://sintef.no/dlite/generator#",
             },
         )
-    assert td2.header == td.header
+    assert td2.headers == td.headers
     assert td2.data == td.data
 
     # Print serialised KB
@@ -212,7 +212,7 @@ def test_csv_duplicated_columns():
     }
 
     td2 = TableDoc.fromdicts([img2, img3], prefixes=prefixes)
-    assert td2.header == [
+    assert td2.headers == [
         "@id",
         "@type",  # TEMImage
         "@type",  # BrightFieldEmage
@@ -255,7 +255,7 @@ def test_unique_header():
     """Test unique_header() method."""
     from tripper.datadoc import TableDoc
 
-    header = [
+    headers = [
         "@id",
         "@type",
         "@type",
@@ -263,7 +263,7 @@ def test_unique_header():
         "distribution.downloadURL",
         "distribution.downloadURL",
     ]
-    unique_header = [
+    unique_headers = [
         "@id",
         "@type[1]",
         "@type[2]",
@@ -271,11 +271,11 @@ def test_unique_header():
         "distribution[1].downloadURL",
         "distribution[2].downloadURL",
     ]
-    td = TableDoc(header=header, data=[])
-    assert td.unique_header() == unique_header
+    td = TableDoc(headers=headers, data=[])
+    assert td.unique_headers() == unique_headers
 
-    td.header = unique_header
-    assert td.unique_header() == unique_header
+    td.headers = unique_headers
+    assert td.unique_headers() == unique_headers
 
 
 def test_csvsniff():
@@ -328,18 +328,18 @@ def test_column():
     from tripper.datadoc.tabledoc import Column
 
     col1 = Column("title")
-    assert col1.head == "title"
+    assert col1.header == "title"
     assert col1.label == ""
     assert not col1.options
 
     col2 = Column(" title ")
-    assert col2.head == "title"
+    assert col2.header == "title"
 
     col3 = Column(" title ", strip=False)
-    assert col3.head == " title "
+    assert col3.header == " title "
 
     col4 = Column("distribution[0].accessURL[?sep=,]")
-    assert col4.head == "distribution[0].accessURL[?sep=,]"
+    assert col4.header == "distribution[0].accessURL[?sep=,]"
     assert col4.label == "0"
     assert col4.options == {"sep": ","}
 
@@ -350,7 +350,7 @@ def test_column():
     assert col5.datatype is None
 
     col6 = Column("creationDate", context=get_context())
-    assert col6.head == "creationDate"
+    assert col6.header == "creationDate"
     assert col6.datatype == XSD.dateTime
 
 
@@ -360,7 +360,7 @@ def test_sep():
     from tripper.datadoc import TableDoc
 
     td = TableDoc(
-        header=["@id", "@type[?sep=,]", "title"],
+        headers=["@id", "@type[?sep=,]", "title"],
         data=[("kb:s1", "kb:T1,kb:T2", "A title, with a comma")],
         prefixes={"kb": "http://example.com/kb#"},
     )
