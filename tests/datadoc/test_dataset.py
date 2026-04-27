@@ -746,13 +746,13 @@ def test_literals_not_checked_in_context():
     prefixes = {"dummy": "https://dummypoject.eu/"}
     context = get_context()
 
-    # Directly register the "missing" class in the context
+    # Directly add the "missing" class in the context
     context.add_context(
         {"missing": {"@id": "dummy:Missing", "@type": "owl:Class"}}
     )
 
     assert "missing" in context
-    # Individual from ind_w_missing.csv inlined as a dict
+
     ind = {
         "@id": "dummy:testdata",
         "@type": "https://dummyproject.eu/Dataset",
@@ -760,7 +760,7 @@ def test_literals_not_checked_in_context():
         "abstract": (
             "this dataset has missing as both title and description to make"
             " sure it does not create problems when there exists a class also"
-            " with label missing"
+            " with label missing."
         ),
     }
 
@@ -772,6 +772,7 @@ def test_literals_not_checked_in_context():
 
     update_restrictions(doc, context)
 
+    # Check that the description is correct
     assert doc["description"] == "missing"
     assert doc["abstract"] == (
         "this dataset has missing as both title and description to make"
