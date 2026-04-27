@@ -486,6 +486,7 @@ def store(
     context.sync_prefixes(ts)
 
     update_restrictions(doc, context=context, restrictions=restrictions)
+
     # add(doc, "@context", context.get_context_dict())
 
     # Validate
@@ -496,6 +497,7 @@ def store(
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
+
     return doc
 
 
@@ -836,10 +838,16 @@ def update_restrictions(
             else:
                 add(source, "subClassOf", e)
 
-    # Convert relations to restrictions
     for k, v in source.copy().items():
-        if k.startswith("@") or k in ("subClassOf",):
+        # no restrictions for annotation properties or special classes
+        if (
+            k.startswith("@")
+            or k in ("subClassOf",)
+            or context.is_annotation_property(k)
+        ):
             continue
+
+        # Convert relations to restrictions
         addrestriction(source, k, v)
 
     return source
