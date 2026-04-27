@@ -198,6 +198,9 @@ Currently recognised keys:
 - **`unit`**: A unit symbol. All numbers in this column has this unit.
 - **`sep`**: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.
 
+!!! warning
+    The syntax for the square brackets is currently experimental and may change in the future.
+
 
 ### Examples of use cases
 
