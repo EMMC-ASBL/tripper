@@ -187,7 +187,7 @@ where
   The only formal requirement is that it cannot contain a begin brace ([), but it might be wise to be more strict.
 - `label`: is a label for the column.
   It is used to make the column unique or to group related columns.
-  The only formal requirement is that is cannot contain a question mark (?), but it probably wise to be more strict.
+  The only formal requirement is that is cannot contain a question mark (?), but it is probably wise to be more strict.
   A digit should be allowed.
 - `key`: a key identifying an option for the column.
   Should be a valid C or Python identifier (regex: `[_a-zA-Z][_a-zA-Z0-9]*`).
