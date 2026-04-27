@@ -66,14 +66,14 @@ class TableDoc:
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-instance-attributes
 
     def __init__(
         self,
         header: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = None,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
+        theme: "Optional[Union[str, Sequence[str]]]" = None,
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
@@ -82,9 +82,13 @@ class TableDoc:
         redefine: str = "raise",
         baseiri: "Optional[str]" = None,
     ) -> None:
+        if theme is None and keywords is None and context is None:
+            theme = "ddoc:datadoc"
+
         self.header = list(header)
         self.data = [list(row) for row in data]
         self.type = type
+        self.theme = theme
         self.keywords = get_keywords(
             keywords=keywords,
             theme=theme,
@@ -144,6 +148,7 @@ class TableDoc:
         ld = told(
             results,
             type=self.type,
+            theme=self.theme,
             prefixes=self.context.get_prefixes(),
             context=self.context,
         )
