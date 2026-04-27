@@ -410,7 +410,7 @@ def store(
         source: Dict or list with the resource documentation to store.
         type: Type of documented resource.  Should be one of the resource types
             defined in `keywords`.
-        theme: IRI of one of more themes to load keywords for.
+        theme: IRI of one or more themes to load keywords for.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
         context: Context object defining keywords in addition to those defined
