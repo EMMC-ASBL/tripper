@@ -184,7 +184,7 @@ The header keyword(s) may be followed by an optional square bracket with the fol
 
 where
 - `name`: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context.
-  The only formal requirement is that is cannot contain a begin brace ([), but it might be wise to be more strict.
+  The only formal requirement is that it cannot contain a begin brace ([), but it might be wise to be more strict.
 - `label`: is a label for the column.
   It is used to make the column unique or to group related columns.
   The only formal requirement is that is cannot contain a question mark (?), but it probably wise to be more strict.
