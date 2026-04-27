@@ -756,6 +756,7 @@ def test_literals_not_checked_in_context():
     ind = {
         "@id": "dummy:testdata",
         "@type": "https://dummyproject.eu/Dataset",
+        "title": "missing",
         "description": "missing",
         "abstract": (
             "this dataset has missing as both title and description to make"
