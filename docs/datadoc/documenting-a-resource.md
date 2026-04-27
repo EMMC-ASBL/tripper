@@ -195,7 +195,7 @@ where
   Should not contain (unescaped) ampersand (&) or end braces (]).
 
 Currently recognised keys:
-- **`unit`**: A unit symbol. All numbers in this column has this unit.
+- **`unit`**: A unit symbol. All numbers in this column have this unit.
 - **`sep`**: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.
 
 !!! warning
