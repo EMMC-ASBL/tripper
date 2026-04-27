@@ -3899,7 +3899,7 @@ measured on a given sample:</p>
 
 
 <h2 id="tripper.datadoc.dataset.store" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.store" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3939,17 +3939,17 @@ defined in <code>keywords</code>.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
+        <td><code>theme</code></td>
+        <td><code>&#39;Optional[Union[str, Sequence[str]]]&#39;</code></td>
+        <td><p>IRI of one or more themes to load keywords for.</p></td>
+        <td><code>&#39;ddoc:datadoc&#39;</code></td>
+      </tr>
+      <tr>
         <td><code>keywords</code></td>
         <td><code>&#39;Optional[Keywords]&#39;</code></td>
         <td><p>Keywords object with additional keywords definitions.
 If not provided, only default keywords are considered.</p></td>
         <td><code>None</code></td>
-      </tr>
-      <tr>
-        <td><code>theme</code></td>
-        <td><code>&#39;Optional[Union[str, Sequence[str]]]&#39;</code></td>
-        <td><p>IRI of one of more themes to load keywords for.</p></td>
-        <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
         <td><code>context</code></td>
@@ -4025,8 +4025,8 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
@@ -4041,9 +4041,9 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 <span class="sd">        source: Dict or list with the resource documentation to store.</span>
 <span class="sd">        type: Type of documented resource.  Should be one of the resource types</span>
 <span class="sd">            defined in `keywords`.</span>
+<span class="sd">        theme: IRI of one or more themes to load keywords for.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
-<span class="sd">        theme: IRI of one of more themes to load keywords for.</span>
 <span class="sd">        context: Context object defining keywords in addition to those defined</span>
 <span class="sd">            in the default [JSON-LD context].</span>
 <span class="sd">            Complementing the `keywords` argument.</span>
@@ -4084,10 +4084,10 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
         <span class="n">default_theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># we are calling update_context() below</span>
     <span class="p">)</span>
-
     <span class="n">doc</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
         <span class="n">source</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
+        <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
@@ -4141,7 +4141,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 
 
 <h2 id="tripper.datadoc.dataset.told" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">told</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">told</span><span class="p">(</span><span class="n">descr</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;ddoc:datadoc&#39;</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataset.told" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -4225,6 +4225,7 @@ or included in the JSON-LD context.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">told</span><span class="p">(</span>
     <span class="n">descr</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
     <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">,</span>
     <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[Keywords]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[Context]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4271,7 +4272,7 @@ or included in the JSON-LD context.</p></td>
             <span class="n">theme</span><span class="o">=</span><span class="n">descr</span><span class="p">[</span><span class="s2">&quot;theme&quot;</span><span class="p">],</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+        <span class="n">keywords</span> <span class="o">=</span> <span class="n">get_keywords</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">prefixes</span><span class="p">:</span>
         <span class="n">keywords</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
@@ -4291,6 +4292,7 @@ or included in the JSON-LD context.</p></td>
                 <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
     <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span>
+        <span class="n">theme</span><span class="o">=</span><span class="n">theme</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
