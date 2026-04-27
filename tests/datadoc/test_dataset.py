@@ -777,7 +777,7 @@ def test_literals_not_checked_in_context():
     assert doc["abstract"] == (
         "this dataset has missing as both title and description to make"
         " sure it does not create problems when there exists a class also"
-        " with label missing"
+        " with label missing."
     )
 
 
