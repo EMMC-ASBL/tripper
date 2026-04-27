@@ -733,6 +733,55 @@ def test_update_restrictions():
     }
 
 
+def test_literals_not_checked_in_context():
+    """Reproduce name collision when a literal value equals a known class
+    label. An expected literal should not be checked against the context,
+    since it is not intended to be interpreted
+    as a reference to neither a class nor an individual.
+    """
+
+    from tripper.datadoc import get_context, told
+    from tripper.datadoc.dataset import update_restrictions
+
+    prefixes = {"dummy": "https://dummypoject.eu/"}
+    context = get_context()
+
+    # Directly add the "missing" class in the context
+    context.add_context(
+        {"missing": {"@id": "dummy:Missing", "@type": "owl:Class"}}
+    )
+
+    assert "missing" in context
+
+    ind = {
+        "@id": "dummy:testdata",
+        "@type": "https://dummyproject.eu/Dataset",
+        "title": "missing",
+        "description": "missing",
+        "abstract": (
+            "this dataset has missing as both title and description to make"
+            " sure it does not create problems when there exists a class also"
+            " with label missing."
+        ),
+    }
+
+    doc = told(
+        ind,
+        context=context,
+        prefixes=prefixes,
+    )
+
+    update_restrictions(doc, context)
+
+    # Check that the description is correct
+    assert doc["description"] == "missing"
+    assert doc["abstract"] == (
+        "this dataset has missing as both title and description to make"
+        " sure it does not create problems when there exists a class also"
+        " with label missing."
+    )
+
+
 def test_datadoc():
     """Test save_datadoc() and acquire()/store()."""
     # pylint: disable=too-many-statements
