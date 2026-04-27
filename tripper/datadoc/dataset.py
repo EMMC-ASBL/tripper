@@ -838,14 +838,16 @@ def update_restrictions(
             else:
                 add(source, "subClassOf", e)
 
-    # Convert relations to restrictions
     for k, v in source.copy().items():
+        # no restrictions for annotation properties or special classes
         if (
             k.startswith("@")
             or k in ("subClassOf",)
             or context.is_annotation_property(k)
         ):
             continue
+
+        # Convert relations to restrictions
         addrestriction(source, k, v)
 
     return source
