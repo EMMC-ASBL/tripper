@@ -235,7 +235,7 @@ For example, the table
 | :a  | http://example.com/a.txt |
 | :b  | http://example.com/b.txt |
 
-correspond to the following turtle representation:
+corresponds to the following turtle representation:
 
 ```turtle
 :a dcat:distribution [
