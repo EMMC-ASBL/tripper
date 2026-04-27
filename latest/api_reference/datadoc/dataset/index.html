@@ -4117,6 +4117,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
     <span class="n">context</span><span class="o">.</span><span class="n">sync_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 
     <span class="n">update_restrictions</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
+
     <span class="c1"># add(doc, &quot;@context&quot;, context.get_context_dict())</span>
 
     <span class="c1"># Validate</span>
@@ -4127,6 +4128,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
 
     <span class="c1"># Add statements and data models to triplestore</span>
     <span class="n">save_extra_content</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>  <span class="c1"># FIXME: SLOW!!</span>
+
     <span class="k">return</span> <span class="n">doc</span>
 </code></pre></div>
         </details>
@@ -4616,10 +4618,16 @@ to call <code>infer_restriction_types()</code>.</p></td>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">add</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
-    <span class="c1"># Convert relations to restrictions</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">,):</span>
+        <span class="c1"># no restrictions for annotation properties or special classes</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">,)</span>
+            <span class="ow">or</span> <span class="n">context</span><span class="o">.</span><span class="n">is_annotation_property</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">continue</span>
+
+        <span class="c1"># Convert relations to restrictions</span>
         <span class="n">addrestriction</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">source</span>
