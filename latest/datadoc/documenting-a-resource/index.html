@@ -533,6 +533,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Documenting as table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples-of-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples of use cases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1700,6 +1724,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Documenting as table">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples-of-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples of use cases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1849,7 +1897,105 @@ Saving <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/m
 <h2 id="documenting-as-table">Documenting as table<a class="headerlink" href="#documenting-as-table" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc">TableDoc</a> class can be used to document multiple resources as rows in a table.</p>
 <p>The table must have a header row with defined keywords (either <a href="../keywords/">predefined</a> or provided with a custom context).
-Nested fields may be specified as dot-separated keywords. For example, the table</p>
+Tripper allows multiple columns with the same keyword in the header.
+Nested fields may be specified as dot-separated keywords.
+Ex: <code>distribution.downloadURL</code>.</p>
+<p>The header keyword(s) may be followed by an optional square bracket with the following syntax (inspired by URL options):</p>
+<div class="language-text highlight"><pre><span></span><code>name[label?var1=value1&amp;var2=value2]
+</code></pre></div>
+<p>where
+- <code>name</code>: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context.
+  The only formal requirement is that it cannot contain a begin brace ([), but it might be wise to be more strict.
+- <code>label</code>: is a label for the column.
+  It is used to make the column unique or to group related columns.
+  The only formal requirement is that is cannot contain a question mark (?), but it is probably wise to be more strict.
+  A digit should be allowed.
+- <code>key</code>: a key identifying an option for the column.
+  Should be a valid C or Python identifier (regex: <code>[_a-zA-Z][_a-zA-Z0-9]*</code>).
+- <code>value</code>: the value of a key.
+  Should not contain (unescaped) ampersand (&amp;) or end braces (]).</p>
+<p>Currently recognised keys:
+- <strong><code>unit</code></strong>: A unit symbol. All numbers in this column have this unit.
+- <strong><code>sep</code></strong>: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The syntax for the square brackets is currently experimental and may change in the future.</p>
+</div>
+<h3 id="examples-of-use-cases">Examples of use cases<a class="headerlink" href="#examples-of-use-cases" title="Permanent link">&para;</a></h3>
+<p>Ensure that columns are unique (e.g. for use with pandas):</p>
+<table>
+<thead>
+<tr>
+<th>@id</th>
+<th>@type[1]</th>
+<th>@type[2]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Grouping of columns (e.g. for DLite datamodels):</p>
+<table>
+<thead>
+<tr>
+<th>@id</th>
+<th>@type</th>
+<th>distribution[1].downloadURL</th>
+<th>distribution[1].mediaType</th>
+<th>distribution[2].accessURL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Specifying unit:</p>
+<table>
+<thead>
+<tr>
+<th>@id</th>
+<th>@type</th>
+<th>length[?unit=m]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ex:my_length</td>
+<td>emmo:Length</td>
+<td>3.2</td>
+</tr>
+</tbody>
+</table>
+<p>Specifying a separator:</p>
+<table>
+<thead>
+<tr>
+<th>@id</th>
+<th>@type</th>
+<th>keyword[?sep=;]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ex:mydata</td>
+<td>emmo:Dataset</td>
+<td>geology;stone;cave</td>
+</tr>
+</tbody>
+</table>
+<h3 id="complete-example">Complete example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h3>
+<p>For example, the table</p>
 <table>
 <thead>
 <tr>
@@ -1868,7 +2014,7 @@ Nested fields may be specified as dot-separated keywords. For example, the table
 </tr>
 </tbody>
 </table>
-<p>correspond to the following turtle representation:</p>
+<p>corresponds to the following turtle representation:</p>
 <div class="language-turtle highlight"><pre><span></span><code><span class="p">:</span><span class="nt">a</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">distribution</span> <span class="p">[</span>
     <span class="kt">a</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">Distribution</span> <span class="p">;</span>
     <span class="err">downloadURL</span> <span class="s">&quot;http://example.com/a.txt&quot;</span> <span class="p">]</span> <span class="p">.</span>
