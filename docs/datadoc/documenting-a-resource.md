@@ -174,7 +174,7 @@ Documenting as table
 The [TableDoc] class can be used to document multiple resources as rows in a table.
 
 The table must have a header row with defined keywords (either [predefined][predefined keywords] or provided with a custom context).
-Tripper allow to have multiple columns with the same keyword in the header.
+Tripper allows multiple columns with the same keyword in the header.
 Nested fields may be specified as dot-separated keywords.
 Ex: `distribution.downloadURL`.
 
