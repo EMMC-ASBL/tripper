@@ -37,7 +37,7 @@ def subcommand_add(ts, args):
         td = TableDoc.parse_csv(
             infile,
             type=args.type,
-            keywords=args.keywords,
+            keywords=args.keywords if args.keywords else None,
             context=args.context,
             redefine=args.redefine,
             baseiri=args.base_iri,
@@ -217,7 +217,7 @@ def maincommand(argv=None):
         help=(
             "Base IRI to resolve relative IRIs. "
             "An error will be raised if relative IRIs are "
-            "encountered without this option.",
+            "encountered without this option."
         ),
     )
 
