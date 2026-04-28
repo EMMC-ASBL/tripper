@@ -336,10 +336,10 @@ classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefix
 resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
 
 # 3. Create one big dict with all resources from all tables
-bigdict = classes_doc.asdicts() + resources_doc.asdicts()
+dicts = classes_doc.asdicts() + resources_doc.asdicts()
 
 # 4. Store the big dict in the triplestore
-store(ts, bigdict, context=context)
+store(ts, dicts, context=context)
 ```
 
 
