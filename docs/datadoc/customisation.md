@@ -290,18 +290,24 @@ After parsing the table that defines your classes, call [`update_context()`][upd
 ```python
 from tripper.datadoc import get_context, TableDoc
 from tripper.datadoc.dataset import update_context
+from tripper import Triplestore
 
 context = get_context("https://example.org/context/", theme=None)
 prefixes = {"myns": "https://example.org/myns/"}
 
-# 1. Parse the table that defines classes
+ts = Triplestore("rdflib")
+
+# 1. Parse and store the table that defines classes
 classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefixes)
+classes_doc.save(ts)
 
 # 2. Register the newly-parsed classes in the shared context
 update_context(classes_doc.asdicts(), context)
 
-# 3. Now parse tables that reference those classes — restrictions will be inferred correctly
+# 3. Now parse tables and store that reference those classes — restrictions will be inferred correctly
 resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
+resources_doc.save(ts)
+
 ```
 
 This pattern applies whenever:
@@ -311,6 +317,32 @@ This pattern applies whenever:
 - You want those properties to be represented as `owl:Restriction` nodes in the output graph.
 
 If you chain more than two tables, repeat the `update_context()` call after each parse.
+
+### Easier solution: create one dict before populating the triplestore
+
+Technically, it is often easier to create one big dict with all the resources from all tables, and then call [store()] once on that dict. This way, all classes are visible to `infer_restriction_types()` when it processes the whole dict.
+
+```python
+from tripper.datadoc import get_context, TableDoc
+from tripper.datadoc.dataset import store
+
+context = get_context("https://example.org/context/", theme=None)
+prefixes = {"myns": "https://example.org/myns/"}
+
+# 1. Parse the table that defines classes
+classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefixes)
+
+# 2. Parse the table that defines resources that reference those classes
+resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
+
+# 3. Create one big dict with all resources from all tables
+bigdict = classes_doc.asdicts() + resources_doc.asdicts()
+
+# 4. Store the big dict in the triplestore
+store(ts, bigdict, context=context)
+```
+
+
 
 
 [With custom context]: #with-custom-context

@@ -275,17 +275,11 @@ class TableDoc:
                 or an IRI to a class in an ontology.
             keywords: Keywords object with additional keywords definitions.
                 If not provided, only default keywords are considered.
-            context: Context object or dict with user-defined JSON-LD
-                context.  If this context object is shared across multiple
-                `parse_csv()` calls for tables that reference classes from
-                each other, call
-                ``update_context(result.asdicts(), context)`` after each
-                call to register newly-parsed classes before parsing the
-                next table.  Without this step, cross-table class
-                references will not be recognised by
-                `infer_restriction_types()` and object properties whose
-                values are those classes will silently produce plain
-                triples instead of ``owl:Restriction`` nodes.
+            context: Additional user-defined context that should be
+                returned on top of the default context.  It may be a
+                string with an URL to the user-defined context, a dict
+                with the user-defined context or a sequence of strings
+                and dicts.
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
             encoding: The encoding of the csv file.  Note that Excel may
@@ -310,6 +304,11 @@ class TableDoc:
 
         Returns:
             New TableDoc instance.
+
+        Note:
+            For situations in which multiple resources are involved,
+            see [multi-table workflows]:
+            https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows
 
         References:
         [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters
