@@ -271,6 +271,78 @@ The `__init__()` method of the [TableDoc] class takes a `context` argument with 
 The value of the `context` argument is the same as for the `@context` key of a [Python dict].
 
 
+Multi-table workflows
+---------------------
+When documenting a knowledge base from multiple CSV (or YAML) tables that cross-reference each other's classes — for example, a `classes.csv` that defines domain-specific dataset types that are referenced as `hasInput`/`hasOutput` values in a `computations.csv` — you must explicitly enrich the shared context between parses.
+
+### Why this matters
+
+Tripper determines whether an object-property value should become an `owl:Restriction` (instead of a plain triple) by checking whether the referenced IRI is a known class in the current context.
+When two tables are parsed independently (even with the same `context` object), classes defined in the first table are **not** automatically visible to `infer_restriction_types()` when it processes the second table.
+
+The consequence is **silent**: for scalar string values a `"value"` restriction is still inferred, but for **list-valued** object properties (e.g. a list of two `hasInput` classes) **no restriction type is inferred at all**, and the property ends up as a plain triple rather than an `owl:Restriction` node.
+
+### Solution: call `update_context()` between parses
+
+After parsing the table that defines your classes, call [`update_context()`][update_context()] with its output before parsing tables that reference those classes:
+
+
+```python
+from tripper.datadoc import get_context, TableDoc
+from tripper.datadoc.dataset import update_context
+from tripper import Triplestore
+
+context = get_context("https://example.org/context/", theme=None)
+prefixes = {"myns": "https://example.org/myns/"}
+
+ts = Triplestore("rdflib")
+
+# 1. Parse and store the table that defines classes
+classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefixes)
+classes_doc.save(ts)
+
+# 2. Register the newly-parsed classes in the shared context
+update_context(classes_doc.asdicts(), context)
+
+# 3. Now parse tables and store that reference those classes — restrictions will be inferred correctly
+resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
+resources_doc.save(ts)
+
+```
+
+This pattern applies whenever:
+
+- One table defines classes (rows with `@type: owl:Class` or `subClassOf`).
+- Another table documents resources whose object properties point to those classes.
+- You want those properties to be represented as `owl:Restriction` nodes in the output graph.
+
+If you chain more than two tables, repeat the `update_context()` call after each parse.
+
+### Easier solution: create one dict before populating the triplestore
+
+Technically, it is often easier to create one big dict with all the resources from all tables, and then call [store()] once on that dict. This way, all classes are visible to `infer_restriction_types()` when it processes the whole dict.
+
+```python
+from tripper.datadoc import get_context, TableDoc
+from tripper.datadoc.dataset import store
+
+context = get_context("https://example.org/context/", theme=None)
+prefixes = {"myns": "https://example.org/myns/"}
+
+# 1. Parse the table that defines classes
+classes_doc = TableDoc.parse_csv("classes.csv", context=context, prefixes=prefixes)
+
+# 2. Parse the table that defines resources that reference those classes
+resources_doc = TableDoc.parse_csv("resources.csv", context=context, prefixes=prefixes)
+
+# 3. Create one big dict with all resources from all tables
+dicts = classes_doc.asdicts() + resources_doc.asdicts()
+
+# 4. Store the big dict in the triplestore
+store(ts, dicts, context=context)
+```
+
+
 
 
 [With custom context]: #with-custom-context
@@ -281,6 +353,7 @@ The value of the `context` argument is the same as for the `@context` key of a [
 [predefined prefixes]: prefixes.md
 [predefined keywords]: keywords.md
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
+[update_context()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.update_context
 [store()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.store
 [told()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.told
 [save_datadoc()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.save_datadoc
