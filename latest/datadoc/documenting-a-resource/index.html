@@ -2040,6 +2040,11 @@ Ex: <code>distribution.downloadURL</code>.</p>
 <span class="o">...</span> <span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 </code></pre></div>
+<blockquote>
+<p><strong>Note</strong>: If you parse multiple CSV files that cross-reference each other's classes (e.g. a table of dataset types referenced as <code>hasInput</code>/<code>hasOutput</code> in a computations table), you must call <code>update_context()</code> with the first table's output before parsing the next table.
+Without this step, object properties whose values are classes defined in a previously parsed table will silently produce plain triples instead of <code>owl:Restriction</code> nodes.
+See <a href="../customisation/#multi-table-workflows">Multi-table workflows</a> for details and a worked example.</p>
+</blockquote>
 
 
 

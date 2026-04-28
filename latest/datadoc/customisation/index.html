@@ -679,6 +679,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#multi-table-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-table workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-table workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why this matters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-call-update_context-between-parses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution: call update_context() between parses
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easier-solution-create-one-dict-before-populating-the-triplestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      Easier solution: create one dict before populating the triplestore
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1852,6 +1894,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#multi-table-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-table workflows
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-table workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why this matters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#solution-call-update_context-between-parses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution: call update_context() between parses
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#easier-solution-create-one-dict-before-populating-the-triplestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      Easier solution: create one dict before populating the triplestore
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2074,6 +2158,61 @@ An additional "kb" prefix (used for documented resources) is defined with the <c
 <h3 id="table">Table<a class="headerlink" href="#table" title="Permanent link">&para;</a></h3>
 <p>The <code>__init__()</code> method of the <a href="../../api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc">TableDoc</a> class takes a <code>context</code> argument with witch user-defined context can be provided.
 The value of the <code>context</code> argument is the same as for the <code>@context</code> key of a <a href="#python-dict">Python dict</a>.</p>
+<h2 id="multi-table-workflows">Multi-table workflows<a class="headerlink" href="#multi-table-workflows" title="Permanent link">&para;</a></h2>
+<p>When documenting a knowledge base from multiple CSV (or YAML) tables that cross-reference each other's classes — for example, a <code>classes.csv</code> that defines domain-specific dataset types that are referenced as <code>hasInput</code>/<code>hasOutput</code> values in a <code>computations.csv</code> — you must explicitly enrich the shared context between parses.</p>
+<h3 id="why-this-matters">Why this matters<a class="headerlink" href="#why-this-matters" title="Permanent link">&para;</a></h3>
+<p>Tripper determines whether an object-property value should become an <code>owl:Restriction</code> (instead of a plain triple) by checking whether the referenced IRI is a known class in the current context.
+When two tables are parsed independently (even with the same <code>context</code> object), classes defined in the first table are <strong>not</strong> automatically visible to <code>infer_restriction_types()</code> when it processes the second table.</p>
+<p>The consequence is <strong>silent</strong>: for scalar string values a <code>"value"</code> restriction is still inferred, but for <strong>list-valued</strong> object properties (e.g. a list of two <code>hasInput</code> classes) <strong>no restriction type is inferred at all</strong>, and the property ends up as a plain triple rather than an <code>owl:Restriction</code> node.</p>
+<h3 id="solution-call-update_context-between-parses">Solution: call <code>update_context()</code> between parses<a class="headerlink" href="#solution-call-update_context-between-parses" title="Permanent link">&para;</a></h3>
+<p>After parsing the table that defines your classes, call <a href="../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.update_context"><code>update_context()</code></a> with its output before parsing tables that reference those classes:</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span><span class="p">,</span> <span class="n">TableDoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
+
+<span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;https://example.org/context/&quot;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;myns&quot;</span><span class="p">:</span> <span class="s2">&quot;https://example.org/myns/&quot;</span><span class="p">}</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+
+<span class="c1"># 1. Parse and store the table that defines classes</span>
+<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;classes.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">classes_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+<span class="c1"># 2. Register the newly-parsed classes in the shared context</span>
+<span class="n">update_context</span><span class="p">(</span><span class="n">classes_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(),</span> <span class="n">context</span><span class="p">)</span>
+
+<span class="c1"># 3. Now parse tables and store that reference those classes — restrictions will be inferred correctly</span>
+<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;resources.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">resources_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+</code></pre></div>
+<p>This pattern applies whenever:</p>
+<ul>
+<li>One table defines classes (rows with <code>@type: owl:Class</code> or <code>subClassOf</code>).</li>
+<li>Another table documents resources whose object properties point to those classes.</li>
+<li>You want those properties to be represented as <code>owl:Restriction</code> nodes in the output graph.</li>
+</ul>
+<p>If you chain more than two tables, repeat the <code>update_context()</code> call after each parse.</p>
+<h3 id="easier-solution-create-one-dict-before-populating-the-triplestore">Easier solution: create one dict before populating the triplestore<a class="headerlink" href="#easier-solution-create-one-dict-before-populating-the-triplestore" title="Permanent link">&para;</a></h3>
+<p>Technically, it is often easier to create one big dict with all the resources from all tables, and then call <a href="../../api_reference/datadoc/dataset/#tripper.datadoc.dataset.store">store()</a> once on that dict. This way, all classes are visible to <code>infer_restriction_types()</code> when it processes the whole dict.</p>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span><span class="p">,</span> <span class="n">TableDoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">store</span>
+
+<span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;https://example.org/context/&quot;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;myns&quot;</span><span class="p">:</span> <span class="s2">&quot;https://example.org/myns/&quot;</span><span class="p">}</span>
+
+<span class="c1"># 1. Parse the table that defines classes</span>
+<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;classes.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+
+<span class="c1"># 2. Parse the table that defines resources that reference those classes</span>
+<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;resources.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+
+<span class="c1"># 3. Create one big dict with all resources from all tables</span>
+<span class="n">dicts</span> <span class="o">=</span> <span class="n">classes_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">()</span> <span class="o">+</span> <span class="n">resources_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">()</span>
+
+<span class="c1"># 4. Store the big dict in the triplestore</span>
+<span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dicts</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+</code></pre></div>
 
 
 

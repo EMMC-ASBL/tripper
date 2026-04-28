@@ -2508,7 +2508,11 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">                or an IRI to a class in an ontology.</span>
 <span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">                If not provided, only default keywords are considered.</span>
-<span class="sd">            context: Dict with user-defined JSON-LD context.</span>
+<span class="sd">            context: Additional user-defined context that should be</span>
+<span class="sd">                returned on top of the default context.  It may be a</span>
+<span class="sd">                string with an URL to the user-defined context, a dict</span>
+<span class="sd">                with the user-defined context or a sequence of strings</span>
+<span class="sd">                and dicts.</span>
 <span class="sd">            prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">                JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">            encoding: The encoding of the csv file.  Note that Excel may</span>
@@ -2533,6 +2537,11 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            New TableDoc instance.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            For situations in which multiple resources are involved,</span>
+<span class="sd">            see [multi-table workflows]:</span>
+<span class="sd">            https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</span>
 
 <span class="sd">        References:</span>
 <span class="sd">        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
@@ -3057,7 +3066,11 @@ If not provided, only default keywords are considered.</p></td>
       <tr>
         <td><code>context</code></td>
         <td><code>Optional[ContextType]</code></td>
-        <td><p>Dict with user-defined JSON-LD context.</p></td>
+        <td><p>Additional user-defined context that should be
+returned on top of the default context.  It may be a
+string with an URL to the user-defined context, a dict
+with the user-defined context or a sequence of strings
+and dicts.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
@@ -3132,7 +3145,13 @@ formatting parameters.  For more details, see
       <td><p>New TableDoc instance.</p></td>
     </tr>
   </tbody>
-</table>      <p>References:</p>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For situations in which multiple resources are involved,
+see [multi-table workflows]:
+https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</p>
+</div>
+<p>References:</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
@@ -3161,7 +3180,11 @@ formatting parameters.  For more details, see
 <span class="sd">            or an IRI to a class in an ontology.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
-<span class="sd">        context: Dict with user-defined JSON-LD context.</span>
+<span class="sd">        context: Additional user-defined context that should be</span>
+<span class="sd">            returned on top of the default context.  It may be a</span>
+<span class="sd">            string with an URL to the user-defined context, a dict</span>
+<span class="sd">            with the user-defined context or a sequence of strings</span>
+<span class="sd">            and dicts.</span>
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        encoding: The encoding of the csv file.  Note that Excel may</span>
@@ -3186,6 +3209,11 @@ formatting parameters.  For more details, see
 
 <span class="sd">    Returns:</span>
 <span class="sd">        New TableDoc instance.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        For situations in which multiple resources are involved,</span>
+<span class="sd">        see [multi-table workflows]:</span>
+<span class="sd">        https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</span>
 
 <span class="sd">    References:</span>
 <span class="sd">    [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>

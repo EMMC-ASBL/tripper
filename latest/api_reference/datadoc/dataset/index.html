@@ -2942,7 +2942,13 @@ types. For example</code></td>
 <p>where <code>&lt;N&gt;</code> is a positive integer.</p></td>
     </tr>
   </tbody>
-</table>
+</table>      <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For situations in which multiple resources are involved,
+see [multi-table workflows]:
+https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</p>
+</div>
+
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">infer_restriction_types</span><span class="p">(</span>
@@ -2991,6 +2997,11 @@ types. For example</code></td>
 <span class="sd">          - &quot;value&quot;: value restriction (ignored)</span>
 
 <span class="sd">        where `&lt;N&gt;` is a positive integer.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        For situations in which multiple resources are involved,</span>
+<span class="sd">        see [multi-table workflows]:</span>
+<span class="sd">        https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=unused-argument</span>
@@ -4367,6 +4378,12 @@ or included in the JSON-LD context.</p></td>
       <p>Update <code>context</code> with information from <code>source</code>.</p>
 <p>Currently this only adds classes defined in <code>source</code> to <code>context</code>.</p>
 <p>Returns the updated context.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For situations in which multiple resources are involved,
+see [multi-table workflows]:
+https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</p>
+</div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/dataset.py</code></summary>
@@ -4379,6 +4396,11 @@ or included in the JSON-LD context.</p></td>
 <span class="sd">    Currently this only adds classes defined in `source` to `context`.</span>
 
 <span class="sd">    Returns the updated context.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        For situations in which multiple resources are involved,</span>
+<span class="sd">        see [multi-table workflows]:</span>
+<span class="sd">        https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">subclassof</span> <span class="o">=</span> <span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="s2">&quot;rdfs:subClassOf&quot;</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">)</span>
 
