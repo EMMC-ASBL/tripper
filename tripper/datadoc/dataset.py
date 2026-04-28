@@ -130,6 +130,7 @@ def show(obj, indent=2) -> None:
 def told(
     descr: "Union[dict, list]",
     type: "Optional[str]" = None,
+    theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
     keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
@@ -176,7 +177,7 @@ def told(
             theme=descr["theme"],  # type: ignore
         )
     else:
-        keywords = get_keywords(keywords=keywords)
+        keywords = get_keywords(keywords=keywords, theme=theme)
 
     if prefixes:
         keywords.add(prefixes, redefine="allow")
@@ -196,6 +197,7 @@ def told(
                 context.add_context(d)
 
     context = get_context(
+        theme=theme,
         context=context,
         keywords=keywords,
         prefixes=prefixes,
@@ -392,8 +394,8 @@ def store(
     ts: Triplestore,
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
-    keywords: "Optional[Keywords]" = None,
     theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
+    keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "raise",
@@ -408,9 +410,9 @@ def store(
         source: Dict or list with the resource documentation to store.
         type: Type of documented resource.  Should be one of the resource types
             defined in `keywords`.
+        theme: IRI of one or more themes to load keywords for.
         keywords: Keywords object with additional keywords definitions.
             If not provided, only default keywords are considered.
-        theme: IRI of one of more themes to load keywords for.
         context: Context object defining keywords in addition to those defined
             in the default [JSON-LD context].
             Complementing the `keywords` argument.
@@ -451,10 +453,10 @@ def store(
         default_theme=None,
         copy=True,  # we are calling update_context() below
     )
-
     doc = told(
         source,
         type=type,
+        theme=theme,
         keywords=keywords,
         context=context,
         prefixes=prefixes,
@@ -484,6 +486,7 @@ def store(
     context.sync_prefixes(ts)
 
     update_restrictions(doc, context=context, restrictions=restrictions)
+
     # add(doc, "@context", context.get_context_dict())
 
     # Validate
@@ -494,6 +497,7 @@ def store(
 
     # Add statements and data models to triplestore
     save_extra_content(ts, doc)  # FIXME: SLOW!!
+
     return doc
 
 
@@ -844,10 +848,16 @@ def update_restrictions(
             else:
                 add(source, "subClassOf", e)
 
-    # Convert relations to restrictions
     for k, v in source.copy().items():
-        if k.startswith("@") or k in ("subClassOf",):
+        # no restrictions for annotation properties or special classes
+        if (
+            k.startswith("@")
+            or k in ("subClassOf",)
+            or context.is_annotation_property(k)
+        ):
             continue
+
+        # Convert relations to restrictions
         addrestriction(source, k, v)
 
     return source

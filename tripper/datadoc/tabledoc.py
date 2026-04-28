@@ -33,7 +33,7 @@ class TableDoc:
     """Representation of tabular documentation of datasets.
 
     Arguments:
-        header: Sequence of column header labels.  Nested data can
+        headers: Sequence of column header labels.  Nested data can
             be represented by dot-separated label strings (e.g.
             "distribution.downloadURL")
         data: Sequence of rows of data. Each row documents an entry.
@@ -66,14 +66,14 @@ class TableDoc:
     """
 
     # pylint: disable=redefined-builtin,too-few-public-methods
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-instance-attributes
 
     def __init__(
         self,
-        header: "Sequence[str]",
+        headers: "Sequence[str]",
         data: "Sequence[Sequence[str]]",
         type: "Optional[str]" = None,
-        theme: "Optional[Union[str, Sequence[str]]]" = "ddoc:datadoc",
+        theme: "Optional[Union[str, Sequence[str]]]" = None,
         keywords: "Optional[KeywordsType]" = None,
         context: "Optional[ContextType]" = None,
         prefixes: "Optional[dict]" = None,
@@ -82,9 +82,13 @@ class TableDoc:
         redefine: str = "raise",
         baseiri: "Optional[str]" = None,
     ) -> None:
-        self.header = list(header)
+        if theme is None and keywords is None and context is None:
+            theme = "ddoc:datadoc"
+
+        self.headers = list(headers)
         self.data = [list(row) for row in data]
         self.type = type
+        self.theme = theme
         self.keywords = get_keywords(
             keywords=keywords,
             theme=theme,
@@ -123,27 +127,23 @@ class TableDoc:
 
     def asdicts(self) -> "List[dict]":
         """Return the table as a list of dicts."""
+        # Parse column headers. Follow the syntax defined in
+        # https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table
+        columns = [
+            Column(head, context=self.context, strip=self.strip)
+            for head in self.headers
+        ]
         results = []
         for row in self.data:
             d = AttrDict()
-            for i, colname in enumerate(self.header):
+            for i, col in enumerate(columns):
                 cell = row[i].strip() if row[i] and self.strip else row[i]
-                if cell:
-
-                    # Convert cell value to correct Python type
-                    if not colname.startswith("@"):
-                        leafname = colname.split(".")[-1]
-                        df = self.context.getdef(leafname.split("[")[0])
-                        if "@type" in df and df["@type"] != "@id":
-                            cell = Literal(cell, datatype=df["@type"]).value
-
-                    addnested(
-                        d, colname.strip() if self.strip else colname, cell
-                    )
+                col.add(d, cell)
             results.append(stripnested(d))
         ld = told(
             results,
             type=self.type,
+            theme=self.theme,
             prefixes=self.context.get_prefixes(),
             context=self.context,
         )
@@ -184,7 +184,7 @@ class TableDoc:
             New TableDoc instance.
 
         """
-        # Store the header as keys in a dict to keep ordering
+        # Store the headers as keys in a dict to keep ordering
         headdict = {"@id": True}
 
         def addheaddict(d, prefix=""):
@@ -212,12 +212,12 @@ class TableDoc:
         for d in dicts:
             addheaddict(d)
 
-        header = list(headdict)
+        headers = list(headdict)
 
         # Calculate multiplicity of each header label
-        mult = [1] * len(header)
+        mult = [1] * len(headers)
         for dct in dicts:
-            for i, head in enumerate(header):
+            for i, head in enumerate(headers):
                 if head in dct and isinstance(dct[head], list):
                     mult[i] = max(mult[i], len(dct[head]))
 
@@ -225,7 +225,7 @@ class TableDoc:
         data = []
         for dct in dicts:
             row = []
-            for head, m in zip(header, mult):
+            for head, m in zip(headers, mult):
                 if head in dct:
                     row.extend(tolist(dct[head], m))
                 else:
@@ -236,12 +236,12 @@ class TableDoc:
             data.append(row)
 
         # New multiplied header
-        newheader = []
-        for head, m in zip(header, mult):
-            newheader.extend(tolist(head, m, head))
+        newheaders = []
+        for head, m in zip(headers, mult):
+            newheaders.extend(tolist(head, m, head))
 
         return TableDoc(
-            header=newheader,
+            headers=newheaders,
             data=data,
             type=type,
             keywords=keywords,
@@ -327,18 +327,18 @@ class TableDoc:
                 finally:
                     f.seek(0)
             reader = csv.reader(f, dialect=dialect, **kwargs)
-            header = next(reader)
+            headers = next(reader)
             data = list(reader)
-            return header, data
+            return headers, data
 
         if isinstance(csvfile, (str, Path)):
             with openfile(csvfile, mode="rt", encoding=encoding) as f:
-                header, data = read(f, dialect)
+                headers, data = read(f, dialect)
         else:
-            header, data = read(csvfile, dialect)
+            headers, data = read(csvfile, dialect)
 
         return TableDoc(
-            header=header,
+            headers=headers,
             data=data,
             type=type,
             keywords=keywords,
@@ -366,7 +366,7 @@ class TableDoc:
             dialect: A subclass of csv.Dialect, or the name of the dialect,
                 specifying how the `csvfile` is formatted.  For more details,
                 see [Dialects and Formatting Parameters].
-            prefixes: Prefixes used to compact the header.
+            prefixes: Prefixes used to compact the headers.
             kwargs: Additional keyword arguments overriding individual
                 formatting parameters.  For more details, see
                 [Dialects and Formatting Parameters].
@@ -380,17 +380,17 @@ class TableDoc:
 
             # TODO: use self.context and compact to shortnames
             if prefixes:
-                header = []
-                for h in self.header:
+                headers = []
+                for h in self.headers:
                     for prefix, ns in prefixes.items():
                         if h.startswith(str(ns)):
-                            header.append(f"{prefix}:{h[len(str(ns)):]}")
+                            headers.append(f"{prefix}:{h[len(str(ns)):]}")
                             break
                     else:
-                        header.append(h)
-                writer.writerow(header)
+                        headers.append(h)
+                writer.writerow(headers)
             else:
-                writer.writerow(self.header)
+                writer.writerow(self.headers)
 
             for row in self.data:
                 writer.writerow(row)
@@ -401,11 +401,99 @@ class TableDoc:
         else:
             write(csvfile)
 
-    def unique_header(self):
-        """Return the header with brackets appended to duplicated labels
+    @staticmethod
+    def parse_excel(
+        excelfile: "Union[Path, str]",
+        sheet: "Union[str, int]" = 0,
+        cellrange: "Optional[str]" = None,
+        type: "Optional[str]" = None,
+        keywords: "Optional[KeywordsType]" = None,
+        context: "Optional[ContextType]" = None,
+        prefixes: "Optional[dict]" = None,
+        strip: bool = True,
+        strict: bool = False,
+        redefine: str = "raise",
+        baseiri: "Optional[str]" = None,
+    ) -> "TableDoc":
+        # pylint: disable=line-too-long
+        """Parse a csv file using the standard library csv module.
+
+        Arguments:
+            excelfile: Name of Excel file to parse.
+            sheet: Sheet name or number to load.
+            cellrange: Cell range to load. Examples: "A1:C4", "A:C", "1:4".
+                The default is to read all cells.
+            type: Type of data to save (applies to all rows).  Should
+                either be one of the pre-defined names: "Dataset",
+                "Distribution", "AccessService", "Parser" and "Generator"
+                or an IRI to a class in an ontology.
+            keywords: Keywords object with additional keywords definitions.
+                If not provided, only default keywords are considered.
+            context: Dict with user-defined JSON-LD context.
+            prefixes: Dict with prefixes in addition to those included in the
+                JSON-LD context.  Should map namespace prefixes to IRIs.
+            strip: Whether to strip leading and trailing whitespaces from cells.
+            strict: Whether to raise an `InvalidKeywordError` exception if `d`
+                contains an unknown key.
+            redefine: Determine how to handle redefinition of existing
+                keywords.  Should be one of the following strings:
+                  - "allow": Allow redefining a keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "skip": Don't redefine existing keyword. Emits a
+                    `RedefineKeywordWarning`.
+                  - "raise": Raise an RedefineError (default).
+            baseiri: If given, it will be used as a base iri to
+                resolve relative IRIs. (I.e. Not valid URLs).
+
+        Returns:
+            New TableDoc instance.
+
+        """
+        # pylint: disable=import-outside-toplevel
+        from openpyxl import load_workbook
+
+        wb = load_workbook(
+            excelfile,
+            read_only=True,
+            keep_vba=False,
+            data_only=True,
+            keep_links=False,
+            rich_text=False,
+        )
+        # Get worksheet
+        ws = wb[wb.sheetnames[sheet] if isinstance(sheet, int) else sheet]
+
+        # Get cell range
+        if cellrange:
+            cr = ws[cellrange]
+        else:
+            # Find first non-empty rows and columns
+            nrows = next((i for i, r in enumerate(ws.values) if not r[0]), 0)
+            ncols = next(
+                (i for i, v in enumerate(next(ws.values)) if not v), 0
+            )
+            cr = ws.iter_rows(max_row=nrows, max_col=ncols)
+
+        table = [[cell.value for cell in row] for row in cr]
+
+        return TableDoc(
+            headers=table[0],
+            data=table[1:],
+            type=type,
+            keywords=keywords,
+            context=context,
+            prefixes=prefixes,
+            strip=strip,
+            strict=strict,
+            redefine=redefine,
+            baseiri=baseiri,
+        )
+
+    def unique_headers(self):
+        """Return the headers with brackets appended to duplicated labels
         to make them unique.
 
-        For example, the header
+        For example, the headers
 
             ["@id", "@type", "@type", "part.name", "part.name"]
 
@@ -418,8 +506,8 @@ class TableDoc:
         """
         new = []
         seen = {}
-        for h in self.header:
-            if self.header.count(h) == 1:
+        for h in self.headers:
+            if self.headers.count(h) == 1:
                 new.append(h)
             else:
                 head, tail = h.split(".", 1) if "." in h else (h, None)
@@ -447,10 +535,10 @@ def csvsniff(sample):
         raise csv.Error(
             "too long csv header. No line terminator within sample"
         )
-    header = lines[0]
+    headers = lines[0]
 
     # Possible delimiters and quote chars to check
-    delims = [d for d in ",;\t :" if header.count(d)]
+    delims = [d for d in ",;\t :" if headers.count(d)]
     quotes = [q for q in "\"'" if sample.count(q)]
     if not quotes:
         quotes = ['"']
@@ -492,3 +580,70 @@ def csvsniff(sample):
         strict = False  # be permissive on malformed csv input
 
     return dialect
+
+
+class Column:
+    """Help class representing a column."""
+
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, header, context=None, strip=True):
+        # pylint: disable=line-too-long
+        """Initialise a column opject.
+
+        Arguments:
+            header: Column header. For the allowed syntax of the header label
+                `header`, see https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table
+            context: Optional context. Used for deriving datatype.
+            strip: Whether to strip white spaces from `header`.
+
+        """
+        if strip:
+            header = header.strip()
+
+        fields = re.findall(r"([^.\[]+)(\[([^\]]*)\])?", header)
+        label = fields[0][2].split("?", 1)[0]
+        spec = fields[-1][2].split("?", 1)
+
+        options = {}
+        if len(spec) == 2:
+            for opt in spec[1].split("&"):
+                k, v = opt.split("=", 1)
+                options[k] = v
+
+        datatype = None
+        leafname = fields[-1][0]
+        if context and not leafname.startswith("@"):
+            df = context.getdef(leafname)
+            if "@type" in df and df["@type"] != "@id":
+                datatype = df["@type"]
+
+        self.header = header
+        self.context = context
+        self.strip = strip
+        self.names = [f[0] for f in fields]
+        self.label = label
+        self.options = options
+        self.datatype = datatype
+
+    def add(self, d, cell):
+        """Add cell value to dict `d`."""
+        if not cell:
+            return
+        if "sep" in self.options:
+            vals = cell.split(self.options["sep"])
+        else:
+            vals = [cell]
+
+        for v in vals:
+            val = (
+                Literal(v, datatype=self.datatype).value
+                if self.datatype
+                else v
+            )
+            # if "unit" in self.options:
+            #    val = {
+            #        "value": val,
+            #        "unit": self.unit,
+            #    }
+            addnested(d, self.header, val)

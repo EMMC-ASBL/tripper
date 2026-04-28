@@ -14,7 +14,7 @@ def test_asdicts():
     from tripper.datadoc import TableDoc
 
     td = TableDoc(
-        header=[
+        headers=[
             "@id",
             "@type",
             "@type",
@@ -106,7 +106,7 @@ def test_fromdicts():
     ]
     td = TableDoc.fromdicts(dicts)
 
-    assert td.header == ["@id", "label", "distribution.downloadURL"]
+    assert td.headers == ["@id", "label", "distribution.downloadURL"]
     assert td.data == [
         [EX.data1, "data1", None],
         [EX.data2, None, "http://example.com/data2"],
@@ -172,7 +172,7 @@ def test_csv():
                 "gen": "http://sintef.no/dlite/generator#",
             },
         )
-    assert td2.header == td.header
+    assert td2.headers == td.headers
     assert td2.data == td.data
 
     # Print serialised KB
@@ -188,9 +188,9 @@ def test_csv():
 
 def test_csv_duplicated_columns():
     """Test CSV with duplicated columns."""
-    from dataset_paths import indir, outdir  # pylint: disable=import-error
-
     pytest.importorskip("rdflib")
+
+    from dataset_paths import indir, outdir  # pylint: disable=import-error
 
     from tripper import Namespace
     from tripper.datadoc import TableDoc
@@ -212,7 +212,7 @@ def test_csv_duplicated_columns():
     }
 
     td2 = TableDoc.fromdicts([img2, img3], prefixes=prefixes)
-    assert td2.header == [
+    assert td2.headers == [
         "@id",
         "@type",  # TEMImage
         "@type",  # BrightFieldEmage
@@ -222,11 +222,40 @@ def test_csv_duplicated_columns():
     td2.write_csv(outdir / "tem.csv", prefixes=prefixes)
 
 
+def test_parse_excel():
+    """Test parse_excel() method."""
+    pytest.importorskip("openpyxl")
+
+    from dataset_paths import indir  # pylint: disable=import-error
+
+    from tripper import Namespace
+    from tripper.datadoc import TableDoc
+
+    PM = Namespace("https://www.ntnu.edu/physmet/data#")
+    td = TableDoc.parse_excel(
+        excelfile=indir / "tem.xlsx",
+        sheet="tem",
+        prefixes={"pm": PM},
+    )
+    d1, d2, d3 = td.asdicts()
+    assert d1["@id"] == "pm:TEM_BF_lowmag"
+    assert set(d1["@type"]) == {"pm:BrightFieldImage", "pm:TEMImage"}
+    assert d1["description"].startswith("Low-magnification TEM ")
+    assert d1["distribution"] == {
+        "@type": ["dcat:Distribution", "dcat:Resource"],
+        # pylint: disable=line-too-long
+        "downloadURL": "https://folk.ntnu.no/friisj/temdata/BF_100-at-m5-and-2_001.dm3",
+        "format": "dm3",
+    }
+    assert d2["@id"] == "pm:TEM_BF"
+    assert d3["@id"] == "pm:TEM_HAADF"
+
+
 def test_unique_header():
     """Test unique_header() method."""
     from tripper.datadoc import TableDoc
 
-    header = [
+    headers = [
         "@id",
         "@type",
         "@type",
@@ -234,7 +263,7 @@ def test_unique_header():
         "distribution.downloadURL",
         "distribution.downloadURL",
     ]
-    unique_header = [
+    unique_headers = [
         "@id",
         "@type[1]",
         "@type[2]",
@@ -242,11 +271,11 @@ def test_unique_header():
         "distribution[1].downloadURL",
         "distribution[2].downloadURL",
     ]
-    td = TableDoc(header=header, data=[])
-    assert td.unique_header() == unique_header
+    td = TableDoc(headers=headers, data=[])
+    assert td.unique_headers() == unique_headers
 
-    td.header = unique_header
-    assert td.unique_header() == unique_header
+    td.headers = unique_headers
+    assert td.unique_headers() == unique_headers
 
 
 def test_csvsniff():
@@ -285,8 +314,57 @@ def test_csv_keywords():
     batch1 = td.asdicts()[0]
     assert batch1["@type"] == [
         "dcat:Dataset",
-        "dcat:Resource",
-        "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
+        # "dcat:Resource",
+        # "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a",
         "myonto:Batch",
     ]
     assert batch1["batchNumber"] == 1
+
+
+def test_column():
+    """Test Column class."""
+    from tripper import XSD
+    from tripper.datadoc import get_context
+    from tripper.datadoc.tabledoc import Column
+
+    col1 = Column("title")
+    assert col1.header == "title"
+    assert col1.label == ""
+    assert not col1.options
+
+    col2 = Column(" title ")
+    assert col2.header == "title"
+
+    col3 = Column(" title ", strip=False)
+    assert col3.header == " title "
+
+    col4 = Column("distribution[0].accessURL[?sep=,]")
+    assert col4.header == "distribution[0].accessURL[?sep=,]"
+    assert col4.label == "0"
+    assert col4.options == {"sep": ","}
+
+    col5 = Column("profile[?sep=,&unit=m]")
+    assert col5.names[0] == "profile"
+    assert col5.label == ""
+    assert col5.options == {"sep": ",", "unit": "m"}
+    assert col5.datatype is None
+
+    col6 = Column("creationDate", context=get_context())
+    assert col6.header == "creationDate"
+    assert col6.datatype == XSD.dateTime
+
+
+def test_sep():
+    """Test the column separation."""
+
+    from tripper.datadoc import TableDoc
+
+    td = TableDoc(
+        headers=["@id", "@type[?sep=,]", "title"],
+        data=[("kb:s1", "kb:T1,kb:T2", "A title, with a comma")],
+        prefixes={"kb": "http://example.com/kb#"},
+    )
+    (s1,) = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
+    assert s1["@id"] == "kb:s1"
+    assert s1["@type"] == ["kb:T1", "kb:T2"]
+    assert s1["title"] == "A title, with a comma"
