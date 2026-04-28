@@ -561,6 +561,11 @@ def update_context(
     Currently this only adds classes defined in `source` to `context`.
 
     Returns the updated context.
+
+    Note:
+        For situations in which multiple resources are involved,
+        see [multi-table workflows]:
+        https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows
     """
     subclassof = (RDFS.subClassOf, "rdfs:subClassOf", "subClassOf")
 
@@ -652,6 +657,11 @@ def infer_restriction_types(
           - "value": value restriction (ignored)
 
         where `<N>` is a positive integer.
+
+    Note:
+        For situations in which multiple resources are involved,
+        see [multi-table workflows]:
+        https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-workflows
 
     """
     # pylint: disable=unused-argument
