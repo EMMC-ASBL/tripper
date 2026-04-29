@@ -276,6 +276,7 @@ def test_to_triplestore():
     """Test to_triplestore() method."""
     # pylint: disable=too-many-locals
     from tripper import OWL, RDF, RDFS, Namespace, Triplestore
+    from tripper.errors import NamespaceError
 
     PERS = Namespace("http://example.com/person#")
     FAM = Namespace("http://example.com/family#")
@@ -287,8 +288,6 @@ def test_to_triplestore():
         "daughter": {"@id": "fam:daughter", "@type": "@id"},
         "Son": {"@id": "fam:Son", "@type": "owl:Class"},
         "Daughter": {"@id": "fam:Daughter", "@type": "owl:Class"},
-        "Father": {"@id": "fam:Father", "@type": "owl:Class"},
-        "father": {"@id": "fam:father", "@type": "@id"},
     }
     ctx = get_context(context=context)  # , theme="ddoc:datadoc")
 
@@ -377,8 +376,9 @@ def test_to_triplestore():
             "owl:someValuesFrom": "Father",
         },
     }
+
     ts5 = Triplestore("rdflib")
-    with pytest.raises(Exception):
+    with pytest.raises(NamespaceError):
         ctx.to_triplestore(ts5, doc5)
 
 
