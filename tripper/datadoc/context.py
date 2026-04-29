@@ -6,6 +6,7 @@ import json
 import os
 import re
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
@@ -533,7 +534,10 @@ class Context:
         base = baseiri if baseiri else false_prefix
 
         ts2 = Triplestore(backend="rdflib")
-        ts2.parse(data=self._todict(doc), format="json-ld", base=base)
+
+        ts2.parse(
+            data=self._todict_for_store(doc), format="json-ld", base=base
+        )
 
         # Check that no IRIs are in namespace "https://falseiri/".
         # If Force is True, issue a warning
@@ -572,6 +576,19 @@ class Context:
             if prefix not in ts.namespaces:
                 ts.bind(prefix, ns)
         return ts2
+
+    def _todict_for_store(self, doc: "Union[dict, list]") -> dict:
+        """Like _todict but adds OWL restriction coercions to the context."""
+        storedict = self._todict(doc)
+        ctx_copy = self.copy()
+        _owl_ctx = str(
+            Path(__file__).parent.parent / "context" / "owl-restrictions.json"
+        )
+        ctx_copy.add_context(_owl_ctx)
+        coercions = ctx_copy.get_context_dict()
+        for key, value in coercions.items():
+            storedict["@context"].setdefault(key, value)
+        return storedict
 
     def _todict(self, doc: "Union[dict, list]") -> dict:
         """Returns a shallow copy of doc as a dict with current
