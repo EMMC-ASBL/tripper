@@ -2626,7 +2626,10 @@ Context        </code>
         <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="n">false_prefix</span>
 
         <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
-        <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
+
+        <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict_for_store</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span>
+        <span class="p">)</span>
 
         <span class="c1"># Check that no IRIs are in namespace &quot;https://falseiri/&quot;.</span>
         <span class="c1"># If Force is True, issue a warning</span>
@@ -2665,6 +2668,19 @@ Context        </code>
             <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ts2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_todict_for_store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Like _todict but adds OWL restriction coercions to the context.&quot;&quot;&quot;</span>
+        <span class="n">storedict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="n">ctx_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_owl_ctx</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;context&quot;</span> <span class="o">/</span> <span class="s2">&quot;owl-restrictions.json&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ctx_copy</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">_owl_ctx</span><span class="p">)</span>
+        <span class="n">coercions</span> <span class="o">=</span> <span class="n">ctx_copy</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">coercions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">storedict</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">storedict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_todict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a shallow copy of doc as a dict with current</span>
@@ -3841,7 +3857,10 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
     <span class="n">base</span> <span class="o">=</span> <span class="n">baseiri</span> <span class="k">if</span> <span class="n">baseiri</span> <span class="k">else</span> <span class="n">false_prefix</span>
 
     <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
-    <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">)</span>
+
+    <span class="n">ts2</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_todict_for_store</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span>
+    <span class="p">)</span>
 
     <span class="c1"># Check that no IRIs are in namespace &quot;https://falseiri/&quot;.</span>
     <span class="c1"># If Force is True, issue a warning</span>

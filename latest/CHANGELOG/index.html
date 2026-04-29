@@ -1543,9 +1543,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased-changes-2026-04-28" class="md-nav__link">
+  <a href="#unreleased-changes-2026-04-29" class="md-nav__link">
     <span class="md-ellipsis">
-      Unreleased changes (2026-04-28)
+      Unreleased changes (2026-04-29)
     </span>
   </a>
   
@@ -1869,9 +1869,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased-changes-2026-04-28" class="md-nav__link">
+  <a href="#unreleased-changes-2026-04-29" class="md-nav__link">
     <span class="md-ellipsis">
-      Unreleased changes (2026-04-28)
+      Unreleased changes (2026-04-29)
     </span>
   </a>
   
@@ -2155,7 +2155,7 @@
 
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
-<h2 id="unreleased-changes-2026-04-28"><a href="https://github.com/EMMC-ASBL/tripper/tree/Unreleased changes">Unreleased changes</a> (2026-04-28)<a class="headerlink" href="#unreleased-changes-2026-04-28" title="Permanent link">&para;</a></h2>
+<h2 id="unreleased-changes-2026-04-29"><a href="https://github.com/EMMC-ASBL/tripper/tree/Unreleased changes">Unreleased changes</a> (2026-04-29)<a class="headerlink" href="#unreleased-changes-2026-04-29" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.5.0...Unreleased changes">Full Changelog</a></p>
 <p><strong>Closed issues:</strong></p>
 <ul>
@@ -2166,6 +2166,7 @@
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>Iri in restrictions are not treated correctly when parsed into ts <a href="https://github.com/EMMC-ASBL/tripper/pull/542">#542</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/541">#541</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
 <li>Do not infer restrictions on annotation properties <a href="https://github.com/EMMC-ASBL/tripper/pull/540">#540</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
 <li>Added parsing of excel and semantics to header braces in tabledoc <a href="https://github.com/EMMC-ASBL/tripper/pull/539">#539</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
@@ -2237,6 +2238,8 @@
 <li>Store prefixes to triplestore <a href="https://github.com/EMMC-ASBL/tripper/pull/443">#443</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Clean up keywords <a href="https://github.com/EMMC-ASBL/tripper/pull/442">#442</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/439">#439</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Added available() method and check_url to argument to Triplestore <a href="https://github.com/EMMC-ASBL/tripper/pull/437">#437</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added substitute_query() function <a href="https://github.com/EMMC-ASBL/tripper/pull/434">#434</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Fixed minor bugs in keywords.py <a href="https://github.com/EMMC-ASBL/tripper/pull/432">#432</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Fix linting warnings for bound prefixes <a href="https://github.com/EMMC-ASBL/tripper/pull/431">#431</a> (<a href="https://github.com/nameloCmaS">nameloCmaS</a>)</li>
 <li>Corrected importorskip for PyLD (corrected to pyld) <a href="https://github.com/EMMC-ASBL/tripper/pull/428">#428</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
@@ -2325,10 +2328,15 @@
 <li>Added update() method to sparqlwrapper backend <a href="https://github.com/EMMC-ASBL/tripper/pull/356">#356</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/355">#355</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
 <li>Added test for Fuseki and fixed query to return TURTLE which works for both fuseki and graphdb <a href="https://github.com/EMMC-ASBL/tripper/pull/347">#347</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
+<li>Correct syntax <a href="https://github.com/EMMC-ASBL/tripper/pull/344">#344</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Correct syntax <a href="https://github.com/EMMC-ASBL/tripper/pull/343">#343</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Fixed CONSTRUCT to return s and not o <a href="https://github.com/EMMC-ASBL/tripper/pull/338">#338</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
 <li>Corrected literals in SELECT and CONSTRUCT queries in the sparqlwrapper backend <a href="https://github.com/EMMC-ASBL/tripper/pull/335">#335</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/332">#332</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
 <li>Added CONSTRUCT query to sparqlwrapper,  <a href="https://github.com/EMMC-ASBL/tripper/pull/331">#331</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
 <li>Include context files in installation <a href="https://github.com/EMMC-ASBL/tripper/pull/328">#328</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Update dataset.py <a href="https://github.com/EMMC-ASBL/tripper/pull/325">#325</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/321">#321</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
 <li>Schema validator <a href="https://github.com/EMMC-ASBL/tripper/pull/296">#296</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 </ul>
 <h2 id="v040-2025-02-10"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.4.0">v0.4.0</a> (2025-02-10)<a class="headerlink" href="#v040-2025-02-10" title="Permanent link">&para;</a></h2>
@@ -2340,20 +2348,41 @@
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>Add updateEndpoint to SPARQLwrapper <a href="https://github.com/EMMC-ASBL/tripper/pull/313">#313</a> (<a href="https://github.com/torhaugl">torhaugl</a>)</li>
 <li>Include prefixes from context when populating a triplestore from a csv file <a href="https://github.com/EMMC-ASBL/tripper/pull/309">#309</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Added support for username/password for sparqlwrapper <a href="https://github.com/EMMC-ASBL/tripper/pull/308">#308</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Implementing regex search <a href="https://github.com/EMMC-ASBL/tripper/pull/307">#307</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/306">#306</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Rename dataset <a href="https://github.com/EMMC-ASBL/tripper/pull/304">#304</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Change pathlib to be pathlib and not as uri. This fixes opening in wi… <a href="https://github.com/EMMC-ASBL/tripper/pull/303">#303</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
+<li>Added fixes for the demonstration at the PINK demo <a href="https://github.com/EMMC-ASBL/tripper/pull/299">#299</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/287">#287</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
 <li>Make datasets with a datamodel an individual of the datamodel <a href="https://github.com/EMMC-ASBL/tripper/pull/286">#286</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Re-applied fixes from testing datadoc on a use case for PINK. <a href="https://github.com/EMMC-ASBL/tripper/pull/285">#285</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Added documentation for datasets <a href="https://github.com/EMMC-ASBL/tripper/pull/280">#280</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Dataset TODOs <a href="https://github.com/EMMC-ASBL/tripper/pull/279">#279</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/277">#277</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Updated dataset module <a href="https://github.com/EMMC-ASBL/tripper/pull/272">#272</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Corrected dataset module <a href="https://github.com/EMMC-ASBL/tripper/pull/271">#271</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Add support for Python 3.13 <a href="https://github.com/EMMC-ASBL/tripper/pull/266">#266</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Updated requirements to allow Pint 0.24, which in turn opens for NumPy 2 <a href="https://github.com/EMMC-ASBL/tripper/pull/265">#265</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Updated documentation format for better rendering <a href="https://github.com/EMMC-ASBL/tripper/pull/262">#262</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Predefined EMMO namespace with checking and label lookup <a href="https://github.com/EMMC-ASBL/tripper/pull/261">#261</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/259">#259</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/258">#258</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Dataset <a href="https://github.com/EMMC-ASBL/tripper/pull/256">#256</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 </ul>
 <h2 id="v034-2024-10-17"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.3.4">v0.3.4</a> (2024-10-17)<a class="headerlink" href="#v034-2024-10-17" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.3.3...v0.3.4">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Update n3 format for string with quotes. <a href="https://github.com/EMMC-ASBL/tripper/pull/253">#253</a> (<a href="https://github.com/pintr">pintr</a>)</li>
+<li>Added option to Triplestore.value() to return a generator over all matching values <a href="https://github.com/EMMC-ASBL/tripper/pull/252">#252</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Ignore safety vulnerabeility 72715 <a href="https://github.com/EMMC-ASBL/tripper/pull/251">#251</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Fix empty prefix <a href="https://github.com/EMMC-ASBL/tripper/pull/250">#250</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/249">#249</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Backend info to triplestore instance <a href="https://github.com/EMMC-ASBL/tripper/pull/248">#248</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v033-2024-08-26"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.3.3">v0.3.3</a> (2024-08-26)<a class="headerlink" href="#v033-2024-08-26" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.3.2...v0.3.3">Full Changelog</a></p>
 <p><strong>Implemented enhancements:</strong></p>
@@ -2369,8 +2398,32 @@
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.3.1...v0.3.2">Full Changelog</a></p>
 <h2 id="v031-2024-08-16"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.3.1">v0.3.1</a> (2024-08-16)<a class="headerlink" href="#v031-2024-08-16" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.3.0...v0.3.1">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Avoid that tripper.Namespace crashes if the cache directory cannot be accessed <a href="https://github.com/EMMC-ASBL/tripper/pull/235">#235</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/232">#232</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/231">#231</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Cleaned up backend tests <a href="https://github.com/EMMC-ASBL/tripper/pull/230">#230</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added a fix for parsing rdflib literals. <a href="https://github.com/EMMC-ASBL/tripper/pull/229">#229</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Add better and more convenient support for rdf:JSON datatype <a href="https://github.com/EMMC-ASBL/tripper/pull/228">#228</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v030-2024-06-24"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.3.0">v0.3.0</a> (2024-06-24)<a class="headerlink" href="#v030-2024-06-24" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.16...v0.3.0">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Tutorial update <a href="https://github.com/EMMC-ASBL/tripper/pull/227">#227</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Get rid of the last warning in the tests <a href="https://github.com/EMMC-ASBL/tripper/pull/226">#226</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Get restrictions as dicts <a href="https://github.com/EMMC-ASBL/tripper/pull/225">#225</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/224">#224</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Added an additional test for convert <a href="https://github.com/EMMC-ASBL/tripper/pull/223">#223</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Minor fix in tutorial <a href="https://github.com/EMMC-ASBL/tripper/pull/221">#221</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Updated the tutorial <a href="https://github.com/EMMC-ASBL/tripper/pull/220">#220</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Improved the handling of different return types from the query() method <a href="https://github.com/EMMC-ASBL/tripper/pull/219">#219</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Correct parsing literals from the rdflib backend. <a href="https://github.com/EMMC-ASBL/tripper/pull/217">#217</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Do not save cache while interpreter shotdown. <a href="https://github.com/EMMC-ASBL/tripper/pull/216">#216</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Allow string literal to compare equal to strings. <a href="https://github.com/EMMC-ASBL/tripper/pull/215">#215</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Also test for Python 3.12 <a href="https://github.com/EMMC-ASBL/tripper/pull/213">#213</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v0216-2024-05-16"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.16">v0.2.16</a> (2024-05-16)<a class="headerlink" href="#v0216-2024-05-16" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.15...v0.2.16">Full Changelog</a></p>
 <p><strong>Fixed bugs:</strong></p>
@@ -2384,6 +2437,13 @@
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>Use latest SINTEF/ci-cd version <a href="https://github.com/EMMC-ASBL/tripper/pull/210">#210</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>Allow prefix with digits <a href="https://github.com/EMMC-ASBL/tripper/pull/209">#209</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added test for SPARQL CONSTRUCT query via tripper <a href="https://github.com/EMMC-ASBL/tripper/pull/207">#207</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added more recognised keys to tripper.convert <a href="https://github.com/EMMC-ASBL/tripper/pull/206">#206</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>[pre-commit.ci] pre-commit autoupdate <a href="https://github.com/EMMC-ASBL/tripper/pull/204">#204</a> (<a href="https://github.com/apps/pre-commit-ci">pre-commit-ci[bot]</a>)</li>
+<li>Changed EMMO representation of function arguments from datasets to datum <a href="https://github.com/EMMC-ASBL/tripper/pull/203">#203</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added comment suggested by Francesca <a href="https://github.com/EMMC-ASBL/tripper/pull/201">#201</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Enhanced the use of namespaces <a href="https://github.com/EMMC-ASBL/tripper/pull/195">#195</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Support for restrictions <a href="https://github.com/EMMC-ASBL/tripper/pull/190">#190</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Correctly convert rdflib bnodes back to tripper <a href="https://github.com/EMMC-ASBL/tripper/pull/187">#187</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
@@ -2427,24 +2487,52 @@
 <p><strong>Merged pull requests:</strong></p>
 <ul>
 <li>Retain datatype when listing literals from rdflib <a href="https://github.com/EMMC-ASBL/tripper/pull/163">#163</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Make it possible to expose an existing rdflib graph via tripper <a href="https://github.com/EMMC-ASBL/tripper/pull/156">#156</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Get rid of confusing UnusedArgumentWarning from working code <a href="https://github.com/EMMC-ASBL/tripper/pull/151">#151</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 </ul>
 <h2 id="v0213-2023-11-14"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.13">v0.2.13</a> (2023-11-14)<a class="headerlink" href="#v0213-2023-11-14" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.12...v0.2.13">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Added UnknownUnitError <a href="https://github.com/EMMC-ASBL/tripper/pull/153">#153</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v0212-2023-11-07"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.12">v0.2.12</a> (2023-11-07)<a class="headerlink" href="#v0212-2023-11-07" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.11...v0.2.12">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Expand pint requirements to include more versions <a href="https://github.com/EMMC-ASBL/tripper/pull/150">#150</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
+</ul>
 <h2 id="v0211-2023-10-30"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.11">v0.2.11</a> (2023-10-30)<a class="headerlink" href="#v0211-2023-10-30" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.10...v0.2.11">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Added new section to README file <a href="https://github.com/EMMC-ASBL/tripper/pull/148">#148</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v0210-2023-10-19"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.10">v0.2.10</a> (2023-10-19)<a class="headerlink" href="#v0210-2023-10-19" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.9...v0.2.10">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Clearified that tripper does not depend on DLite and Pydantic <a href="https://github.com/EMMC-ASBL/tripper/pull/136">#136</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v029-2023-09-29"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.9">v0.2.9</a> (2023-09-29)<a class="headerlink" href="#v029-2023-09-29" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.8...v0.2.9">Full Changelog</a></p>
 <h2 id="v028-2023-09-12"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.8">v0.2.8</a> (2023-09-12)<a class="headerlink" href="#v028-2023-09-12" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.7...v0.2.8">Full Changelog</a></p>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Added support for lists in tripper.convert <a href="https://github.com/EMMC-ASBL/tripper/pull/129">#129</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v027-2023-08-29"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.7">v0.2.7</a> (2023-08-29)<a class="headerlink" href="#v027-2023-08-29" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.6...v0.2.7">Full Changelog</a></p>
 <p><strong>Fixed bugs:</strong></p>
 <ul>
 <li>Fix issues related to renaming of the default branch <a href="https://github.com/EMMC-ASBL/tripper/issues/116">#116</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Added a module for converting to/from dicts <a href="https://github.com/EMMC-ASBL/tripper/pull/126">#126</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Update dependabot after changing master branch to 'master' <a href="https://github.com/EMMC-ASBL/tripper/pull/121">#121</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Also run CI tests on examples in documentation <a href="https://github.com/EMMC-ASBL/tripper/pull/118">#118</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 </ul>
 <h2 id="v026-2023-06-23"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.6">v0.2.6</a> (2023-06-23)<a class="headerlink" href="#v026-2023-06-23" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.5...v0.2.6">Full Changelog</a></p>
@@ -2454,6 +2542,11 @@
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>One letter words where not allowed in mappings, now they are <a href="https://github.com/EMMC-ASBL/tripper/pull/117">#117</a> (<a href="https://github.com/francescalb">francescalb</a>)</li>
+<li>pylint settings <a href="https://github.com/EMMC-ASBL/tripper/pull/115">#115</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added DOI badge <a href="https://github.com/EMMC-ASBL/tripper/pull/109">#109</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Fixed parsing rdf:HTML literals with the rdflib backend <a href="https://github.com/EMMC-ASBL/tripper/pull/106">#106</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Support Python 3.11 <a href="https://github.com/EMMC-ASBL/tripper/pull/103">#103</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>92 new triplestore subclass <a href="https://github.com/EMMC-ASBL/tripper/pull/99">#99</a> (<a href="https://github.com/alfredoisg">alfredoisg</a>)</li>
 </ul>
 <h2 id="v025-2023-05-24"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.5">v0.2.5</a> (2023-05-24)<a class="headerlink" href="#v025-2023-05-24" title="Permanent link">&para;</a></h2>
@@ -2469,11 +2562,26 @@
 <li>Transformations based on data sources <a href="https://github.com/EMMC-ASBL/tripper/issues/90">#90</a></li>
 <li>Add workflow example  <a href="https://github.com/EMMC-ASBL/tripper/issues/79">#79</a></li>
 </ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Added argument <code>lang</code> to triplestore.value() <a href="https://github.com/EMMC-ASBL/tripper/pull/104">#104</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Run doctest from CI tests <a href="https://github.com/EMMC-ASBL/tripper/pull/101">#101</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added add_data(), get_value() and add_interpolation_source() methods to Triplestore <a href="https://github.com/EMMC-ASBL/tripper/pull/91">#91</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added tests for Python 3.11 and 3.6 <a href="https://github.com/EMMC-ASBL/tripper/pull/84">#84</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Remove some deprecation warnings <a href="https://github.com/EMMC-ASBL/tripper/pull/83">#83</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Workflow example <a href="https://github.com/EMMC-ASBL/tripper/pull/81">#81</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Support external backends <a href="https://github.com/EMMC-ASBL/tripper/pull/80">#80</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v023-2023-02-05"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.3">v0.2.3</a> (2023-02-05)<a class="headerlink" href="#v023-2023-02-05" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.2...v0.2.3">Full Changelog</a></p>
 <p><strong>Closed issues:</strong></p>
 <ul>
 <li>Add a to_yaml() method to MappingStep <a href="https://github.com/EMMC-ASBL/tripper/issues/66">#66</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Add official support for Python 3.11 <a href="https://github.com/EMMC-ASBL/tripper/pull/82">#82</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>added PR template <a href="https://github.com/EMMC-ASBL/tripper/pull/77">#77</a> (<a href="https://github.com/alfredoisg">alfredoisg</a>)</li>
 </ul>
 <h2 id="v022-2023-01-30"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.2">v0.2.2</a> (2023-01-30)<a class="headerlink" href="#v022-2023-01-30" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.1...v0.2.2">Full Changelog</a></p>
@@ -2486,11 +2594,29 @@
 <ul>
 <li>Describe functions with EMMO instead of FnO <a href="https://github.com/EMMC-ASBL/tripper/issues/65">#65</a></li>
 </ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Using isort 5.12.0 for pre-commit <a href="https://github.com/EMMC-ASBL/tripper/pull/76">#76</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>Visualise <a href="https://github.com/EMMC-ASBL/tripper/pull/74">#74</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Generate mapping routes from subclasses of Value and MappingStep <a href="https://github.com/EMMC-ASBL/tripper/pull/73">#73</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Fix deprecated calls syntax to Triplestore.triples() <a href="https://github.com/EMMC-ASBL/tripper/pull/71">#71</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Made the value optional + added some cleanup <a href="https://github.com/EMMC-ASBL/tripper/pull/70">#70</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Add map() method to Triplestore <a href="https://github.com/EMMC-ASBL/tripper/pull/69">#69</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Proper cost function <a href="https://github.com/EMMC-ASBL/tripper/pull/68">#68</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Updated Triplestore.add_function() to also support EMMO. <a href="https://github.com/EMMC-ASBL/tripper/pull/67">#67</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added mappings <a href="https://github.com/EMMC-ASBL/tripper/pull/62">#62</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+</ul>
 <h2 id="v021-2022-12-18"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.1">v0.2.1</a> (2022-12-18)<a class="headerlink" href="#v021-2022-12-18" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.2.0...v0.2.1">Full Changelog</a></p>
 <p><strong>Closed issues:</strong></p>
 <ul>
 <li>Simplify use of the Triplestore triples() and remove() methods <a href="https://github.com/EMMC-ASBL/tripper/issues/50">#50</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Commented out __hash__() and __eq__() methods from Literal. <a href="https://github.com/EMMC-ASBL/tripper/pull/55">#55</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Simplify use of the Triplestore triples() and remove() methods <a href="https://github.com/EMMC-ASBL/tripper/pull/51">#51</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Separated <code>base_iri</code> argument from <code>triplestore_url</code> in rdflib backend <a href="https://github.com/EMMC-ASBL/tripper/pull/49">#49</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 </ul>
 <h2 id="v020-2022-12-13"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.2.0">v0.2.0</a> (2022-12-13)<a class="headerlink" href="#v020-2022-12-13" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.1.2...v0.2.0">Full Changelog</a></p>
@@ -2502,6 +2628,12 @@
 <ul>
 <li>Remove backend packages from requirements <a href="https://github.com/EMMC-ASBL/tripper/issues/48">#48</a></li>
 <li>Fix utils.parse_object()  <a href="https://github.com/EMMC-ASBL/tripper/issues/45">#45</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Update <code>docs</code> extra <a href="https://github.com/EMMC-ASBL/tripper/pull/54">#54</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>Remove backend packages from requirements <a href="https://github.com/EMMC-ASBL/tripper/pull/52">#52</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Fix utils.parse_object() <a href="https://github.com/EMMC-ASBL/tripper/pull/46">#46</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 </ul>
 <h2 id="v012-2022-12-11"><a href="https://github.com/EMMC-ASBL/tripper/tree/v0.1.2">v0.1.2</a> (2022-12-11)<a class="headerlink" href="#v012-2022-12-11" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/EMMC-ASBL/tripper/compare/v0.1.1...v0.1.2">Full Changelog</a></p>
@@ -2522,6 +2654,16 @@
 </ul>
 <p><strong>Merged pull requests:</strong></p>
 <ul>
+<li>Added collection backend <a href="https://github.com/EMMC-ASBL/tripper/pull/44">#44</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Fix return types <a href="https://github.com/EMMC-ASBL/tripper/pull/43">#43</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>Updated import statements in the tutorial <a href="https://github.com/EMMC-ASBL/tripper/pull/40">#40</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Added create_database() and remove_database() methods. <a href="https://github.com/EMMC-ASBL/tripper/pull/39">#39</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Use the proper version of SINTEF/ci-cd <a href="https://github.com/EMMC-ASBL/tripper/pull/36">#36</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>bumped ci-cd version to remove --strict mkdocs command <a href="https://github.com/EMMC-ASBL/tripper/pull/32">#32</a> (<a href="https://github.com/daniel-sintef">daniel-sintef</a>)</li>
+<li>3 refactor triplestorepy triplestore module api <a href="https://github.com/EMMC-ASBL/tripper/pull/31">#31</a> (<a href="https://github.com/daniel-sintef">daniel-sintef</a>)</li>
+<li>3 refactor triplestore <a href="https://github.com/EMMC-ASBL/tripper/pull/27">#27</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Corrected copyright <a href="https://github.com/EMMC-ASBL/tripper/pull/21">#21</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
+<li>Add a useful description to README file. <a href="https://github.com/EMMC-ASBL/tripper/pull/19">#19</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Added support for simple persistent storage in the rdflib backend <a href="https://github.com/EMMC-ASBL/tripper/pull/15">#15</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>sparqlwrapper backend <a href="https://github.com/EMMC-ASBL/tripper/pull/11">#11</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
 <li>Documented return value of the Triplestore.query() and added a test for it <a href="https://github.com/EMMC-ASBL/tripper/pull/9">#9</a> (<a href="https://github.com/jesper-friis">jesper-friis</a>)</li>
@@ -2537,6 +2679,12 @@
 <ul>
 <li>Enable proper release workflow <a href="https://github.com/EMMC-ASBL/tripper/issues/8">#8</a></li>
 <li>Fix workflows so they succeed <a href="https://github.com/EMMC-ASBL/tripper/issues/2">#2</a></li>
+</ul>
+<p><strong>Merged pull requests:</strong></p>
+<ul>
+<li>Use the package name <code>tripper</code> (not <code>tripperpy</code>) <a href="https://github.com/EMMC-ASBL/tripper/pull/16">#16</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>Clean up repository &amp; fix workflows <a href="https://github.com/EMMC-ASBL/tripper/pull/5">#5</a> (<a href="https://github.com/CasperWA">CasperWA</a>)</li>
+<li>Added version number in __init__ to enable local pip install <a href="https://github.com/EMMC-ASBL/tripper/pull/4">#4</a> (<a href="https://github.com/quaat">quaat</a>)</li>
 </ul>
 <p>* <em>This Changelog was automatically generated by <a href="https://github.com/github-changelog-generator/github-changelog-generator">github_changelog_generator</a></em></p>
 
