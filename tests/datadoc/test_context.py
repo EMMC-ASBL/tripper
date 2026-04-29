@@ -274,19 +274,23 @@ def test_is_class():
 
 def test_to_triplestore():
     """Test to_triplestore() method."""
-    from tripper import Namespace, Triplestore
+    # pylint: disable=too-many-locals
+    from tripper import OWL, RDF, RDFS, Namespace, Triplestore
 
     PERS = Namespace("http://example.com/person#")
     FAM = Namespace("http://example.com/family#")
     context = {
         "pers": str(PERS),
         "fam": str(FAM),
+        "owl": str(OWL),
         "son": {"@id": "fam:son", "@type": "@id"},
         "daughter": {"@id": "fam:daughter", "@type": "@id"},
-        "Son": "fam:Son",
-        "Daughter": "fam:Daughter",
+        "Son": {"@id": "fam:Son", "@type": "owl:Class"},
+        "Daughter": {"@id": "fam:Daughter", "@type": "owl:Class"},
+        "Father": {"@id": "fam:Father", "@type": "owl:Class"},
+        "father": {"@id": "fam:father", "@type": "@id"},
     }
-    ctx = get_context(context=context)
+    ctx = get_context(context=context)  # , theme="ddoc:datadoc")
 
     doc1 = {
         "@id": "pers:ada",
@@ -338,6 +342,44 @@ def test_to_triplestore():
         (PERS.cyril, FAM.daughter, PERS.ewa),
         (PERS.cyril, FAM.son, PERS.fredrik),
     }
+    ctx = get_context(context=context)
+    # OWL restriction values should be interpreted as IRIs when ingested.
+    doc4 = {
+        "@id": "fam:Son",
+        "@type": "owl:Class",
+        "subClassOf": {
+            "@type": "owl:Restriction",
+            "owl:onProperty": "fam:father",
+            "owl:someValuesFrom": "fam:Father",
+        },
+    }
+    ts4 = Triplestore("rdflib")
+    ctx.to_triplestore(ts4, doc4)
+    triples4 = set(ts4.triples())
+    print(ts4.serialize())
+    subclasses = list(ts4.triples(subject=FAM.Son, predicate=RDFS.subClassOf))
+    assert len(subclasses) == 1
+
+    restriction = subclasses[0][2]
+    assert (restriction, RDF.type, OWL.Restriction) in triples4
+    assert (restriction, OWL.onProperty, FAM.father) in triples4
+    assert (restriction, OWL.someValuesFrom, FAM.Father) in triples4
+
+    ctx = get_context(context=context)
+    # OWL restriction values should be interpreted as IRIs when ingested.
+    # should give namespaceerror
+    doc5 = {
+        "@id": "fam:Son",
+        "@type": "owl:Class",
+        "subClassOf": {
+            "@type": "owl:Restriction",
+            "owl:onProperty": "fam:father",
+            "owl:someValuesFrom": "Father",
+        },
+    }
+    ts5 = Triplestore("rdflib")
+    with pytest.raises(Exception):
+        ctx.to_triplestore(ts5, doc5)
 
 
 def test_base():
