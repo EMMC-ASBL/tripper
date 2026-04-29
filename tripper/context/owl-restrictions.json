@@ -1,0 +1,13 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "subClassOf":            {"@id": "rdfs:subClassOf",       "@type": "@id"},
+    "owl:onProperty":        {"@id": "owl:onProperty",        "@type": "@id"},
+    "owl:someValuesFrom":    {"@id": "owl:someValuesFrom",    "@type": "@id"},
+    "owl:allValuesFrom":     {"@id": "owl:allValuesFrom",     "@type": "@id"},
+    "owl:hasValue":          {"@id": "owl:hasValue",          "@type": "@id"},
+    "owl:onClass":           {"@id": "owl:onClass",           "@type": "@id"},
+    "owl:onDataRange":       {"@id": "owl:onDataRange",       "@type": "@id"}
+  }
+}
