@@ -289,7 +289,7 @@ def test_to_triplestore():
         "Son": {"@id": "fam:Son", "@type": "owl:Class"},
         "Daughter": {"@id": "fam:Daughter", "@type": "owl:Class"},
     }
-    ctx = get_context(context=context)  # , theme="ddoc:datadoc")
+    ctx = get_context(context=context)
 
     doc1 = {
         "@id": "pers:ada",
@@ -342,7 +342,8 @@ def test_to_triplestore():
         (PERS.cyril, FAM.son, PERS.fredrik),
     }
     ctx = get_context(context=context)
-    # OWL restriction values should be interpreted as IRIs when ingested.
+    # OWL restriction values should be interpreted as IRIs
+    # when parsed into the triplestore.
     doc4 = {
         "@id": "fam:Son",
         "@type": "owl:Class",
@@ -365,8 +366,9 @@ def test_to_triplestore():
     assert (restriction, OWL.someValuesFrom, FAM.Father) in triples4
 
     ctx = get_context(context=context)
-    # OWL restriction values should be interpreted as IRIs when ingested.
-    # should give namespaceerror
+    # Same as above, but now the value of `owl:someValuesFrom`
+    # is not a valid IRI, so it should raise a NamespaceError when
+    # parsed into the triplestore.
     doc5 = {
         "@id": "fam:Son",
         "@type": "owl:Class",
