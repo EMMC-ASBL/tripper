@@ -1,5 +1,73 @@
 # Changelog
 
+## [v0.5.2](https://github.com/EMMC-ASBL/tripper/tree/v0.5.2) (2026-05-11)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.1...v0.5.2)
+
+**Merged pull requests:**
+
+- Do not fail when wikidata stops access [\#544](https://github.com/EMMC-ASBL/tripper/pull/544) ([francescalb](https://github.com/francescalb))
+
+## [v0.5.1](https://github.com/EMMC-ASBL/tripper/tree/v0.5.1) (2026-04-29)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.0...v0.5.1)
+
+**Closed issues:**
+
+- TableDoc - add semantics to content of braces prepended to the header [\#529](https://github.com/EMMC-ASBL/tripper/issues/529)
+- Restrictions on individuals [\#488](https://github.com/EMMC-ASBL/tripper/issues/488)
+- Improve description of classes [\#460](https://github.com/EMMC-ASBL/tripper/issues/460)
+- One prefix can now point to two different namespaces [\#452](https://github.com/EMMC-ASBL/tripper/issues/452)
+
+**Merged pull requests:**
+
+- Iri in restrictions are not treated correctly when parsed into ts [\#542](https://github.com/EMMC-ASBL/tripper/pull/542) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#541](https://github.com/EMMC-ASBL/tripper/pull/541) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Do not infer restrictions on annotation properties [\#540](https://github.com/EMMC-ASBL/tripper/pull/540) ([francescalb](https://github.com/francescalb))
+- Added parsing of excel and semantics to header braces in tabledoc [\#539](https://github.com/EMMC-ASBL/tripper/pull/539) ([jesper-friis](https://github.com/jesper-friis))
+- Avoid injecting default context [\#538](https://github.com/EMMC-ASBL/tripper/pull/538) ([jesper-friis](https://github.com/jesper-friis))
+- Add documentation on how to make sure that new classes exist in context [\#537](https://github.com/EMMC-ASBL/tripper/pull/537) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#528](https://github.com/EMMC-ASBL/tripper/pull/528) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Removed automatic detection of datamodel in tripper dataset [\#526](https://github.com/EMMC-ASBL/tripper/pull/526) ([francescalb](https://github.com/francescalb))
+- Changed prefix `accr:` to `rights:` [\#525](https://github.com/EMMC-ASBL/tripper/pull/525) ([jesper-friis](https://github.com/jesper-friis))
+- Fixed formatting of keywords [\#521](https://github.com/EMMC-ASBL/tripper/pull/521) ([jesper-friis](https://github.com/jesper-friis))
+- Made altLabel and label language strings [\#519](https://github.com/EMMC-ASBL/tripper/pull/519) ([jesper-friis](https://github.com/jesper-friis))
+- Made test\_backends\_sparql.py slightly more robust [\#518](https://github.com/EMMC-ASBL/tripper/pull/518) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#517](https://github.com/EMMC-ASBL/tripper/pull/517) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Corrected infering name from iri. [\#516](https://github.com/EMMC-ASBL/tripper/pull/516) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#515](https://github.com/EMMC-ASBL/tripper/pull/515) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Individual restrictions [\#514](https://github.com/EMMC-ASBL/tripper/pull/514) ([jesper-friis](https://github.com/jesper-friis))
+- Keywords with context input [\#513](https://github.com/EMMC-ASBL/tripper/pull/513) ([jesper-friis](https://github.com/jesper-friis))
+- Restrictions to iris [\#512](https://github.com/EMMC-ASBL/tripper/pull/512) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#511](https://github.com/EMMC-ASBL/tripper/pull/511) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added support for multiple labels in keywords [\#508](https://github.com/EMMC-ASBL/tripper/pull/508) ([jesper-friis](https://github.com/jesper-friis))
+- Make TableDoc.save return the saved JSON-LD [\#507](https://github.com/EMMC-ASBL/tripper/pull/507) ([jesper-friis](https://github.com/jesper-friis))
+- Improved error message when missing prefix [\#506](https://github.com/EMMC-ASBL/tripper/pull/506) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#505](https://github.com/EMMC-ASBL/tripper/pull/505) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Changed sxd:date to xsd:dateTime in keywords [\#504](https://github.com/EMMC-ASBL/tripper/pull/504) ([jesper-friis](https://github.com/jesper-friis))
+- Restrictions on individuals [\#503](https://github.com/EMMC-ASBL/tripper/pull/503) ([jesper-friis](https://github.com/jesper-friis))
+- Correct rdf serialisation [\#502](https://github.com/EMMC-ASBL/tripper/pull/502) ([jesper-friis](https://github.com/jesper-friis))
+- Skip tests depending on dlite if dlite is not available [\#501](https://github.com/EMMC-ASBL/tripper/pull/501) ([jesper-friis](https://github.com/jesper-friis))
+- Removed unnecessary warning [\#500](https://github.com/EMMC-ASBL/tripper/pull/500) ([jesper-friis](https://github.com/jesper-friis))
+- Update jsonld to rdf [\#499](https://github.com/EMMC-ASBL/tripper/pull/499) ([francescalb](https://github.com/francescalb))
+- context is in many places forced to use default even when this is not desired [\#498](https://github.com/EMMC-ASBL/tripper/pull/498) ([francescalb](https://github.com/francescalb))
+- Annotation mappings for generated keywords  [\#497](https://github.com/EMMC-ASBL/tripper/pull/497) ([jesper-friis](https://github.com/jesper-friis))
+- Added --set-prefix option to keywords [\#496](https://github.com/EMMC-ASBL/tripper/pull/496) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#495](https://github.com/EMMC-ASBL/tripper/pull/495) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Fixed use of deprecated `yamlfile` argument to get\_keywords\(\) [\#494](https://github.com/EMMC-ASBL/tripper/pull/494) ([jesper-friis](https://github.com/jesper-friis))
+- Added prefix argument to keywords tool [\#492](https://github.com/EMMC-ASBL/tripper/pull/492) ([francescalb](https://github.com/francescalb))
+- \[pre-commit.ci\] pre-commit autoupdate [\#489](https://github.com/EMMC-ASBL/tripper/pull/489) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#487](https://github.com/EMMC-ASBL/tripper/pull/487) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Added reverse mapping to Namespace objects using the \_\_call\_\_\(\) method. [\#483](https://github.com/EMMC-ASBL/tripper/pull/483) ([jesper-friis](https://github.com/jesper-friis))
+- Added --redefine option to datadoc tool and corrected Keywords.\_keywords\_list\(\) method [\#482](https://github.com/EMMC-ASBL/tripper/pull/482) ([jesper-friis](https://github.com/jesper-friis))
+- Update keywords for manufactured product [\#481](https://github.com/EMMC-ASBL/tripper/pull/481) ([jesper-friis](https://github.com/jesper-friis))
+- 460 improve description of classes [\#479](https://github.com/EMMC-ASBL/tripper/pull/479) ([jesper-friis](https://github.com/jesper-friis))
+- Restore license [\#478](https://github.com/EMMC-ASBL/tripper/pull/478) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#477](https://github.com/EMMC-ASBL/tripper/pull/477) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Allow to filter generated markdown documentation on namespaces [\#476](https://github.com/EMMC-ASBL/tripper/pull/476) ([jesper-friis](https://github.com/jesper-friis))
+- Speedup [\#474](https://github.com/EMMC-ASBL/tripper/pull/474) ([jesper-friis](https://github.com/jesper-friis))
+- Make it possible to duplicate nested table headers [\#467](https://github.com/EMMC-ASBL/tripper/pull/467) ([jesper-friis](https://github.com/jesper-friis))
+
 ## [v0.5.0](https://github.com/EMMC-ASBL/tripper/tree/v0.5.0) (2025-11-22)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.4.3...v0.5.0)

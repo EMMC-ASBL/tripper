@@ -29,18 +29,16 @@ WHERE
     endpoint_url = "https://query.wikidata.org/sparql"
     ts = Triplestore(backend="sparqlwrapper", base_iri=endpoint_url)
 
-    # Skip test on failures due to too many requests or 403 response
+    # Skip test on failures due to endpoint throttling or access restrictions.
     try:
         res = ts.query(sparql_query)
     except requests.HTTPError as exc:
-        if "Too Many Requests" in str(exc):
+        if exc.response is not None and exc.response.status_code == 429:
             pytest.skip(str(exc))
         else:
             raise
     except urllib.error.HTTPError as exc:
-        if "HTTP Error 403: Forbidden" in str(exc):
-            pytest.skip(str(exc))
-        elif "Too Many Requests" in str(exc):
+        if exc.code in (403, 429):
             pytest.skip(str(exc))
         else:
             raise
