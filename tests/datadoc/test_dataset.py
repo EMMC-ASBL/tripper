@@ -245,6 +245,22 @@ def test_told():
     # d8 = told(descrH)
     # assert d8["distribution"] == {"downloadURL": "ftp://server.org/data.zip"}
 
+    # Numerical cells
+    descrJ = {
+        "@context": {
+            "@version": 1.1,
+            "ex": "http://example.com/",
+            "x": {"@id": "ex:x", "@type": "xsd:double"},
+            "n": {"@id": "ex:n", "@type": "xsd:int"},
+        },
+        "@id": "ex:somedata",
+        "x": 1.2,
+        "n": 3,
+    }
+    d10 = told(descrJ)
+    assert d10["x"] == 1.2
+    assert d10["n"] == 3
+
 
 def test_get_jsonld_context():
     """Test get_context()."""
