@@ -3526,8 +3526,6 @@ from ontologies.</p>
         <span class="n">cache</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># FIXME: Remove doctest SKIP comments when support for</span>
-        <span class="c1"># Python 3.8 is dropped</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise a Units class from triplestore `ts`</span>
 
 <span class="sd">        Arguments:</span>
@@ -3557,14 +3555,14 @@ from ontologies.</p>
 <span class="sd">            &gt;&gt;&gt; u</span>
 <span class="sd">            &lt;Unit(&#39;Metre&#39;)&gt;</span>
 
-<span class="sd">            &gt;&gt;&gt; u.emmoIRI  # doctest: +SKIP</span>
+<span class="sd">            &gt;&gt;&gt; u.emmoIRI</span>
 <span class="sd">            &#39;https://w3id.org/emmo#Metre&#39;</span>
 
 <span class="sd">            &gt;&gt;&gt; q = ureg.Quantity(&quot;3 h&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; q</span>
 <span class="sd">            &lt;Quantity(3, &#39;Hour&#39;)&gt;</span>
 
-<span class="sd">            &gt;&gt;&gt; q.u.qudtIRI  # doctest: +SKIP</span>
+<span class="sd">            &gt;&gt;&gt; q.u.qudtIRI</span>
 <span class="sd">            &#39;http://qudt.org/vocab/unit/HR&#39;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4438,8 +4436,6 @@ supported.</p></td>
     <span class="n">cache</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># FIXME: Remove doctest SKIP comments when support for</span>
-    <span class="c1"># Python 3.8 is dropped</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise a Units class from triplestore `ts`</span>
 
 <span class="sd">    Arguments:</span>
@@ -4469,14 +4465,14 @@ supported.</p></td>
 <span class="sd">        &gt;&gt;&gt; u</span>
 <span class="sd">        &lt;Unit(&#39;Metre&#39;)&gt;</span>
 
-<span class="sd">        &gt;&gt;&gt; u.emmoIRI  # doctest: +SKIP</span>
+<span class="sd">        &gt;&gt;&gt; u.emmoIRI</span>
 <span class="sd">        &#39;https://w3id.org/emmo#Metre&#39;</span>
 
 <span class="sd">        &gt;&gt;&gt; q = ureg.Quantity(&quot;3 h&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; q</span>
 <span class="sd">        &lt;Quantity(3, &#39;Hour&#39;)&gt;</span>
 
-<span class="sd">        &gt;&gt;&gt; q.u.qudtIRI  # doctest: +SKIP</span>
+<span class="sd">        &gt;&gt;&gt; q.u.qudtIRI</span>
 <span class="sd">        &#39;http://qudt.org/vocab/unit/HR&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
