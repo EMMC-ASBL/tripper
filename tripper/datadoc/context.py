@@ -411,11 +411,6 @@ class Context:
             self._create_caches()
         if name in self._shortnamed:
             return self._shortnamed[name]
-        if ":" in name:
-            prefix, shortname = name.split(":", 1)
-            if strict and prefix not in self.get_prefixes():
-                raise NamespaceError(f"unknown prefix in: {name}")
-            return shortname
         if strict:
             raise NamespaceError(f"no short name for: {name}")
         return name
