@@ -137,7 +137,8 @@ class TableDoc:
         for row in self.data:
             d = AttrDict()
             for i, col in enumerate(columns):
-                cell = row[i].strip() if row[i] and self.strip else row[i]
+                strip = self.strip and isinstance(row[i], str)
+                cell = row[i].strip() if strip else row[i]
                 col.add(d, cell)
             results.append(stripnested(d))
         ld = told(
