@@ -42,7 +42,8 @@ mappings = [
 datadoc = [
     "tripper[mappings]",
     "keyring>=22.0.0,<25.6.1",
-    "PyLD>=2.0.0,<3.0.1",
+    "PyLD>=2.0.0,<3.0.0; python_version<'3.10'",
+    "PyLD>=2.0.0,<3.0.1; python_version>='3.10'",
     "PyYaml>=3.0.0,<6.0.4",
     "requests>=2.0.0,<3.4.1",
     "sparqlwrapper>=2.0.0,<2.0.1",
