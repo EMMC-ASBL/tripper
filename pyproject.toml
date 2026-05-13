@@ -46,6 +46,7 @@ datadoc = [
     "PyYaml>=3.0.0,<6.0.4",
     "requests>=2.0.0,<3.4.1",
     "sparqlwrapper>=2.0.0,<2.0.1",
+    "openpyxl ~= 3.0"
 ]
 backends = [
     "dlite-python>=0.5.27",
