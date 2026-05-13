@@ -78,10 +78,8 @@ if TYPE_CHECKING:  # pragma: no cover
     #         "some", "only", "exactly", "min", "max", "value",
     #     ]
     #
-    # but mypy doesn't like that. Also, typing.Literal was added in
-    # Python 3.8 and updated in 3.9.1.  For earlier versions, there
-    # exists typing_extensions, which adds to the version-dependencies
-    # as well as adding an extra requirement.
+    # but mypy doesn't like that. We therefore keep this as a simple
+    # string alias for compatibility with static typing in this module.
     # For now we do it simple.
     RestrictionType = str
 

@@ -14,7 +14,6 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -26,17 +25,15 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 keywords = ["triplestore", "ontology", "RDF"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version"]
 
 dependencies = [
-    "typing-extensions>=4.7.0,<4.13.1; python_version < '3.9'",
 ]
 
 [project.optional-dependencies]
 units = [
-    "pint>=0.21.1,<0.26; python_version<'3.9'",
-    "pint>=0.24.1,<0.26; python_version>='3.9'",
+    "pint>=0.24.1,<0.26",
     "rdflib>=6.3.0,<=7.6.0",
 ]
 mappings = [
@@ -45,22 +42,21 @@ mappings = [
 datadoc = [
     "tripper[mappings]",
     "keyring>=22.0.0,<25.6.1",
-    "PyLD>=2.0.0,<2.0.5",
-    "PyYaml>=3.0.0,<6.0.3",  # todo: check lower version
-    "requests>=2.0.0,<3.4.1",  # todo: check lower version
+    "PyLD>=2.0.0,<3.0.1",
+    "PyYaml>=3.0.0,<6.0.4",
+    "requests>=2.0.0,<3.4.1",
     "sparqlwrapper>=2.0.0,<2.0.1",
 ]
 backends = [
     "dlite-python>=0.5.27",
-    "emmontopy>=0.5.0,<=0.8.1",
-    "graphviz>=0.20.1,<0.20.2",
+    "emmontopy>=0.5.0,<=0.11.3",
+    "graphviz>=0.20.1,<0.20.4",
     "numpy<2.1.0; python_version=='3.13'",  # todo: relax versions
     "rdflib>=6.3.0,<7.0.0",
 ]
 testing-core = [
     "pytest==8.3.4",
-    "pytest-cov==5.0.0; python_version<'3.9'",
-    "pytest-cov==6.0.0; python_version>='3.9'",
+    "pytest-cov==6.0.0",
 ]
 testing = [
     "tripper[datadoc,backends,testing-core]",

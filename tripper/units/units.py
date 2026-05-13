@@ -1117,8 +1117,6 @@ class UnitRegistry(pint.UnitRegistry):
         cache: "Optional[bool]" = True,
         **kwargs: "Any",
     ) -> None:
-        # FIXME: Remove doctest SKIP comments when support for
-        # Python 3.8 is dropped
         """Initialise a Units class from triplestore `ts`
 
         Arguments:
@@ -1148,14 +1146,14 @@ class UnitRegistry(pint.UnitRegistry):
             >>> u
             <Unit('Metre')>
 
-            >>> u.emmoIRI  # doctest: +SKIP
+            >>> u.emmoIRI
             'https://w3id.org/emmo#Metre'
 
             >>> q = ureg.Quantity("3 h")
             >>> q
             <Quantity(3, 'Hour')>
 
-            >>> q.u.qudtIRI  # doctest: +SKIP
+            >>> q.u.qudtIRI
             'http://qudt.org/vocab/unit/HR'
 
         """
