@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.5.3](https://github.com/EMMC-ASBL/tripper/tree/v0.5.3) (2026-05-13)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.2...v0.5.3)
+
+**Merged pull requests:**
+
+- Removed support for python 3.8 [\#547](https://github.com/EMMC-ASBL/tripper/pull/547) ([francescalb](https://github.com/francescalb))
+
 ## [v0.5.2](https://github.com/EMMC-ASBL/tripper/tree/v0.5.2) (2026-05-11)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.1...v0.5.2)
