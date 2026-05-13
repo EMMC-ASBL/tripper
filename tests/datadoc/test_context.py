@@ -208,7 +208,10 @@ def test_expanddoc_compactdoc():
 
     context = get_context(context=doc)
     exp = context.expanddoc(doc)
-    assert exp == [
+
+    # PyLD 3.x resolves node @id values against @base during expansion,
+    # while older versions may keep relative @id values here.
+    legacy_exp = [
         {
             "@id": "fred",
             "http://example2.com/knows": [
@@ -222,6 +225,21 @@ def test_expanddoc_compactdoc():
             ],
         }
     ]
+    modern_exp = [
+        {
+            "@id": "http://example1.com/fred",
+            "http://example2.com/knows": [
+                {
+                    "@id": "http://example1.com/barney",
+                    "http://example2.com/mnemonic": [
+                        {"@value": "the sidekick"}
+                    ],
+                },
+                {"@id": "http://example2.com/barney"},
+            ],
+        }
+    ]
+    assert exp in (legacy_exp, modern_exp)
     compact = context.compactdoc(exp)
     assert compact == doc
 
