@@ -305,7 +305,7 @@ def _told(
         values = list(uniq.values())
         d["@type"] = values[0] if len(values) == 1 else values
 
-    if isinstance(descr, str):
+    if isinstance(descr, (str, int, float, bool)):
         return descr
 
     if isinstance(descr, list):
@@ -314,8 +314,8 @@ def _told(
 
     if not isinstance(descr, dict):
         raise InvalidDatadocError(
-            "Malformed data documentation. Expected dict, list or string. "
-            f"Got: {descr:!}"
+            "Malformed data documentation. Expected dict, list, string, "
+            f"int, float or bool. Got: {descr!r}"
         )
 
     # From hereon `descr` must be a dict.
