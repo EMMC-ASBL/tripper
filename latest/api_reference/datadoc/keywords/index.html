@@ -3190,6 +3190,13 @@ Keywords        </code>
                 <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iriname</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
             <span class="n">input_mappings</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
 
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_input_value</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Return the first value in `entity` matching mapped `key`.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">mapped_key</span> <span class="ow">in</span> <span class="n">input_mappings</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">mapped_key</span> <span class="ow">in</span> <span class="n">entity</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">entity</span><span class="p">[</span><span class="n">mapped_key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="c1"># Add classes</span>
         <span class="n">clslabels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3202,21 +3209,23 @@ Keywords        </code>
             <span class="k">if</span> <span class="s2">&quot;subClassOf&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">d</span><span class="p">[</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_prefixed</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">d</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;keywords&quot;</span><span class="p">,</span> <span class="n">AttrDict</span><span class="p">())</span>
-            <span class="c1"># label = d.pop(&quot;label&quot;) if &quot;label&quot; in d else iriname(k)</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">input_mappings</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]:</span>
-                    <span class="n">label</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                    <span class="k">break</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">get_input_value</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">iriname</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">set</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
                 <span class="n">resources</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
-            <span class="n">clslabels</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">iri</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+            <span class="n">clslabels</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">iri</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">label</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="k">else</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">iriname</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+            <span class="p">)</span>
 
         <span class="c1"># Add properties</span>
         <span class="k">for</span> <span class="n">propname</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">iriname</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;label&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">else</span> <span class="n">name</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">get_input_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">name</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">(</span><span class="n">iri</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">])</span>
             <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">to_prefixed</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
