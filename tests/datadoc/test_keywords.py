@@ -443,6 +443,41 @@ def test_fromdicts():
     assert kw.keywords.curator.range == "foaf:Agent"
 
 
+def test_fromdicts_pref_label_fallback_order():
+    """Prefer skos:prefLabel and fall back to rdfs:label."""
+    from tripper.datadoc import get_context
+
+    kw = Keywords(theme=None)
+    prefixes = get_context().get_prefixes()
+    dicts = [
+        {
+            "@id": "http://example.com/hasPrimaryLabel",
+            "@type": "owl:DatatypeProperty",
+            "skos:prefLabel": "primaryLabel",
+            "rdfs:label": "fallbackLabel",
+            "domain": "dcat:Resource",
+            "range": "xsd:string",
+        },
+        {
+            "@id": "http://example.com/hasFallbackLabel",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "fallbackOnlyLabel",
+            "domain": "dcat:Resource",
+            "range": "xsd:string",
+        },
+    ]
+
+    kw.fromdicts(dicts, prefixes=prefixes)
+
+    assert "primaryLabel" in kw.keywords
+    assert kw.keywords.primaryLabel.iri == "http://example.com/hasPrimaryLabel"
+    assert "fallbackOnlyLabel" in kw.keywords
+    assert (
+        kw.keywords.fallbackOnlyLabel.iri
+        == "http://example.com/hasFallbackLabel"
+    )
+
+
 def test_save_rdf():
     """Test missing_keywords() method.  VERY SLOW!"""
     from dataset_paths import outdir  # pylint: disable=import-error

@@ -1062,6 +1062,13 @@ class Keywords:
                 s.append(iriname(m))
             input_mappings[key] = s
 
+        def get_input_value(entity, key):
+            """Return the first value in `entity` matching mapped `key`."""
+            for mapped_key in input_mappings[key]:
+                if mapped_key in entity:
+                    return entity[mapped_key]
+            return None
+
         # Add classes
         clslabels = {}
         for k, v in classes.items():
@@ -1074,21 +1081,23 @@ class Keywords:
             if "subClassOf" in v and isinstance(v["subClassOf"], str):
                 d["subClassOf"] = to_prefixed(v["subClassOf"], p, strict=True)
             d.setdefault("keywords", AttrDict())
-            # label = d.pop("label") if "label" in d else iriname(k)
-            for key in d:
-                if key in input_mappings["label"]:
-                    label = d.pop(key)
-                    break
-            else:
+            label = get_input_value(v, "label")
+            if label is None:
                 label = iriname(k)
             for lbl in [label] if isinstance(label, str) else set(label):
                 resources[lbl] = d
-            clslabels[d.iri] = label
+            clslabels[d.iri] = (
+                label
+                if isinstance(label, str)
+                else next(iter(label), iriname(k))
+            )
 
         # Add properties
         for propname, value in properties.items():
             name = iriname(propname)
-            label = value["label"] if "label" in value else name
+            label = get_input_value(value, "label")
+            if label is None:
+                label = name
             d = AttrDict(iri=value["@id"])
             if "@type" in value:
                 d.type = to_prefixed(value["@type"], p)
