@@ -2,6 +2,36 @@ Customisations
 ==============
 
 
+Themes in `get_context()`
+-------------------------
+The [get_context()] function can initialise the context from one or more
+keyword themes.
+
+- Use `theme="mytheme"` (or a list of themes) to include keywords from the
+  selected theme(s).
+- Use `theme=None` to disable automatic theme loading (useful when you only
+  want a custom context).
+
+```python
+from tripper.datadoc import get_context
+
+# Default behaviour: loads the default theme ("ddoc:datadoc")
+ctx_default = get_context()
+
+# Explicitly load one theme
+ctx_theme = get_context(theme="ddoc:datadoc")
+
+# Disable theme loading and only use the provided context
+ctx_custom = get_context("https://example.org/context/", theme=None)
+```
+
+To list installed themes in your environment, run:
+
+```console
+keywords --list-themes
+```
+
+
 User-defined prefixes
 ---------------------
 A namespace prefix is a mapping from a *prefix* to a *namespace URL*.
@@ -352,6 +382,7 @@ store(ts, dicts, context=context)
 [Search for and fetching resources]: fetching-resources-from-a-triplestore.md
 [predefined prefixes]: prefixes.md
 [predefined keywords]: keywords.md
+[get_context()]: ../api_reference/datadoc/context.md#tripper.datadoc.context.get_context
 [default context]: https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.2/context.json
 [update_context()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.update_context
 [store()]: ../api_reference/datadoc/dataset.md#tripper.datadoc.dataset.store
