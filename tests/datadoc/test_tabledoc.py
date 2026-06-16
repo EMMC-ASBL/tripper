@@ -123,10 +123,28 @@ def test_csv():
 
     from tripper import Triplestore
     from tripper.datadoc import TableDoc
+    from tripper.datadoc.context import get_context
+
+    context = get_context(theme="ddoc:datadoc")
+    context.add_context(
+        {
+            "ssbd": "http://w3id.org/ssbd/",
+            "prov": "http://www.w3.org/ns/prov#",
+            "wasDerivedFrom": {
+                "@id": "prov:wasDerivedFrom",
+                "@type": "@id",
+            },
+            "ssbd:wasDerivedFrom": {
+                "@id": "ssbd:wasDerivedFrom",
+                "@type": "@id",
+            },
+        }
+    )
 
     # Read csv file
     td = TableDoc.parse_csv(
         indir / "semdata.csv",
+        context=context,
         prefixes={
             "sem": "https://w3id.com/emmo/domain/sem/0.1#",
             "semdata": "https://he-matchmaker.eu/data/sem/",
@@ -135,6 +153,7 @@ def test_csv():
             "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
             "par": "http://sintef.no/dlite/parser#",
             "gen": "http://sintef.no/dlite/generator#",
+            "prov": "http://www.w3.org/ns/prov#",
         },
     )
 
@@ -144,6 +163,7 @@ def test_csv():
     assert img["@id"] == (
         "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
     )
+    assert img["prov:wasDerivedFrom"] == "semdata:SEM_cement_batch2/77600-23-001"
     assert img["distribution"]["downloadURL"] == (
         "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/"
         "tests/input/77600-23-001_5kV_400x_m001.tif"
@@ -162,6 +182,7 @@ def test_csv():
         td2 = TableDoc.parse_csv(
             f,
             delimiter=",",
+            context=context,
             prefixes={
                 "sem": "https://w3id.com/emmo/domain/sem/0.1#",
                 "semdata": "https://he-matchmaker.eu/data/sem/",
