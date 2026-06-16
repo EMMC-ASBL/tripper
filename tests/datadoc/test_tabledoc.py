@@ -163,7 +163,9 @@ def test_csv():
     assert img["@id"] == (
         "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
     )
-    assert img["prov:wasDerivedFrom"] == "semdata:SEM_cement_batch2/77600-23-001"
+    assert (
+        img["prov:wasDerivedFrom"] == "semdata:SEM_cement_batch2/77600-23-001"
+    )
     assert img["distribution"]["downloadURL"] == (
         "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/"
         "tests/input/77600-23-001_5kV_400x_m001.tif"
