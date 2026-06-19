@@ -141,6 +141,7 @@ class TableDoc:
                 cell = row[i].strip() if strip else row[i]
                 col.add(d, cell)
             results.append(stripnested(d))
+
         ld = told(
             results,
             type=self.type,
@@ -602,7 +603,13 @@ class Column:
         if strip:
             header = header.strip()
 
-        fields = re.findall(r"([^.\[]+)(\[([^\]]*)\])?", header)
+        # Check IRIs starting with uri scheme, case insensitive
+        IRI_CHECK = re.compile(r"^[a-z][a-z0-9+.-]*://", re.I)
+        if IRI_CHECK.match(header):
+            fields = [(header, "", "")]
+        else:
+            fields = re.findall(r"([^.\[]+)(\[([^\]]*)\])?", header)
+
         label = fields[0][2].split("?", 1)[0]
         spec = fields[-1][2].split("?", 1)
 
@@ -615,8 +622,8 @@ class Column:
         datatype = None
         leafname = fields[-1][0]
         if context and not leafname.startswith("@"):
-            df = context.getdef(leafname)
-            if "@type" in df and df["@type"] != "@id":
+            df = context.getdef(leafname, strict=False)
+            if df and "@type" in df and df["@type"] != "@id":
                 datatype = df["@type"]
 
         self.header = header
