@@ -459,6 +459,7 @@ class Context:
 
         for mapping in self.ctx["mappings"].values():
             if mapping.get("@id") == shortname:
+                self.ctx.add_context({shortname: mapping})
                 return mapping
         return {}
 

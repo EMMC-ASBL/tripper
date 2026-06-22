@@ -128,13 +128,16 @@ def test_csv():
     context = get_context(theme="ddoc:datadoc")
     context.add_context(
         {
-            "ssbd": "http://w3id.org/ssbd/",
+            "ssbd": "https://w3id.org/ssbd/",
             "prov": "http://www.w3.org/ns/prov#",
             "wasDerivedFrom": {
+                # should be "prov:wasDerivedFrom" in the table header
                 "@id": "prov:wasDerivedFrom",
                 "@type": "@id",
             },
             "ssbd:wasDerivedFrom": {
+                # should be "https://w3id.org/ssbd/wasDerivedFrom"
+                # in the table header
                 "@id": "ssbd:wasDerivedFrom",
                 "@type": "@id",
             },
@@ -158,7 +161,8 @@ def test_csv():
     )
 
     # pylint: disable=unused-variable,unbalanced-tuple-unpacking
-    img, series, batch, sample = td.asdicts()
+    tddict = td.asdicts()
+    img = tddict[0]
 
     assert img["@id"] == (
         "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
@@ -200,6 +204,9 @@ def test_csv():
 
     # Print serialised KB
     ts = Triplestore(backend="rdflib")
+    # from tripper.datadoc import store
+    # jsonld = store(ts, td.asdicts())
+    # print(jsonld)
     td.save(ts)
     ts.serialize(outdir / "semdata.ttl")
     print(ts.serialize())
@@ -207,6 +214,17 @@ def test_csv():
     # Test that prefixes are included in the serialisation
     content = (outdir / "semdata.ttl").read_text()
     assert "sem:SEMImageSeries" in content
+
+    assert (
+        "ssbd:wasDerivedFrom "
+        "<https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001>"
+        in content
+    )
+    assert (
+        "prov:wasDerivedFrom "
+        "<https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001>"
+        in content
+    )
 
 
 def test_csv_duplicated_columns():
