@@ -455,12 +455,6 @@ class Context:
         shortname = self.shortname(name, strict=strict)
         if shortname in self.ctx["mappings"]:
             return self.ctx["mappings"][shortname]
-        # if shortname is the @id of one of the mappings, return that mapping
-
-        for mapping in self.ctx["mappings"].values():
-            if mapping.get("@id") == shortname:
-                self.ctx.add_context({shortname: mapping})
-                return mapping
         return {}
 
     def isref(self, name: str) -> bool:
