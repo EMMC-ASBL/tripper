@@ -409,3 +409,31 @@ def test_sep():
     assert s1["@id"] == "kb:s1"
     assert s1["@type"] == ["kb:T1", "kb:T2"]
     assert s1["dcterms:title"] == "A title, with a comma"
+
+
+def test_unknown_header_full_iri():
+    """Test that unknown full-IRI headers raise InvalidKeywordError."""
+
+    from tripper.datadoc import TableDoc
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    # Full IRI header not defined in context should raise
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        TableDoc(
+            headers=["@id", "http://example.com/unknown"],
+            data=[("id1", "value1")],
+        )
+
+
+def test_unknown_header_prefixed():
+    """Test that unknown prefixed headers raise InvalidKeywordError."""
+
+    from tripper.datadoc import TableDoc
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    # Prefixed header not defined in context should raise
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        TableDoc(
+            headers=["@id", "unknown:property"],
+            data=[("id1", "value1")],
+        )
