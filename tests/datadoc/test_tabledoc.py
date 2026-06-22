@@ -418,11 +418,13 @@ def test_unknown_header_full_iri():
     from tripper.datadoc.errors import InvalidKeywordError
 
     # Full IRI header not defined in context should raise
+    td = TableDoc(
+        headers=["@id", "http://example.com/unknown"],
+        data=[("id1", "value1")],
+    )
+
     with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
-        TableDoc(
-            headers=["@id", "http://example.com/unknown"],
-            data=[("id1", "value1")],
-        )
+        td.asdicts()
 
 
 def test_unknown_header_prefixed():
@@ -432,8 +434,10 @@ def test_unknown_header_prefixed():
     from tripper.datadoc.errors import InvalidKeywordError
 
     # Prefixed header not defined in context should raise
+    td = TableDoc(
+        headers=["@id", "unknown:property"],
+        data=[("id1", "value1")],
+    )
+
     with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
-        TableDoc(
-            headers=["@id", "unknown:property"],
-            data=[("id1", "value1")],
-        )
+        td.asdicts()
