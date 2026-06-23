@@ -588,7 +588,7 @@ def csvsniff(sample):
 class Column:
     """Help class representing a column."""
 
-    # pylint: disable=too-few-public-methods, too-many-instance-attributes
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, header, context=None, strip=True):
         # pylint: disable=line-too-long
@@ -630,7 +630,6 @@ class Column:
         is_full_iri = bool(IRI_CHECK.match(header))
         is_prefixed = (":" in leafname) and not is_full_iri
 
-        add_key = header
         if context and not leafname.startswith("@"):
             df = context.getdef(leafname, strict=False)
 
@@ -656,9 +655,6 @@ class Column:
                     elif "@language" in df:
                         entry["@language"] = df["@language"]
                     context.add_context({leafname: entry})
-
-        # store key to use when adding nested values
-        self._add_key = add_key
 
         self.header = header
         self.context = context
@@ -688,4 +684,4 @@ class Column:
             #        "value": val,
             #        "unit": self.unit,
             #    }
-            addnested(d, self._add_key, val)
+            addnested(d, self.header, val)
