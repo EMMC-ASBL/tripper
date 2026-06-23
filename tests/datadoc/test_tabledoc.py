@@ -204,9 +204,6 @@ def test_csv():
 
     # Print serialised KB
     ts = Triplestore(backend="rdflib")
-    # from tripper.datadoc import store
-    # jsonld = store(ts, td.asdicts())
-    # print(jsonld)
     td.save(ts)
     ts.serialize(outdir / "semdata.ttl")
     print(ts.serialize())
