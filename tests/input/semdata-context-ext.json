@@ -10,9 +10,18 @@
       "par": "http://sintef.no/dlite/parser#",
       "gen": "http://sintef.no/dlite/generator#",
       "micro": "https://w3id.org/emmo/domain/microstructure/0.3#",
-
+      "ssbd": "https://w3id.org/ssbd/",
+      "prov": "http://www.w3.org/ns/prov#",
       "fromSample": {
         "@id": "micro:fromSample",
+        "@type": "@id"
+      },
+      "wasDerivedFrom": {
+        "@id": "prov:wasDerivedFrom",
+        "@type": "@id"
+      },
+      "ssbd:wasDerivedFrom": {
+        "@id": "ssbd:wasDerivedFrom",
         "@type": "@id"
       }
     }
