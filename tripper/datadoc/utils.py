@@ -114,7 +114,9 @@ def addnested(
     if cls is None:
         cls = type(d) if isinstance(d, Mapping) else dict
 
-    if "." in key:
+    IRI_CHECK = re.compile(r"^[a-z][a-z0-9+.-]*://", re.I)
+
+    if not IRI_CHECK.match(key) and "." in key:
         first, rest = key.split(".", 1)
         if isinstance(d, list):
             for ele in d:

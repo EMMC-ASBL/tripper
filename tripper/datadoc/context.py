@@ -446,10 +446,16 @@ class Context:
         except NamespaceError:
             return default
 
-    def getdef(self, name: str) -> dict:
-        """Return JSON-LD definition of `name`."""
-        shortname = self.shortname(name)
-        return self.ctx["mappings"][shortname]
+    def getdef(self, name: str, strict: bool = True) -> dict:
+        """Return JSON-LD definition of `name`.
+
+        If strict is true, a `NamespaceError` will be raised if `name` is not
+        defined in the context. Otherwise, an empty dict will be returned.
+        """
+        shortname = self.shortname(name, strict=strict)
+        if shortname in self.ctx["mappings"]:
+            return self.ctx["mappings"][shortname]
+        return {}
 
     def isref(self, name: str) -> bool:
         """Return wheter `name` is an object property that refers to a node."""

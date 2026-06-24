@@ -123,10 +123,31 @@ def test_csv():
 
     from tripper import Triplestore
     from tripper.datadoc import TableDoc
+    from tripper.datadoc.context import get_context
+
+    context = get_context(theme="ddoc:datadoc")
+    context.add_context(
+        {
+            "ssbd": "https://w3id.org/ssbd/",
+            "prov": "http://www.w3.org/ns/prov#",
+            "wasDerivedFrom": {
+                # should be "prov:wasDerivedFrom" in the table header
+                "@id": "prov:wasDerivedFrom",
+                "@type": "@id",
+            },
+            "ssbd:wasDerivedFrom": {
+                # should be "https://w3id.org/ssbd/wasDerivedFrom"
+                # in the table header
+                "@id": "ssbd:wasDerivedFrom",
+                "@type": "@id",
+            },
+        }
+    )
 
     # Read csv file
     td = TableDoc.parse_csv(
         indir / "semdata.csv",
+        context=context,
         prefixes={
             "sem": "https://w3id.com/emmo/domain/sem/0.1#",
             "semdata": "https://he-matchmaker.eu/data/sem/",
@@ -135,14 +156,19 @@ def test_csv():
             "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
             "par": "http://sintef.no/dlite/parser#",
             "gen": "http://sintef.no/dlite/generator#",
+            "prov": "http://www.w3.org/ns/prov#",
         },
     )
 
     # pylint: disable=unused-variable,unbalanced-tuple-unpacking
-    img, series, batch, sample = td.asdicts()
+    tddict = td.asdicts()
+    img = tddict[0]
 
     assert img["@id"] == (
         "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
+    )
+    assert (
+        img["prov:wasDerivedFrom"] == "semdata:SEM_cement_batch2/77600-23-001"
     )
     assert img["distribution"]["downloadURL"] == (
         "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/"
@@ -162,6 +188,7 @@ def test_csv():
         td2 = TableDoc.parse_csv(
             f,
             delimiter=",",
+            context=context,
             prefixes={
                 "sem": "https://w3id.com/emmo/domain/sem/0.1#",
                 "semdata": "https://he-matchmaker.eu/data/sem/",
@@ -184,6 +211,17 @@ def test_csv():
     # Test that prefixes are included in the serialisation
     content = (outdir / "semdata.ttl").read_text()
     assert "sem:SEMImageSeries" in content
+
+    assert (
+        "ssbd:wasDerivedFrom "
+        "<https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001>"
+        in content
+    )
+    assert (
+        "prov:wasDerivedFrom "
+        "<https://he-matchmaker.eu/data/sem/SEM_cement_batch2/77600-23-001>"
+        in content
+    )
 
 
 def test_csv_duplicated_columns():
@@ -368,3 +406,35 @@ def test_sep():
     assert s1["@id"] == "kb:s1"
     assert s1["@type"] == ["kb:T1", "kb:T2"]
     assert s1["dcterms:title"] == "A title, with a comma"
+
+
+def test_unknown_header_full_iri():
+    """Test that unknown full-IRI headers raise InvalidKeywordError."""
+
+    from tripper.datadoc import TableDoc
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    # Full IRI header not defined in context should raise
+    td = TableDoc(
+        headers=["@id", "http://example.com/unknown"],
+        data=[("id1", "value1")],
+    )
+
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        td.asdicts()
+
+
+def test_unknown_header_prefixed():
+    """Test that unknown prefixed headers raise InvalidKeywordError."""
+
+    from tripper.datadoc import TableDoc
+    from tripper.datadoc.errors import InvalidKeywordError
+
+    # Prefixed header not defined in context should raise
+    td = TableDoc(
+        headers=["@id", "unknown:property"],
+        data=[("id1", "value1")],
+    )
+
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        td.asdicts()
