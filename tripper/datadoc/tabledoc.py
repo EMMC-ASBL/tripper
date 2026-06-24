@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from tripper import Triplestore
 from tripper.datadoc.context import get_context
 from tripper.datadoc.dataset import store, told
+from tripper.datadoc.errors import InvalidKeywordError
 from tripper.datadoc.keywords import get_keywords
 from tripper.datadoc.utils import addnested, stripnested
 from tripper.literal import Literal
@@ -141,6 +142,7 @@ class TableDoc:
                 cell = row[i].strip() if strip else row[i]
                 col.add(d, cell)
             results.append(stripnested(d))
+
         ld = told(
             results,
             type=self.type,
@@ -602,7 +604,13 @@ class Column:
         if strip:
             header = header.strip()
 
-        fields = re.findall(r"([^.\[]+)(\[([^\]]*)\])?", header)
+        # Check IRIs starting with uri scheme, case insensitive
+        IRI_CHECK = re.compile(r"^[a-z][a-z0-9+.-]*://", re.I)
+        if IRI_CHECK.match(header):
+            fields = [(header, "", "")]
+        else:
+            fields = re.findall(r"([^.\[]+)(\[([^\]]*)\])?", header)
+
         label = fields[0][2].split("?", 1)[0]
         spec = fields[-1][2].split("?", 1)
 
@@ -614,10 +622,39 @@ class Column:
 
         datatype = None
         leafname = fields[-1][0]
+        # If the header is a full IRI, prefer using the existing shortname
+        # defined in the context when adding values to the dict. This makes
+        # sure coercion rules (e.g. @type: @id) apply without creating new
+        # context entries. Do NOT auto-register unknown short keywords.
+        IRI_CHECK = re.compile(r"^[a-z][a-z0-9+.-]*://", re.I)
+        is_full_iri = bool(IRI_CHECK.match(header))
+        is_prefixed = (":" in leafname) and not is_full_iri
+
         if context and not leafname.startswith("@"):
-            df = context.getdef(leafname)
-            if "@type" in df and df["@type"] != "@id":
+            df = context.getdef(leafname, strict=False)
+
+            # If a full IRI or a prefixed name is used as header but the
+            # context does not define it, treat this as an error instead
+            # of silently accepting it.
+            if (is_full_iri or is_prefixed) and not df:
+                raise InvalidKeywordError(
+                    f"Unknown keyword/IRI in header: '{leafname}'"
+                )
+            if df and "@type" in df and df["@type"] != "@id":
                 datatype = df["@type"]
+
+            # If header is a full IRI or a prefixed name, and the context
+            # defines it, ensure the exact header string is present in the
+            # JSON-LD context as a synonym (so coercion like @type:@id
+            # applies). Do NOT create entries for undefined terms.
+            if (is_full_iri or is_prefixed) and df:
+                if leafname not in context.get_context_dict():
+                    entry = {"@id": df["@id"]}
+                    if "@type" in df:
+                        entry["@type"] = df["@type"]
+                    elif "@language" in df:
+                        entry["@language"] = df["@language"]
+                    context.add_context({leafname: entry})
 
         self.header = header
         self.context = context
