@@ -252,8 +252,31 @@ The below example shows how to save all datasets listed in the CSV file [semdata
 ```python
 >>> from tripper.datadoc import TableDoc
 
+>>> from tripper.datadoc.context import get_context
+
+>>> context = get_context(theme="ddoc:datadoc")
+
+>>> context.add_context(
+...     {
+...         "ssbd": "https://w3id.org/ssbd/",
+...         "prov": "http://www.w3.org/ns/prov#",
+...         "wasDerivedFrom": {
+...             # should be "prov:wasDerivedFrom" in the table header
+...             "@id": "prov:wasDerivedFrom",
+...             "@type": "@id",
+...         },
+...         "ssbd:wasDerivedFrom": {
+...             # should be "https://w3id.org/ssbd/wasDerivedFrom"
+...             # in the table header
+...             "@id": "ssbd:wasDerivedFrom",
+...             "@type": "@id",
+...        },
+...     }
+... )
+
 >>> td = TableDoc.parse_csv(
 ...     "https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv",
+...     context=context,
 ...     prefixes={
 ...         "sem": "https://w3id.org/emmo/domain/sem/0.1#",
 ...         "semdata": "https://he-matchmaker.eu/data/sem/",
