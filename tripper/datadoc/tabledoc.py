@@ -105,7 +105,7 @@ class TableDoc:
         self.strip = strip
         self.baseiri = baseiri
 
-    def save(self, ts: Triplestore) -> dict:
+    def save(self, ts: Triplestore, unknown_key: str = "raise") -> dict:
         """Save tabular datadocumentation to triplestore.
 
         Returns a dict with the JSON-LD written to the triplestore.
@@ -124,6 +124,7 @@ class TableDoc:
             keywords=self.keywords,
             context=self.context,
             baseiri=self.baseiri,
+            unknown_key=unknown_key,
         )
 
     def asdicts(self) -> "List[dict]":

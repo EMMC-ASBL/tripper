@@ -55,6 +55,7 @@ from tripper.datadoc.errors import (
     IRIExistsError,
     IRIExistsWarning,
     NoSuchTypeError,
+    UnknownKeywordWarning,
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
@@ -390,7 +391,7 @@ def _told(
     return d
 
 
-def store(
+def store(  # pylint: disable=too-many-arguments
     ts: Triplestore,
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
@@ -401,6 +402,7 @@ def store(
     method: str = "raise",
     restrictions: "Optional[dict]" = None,
     baseiri: "Optional[str]" = None,
+    unknown_key: str = "raise",
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -428,6 +430,13 @@ def store(
               is unwanted, merge manually and use "overwrite".
             - "ignore": If the IRI of `source` already exists, do nothing but
               issueing an `IRIExistsWarning`.
+        unknown_key: How to handle unknown keywords and relations in `source`.
+                Possible values are:
+                - "raise": Raise a `ValidateError` if an unknown keyword is
+                    encountered (default).
+                - "warn": Drop unknown keywords and emit an
+                    `UnknownKeywordWarning`.
+                - "ignore": Drop unknown keywords silently.
         restrictions: A dict describing how properties of classes in
             `source` should be mapped to restrictions.  The default is
             to call `infer_restriction_types()`.
@@ -463,6 +472,13 @@ def store(
     )
     update_context(doc, context)
 
+    _handle_unknown_keywords(
+        doc,
+        keywords,
+        context,
+        unknown_key=unknown_key,
+    )
+
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
         iri = d["@id"]
@@ -487,11 +503,8 @@ def store(
 
     update_restrictions(doc, context=context, restrictions=restrictions)
 
-    # add(doc, "@context", context.get_context_dict())
-
-    # Validate
-    # TODO: reenable validation
-    # validate(doc, type=type, keywords=keywords)
+    # Validate the final JSON-LD before writing it to the triplestore.
+    validate(doc, type=type, keywords=keywords, context=context)
 
     context.to_triplestore(ts, doc, baseiri=baseiri)
 
@@ -509,6 +522,7 @@ def save_dict(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "merge",
+    unknown_key: str = "raise",
     # The unnecessary strictness of the "build documentation" CI enforces us
     # to add a `restrictions` argument to save_dict(), although this argument
     # came after that save_dict() was renamed.
@@ -529,6 +543,7 @@ def save_dict(
         keywords=keywords,
         prefixes=prefixes,
         method=method,
+        unknown_key=unknown_key,
         restrictions=restrictions,
     )
 
@@ -1173,6 +1188,7 @@ def save_datadoc(
     keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
     baseiri: "Optional[str]" = None,
+    unknown_key: str = "raise",
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -1206,7 +1222,73 @@ def save_datadoc(
             keywords=keywords, context=context, theme=d["theme"]
         )
 
-    return store(ts, d, keywords=keywords, context=context, baseiri=baseiri)
+    return store(
+        ts,
+        d,
+        keywords=keywords,
+        context=context,
+        baseiri=baseiri,
+        unknown_key=unknown_key,
+    )
+
+
+def _handle_unknown_keywords(
+    source: "Union[dict, list]",
+    keywords: "Keywords",
+    context: "Context",
+    unknown_key: str = "raise",
+) -> None:
+    """Handle unknown keys in a JSON-LD document in place."""
+
+    if unknown_key not in {"raise", "warn", "ignore"}:
+        raise ValueError(
+            f"Invalid unknown-key handling mode: '{unknown_key}'. "
+            "Should be one of: 'raise', 'warn' or 'ignore'"
+        )
+
+    def recurse(value):
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+            return
+
+        if not isinstance(value, dict):
+            return
+
+        for key in list(value.keys()):
+            if key == "@context":
+                continue
+            item = value[key]
+            if key in keywords:
+                if "datatype" in keywords[key]:
+                    continue
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+                continue
+            if key in context:
+                if context.is_object_property(key) and isinstance(
+                    item, (dict, list)
+                ):
+                    recurse(item)
+                continue
+            if key.startswith("@"):
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+                continue
+
+            msg = f"unknown keyword: '{key}'"
+            if unknown_key == "raise":
+                raise ValidateError(msg)
+            if unknown_key == "warn":
+                warnings.warn(
+                    msg,
+                    category=UnknownKeywordWarning,
+                    stacklevel=3,
+                )
+            del value[key]
+
+    recurse(source)
 
 
 def validate(
@@ -1241,6 +1323,8 @@ def validate(
 
     def check_keyword(keyword, type):
         """Check that the resource type `type` has keyword `keyword`."""
+        if isinstance(type, list):
+            return any(check_keyword(keyword, item) for item in type)
         typename = keywords.typename(type)
         name = keywords.shortname(keyword)
         if (
