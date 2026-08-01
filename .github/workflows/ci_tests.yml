@@ -83,10 +83,10 @@ jobs:
 
     steps:
     - name: Checkout tripper
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -105,7 +105,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
-      uses: codecov/codecov-action@v6
+      uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -122,10 +122,10 @@ jobs:
 
     steps:
     - name: Checkout tripper
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
 
