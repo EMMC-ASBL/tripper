@@ -1625,14 +1625,18 @@ def make_query(
         else:
             if key in expanded:
                 key = expanded[key]
+
+            is_iri_value = False
             if v in expanded:
                 value = f"<{expanded[v]}>"
+                is_iri_value = True
             elif isinstance(v, str):
-                value = (
-                    f"<{v}>"
-                    if re.match("^[a-z][a-z0-9.+-]*://", v)
-                    else f'"{v}"'
-                )
+                expanded_v = ts.expand_iri(v)
+                if re.match("^[a-z][a-z0-9.+-]*://", expanded_v):
+                    value = f"<{expanded_v}>"
+                    is_iri_value = True
+                else:
+                    value = f'"{v}"'
             else:
                 value = v
             n += 1
@@ -1643,7 +1647,10 @@ def make_query(
                     f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
                 )
             else:
-                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+                if is_iri_value:
+                    filters.append(f"FILTER(?{var} = {value}) .")
+                else:
+                    filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
     for k, v in criteria.items():
         add_crit(k, v)

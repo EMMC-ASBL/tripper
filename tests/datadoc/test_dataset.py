@@ -1008,6 +1008,17 @@ def test_datadoc():
     assert (
         search(ts, criteria={"http://purl.org/dc/terms/title": title}) == dset
     )
+    assert (
+        search(
+            ts,
+            criteria={
+                "https://w3id.org/emmo#isDescriptionOf": "https://he-matchmaker.eu/material/concrete1"  # pylint: disable=line-too-long
+            },
+        )
+    ) == [
+        "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
+        "77600-23-001/77600-23-001_5kV_400x_m001"
+    ]
 
 
 def test_custom_context():
