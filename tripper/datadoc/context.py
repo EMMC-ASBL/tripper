@@ -36,7 +36,7 @@ def get_context(
     copy: bool = False,
     timeout: float = 3,
 ) -> "Context":
-    """A convinient function that returns an Context instance.
+    """A convenience function that returns a Context instance.
 
     Arguments:
         context: Input context.  Several types are supported:
@@ -46,9 +46,12 @@ def get_context(
             - str: If a valid URI, the context is loaded from this URI,
               otherwise it is assumed to be a file path to load.
             - sequence: A sequence of the above.
-        theme: Load initial context for this theme.
-        default_theme: Initialise context for this theme if neither
-            `context` nor `theme` are provided.
+        theme: IRI (or list of IRIs) of theme(s) to load initial context
+            for.  Built-in themes:
+            - ``"ddoc:datadoc"`` (default) — basic data documentation.
+            - ``"ddoc:process"`` — basic documentation of processes.
+        default_theme: Theme used when neither `context`, `theme`, nor
+            `keywords` are provided.  Defaults to ``"ddoc:datadoc"``.
         keywords: Initialise from this keywords instance.
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
@@ -101,7 +104,12 @@ class Context:
                 - str: If a valid URI, the context is loaded from this URI,
                   otherwise it is assumed to be a file path to load.
                 - sequence: A sequence of the above.
-            theme: Load initial context for this theme.
+            theme: IRI (or list of IRIs) of theme(s) to load initial
+                context for.  Built-in themes:
+                - ``"ddoc:datadoc"`` (default) — basic data documentation.
+                - ``"ddoc:process"`` — basic documentation of processes.
+                Additional themes can be registered by third-party packages
+                via the ``tripper.keywords`` entry-point group.
             keywords: Initialise from this keywords instance.
             processingMode: Either "json-ld-1.0" or "json-ld-1.1".
             timeout: Timeout when accessing remote files.
