@@ -638,9 +638,25 @@ class Context:
         self._shortnamed[RDF.type] = "@type"
         self._shortnamed["rdf:type"] = "@type"
         self._shortnamed["@type"] = "@type"
+        # Build a reverse map: IRI -> all prefixed aliases (e.g. both
+        # "dcterms:license" and "term:license" when two prefixes share an IRI)
+        aliases: "dict[str, list[str]]" = {}
+        for pfx, ns in prefixes.items():
+            for expanded in mappings.values():
+                if expanded.startswith(ns):
+                    local = expanded[len(ns) :]
+                    aliases.setdefault(expanded, []).append(f"{pfx}:{local}")
+
         for key, expanded in mappings.items():
             prefixed = prefix_iri(expanded, prefixes)
             self._update_caches(key, prefixed, expanded)
+            # Also register every alias prefixed form so that e.g.
+            # "dcterms:license" is found even when "term" is the canonical
+            # prefix for http://purl.org/dc/terms/.
+            for alias in aliases.get(expanded, []):
+                if alias not in self._shortnamed:
+                    self._shortnamed[alias] = key
+                    self._expanded[alias] = expanded
 
     def _update_caches(self, shortname, prefixed, expanded):
         self._expanded[shortname] = expanded
