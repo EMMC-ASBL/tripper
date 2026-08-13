@@ -1103,6 +1103,10 @@ class Keywords:
                 d.type = to_prefixed(value["@type"], p)
             d.domain = value.get("domain", RDFS.Resource)
 
+            if isinstance(d.domain, dict):
+                # Ignore the case where the domain is a logical construct
+                continue
+
             for domain in asseq(d.domain):
                 dlabel = prefix_iri(domain, p, strict=True)
                 domainname = clslabels.get(dlabel, iriname(domain))
