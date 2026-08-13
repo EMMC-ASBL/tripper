@@ -2193,7 +2193,12 @@ Context        </code>
 <span class="sd">                - str: If a valid URI, the context is loaded from this URI,</span>
 <span class="sd">                  otherwise it is assumed to be a file path to load.</span>
 <span class="sd">                - sequence: A sequence of the above.</span>
-<span class="sd">            theme: Load initial context for this theme.</span>
+<span class="sd">            theme: IRI (or list of IRIs) of theme(s) to load initial</span>
+<span class="sd">                context for.  Built-in themes:</span>
+<span class="sd">                - ``&quot;ddoc:datadoc&quot;`` (default) — basic data documentation.</span>
+<span class="sd">                - ``&quot;ddoc:process&quot;`` — basic documentation of processes.</span>
+<span class="sd">                Additional themes can be registered by third-party packages</span>
+<span class="sd">                via the ``tripper.keywords`` entry-point group.</span>
 <span class="sd">            keywords: Initialise from this keywords instance.</span>
 <span class="sd">            processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
 <span class="sd">            timeout: Timeout when accessing remote files.</span>
@@ -2722,9 +2727,25 @@ Context        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@type&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="s2">&quot;rdf:type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@type&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@type&quot;</span>
+        <span class="c1"># Build a reverse map: IRI -&gt; all prefixed aliases (e.g. both</span>
+        <span class="c1"># &quot;dcterms:license&quot; and &quot;term:license&quot; when two prefixes share an IRI)</span>
+        <span class="n">aliases</span><span class="p">:</span> <span class="s2">&quot;dict[str, list[str]]&quot;</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">pfx</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">expanded</span> <span class="ow">in</span> <span class="n">mappings</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">expanded</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">ns</span><span class="p">):</span>
+                    <span class="n">local</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="p">:]</span>
+                    <span class="n">aliases</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">expanded</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pfx</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">local</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">expanded</span> <span class="ow">in</span> <span class="n">mappings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">prefixed</span> <span class="o">=</span> <span class="n">prefix_iri</span><span class="p">(</span><span class="n">expanded</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_caches</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">prefixed</span><span class="p">,</span> <span class="n">expanded</span><span class="p">)</span>
+            <span class="c1"># Also register every alias prefixed form so that e.g.</span>
+            <span class="c1"># &quot;dcterms:license&quot; is found even when &quot;term&quot; is the canonical</span>
+            <span class="c1"># prefix for http://purl.org/dc/terms/.</span>
+            <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">expanded</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">alias</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_shortnamed</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">expanded</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_caches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shortname</span><span class="p">,</span> <span class="n">prefixed</span><span class="p">,</span> <span class="n">expanded</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span><span class="p">[</span><span class="n">shortname</span><span class="p">]</span> <span class="o">=</span> <span class="n">expanded</span>
@@ -2853,7 +2874,12 @@ Context        </code>
       <tr>
         <td><code>theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Load initial context for this theme.</p></td>
+        <td><p>IRI (or list of IRIs) of theme(s) to load initial
+context for.  Built-in themes:
+- <code>"ddoc:datadoc"</code> (default) — basic data documentation.
+- <code>"ddoc:process"</code> — basic documentation of processes.
+Additional themes can be registered by third-party packages
+via the <code>tripper.keywords</code> entry-point group.</p></td>
         <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
@@ -2896,7 +2922,12 @@ Context        </code>
 <span class="sd">            - str: If a valid URI, the context is loaded from this URI,</span>
 <span class="sd">              otherwise it is assumed to be a file path to load.</span>
 <span class="sd">            - sequence: A sequence of the above.</span>
-<span class="sd">        theme: Load initial context for this theme.</span>
+<span class="sd">        theme: IRI (or list of IRIs) of theme(s) to load initial</span>
+<span class="sd">            context for.  Built-in themes:</span>
+<span class="sd">            - ``&quot;ddoc:datadoc&quot;`` (default) — basic data documentation.</span>
+<span class="sd">            - ``&quot;ddoc:process&quot;`` — basic documentation of processes.</span>
+<span class="sd">            Additional themes can be registered by third-party packages</span>
+<span class="sd">            via the ``tripper.keywords`` entry-point group.</span>
 <span class="sd">        keywords: Initialise from this keywords instance.</span>
 <span class="sd">        processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
 <span class="sd">        timeout: Timeout when accessing remote files.</span>
@@ -4020,7 +4051,7 @@ context.type("creator")  # object property
 
     <div class="doc doc-contents ">
 
-      <p>A convinient function that returns an Context instance.</p>
+      <p>A convenience function that returns a Context instance.</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -4048,14 +4079,17 @@ context.type("creator")  # object property
       <tr>
         <td><code>theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Load initial context for this theme.</p></td>
+        <td><p>IRI (or list of IRIs) of theme(s) to load initial context
+for.  Built-in themes:
+- <code>"ddoc:datadoc"</code> (default) — basic data documentation.
+- <code>"ddoc:process"</code> — basic documentation of processes.</p></td>
         <td><code>None</code></td>
       </tr>
       <tr>
         <td><code>default_theme</code></td>
         <td><code>Optional[Union[str, Sequence[str]]]</code></td>
-        <td><p>Initialise context for this theme if neither
-<code>context</code> nor <code>theme</code> are provided.</p></td>
+        <td><p>Theme used when neither <code>context</code>, <code>theme</code>, nor
+<code>keywords</code> are provided.  Defaults to <code>"ddoc:datadoc"</code>.</p></td>
         <td><code>&#39;ddoc:datadoc&#39;</code></td>
       </tr>
       <tr>
@@ -4117,7 +4151,7 @@ context.type("creator")  # object property
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Context&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A convinient function that returns an Context instance.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A convenience function that returns a Context instance.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        context: Input context.  Several types are supported:</span>
@@ -4127,9 +4161,12 @@ context.type("creator")  # object property
 <span class="sd">            - str: If a valid URI, the context is loaded from this URI,</span>
 <span class="sd">              otherwise it is assumed to be a file path to load.</span>
 <span class="sd">            - sequence: A sequence of the above.</span>
-<span class="sd">        theme: Load initial context for this theme.</span>
-<span class="sd">        default_theme: Initialise context for this theme if neither</span>
-<span class="sd">            `context` nor `theme` are provided.</span>
+<span class="sd">        theme: IRI (or list of IRIs) of theme(s) to load initial context</span>
+<span class="sd">            for.  Built-in themes:</span>
+<span class="sd">            - ``&quot;ddoc:datadoc&quot;`` (default) — basic data documentation.</span>
+<span class="sd">            - ``&quot;ddoc:process&quot;`` — basic documentation of processes.</span>
+<span class="sd">        default_theme: Theme used when neither `context`, `theme`, nor</span>
+<span class="sd">            `keywords` are provided.  Defaults to ``&quot;ddoc:datadoc&quot;``.</span>
 <span class="sd">        keywords: Initialise from this keywords instance.</span>
 <span class="sd">        prefixes: Optional dict with additional prefixes.</span>
 <span class="sd">        processingMode: Either &quot;json-ld-1.0&quot; or &quot;json-ld-1.1&quot;.</span>
