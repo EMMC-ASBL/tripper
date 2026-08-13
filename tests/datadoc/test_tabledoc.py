@@ -157,6 +157,7 @@ def test_csv():
             "par": "http://sintef.no/dlite/parser#",
             "gen": "http://sintef.no/dlite/generator#",
             "prov": "http://www.w3.org/ns/prov#",
+            "dcterms": "http://purl.org/dc/terms/",
         },
     )
 
