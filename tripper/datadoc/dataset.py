@@ -1291,7 +1291,7 @@ def _handle_unknown_keywords(
     recurse(source)
 
 
-def validate(
+def validate(  # pylint: disable=too-many-statements
     dct: dict,
     type: "Optional[str]" = None,
     context: "Optional[Context]" = None,
@@ -1313,11 +1313,20 @@ def validate(
     if context is None:
         context = Context(keywords=keywords)
 
-    if type is None and "@type" in dct:
-        try:
-            type = keywords.typename(dct["@type"])
-        except NoSuchTypeError:
-            pass
+    effective_type: "Optional[Union[str, Sequence[str]]]" = type
+
+    if effective_type is None and "@type" in dct:
+        detected_type = dct["@type"]
+        if isinstance(detected_type, list):
+            effective_type = detected_type
+        else:
+            try:
+                effective_type = keywords.typename(detected_type)
+            except NoSuchTypeError:
+                pass
+
+    # Resolve datatypes using prefixes from the active context only.
+    prefixes = {k: str(v) for k, v in context.get_prefixes().items()}
 
     resources = keywords.data.resources
 
@@ -1341,7 +1350,7 @@ def validate(
         if k in keywords:
             r = keywords[k]
             if "datatype" in r:
-                datatype = expand_iri(r.datatype, keywords.data.prefixes)
+                datatype = expand_iri(r.datatype, prefixes)
                 literal = parse_literal(v)
                 tr = {}
                 for t, seq in Literal.datatypes.items():
@@ -1368,21 +1377,38 @@ def validate(
             continue
         _check_keywords(k, v)
 
-    if type:
-        typename = keywords.typename(type)
+    if effective_type:
+        keyword_check_type: "Union[str, Sequence[str]]"
+        if isinstance(effective_type, list):
+            typename = None
+            for t in effective_type:
+                try:
+                    typename = keywords.typename(t)
+                    break
+                except NoSuchTypeError:
+                    continue
+            if typename is None:
+                return
+            keyword_check_type = effective_type
+        else:
+            typename = keywords.typename(effective_type)
+            keyword_check_type = typename
 
         for k in dct:
             if not k.startswith("@"):
-                if not check_keyword(k, typename):
+                if not check_keyword(k, keyword_check_type):
                     logger.info(
-                        f"unexpected keyword '{k}' provided for type: '{type}'"
+                        "unexpected keyword '%s' provided for type: '%s'",
+                        k,
+                        effective_type,
                     )
 
         for kr, vr in resources[typename].items():
             if "conformance" in vr and vr.conformance == "mandatory":
                 if kr not in dct:
                     raise ValidateError(
-                        f"missing mandatory keyword '{kr}' for type: '{type}'"
+                        "missing mandatory keyword "
+                        f"'{kr}' for type: '{effective_type}'"
                     )
 
 
