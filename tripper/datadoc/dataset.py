@@ -1272,6 +1272,10 @@ def _handle_unknown_keywords(
                 ):
                     recurse(item)
                 continue
+            if re.match(MATCH_IRI, key):
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+                continue
             if key.startswith("@"):
                 if isinstance(item, (dict, list)):
                     recurse(item)
@@ -1334,7 +1338,10 @@ def validate(  # pylint: disable=too-many-statements
         """Check that the resource type `type` has keyword `keyword`."""
         if isinstance(type, list):
             return any(check_keyword(keyword, item) for item in type)
-        typename = keywords.typename(type)
+        try:
+            typename = keywords.typename(type)
+        except NoSuchTypeError:
+            return False
         name = keywords.shortname(keyword)
         if (
             "keywords" in resources[typename]
@@ -1368,6 +1375,8 @@ def validate(  # pylint: disable=too-many-statements
                     _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
+        elif re.match(MATCH_IRI, k):
+            pass
         elif k not in context:
             raise ValidateError(f"unknown keyword: '{k}'")
 
@@ -1391,11 +1400,16 @@ def validate(  # pylint: disable=too-many-statements
                 return
             keyword_check_type = effective_type
         else:
-            typename = keywords.typename(effective_type)
+            try:
+                typename = keywords.typename(effective_type)
+            except NoSuchTypeError:
+                return
             keyword_check_type = typename
 
         for k in dct:
             if not k.startswith("@"):
+                if re.match(MATCH_IRI, k):
+                    continue
                 if not check_keyword(k, keyword_check_type):
                     logger.info(
                         "unexpected keyword '%s' provided for type: '%s'",
