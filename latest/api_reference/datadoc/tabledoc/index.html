@@ -2407,10 +2407,19 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span> <span class="o">=</span> <span class="n">baseiri</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.</span>
 
-<span class="sd">        Returns a dict with the JSON-LD written to the triplestore.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ts: Triplestore to populate with individuals from the table.</span>
+<span class="sd">            unknown_key: How to handle unknown keywords and relations.</span>
+<span class="sd">                    Possible values are:</span>
+<span class="sd">                    - &quot;raise&quot;: Raise a `ValidateError` if an unknown keyword is</span>
+<span class="sd">                        encountered (default).</span>
+<span class="sd">                    - &quot;warn&quot;: Drop unknown keywords and emit an</span>
+<span class="sd">                        `UnknownKeywordWarning`.</span>
+<span class="sd">                    - &quot;ignore&quot;: Drop unknown keywords silently.</span>
+<span class="sd">                Returns a dict with the JSON-LD written to the triplestore.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
             <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -2426,6 +2435,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
             <span class="n">keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
             <span class="n">baseiri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span><span class="p">,</span>
+            <span class="n">unknown_key</span><span class="o">=</span><span class="n">unknown_key</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[dict]&quot;</span><span class="p">:</span>
@@ -3562,7 +3572,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.save" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">unknown_key</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.tabledoc.TableDoc.save" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3570,14 +3580,54 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
     <div class="doc doc-contents ">
 
       <p>Save tabular datadocumentation to triplestore.</p>
-<p>Returns a dict with the JSON-LD written to the triplestore.</p>
 
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>ts</code></td>
+        <td><code>Triplestore</code></td>
+        <td><p>Triplestore to populate with individuals from the table.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>unknown_key</code></td>
+        <td><code>str</code></td>
+        <td><p>How to handle unknown keywords and relations.
+    Possible values are:
+    - "raise": Raise a <code>ValidateError</code> if an unknown keyword is
+        encountered (default).
+    - "warn": Drop unknown keywords and emit an
+        <code>UnknownKeywordWarning</code>.
+    - "ignore": Drop unknown keywords silently.
+Returns a dict with the JSON-LD written to the triplestore.</p></td>
+        <td><code>&#39;raise&#39;</code></td>
+      </tr>
+  </tbody>
+</table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.</span>
 
-<span class="sd">    Returns a dict with the JSON-LD written to the triplestore.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        ts: Triplestore to populate with individuals from the table.</span>
+<span class="sd">        unknown_key: How to handle unknown keywords and relations.</span>
+<span class="sd">                Possible values are:</span>
+<span class="sd">                - &quot;raise&quot;: Raise a `ValidateError` if an unknown keyword is</span>
+<span class="sd">                    encountered (default).</span>
+<span class="sd">                - &quot;warn&quot;: Drop unknown keywords and emit an</span>
+<span class="sd">                    `UnknownKeywordWarning`.</span>
+<span class="sd">                - &quot;ignore&quot;: Drop unknown keywords silently.</span>
+<span class="sd">            Returns a dict with the JSON-LD written to the triplestore.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
         <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -3593,6 +3643,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="n">keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
         <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
         <span class="n">baseiri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span><span class="p">,</span>
+        <span class="n">unknown_key</span><span class="o">=</span><span class="n">unknown_key</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
