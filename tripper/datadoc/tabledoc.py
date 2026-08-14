@@ -110,7 +110,7 @@ class TableDoc:
 
         Args:
             ts: Triplestore to populate with individuals from the table.
-            unknown_key: How to handle unknown keywords and relations in `source`.
+            unknown_key: How to handle unknown keywords and relations.
                     Possible values are:
                     - "raise": Raise a `ValidateError` if an unknown keyword is
                         encountered (default).
