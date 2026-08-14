@@ -342,7 +342,12 @@ def test_store():
     """Test store()."""
     from tripper import DCTERMS, OWL, RDF, Literal, Triplestore
     from tripper.datadoc import acquire, store
-    from tripper.datadoc.errors import IRIExistsError, IRIExistsWarning
+    from tripper.datadoc.errors import (
+        IRIExistsError,
+        IRIExistsWarning,
+        UnknownKeywordWarning,
+        ValidateError,
+    )
     from tripper.errors import NamespaceError
 
     ts = Triplestore("rdflib")
@@ -381,6 +386,29 @@ def test_store():
     store(ts, d, type="Dataset", method="merge")
     d4 = acquire(ts, EX.exdata)
     assert isinstance(d4.distribution, list)
+
+    d_unknown = {
+        "@id": EX.unknown,
+        "title": "Unknown data",
+        "hasModel": EX.model,
+    }
+    with pytest.raises(ValidateError, match="unknown keyword: 'hasModel'"):
+        store(ts, d_unknown, type="Dataset")
+
+    ts_unknown = Triplestore("rdflib")
+    with pytest.warns(UnknownKeywordWarning, match="hasModel"):
+        store(ts_unknown, d_unknown, type="Dataset", unknown_key="warn")
+    assert not any(
+        str(p).endswith("hasModel")
+        for p, _ in ts_unknown.predicate_objects(EX.unknown)
+    )
+
+    ts_ignore = Triplestore("rdflib")
+    store(ts_ignore, d_unknown, type="Dataset", unknown_key="ignore")
+    assert not any(
+        str(p).endswith("hasModel")
+        for p, _ in ts_ignore.predicate_objects(EX.unknown)
+    )
 
     with pytest.raises(ValueError):
         store(ts, d, type="Dataset", method="invalid_method_name")
@@ -980,6 +1008,17 @@ def test_datadoc():
     assert (
         search(ts, criteria={"http://purl.org/dc/terms/title": title}) == dset
     )
+    assert (
+        search(
+            ts,
+            criteria={
+                "https://w3id.org/emmo#isDescriptionOf": "https://he-matchmaker.eu/material/concrete1"  # pylint: disable=line-too-long
+            },
+        )
+    ) == [
+        "https://he-matchmaker.eu/data/sem/SEM_cement_batch2/"
+        "77600-23-001/77600-23-001_5kV_400x_m001"
+    ]
 
 
 def test_custom_context():
