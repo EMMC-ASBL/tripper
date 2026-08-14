@@ -108,16 +108,16 @@ class TableDoc:
     def save(self, ts: Triplestore, unknown_key: str = "raise") -> dict:
         """Save tabular datadocumentation to triplestore.
 
-Args:
-    ts: Triplestore to populate with individuals from the table.
-    unknown_key: How to handle unknown keywords and relations in `source`.
-            Possible values are:
-            - "raise": Raise a `ValidateError` if an unknown keyword is
-                encountered (default).
-            - "warn": Drop unknown keywords and emit an
-                `UnknownKeywordWarning`.
-            - "ignore": Drop unknown keywords silently.
-        Returns a dict with the JSON-LD written to the triplestore.
+        Args:
+            ts: Triplestore to populate with individuals from the table.
+            unknown_key: How to handle unknown keywords and relations in `source`.
+                    Possible values are:
+                    - "raise": Raise a `ValidateError` if an unknown keyword is
+                        encountered (default).
+                    - "warn": Drop unknown keywords and emit an
+                        `UnknownKeywordWarning`.
+                    - "ignore": Drop unknown keywords silently.
+                Returns a dict with the JSON-LD written to the triplestore.
         """
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
