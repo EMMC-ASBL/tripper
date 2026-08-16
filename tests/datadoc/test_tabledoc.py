@@ -388,12 +388,17 @@ def test_column():
     assert col5.options == {"sep": ",", "unit": "m"}
     assert col5.datatype is None
 
-    col6 = Column("creationDate", context=get_context())
-    assert col6.header == "creationDate"
-    assert col6.datatype == XSD.dateTime
+    col6 = Column("length[unit=m]")
+    assert col6.names == ["length"]
+    assert col6.label == ""
+    assert col6.options == {"unit": "m"}
+
+    col7 = Column("creationDate", context=get_context())
+    assert col7.header == "creationDate"
+    assert col7.datatype == XSD.dateTime
 
 
-def test_sep():
+def test_column_sep():
     """Test the column separation."""
 
     from tripper.datadoc import TableDoc
