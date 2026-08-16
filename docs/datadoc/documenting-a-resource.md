@@ -180,14 +180,15 @@ Ex: `distribution.downloadURL`.
 
 The header keyword(s) may be followed by an optional square bracket with the following syntax (inspired by URL options):
 
-    name[label?var1=value1&var2=value2]
+    name[label?key1=value1&key2=value2]
 
 where
-- `name`: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context.
+
+- `name`: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context. (_required_)
   The only formal requirement is that it cannot contain a begin brace ([), but it might be wise to be more strict.
 - `label`: is a label for the column.
   It is used to make the column unique or to group related columns.
-  The only formal requirement is that is cannot contain a question mark (?), but it is probably wise to be more strict.
+  The only formal requirement is that is cannot contain a question mark (?) or equal sign (=), but it is probably wise to be more strict.
   A digit should be allowed.
 - `key`: a key identifying an option for the column.
   Should be a valid C or Python identifier (regex: `[_a-zA-Z][_a-zA-Z0-9]*`).
@@ -195,6 +196,7 @@ where
   Should not contain (unescaped) ampersand (&) or end braces (]).
 
 Currently recognised keys:
+
 - **`unit`**: A unit symbol. All numbers in this column have this unit.
 - **`sep`**: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.
 
@@ -216,13 +218,13 @@ Grouping of columns (e.g. for DLite datamodels):
 
 Specifying unit:
 
-| @id          | @type       | length[?unit=m] |
+| @id          | @type       | length[unit=m]  |
 |--------------|-------------|-----------------|
 | ex:my_length | emmo:Length | 3.2             |
 
 Specifying a separator:
 
-| @id       | @type        | keyword[?sep=;]    |
+| @id       | @type        | keyword[sep=;]     |
 |-----------|--------------|--------------------|
 | ex:mydata | emmo:Dataset | geology;stone;cave |
 
