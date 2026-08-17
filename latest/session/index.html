@@ -1703,20 +1703,20 @@ you can now do:</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
 
 <span class="c1"># ...but it is also possible to specify the config file explicitly</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="s2">&quot;tests/input/session.yaml&quot;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_triplestore</span><span class="p">(</span><span class="s2">&quot;FusekiTest&quot;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">EX</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;http://example.com#&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="s2">"tests/input/session.yaml"</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_triplestore</span><span class="p">(</span><span class="s2">"FusekiTest"</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">EX</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"ex"</span><span class="p">,</span> <span class="s2">"http://example.com#"</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>  <span class="c1"># clear the triplestore  # doctest: +ELLIPSIS</span>
 <span class="o">&lt;</span><span class="n">SPARQLWrapper</span><span class="o">.</span><span class="n">Wrapper</span><span class="o">.</span><span class="n">QueryResult</span> <span class="nb">object</span> <span class="n">at</span> <span class="mi">0</span><span class="n">x</span><span class="o">...&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span>
-<span class="o">...</span>     <span class="p">(</span><span class="n">EX</span><span class="o">.</span><span class="n">john</span><span class="p">,</span> <span class="n">EX</span><span class="o">.</span><span class="n">hasName</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;John&quot;</span><span class="p">)),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="n">EX</span><span class="o">.</span><span class="n">john</span><span class="p">,</span> <span class="n">EX</span><span class="o">.</span><span class="n">hasName</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">"John"</span><span class="p">)),</span>
 <span class="o">...</span>     <span class="p">(</span><span class="n">EX</span><span class="o">.</span><span class="n">john</span><span class="p">,</span> <span class="n">EX</span><span class="o">.</span><span class="n">hasSon</span><span class="p">,</span> <span class="n">EX</span><span class="o">.</span><span class="n">lars</span><span class="p">),</span>
 <span class="o">...</span> <span class="p">])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">())</span>  <span class="c1"># doctest: +NORMALIZE_WHITESPACE</span>
-<span class="p">[(</span><span class="s1">&#39;http://example.com#john&#39;</span><span class="p">,</span> <span class="s1">&#39;http://example.com#hasName&#39;</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;John&#39;</span><span class="p">)),</span>
- <span class="p">(</span><span class="s1">&#39;http://example.com#john&#39;</span><span class="p">,</span> <span class="s1">&#39;http://example.com#hasSon&#39;</span><span class="p">,</span> <span class="s1">&#39;http://example.com#lars&#39;</span><span class="p">)]</span>
+<span class="p">[(</span><span class="s1">'http://example.com#john'</span><span class="p">,</span> <span class="s1">'http://example.com#hasName'</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s1">'John'</span><span class="p">)),</span>
+ <span class="p">(</span><span class="s1">'http://example.com#john'</span><span class="p">,</span> <span class="s1">'http://example.com#hasSon'</span><span class="p">,</span> <span class="s1">'http://example.com#lars'</span><span class="p">)]</span>
 </code></pre></div>
 
 

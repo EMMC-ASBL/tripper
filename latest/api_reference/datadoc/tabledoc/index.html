@@ -1915,13 +1915,13 @@ Column        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Column</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help class representing a column.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Help class representing a column."""</span>
 
     <span class="c1"># pylint: disable=too-few-public-methods</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise a column opject.</span>
+        <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
+<span class="w">        </span><span class="sd">"""Initialise a column opject.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            header: Column header. For the allowed syntax of the header label</span>
@@ -1929,24 +1929,32 @@ Column        </code>
 <span class="sd">            context: Optional context. Used for deriving datatype.</span>
 <span class="sd">            strip: Whether to strip white spaces from `header`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">strip</span><span class="p">:</span>
             <span class="n">header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="c1"># Check IRIs starting with uri scheme, case insensitive</span>
-        <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z][a-z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+        <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[a-z][a-z0-9+.-]*://"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">IRI_CHECK</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="n">header</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="n">header</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^.\[]+)(\[([^\]]*)\])?&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"([^.\[]+)(\[([^\]]*)\])?"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
-        <span class="n">label</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">spec</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"?"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"?"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">""</span>
+
+        <span class="c1"># Special rule. If `label` contains an equal sign (=), it is treated</span>
+        <span class="c1"># to be the first part of `opts`.</span>
+        <span class="c1"># This allows the user to omit the ?-sign if there is no label, e.g.</span>
+        <span class="c1"># writing "length[unit=m]" instead of "length[?unit=m]"</span>
+        <span class="k">if</span> <span class="s2">"="</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+            <span class="n">label</span><span class="p">,</span> <span class="n">opts</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&amp;</span><span class="si">{</span><span class="n">opts</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">opts</span> <span class="k">else</span> <span class="n">label</span>
 
         <span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">):</span>
-                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opts</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"&amp;"</span><span class="p">):</span>
+                <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">options</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
         <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1955,11 +1963,11 @@ Column        </code>
         <span class="c1"># defined in the context when adding values to the dict. This makes</span>
         <span class="c1"># sure coercion rules (e.g. @type: @id) apply without creating new</span>
         <span class="c1"># context entries. Do NOT auto-register unknown short keywords.</span>
-        <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z][a-z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+        <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[a-z][a-z0-9+.-]*://"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
         <span class="n">is_full_iri</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">IRI_CHECK</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
-        <span class="n">is_prefixed</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">leafname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_full_iri</span>
+        <span class="n">is_prefixed</span> <span class="o">=</span> <span class="p">(</span><span class="s2">":"</span> <span class="ow">in</span> <span class="n">leafname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_full_iri</span>
 
-        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">leafname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">leafname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"@"</span><span class="p">):</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">leafname</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
             <span class="c1"># If a full IRI or a prefixed name is used as header but the</span>
@@ -1967,10 +1975,10 @@ Column        </code>
             <span class="c1"># of silently accepting it.</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unknown keyword/IRI in header: &#39;</span><span class="si">{</span><span class="n">leafname</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Unknown keyword/IRI in header: '</span><span class="si">{</span><span class="n">leafname</span><span class="si">}</span><span class="s2">'"</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="n">df</span> <span class="ow">and</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">df</span> <span class="ow">and</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"@id"</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
 
             <span class="c1"># If header is a full IRI or a prefixed name, and the context</span>
             <span class="c1"># defines it, ensure the exact header string is present in the</span>
@@ -1978,11 +1986,11 @@ Column        </code>
             <span class="c1"># applies). Do NOT create entries for undefined terms.</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="n">df</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">leafname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">():</span>
-                    <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]}</span>
-                    <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                        <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span>
-                    <span class="k">elif</span> <span class="s2">&quot;@language&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                        <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">]</span>
+                    <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]}</span>
+                    <span class="k">if</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                        <span class="n">entry</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="s2">"@language"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                        <span class="n">entry</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span>
                     <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">leafname</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
@@ -1994,11 +2002,11 @@ Column        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">datatype</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add cell value to dict `d`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add cell value to dict `d`."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cell</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="s2">&quot;sep&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;sep&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">"sep"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">"sep"</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell</span><span class="p">]</span>
 
@@ -2008,10 +2016,10 @@ Column        </code>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span>
                 <span class="k">else</span> <span class="n">v</span>
             <span class="p">)</span>
-            <span class="c1"># if &quot;unit&quot; in self.options:</span>
+            <span class="c1"># if "unit" in self.options:</span>
             <span class="c1">#    val = {</span>
-            <span class="c1">#        &quot;value&quot;: val,</span>
-            <span class="c1">#        &quot;unit&quot;: self.unit,</span>
+            <span class="c1">#        "value": val,</span>
+            <span class="c1">#        "unit": self.unit,</span>
             <span class="c1">#    }</span>
             <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 </code></pre></div>
@@ -2081,8 +2089,8 @@ Column        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialise a column opject.</span>
+    <span class="c1"># pylint: disable=line-too-long,too-many-branches</span>
+<span class="w">    </span><span class="sd">"""Initialise a column opject.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        header: Column header. For the allowed syntax of the header label</span>
@@ -2090,24 +2098,32 @@ Column        </code>
 <span class="sd">        context: Optional context. Used for deriving datatype.</span>
 <span class="sd">        strip: Whether to strip white spaces from `header`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">strip</span><span class="p">:</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="c1"># Check IRIs starting with uri scheme, case insensitive</span>
-    <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z][a-z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+    <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[a-z][a-z0-9+.-]*://"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">IRI_CHECK</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="n">header</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="n">header</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^.\[]+)(\[([^\]]*)\])?&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"([^.\[]+)(\[([^\]]*)\])?"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
-    <span class="n">label</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">spec</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"?"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"?"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">opts</span> <span class="o">=</span> <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">""</span>
+
+    <span class="c1"># Special rule. If `label` contains an equal sign (=), it is treated</span>
+    <span class="c1"># to be the first part of `opts`.</span>
+    <span class="c1"># This allows the user to omit the ?-sign if there is no label, e.g.</span>
+    <span class="c1"># writing "length[unit=m]" instead of "length[?unit=m]"</span>
+    <span class="k">if</span> <span class="s2">"="</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+        <span class="n">label</span><span class="p">,</span> <span class="n">opts</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&amp;</span><span class="si">{</span><span class="n">opts</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">opts</span> <span class="k">else</span> <span class="n">label</span>
 
     <span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">):</span>
-            <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"&amp;"</span><span class="p">):</span>
+            <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">options</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2116,11 +2132,11 @@ Column        </code>
     <span class="c1"># defined in the context when adding values to the dict. This makes</span>
     <span class="c1"># sure coercion rules (e.g. @type: @id) apply without creating new</span>
     <span class="c1"># context entries. Do NOT auto-register unknown short keywords.</span>
-    <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z][a-z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+    <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[a-z][a-z0-9+.-]*://"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
     <span class="n">is_full_iri</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">IRI_CHECK</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
-    <span class="n">is_prefixed</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">leafname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_full_iri</span>
+    <span class="n">is_prefixed</span> <span class="o">=</span> <span class="p">(</span><span class="s2">":"</span> <span class="ow">in</span> <span class="n">leafname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_full_iri</span>
 
-    <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">leafname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">leafname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"@"</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">leafname</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># If a full IRI or a prefixed name is used as header but the</span>
@@ -2128,10 +2144,10 @@ Column        </code>
         <span class="c1"># of silently accepting it.</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Unknown keyword/IRI in header: &#39;</span><span class="si">{</span><span class="n">leafname</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">"Unknown keyword/IRI in header: '</span><span class="si">{</span><span class="n">leafname</span><span class="si">}</span><span class="s2">'"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">df</span> <span class="ow">and</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@id&quot;</span><span class="p">:</span>
-            <span class="n">datatype</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">and</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span> <span class="ow">and</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"@id"</span><span class="p">:</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
 
         <span class="c1"># If header is a full IRI or a prefixed name, and the context</span>
         <span class="c1"># defines it, ensure the exact header string is present in the</span>
@@ -2139,11 +2155,11 @@ Column        </code>
         <span class="c1"># applies). Do NOT create entries for undefined terms.</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="n">df</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">leafname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">():</span>
-                <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]}</span>
-                <span class="k">if</span> <span class="s2">&quot;@type&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                    <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span>
-                <span class="k">elif</span> <span class="s2">&quot;@language&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
-                    <span class="n">entry</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;@language&quot;</span><span class="p">]</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="s2">"@type"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@type"</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="s2">"@language"</span> <span class="ow">in</span> <span class="n">df</span><span class="p">:</span>
+                    <span class="n">entry</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">"@language"</span><span class="p">]</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">({</span><span class="n">leafname</span><span class="p">:</span> <span class="n">entry</span><span class="p">})</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
@@ -2178,11 +2194,11 @@ Column        </code>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add cell value to dict `d`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add cell value to dict `d`."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cell</span><span class="p">:</span>
         <span class="k">return</span>
-    <span class="k">if</span> <span class="s2">&quot;sep&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
-        <span class="n">vals</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;sep&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">"sep"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">"sep"</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell</span><span class="p">]</span>
 
@@ -2192,10 +2208,10 @@ Column        </code>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span>
             <span class="k">else</span> <span class="n">v</span>
         <span class="p">)</span>
-        <span class="c1"># if &quot;unit&quot; in self.options:</span>
+        <span class="c1"># if "unit" in self.options:</span>
         <span class="c1">#    val = {</span>
-        <span class="c1">#        &quot;value&quot;: val,</span>
-        <span class="c1">#        &quot;unit&quot;: self.unit,</span>
+        <span class="c1">#        "value": val,</span>
+        <span class="c1">#        "unit": self.unit,</span>
         <span class="c1">#    }</span>
         <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 </code></pre></div>
@@ -2333,16 +2349,16 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TableDoc</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Representation of tabular documentation of datasets.</span>
+<span class="w">    </span><span class="sd">"""Representation of tabular documentation of datasets.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        headers: Sequence of column header labels.  Nested data can</span>
 <span class="sd">            be represented by dot-separated label strings (e.g.</span>
-<span class="sd">            &quot;distribution.downloadURL&quot;)</span>
+<span class="sd">            "distribution.downloadURL")</span>
 <span class="sd">        data: Sequence of rows of data. Each row documents an entry.</span>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">            either be one of the pre-defined names: &quot;dataset&quot;,</span>
-<span class="sd">            &quot;distribution&quot;, &quot;accessService&quot;, &quot;parser&quot; and &quot;generator&quot;</span>
+<span class="sd">            either be one of the pre-defined names: "dataset",</span>
+<span class="sd">            "distribution", "accessService", "parser" and "generator"</span>
 <span class="sd">            or an IRI to a class in an ontology.</span>
 <span class="sd">        theme: Name of one of more themes to load keywords for.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
@@ -2359,34 +2375,34 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            contains an unknown key.</span>
 <span class="sd">        redefine: Determine how to handle redefinition of existing</span>
 <span class="sd">            keywords.  Should be one of the following strings:</span>
-<span class="sd">              - &quot;allow&quot;: Allow redefining a keyword. Emits a</span>
+<span class="sd">              - "allow": Allow redefining a keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
-<span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
+<span class="sd">              - "skip": Don't redefine existing keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
-<span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">              - "raise": Raise an RedefineError (default).</span>
 <span class="sd">        baseiri: If given, it will be used as a base iri to</span>
 <span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=redefined-builtin,too-few-public-methods</span>
     <span class="c1"># pylint: disable=too-many-arguments,too-many-instance-attributes</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">headers</span><span class="p">:</span> <span class="s2">&quot;Sequence[str]&quot;</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;Sequence[Sequence[str]]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">theme</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">headers</span><span class="p">:</span> <span class="s2">"Sequence[str]"</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="s2">"Sequence[Sequence[str]]"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">theme</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">theme</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">keywords</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">theme</span> <span class="o">=</span> <span class="s2">&quot;ddoc:datadoc&quot;</span>
+            <span class="n">theme</span> <span class="o">=</span> <span class="s2">"ddoc:datadoc"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
@@ -2407,20 +2423,20 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">baseiri</span> <span class="o">=</span> <span class="n">baseiri</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Save tabular datadocumentation to triplestore.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            ts: Triplestore to populate with individuals from the table.</span>
 <span class="sd">            unknown_key: How to handle unknown keywords and relations.</span>
 <span class="sd">                    Possible values are:</span>
-<span class="sd">                    - &quot;raise&quot;: Raise a `ValidateError` if an unknown keyword is</span>
+<span class="sd">                    - "raise": Raise a `ValidateError` if an unknown keyword is</span>
 <span class="sd">                        encountered (default).</span>
-<span class="sd">                    - &quot;warn&quot;: Drop unknown keywords and emit an</span>
+<span class="sd">                    - "warn": Drop unknown keywords and emit an</span>
 <span class="sd">                        `UnknownKeywordWarning`.</span>
-<span class="sd">                    - &quot;ignore&quot;: Drop unknown keywords silently.</span>
+<span class="sd">                    - "ignore": Drop unknown keywords silently.</span>
 <span class="sd">                Returns a dict with the JSON-LD written to the triplestore.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
             <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="p">)</span>
@@ -2438,8 +2454,8 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
             <span class="n">unknown_key</span><span class="o">=</span><span class="n">unknown_key</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[dict]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the table as a list of dicts.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[dict]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the table as a list of dicts."""</span>
         <span class="c1"># Parse column headers. Follow the syntax defined in</span>
         <span class="c1"># https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
@@ -2462,26 +2478,26 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
             <span class="n">prefixes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">(),</span>
             <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">dicts</span> <span class="o">=</span> <span class="n">ld</span><span class="p">[</span><span class="s2">&quot;@graph&quot;</span><span class="p">]</span>
+        <span class="n">dicts</span> <span class="o">=</span> <span class="n">ld</span><span class="p">[</span><span class="s2">"@graph"</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">dicts</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
-        <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dicts</span><span class="p">:</span> <span class="s2">"Sequence[dict]"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create new TableDoc instance from a sequence of dicts.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create new TableDoc instance from a sequence of dicts.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            dicts: Sequence of single-resource dicts.</span>
 <span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
-<span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
-<span class="sd">                &quot;Generator&quot; or an IRI to a class in an ontology.</span>
+<span class="sd">                either be one of the pre-defined names: "Dataset",</span>
+<span class="sd">                "Distribution", "AccessService", "Parser" and</span>
+<span class="sd">                "Generator" or an IRI to a class in an ontology.</span>
 <span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">                If not provided, only default keywords are considered.</span>
 <span class="sd">            context: Additional user-defined context that should be</span>
@@ -2498,27 +2514,27 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">        Returns:</span>
 <span class="sd">            New TableDoc instance.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Store the headers as keys in a dict to keep ordering</span>
-        <span class="n">headdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="n">headdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Add keys in `d` to headdict.</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">"""Add keys in `d` to headdict.</span>
 
 <span class="sd">            Nested dicts will result in dot-separated keys.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">            """</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@context&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">"@context"</span><span class="p">:</span>
                     <span class="k">pass</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="n">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"@type"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">"."</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">headdict</span><span class="p">[</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Return `v` as a list of length `mult` with given padding.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Return `v` as a list of length `mult` with given padding."""</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">v</span> <span class="o">+</span> <span class="p">[</span><span class="n">pad</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">mult</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">pad</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">mult</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -2545,7 +2561,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
                     <span class="n">row</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tolist</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="n">head</span><span class="p">],</span> <span class="n">m</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">dct</span>
-                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">):</span>
                         <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
                     <span class="n">row</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tolist</span><span class="p">(</span><span class="n">d</span> <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="p">{}</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
             <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
@@ -2567,26 +2583,26 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
-        <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-        <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[csv.Dialect, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">csvfile</span><span class="p">:</span> <span class="s2">"Union[Iterable[str], Path, str]"</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">,</span>
+        <span class="n">dialect</span><span class="p">:</span> <span class="s2">"Optional[Union[csv.Dialect, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
         <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a csv file using the standard library csv module.</span>
+<span class="w">        </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            csvfile: Name of CSV file to parse or an iterable of strings.</span>
 <span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
-<span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
+<span class="sd">                either be one of the pre-defined names: "Dataset",</span>
+<span class="sd">                "Distribution", "AccessService", "Parser" and "Generator"</span>
 <span class="sd">                or an IRI to a class in an ontology.</span>
 <span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">                If not provided, only default keywords are considered.</span>
@@ -2598,7 +2614,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">                JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">            encoding: The encoding of the csv file.  Note that Excel may</span>
-<span class="sd">                encode as &quot;ISO-8859&quot; (which was commonly used in the 1990th).</span>
+<span class="sd">                encode as "ISO-8859" (which was commonly used in the 1990th).</span>
 <span class="sd">            dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
 <span class="sd">                specifying how the `csvfile` is formatted.  For more details,</span>
 <span class="sd">                see [Dialects and Formatting Parameters].</span>
@@ -2606,11 +2622,11 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">                contains an unknown key.</span>
 <span class="sd">            redefine: Determine how to handle redefinition of existing</span>
 <span class="sd">                keywords.  Should be one of the following strings:</span>
-<span class="sd">                  - &quot;allow&quot;: Allow redefining a keyword. Emits a</span>
+<span class="sd">                  - "allow": Allow redefining a keyword. Emits a</span>
 <span class="sd">                    `RedefineKeywordWarning`.</span>
-<span class="sd">                  - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
+<span class="sd">                  - "skip": Don't redefine existing keyword. Emits a</span>
 <span class="sd">                    `RedefineKeywordWarning`.</span>
-<span class="sd">                  - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">                  - "raise": Raise an RedefineError (default).</span>
 <span class="sd">            baseiri: If given, it will be used as a base iri to</span>
 <span class="sd">                resolve relative IRIs. (I.e. Not valid URLs).</span>
 <span class="sd">            kwargs: Additional keyword arguments overriding individual</span>
@@ -2627,14 +2643,14 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
 <span class="sd">        References:</span>
 <span class="sd">        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Return csv reader from file-like object `f`.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Return csv reader from file-like object `f`."""</span>
             <span class="k">if</span> <span class="n">dialect</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">sample</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">dialect</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">delimiters</span><span class="o">=</span><span class="s2">&quot;,;</span><span class="se">\t</span><span class="s2"> &quot;</span><span class="p">)</span>
+                    <span class="n">dialect</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">delimiters</span><span class="o">=</span><span class="s2">",;</span><span class="se">\t</span><span class="s2"> "</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">csv</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
                     <span class="c1"># The build-in sniffer not always work well with</span>
                     <span class="c1"># non-numerical csv files. Try our simple sniffer</span>
@@ -2647,7 +2663,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
             <span class="k">return</span> <span class="n">headers</span><span class="p">,</span> <span class="n">data</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-            <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">headers</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">headers</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">dialect</span><span class="p">)</span>
@@ -2666,14 +2682,14 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str, Writer]&quot;</span><span class="p">,</span>
-        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-        <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Union[csv.Dialect, str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">csvfile</span><span class="p">:</span> <span class="s2">"Union[Path, str, Writer]"</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">,</span>
+        <span class="n">dialect</span><span class="p">:</span> <span class="s2">"Union[csv.Dialect, str]"</span> <span class="o">=</span> <span class="s2">"excel"</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the table to a csv file using the standard library csv module.</span>
+<span class="w">        </span><span class="sd">"""Write the table to a csv file using the standard library csv module.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            csvfile: File-like object or name of CSV file to write.</span>
@@ -2688,7 +2704,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
 <span class="sd">        References:</span>
 <span class="sd">        [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
             <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -2699,7 +2715,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
                 <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                         <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
-                            <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                             <span class="k">break</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
@@ -2711,36 +2727,36 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
                 <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">write</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_excel</span><span class="p">(</span>
-        <span class="n">excelfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
-        <span class="n">sheet</span><span class="p">:</span> <span class="s2">&quot;Union[str, int]&quot;</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">cellrange</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">excelfile</span><span class="p">:</span> <span class="s2">"Union[Path, str]"</span><span class="p">,</span>
+        <span class="n">sheet</span><span class="p">:</span> <span class="s2">"Union[str, int]"</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">cellrange</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
+        <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
+        <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
         <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a csv file using the standard library csv module.</span>
+<span class="w">        </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            excelfile: Name of Excel file to parse.</span>
 <span class="sd">            sheet: Sheet name or number to load.</span>
-<span class="sd">            cellrange: Cell range to load. Examples: &quot;A1:C4&quot;, &quot;A:C&quot;, &quot;1:4&quot;.</span>
+<span class="sd">            cellrange: Cell range to load. Examples: "A1:C4", "A:C", "1:4".</span>
 <span class="sd">                The default is to read all cells.</span>
 <span class="sd">            type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">                either be one of the pre-defined names: &quot;Dataset&quot;,</span>
-<span class="sd">                &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
+<span class="sd">                either be one of the pre-defined names: "Dataset",</span>
+<span class="sd">                "Distribution", "AccessService", "Parser" and "Generator"</span>
 <span class="sd">                or an IRI to a class in an ontology.</span>
 <span class="sd">            keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">                If not provided, only default keywords are considered.</span>
@@ -2752,18 +2768,18 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">                contains an unknown key.</span>
 <span class="sd">            redefine: Determine how to handle redefinition of existing</span>
 <span class="sd">                keywords.  Should be one of the following strings:</span>
-<span class="sd">                  - &quot;allow&quot;: Allow redefining a keyword. Emits a</span>
+<span class="sd">                  - "allow": Allow redefining a keyword. Emits a</span>
 <span class="sd">                    `RedefineKeywordWarning`.</span>
-<span class="sd">                  - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
+<span class="sd">                  - "skip": Don't redefine existing keyword. Emits a</span>
 <span class="sd">                    `RedefineKeywordWarning`.</span>
-<span class="sd">                  - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">                  - "raise": Raise an RedefineError (default).</span>
 <span class="sd">            baseiri: If given, it will be used as a base iri to</span>
 <span class="sd">                resolve relative IRIs. (I.e. Not valid URLs).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            New TableDoc instance.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">openpyxl</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_workbook</span>
 
@@ -2805,30 +2821,30 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">unique_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the headers with brackets appended to duplicated labels</span>
+<span class="w">        </span><span class="sd">"""Return the headers with brackets appended to duplicated labels</span>
 <span class="sd">        to make them unique.</span>
 
 <span class="sd">        For example, the headers</span>
 
-<span class="sd">            [&quot;@id&quot;, &quot;@type&quot;, &quot;@type&quot;, &quot;part.name&quot;, &quot;part.name&quot;]</span>
+<span class="sd">            ["@id", "@type", "@type", "part.name", "part.name"]</span>
 
-<span class="sd">        &quot;distribution.downloadURL&quot;,</span>
+<span class="sd">        "distribution.downloadURL",</span>
 
 <span class="sd">        would be renamed to</span>
 
-<span class="sd">            [&quot;@id&quot;, &quot;@type[1]&quot;, &quot;@type[2]&quot;, &quot;part[1].name&quot;, &quot;part[2].name&quot;]</span>
+<span class="sd">            ["@id", "@type[1]", "@type[2]", "part[1].name", "part[2].name"]</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">new</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">h</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">"."</span> <span class="ow">in</span> <span class="n">h</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">seen</span> <span class="k">else</span> <span class="mi">1</span>
                 <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
-                <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">].</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">tail</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+                <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">].</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">tail</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new</span>
 </code></pre></div>
         </details>
@@ -2862,8 +2878,8 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[dict]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the table as a list of dicts.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asdicts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[dict]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the table as a list of dicts."""</span>
     <span class="c1"># Parse column headers. Follow the syntax defined in</span>
     <span class="c1"># https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table</span>
     <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
@@ -2886,7 +2902,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
         <span class="n">prefixes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">(),</span>
         <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">dicts</span> <span class="o">=</span> <span class="n">ld</span><span class="p">[</span><span class="s2">&quot;@graph&quot;</span><span class="p">]</span>
+    <span class="n">dicts</span> <span class="o">=</span> <span class="n">ld</span><span class="p">[</span><span class="s2">"@graph"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">dicts</span>
 </code></pre></div>
         </details>
@@ -2992,21 +3008,21 @@ from cells.</p></td>
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">fromdicts</span><span class="p">(</span>
-    <span class="n">dicts</span><span class="p">:</span> <span class="s2">&quot;Sequence[dict]&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dicts</span><span class="p">:</span> <span class="s2">"Sequence[dict]"</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create new TableDoc instance from a sequence of dicts.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Create new TableDoc instance from a sequence of dicts.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        dicts: Sequence of single-resource dicts.</span>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
-<span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and</span>
-<span class="sd">            &quot;Generator&quot; or an IRI to a class in an ontology.</span>
+<span class="sd">            either be one of the pre-defined names: "Dataset",</span>
+<span class="sd">            "Distribution", "AccessService", "Parser" and</span>
+<span class="sd">            "Generator" or an IRI to a class in an ontology.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
 <span class="sd">        context: Additional user-defined context that should be</span>
@@ -3023,27 +3039,27 @@ from cells.</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        New TableDoc instance.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Store the headers as keys in a dict to keep ordering</span>
-    <span class="n">headdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">headdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add keys in `d` to headdict.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Add keys in `d` to headdict.</span>
 
 <span class="sd">        Nested dicts will result in dot-separated keys.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@context&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">"@context"</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;@type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="n">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"@type"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">addheaddict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">"."</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">headdict</span><span class="p">[</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return `v` as a list of length `mult` with given padding.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return `v` as a list of length `mult` with given padding."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">v</span> <span class="o">+</span> <span class="p">[</span><span class="n">pad</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">mult</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">pad</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">mult</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -3070,7 +3086,7 @@ from cells.</p></td>
                 <span class="n">row</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tolist</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="n">head</span><span class="p">],</span> <span class="n">m</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">dct</span>
-                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">):</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="n">row</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tolist</span><span class="p">(</span><span class="n">d</span> <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="p">{}</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
@@ -3102,7 +3118,7 @@ from cells.</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.parse_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">'raise'</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -3241,26 +3257,26 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_csv</span><span class="p">(</span>
-    <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Iterable[str], Path, str]&quot;</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-    <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[csv.Dialect, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">csvfile</span><span class="p">:</span> <span class="s2">"Union[Iterable[str], Path, str]"</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">,</span>
+    <span class="n">dialect</span><span class="p">:</span> <span class="s2">"Optional[Union[csv.Dialect, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
     <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a csv file using the standard library csv module.</span>
+<span class="w">    </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        csvfile: Name of CSV file to parse or an iterable of strings.</span>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
-<span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
+<span class="sd">            either be one of the pre-defined names: "Dataset",</span>
+<span class="sd">            "Distribution", "AccessService", "Parser" and "Generator"</span>
 <span class="sd">            or an IRI to a class in an ontology.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
@@ -3272,7 +3288,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 <span class="sd">        prefixes: Dict with prefixes in addition to those included in the</span>
 <span class="sd">            JSON-LD context.  Should map namespace prefixes to IRIs.</span>
 <span class="sd">        encoding: The encoding of the csv file.  Note that Excel may</span>
-<span class="sd">            encode as &quot;ISO-8859&quot; (which was commonly used in the 1990th).</span>
+<span class="sd">            encode as "ISO-8859" (which was commonly used in the 1990th).</span>
 <span class="sd">        dialect: A subclass of csv.Dialect, or the name of the dialect,</span>
 <span class="sd">            specifying how the `csvfile` is formatted.  For more details,</span>
 <span class="sd">            see [Dialects and Formatting Parameters].</span>
@@ -3280,11 +3296,11 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 <span class="sd">            contains an unknown key.</span>
 <span class="sd">        redefine: Determine how to handle redefinition of existing</span>
 <span class="sd">            keywords.  Should be one of the following strings:</span>
-<span class="sd">              - &quot;allow&quot;: Allow redefining a keyword. Emits a</span>
+<span class="sd">              - "allow": Allow redefining a keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
-<span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
+<span class="sd">              - "skip": Don't redefine existing keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
-<span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">              - "raise": Raise an RedefineError (default).</span>
 <span class="sd">        baseiri: If given, it will be used as a base iri to</span>
 <span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 <span class="sd">        kwargs: Additional keyword arguments overriding individual</span>
@@ -3301,14 +3317,14 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 
 <span class="sd">    References:</span>
 <span class="sd">    [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return csv reader from file-like object `f`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return csv reader from file-like object `f`."""</span>
         <span class="k">if</span> <span class="n">dialect</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">dialect</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">delimiters</span><span class="o">=</span><span class="s2">&quot;,;</span><span class="se">\t</span><span class="s2"> &quot;</span><span class="p">)</span>
+                <span class="n">dialect</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">delimiters</span><span class="o">=</span><span class="s2">",;</span><span class="se">\t</span><span class="s2"> "</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">csv</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
                 <span class="c1"># The build-in sniffer not always work well with</span>
                 <span class="c1"># non-numerical csv files. Try our simple sniffer</span>
@@ -3321,7 +3337,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
         <span class="k">return</span> <span class="n">headers</span><span class="p">,</span> <span class="n">data</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-        <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">headers</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">headers</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">dialect</span><span class="p">)</span>
@@ -3350,7 +3366,7 @@ https://emmc-asbl.github.io/tripper/latest/datadoc/customisation/#multi-table-wo
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.parse_excel" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">parse_excel</span><span class="p">(</span><span class="n">excelfile</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cellrange</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">parse_excel</span><span class="p">(</span><span class="n">excelfile</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cellrange</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">'raise'</span><span class="p">,</span> <span class="n">baseiri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
@@ -3474,29 +3490,29 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_excel</span><span class="p">(</span>
-    <span class="n">excelfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str]&quot;</span><span class="p">,</span>
-    <span class="n">sheet</span><span class="p">:</span> <span class="s2">&quot;Union[str, int]&quot;</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">cellrange</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">keywords</span><span class="p">:</span> <span class="s2">&quot;Optional[KeywordsType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">context</span><span class="p">:</span> <span class="s2">&quot;Optional[ContextType]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">excelfile</span><span class="p">:</span> <span class="s2">"Union[Path, str]"</span><span class="p">,</span>
+    <span class="n">sheet</span><span class="p">:</span> <span class="s2">"Union[str, int]"</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">cellrange</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="p">:</span> <span class="s2">"Optional[KeywordsType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">context</span><span class="p">:</span> <span class="s2">"Optional[ContextType]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">strip</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TableDoc&quot;</span><span class="p">:</span>
+    <span class="n">redefine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
+    <span class="n">baseiri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"TableDoc"</span><span class="p">:</span>
     <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a csv file using the standard library csv module.</span>
+<span class="w">    </span><span class="sd">"""Parse a csv file using the standard library csv module.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        excelfile: Name of Excel file to parse.</span>
 <span class="sd">        sheet: Sheet name or number to load.</span>
-<span class="sd">        cellrange: Cell range to load. Examples: &quot;A1:C4&quot;, &quot;A:C&quot;, &quot;1:4&quot;.</span>
+<span class="sd">        cellrange: Cell range to load. Examples: "A1:C4", "A:C", "1:4".</span>
 <span class="sd">            The default is to read all cells.</span>
 <span class="sd">        type: Type of data to save (applies to all rows).  Should</span>
-<span class="sd">            either be one of the pre-defined names: &quot;Dataset&quot;,</span>
-<span class="sd">            &quot;Distribution&quot;, &quot;AccessService&quot;, &quot;Parser&quot; and &quot;Generator&quot;</span>
+<span class="sd">            either be one of the pre-defined names: "Dataset",</span>
+<span class="sd">            "Distribution", "AccessService", "Parser" and "Generator"</span>
 <span class="sd">            or an IRI to a class in an ontology.</span>
 <span class="sd">        keywords: Keywords object with additional keywords definitions.</span>
 <span class="sd">            If not provided, only default keywords are considered.</span>
@@ -3508,18 +3524,18 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 <span class="sd">            contains an unknown key.</span>
 <span class="sd">        redefine: Determine how to handle redefinition of existing</span>
 <span class="sd">            keywords.  Should be one of the following strings:</span>
-<span class="sd">              - &quot;allow&quot;: Allow redefining a keyword. Emits a</span>
+<span class="sd">              - "allow": Allow redefining a keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
-<span class="sd">              - &quot;skip&quot;: Don&#39;t redefine existing keyword. Emits a</span>
+<span class="sd">              - "skip": Don't redefine existing keyword. Emits a</span>
 <span class="sd">                `RedefineKeywordWarning`.</span>
-<span class="sd">              - &quot;raise&quot;: Raise an RedefineError (default).</span>
+<span class="sd">              - "raise": Raise an RedefineError (default).</span>
 <span class="sd">        baseiri: If given, it will be used as a base iri to</span>
 <span class="sd">            resolve relative IRIs. (I.e. Not valid URLs).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        New TableDoc instance.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">openpyxl</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_workbook</span>
 
@@ -3572,7 +3588,7 @@ resolve relative IRIs. (I.e. Not valid URLs).</p></td>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.save" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">unknown_key</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">unknown_key</span><span class="o">=</span><span class="s1">'raise'</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.tabledoc.TableDoc.save" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3615,20 +3631,20 @@ Returns a dict with the JSON-LD written to the triplestore.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save tabular datadocumentation to triplestore.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span> <span class="n">unknown_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Save tabular datadocumentation to triplestore.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        ts: Triplestore to populate with individuals from the table.</span>
 <span class="sd">        unknown_key: How to handle unknown keywords and relations.</span>
 <span class="sd">                Possible values are:</span>
-<span class="sd">                - &quot;raise&quot;: Raise a `ValidateError` if an unknown keyword is</span>
+<span class="sd">                - "raise": Raise a `ValidateError` if an unknown keyword is</span>
 <span class="sd">                    encountered (default).</span>
-<span class="sd">                - &quot;warn&quot;: Drop unknown keywords and emit an</span>
+<span class="sd">                - "warn": Drop unknown keywords and emit an</span>
 <span class="sd">                    `UnknownKeywordWarning`.</span>
-<span class="sd">                - &quot;ignore&quot;: Drop unknown keywords silently.</span>
+<span class="sd">                - "ignore": Drop unknown keywords silently.</span>
 <span class="sd">            Returns a dict with the JSON-LD written to the triplestore.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
         <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="p">)</span>
@@ -3668,40 +3684,40 @@ Returns a dict with the JSON-LD written to the triplestore.</p></td>
       <p>Return the headers with brackets appended to duplicated labels
 to make them unique.</p>
 <p>For example, the headers</p>
-<div class="language-text highlight"><pre><span></span><code>[&quot;@id&quot;, &quot;@type&quot;, &quot;@type&quot;, &quot;part.name&quot;, &quot;part.name&quot;]
+<div class="language-text highlight"><pre><span></span><code>["@id", "@type", "@type", "part.name", "part.name"]
 </code></pre></div>
 <p>"distribution.downloadURL",</p>
 <p>would be renamed to</p>
-<div class="language-text highlight"><pre><span></span><code>[&quot;@id&quot;, &quot;@type[1]&quot;, &quot;@type[2]&quot;, &quot;part[1].name&quot;, &quot;part[2].name&quot;]
+<div class="language-text highlight"><pre><span></span><code>["@id", "@type[1]", "@type[2]", "part[1].name", "part[2].name"]
 </code></pre></div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">unique_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the headers with brackets appended to duplicated labels</span>
+<span class="w">    </span><span class="sd">"""Return the headers with brackets appended to duplicated labels</span>
 <span class="sd">    to make them unique.</span>
 
 <span class="sd">    For example, the headers</span>
 
-<span class="sd">        [&quot;@id&quot;, &quot;@type&quot;, &quot;@type&quot;, &quot;part.name&quot;, &quot;part.name&quot;]</span>
+<span class="sd">        ["@id", "@type", "@type", "part.name", "part.name"]</span>
 
-<span class="sd">    &quot;distribution.downloadURL&quot;,</span>
+<span class="sd">    "distribution.downloadURL",</span>
 
 <span class="sd">    would be renamed to</span>
 
-<span class="sd">        [&quot;@id&quot;, &quot;@type[1]&quot;, &quot;@type[2]&quot;, &quot;part[1].name&quot;, &quot;part[2].name&quot;]</span>
+<span class="sd">        ["@id", "@type[1]", "@type[2]", "part[1].name", "part[2].name"]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">new</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">h</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="s2">"."</span> <span class="ow">in</span> <span class="n">h</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">seen</span> <span class="k">else</span> <span class="mi">1</span>
             <span class="n">seen</span><span class="p">[</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
-            <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">].</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">tail</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">].</span><span class="si">{</span><span class="n">tail</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">tail</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new</span>
 </code></pre></div>
         </details>
@@ -3716,7 +3732,7 @@ to make them unique.</p>
 
 
 <h3 id="tripper.datadoc.tabledoc.TableDoc.write_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">write_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csvfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel&#39;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">write_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csvfile</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">'excel'</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.tabledoc.TableDoc.write_csv" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3777,14 +3793,14 @@ formatting parameters.  For more details, see
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_csv</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">csvfile</span><span class="p">:</span> <span class="s2">&quot;Union[Path, str, Writer]&quot;</span><span class="p">,</span>
-    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-    <span class="n">dialect</span><span class="p">:</span> <span class="s2">&quot;Union[csv.Dialect, str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;excel&quot;</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">csvfile</span><span class="p">:</span> <span class="s2">"Union[Path, str, Writer]"</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"utf-8"</span><span class="p">,</span>
+    <span class="n">dialect</span><span class="p">:</span> <span class="s2">"Union[csv.Dialect, str]"</span> <span class="o">=</span> <span class="s2">"excel"</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># pylint: disable=line-too-long</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the table to a csv file using the standard library csv module.</span>
+<span class="w">    </span><span class="sd">"""Write the table to a csv file using the standard library csv module.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        csvfile: File-like object or name of CSV file to write.</span>
@@ -3799,7 +3815,7 @@ formatting parameters.  For more details, see
 
 <span class="sd">    References:</span>
 <span class="sd">    [Dialects and Formatting Parameters]: https://docs.python.org/3/library/csv.html#dialects-and-formatting-parameters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="n">dialect</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -3810,7 +3826,7 @@ formatting parameters.  For more details, see
             <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
-                        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">h</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                         <span class="k">break</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
@@ -3822,7 +3838,7 @@ formatting parameters.  For more details, see
             <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">write</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
@@ -3863,30 +3879,30 @@ formatting parameters.  For more details, see
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/tabledoc.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">csvsniff</span><span class="p">(</span><span class="n">sample</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom csv sniffer.</span>
+<span class="w">    </span><span class="sd">"""Custom csv sniffer.</span>
 
 <span class="sd">    Analyse csv sample and returns a csv.Dialect instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Determine line terminator</span>
-    <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">:</span>
-        <span class="n">linesep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">:</span>
+        <span class="n">linesep</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">counts</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="s2">&quot;</span><span class="se">\n\r</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="s2">"</span><span class="se">\n\r</span><span class="s2">"</span><span class="p">}</span>
         <span class="n">linesep</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
 
     <span class="n">lines</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">linesep</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># skip last line since it might be truncated</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">lines</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">csv</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span>
-            <span class="s2">&quot;too long csv header. No line terminator within sample&quot;</span>
+            <span class="s2">"too long csv header. No line terminator within sample"</span>
         <span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># Possible delimiters and quote chars to check</span>
-    <span class="n">delims</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="s2">&quot;,;</span><span class="se">\t</span><span class="s2"> :&quot;</span> <span class="k">if</span> <span class="n">headers</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
-    <span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">q</span><span class="p">)]</span>
+    <span class="n">delims</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="s2">",;</span><span class="se">\t</span><span class="s2"> :"</span> <span class="k">if</span> <span class="n">headers</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
+    <span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="s2">"</span><span class="se">\"</span><span class="s2">'"</span> <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">q</span><span class="p">)]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">quotes</span><span class="p">:</span>
-        <span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">]</span>
+        <span class="n">quotes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'"'</span><span class="p">]</span>
 
     <span class="c1"># For each (quote, delim)-pair, count the number of tokens per line</span>
     <span class="c1"># Only pairs for which all lines has the same number of tokens are added</span>
@@ -3897,8 +3913,8 @@ formatting parameters.  For more details, see
             <span class="n">ntok</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">ln</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
                 <span class="c1"># Remove quoted tokens</span>
-                <span class="n">ln</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">[^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">]*</span><span class="si">{</span><span class="n">q</span><span class="si">}{</span><span class="n">d</span><span class="si">}</span><span class="s2">)|(</span><span class="si">{</span><span class="n">d</span><span class="si">}{</span><span class="n">q</span><span class="si">}</span><span class="s2">[^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">]*</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">$)&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">ln</span><span class="p">)</span>
-                <span class="n">ln</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="si">}{</span><span class="n">q</span><span class="si">}</span><span class="s2">[^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">]*</span><span class="si">{</span><span class="n">q</span><span class="si">}{</span><span class="n">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ln</span><span class="p">)</span>
+                <span class="n">ln</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">"(^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">[^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">]*</span><span class="si">{</span><span class="n">q</span><span class="si">}{</span><span class="n">d</span><span class="si">}</span><span class="s2">)|(</span><span class="si">{</span><span class="n">d</span><span class="si">}{</span><span class="n">q</span><span class="si">}</span><span class="s2">[^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">]*</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">$)"</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">ln</span><span class="p">)</span>
+                <span class="n">ln</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">d</span><span class="si">}{</span><span class="n">q</span><span class="si">}</span><span class="s2">[^</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">]*</span><span class="si">{</span><span class="n">q</span><span class="si">}{</span><span class="n">d</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">d</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ln</span><span class="p">)</span>
                 <span class="n">ntok</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ln</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
 
             <span class="k">if</span> <span class="n">ntok</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">(</span><span class="n">ntok</span><span class="p">)</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">ntok</span><span class="p">):</span>
@@ -3907,21 +3923,21 @@ formatting parameters.  For more details, see
     <span class="c1"># From ntokens, select (quote, delim) pair that results in the highest</span>
     <span class="c1"># number of tokens per line</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ntokens</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">csv</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s2">&quot;not able to determine delimiter&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">csv</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s2">"not able to determine delimiter"</span><span class="p">)</span>
     <span class="n">quote</span><span class="p">,</span> <span class="n">delim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ntokens</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">ntokens</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">dialect</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">Dialect</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom dialect.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Custom dialect."""</span>
 
         <span class="c1"># pylint: disable=too-few-public-methods</span>
-        <span class="n">_name</span> <span class="o">=</span> <span class="s2">&quot;sniffed&quot;</span>
+        <span class="n">_name</span> <span class="o">=</span> <span class="s2">"sniffed"</span>
         <span class="n">delimiter</span> <span class="o">=</span> <span class="n">delim</span>
         <span class="n">doublequote</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># quote chars inside quotes are duplicated</span>
-        <span class="c1"># escapechar = &quot;\\&quot;  # unused</span>
+        <span class="c1"># escapechar = "\\"  # unused</span>
         <span class="n">lineterminator</span> <span class="o">=</span> <span class="n">linesep</span>
         <span class="n">quotechar</span> <span class="o">=</span> <span class="n">quote</span>
         <span class="n">quoting</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_MINIMAL</span>
-        <span class="n">skipinitialspace</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># don&#39;t ignore spaces before a delimiter</span>
+        <span class="n">skipinitialspace</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># don't ignore spaces before a delimiter</span>
         <span class="n">strict</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># be permissive on malformed csv input</span>
 
     <span class="k">return</span> <span class="n">dialect</span>

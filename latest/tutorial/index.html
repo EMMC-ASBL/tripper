@@ -1846,7 +1846,7 @@ Most important are:</p>
 <p>To interface a triplestore, you create an instance of <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/triplestore/#tripper.triplestore.Triplestore">Triplestore</a> providing the name of the triplestore as the <code>backend</code> argument.</p>
 <p>For example, to create an interface to an in-memory <a href="https://rdflib.readthedocs.io/">rdflib</a> triplestore, you can use the <code>rdflib</code> backend:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="namespace-objects">Namespace objects<a class="headerlink" href="#namespace-objects" title="Permanent link">&para;</a></h3>
 <p>Namespace objects are a very convenient feature that simplifies writing IRIs.
@@ -1854,31 +1854,31 @@ Tripper provides a set of standard pre-defined namespaces that can simply be imp
 For example:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">OWL</span><span class="p">,</span> <span class="n">RDFS</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span>
-<span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span>
+<span class="s1">'http://www.w3.org/2000/01/rdf-schema#subClassOf'</span>
 </code></pre></div>
 <p>New namespaces can be created using the <a href="https://emmc-asbl.github.io/tripper/latest/api_reference/namespace/#tripper.namespace.Namespace">Namespace</a> class, but are usually added with the [<code>bind()</code>] method:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;onto&quot;</span><span class="p">,</span> <span class="s2">&quot;http://example.com/onto#&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"onto"</span><span class="p">,</span> <span class="s2">"http://example.com/onto#"</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span>
-<span class="s1">&#39;http://example.com/onto#MyConcept&#39;</span>
+<span class="s1">'http://example.com/onto#MyConcept'</span>
 </code></pre></div>
 <h3 id="adding-triples-to-the-triplestore">Adding triples to the triplestore<a class="headerlink" href="#adding-triples-to-the-triplestore" title="Permanent link">&para;</a></h3>
 <p>Triples can now be added to the triplestore, using the [<code>add()</code>] and [<code>add_triples()</code>] methods:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">en</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">([</span>
 <span class="o">...</span>     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span><span class="p">),</span>
-<span class="o">...</span>     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="s2">&quot;My briliant ontological concept.&quot;</span><span class="p">)),</span>
+<span class="o">...</span>     <span class="p">(</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">en</span><span class="p">(</span><span class="s2">"My briliant ontological concept."</span><span class="p">)),</span>
 <span class="o">...</span> <span class="p">])</span>
 </code></pre></div>
 <p>The function [<code>en()</code>] is just a convenient function for adding English literals.
 It is equivalent to <code>tripper.Literal(msg, lang="en")</code>.</p>
 <p>Triples can also be added from a source using the [<code>parse()</code>] method.
 For example will</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;onto.ttl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"onto.ttl"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">)</span>
 </code></pre></div>
 <p>load all triples in turtle file <code>onto.ttl</code> into the triplestore.</p>
 <p>Similarly, the triplestore can be serialised to a string or a file using the [<code>serialize()</code>] method:</p>
-<div class="language-python highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">&quot;onto2.ttl&quot;</span><span class="p">)</span>  <span class="c1"># serialise to file `onto2.ttl`</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ntriples&quot;</span><span class="p">)</span>  <span class="c1"># serialise to string s in ntriples format</span>
+<div class="language-python highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="s2">"onto2.ttl"</span><span class="p">)</span>  <span class="c1"># serialise to file `onto2.ttl`</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">"ntriples"</span><span class="p">)</span>  <span class="c1"># serialise to string s in ntriples format</span>
 </code></pre></div>
 <h3 id="retrieving-triples-from-and-querying-a-triplestore">Retrieving triples from and querying a triplestore<a class="headerlink" href="#retrieving-triples-from-and-querying-a-triplestore" title="Permanent link">&para;</a></h3>
 <p>A set of convenient functions exist for simple queries, including [<code>triples()</code>], [<code>subjects()</code>], [<code>predicates()</code>], [<code>objects()</code>], [<code>subject_predicates()</code>], [<code>subject_objects()</code>], [<code>predicate_objects()</code>] and [<code>value()</code>].
@@ -1888,7 +1888,7 @@ For example:</p>
 <span class="o">&lt;</span><span class="n">generator</span> <span class="nb">object</span> <span class="n">Triplestore</span><span class="o">.</span><span class="n">objects</span> <span class="n">at</span> <span class="mi">0</span><span class="n">x</span><span class="o">...&gt;</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">MyConcept</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">))</span>
-<span class="p">[</span><span class="s1">&#39;http://www.w3.org/2002/07/owl#Thing&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">'http://www.w3.org/2002/07/owl#Thing'</span><span class="p">]</span>
 </code></pre></div>
 <p>The [<code>query()</code>] and [<code>update()</code>] methods can be used to query and update the triplestore using SPARQL.
 See the next section.</p>
@@ -1901,15 +1901,15 @@ The keyword argument <code>label_annotations=True</code> enables access by <code
 What labels to use can also be specified explicitly.
 The <code>check=True</code> enables checking for existing IRIs.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-<span class="o">...</span>     <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;https://w3id.org/emmo#&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">prefix</span><span class="o">=</span><span class="s2">"emmo"</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">namespace</span><span class="o">=</span><span class="s2">"https://w3id.org/emmo#"</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="c1"># Access by label</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">Atom</span>
-<span class="s1">&#39;https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad&#39;</span>
+<span class="s1">'https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'</span>
 
 <span class="c1"># This fails because we set `check=True`</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">invalid_name</span>  <span class="c1"># doctest: +ELLIPSIS</span>
@@ -1926,12 +1926,12 @@ For example:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">extend_namespace</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
-<span class="o">...</span>     <span class="s2">&quot;http://onto-ns.com/ontologies/examples/food#&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"http://onto-ns.com/ontologies/examples/food#"</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="o">...</span>     <span class="n">triplestore</span><span class="o">=</span><span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food.ttl&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="n">triplestore</span><span class="o">=</span><span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food.ttl"</span><span class="p">,</span>
+<span class="o">...</span>     <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="c1"># Hamburger is not a known label</span>
@@ -1941,8 +1941,8 @@ For example:</p>
 <span class="n">tripper</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NoSuchIRIError</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">onto</span><span class="o">-</span><span class="n">ns</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ontologies</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">food</span><span class="c1">#Hamburger...</span>
 
 <span class="c1"># Add Hamburger to known labels</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span><span class="n">FOOD</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;Hamburger&quot;</span><span class="p">:</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">&quot;Hamburger&quot;</span><span class="p">})</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Hamburger</span> <span class="o">==</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">&quot;Hamburger&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span><span class="n">FOOD</span><span class="p">,</span> <span class="p">{</span><span class="s2">"Hamburger"</span><span class="p">:</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">"Hamburger"</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Hamburger</span> <span class="o">==</span> <span class="n">FOOD</span> <span class="o">+</span> <span class="s2">"Hamburger"</span>
 <span class="kc">True</span>
 
 <span class="c1"># Fish is not a known label</span>
@@ -1954,13 +1954,13 @@ For example:</p>
 <span class="c1"># Extend FOOD from an online turtle file</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">extend_namespace</span><span class="p">(</span>
 <span class="o">...</span>    <span class="n">FOOD</span><span class="p">,</span>
-<span class="o">...</span>    <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food-more.ttl&quot;</span><span class="p">,</span>
-<span class="o">...</span>    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
+<span class="o">...</span>    <span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/master/tests/ontologies/food-more.ttl"</span><span class="p">,</span>
+<span class="o">...</span>    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="c1"># Now Fish is in the namespace</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">FOOD</span><span class="o">.</span><span class="n">Fish</span>
-<span class="s1">&#39;http://onto-ns.com/ontologies/examples/food#FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26&#39;</span>
+<span class="s1">'http://onto-ns.com/ontologies/examples/food#FOOD_90f5dd54_9e5c_46c9_824f_e10625a90c26'</span>
 </code></pre></div>
 <p>Namespace objects also have a few convenient methods, including:</p>
 <ul>
@@ -2006,14 +2006,14 @@ Note:
 1. EMMO classes and properties are written as <code>{EMMO.LengthUnit}</code>, which would expand to <code>https://w3id.org/emmo#EMMO_b3600e73_3e05_479d_9714_c041c3acf5cc</code>.
 2. The curly brackets after the <code>WHERE</code> clause have to be written <code>{{</code>, <code>}}</code> because the query is an f-string.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="c1"># Load pre-inferred EMMO</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="s2">&quot;https://w3id.org/emmo#&quot;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;https://w3id.org/emmo#inferred&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="s2">"https://w3id.org/emmo#"</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"https://w3id.org/emmo#inferred"</span><span class="p">)</span>
 
-<span class="c1"># Bind &quot;emmo&quot; prefix to base_iri</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Bind "emmo" prefix to base_iri</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">EMMO</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"emmo"</span><span class="p">,</span> <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Get IRI and symbol of all length units</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">... PREFIX owl:  &lt;http://www.w3.org/2002/07/owl#&gt;</span>
 <span class="s2">... PREFIX rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span>
 <span class="s2">... PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span>
@@ -2026,9 +2026,9 @@ Note:
 <span class="s2">...   ?r owl:onProperty &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">unitSymbolValue</span><span class="si">}</span><span class="s2">&gt; .</span>
 <span class="s2">...   ?r owl:hasValue ?symbol .</span>
 <span class="s2">... </span><span class="se">}}</span>
-<span class="s2">... &quot;&quot;&quot;</span>
+<span class="s2">... """</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">EMMO</span><span class="o">.</span><span class="n">Metre</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">EMMO</span><span class="o">.</span><span class="n">Metre</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">)</span> <span class="ow">in</span> <span class="n">r</span>
 <span class="kc">True</span>
 </code></pre></div>
 <h3 id="class-restrictions">Class restrictions<a class="headerlink" href="#class-restrictions" title="Permanent link">&para;</a></h3>
@@ -2063,7 +2063,7 @@ With Tripper this can be stated as:</p>
 <p><div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">add_restriction</span><span class="p">(</span>
 <span class="o">...</span>     <span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span>
 <span class="o">...</span>     <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span>
-<span class="o">...</span>     <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exactly&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="nb">type</span><span class="o">=</span><span class="s2">"exactly"</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">cardinality</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">value</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Cell</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
@@ -2074,7 +2074,7 @@ It returns an iterator over all restrictions that matches the provided criteria.
 For example:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS</span>
-<span class="p">[{</span><span class="s1">&#39;iri&#39;</span><span class="p">:</span> <span class="s1">&#39;_:...&#39;</span><span class="p">,</span> <span class="s1">&#39;cls&#39;</span><span class="p">:</span> <span class="s1">&#39;http://example.com/onto#Bacteria&#39;</span><span class="p">,</span> <span class="s1">&#39;property&#39;</span><span class="p">:</span> <span class="s1">&#39;https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;exactly&#39;</span><span class="p">,</span> <span class="s1">&#39;cardinality&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;http://example.com/onto#Cell&#39;</span><span class="p">}]</span>
+<span class="p">[{</span><span class="s1">'iri'</span><span class="p">:</span> <span class="s1">'_:...'</span><span class="p">,</span> <span class="s1">'cls'</span><span class="p">:</span> <span class="s1">'http://example.com/onto#Bacteria'</span><span class="p">,</span> <span class="s1">'property'</span><span class="p">:</span> <span class="s1">'https://w3id.org/emmo#EMMO_17e27c22_37e1_468c_9dd7_95e137f73e7f'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'exactly'</span><span class="p">,</span> <span class="s1">'cardinality'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="s1">'http://example.com/onto#Cell'</span><span class="p">}]</span>
 </code></pre></div>
 <p>With the <code>asdict</code> argument set to false, an iterator over the IRIs of all matching restrictions is returned:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ONTO</span><span class="o">.</span><span class="n">Bacteria</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasPart</span><span class="p">,</span> <span class="n">asdict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -2095,7 +2095,7 @@ The purpose of the [<code>map()</code>] method, is to map a data models and its 
 <p>Lets assume that you have a data model identified by the IRI <code>http://onto-ns.com/meta/ex/0.1/MyDataModel</code>, which has a property (structural element) called <em>velocity</em>.
 A namespace object for this data model can be created with</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespace</span>
-<span class="n">DM</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="s2">&quot;http://onto-ns.com/meta/ex/0.1/MyDataModel#&quot;</span><span class="p">)</span>
+<span class="n">DM</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="s2">"http://onto-ns.com/meta/ex/0.1/MyDataModel#"</span><span class="p">)</span>
 </code></pre></div>
 <p>and use to map the data model property <code>velocity</code> to the concept <code>ONTO.Velocity</code> in the ontology</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">ts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">DM</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">Velocity</span><span class="p">)</span>
@@ -2103,14 +2103,14 @@ A namespace object for this data model can be created with</p>
 <p>One can also work directly with DLite and SOFT7 data models.
 Here we repeat the above with DLite:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
-<span class="n">mymodel</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">&quot;http://onto-ns.com/meta/ex/0.1/MyDataModel&quot;</span><span class="p">)</span>
+<span class="n">mymodel</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="s2">"http://onto-ns.com/meta/ex/0.1/MyDataModel"</span><span class="p">)</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mymodel</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">ONTO</span><span class="o">.</span><span class="n">Velocity</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>add_function()</code> method documents a Python function semantically and adds mappings for its arguments and return value(s).
 Currently, it supports both <a href="https://emmc.eu/emmo/">EMMO</a> and the <a href="https://fno.io/">Function Ontology (FnO)</a> for the semantic documentation.</p>
 <p>For example, to semantically document the general function <code>mean()</code> applied to the special context of arm lengths, one can do</p>
 <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the mean value of `x` and `y`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Returns the mean value of `x` and `y`."""</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
 
 <span class="n">ts</span><span class="o">.</span><span class="n">add_function</span><span class="p">(</span>

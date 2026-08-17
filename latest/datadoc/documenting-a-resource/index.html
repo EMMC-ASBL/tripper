@@ -1776,15 +1776,15 @@ These are further described below.</p>
 <h3 id="single-resource-dict">Single-resource dict<a class="headerlink" href="#single-resource-dict" title="Permanent link">&para;</a></h3>
 <p>Below is a simple example of how to document a SEM image dataset as a Python dict:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;kb:image1&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;sem:SEMImage&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sigurd Wenner&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"@id"</span><span class="p">:</span> <span class="s2">"kb:image1"</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"@type"</span><span class="p">:</span> <span class="s2">"sem:SEMImage"</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"creator"</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>         <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Sigurd Wenner"</span><span class="p">,</span>
 <span class="o">...</span>     <span class="p">},</span>
-<span class="o">...</span>     <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Back-scattered SEM image of cement, polished with 1 um diamond compound.&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>         <span class="s2">&quot;downloadURL&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;mediaType&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.iana.org/assignments/media-types/image/tiff&quot;</span>
+<span class="o">...</span>     <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Back-scattered SEM image of cement, polished with 1 um diamond compound."</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"distribution"</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>         <span class="s2">"downloadURL"</span><span class="p">:</span> <span class="s2">"https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"mediaType"</span><span class="p">:</span> <span class="s2">"https://www.iana.org/assignments/media-types/image/tiff"</span>
 <span class="o">...</span>     <span class="p">}</span>
 <span class="o">...</span> <span class="p">}</span>
 </code></pre></div>
@@ -1792,8 +1792,8 @@ These are further described below.</p>
 <p>This example uses two namespace prefixes not included in the <a href="../prefixes/">predefined prefixes</a>.
 We therefore have to define them explicitly</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="s2">&quot;sem&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/emmo/domain/sem/0.1#&quot;</span><span class="p">,</span>
-<span class="o">...</span>     <span class="s2">&quot;kb&quot;</span><span class="p">:</span> <span class="s2">&quot;http://example.com/kb/&quot;</span>
+<span class="o">...</span>     <span class="s2">"sem"</span><span class="p">:</span> <span class="s2">"https://w3id.org/emmo/domain/sem/0.1#"</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"kb"</span><span class="p">:</span> <span class="s2">"http://example.com/kb/"</span>
 <span class="o">...</span> <span class="p">}</span>
 </code></pre></div>
 <div class="admonition warning">
@@ -1813,21 +1813,21 @@ In addition to add a <code>@context</code> field, this function also adds some i
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>  <span class="c1"># doctest: +SKIP</span>
 </code></pre></div>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://example.com/kb/image1&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/emmo/domain/sem/0.1#SEMImage&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;creator&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="s2">&quot;http://xmlns.com/foaf/0.1/Agent&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">&quot;https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046&quot;</span>
+<span class="w">    </span><span class="nt">"@context"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tripper/context/0.3/context.json"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://example.com/kb/image1"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://w3id.org/emmo/domain/sem/0.1#SEMImage"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"creator"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"http://xmlns.com/foaf/0.1/Agent"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"https://w3id.org/emmo#EMMO_2480b72b_db8d_460f_9a5f_c2912f979046"</span>
 <span class="w">        </span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sigurd Wenner&quot;</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sigurd Wenner"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Back-scattered SEM image of cement, polished with 1 um diamond compound.&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;distribution&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/dcat#Distribution&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;downloadURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;mediaType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://www.iana.org/assignments/media-types/image/tiff&quot;</span>
+<span class="w">    </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Back-scattered SEM image of cement, polished with 1 um diamond compound."</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"distribution"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.w3.org/ns/dcat#Distribution"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"downloadURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"mediaType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://www.iana.org/assignments/media-types/image/tiff"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1836,7 +1836,7 @@ In addition to add a <code>@context</code> field, this function also adds some i
 Since the prefixes "sem" and "kb" are not included in the <a href="../prefixes/">Predefined prefixes</a>, they are have to be provided explicitly.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">store</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 </code></pre></div>
 <p>The returned <code>AttrDict</code> instance is an updated copy of <code>dataset</code> (casted to a dict subclass with attribute access).
@@ -1856,10 +1856,10 @@ It correspond to a valid JSON-LD document and is the same as returned by <a href
 <span class="nn">kb</span><span class="p">:</span><span class="nt">image1</span> <span class="kt">a</span> <span class="nn">sem</span><span class="p">:</span><span class="nt">SEMImage</span> <span class="p">;</span>
     <span class="nn">dcterms</span><span class="p">:</span><span class="nt">creator</span> <span class="p">[</span> <span class="kt">a</span> <span class="nn">foaf</span><span class="p">:</span><span class="nt">Agent</span><span class="p">,</span>
                 <span class="nn">emmo</span><span class="p">:</span><span class="nt">EMMO_2480b72b_db8d_460f_9a5f_c2912f979046</span> <span class="p">;</span>
-            <span class="nn">foaf</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Sigurd Wenner&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">string</span> <span class="p">]</span> <span class="p">;</span>
-    <span class="nn">dcterms</span><span class="p">:</span><span class="nt">description</span> <span class="s">&quot;Back-scattered SEM image of cement, polished with 1 um diamond compound.&quot;</span><span class="p">^^</span><span class="nn">rdf</span><span class="p">:</span><span class="nt">langString</span> <span class="p">;</span>
+            <span class="nn">foaf</span><span class="p">:</span><span class="nt">name</span> <span class="s">"Sigurd Wenner"</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">string</span> <span class="p">]</span> <span class="p">;</span>
+    <span class="nn">dcterms</span><span class="p">:</span><span class="nt">description</span> <span class="s">"Back-scattered SEM image of cement, polished with 1 um diamond compound."</span><span class="p">^^</span><span class="nn">rdf</span><span class="p">:</span><span class="nt">langString</span> <span class="p">;</span>
     <span class="nn">dcat</span><span class="p">:</span><span class="nt">distribution</span> <span class="p">[</span> <span class="kt">a</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">Distribution</span> <span class="p">;</span>
-            <span class="nn">dcat</span><span class="p">:</span><span class="nt">downloadURL</span> <span class="s">&quot;https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">anyURI</span> <span class="p">;</span>
+            <span class="nn">dcat</span><span class="p">:</span><span class="nt">downloadURL</span> <span class="s">"https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/tests/input/77600-23-001_5kV_400x_m001.tif"</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">anyURI</span> <span class="p">;</span>
             <span class="nn">dcat</span><span class="p">:</span><span class="nt">mediaType</span> <span class="nv">&lt;https://www.iana.org/assignments/media-types/image/tiff&gt;</span> <span class="p">]</span> <span class="p">.</span>
 </code></pre></div>
 <p>Note that the image implicitly has been declared to be an individual of the classes <code>dcat:Dataset</code> and <code>emmo:Dataset</code>.
@@ -1890,9 +1890,9 @@ Saving <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/m
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_datadoc</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">save_datadoc</span><span class="p">(</span>  <span class="c1"># doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE</span>
 <span class="o">...</span>    <span class="n">ts</span><span class="p">,</span>
-<span class="o">...</span>    <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml&quot;</span>
+<span class="o">...</span>    <span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.yaml"</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;@context&#39;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> <span class="s1">&#39;@graph&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">'@context'</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span> <span class="s1">'@graph'</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="documenting-as-table">Documenting as table<a class="headerlink" href="#documenting-as-table" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../api_reference/datadoc/tabledoc/#tripper.datadoc.tabledoc.TableDoc">TableDoc</a> class can be used to document multiple resources as rows in a table.</p>
@@ -1901,22 +1901,26 @@ Tripper allows multiple columns with the same keyword in the header.
 Nested fields may be specified as dot-separated keywords.
 Ex: <code>distribution.downloadURL</code>.</p>
 <p>The header keyword(s) may be followed by an optional square bracket with the following syntax (inspired by URL options):</p>
-<div class="language-text highlight"><pre><span></span><code>name[label?var1=value1&amp;var2=value2]
+<div class="language-text highlight"><pre><span></span><code>name[label?key1=value1&amp;key2=value2]
 </code></pre></div>
-<p>where
-- <code>name</code>: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context.
-  The only formal requirement is that it cannot contain a begin brace ([), but it might be wise to be more strict.
-- <code>label</code>: is a label for the column.
+<p>where</p>
+<ul>
+<li><code>name</code>: is the column name that is mapped to a keyword (or set of dot-separated keywords) defined in the JSON-LD context. (<em>required</em>)
+  The only formal requirement is that it cannot contain a begin brace ([), but it might be wise to be more strict.</li>
+<li><code>label</code>: is a label for the column.
   It is used to make the column unique or to group related columns.
-  The only formal requirement is that is cannot contain a question mark (?), but it is probably wise to be more strict.
-  A digit should be allowed.
-- <code>key</code>: a key identifying an option for the column.
-  Should be a valid C or Python identifier (regex: <code>[_a-zA-Z][_a-zA-Z0-9]*</code>).
-- <code>value</code>: the value of a key.
-  Should not contain (unescaped) ampersand (&amp;) or end braces (]).</p>
-<p>Currently recognised keys:
-- <strong><code>unit</code></strong>: A unit symbol. All numbers in this column have this unit.
-- <strong><code>sep</code></strong>: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.</p>
+  The only formal requirement is that is cannot contain a question mark (?) or equal sign (=), but it is probably wise to be more strict.
+  A digit should be allowed.</li>
+<li><code>key</code>: a key identifying an option for the column.
+  Should be a valid C or Python identifier (regex: <code>[_a-zA-Z][_a-zA-Z0-9]*</code>).</li>
+<li><code>value</code>: the value of a key.
+  Should not contain (unescaped) ampersand (&amp;) or end braces (]).</li>
+</ul>
+<p>Currently recognised keys:</p>
+<ul>
+<li><strong><code>unit</code></strong>: A unit symbol. All numbers in this column have this unit.</li>
+<li><strong><code>sep</code></strong>: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.</li>
+</ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The syntax for the square brackets is currently experimental and may change in the future.</p>
@@ -1966,7 +1970,7 @@ Ex: <code>distribution.downloadURL</code>.</p>
 <tr>
 <th>@id</th>
 <th>@type</th>
-<th>length[?unit=m]</th>
+<th>length[unit=m]</th>
 </tr>
 </thead>
 <tbody>
@@ -1983,7 +1987,7 @@ Ex: <code>distribution.downloadURL</code>.</p>
 <tr>
 <th>@id</th>
 <th>@type</th>
-<th>keyword[?sep=;]</th>
+<th>keyword[sep=;]</th>
 </tr>
 </thead>
 <tbody>
@@ -1991,6 +1995,41 @@ Ex: <code>distribution.downloadURL</code>.</p>
 <td>ex:mydata</td>
 <td>emmo:Dataset</td>
 <td>geology;stone;cave</td>
+</tr>
+</tbody>
+</table>
+<p>Combining label ('temsample') and unit ('unit=mm'):</p>
+<table>
+<thead>
+<tr>
+<th>@id</th>
+<th>@type</th>
+<th>diameter[temsample?unit=mm]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ex:mydata</td>
+<td>emmo:Dataset</td>
+<td>3.0</td>
+</tr>
+</tbody>
+</table>
+<p>Same as above, but with sample being a blank node (labeled 'temsample') with property <code>diameter</code> (with unit mm).
+In this case, we put the label on the <code>hasSample</code> property and the unit on the <code>diameter</code> property:</p>
+<table>
+<thead>
+<tr>
+<th>@id</th>
+<th>@type</th>
+<th>hasSample[temsample].diameter[unit=mm]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ex:mydata</td>
+<td>emmo:Dataset</td>
+<td>3.0</td>
 </tr>
 </tbody>
 </table>
@@ -2017,48 +2056,48 @@ Ex: <code>distribution.downloadURL</code>.</p>
 <p>corresponds to the following turtle representation:</p>
 <div class="language-turtle highlight"><pre><span></span><code><span class="p">:</span><span class="nt">a</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">distribution</span> <span class="p">[</span>
     <span class="kt">a</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">Distribution</span> <span class="p">;</span>
-    <span class="err">downloadURL</span> <span class="s">&quot;http://example.com/a.txt&quot;</span> <span class="p">]</span> <span class="p">.</span>
+    <span class="err">downloadURL</span> <span class="s">"http://example.com/a.txt"</span> <span class="p">]</span> <span class="p">.</span>
 
 <span class="p">:</span><span class="nt">b</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">distribution</span> <span class="p">[</span>
     <span class="kt">a</span> <span class="nn">dcat</span><span class="p">:</span><span class="nt">Distribution</span> <span class="p">;</span>
-    <span class="err">downloadURL</span> <span class="s">&quot;http://example.com/b.txt&quot;</span> <span class="p">]</span> <span class="p">.</span>
+    <span class="err">downloadURL</span> <span class="s">"http://example.com/b.txt"</span> <span class="p">]</span> <span class="p">.</span>
 </code></pre></div>
 <p>The below example shows how to save all datasets listed in the CSV file <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv">semdata.csv</a> to a triplestore.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">TableDoc</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s2">"ddoc:datadoc"</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
 <span class="o">...</span>     <span class="p">{</span>
-<span class="o">...</span>         <span class="s2">&quot;ssbd&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/ssbd/&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;prov&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.w3.org/ns/prov#&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;wasDerivedFrom&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>             <span class="c1"># should be &quot;prov:wasDerivedFrom&quot; in the table header</span>
-<span class="o">...</span>             <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;prov:wasDerivedFrom&quot;</span><span class="p">,</span>
-<span class="o">...</span>             <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"ssbd"</span><span class="p">:</span> <span class="s2">"https://w3id.org/ssbd/"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"prov"</span><span class="p">:</span> <span class="s2">"http://www.w3.org/ns/prov#"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"wasDerivedFrom"</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>             <span class="c1"># should be "prov:wasDerivedFrom" in the table header</span>
+<span class="o">...</span>             <span class="s2">"@id"</span><span class="p">:</span> <span class="s2">"prov:wasDerivedFrom"</span><span class="p">,</span>
+<span class="o">...</span>             <span class="s2">"@type"</span><span class="p">:</span> <span class="s2">"@id"</span><span class="p">,</span>
 <span class="o">...</span>         <span class="p">},</span>
-<span class="o">...</span>         <span class="s2">&quot;ssbd:wasDerivedFrom&quot;</span><span class="p">:</span> <span class="p">{</span>
-<span class="o">...</span>             <span class="c1"># should be &quot;https://w3id.org/ssbd/wasDerivedFrom&quot;</span>
+<span class="o">...</span>         <span class="s2">"ssbd:wasDerivedFrom"</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>             <span class="c1"># should be "https://w3id.org/ssbd/wasDerivedFrom"</span>
 <span class="o">...</span>             <span class="c1"># in the table header</span>
-<span class="o">...</span>             <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;ssbd:wasDerivedFrom&quot;</span><span class="p">,</span>
-<span class="o">...</span>             <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span>
+<span class="o">...</span>             <span class="s2">"@id"</span><span class="p">:</span> <span class="s2">"ssbd:wasDerivedFrom"</span><span class="p">,</span>
+<span class="o">...</span>             <span class="s2">"@type"</span><span class="p">:</span> <span class="s2">"@id"</span><span class="p">,</span>
 <span class="o">...</span>        <span class="p">},</span>
 <span class="o">...</span>     <span class="p">}</span>
 <span class="o">...</span> <span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">td</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
-<span class="o">...</span>     <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/semdata.csv"</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
 <span class="o">...</span>     <span class="n">prefixes</span><span class="o">=</span><span class="p">{</span>
-<span class="o">...</span>         <span class="s2">&quot;sem&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/emmo/domain/sem/0.1#&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;semdata&quot;</span><span class="p">:</span> <span class="s2">&quot;https://he-matchmaker.eu/data/sem/&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="s2">&quot;https://he-matchmaker.eu/sample/&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;mat&quot;</span><span class="p">:</span> <span class="s2">&quot;https://he-matchmaker.eu/material/&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;dm&quot;</span><span class="p">:</span> <span class="s2">&quot;http://onto-ns.com/meta/characterisation/0.1/SEMImage#&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;par&quot;</span><span class="p">:</span> <span class="s2">&quot;http://sintef.no/dlite/parser#&quot;</span><span class="p">,</span>
-<span class="o">...</span>         <span class="s2">&quot;gen&quot;</span><span class="p">:</span> <span class="s2">&quot;http://sintef.no/dlite/generator#&quot;</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"sem"</span><span class="p">:</span> <span class="s2">"https://w3id.org/emmo/domain/sem/0.1#"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"semdata"</span><span class="p">:</span> <span class="s2">"https://he-matchmaker.eu/data/sem/"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"sample"</span><span class="p">:</span> <span class="s2">"https://he-matchmaker.eu/sample/"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"mat"</span><span class="p">:</span> <span class="s2">"https://he-matchmaker.eu/material/"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"dm"</span><span class="p">:</span> <span class="s2">"http://onto-ns.com/meta/characterisation/0.1/SEMImage#"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"par"</span><span class="p">:</span> <span class="s2">"http://sintef.no/dlite/parser#"</span><span class="p">,</span>
+<span class="o">...</span>         <span class="s2">"gen"</span><span class="p">:</span> <span class="s2">"http://sintef.no/dlite/generator#"</span><span class="p">,</span>
 <span class="o">...</span>     <span class="p">},</span>
 <span class="o">...</span> <span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>

@@ -1790,11 +1790,11 @@ The default is to only make one attempt to access the dataset.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">distributions</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence[str]]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence[str]]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load dataset with given IRI from its source.</span>
+<span class="w">    </span><span class="sd">"""Load dataset with given IRI from its source.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore documenting the data to load.</span>
@@ -1813,40 +1813,40 @@ The default is to only make one attempt to access the dataset.</p></td>
 
 <span class="sd">    Note:</span>
 <span class="sd">        For now this requires DLite.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
     <span class="c1"># Use the Protocol plugin system from DLite.  Should we move it to tripper?</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">dlite.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span>
 
     <span class="n">dct</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;expected IRI &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; to be a dataset, but got: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;@type&#39;</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"expected IRI '</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">' to be a dataset, but got: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span><span class="w"> </span><span class="s1">'@type'</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">distributions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">distributions</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">)</span>
+        <span class="n">distributions</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="s2">"distribution"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">distributions</span><span class="p">:</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;downloadURL&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;accessURL&quot;</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"downloadURL"</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"accessURL"</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
             <span class="c1"># Mapping of supported schemes - should be moved into the protocol</span>
             <span class="c1"># module.</span>
             <span class="n">schemes</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;https&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
+                <span class="s2">"https"</span><span class="p">:</span> <span class="s2">"http"</span><span class="p">,</span>
             <span class="p">}</span>
-            <span class="n">scheme</span> <span class="o">=</span> <span class="n">schemes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span> <span class="k">else</span> <span class="s2">&quot;file&quot;</span>
+            <span class="n">scheme</span> <span class="o">=</span> <span class="n">schemes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span> <span class="k">else</span> <span class="s2">"file"</span>
             <span class="n">location</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">netloc</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">netloc</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">netloc</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="nb">id</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">dist</span><span class="o">.</span><span class="n">accessService</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;identifier&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-                <span class="k">if</span> <span class="s2">&quot;accessService&quot;</span> <span class="ow">in</span> <span class="n">dist</span>
+                <span class="n">dist</span><span class="o">.</span><span class="n">accessService</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"identifier"</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                <span class="k">if</span> <span class="s2">"accessService"</span> <span class="ow">in</span> <span class="n">dist</span>
                 <span class="k">else</span> <span class="kc">None</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span><span class="p">):</span>
@@ -1862,12 +1862,12 @@ The default is to only make one attempt to access the dataset.</p></td>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;cannot access dataset &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; using &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;scheme=</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">, location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;and options=&#39;</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                            <span class="sa">f</span><span class="s2">"cannot access dataset '</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">' using "</span>
+                            <span class="sa">f</span><span class="s2">"scheme=</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">, location=</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2"> "</span>
+                            <span class="sa">f</span><span class="s2">"and options='</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="si">}</span><span class="s2">'"</span>
                         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
-    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot access dataset: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot access dataset: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -1881,7 +1881,7 @@ The default is to only make one attempt to access the dataset.</p></td>
 
 
 <h2 id="tripper.datadoc.dataaccess.save" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">class_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">class_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">'raise'</span><span class="p">)</span></code>
 
 
 <a href="#tripper.datadoc.dataaccess.save" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2003,15 +2003,15 @@ with the same id as <code>source</code>. Possible values are:
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
     <span class="n">ts</span><span class="p">:</span> <span class="n">Triplestore</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
-    <span class="n">class_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dataset</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">distribution</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, dict]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">generator</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+    <span class="n">class_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">distribution</span><span class="p">:</span> <span class="s2">"Optional[Union[str, dict]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">generator</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefixes</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_sparql</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Saves data to a dataresource and document it in the triplestore.</span>
+<span class="w">    </span><span class="sd">"""Saves data to a dataresource and document it in the triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore that documents the data to save.</span>
@@ -2024,14 +2024,14 @@ with the same id as <code>source</code>. Possible values are:
 <span class="sd">            added to `class_iri`</span>
 <span class="sd">        dataset: Either the IRI of the dataset individual standing for</span>
 <span class="sd">            the data to be saved or or a dict that in addition to the IRI</span>
-<span class="sd">            (&#39;@id&#39; keyword) can provide with additional documentation of</span>
+<span class="sd">            ('@id' keyword) can provide with additional documentation of</span>
 <span class="sd">            the dataset.</span>
 <span class="sd">            If `dataset` is None, a new blank node IRI will be created.</span>
 <span class="sd">        distribution: Either the IRI of distribution for the data to be saved</span>
 <span class="sd">            or a dict additional documentation of the distribution,</span>
 <span class="sd">            like media type, parsers, generators etc...</span>
 <span class="sd">            If `distribution` is None and dataset is not a dict with a</span>
-<span class="sd">            &#39;distribution&#39; keyword, a new distribution will be added</span>
+<span class="sd">            'distribution' keyword, a new distribution will be added</span>
 <span class="sd">            to the dataset.</span>
 <span class="sd">        generator: Name of generator to use in case the distribution has</span>
 <span class="sd">            several generators.</span>
@@ -2041,19 +2041,19 @@ with the same id as <code>source</code>. Possible values are:
 <span class="sd">            Defaults to `ts.prefer_sparql`.</span>
 <span class="sd">        method: How to handle the case where `ts` already contains a document</span>
 <span class="sd">            with the same id as `source`. Possible values are:</span>
-<span class="sd">            - &quot;overwrite&quot;: Remove existing documentation before storing.</span>
-<span class="sd">            - &quot;raise&quot;: Raise an `IRIExistsError` if the IRI of `source`</span>
+<span class="sd">            - "overwrite": Remove existing documentation before storing.</span>
+<span class="sd">            - "raise": Raise an `IRIExistsError` if the IRI of `source`</span>
 <span class="sd">              already exits in the triplestore (default).</span>
-<span class="sd">            - &quot;merge&quot;: Merge `source` with existing documentation. This will</span>
+<span class="sd">            - "merge": Merge `source` with existing documentation. This will</span>
 <span class="sd">              duplicate non-literal properties with no explicit `@id`. If this</span>
-<span class="sd">              is unwanted, merge manually and use &quot;overwrite&quot;.</span>
-<span class="sd">            - &quot;ignore&quot;: If the IRI of `source` already exists, do nothing but</span>
+<span class="sd">              is unwanted, merge manually and use "overwrite".</span>
+<span class="sd">            - "ignore": If the IRI of `source` already exists, do nothing but</span>
 <span class="sd">              issueing an `IRIExistsWarning`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        IRI of the dataset.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=too-many-locals,too-many-branches,too-many-statements</span>
     <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
     <span class="c1"># Use the Protocol plugin system from DLite.  Should we move it to tripper?</span>
@@ -2065,9 +2065,9 @@ with the same id as <code>source</code>. Possible values are:
     <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># __TODO__: Infer dataset from value restriction on `class_iri`</span>
         <span class="c1"># This require that we make a SPARQL-version of ts.restriction().</span>
-        <span class="n">newiri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:N</span><span class="si">{</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">newiri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:N</span><span class="si">{</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">typeiri</span> <span class="o">=</span> <span class="p">[</span><span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">class_iri</span><span class="p">]</span> <span class="k">if</span> <span class="n">class_iri</span> <span class="k">else</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span>
-        <span class="n">dataset</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">({</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">newiri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">typeiri</span><span class="p">})</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">({</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">newiri</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">:</span> <span class="n">typeiri</span><span class="p">})</span>
         <span class="n">save_dataset</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">dset</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
@@ -2075,26 +2075,26 @@ with the same id as <code>source</code>. Possible values are:
             <span class="n">dataset</span> <span class="o">=</span> <span class="n">dset</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">typeiri</span> <span class="o">=</span> <span class="p">[</span><span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">class_iri</span><span class="p">]</span> <span class="k">if</span> <span class="n">class_iri</span> <span class="k">else</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Dataset</span>
-            <span class="n">dataset</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">({</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">typeiri</span><span class="p">})</span>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">({</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">:</span> <span class="n">typeiri</span><span class="p">})</span>
             <span class="n">save_dataset</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">save_dataset</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;if given, `dataset` should be either a string or dict&quot;</span>
+            <span class="s2">"if given, `dataset` should be either a string or dict"</span>
         <span class="p">)</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="nb">dict</span>  <span class="c1"># Tell mypy that this now is a dict</span>
 
     <span class="k">if</span> <span class="n">distribution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;distribution&quot;</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
-            <span class="n">distribution</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"distribution"</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">distribution</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">"distribution"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">newiri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:N</span><span class="si">{</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">newiri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:N</span><span class="si">{</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">distribution</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">newiri</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Distribution</span><span class="p">}</span>
+                <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">newiri</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">:</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Distribution</span><span class="p">}</span>
             <span class="p">)</span>
-            <span class="n">add</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)</span>
-            <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">newiri</span><span class="p">))</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">"distribution"</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)</span>
+            <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dataset</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">newiri</span><span class="p">))</span>
             <span class="n">save_distribution</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">distr</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="n">distribution</span><span class="p">,</span> <span class="n">use_sparql</span><span class="o">=</span><span class="n">use_sparql</span><span class="p">)</span>
@@ -2102,40 +2102,40 @@ with the same id as <code>source</code>. Possible values are:
             <span class="n">distribution</span> <span class="o">=</span> <span class="n">distr</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">distribution</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Distribution</span><span class="p">}</span>
+                <span class="p">{</span><span class="s2">"@id"</span><span class="p">:</span> <span class="n">distribution</span><span class="p">,</span> <span class="s2">"@type"</span><span class="p">:</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">Distribution</span><span class="p">}</span>
             <span class="p">)</span>
-            <span class="n">add</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)</span>
-            <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">newiri</span><span class="p">))</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s2">"distribution"</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)</span>
+            <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dataset</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">newiri</span><span class="p">))</span>
             <span class="n">save_distribution</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">add</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">distribution</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">distribution</span><span class="p">:</span>
             <span class="n">triples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">distribution</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">])</span>
+                <span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">],</span> <span class="n">DCAT</span><span class="o">.</span><span class="n">distribution</span><span class="p">,</span> <span class="n">distribution</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">])</span>
             <span class="p">)</span>
         <span class="n">save_distribution</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;if given, `distribution` should be either a string or dict&quot;</span>
+            <span class="s2">"if given, `distribution` should be either a string or dict"</span>
         <span class="p">)</span>
     <span class="n">distribution</span><span class="p">:</span> <span class="nb">dict</span>  <span class="c1"># Tell mypy that this now is a dict</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">gen</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">)</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="s2">"generator"</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="n">gen</span> <span class="o">=</span> <span class="p">[</span><span class="n">gen</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">gen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">generator</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">gen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"@id"</span><span class="p">)</span> <span class="o">==</span> <span class="n">generator</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">break</span>  <span class="c1"># ???</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;dataset &#39;</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&#39; has no such generator: </span><span class="si">{</span><span class="n">generator</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"dataset '</span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">' has no such generator: </span><span class="si">{</span><span class="n">generator</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
-    <span class="k">elif</span> <span class="s2">&quot;generator&quot;</span> <span class="ow">in</span> <span class="n">distribution</span><span class="p">:</span>
-        <span class="n">gen</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">"generator"</span> <span class="ow">in</span> <span class="n">distribution</span><span class="p">:</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="s2">"generator"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">gen</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -2145,44 +2145,44 @@ with the same id as <code>source</code>. Possible values are:
     <span class="c1"># __TODO__: Move this mapping of supported schemes into the protocol</span>
     <span class="c1"># module.</span>
     <span class="n">schemes</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;https&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
+        <span class="s2">"https"</span><span class="p">:</span> <span class="s2">"http"</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># Save data</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;downloadURL&quot;</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;accessURL&quot;</span><span class="p">))</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"downloadURL"</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"accessURL"</span><span class="p">))</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">url</span><span class="p">))</span>
     <span class="n">scheme</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">schemes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span> <span class="k">else</span> <span class="s2">&quot;file&quot;</span>  <span class="c1"># type: ignore</span>
+        <span class="n">schemes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">scheme</span> <span class="k">else</span> <span class="s2">"file"</span>  <span class="c1"># type: ignore</span>
     <span class="p">)</span>
     <span class="n">location</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">netloc</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">netloc</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">netloc</span><span class="si">}{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">netloc</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">query</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">query</span> <span class="k">else</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">gen</span> <span class="ow">and</span> <span class="s2">&quot;configuration&quot;</span> <span class="ow">in</span> <span class="n">gen</span> <span class="ow">and</span> <span class="s2">&quot;options&quot;</span> <span class="ow">in</span> <span class="n">gen</span><span class="o">.</span><span class="n">configuration</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">gen</span> <span class="ow">and</span> <span class="s2">"configuration"</span> <span class="ow">in</span> <span class="n">gen</span> <span class="ow">and</span> <span class="s2">"options"</span> <span class="ow">in</span> <span class="n">gen</span><span class="o">.</span><span class="n">configuration</span><span class="p">:</span>
         <span class="c1"># __TODO__: allow options to also be a dict</span>
-        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">])</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">"options"</span><span class="p">])</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">distribution</span><span class="p">[</span><span class="s2">&quot;accessService&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;identifier&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;accessService&quot;</span> <span class="ow">in</span> <span class="n">distribution</span>
+        <span class="n">distribution</span><span class="p">[</span><span class="s2">"accessService"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"identifier"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"accessService"</span> <span class="ow">in</span> <span class="n">distribution</span>
         <span class="k">else</span> <span class="kc">None</span>
     <span class="p">)</span>
-    <span class="k">with</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="s2">&quot;;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">))</span> <span class="k">as</span> <span class="n">pr</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">Protocol</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="s2">";"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">))</span> <span class="k">as</span> <span class="n">pr</span><span class="p">:</span>
         <span class="n">pr</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
 
     <span class="c1"># Update triplestore</span>
     <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span><span class="n">triples</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">save_dataset</span><span class="p">:</span>
-        <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;Dataset&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">store</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"Dataset"</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">save_distribution</span><span class="p">:</span>
         <span class="n">store</span><span class="p">(</span>
             <span class="n">ts</span><span class="p">,</span>
             <span class="n">distribution</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;Distribution&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">"Distribution"</span><span class="p">,</span>
             <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>

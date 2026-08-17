@@ -1982,14 +1982,14 @@ keyword themes.</p>
 </ul>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span>
 
-<span class="c1"># Default behaviour: loads the default theme (&quot;ddoc:datadoc&quot;)</span>
+<span class="c1"># Default behaviour: loads the default theme ("ddoc:datadoc")</span>
 <span class="n">ctx_default</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">()</span>
 
 <span class="c1"># Explicitly load one theme</span>
-<span class="n">ctx_theme</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s2">&quot;ddoc:datadoc&quot;</span><span class="p">)</span>
+<span class="n">ctx_theme</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="s2">"ddoc:datadoc"</span><span class="p">)</span>
 
 <span class="c1"># Disable theme loading and only use the provided context</span>
-<span class="n">ctx_custom</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;https://example.org/context/&quot;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">ctx_custom</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">"https://example.org/context/"</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 <p>To list installed themes in your environment, run:</p>
 <div class="language-console highlight"><pre><span></span><code><span class="go">keywords --list-themes</span>
@@ -2013,7 +2013,7 @@ A description of how to define new concepts in the JSON-LD context is given by <
 <p>A new custom keyword can be added by providing mapping in a custom JSON-LD context from the keyword to the IRI of the corresponding concept in an ontology.</p>
 <p>Lets assume that you already have a domain ontology with base IRI http://example.com/myonto#, that defines the concepts for the keywords you want to use for the data documentation.</p>
 <p>First, you can add the prefix for the base IRI of your domain ontology to a custom JSON-LD context</p>
-<div class="language-json highlight"><pre><span></span><code><span class="nt">&quot;myonto&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://example.com/myonto#&quot;</span><span class="p">,</span>
+<div class="language-json highlight"><pre><span></span><code><span class="nt">"myonto"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://example.com/myonto#"</span><span class="p">,</span>
 </code></pre></div>
 <p>How the keywords should be specified in the context depends on whether they correspond to a data property or an object property in the ontology and whether a given datatype is expected.</p>
 <h3 id="simple-literal">Simple literal<a class="headerlink" href="#simple-literal" title="Permanent link">&para;</a></h3>
@@ -2021,13 +2021,13 @@ A description of how to define new concepts in the JSON-LD context is given by <
 <p>Assume you want to add the keyword <code>batchNumber</code> to relate documented samples to the number assigned to the batch they are taken from.
 It corresponds to the data property http://example.com/myonto#batchNumber in your domain ontology.
 By adding the following mapping to your custom JSON-LD context, <code>batchNumber</code> becomes available as a keyword for your data documentation:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="nt">&quot;batchNumber&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;myonto:batchNumber&quot;</span><span class="p">,</span>
+<div class="language-json highlight"><pre><span></span><code><span class="nt">"batchNumber"</span><span class="p">:</span><span class="w"> </span><span class="s2">"myonto:batchNumber"</span><span class="p">,</span>
 </code></pre></div>
 <h3 id="literal-with-specific-datatype">Literal with specific datatype<a class="headerlink" href="#literal-with-specific-datatype" title="Permanent link">&para;</a></h3>
 <p>If <code>batchNumber</code> must always be an integer, you can specify this by replacing the above mapping with the following:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="nt">&quot;batchNumber&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;myonto:batchNumber&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xsd:integer&quot;</span>
+<div class="language-json highlight"><pre><span></span><code><span class="nt">"batchNumber"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"myonto:batchNumber"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xsd:integer"</span>
 <span class="p">},</span>
 </code></pre></div>
 <p>Here "@id" refer to the IRI <code>batchNumber</code> is mapped to and "@type" its datatype. In this case we use <code>xsd:integer</code>, which is defined in the W3C <code>xsd</code> vocabulary.</p>
@@ -2036,9 +2036,9 @@ By adding the following mapping to your custom JSON-LD context, <code>batchNumbe
 <p>If you want to say more about the batches, you may want to store them as individuals in the knowledge base.
 In that case, you may want to add a keyword <code>fromBatch</code> which relate your sample to the batch it was taken from.
 In your ontology you may define <code>fromBatch</code> as a object property with IRI: http://example.com/myonto/fromBatch.</p>
-<div class="language-json highlight"><pre><span></span><code><span class="nt">&quot;fromBatch&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;myonto:fromBatch&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span>
+<div class="language-json highlight"><pre><span></span><code><span class="nt">"fromBatch"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"@id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"myonto:fromBatch"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"@type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@id"</span>
 <span class="p">},</span>
 </code></pre></div>
 <p>Here the special value "@id" for the "@type" means that the value of <code>fromBatch</code> must be an IRI.</p>
@@ -2049,22 +2049,22 @@ It is therefore advisable to only use one source of truth, namely the ontology.<
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_keywords</span>
 
-<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s1">&#39;rdflib&#39;</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s1">'rdflib'</span><span class="p">)</span>
 
 <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-    <span class="s1">&#39;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl&#39;</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">,</span>
+    <span class="s1">'https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/ontologies/family.ttl'</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">'turtle'</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">kw</span> <span class="o">=</span>  <span class="n">get_keywords</span><span class="p">()</span> <span class="c1"># create an Keywords instance populated with the default keywords (ddoc:datadoc)</span>
 <span class="c1"># Before loading the keywords file it is required that all namespaces have a prefix.</span>
 <span class="c1"># The family namespace does not have prefix by defualt and it must be added:</span>
-<span class="n">kw</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="s1">&#39;fam&#39;</span><span class="p">,</span> <span class="s1">&#39;http://onto-ns.com/ontologies/examples/family#&#39;</span><span class="p">)</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="s1">'fam'</span><span class="p">,</span> <span class="s1">'http://onto-ns.com/ontologies/examples/family#'</span><span class="p">)</span>
 
 <span class="c1"># We can now load the ontology into the keywords</span>
-<span class="n">kw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;skip&#39;</span><span class="p">)</span> <span class="c1"># keywords that are already defined are skipped</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">'skip'</span><span class="p">)</span> <span class="c1"># keywords that are already defined are skipped</span>
 <span class="c1"># or</span>
-<span class="n">lw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">&#39;allow&#39;</span><span class="p">)</span> <span class="c1"># keywords that are already defined are redefined</span>
+<span class="n">lw</span><span class="o">.</span><span class="n">load_rdf</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">redefine</span><span class="o">=</span><span class="s1">'allow'</span><span class="p">)</span> <span class="c1"># keywords that are already defined are redefined</span>
 </code></pre></div>
 <p>Note that there are a few considerations when generating a context from an ontology:</p>
 <p>First of all, labels that are the same as predefined keywords must be handled with care.
@@ -2084,15 +2084,15 @@ In order to generate keywords from an ontology without redefining existing keywo
 </ul>
 <p>For example</p>
 <div class="language-python highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">"@context"</span><span class="p">:</span> <span class="p">[</span>
         <span class="c1"># URL to a JSON file, typically a domain-specific context</span>
-        <span class="s2">&quot;https://json-ld.org/contexts/person.jsonld&quot;</span><span class="p">,</span>
+        <span class="s2">"https://json-ld.org/contexts/person.jsonld"</span><span class="p">,</span>
 
         <span class="c1"># Local context</span>
         <span class="p">{</span>
-            <span class="s2">&quot;fromBatch&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;myonto:fromBatch&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span>
+            <span class="s2">"fromBatch"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"@id"</span><span class="p">:</span> <span class="s2">"myonto:fromBatch"</span><span class="p">,</span>
+                <span class="s2">"@type"</span><span class="p">:</span> <span class="s2">"@id"</span>
             <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">],</span>
@@ -2109,16 +2109,16 @@ An additional "kb" prefix (used for documented resources) is defined with the <c
 <div class="language-yaml highlight"><pre><span></span><code><span class="nn">---</span>
 
 <span class="c1"># Custom context</span>
-<span class="s">&quot;@context&quot;</span><span class="p p-Indicator">:</span>
+<span class="s">"@context"</span><span class="p p-Indicator">:</span>
 <span class="w">  </span><span class="nt">myonto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://example.com/myonto#</span>
 
 <span class="w">  </span><span class="nt">batchNumber</span><span class="p">:</span>
-<span class="w">    </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:batchNumber</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:integer</span>
+<span class="w">    </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:batchNumber</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:integer</span>
 
 <span class="w">  </span><span class="nt">fromBatch</span><span class="p">:</span>
-<span class="w">    </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:fromBatch</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;@id&quot;</span>
+<span class="w">    </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:fromBatch</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">"@id"</span>
 
 
 <span class="c1"># Additional prefixes</span>
@@ -2128,37 +2128,37 @@ An additional "kb" prefix (used for documented resources) is defined with the <c
 
 <span class="nt">resources</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Samples</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:sampleA</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chameo:Sample</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:sampleA</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chameo:Sample</span>
 <span class="w">    </span><span class="nt">fromBatch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch1</span>
 
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:sampleB</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chameo:Sample</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:sampleB</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chameo:Sample</span>
 <span class="w">    </span><span class="nt">fromBatch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch1</span>
 
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:sampleC</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chameo:Sample</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:sampleC</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chameo:Sample</span>
 <span class="w">    </span><span class="nt">fromBatch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch2</span>
 
 <span class="w">  </span><span class="c1"># Batches</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch1</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:Batch</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch1</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:Batch</span>
 <span class="w">    </span><span class="nt">batchNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;@id&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch2</span>
-<span class="w">    </span><span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:Batch</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"@id"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kb:batch2</span>
+<span class="w">    </span><span class="s">"@type"</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myonto:Batch</span>
 <span class="w">    </span><span class="nt">batchNumber</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
 <p>You can save this context to a triplestore with</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_datadoc</span>
 <span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">save_datadoc</span><span class="p">(</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="o">...</span>     <span class="n">ts</span><span class="p">,</span>
-<span class="o">...</span>     <span class="s2">&quot;https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml&quot;</span><span class="p">,</span>
+<span class="o">...</span>     <span class="s2">"https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/master/tests/input/custom_context.yaml"</span><span class="p">,</span>
 <span class="o">...</span> <span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;@context&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">'@context'</span><span class="p">:</span> <span class="o">...</span><span class="p">}</span>
 </code></pre></div>
 <p>The content of the triplestore should now be</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
@@ -2211,20 +2211,20 @@ When two tables are parsed independently (even with the same <code>context</code
 <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_context</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
 
-<span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;https://example.org/context/&quot;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;myns&quot;</span><span class="p">:</span> <span class="s2">&quot;https://example.org/myns/&quot;</span><span class="p">}</span>
+<span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">"https://example.org/context/"</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"myns"</span><span class="p">:</span> <span class="s2">"https://example.org/myns/"</span><span class="p">}</span>
 
-<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
 
 <span class="c1"># 1. Parse and store the table that defines classes</span>
-<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;classes.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"classes.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 <span class="n">classes_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 
 <span class="c1"># 2. Register the newly-parsed classes in the shared context</span>
 <span class="n">update_context</span><span class="p">(</span><span class="n">classes_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">(),</span> <span class="n">context</span><span class="p">)</span>
 
 <span class="c1"># 3. Now parse tables and store that reference those classes — restrictions will be inferred correctly</span>
-<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;resources.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"resources.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 <span class="n">resources_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 </code></pre></div>
 <p>This pattern applies whenever:</p>
@@ -2239,14 +2239,14 @@ When two tables are parsed independently (even with the same <code>context</code
 <div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_context</span><span class="p">,</span> <span class="n">TableDoc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.datadoc.dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">store</span>
 
-<span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">&quot;https://example.org/context/&quot;</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;myns&quot;</span><span class="p">:</span> <span class="s2">&quot;https://example.org/myns/&quot;</span><span class="p">}</span>
+<span class="n">context</span> <span class="o">=</span> <span class="n">get_context</span><span class="p">(</span><span class="s2">"https://example.org/context/"</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">prefixes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"myns"</span><span class="p">:</span> <span class="s2">"https://example.org/myns/"</span><span class="p">}</span>
 
 <span class="c1"># 1. Parse the table that defines classes</span>
-<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;classes.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">classes_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"classes.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 
 <span class="c1"># 2. Parse the table that defines resources that reference those classes</span>
-<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">&quot;resources.csv&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
+<span class="n">resources_doc</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span><span class="s2">"resources.csv"</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">)</span>
 
 <span class="c1"># 3. Create one big dict with all resources from all tables</span>
 <span class="n">dicts</span> <span class="o">=</span> <span class="n">classes_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">()</span> <span class="o">+</span> <span class="n">resources_doc</span><span class="o">.</span><span class="n">asdicts</span><span class="p">()</span>

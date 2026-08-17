@@ -1908,7 +1908,7 @@ ArgumentTypeError            (<a class="autorefs autorefs-internal" title="tripp
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ArgumentTypeError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid argument type.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Invalid argument type."""</span>
 </code></pre></div>
         </details>
 
@@ -1939,7 +1939,7 @@ ArgumentValueError            (<a class="autorefs autorefs-internal" title="trip
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ArgumentValueError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid argument value (of correct type).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Invalid argument value (of correct type)."""</span>
 </code></pre></div>
         </details>
 
@@ -1970,7 +1970,7 @@ CannotGetFunctionError            (<a class="autorefs autorefs-internal" title="
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CannotGetFunctionError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Not able to get function documented in the triplestore.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Not able to get function documented in the triplestore."""</span>
 </code></pre></div>
         </details>
 
@@ -2001,7 +2001,7 @@ IRIExistsError            (<a class="autorefs autorefs-internal" title="tripper.
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IRIExistsError</span><span class="p">(</span><span class="n">NamespaceError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;IRI already exists.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""IRI already exists."""</span>
 </code></pre></div>
         </details>
 
@@ -2032,7 +2032,7 @@ NamespaceError            (<a class="autorefs autorefs-internal" title="tripper.
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NamespaceError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Namespace error.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Namespace error."""</span>
 </code></pre></div>
         </details>
 
@@ -2063,7 +2063,7 @@ NamespaceWarning            (<a class="autorefs autorefs-internal" title="trippe
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NamespaceWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Namespace warning.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Namespace warning."""</span>
 </code></pre></div>
         </details>
 
@@ -2094,7 +2094,7 @@ NoSuchIRIError            (<a class="autorefs autorefs-internal" title="tripper.
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NoSuchIRIError</span><span class="p">(</span><span class="n">NamespaceError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Namespace has no such IRI.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Namespace has no such IRI."""</span>
 </code></pre></div>
         </details>
 
@@ -2125,7 +2125,7 @@ PermissionWarning            (<a class="autorefs autorefs-internal" title="tripp
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PermissionWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Not enough permissions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Not enough permissions."""</span>
 </code></pre></div>
         </details>
 
@@ -2156,7 +2156,7 @@ TripperError            (<span title="Exception">Exception</span>)
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TripperError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base exception for tripper errors.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base exception for tripper errors."""</span>
 </code></pre></div>
         </details>
 
@@ -2187,7 +2187,7 @@ TripperWarning            (<span title="Warning">Warning</span>)
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TripperWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for tripper warnings.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for tripper warnings."""</span>
 </code></pre></div>
         </details>
 
@@ -2218,7 +2218,7 @@ UniquenessError            (<a class="autorefs autorefs-internal" title="tripper
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UniquenessError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;More than one matching triple.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""More than one matching triple."""</span>
 </code></pre></div>
         </details>
 
@@ -2249,7 +2249,7 @@ UnknownDatatypeWarning            (<a class="autorefs autorefs-internal" title="
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnknownDatatypeWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unknown datatype.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Unknown datatype."""</span>
 </code></pre></div>
         </details>
 
@@ -2280,7 +2280,7 @@ UnusedArgumentWarning            (<a class="autorefs autorefs-internal" title="t
         <details class="quote">
           <summary>Source code in <code>tripper/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnusedArgumentWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Argument is unused.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Argument is unused."""</span>
 </code></pre></div>
         </details>
 

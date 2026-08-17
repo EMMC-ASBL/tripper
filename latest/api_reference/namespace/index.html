@@ -1878,7 +1878,7 @@ corresponding to <code>reload=True</code>).</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/namespace.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Namespace</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent a namespace.</span>
+<span class="w">    </span><span class="sd">"""Represent a namespace.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        iri: IRI of namespace to represent.</span>
@@ -1901,39 +1901,39 @@ corresponding to <code>reload=True</code>).</p></td>
 <span class="sd">        cachemode: Deprecated. Use `reload` instead (with `cachemode=NO_CACHE`</span>
 <span class="sd">            corresponding to `reload=True`).</span>
 <span class="sd">        triplestore_url: Deprecated. Use the `triplestore` argument instead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;_iri&quot;</span><span class="p">,</span>  <span class="c1"># Ontology IRI</span>
-        <span class="s2">&quot;_label_annotations&quot;</span><span class="p">,</span>  <span class="c1"># Recognised annotations for labels</span>
-        <span class="s2">&quot;_check&quot;</span><span class="p">,</span>  <span class="c1"># Whether to check that IRIs exists</span>
-        <span class="s2">&quot;_iris&quot;</span><span class="p">,</span>  <span class="c1"># Dict mapping labels to IRIs</span>
-        <span class="s2">&quot;_reviris&quot;</span><span class="p">,</span>  <span class="c1"># Dict mapping IRIs to labels. The reverse of `_iris`</span>
-        <span class="s2">&quot;_reload&quot;</span><span class="p">,</span>  <span class="c1"># Whether to reload</span>
-        <span class="s2">&quot;_triplestore&quot;</span><span class="p">,</span>  <span class="c1"># Triplestore for label lookup and checking</span>
-        <span class="s2">&quot;_format&quot;</span><span class="p">,</span>  <span class="c1"># Format to use when loading from a triplestore</span>
+        <span class="s2">"_iri"</span><span class="p">,</span>  <span class="c1"># Ontology IRI</span>
+        <span class="s2">"_label_annotations"</span><span class="p">,</span>  <span class="c1"># Recognised annotations for labels</span>
+        <span class="s2">"_check"</span><span class="p">,</span>  <span class="c1"># Whether to check that IRIs exists</span>
+        <span class="s2">"_iris"</span><span class="p">,</span>  <span class="c1"># Dict mapping labels to IRIs</span>
+        <span class="s2">"_reviris"</span><span class="p">,</span>  <span class="c1"># Dict mapping IRIs to labels. The reverse of `_iris`</span>
+        <span class="s2">"_reload"</span><span class="p">,</span>  <span class="c1"># Whether to reload</span>
+        <span class="s2">"_triplestore"</span><span class="p">,</span>  <span class="c1"># Triplestore for label lookup and checking</span>
+        <span class="s2">"_format"</span><span class="p">,</span>  <span class="c1"># Format to use when loading from a triplestore</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">label_annotations</span><span class="p">:</span> <span class="s2">&quot;Union[Sequence, bool]&quot;</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">label_annotations</span><span class="p">:</span> <span class="s2">"Union[Sequence, bool]"</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">reload</span><span class="p">:</span> <span class="s2">&quot;Optional[bool]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Triplestore, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reload</span><span class="p">:</span> <span class="s2">"Optional[bool]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triplestore</span><span class="p">:</span> <span class="s2">"Optional[Union[Triplestore, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cachemode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triplestore_url</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="k">if</span> <span class="n">cachemode</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The `cachemode` argument of Triplestore.__init__() is &quot;</span>
-                <span class="s2">&quot;deprecated.  Use `reload` instead (with `cachemode=NO_CACHE` &quot;</span>
-                <span class="s2">&quot;corresponding to `reload=True`).</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Will be removed in v0.3.&quot;</span><span class="p">,</span>
+                <span class="s2">"The `cachemode` argument of Triplestore.__init__() is "</span>
+                <span class="s2">"deprecated.  Use `reload` instead (with `cachemode=NO_CACHE` "</span>
+                <span class="s2">"corresponding to `reload=True`).</span><span class="se">\n\n</span><span class="s2">"</span>
+                <span class="s2">"Will be removed in v0.3."</span><span class="p">,</span>
                 <span class="ne">DeprecationWarning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1942,10 +1942,10 @@ corresponding to <code>reload=True</code>).</p></td>
 
         <span class="k">if</span> <span class="n">triplestore_url</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;The `triplestore_url` argument of Triplestore.__init__() is &quot;</span>
-                <span class="s2">&quot;deprecated.  Use the `triplestore` argument instead (which &quot;</span>
-                <span class="s2">&quot;now accepts a string argument with the URL).</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Will be removed in v0.3.&quot;</span><span class="p">,</span>
+                <span class="s2">"The `triplestore_url` argument of Triplestore.__init__() is "</span>
+                <span class="s2">"deprecated.  Use the `triplestore` argument instead (which "</span>
+                <span class="s2">"now accepts a string argument with the URL).</span><span class="se">\n\n</span><span class="s2">"</span>
+                <span class="s2">"Will be removed in v0.3."</span><span class="p">,</span>
                 <span class="ne">DeprecationWarning</span><span class="p">,</span>
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1962,21 +1962,21 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="nb">tuple</span><span class="p">(</span><span class="n">label_annotations</span><span class="p">)</span> <span class="k">if</span> <span class="n">label_annotations</span> <span class="k">else</span> <span class="p">()</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span> <span class="s2">&quot;dict&quot;</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">need_triplestore</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span> <span class="s2">"dict"</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reload</span> <span class="o">=</span> <span class="n">reload</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_triplestore</span> <span class="o">=</span> <span class="n">triplestore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="nb">format</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triplestore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the internal cache from `triplestore`.</span>
+<span class="w">        </span><span class="sd">"""Update the internal cache from `triplestore`.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            triplestore: Triplestore to update the cache from.</span>
 <span class="sd">            reload: If true, reload regardless we have a local cache.</span>
 <span class="sd">            format: If `triplestore` is a tring or Path, parse it using this</span>
 <span class="sd">                format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># pylint: disable=redefined-builtin</span>
 
         <span class="c1"># Import Triplestore here to avoid cyclic import</span>
@@ -1993,22 +1993,22 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
             <span class="c1"># Ignore UnusedArgumentWarning when creating triplestore</span>
             <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnusedArgumentWarning</span><span class="p">)</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnusedArgumentWarning</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">Triplestore</span><span class="p">):</span>
             <span class="n">ts</span> <span class="o">=</span> <span class="n">triplestore</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">triplestore</span><span class="p">,</span> <span class="n">Triplestore</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
-                <span class="s2">&quot;If given, `triplestore` argument must be either a URL &quot;</span>
-                <span class="s2">&quot;(string), Path or a Triplestore object.&quot;</span>
+                <span class="s2">"If given, `triplestore` argument must be either a URL "</span>
+                <span class="s2">"(string), Path or a Triplestore object."</span>
             <span class="p">)</span>
 
         <span class="c1"># Add (label, full_iri) pairs</span>
-        <span class="n">iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/#&quot;</span><span class="p">)</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"/#"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_annotations</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span>
+                <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
             <span class="p">)</span>
@@ -2024,9 +2024,9 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return annotation labels corresponding to the given IRI.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return annotation labels corresponding to the given IRI."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iris</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">iri</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">":"</span> <span class="ow">in</span> <span class="n">iri</span><span class="p">:</span>
             <span class="n">iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">iri</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">k</span>
@@ -2036,47 +2036,47 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="k">return</span> <span class="n">labels</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_cachefile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return path to cache file for this namespace.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return path to cache file for this namespace."""</span>
         <span class="c1"># pylint: disable=too-many-function-args</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;#/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"#/"</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">hashno</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">shake_128</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">get_cachedir</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">hashno</span><span class="si">}</span><span class="s2">.cache&quot;</span>
+        <span class="k">return</span> <span class="n">get_cachedir</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">hashno</span><span class="si">}</span><span class="s2">.cache"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save current cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Save current cache."""</span>
         <span class="c1"># pylint: disable=invalid-name</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">is_finalizing</span><span class="p">():</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;You can select cache directory with the XDG_CACHE_HOME &quot;</span>
-                <span class="s2">&quot;environment variable.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span>
+                <span class="s2">"You can select cache directory with the XDG_CACHE_HOME "</span>
+                <span class="s2">"environment variable."</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update cache with cache file.</span>
+<span class="w">        </span><span class="sd">"""Update cache with cache file.</span>
 
 <span class="sd">        Returns true if there exists a cache file to load from.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># pylint: disable=invalid-name</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>  <span class="c1"># nosec</span>
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Cannot create cache directory: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;You can select cache directory with the XDG_CACHE_HOME &quot;</span>
-                <span class="s2">&quot;environment variable.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Cannot create cache directory: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span>
+                <span class="s2">"You can select cache directory with the XDG_CACHE_HOME "</span>
+                <span class="s2">"environment variable."</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -2096,22 +2096,22 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="c1"># Hack to work around a pytest bug.  During its collection</span>
             <span class="c1"># phase pytest tries to mock namespace objects with an</span>
             <span class="c1"># attribute `__wrapped__`.</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;__wrapped__&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"__wrapped__"</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Maybe you have to remove the cache file: &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="s2">"</span><span class="se">\n</span><span class="s2">Maybe you have to remove the cache file: "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">"</span>
                     <span class="p">)</span>
             <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;You can select cache directory with the XDG_CACHE_HOME &quot;</span>
-                    <span class="s2">&quot;environment variable.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span>
+                    <span class="s2">"You can select cache directory with the XDG_CACHE_HOME "</span>
+                    <span class="s2">"environment variable."</span>
                 <span class="p">)</span>
             <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span> <span class="o">+</span> <span class="n">name</span>
@@ -2120,7 +2120,7 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Namespace(&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Namespace('</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">')"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
@@ -2154,36 +2154,36 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="k">return</span> <span class="n">names</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The negation operator (-) is a short-hand for returning the base</span>
+<span class="w">        </span><span class="sd">"""The negation operator (-) is a short-hand for returning the base</span>
 <span class="sd">        iri with any trailing slash or hash stripped off.</span>
 
 <span class="sd">        Examples:</span>
 
 <span class="sd">        &gt;&gt;&gt; from tripper import OWL</span>
 <span class="sd">        &gt;&gt;&gt; -OWL</span>
-<span class="sd">        &#39;http://www.w3.org/2002/07/owl&#39;</span>
+<span class="sd">        'http://www.w3.org/2002/07/owl'</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/#&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"/#"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The positive operator (+) is a short-hand for returning the base</span>
+<span class="w">        </span><span class="sd">"""The positive operator (+) is a short-hand for returning the base</span>
 <span class="sd">        iri.</span>
 
 <span class="sd">        Examples:</span>
 
 <span class="sd">        &gt;&gt;&gt; from tripper import OWL</span>
 <span class="sd">        &gt;&gt;&gt; +OWL</span>
-<span class="sd">        &#39;http://www.w3.org/2002/07/owl#&#39;</span>
+<span class="sd">        'http://www.w3.org/2002/07/owl#'</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the name or label associated with the given iri.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the name or label associated with the given iri."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;IRI &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; is not in namespace &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">"IRI '</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">' is not in namespace '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">'"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span> <span class="p">:]</span>
@@ -2200,8 +2200,8 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="k">if</span> <span class="n">iri</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span>
             <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span>
 </code></pre></div>
@@ -2241,10 +2241,10 @@ corresponding to <code>reload=True</code>).</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/namespace.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the name or label associated with the given iri.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Returns the name or label associated with the given iri."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;IRI &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; is not in namespace &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">"IRI '</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">' is not in namespace '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">)</span> <span class="p">:]</span>
@@ -2261,8 +2261,8 @@ corresponding to <code>reload=True</code>).</p></td>
     <span class="k">if</span> <span class="n">iri</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">:</span>
         <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
         <span class="k">raise</span> <span class="n">NoSuchIRIError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"Maybe you have to remove the cache file: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reviris</span><span class="p">[</span><span class="n">iri</span><span class="p">]</span>
 </code></pre></div>
@@ -2314,17 +2314,17 @@ iri with any trailing slash or hash stripped off.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/namespace.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The negation operator (-) is a short-hand for returning the base</span>
+<span class="w">    </span><span class="sd">"""The negation operator (-) is a short-hand for returning the base</span>
 <span class="sd">    iri with any trailing slash or hash stripped off.</span>
 
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; from tripper import OWL</span>
 <span class="sd">    &gt;&gt;&gt; -OWL</span>
-<span class="sd">    &#39;http://www.w3.org/2002/07/owl&#39;</span>
+<span class="sd">    'http://www.w3.org/2002/07/owl'</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/#&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"/#"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2366,16 +2366,16 @@ iri.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/namespace.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The positive operator (+) is a short-hand for returning the base</span>
+<span class="w">    </span><span class="sd">"""The positive operator (+) is a short-hand for returning the base</span>
 <span class="sd">    iri.</span>
 
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; from tripper import OWL</span>
 <span class="sd">    &gt;&gt;&gt; +OWL</span>
-<span class="sd">    &#39;http://www.w3.org/2002/07/owl#&#39;</span>
+<span class="sd">    'http://www.w3.org/2002/07/owl#'</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iri</span>
 </code></pre></div>
         </details>
@@ -2417,23 +2417,23 @@ iri.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/namespace.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_cachedir</span><span class="p">(</span><span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns cross-platform path to tripper cache directory.</span>
+<span class="w">    </span><span class="sd">"""Returns cross-platform path to tripper cache directory.</span>
 
-<span class="sd">    If `create` is true, create the cache directory if it doesn&#39;t exists.</span>
+<span class="sd">    If `create` is true, create the cache directory if it doesn't exists.</span>
 
 <span class="sd">    The XDG_CACHE_HOME environment variable is used if it exists.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XDG_CACHE_HOME&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"XDG_CACHE_HOME"</span><span class="p">)</span>
     <span class="n">finaldir</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">site_cachedir</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win32&quot;</span><span class="p">):</span>
-            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;AppData&quot;</span> <span class="o">/</span> <span class="s2">&quot;Local&quot;</span>
-            <span class="n">finaldir</span> <span class="o">=</span> <span class="s2">&quot;Cache&quot;</span>
-        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;darwin&quot;</span><span class="p">):</span>
-            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;Library&quot;</span> <span class="o">/</span> <span class="s2">&quot;Caches&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"win32"</span><span class="p">):</span>
+            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"AppData"</span> <span class="o">/</span> <span class="s2">"Local"</span>
+            <span class="n">finaldir</span> <span class="o">=</span> <span class="s2">"Cache"</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"darwin"</span><span class="p">):</span>
+            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"Library"</span> <span class="o">/</span> <span class="s2">"Caches"</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Default to UNIX</span>
-            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.cache&quot;</span>  <span class="c1"># type: ignore</span>
-    <span class="n">cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">site_cachedir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;tripper&quot;</span>  <span class="c1"># type: ignore</span>
+            <span class="n">site_cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">".cache"</span>  <span class="c1"># type: ignore</span>
+    <span class="n">cachedir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">site_cachedir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"tripper"</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">finaldir</span><span class="p">:</span>
         <span class="n">cachedir</span> <span class="o">/=</span> <span class="n">finaldir</span>
 
@@ -2442,7 +2442,7 @@ iri.</p>
             <span class="n">cachedir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cachedir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cachedir</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="n">PermissionWarning</span><span class="p">,</span>
             <span class="p">)</span>
 

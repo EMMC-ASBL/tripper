@@ -1723,13 +1723,13 @@ The methods they are supposed to define are documented in <a href="https://emmc-
 <h2 id="installed-backend-package">Installed backend package<a class="headerlink" href="#installed-backend-package" title="Permanent link">&para;</a></h2>
 <p>It is possible to create a pip installable Python package that provides new tripper backends that will be automatically discovered.</p>
 <p>The backend package should add the following to its <code>pyproject.toml</code> file:</p>
-<div class="language-toml highlight"><pre><span></span><code><span class="k">[project.entry-points.</span><span class="s2">&quot;tripper.backends&quot;</span><span class="k">]</span>
-<span class="n">mybackend1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;subpackage.mybackend1&quot;</span>
-<span class="n">mybackend2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;subpackage.mybackend2&quot;</span>
+<div class="language-toml highlight"><pre><span></span><code><span class="k">[project.entry-points.</span><span class="s2">"tripper.backends"</span><span class="k">]</span>
+<span class="n">mybackend1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"subpackage.mybackend1"</span>
+<span class="n">mybackend2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"subpackage.mybackend2"</span>
 </code></pre></div>
 <p>When your package is installed, this would make <code>mybackend1</code> and <code>mybackend2</code> automatically discovarable by tripper, such that you can write</p>
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triplestore</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;mybackend1&quot;</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"mybackend1"</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
 </code></pre></div>
 <h2 id="backend-module">Backend module<a class="headerlink" href="#backend-module" title="Permanent link">&para;</a></h2>
 <p>If you have a tripper backend that is specific to your application, or that you for some other reason don't want or feel the need to publish as a separate Python package, you can keep the backend as a module within your application.</p>
@@ -1737,17 +1737,17 @@ The methods they are supposed to define are documented in <a href="https://emmc-
 <h3 id="instantiate-triplestore-with-explicit-module-path">Instantiate triplestore with explicit module path<a class="headerlink" href="#instantiate-triplestore-with-explicit-module-path" title="Permanent link">&para;</a></h3>
 <p>An explicit module path can either be absolute or relative as shown in the example below:</p>
 <div class="language-text highlight"><pre><span></span><code># Absolute
-ts = Triplestore(backend=&quot;mypackage.backends.mybackend&quot;)
+ts = Triplestore(backend="mypackage.backends.mybackend")
 
 # Relative to the `package` argument
-ts = Triplestore(backend=&quot;backends.mybackend&quot;, package=&quot;mypackage&quot;)
+ts = Triplestore(backend="backends.mybackend", package="mypackage")
 </code></pre></div>
 <p>A backend is considered to be specified explicitly if the <code>backend</code> argument contain a dot (.) or if the <code>package</code> argument is provided.</p>
 <h3 id="append-to-tripperbackend_packages">Append to <code>tripper.backend_packages</code><a class="headerlink" href="#append-to-tripperbackend_packages" title="Permanent link">&para;</a></h3>
 <p>Finally you can insert/append the sub-package with your backend to the <code>tripper.backend_packages</code> list module variable:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">tripper</span>
-<span class="n">tripper</span><span class="o">.</span><span class="n">backend_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mypackage.backends&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;mybackend&quot;</span><span class="p">)</span>
+<span class="n">tripper</span><span class="o">.</span><span class="n">backend_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"mypackage.backends"</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"mybackend"</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="search-order-for-backends">Search order for backends<a class="headerlink" href="#search-order-for-backends" title="Permanent link">&para;</a></h2>
 <p>Tripper backends are looked up in the following order:

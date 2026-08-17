@@ -1761,22 +1761,22 @@ such as get_value, add_data and add_interpolation_source.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tripper</span><span class="p">(</span><span class="n">Triplestore</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class that provides additional</span>
 <span class="sd">    methods for handling data in the triplestore,</span>
 <span class="sd">    such as get_value, add_data and add_interpolation_source.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Union[Callable, Literal]&quot;</span><span class="p">,</span>
-        <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">configurations</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="s2">"Union[Callable, Literal]"</span><span class="p">,</span>
+        <span class="n">iri</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">configurations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a data source to the triplestore.</span>
+<span class="w">        </span><span class="sd">"""Register a data source to the triplestore.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            func: A callable that should return the value of the registered</span>
@@ -1798,8 +1798,8 @@ such as get_value, add_data and add_interpolation_source.</p>
 <span class="sd">                knowledge base.  Defaults to the base IRI of the triplestore.</span>
 <span class="sd">            standard: Name of ontological standard to use when describing the</span>
 <span class="sd">                function.  Valid values are:</span>
-<span class="sd">                - &quot;emmo&quot;: Elementary Multiperspective Material Ontology (EMMO)</span>
-<span class="sd">                - &quot;fno&quot;: Function Ontology (FnO)</span>
+<span class="sd">                - "emmo": Elementary Multiperspective Material Ontology (EMMO)</span>
+<span class="sd">                - "fno": Function Ontology (FnO)</span>
 <span class="sd">            cost: User-defined cost of following this mapping relation</span>
 <span class="sd">                represented as a float.  It may be given either as a</span>
 <span class="sd">                float or as a callable taking the same arguments as `func`</span>
@@ -1807,12 +1807,12 @@ such as get_value, add_data and add_interpolation_source.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            IRI of data source.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># pylint complains about uuid being unused if we make this an</span>
             <span class="c1"># f-string</span>
-            <span class="n">iri</span> <span class="o">=</span> <span class="s2">&quot;_bnode_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-        <span class="n">data_source</span> <span class="o">=</span> <span class="s2">&quot;_data_source_&quot;</span> <span class="o">+</span> <span class="n">random_string</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">iri</span> <span class="o">=</span> <span class="s2">"_bnode_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="n">data_source</span> <span class="o">=</span> <span class="s2">"_data_source_"</span> <span class="o">+</span> <span class="n">random_string</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">data_source</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSource</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
@@ -1822,7 +1822,7 @@ such as get_value, add_data and add_interpolation_source.</p>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">data_source</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;literal data can only have a single `iri`&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"literal data can only have a single `iri`"</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
 
@@ -1832,7 +1832,7 @@ such as get_value, add_data and add_interpolation_source.</p>
             <span class="c1"># Include data source IRI in documentation to ensure that the</span>
             <span class="c1"># function_id of `fn()` will differ for different data sources...</span>
             <span class="n">fn</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Function for data source: </span><span class="si">{</span><span class="n">data_source</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Function for data source: </span><span class="si">{</span><span class="n">data_source</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
@@ -1847,7 +1847,7 @@ such as get_value, add_data and add_interpolation_source.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">data_source</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="p">,</span> <span class="n">func_iri</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`func` must be a callable or literal, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"`func` must be a callable or literal, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">data_source</span>
@@ -1856,15 +1856,15 @@ such as get_value, add_data and add_interpolation_source.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">iri</span><span class="p">,</span>
         <span class="n">routeno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Optional[Any]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Optional[Any]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Value&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value of an individual.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Value"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the value of an individual.</span>
 
 <span class="sd">        Parameters:</span>
-<span class="sd">            iri: IRI of individual who&#39;s value we want to return.  IRI may</span>
+<span class="sd">            iri: IRI of individual who's value we want to return.  IRI may</span>
 <span class="sd">                either refer to a data source or an individual mapped to</span>
 <span class="sd">                an ontological concept.</span>
 <span class="sd">            routeno: Number identifying the mapping route to apply for</span>
@@ -1879,7 +1879,7 @@ such as get_value, add_data and add_interpolation_source.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The value of the individual.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
             <span class="n">Value</span><span class="p">,</span>
             <span class="n">mapping_routes</span><span class="p">,</span>
@@ -1917,8 +1917,8 @@ such as get_value, add_data and add_interpolation_source.</p>
                 <span class="k">return</span> <span class="n">retval</span>
 
             <span class="k">raise</span> <span class="n">TripperError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;data source </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2"> has neither a &#39;hasDataValue&#39; or a &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;hasAccessFunction&#39; property&quot;</span>
+                <span class="sa">f</span><span class="s2">"data source </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2"> has neither a 'hasDataValue' or a "</span>
+                <span class="sa">f</span><span class="s2">"'hasAccessFunction' property"</span>
             <span class="p">)</span>
 
         <span class="c1"># `iri` correspond to an individual mapped to an ontological concept.</span>
@@ -1946,14 +1946,14 @@ such as get_value, add_data and add_interpolation_source.</p>
         <span class="n">ycoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">input_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">output_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">left</span><span class="p">:</span> <span class="s2">&quot;Optional[float]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">right</span><span class="p">:</span> <span class="s2">&quot;Optional[float]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">period</span><span class="p">:</span> <span class="s2">&quot;Optional[float]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">left</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">right</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">period</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add data source to triplestore, such that it can be used to</span>
+<span class="w">        </span><span class="sd">"""Add data source to triplestore, such that it can be used to</span>
 <span class="sd">        transparently transform other data.</span>
 
 <span class="sd">        No data will be fetch before it is actually needed.</span>
@@ -1973,8 +1973,8 @@ such as get_value, add_data and add_interpolation_source.</p>
 <span class="sd">                knowledge base.  Defaults to the base IRI of the triplestore.</span>
 <span class="sd">            standard: Name of ontology to use when describing the</span>
 <span class="sd">                transformation.  Valid values are:</span>
-<span class="sd">                - &quot;emmo&quot;: Elementary Multiperspective Material Ontology (EMMO)</span>
-<span class="sd">                - &quot;fno&quot;: Function Ontology (FnO)</span>
+<span class="sd">                - "emmo": Elementary Multiperspective Material Ontology (EMMO)</span>
+<span class="sd">                - "fno": Function Ontology (FnO)</span>
 <span class="sd">            cost: User-defined cost of following this mapping relation</span>
 <span class="sd">                represented as a float.  It may be given either as a</span>
 <span class="sd">                float or as a callable taking the same arguments as `func`</span>
@@ -1988,14 +1988,14 @@ such as get_value, add_data and add_interpolation_source.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            transformation_iri: IRI of the added transformation.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Triplestore.add_interpolation_source() requires numpy.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Install it with</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;    pip install numpy&quot;</span>
+                <span class="s2">"Triplestore.add_interpolation_source() requires numpy.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"Install it with</span><span class="se">\n\n</span><span class="s2">"</span>
+                <span class="s2">"    pip install numpy"</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -2038,7 +2038,7 @@ such as get_value, add_data and add_interpolation_source.</p>
 
 
 <h3 id="tripper.triplestore_extend.Tripper.add_data" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">configurations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard</span><span class="o">=</span><span class="s1">&#39;emmo&#39;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">configurations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard</span><span class="o">=</span><span class="s1">'emmo'</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.triplestore_extend.Tripper.add_data" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -2133,14 +2133,14 @@ returning the cost as a float.</p></td>
           <summary>Source code in <code>tripper/triplestore_extend.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_data</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">func</span><span class="p">:</span> <span class="s2">&quot;Union[Callable, Literal]&quot;</span><span class="p">,</span>
-    <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, Sequence]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">configurations</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">func</span><span class="p">:</span> <span class="s2">"Union[Callable, Literal]"</span><span class="p">,</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="s2">"Optional[Union[str, Sequence]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">configurations</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a data source to the triplestore.</span>
+<span class="w">    </span><span class="sd">"""Register a data source to the triplestore.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        func: A callable that should return the value of the registered</span>
@@ -2162,8 +2162,8 @@ returning the cost as a float.</p></td>
 <span class="sd">            knowledge base.  Defaults to the base IRI of the triplestore.</span>
 <span class="sd">        standard: Name of ontological standard to use when describing the</span>
 <span class="sd">            function.  Valid values are:</span>
-<span class="sd">            - &quot;emmo&quot;: Elementary Multiperspective Material Ontology (EMMO)</span>
-<span class="sd">            - &quot;fno&quot;: Function Ontology (FnO)</span>
+<span class="sd">            - "emmo": Elementary Multiperspective Material Ontology (EMMO)</span>
+<span class="sd">            - "fno": Function Ontology (FnO)</span>
 <span class="sd">        cost: User-defined cost of following this mapping relation</span>
 <span class="sd">            represented as a float.  It may be given either as a</span>
 <span class="sd">            float or as a callable taking the same arguments as `func`</span>
@@ -2171,12 +2171,12 @@ returning the cost as a float.</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        IRI of data source.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># pylint complains about uuid being unused if we make this an</span>
         <span class="c1"># f-string</span>
-        <span class="n">iri</span> <span class="o">=</span> <span class="s2">&quot;_bnode_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
-    <span class="n">data_source</span> <span class="o">=</span> <span class="s2">&quot;_data_source_&quot;</span> <span class="o">+</span> <span class="n">random_string</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="s2">"_bnode_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+    <span class="n">data_source</span> <span class="o">=</span> <span class="s2">"_data_source_"</span> <span class="o">+</span> <span class="n">random_string</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">data_source</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">DataSource</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
@@ -2186,7 +2186,7 @@ returning the cost as a float.</p></td>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">data_source</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;literal data can only have a single `iri`&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"literal data can only have a single `iri`"</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
 
@@ -2196,7 +2196,7 @@ returning the cost as a float.</p></td>
         <span class="c1"># Include data source IRI in documentation to ensure that the</span>
         <span class="c1"># function_id of `fn()` will differ for different data sources...</span>
         <span class="n">fn</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Function for data source: </span><span class="si">{</span><span class="n">data_source</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Function for data source: </span><span class="si">{</span><span class="n">data_source</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
@@ -2211,7 +2211,7 @@ returning the cost as a float.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">data_source</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="p">,</span> <span class="n">func_iri</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`func` must be a callable or literal, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`func` must be a callable or literal, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">data_source</span>
@@ -2228,7 +2228,7 @@ returning the cost as a float.</p></td>
 
 
 <h3 id="tripper.triplestore_extend.Tripper.add_interpolation_source" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">add_interpolation_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xcoord</span><span class="p">,</span> <span class="n">ycoord</span><span class="p">,</span> <span class="n">input_iri</span><span class="p">,</span> <span class="n">output_iri</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard</span><span class="o">=</span><span class="s1">&#39;emmo&#39;</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">add_interpolation_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xcoord</span><span class="p">,</span> <span class="n">ycoord</span><span class="p">,</span> <span class="n">input_iri</span><span class="p">,</span> <span class="n">output_iri</span><span class="p">,</span> <span class="n">base_iri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">standard</span><span class="o">=</span><span class="s1">'emmo'</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 
 <a href="#tripper.triplestore_extend.Tripper.add_interpolation_source" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -2350,14 +2350,14 @@ proper interpolation of angular x-coordinates. Parameters
     <span class="n">ycoord</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">input_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;emmo&quot;</span><span class="p">,</span>
-    <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[float, Callable]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">left</span><span class="p">:</span> <span class="s2">&quot;Optional[float]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">right</span><span class="p">:</span> <span class="s2">&quot;Optional[float]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">period</span><span class="p">:</span> <span class="s2">&quot;Optional[float]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">standard</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"emmo"</span><span class="p">,</span>
+    <span class="n">cost</span><span class="p">:</span> <span class="s2">"Optional[Union[float, Callable]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">left</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">right</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">period</span><span class="p">:</span> <span class="s2">"Optional[float]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add data source to triplestore, such that it can be used to</span>
+<span class="w">    </span><span class="sd">"""Add data source to triplestore, such that it can be used to</span>
 <span class="sd">    transparently transform other data.</span>
 
 <span class="sd">    No data will be fetch before it is actually needed.</span>
@@ -2377,8 +2377,8 @@ proper interpolation of angular x-coordinates. Parameters
 <span class="sd">            knowledge base.  Defaults to the base IRI of the triplestore.</span>
 <span class="sd">        standard: Name of ontology to use when describing the</span>
 <span class="sd">            transformation.  Valid values are:</span>
-<span class="sd">            - &quot;emmo&quot;: Elementary Multiperspective Material Ontology (EMMO)</span>
-<span class="sd">            - &quot;fno&quot;: Function Ontology (FnO)</span>
+<span class="sd">            - "emmo": Elementary Multiperspective Material Ontology (EMMO)</span>
+<span class="sd">            - "fno": Function Ontology (FnO)</span>
 <span class="sd">        cost: User-defined cost of following this mapping relation</span>
 <span class="sd">            represented as a float.  It may be given either as a</span>
 <span class="sd">            float or as a callable taking the same arguments as `func`</span>
@@ -2392,14 +2392,14 @@ proper interpolation of angular x-coordinates. Parameters
 <span class="sd">    Returns:</span>
 <span class="sd">        transformation_iri: IRI of the added transformation.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s2">&quot;Triplestore.add_interpolation_source() requires numpy.</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;Install it with</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;    pip install numpy&quot;</span>
+            <span class="s2">"Triplestore.add_interpolation_source() requires numpy.</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="s2">"Install it with</span><span class="se">\n\n</span><span class="s2">"</span>
+            <span class="s2">"    pip install numpy"</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -2520,15 +2520,15 @@ value (with no unit).</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">,</span>
     <span class="n">routeno</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Optional[Any]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Optional[Any]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Value&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the value of an individual.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Value"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the value of an individual.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        iri: IRI of individual who&#39;s value we want to return.  IRI may</span>
+<span class="sd">        iri: IRI of individual who's value we want to return.  IRI may</span>
 <span class="sd">            either refer to a data source or an individual mapped to</span>
 <span class="sd">            an ontological concept.</span>
 <span class="sd">        routeno: Number identifying the mapping route to apply for</span>
@@ -2543,7 +2543,7 @@ value (with no unit).</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The value of the individual.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.mappings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="n">Value</span><span class="p">,</span>
         <span class="n">mapping_routes</span><span class="p">,</span>
@@ -2581,8 +2581,8 @@ value (with no unit).</p></td>
             <span class="k">return</span> <span class="n">retval</span>
 
         <span class="k">raise</span> <span class="n">TripperError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;data source </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2"> has neither a &#39;hasDataValue&#39; or a &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;hasAccessFunction&#39; property&quot;</span>
+            <span class="sa">f</span><span class="s2">"data source </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2"> has neither a 'hasDataValue' or a "</span>
+            <span class="sa">f</span><span class="s2">"'hasAccessFunction' property"</span>
         <span class="p">)</span>
 
     <span class="c1"># `iri` correspond to an individual mapped to an ontological concept.</span>

@@ -1728,10 +1728,10 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/prefixes.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bnode</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a new unique blank node.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Returns a new unique blank node."""</span>
     <span class="k">global</span> <span class="n">_bnode_counter</span>  <span class="c1"># pylint: disable=global-statement</span>
     <span class="n">_bnode_counter</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;_:b</span><span class="si">{</span><span class="n">_bnode_counter</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"_:b</span><span class="si">{</span><span class="n">_bnode_counter</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div>
         </details>
     </div>
@@ -1803,8 +1803,8 @@ pairs defined in the triplestore.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/prefixes.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an list of all matching prefix-namespace</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns an list of all matching prefix-namespace</span>
 <span class="sd">    pairs defined in the triplestore.</span>
 
 <span class="sd">    Arguments:</span>
@@ -1814,22 +1814,22 @@ pairs defined in the triplestore.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List of `(prefix, namespace)` tuples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">bind</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">bind</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BIND(</span><span class="si">{</span><span class="n">Literal</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span><span class="si">}</span><span class="s2"> AS ?prefix)&quot;</span><span class="p">)</span>
+        <span class="n">bind</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"BIND(</span><span class="si">{</span><span class="n">Literal</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span><span class="si">}</span><span class="s2"> AS ?prefix)"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">namespace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bind</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;BIND(</span><span class="si">{</span><span class="n">Literal</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span><span class="w"> </span><span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">)</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span><span class="si">}</span><span class="s2"> AS ?ns)&quot;</span>
+            <span class="sa">f</span><span class="s2">"BIND(</span><span class="si">{</span><span class="n">Literal</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span><span class="w"> </span><span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">)</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span><span class="si">}</span><span class="s2"> AS ?ns)"</span>
         <span class="p">)</span>
-    <span class="n">binds</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bind</span><span class="p">)</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">binds</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">  "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bind</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">    SELECT ?prefix ?ns WHERE </span><span class="se">{{</span>
 <span class="s2">      </span><span class="si">{</span><span class="n">binds</span><span class="si">}</span>
 <span class="s2">      ?s &lt;</span><span class="si">{</span><span class="n">VANN</span><span class="o">.</span><span class="n">preferredNamespacePrefix</span><span class="si">}</span><span class="s2">&gt; ?prefix ;</span>
 <span class="s2">         &lt;</span><span class="si">{</span><span class="n">VANN</span><span class="o">.</span><span class="n">preferredNamespaceUri</span><span class="si">}</span><span class="s2">&gt; ?ns .</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="s2">    """</span>
     <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1882,8 +1882,8 @@ pairs defined in the triplestore.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/prefixes.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save prefixes to the triplestore.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Save prefixes to the triplestore.</span>
 
 <span class="sd">    Prefix-namespace pairs already in the knowledge base will not be</span>
 <span class="sd">        duplicated.</span>
@@ -1892,7 +1892,7 @@ pairs defined in the triplestore.</p>
 <span class="sd">        ts: Triplestore instance to store the prefixes to.</span>
 <span class="sd">        prefixes: Dict to store. It should map prefixes to namespaces.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">existing</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">load_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
     <span class="n">triples</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

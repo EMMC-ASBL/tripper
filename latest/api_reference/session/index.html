@@ -1781,7 +1781,7 @@ get_triplestore() for the other resource.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/session.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class making it easy to access pre-configured triplestores.</span>
+<span class="w">    </span><span class="sd">"""A class making it easy to access pre-configured triplestores.</span>
 
 <span class="sd">    Each triplestore is identified by a name and configured in a</span>
 <span class="sd">    user-defined YAML file.</span>
@@ -1792,12 +1792,12 @@ get_triplestore() for the other resource.</p>
 <span class="sd">    easies is to create a subclass that implements a method similar to</span>
 <span class="sd">    get_triplestore() for the other resource.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-few-public-methods</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Path, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialises a session.</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">"Optional[Union[Path, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialises a session.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            config: Configuration file.</span>
@@ -1809,40 +1809,40 @@ get_triplestore() for the other resource.</p>
 <span class="sd">        - Windows: $HOME/AppData/Local/tripper/Config/session.yaml</span>
 <span class="sd">        - Darwin: $HOME/Library/Config/tripper/session.yaml</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>  <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
 
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;session.yaml&quot;</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"session.yaml"</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns configrations for the named service.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns configrations for the named service."""</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no session configured for: &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"no session configured for: '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
         <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s2">&quot;password&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"password"</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
-                <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
-            <span class="k">elif</span> <span class="s2">&quot;username&quot;</span> <span class="ow">in</span> <span class="n">conf</span> <span class="ow">and</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;KEYRING&quot;</span><span class="p">:</span>
+                <span class="n">conf</span><span class="p">[</span><span class="s2">"password"</span><span class="p">]</span> <span class="o">=</span> <span class="n">password</span>
+            <span class="k">elif</span> <span class="s2">"username"</span> <span class="ow">in</span> <span class="n">conf</span> <span class="ow">and</span> <span class="n">conf</span><span class="p">[</span><span class="s2">"password"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"KEYRING"</span><span class="p">:</span>
                 <span class="kn">import</span><span class="w"> </span><span class="nn">keyring</span>  <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
 
-                <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyring</span><span class="o">.</span><span class="n">get_password</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">])</span>
+                <span class="n">conf</span><span class="p">[</span><span class="s2">"password"</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyring</span><span class="o">.</span><span class="n">get_password</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">conf</span><span class="p">[</span><span class="s2">"username"</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">conf</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list with all configured session names.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a list with all configured session names."""</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_triplestore</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new triplestore instance with the given name.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Triplestore"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return a new triplestore instance with the given name."""</span>
         <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Triplestore</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
@@ -1905,8 +1905,8 @@ get_triplestore() for the other resource.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/session.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Path, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialises a session.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="s2">"Optional[Union[Path, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Initialises a session.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        config: Configuration file.</span>
@@ -1918,13 +1918,13 @@ get_triplestore() for the other resource.</p>
 <span class="sd">    - Windows: $HOME/AppData/Local/tripper/Config/session.yaml</span>
 <span class="sd">    - Darwin: $HOME/Library/Config/tripper/session.yaml</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>  <span class="c1"># pylint: disable=import-outside-toplevel,import-error</span>
 
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;session.yaml&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">get_configdir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"session.yaml"</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1951,7 +1951,7 @@ get_triplestore() for the other resource.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/session.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list with all configured session names.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a list with all configured session names."""</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </code></pre></div>
         </details>
@@ -1978,9 +1978,9 @@ get_triplestore() for the other resource.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/session.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_triplestore</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a new triplestore instance with the given name.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Triplestore"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return a new triplestore instance with the given name."""</span>
     <span class="n">conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Triplestore</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">)</span>
@@ -2022,28 +2022,28 @@ get_triplestore() for the other resource.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/session.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_configdir</span><span class="p">(</span><span class="n">create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns cross-platform path to tripper config directory.</span>
+<span class="w">    </span><span class="sd">"""Returns cross-platform path to tripper config directory.</span>
 
-<span class="sd">    If `create` is true, create the config directory if it doesn&#39;t exists.</span>
+<span class="sd">    If `create` is true, create the config directory if it doesn't exists.</span>
 
 <span class="sd">    The XDG_CONFIG_HOME environment variable is used if it exists.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XDG_CONFIG_HOME&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"XDG_CONFIG_HOME"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">site_configdir</span><span class="p">:</span>
-        <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;XDG_CONFIG_DIRS&quot;</span><span class="p">)</span>
+        <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"XDG_CONFIG_DIRS"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">site_configdir</span><span class="p">:</span>
-            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">site_configdir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">site_configdir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">finaldir</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">site_configdir</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win32&quot;</span><span class="p">):</span>
-            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;AppData&quot;</span> <span class="o">/</span> <span class="s2">&quot;Local&quot;</span>
-            <span class="n">finaldir</span> <span class="o">=</span> <span class="s2">&quot;Config&quot;</span>
-        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;darwin&quot;</span><span class="p">):</span>
-            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;Library&quot;</span> <span class="o">/</span> <span class="s2">&quot;Config&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"win32"</span><span class="p">):</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"AppData"</span> <span class="o">/</span> <span class="s2">"Local"</span>
+            <span class="n">finaldir</span> <span class="o">=</span> <span class="s2">"Config"</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"darwin"</span><span class="p">):</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"Library"</span> <span class="o">/</span> <span class="s2">"Config"</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Default to UNIX</span>
-            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.config&quot;</span>  <span class="c1"># type: ignore</span>
-    <span class="n">configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">site_configdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;tripper&quot;</span>  <span class="c1"># type: ignore</span>
+            <span class="n">site_configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">".config"</span>  <span class="c1"># type: ignore</span>
+    <span class="n">configdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">site_configdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"tripper"</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">finaldir</span><span class="p">:</span>
         <span class="n">configdir</span> <span class="o">/=</span> <span class="n">finaldir</span>
 

@@ -1860,35 +1860,35 @@ inferred from <code>value</code>.  Should not be combined with
 <span class="c1"># Inferring the data type</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l1</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l1</span>
-<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;42&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2001/XMLSchema#integer&#39;</span><span class="p">)</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">'42'</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">'http://www.w3.org/2001/XMLSchema#integer'</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l1</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">42</span>
 
 <span class="c1"># String values with no datatype are assumed to be strings</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;42&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">"42"</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l2</span><span class="o">.</span><span class="n">value</span>
-<span class="s1">&#39;42&#39;</span>
+<span class="s1">'42'</span>
 
 <span class="c1"># Explicit providing the datatype</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;42&quot;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">"42"</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span>
-<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;42&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2001/XMLSchema#integer&#39;</span><span class="p">)</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">'42'</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">'http://www.w3.org/2001/XMLSchema#integer'</span><span class="p">)</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l3</span><span class="o">.</span><span class="n">value</span>
 <span class="mi">42</span>
 
 <span class="c1"># Localised or language-tagged string literal</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
-<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;Hello world&#39;</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">"Hello world"</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s2">"en"</span><span class="p">)</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">'Hello world'</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">'en'</span><span class="p">)</span>
 
 <span class="c1"># Dicts, lists and None are assumed to be of type rdf:JSON</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Jon Doe&quot;</span><span class="p">})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">({</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Jon Doe"</span><span class="p">})</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span><span class="o">.</span><span class="n">datatype</span>
-<span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39;</span>
+<span class="s1">'http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON'</span>
 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l4</span><span class="o">.</span><span class="n">value</span>
-<span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Jon Doe&#39;</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Jon Doe'</span><span class="p">}</span>
 
 <span class="c1"># Literal of custom datatype (`value` must be a string)</span>
 <span class="c1"># This will issue an `UnknownDatatypeWarning` which we ignore...</span>
@@ -1896,27 +1896,27 @@ inferred from <code>value</code>.  Should not be combined with
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnknownDatatypeWarning</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
 <span class="o">...</span>     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
-<span class="o">...</span>         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnknownDatatypeWarning</span><span class="p">,</span>
+<span class="o">...</span>         <span class="n">action</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">UnknownDatatypeWarning</span><span class="p">,</span>
 <span class="o">...</span>     <span class="p">)</span>
-<span class="o">...</span>     <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;a value&quot;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;http://example.com/onto#MyType&quot;</span><span class="p">)</span>
-<span class="n">Literal</span><span class="p">(</span><span class="s1">&#39;a value&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;http://example.com/onto#MyType&#39;</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">Literal</span><span class="p">(</span><span class="s2">"a value"</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s2">"http://example.com/onto#MyType"</span><span class="p">)</span>
+<span class="n">Literal</span><span class="p">(</span><span class="s1">'a value'</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">'http://example.com/onto#MyType'</span><span class="p">)</span>
 </code></pre></div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Literal</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A literal RDF value.</span>
+<span class="w">    </span><span class="sd">"""A literal RDF value.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        value (Union[datetime, bytes, bytearray, bool, int, float,</span>
 <span class="sd">            str, None, dict, list]): The literal value. Can be</span>
 <span class="sd">            given as a string or a Python object.</span>
-<span class="sd">        lang (Optional[str]): A standard language code, like &quot;en&quot;,</span>
-<span class="sd">            &quot;no&quot;, etc.  Implies that the `value` is a language-tagged</span>
+<span class="sd">        lang (Optional[str]): A standard language code, like "en",</span>
+<span class="sd">            "no", etc.  Implies that the `value` is a language-tagged</span>
 <span class="sd">            string.</span>
 <span class="sd">        datatype (Optional[str, type]): The datatype of this literal.</span>
 <span class="sd">            Can be given either as a string with the datatype IRI (ex:</span>
-<span class="sd">            `&quot;http://www.w3.org/2001/XMLSchema#integer&quot;`) or as a</span>
+<span class="sd">            `"http://www.w3.org/2001/XMLSchema#integer"`) or as a</span>
 <span class="sd">            Python type (ex: `int`).  If not given, the datatype is</span>
 <span class="sd">            inferred from `value`.  Should not be combined with</span>
 <span class="sd">            `lang`.</span>
@@ -1929,35 +1929,35 @@ inferred from <code>value</code>.  Should not be combined with
 <span class="sd">        # Inferring the data type</span>
 <span class="sd">        &gt;&gt;&gt; l1 = Literal(42)</span>
 <span class="sd">        &gt;&gt;&gt; l1</span>
-<span class="sd">        Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;)</span>
+<span class="sd">        Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')</span>
 
 <span class="sd">        &gt;&gt;&gt; l1.value</span>
 <span class="sd">        42</span>
 
 <span class="sd">        # String values with no datatype are assumed to be strings</span>
-<span class="sd">        &gt;&gt;&gt; l2 = Literal(&quot;42&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; l2 = Literal("42")</span>
 <span class="sd">        &gt;&gt;&gt; l2.value</span>
-<span class="sd">        &#39;42&#39;</span>
+<span class="sd">        '42'</span>
 
 <span class="sd">        # Explicit providing the datatype</span>
-<span class="sd">        &gt;&gt;&gt; l3 = Literal(&quot;42&quot;, datatype=XSD.integer)</span>
+<span class="sd">        &gt;&gt;&gt; l3 = Literal("42", datatype=XSD.integer)</span>
 <span class="sd">        &gt;&gt;&gt; l3</span>
-<span class="sd">        Literal(&#39;42&#39;, datatype=&#39;http://www.w3.org/2001/XMLSchema#integer&#39;)</span>
+<span class="sd">        Literal('42', datatype='http://www.w3.org/2001/XMLSchema#integer')</span>
 
 <span class="sd">        &gt;&gt;&gt; l3.value</span>
 <span class="sd">        42</span>
 
 <span class="sd">        # Localised or language-tagged string literal</span>
-<span class="sd">        &gt;&gt;&gt; Literal(&quot;Hello world&quot;, lang=&quot;en&quot;)</span>
-<span class="sd">        Literal(&#39;Hello world&#39;, lang=&#39;en&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; Literal("Hello world", lang="en")</span>
+<span class="sd">        Literal('Hello world', lang='en')</span>
 
 <span class="sd">        # Dicts, lists and None are assumed to be of type rdf:JSON</span>
-<span class="sd">        &gt;&gt;&gt; l4 = Literal({&quot;name&quot;: &quot;Jon Doe&quot;})</span>
+<span class="sd">        &gt;&gt;&gt; l4 = Literal({"name": "Jon Doe"})</span>
 <span class="sd">        &gt;&gt;&gt; l4.datatype</span>
-<span class="sd">        &#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON&#39;</span>
+<span class="sd">        'http://www.w3.org/1999/02/22-rdf-syntax-ns#JSON'</span>
 
 <span class="sd">        &gt;&gt;&gt; l4.value</span>
-<span class="sd">        {&#39;name&#39;: &#39;Jon Doe&#39;}</span>
+<span class="sd">        {'name': 'Jon Doe'}</span>
 
 <span class="sd">        # Literal of custom datatype (`value` must be a string)</span>
 <span class="sd">        # This will issue an `UnknownDatatypeWarning` which we ignore...</span>
@@ -1965,14 +1965,14 @@ inferred from <code>value</code>.  Should not be combined with
 <span class="sd">        &gt;&gt;&gt; from tripper.errors import UnknownDatatypeWarning</span>
 <span class="sd">        &gt;&gt;&gt; with warnings.catch_warnings():</span>
 <span class="sd">        ...     warnings.filterwarnings(</span>
-<span class="sd">        ...         action=&quot;ignore&quot;, category=UnknownDatatypeWarning,</span>
+<span class="sd">        ...         action="ignore", category=UnknownDatatypeWarning,</span>
 <span class="sd">        ...     )</span>
-<span class="sd">        ...     Literal(&quot;a value&quot;, datatype=&quot;http://example.com/onto#MyType&quot;)</span>
-<span class="sd">        Literal(&#39;a value&#39;, datatype=&#39;http://example.com/onto#MyType&#39;)</span>
+<span class="sd">        ...     Literal("a value", datatype="http://example.com/onto#MyType")</span>
+<span class="sd">        Literal('a value', datatype='http://example.com/onto#MyType')</span>
 
 <span class="sd">        ```</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-many-nested-blocks</span>
 
@@ -2030,18 +2030,18 @@ inferred from <code>value</code>.  Should not be combined with
     <span class="k">if</span> <span class="n">Quantity</span><span class="p">:</span>
         <span class="n">datatypes</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">SIQuantityDatatype</span><span class="p">,)</span>
 
-    <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Union[str, None]&quot;</span>
-    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Union[str, None]&quot;</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="s2">"Union[str, None]"</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Union[str, None]"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">value</span><span class="p">:</span> <span class="p">(</span>
-            <span class="s2">&quot;Union[datetime.datetime, datetime.date, datetime.time, &quot;</span>
-            <span class="s2">&quot;datetime.timedelta, bytes, bytearray, bool, int, float, str, &quot;</span>
-            <span class="s2">&quot;None, dict, list]&quot;</span>
+            <span class="s2">"Union[datetime.datetime, datetime.date, datetime.time, "</span>
+            <span class="s2">"datetime.timedelta, bytes, bytearray, bool, int, float, str, "</span>
+            <span class="s2">"None, dict, list]"</span>
         <span class="p">),</span>
-        <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, type]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lang</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Optional[Union[str, type]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># pylint: disable=too-many-branches,too-many-statements</span>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -2052,7 +2052,7 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">&quot;A literal can only have one of `lang` or `datatype`.&quot;</span>
+                    <span class="s2">"A literal can only have one of `lang` or `datatype`."</span>
                 <span class="p">)</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
 
@@ -2070,7 +2070,7 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
         <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="n">SIQuantityDatatype</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">Quantity</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
@@ -2082,7 +2082,7 @@ inferred from <code>value</code>.  Should not be combined with
                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;fromisoformat&quot;</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">"fromisoformat"</span><span class="p">):</span>
                                 <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -2138,7 +2138,7 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
         <span class="k">elif</span> <span class="n">Quantity</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
 
@@ -2147,12 +2147,12 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span>
             <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonPositiveInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonPositiveInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span>
             <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonNegativeInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonNegativeInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span>
             <span class="ow">in</span> <span class="p">(</span>
@@ -2163,14 +2163,14 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="p">)</span>
             <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not an unsigned integer: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not an unsigned integer: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
         <span class="c1"># Check if datatype is known</span>
         <span class="k">if</span> <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
             <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">types</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="n">string</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming xsd:string&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"unknown datatype: </span><span class="si">{</span><span class="n">string</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming xsd:string"</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="n">UnknownDatatypeWarning</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -2207,20 +2207,20 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">lang</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, lang=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;, datatype=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Literal(&#39;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">lang</span><span class="si">}{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">", lang='</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">'"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">", datatype='</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">'"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Literal('</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">'</span><span class="si">{</span><span class="n">lang</span><span class="si">}{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span>
         <span class="n">fget</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_python</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Appropriate python datatype derived from this RDF literal.&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">"Appropriate python datatype derived from this RDF literal."</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF</span>
-<span class="sd">        literal.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns an appropriate python datatype derived from this RDF</span>
+<span class="sd">        literal."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"False"</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
@@ -2244,8 +2244,8 @@ inferred from <code>value</code>.  Should not be combined with
                 <span class="n">value</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="s2">&quot;pint is needed to convert emmo:SIQuantityDatatype to &quot;</span>
-                    <span class="s2">&quot;a quantity&quot;</span>
+                    <span class="s2">"pint is needed to convert emmo:SIQuantityDatatype to "</span>
+                    <span class="s2">"a quantity"</span>
                 <span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2254,15 +2254,15 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">n3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a representation in n3 format.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns a representation in n3 format."""</span>
 
-        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\"</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&quot;@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">"@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&quot;^^&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">"^^&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&gt;'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">"'</span>
 </code></pre></div>
         </details>
 
@@ -2328,12 +2328,12 @@ inferred from <code>value</code>.  Should not be combined with
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span>
     <span class="n">value</span><span class="p">:</span> <span class="p">(</span>
-        <span class="s2">&quot;Union[datetime.datetime, datetime.date, datetime.time, &quot;</span>
-        <span class="s2">&quot;datetime.timedelta, bytes, bytearray, bool, int, float, str, &quot;</span>
-        <span class="s2">&quot;None, dict, list]&quot;</span>
+        <span class="s2">"Union[datetime.datetime, datetime.date, datetime.time, "</span>
+        <span class="s2">"datetime.timedelta, bytes, bytearray, bool, int, float, str, "</span>
+        <span class="s2">"None, dict, list]"</span>
     <span class="p">),</span>
-    <span class="n">lang</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[str, type]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Optional[Union[str, type]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1"># pylint: disable=too-many-branches,too-many-statements</span>
     <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -2344,7 +2344,7 @@ inferred from <code>value</code>.  Should not be combined with
     <span class="k">if</span> <span class="n">lang</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;A literal can only have one of `lang` or `datatype`.&quot;</span>
+                <span class="s2">"A literal can only have one of `lang` or `datatype`."</span>
             <span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
 
@@ -2362,7 +2362,7 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="n">SIQuantityDatatype</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">Quantity</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
@@ -2374,7 +2374,7 @@ inferred from <code>value</code>.  Should not be combined with
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">datatype</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;fromisoformat&quot;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">"fromisoformat"</span><span class="p">):</span>
                             <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">val</span> <span class="o">=</span> <span class="n">typ</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -2430,7 +2430,7 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">JSON</span>
     <span class="k">elif</span> <span class="n">Quantity</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">string</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SIQuantityDatatype</span>
 
@@ -2439,12 +2439,12 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonPositiveInteger</span>
         <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonPositiveInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonPositiveInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span>
         <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a xsd:nonNegativeInteger: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a xsd:nonNegativeInteger: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span>
         <span class="ow">in</span> <span class="p">(</span>
@@ -2455,14 +2455,14 @@ inferred from <code>value</code>.  Should not be combined with
         <span class="p">)</span>
         <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># type: ignore[arg-type]</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not an unsigned integer: &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not an unsigned integer: '</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
 
     <span class="c1"># Check if datatype is known</span>
     <span class="k">if</span> <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
         <span class="n">string</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="n">types</span> <span class="k">for</span> <span class="n">types</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">datatypes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;unknown datatype: </span><span class="si">{</span><span class="n">string</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming xsd:string&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"unknown datatype: </span><span class="si">{</span><span class="n">string</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> - assuming xsd:string"</span><span class="p">,</span>
             <span class="n">category</span><span class="o">=</span><span class="n">UnknownDatatypeWarning</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -2493,15 +2493,15 @@ inferred from <code>value</code>.  Should not be combined with
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">n3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a representation in n3 format.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Returns a representation in n3 format."""</span>
 
-    <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"</span><span class="se">\"</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&quot;@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">"@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s1">'</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&quot;^^&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">"^^&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&gt;'</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s1">"'</span>
 </code></pre></div>
         </details>
     </div>
@@ -2528,10 +2528,10 @@ literal.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an appropriate python datatype derived from this RDF</span>
-<span class="sd">    literal.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Returns an appropriate python datatype derived from this RDF</span>
+<span class="sd">    literal."""</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"False"</span> <span class="k">else</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatypes</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
@@ -2555,8 +2555,8 @@ literal.</p>
             <span class="n">value</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;pint is needed to convert emmo:SIQuantityDatatype to &quot;</span>
-                <span class="s2">&quot;a quantity&quot;</span>
+                <span class="s2">"pint is needed to convert emmo:SIQuantityDatatype to "</span>
+                <span class="s2">"a quantity"</span>
             <span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2598,29 +2598,29 @@ literal.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_duration</span><span class="p">(</span><span class="n">td</span><span class="p">:</span> <span class="s2">&quot;datetime.timedelta&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format a timedelta object as a ISO 8601 string.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">format_duration</span><span class="p">(</span><span class="n">td</span><span class="p">:</span> <span class="s2">"datetime.timedelta"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Format a timedelta object as a ISO 8601 string."""</span>
     <span class="n">dm</span> <span class="o">=</span> <span class="mi">60</span>
     <span class="n">dh</span> <span class="o">=</span> <span class="n">dm</span> <span class="o">*</span> <span class="mi">60</span>
     <span class="n">dD</span> <span class="o">=</span> <span class="n">dh</span> <span class="o">*</span> <span class="mi">24</span>
     <span class="n">dM</span> <span class="o">=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">/</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">dD</span>
     <span class="n">dY</span> <span class="o">=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">*</span> <span class="n">dD</span>
     <span class="n">seconds</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
-    <span class="n">sign</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">sign</span> <span class="o">=</span> <span class="s2">"-"</span> <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">t</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
-    <span class="n">Y</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dY</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">Y&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dY</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dY</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">Y"</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dY</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">t</span> <span class="o">%=</span> <span class="n">dY</span>
-    <span class="n">M</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dM</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">M&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dM</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dM</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">M"</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dM</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">t</span> <span class="o">%=</span> <span class="n">dM</span>
-    <span class="n">D</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dD</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">D&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dD</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dD</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">D"</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dD</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">t</span> <span class="o">%=</span> <span class="n">dD</span>
-    <span class="n">h</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dh</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">H&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dh</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dh</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">H"</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dh</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">t</span> <span class="o">%=</span> <span class="n">dh</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dm</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">M&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dm</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">dm</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">M"</span> <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">dm</span> <span class="k">else</span> <span class="s2">""</span>
     <span class="n">t</span> <span class="o">%=</span> <span class="n">dm</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">S&quot;</span> <span class="k">if</span> <span class="n">t</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">or</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">s</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sign</span><span class="si">}</span><span class="s2">P</span><span class="si">{</span><span class="n">Y</span><span class="si">}{</span><span class="n">M</span><span class="si">}{</span><span class="n">D</span><span class="si">}{</span><span class="n">T</span><span class="si">}{</span><span class="n">h</span><span class="si">}{</span><span class="n">m</span><span class="si">}{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">S"</span> <span class="k">if</span> <span class="n">t</span> <span class="k">else</span> <span class="s2">""</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="s2">"T"</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">or</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">s</span> <span class="k">else</span> <span class="s2">""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sign</span><span class="si">}</span><span class="s2">P</span><span class="si">{</span><span class="n">Y</span><span class="si">}{</span><span class="n">M</span><span class="si">}{</span><span class="n">D</span><span class="si">}{</span><span class="n">T</span><span class="si">}{</span><span class="n">h</span><span class="si">}{</span><span class="n">m</span><span class="si">}{</span><span class="n">s</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div>
         </details>
     </div>
@@ -2648,25 +2648,25 @@ with "-".</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/literal.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;datetime.timedelta&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse an ISO 8601 duration string to a timedelta object.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"datetime.timedelta"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Parse an ISO 8601 duration string to a timedelta object.</span>
 
-<span class="sd">    The duration should be a string of the form &quot;PnYnMnDTnHnMnS&quot;,</span>
+<span class="sd">    The duration should be a string of the form "PnYnMnDTnHnMnS",</span>
 <span class="sd">    where `n` is a number. A negative duration can be prefixed</span>
-<span class="sd">    with &quot;-&quot;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    with "-".</span>
+<span class="sd">    """</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
-        <span class="s2">&quot;(-)?P([0-9.]+Y)?([0-9.]+M)?([0-9.]+D)?&quot;</span>
-        <span class="s2">&quot;(T([0-9.]+H)?([0-9.]+M)?([0-9.eE+-]+S)?)?&quot;</span><span class="p">,</span>
+        <span class="s2">"(-)?P([0-9.]+Y)?([0-9.]+M)?([0-9.]+D)?"</span>
+        <span class="s2">"(T([0-9.]+H)?([0-9.]+M)?([0-9.eE+-]+S)?)?"</span><span class="p">,</span>
         <span class="n">duration</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Invalid duration literal &#39;</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
-            <span class="s2">&quot;Should be of the form &#39;PnYnMnDTnHnMnS&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">"Invalid duration literal '</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">'. "</span>
+            <span class="s2">"Should be of the form 'PnYnMnDTnHnMnS'"</span>
         <span class="p">)</span>
     <span class="n">sign</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-    <span class="n">sn</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="n">sn</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s2">"-"</span> <span class="k">else</span> <span class="mi">1</span>
     <span class="n">days</span> <span class="o">=</span> <span class="n">seconds</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="k">if</span> <span class="n">Y</span><span class="p">:</span>
         <span class="n">days</span> <span class="o">+=</span> <span class="n">DAYS_PER_YEAR</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">Y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>

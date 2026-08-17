@@ -1791,22 +1791,22 @@ triplestore from.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/collection.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CollectionStrategy</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for DLite collections.</span>
+<span class="w">    </span><span class="sd">"""Triplestore strategy for DLite collections.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: Unused.</span>
 <span class="sd">        database: Unused - collection does not support multiple databases.</span>
 <span class="sd">        collection: Optional collection from which to initialise the</span>
 <span class="sd">            triplestore from.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">prefer_sparql</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">collection</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[dlite.Collection, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">:</span> <span class="s2">"Optional[Union[dlite.Collection, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># pylint: disable=unused-argument,import-outside-toplevel,import-error</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">dlite</span>
@@ -1817,49 +1817,49 @@ triplestore from.</p></td>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">get_instance</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">uri</span> <span class="o">!=</span> <span class="n">dlite</span><span class="o">.</span><span class="n">COLLECTION_ENTITY</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;expected &#39;</span><span class="si">{</span><span class="n">collection</span><span class="si">}</span><span class="s2">&#39; to be a collection, was a &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"expected '</span><span class="si">{</span><span class="n">collection</span><span class="si">}</span><span class="s2">' to be a collection, was a "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">dlite</span><span class="o">.</span><span class="n">Collection</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;`collection` should be None, string or a collection&quot;</span>
+                <span class="s2">"`collection` should be None, string or a collection"</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">get_relations</span><span class="p">(</span><span class="o">*</span><span class="n">triple</span><span class="p">,</span> <span class="n">rettype</span><span class="o">=</span><span class="s2">&quot;T&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns a generator over matching triples."""</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">get_relations</span><span class="p">(</span><span class="o">*</span><span class="n">triple</span><span class="p">,</span> <span class="n">rettype</span><span class="o">=</span><span class="s2">"T"</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
-                <span class="n">lang</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;@&quot;</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">lang</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"@"</span> <span class="k">else</span> <span class="kc">None</span>
                 <span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">lang</span> <span class="k">else</span> <span class="n">d</span>
                 <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Union[Sequence[Triple], Generator[Triple, None, None]]&quot;</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Union[Sequence[Triple], Generator[Triple, None, None]]"</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add a sequence of triples."""</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">parse_object</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="kc">None</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">add_relation</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Remove all matching triples from the backend."""</span>
         <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">parse_object</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">remove_relations</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 </code></pre></div>
@@ -1896,16 +1896,16 @@ triplestore from.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/collection.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Union[Sequence[Triple], Generator[Triple, None, None]]&quot;</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Union[Sequence[Triple], Generator[Triple, None, None]]"</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add a sequence of triples."""</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">parse_object</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
             <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">add_relation</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 </code></pre></div>
@@ -1932,15 +1932,15 @@ triplestore from.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/collection.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Remove all matching triples from the backend."""</span>
     <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
     <span class="n">v</span> <span class="o">=</span> <span class="n">parse_object</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
     <span class="n">obj</span> <span class="o">=</span> <span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
     <span class="n">d</span> <span class="o">=</span> <span class="p">(</span>
         <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-        <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
+        <span class="k">else</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">lang</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">datatype</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">remove_relations</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 </code></pre></div>
@@ -1967,11 +1967,11 @@ triplestore from.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/collection.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">get_relations</span><span class="p">(</span><span class="o">*</span><span class="n">triple</span><span class="p">,</span> <span class="n">rettype</span><span class="o">=</span><span class="s2">&quot;T&quot;</span><span class="p">):</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a generator over matching triples."""</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">get_relations</span><span class="p">(</span><span class="o">*</span><span class="n">triple</span><span class="p">,</span> <span class="n">rettype</span><span class="o">=</span><span class="s2">"T"</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
-            <span class="n">lang</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;@&quot;</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">lang</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"@"</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">lang</span> <span class="k">else</span> <span class="n">d</span>
             <span class="k">yield</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

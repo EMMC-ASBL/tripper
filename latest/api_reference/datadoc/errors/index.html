@@ -1964,7 +1964,7 @@ DatadocValueError            (<a class="autorefs autorefs-internal" title="tripp
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DatadocValueError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid/inconsistent value (of correct type).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Invalid/inconsistent value (of correct type)."""</span>
 </code></pre></div>
         </details>
 
@@ -1995,7 +1995,7 @@ IRIExistsError            (<a class="autorefs autorefs-internal" title="tripper.
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IRIExistsError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IRI already exists in the triplestore.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The IRI already exists in the triplestore."""</span>
 </code></pre></div>
         </details>
 
@@ -2026,7 +2026,7 @@ IRIExistsWarning            (<a class="autorefs autorefs-internal" title="trippe
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IRIExistsWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IRI already exists in the triplestore.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The IRI already exists in the triplestore."""</span>
 </code></pre></div>
         </details>
 
@@ -2057,7 +2057,7 @@ InconsistentKeywordError            (<a class="autorefs autorefs-internal" title
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InconsistentKeywordError</span><span class="p">(</span><span class="n">DatadocValueError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inconsistent keyword.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Inconsistent keyword."""</span>
 </code></pre></div>
         </details>
 
@@ -2088,7 +2088,7 @@ InvalidContextError            (<a class="autorefs autorefs-internal" title="tri
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InvalidContextError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context is invalid.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Context is invalid."""</span>
 </code></pre></div>
         </details>
 
@@ -2119,7 +2119,7 @@ InvalidDatadocError            (<a class="autorefs autorefs-internal" title="tri
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InvalidDatadocError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Invalid data documentation dict (or list).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Invalid data documentation dict (or list)."""</span>
 </code></pre></div>
         </details>
 
@@ -2150,7 +2150,7 @@ InvalidKeywordError            (<a class="autorefs autorefs-internal" title="tri
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InvalidKeywordError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>  <span class="c1"># remove?</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Keyword is not defined.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Keyword is not defined."""</span>
 </code></pre></div>
         </details>
 
@@ -2181,7 +2181,7 @@ MissingKeyError            (<a class="autorefs autorefs-internal" title="tripper
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingKeyError</span><span class="p">(</span><span class="n">InvalidDatadocError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Missing required key in description of a resource or keyword.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Missing required key in description of a resource or keyword."""</span>
 </code></pre></div>
         </details>
 
@@ -2212,7 +2212,7 @@ NoSuchTypeError            (<a class="autorefs autorefs-internal" title="tripper
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NoSuchTypeError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;There are no pre-defined type defined with the given name.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""There are no pre-defined type defined with the given name."""</span>
 </code></pre></div>
         </details>
 
@@ -2243,7 +2243,7 @@ ParseError            (<a class="autorefs autorefs-internal" title="tripper.erro
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParseError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error when parsing a file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Error when parsing a file."""</span>
 </code></pre></div>
         </details>
 
@@ -2274,7 +2274,7 @@ PrefixMismatchError            (<a class="autorefs autorefs-internal" title="tri
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PrefixMismatchError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prefix mismatch between two sources.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Prefix mismatch between two sources."""</span>
 </code></pre></div>
         </details>
 
@@ -2305,7 +2305,7 @@ RedefineError            (<a class="autorefs autorefs-internal" title="tripper.e
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineError</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trying to redefine an existing concept or keyword.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Trying to redefine an existing concept or keyword."""</span>
 </code></pre></div>
         </details>
 
@@ -2336,7 +2336,7 @@ RedefineKeywordWarning            (<a class="autorefs autorefs-internal" title="
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedefineKeywordWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Redefine an existing keyword (by mapping it to a new IRI).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Redefine an existing keyword (by mapping it to a new IRI)."""</span>
 </code></pre></div>
         </details>
 
@@ -2368,8 +2368,8 @@ definition (by mapping it to a new IRI).</p>
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SkipRedefineKeywordWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Skip redefining an existing keyword in a user-defined keyword</span>
-<span class="sd">    definition (by mapping it to a new IRI).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Skip redefining an existing keyword in a user-defined keyword</span>
+<span class="sd">    definition (by mapping it to a new IRI)."""</span>
 </code></pre></div>
         </details>
 
@@ -2400,7 +2400,7 @@ UnknownKeywordWarning            (<a class="autorefs autorefs-internal" title="t
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnknownKeywordWarning</span><span class="p">(</span><span class="n">TripperWarning</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unknown keyword in data documentation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Unknown keyword in data documentation."""</span>
 </code></pre></div>
         </details>
 
@@ -2431,7 +2431,7 @@ ValidateError            (<a class="autorefs autorefs-internal" title="tripper.e
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/errors.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ValidateError</span><span class="p">(</span><span class="n">TripperError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error validating data documentation dict.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Error validating data documentation dict."""</span>
 </code></pre></div>
         </details>
 

@@ -1901,7 +1901,7 @@ Defaults to base_iri.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SparqlwrapperStrategy</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for SPARQLWrapper.</span>
+<span class="w">    </span><span class="sd">"""Triplestore strategy for SPARQLWrapper.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: SPARQL endpoint.</span>
@@ -1914,24 +1914,24 @@ Defaults to base_iri.</p></td>
 <span class="sd">        password: Password.</span>
 <span class="sd">        kwargs: Additional arguments passed to the SPARQLWrapper constructor.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">prefer_sparql</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">base_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">update_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">check_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">username</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">password</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">update_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">check_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">username</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">password</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="o">=</span> <span class="n">update_iri</span> <span class="k">if</span> <span class="n">update_iri</span> <span class="k">else</span> <span class="n">base_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span> <span class="o">=</span> <span class="n">check_iri</span> <span class="k">if</span> <span class="n">check_iri</span> <span class="k">else</span> <span class="n">base_iri</span>
 
         <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
-            <span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="s2">"database"</span><span class="p">,</span> <span class="kc">None</span>
         <span class="p">)</span>  <span class="c1"># database is not used in the SPARQLWrapper backend</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="n">base_iri</span><span class="p">,</span> <span class="n">updateEndpoint</span><span class="o">=</span><span class="n">update_iri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -1940,24 +1940,24 @@ Defaults to base_iri.</p></td>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setCredentials</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Optional[str]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Getter for the update IRI.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Optional[str]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Getter for the update IRI."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_iri</span>
 
     <span class="nd">@update_iri</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_update_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for the update IRI that also updates the SPARQL endpoint.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_update_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Setter for the update IRI that also updates the SPARQL endpoint."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iri</span> <span class="o">=</span> <span class="n">new_update_iri</span>
-        <span class="c1"># Update the SPARQLWrapper&#39;s updateEndpoint only if it was initialized.</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;sparql&quot;</span><span class="p">):</span>
+        <span class="c1"># Update the SPARQLWrapper's updateEndpoint only if it was initialized.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"sparql"</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">updateEndpoint</span> <span class="o">=</span> <span class="n">new_update_iri</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            query_object: String with the SPARQL query.</span>
@@ -1969,76 +1969,76 @@ Defaults to base_iri.</p></td>
 <span class="sd">              - CONSTRUCT: generator over triples</span>
 <span class="sd">              - DESCRIBE: generator over triples</span>
 <span class="sd">              - SELECT: list of tuples of IRIs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"ASK"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;boolean&quot;</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"boolean"</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">value</span>
 
-        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"CONSTRUCT"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
             <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
             <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"DESCRIBE"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
             <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
             <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"SELECT"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-            <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+            <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">"results"</span><span class="p">][</span><span class="s2">"bindings"</span><span class="p">]</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="nb">tuple</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
             <span class="p">]</span>
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Query type '</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">' not implemented."</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_sparql_query_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the SPARQL query type (e.g., SELECT, ASK, CONSTRUCT, DESCRIBE)</span>
 <span class="sd">        by finding the first word of a sentence that matches one of these</span>
 <span class="sd">        keywords.</span>
-<span class="sd">        If none is found, it returns &#39;UNKNOWN&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        If none is found, it returns 'UNKNOWN'.</span>
+<span class="sd">        """</span>
         <span class="c1"># A regex that looks for a sentence start:</span>
         <span class="c1"># either the beginning of the string or following a newline</span>
         <span class="c1"># or a period. It then matches one of the keywords.</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-            <span class="sa">r</span><span class="s2">&quot;(?:(?&lt;=^)|(?&lt;=[\.\n]))\s*(ASK|CONSTRUCT|SELECT|DESCRIBE|&quot;</span>
-            <span class="sa">r</span><span class="s2">&quot;DELETE|INSERT)\b&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">"(?:(?&lt;=^)|(?&lt;=[\.\n]))\s*(ASK|CONSTRUCT|SELECT|DESCRIBE|"</span>
+            <span class="sa">r</span><span class="s2">"DELETE|INSERT)\b"</span><span class="p">,</span>
             <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="k">return</span> <span class="s2">&quot;UNKNOWN&quot;</span>
+        <span class="k">return</span> <span class="s2">"UNKNOWN"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL query.</span>
+<span class="w">        </span><span class="sd">"""Update triplestore with SPARQL query.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            update_object: String with the SPARQL query.</span>
@@ -2047,11 +2047,11 @@ Defaults to base_iri.</p></td>
 <span class="sd">        Note:</span>
 <span class="sd">            This method is intended for INSERT and DELETE queries.  Use</span>
 <span class="sd">            the query() method for ASK/CONSTRUCT/SELECT/DESCRIBE queries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">update_object</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">query_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;INSERT&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">query_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"DELETE"</span><span class="p">,</span> <span class="s2">"INSERT"</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Update query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Update query type '</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">' not implemented."</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -2059,7 +2059,7 @@ Defaults to base_iri.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the backend is available.</span>
+<span class="w">        </span><span class="sd">"""Checks if the backend is available.</span>
 
 <span class="sd">        This is done by sending a request to the URL specified</span>
 <span class="sd">        in the `check_iri` attribute and checking for the response.</span>
@@ -2073,100 +2073,100 @@ Defaults to base_iri.</p></td>
 <span class="sd">            Returns true if the service responds with code 200,</span>
 <span class="sd">            otherwise false is returned.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;`check_iri` must be assigned before calling is_available()&quot;</span>
+                <span class="s2">"`check_iri` must be assigned before calling is_available()"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">check_service_availability</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns a generator over matching triples."""</span>
         <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">"?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">]</span>
-        <span class="n">where_spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">where_spec</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
                 <span class="k">else</span> <span class="p">(</span>
                     <span class="n">triple_value</span>
-                    <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                    <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;"</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="sa">f</span><span class="s2">&quot;SELECT </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2"> WHERE </span><span class="se">{{</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">where_spec</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;}&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"SELECT </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2"> WHERE </span><span class="se">{{</span><span class="s2">"</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">where_spec</span><span class="si">}</span><span class="s2"> ."</span><span class="p">,</span>
+                <span class="s2">"}"</span><span class="p">,</span>
             <span class="p">]</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">[</span><span class="s2">"results"</span><span class="p">][</span><span class="s2">"bindings"</span><span class="p">]:</span>
             <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">binding</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
                     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">binding</span>
                     <span class="k">else</span> <span class="n">value</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Sequence[Triple]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"QueryResult"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add a sequence of triples."""</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
 
-        <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="s2">&quot;  &quot;</span>
-            <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s2">"  "</span>
+            <span class="o">+</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">triple</span>
             <span class="p">)</span>
-            <span class="o">+</span> <span class="s2">&quot; .&quot;</span>
+            <span class="o">+</span> <span class="s2">" ."</span>
             <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span>
         <span class="p">)</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"QueryResult"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Remove all matching triples from the backend."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
-        <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
                 <span class="k">else</span> <span class="p">(</span>
                     <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                    <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">        DELETE WHERE </span><span class="se">{{</span>
 <span class="s2">          </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> .</span>
 <span class="s2">        </span><span class="se">}}</span>
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -2174,14 +2174,14 @@ Defaults to base_iri.</p></td>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the update endpoint is valid&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check if the update endpoint is valid"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">isSparqlUpdateRequest</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TripperError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The base_iri &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">updateEndpoint</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                <span class="s2">&quot;is not a valid update endpoint. &quot;</span>
-                <span class="s2">&quot;For updates it is necessary to give the &quot;</span>
-                <span class="s2">&quot;&#39;update_iri&#39; as argument to the triplestore directly,&quot;</span>
-                <span class="s2">&quot;or update it with ts.backend.update_iri = ...&quot;</span>
+                <span class="sa">f</span><span class="s2">"The base_iri '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">updateEndpoint</span><span class="si">}</span><span class="s2">' "</span>
+                <span class="s2">"is not a valid update endpoint. "</span>
+                <span class="s2">"For updates it is necessary to give the "</span>
+                <span class="s2">"'update_iri' as argument to the triplestore directly,"</span>
+                <span class="s2">"or update it with ts.backend.update_iri = ..."</span>
             <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2239,25 +2239,25 @@ Defaults to base_iri.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Sequence[Triple]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"QueryResult"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Add a sequence of triples."""</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
 
-    <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="s2">&quot;  &quot;</span>
-        <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="s2">"  "</span>
+        <span class="o">+</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">triple</span>
         <span class="p">)</span>
-        <span class="o">+</span> <span class="s2">&quot; .&quot;</span>
+        <span class="o">+</span> <span class="s2">" ."</span>
         <span class="k">for</span> <span class="n">triple</span> <span class="ow">in</span> <span class="n">triples</span>
     <span class="p">)</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"INSERT DATA </span><span class="se">{{\n</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="se">\n}}</span><span class="s2">"</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -2332,7 +2332,7 @@ otherwise false is returned.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the backend is available.</span>
+<span class="w">    </span><span class="sd">"""Checks if the backend is available.</span>
 
 <span class="sd">    This is done by sending a request to the URL specified</span>
 <span class="sd">    in the `check_iri` attribute and checking for the response.</span>
@@ -2346,10 +2346,10 @@ otherwise false is returned.</p></td>
 <span class="sd">        Returns true if the service responds with code 200,</span>
 <span class="sd">        otherwise false is returned.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;`check_iri` must be assigned before calling is_available()&quot;</span>
+            <span class="s2">"`check_iri` must be assigned before calling is_available()"</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">check_service_availability</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_iri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span>
@@ -2427,8 +2427,8 @@ otherwise false is returned.</p></td>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">query_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        query_object: String with the SPARQL query.</span>
@@ -2440,48 +2440,48 @@ otherwise false is returned.</p></td>
 <span class="sd">          - CONSTRUCT: generator over triples</span>
 <span class="sd">          - DESCRIBE: generator over triples</span>
 <span class="sd">          - SELECT: list of tuples of IRIs</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;ASK&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"ASK"</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;boolean&quot;</span><span class="p">]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"boolean"</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;CONSTRUCT&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"CONSTRUCT"</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;DESCRIBE&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"DESCRIBE"</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
         <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_convert_triples_to_tripper</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">&quot;SELECT&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="o">==</span> <span class="s2">"SELECT"</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-        <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]</span>
+        <span class="n">bindings</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">"results"</span><span class="p">][</span><span class="s2">"bindings"</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="nb">tuple</span><span class="p">(</span><span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">bindings</span>
         <span class="p">]</span>
 
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
+        <span class="sa">f</span><span class="s2">"Query type '</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">' not implemented."</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2507,26 +2507,26 @@ otherwise false is returned.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;QueryResult&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"QueryResult"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Remove all matching triples from the backend."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_check_endpoint</span><span class="p">()</span>
-    <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"?</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="p">(</span>
                 <span class="n">value</span><span class="o">.</span><span class="n">n3</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;"</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">    DELETE WHERE </span><span class="se">{{</span>
 <span class="s2">      </span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2"> .</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="s2">    """</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -2556,44 +2556,44 @@ otherwise false is returned.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a generator over matching triples."""</span>
     <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+        <span class="sa">f</span><span class="s2">"?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="p">]</span>
-    <span class="n">where_spec</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">where_spec</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"?</span><span class="si">{</span><span class="n">triple_name</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">if</span> <span class="n">triple_value</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="p">(</span>
                 <span class="n">triple_value</span>
-                <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+                <span class="k">if</span> <span class="n">triple_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;"</span><span class="p">)</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">triple_value</span><span class="si">}</span><span class="s2">&gt;"</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">triple_name</span><span class="p">,</span> <span class="n">triple_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="sa">f</span><span class="s2">&quot;SELECT </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2"> WHERE </span><span class="se">{{</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">where_spec</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;}&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"SELECT </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span><span class="si">}</span><span class="s2"> WHERE </span><span class="se">{{</span><span class="s2">"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">where_spec</span><span class="si">}</span><span class="s2"> ."</span><span class="p">,</span>
+            <span class="s2">"}"</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">JSON</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">GET</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setQuery</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">queryAndConvert</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;bindings&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">binding</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">[</span><span class="s2">"results"</span><span class="p">][</span><span class="s2">"bindings"</span><span class="p">]:</span>
         <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">convert_json_entrydict</span><span class="p">(</span><span class="n">binding</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">binding</span>
                 <span class="k">else</span> <span class="n">value</span>
             <span class="p">)</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">&quot;spo&quot;</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="s2">"spo"</span><span class="p">,</span> <span class="n">triple</span><span class="p">)</span>
         <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2654,7 +2654,7 @@ the query() method for ASK/CONSTRUCT/SELECT/DESCRIBE queries.</p>
     <span class="n">update_object</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL query.</span>
+<span class="w">    </span><span class="sd">"""Update triplestore with SPARQL query.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        update_object: String with the SPARQL query.</span>
@@ -2663,11 +2663,11 @@ the query() method for ASK/CONSTRUCT/SELECT/DESCRIBE queries.</p>
 <span class="sd">    Note:</span>
 <span class="sd">        This method is intended for INSERT and DELETE queries.  Use</span>
 <span class="sd">        the query() method for ASK/CONSTRUCT/SELECT/DESCRIBE queries.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">query_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sparql_query_type</span><span class="p">(</span><span class="n">update_object</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">query_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">,</span> <span class="s2">&quot;INSERT&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">query_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"DELETE"</span><span class="p">,</span> <span class="s2">"INSERT"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Update query type &#39;</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">&#39; not implemented.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Update query type '</span><span class="si">{</span><span class="n">query_type</span><span class="si">}</span><span class="s2">' not implemented."</span>
         <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setReturnFormat</span><span class="p">(</span><span class="n">TURTLE</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span><span class="o">.</span><span class="n">setMethod</span><span class="p">(</span><span class="n">POST</span><span class="p">)</span>
@@ -2710,24 +2710,24 @@ literal) to a tripper type.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/sparqlwrapper.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_json_entrydict</span><span class="p">(</span><span class="n">entrydict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert SPARQLWrapper json entry dict (representing a single IRI or</span>
-<span class="sd">    literal) to a tripper type.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;uri&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;literal&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Convert SPARQLWrapper json entry dict (representing a single IRI or</span>
+<span class="sd">    literal) to a tripper type."""</span>
+    <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"uri"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"literal"</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span>
-            <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span>
-            <span class="n">lang</span><span class="o">=</span><span class="n">entrydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xml:lang&quot;</span><span class="p">),</span>
-            <span class="n">datatype</span><span class="o">=</span><span class="n">entrydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datatype&quot;</span><span class="p">),</span>
+            <span class="n">entrydict</span><span class="p">[</span><span class="s2">"value"</span><span class="p">],</span>
+            <span class="n">lang</span><span class="o">=</span><span class="n">entrydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"xml:lang"</span><span class="p">),</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="n">entrydict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"datatype"</span><span class="p">),</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bnode&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"bnode"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;_:</span><span class="si">{</span><span class="n">entrydict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">entrydict</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">entrydict</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_:"</span><span class="p">)</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">"_:</span><span class="si">{</span><span class="n">entrydict</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unexpected type in entrydict: </span><span class="si">{</span><span class="n">entrydict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unexpected type in entrydict: </span><span class="si">{</span><span class="n">entrydict</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>

@@ -2210,7 +2210,7 @@ AmbiguousMappingError            (<a class="autorefs autorefs-internal" title="t
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AmbiguousMappingError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A property maps to more than one value.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A property maps to more than one value."""</span>
 </code></pre></div>
         </details>
 
@@ -2241,7 +2241,7 @@ InconsistentDimensionError            (<a class="autorefs autorefs-internal" tit
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InconsistentDimensionError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The size of a dimension is assigned to more than one value.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The size of a dimension is assigned to more than one value."""</span>
 </code></pre></div>
         </details>
 
@@ -2272,7 +2272,7 @@ InconsistentTriplesError            (<a class="autorefs autorefs-internal" title
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InconsistentTriplesError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inconsistcy in RDF triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Inconsistcy in RDF triples."""</span>
 </code></pre></div>
         </details>
 
@@ -2303,7 +2303,7 @@ InsufficientMappingError            (<a class="autorefs autorefs-internal" title
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InsufficientMappingError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;There are properties or dimensions that are not mapped.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""There are properties or dimensions that are not mapped."""</span>
 </code></pre></div>
         </details>
 
@@ -2334,7 +2334,7 @@ MappingError            (<span title="Exception">Exception</span>)
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MappingError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for mapping errors.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for mapping errors."""</span>
 </code></pre></div>
         </details>
 
@@ -2421,7 +2421,7 @@ that this mapping step was created from.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MappingStep</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A step in a mapping route from a target to one or more sources.</span>
+<span class="w">    </span><span class="sd">"""A step in a mapping route from a target to one or more sources.</span>
 
 <span class="sd">    A mapping step corresponds to one or more RDF triples.  In the</span>
 <span class="sd">    simple case of a `mo:mapsTo` or `rdfs:isSubclassOf` relation, it is</span>
@@ -2440,18 +2440,18 @@ that this mapping step was created from.</p></td>
 <span class="sd">            that this mapping step was created from.</span>
 
 <span class="sd">    The arguments can also be assigned as attributes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">steptype</span><span class="p">:</span> <span class="s2">&quot;StepType&quot;</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
-        <span class="n">function</span><span class="p">:</span> <span class="s2">&quot;Optional[Callable]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">output_unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Optional[Triplestore]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">steptype</span><span class="p">:</span> <span class="s2">"StepType"</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
+        <span class="n">function</span><span class="p">:</span> <span class="s2">"Optional[Callable]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Union[float, Callable]"</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">output_unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">triplestore</span><span class="p">:</span> <span class="s2">"Optional[Triplestore]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">output_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">steptype</span>
@@ -2459,17 +2459,17 @@ that this mapping step was created from.</p></td>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span> <span class="o">=</span> <span class="n">triplestore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_unit</span> <span class="o">=</span> <span class="n">output_unit</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span> <span class="s2">&quot;List[dict]&quot;</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of inputs dicts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span> <span class="s2">"List[dict]"</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of inputs dicts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># whether to join upcoming input</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">:</span> <span class="s2">"Inputs"</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add input Mapping (e.g., dict) for an input route.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">"Inputs"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add input Mapping (e.g., dict) for an input route."""</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>  <span class="c1"># nosec B101</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an input (MappingStep or Value), where `name` is the name</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">"Input"</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Add an input (MappingStep or Value), where `name` is the name</span>
 <span class="sd">        assigned to the argument.</span>
 
 <span class="sd">        If the `join_mode` attribute is false, a new route is created with</span>
@@ -2481,31 +2481,31 @@ that this mapping step was created from.</p></td>
 <span class="sd">        Arguments:</span>
 <span class="sd">            input: A mapping step or a value.</span>
 <span class="sd">            name: Name assigned to the argument.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="n">MappingStep</span><span class="p">,</span> <span class="n">Value</span><span class="p">))</span>  <span class="c1"># nosec B101</span>
-        <span class="n">argname</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;arg</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">argname</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"arg</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">[</span><span class="n">argname</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_inputs</span><span class="p">({</span><span class="n">argname</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">join_input</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Join all input added with add_input() since `join_mode` was set</span>
-<span class="sd">        true.  Resets `join_mode` to false.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Join all input added with add_input() since `join_mode` was set</span>
+<span class="sd">        true.  Resets `join_mode` to false."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MappingError</span><span class="p">(</span><span class="s2">&quot;Calling join_input() when join_mode is false.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MappingError</span><span class="p">(</span><span class="s2">"Calling join_input() when join_mode is false."</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">routeno</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Optional[Type[Quantity]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the evaluated value of given input route number.</span>
+        <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Optional[Type[Quantity]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns the evaluated value of given input route number.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            routeno: The route number to evaluate.  If None (default)</span>
@@ -2518,10 +2518,10 @@ that this mapping step was created from.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Evaluation result.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_routes</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">MissingRelationError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;no route to evaluate &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">"no route to evaluate '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">'"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">quantity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">quantity</span> <span class="o">=</span> <span class="n">Quantity</span>
@@ -2536,7 +2536,7 @@ that this mapping step was created from.</p></td>
             <span class="p">(</span><span class="n">value</span><span class="p">,)</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected inputs to be a single argument: </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Expected inputs to be a single argument: </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">)</span> <span class="ow">and</span> <span class="n">unit</span><span class="p">:</span>
@@ -2549,8 +2549,8 @@ that this mapping step was created from.</p></td>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tuple[Inputs, int]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns input and input index `(inputs, idx)` for route number</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Tuple[Inputs, int]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns input and input index `(inputs, idx)` for route number</span>
 <span class="sd">        `routeno`.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2559,17 +2559,17 @@ that this mapping step was created from.</p></td>
 <span class="sd">        Returns:</span>
 <span class="sd">            Inputs and difference between route number and number of routes for</span>
 <span class="sd">            an input dictioary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
             <span class="n">n0</span> <span class="o">=</span> <span class="n">n</span>
             <span class="n">n</span> <span class="o">+=</span> <span class="n">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">routeno</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">routeno</span> <span class="o">-</span> <span class="n">n0</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;routeno=</span><span class="si">{</span><span class="n">routeno</span><span class="si">}</span><span class="s2"> exceeds number of routes&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"routeno=</span><span class="si">{</span><span class="n">routeno</span><span class="si">}</span><span class="s2"> exceeds number of routes"</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, Optional[str]]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict mapping input names to iris for the given route</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Dict[str, Optional[str]]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns a dict mapping input names to iris for the given route</span>
 <span class="sd">        number.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2578,7 +2578,7 @@ that this mapping step was created from.</p></td>
 <span class="sd">        Returns:</span>
 <span class="sd">            Mapping of input names to IRIs.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span>
@@ -2586,18 +2586,18 @@ that this mapping step was created from.</p></td>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">number_of_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total number of routes to this mapping step.</span>
+<span class="w">        </span><span class="sd">"""Total number of routes to this mapping step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Total number of routes to this mapping step.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
             <span class="n">n</span> <span class="o">+=</span> <span class="n">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">n</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">lowest_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nresults</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[float, int]]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of `(cost, routeno)` tuples with up to the `nresult`</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lowest_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nresults</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[Tuple[float, int]]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns a list of `(cost, routeno)` tuples with up to the `nresult`</span>
 <span class="sd">        lowest costs and their corresponding route numbers.</span>
 
 <span class="sd">        Arguments:</span>
@@ -2605,14 +2605,14 @@ that this mapping step was created from.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of `(cost, routeno)` tuples.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s2">&quot;Mappings.lowest_costs() requires numpy.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Install it with</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;    pip install numpy&quot;</span>
+                <span class="s2">"Mappings.lowest_costs() requires numpy.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"Install it with</span><span class="se">\n\n</span><span class="s2">"</span>
+                <span class="s2">"    pip install numpy"</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2635,7 +2635,7 @@ that this mapping step was created from.</p></td>
             <span class="c1"># The `results` list is extended with the cost array</span>
             <span class="c1"># for each toplevel route leading into this step.</span>
             <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span>
-                <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="s2">&quot;cost,routeno&quot;</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="s2">&quot;f8,i8&quot;</span>
+                <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="s2">"cost,routeno"</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="s2">"f8,i8"</span>
             <span class="p">)</span>
             <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -2664,7 +2664,7 @@ that this mapping step was created from.</p></td>
                     <span class="n">base</span><span class="o">.</span><span class="n">cost</span> <span class="o">+=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cost</span>
 
             <span class="c1"># Reduce the length of base (makes probably only sense in</span>
-            <span class="c1"># the case self.cost is a callable, but it doesn&#39;t hurt...)</span>
+            <span class="c1"># the case self.cost is a callable, but it doesn't hurt...)</span>
             <span class="n">base</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
             <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="p">[:</span><span class="n">nresults</span><span class="p">]</span>
             <span class="n">base</span><span class="o">.</span><span class="n">routeno</span> <span class="o">+=</span> <span class="n">n</span>
@@ -2696,11 +2696,11 @@ that this mapping step was created from.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">routeno</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the mapping routes to this step.</span>
+<span class="w">        </span><span class="sd">"""Returns a string representation of the mapping routes to this step.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            routeno: show given route.  The default is to show all routes.</span>
@@ -2710,48 +2710,48 @@ that this mapping step was created from.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            String representation of the mapping routes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">indent</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">"Step"</span><span class="si">}</span><span class="s1">:'</span><span class="p">)</span>
         <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  steptype: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  steptype: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  output_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  output_unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  output_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  output_unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_unit</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">routeno</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;  routes:&quot;</span><span class="p">)</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"  routes:"</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
-                <span class="n">t</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="p">[</span>
                         <span class="n">input_</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name_</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span>
                         <span class="k">for</span> <span class="n">name_</span><span class="p">,</span> <span class="n">input_</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                     <span class="p">]</span>
                 <span class="p">)</span>
-                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;    - &quot;</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
+                <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"    - "</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;  inputs:&quot;</span><span class="p">)</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"  inputs:"</span><span class="p">)</span>
             <span class="n">inputs</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="n">input_</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">routeno</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name_</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">name_</span><span class="p">,</span> <span class="n">input_</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;    - &quot;</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"    - "</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_iri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Help method that returns prefixed iri if possible, otherwise</span>
-<span class="sd">        `iri`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Help method that returns prefixed iri if possible, otherwise</span>
+<span class="sd">        `iri`."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="o">.</span><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span> <span class="k">else</span> <span class="n">iri</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_visualise</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">next_iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">next_steptype</span><span class="p">:</span> <span class="n">StepType</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Help function for visualise().</span>
+<span class="w">        </span><span class="sd">"""Help function for visualise().</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            routeno: Route number to visualise.</span>
@@ -2761,30 +2761,30 @@ that this mapping step was created from.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Mapping route in dot (graphviz) notation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">hasOutput</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840</span>
 
         <span class="c1"># Edge labels. We invert the steptypes, since we want to visualise</span>
         <span class="c1"># the workflow in forward direction, while the steptypes refer to</span>
         <span class="c1"># backward direction</span>
         <span class="n">labeldict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">MAPSTO</span><span class="p">:</span> <span class="s2">&quot;inverse(mapsTo)&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_MAPSTO</span><span class="p">:</span> <span class="s2">&quot;mapsTo&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">INSTANCEOF</span><span class="p">:</span> <span class="s2">&quot;instanceOf&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_INSTANCEOF</span><span class="p">:</span> <span class="s2">&quot;inverse(instanceOf)&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">SUBCLASSOF</span><span class="p">:</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_SUBCLASSOF</span><span class="p">:</span> <span class="s2">&quot;inverse(subClassOf)&quot;</span><span class="p">,</span>
-            <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">MAPSTO</span><span class="p">:</span> <span class="s2">"inverse(mapsTo)"</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_MAPSTO</span><span class="p">:</span> <span class="s2">"mapsTo"</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INSTANCEOF</span><span class="p">:</span> <span class="s2">"instanceOf"</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_INSTANCEOF</span><span class="p">:</span> <span class="s2">"inverse(instanceOf)"</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">SUBCLASSOF</span><span class="p">:</span> <span class="s2">"subClassOf"</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">INV_SUBCLASSOF</span><span class="p">:</span> <span class="s2">"inverse(subClassOf)"</span><span class="p">,</span>
+            <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span><span class="p">:</span> <span class="s2">"function"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
                 <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;  &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; -&gt; &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;[label=&quot;</span><span class="si">{</span><span class="n">labeldict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;];&#39;</span>
+                    <span class="sa">f</span><span class="s1">'  "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">" -&gt; '</span>
+                    <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">" '</span>
+                    <span class="sa">f</span><span class="s1">'[label="</span><span class="si">{</span><span class="n">labeldict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="p">]</span><span class="si">}</span><span class="s1">"];'</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">):</span>
                 <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -2795,14 +2795,14 @@ that this mapping step was created from.</p></td>
                     <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input should be Value or MappingStep&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"input should be Value or MappingStep"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">next_iri</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">labeldict</span><span class="p">[</span><span class="n">next_steptype</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">next_steptype</span> <span class="o">==</span> <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="p">:</span>
                 <span class="n">model_iri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">triplestore</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
                     <span class="n">predicate</span><span class="o">=</span><span class="n">hasOutput</span><span class="p">,</span>  <span class="c1"># Assuming EMMO</span>
                     <span class="nb">object</span><span class="o">=</span><span class="n">next_iri</span><span class="p">,</span>
-                    <span class="n">default</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s2">"function"</span><span class="p">,</span>
                     <span class="nb">any</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">model_iri</span><span class="p">:</span>
@@ -2815,19 +2815,19 @@ that this mapping step was created from.</p></td>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">labeldict</span><span class="p">[</span><span class="n">next_steptype</span><span class="p">]</span>
             <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;  &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; -&gt; &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="n">next_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; [label=&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">&quot;];&#39;</span>
+                <span class="sa">f</span><span class="s1">'  "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">" -&gt; '</span>
+                <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_iri</span><span class="p">(</span><span class="n">next_iri</span><span class="p">)</span><span class="si">}</span><span class="s1">" [label="</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">"];'</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visualise</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">output</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
-        <span class="n">dot</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="s2">"png"</span><span class="p">,</span>
+        <span class="n">dot</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dot"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Greate a Graphviz visualisation of a given mapping route.</span>
+<span class="w">        </span><span class="sd">"""Greate a Graphviz visualisation of a given mapping route.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            routeno: Number of mapping route to visualise.</span>
@@ -2837,15 +2837,15 @@ that this mapping step was created from.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            String representation of the graph in dot format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;digraph G {&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span><span class="n">routeno</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">))</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
-        <span class="n">graph</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"digraph G {"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span><span class="n">routeno</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">))</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"}"</span><span class="p">)</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">dot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-T</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">dot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"-T</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span>
                 <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># nosec: B603</span>
                 <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="nb">input</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
@@ -2913,8 +2913,8 @@ first added when <code>join_input()</code> is called.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add an input (MappingStep or Value), where `name` is the name</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="s2">"Input"</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Add an input (MappingStep or Value), where `name` is the name</span>
 <span class="sd">    assigned to the argument.</span>
 
 <span class="sd">    If the `join_mode` attribute is false, a new route is created with</span>
@@ -2926,9 +2926,9 @@ first added when <code>join_input()</code> is called.</p>
 <span class="sd">    Arguments:</span>
 <span class="sd">        input: A mapping step or a value.</span>
 <span class="sd">        name: Name assigned to the argument.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="n">MappingStep</span><span class="p">,</span> <span class="n">Value</span><span class="p">))</span>  <span class="c1"># nosec B101</span>
-    <span class="n">argname</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;arg</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">argname</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"arg</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">[</span><span class="n">argname</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2957,8 +2957,8 @@ first added when <code>join_input()</code> is called.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add input Mapping (e.g., dict) for an input route.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="s2">"Inputs"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Add input Mapping (e.g., dict) for an input route."""</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>  <span class="c1"># nosec B101</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 </code></pre></div>
@@ -3042,12 +3042,12 @@ value (with no unit).</p></td>
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">routeno</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">magnitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Optional[Type[Quantity]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the evaluated value of given input route number.</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Optional[Type[Quantity]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns the evaluated value of given input route number.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        routeno: The route number to evaluate.  If None (default)</span>
@@ -3060,10 +3060,10 @@ value (with no unit).</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Evaluation result.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_routes</span><span class="p">():</span>
         <span class="k">raise</span> <span class="n">MissingRelationError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;no route to evaluate &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">"no route to evaluate '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">quantity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">quantity</span> <span class="o">=</span> <span class="n">Quantity</span>
@@ -3078,7 +3078,7 @@ value (with no unit).</p></td>
         <span class="p">(</span><span class="n">value</span><span class="p">,)</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Expected inputs to be a single argument: </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Expected inputs to be a single argument: </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">)</span> <span class="ow">and</span> <span class="n">unit</span><span class="p">:</span>
@@ -3149,8 +3149,8 @@ number.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_input_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, Optional[str]]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a dict mapping input names to iris for the given route</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_input_iris</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Dict[str, Optional[str]]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a dict mapping input names to iris for the given route</span>
 <span class="sd">    number.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3159,7 +3159,7 @@ number.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        Mapping of input names to IRIs.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">output_iri</span>
@@ -3225,8 +3225,8 @@ an input dictioary.</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tuple[Inputs, int]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns input and input index `(inputs, idx)` for route number</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Tuple[Inputs, int]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns input and input index `(inputs, idx)` for route number</span>
 <span class="sd">    `routeno`.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3235,14 +3235,14 @@ an input dictioary.</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        Inputs and difference between route number and number of routes for</span>
 <span class="sd">        an input dictioary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
         <span class="n">n0</span> <span class="o">=</span> <span class="n">n</span>
         <span class="n">n</span> <span class="o">+=</span> <span class="n">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">routeno</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">routeno</span> <span class="o">-</span> <span class="n">n0</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;routeno=</span><span class="si">{</span><span class="n">routeno</span><span class="si">}</span><span class="s2"> exceeds number of routes&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"routeno=</span><span class="si">{</span><span class="n">routeno</span><span class="si">}</span><span class="s2"> exceeds number of routes"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3269,10 +3269,10 @@ true.  Resets <code>join_mode</code> to false.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">join_input</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Join all input added with add_input() since `join_mode` was set</span>
-<span class="sd">    true.  Resets `join_mode` to false.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Join all input added with add_input() since `join_mode` was set</span>
+<span class="sd">    true.  Resets `join_mode` to false."""</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">MappingError</span><span class="p">(</span><span class="s2">&quot;Calling join_input() when join_mode is false.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">MappingError</span><span class="p">(</span><span class="s2">"Calling join_input() when join_mode is false."</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">add_inputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">joined_input</span> <span class="o">=</span> <span class="p">{}</span>
@@ -3335,8 +3335,8 @@ lowest costs and their corresponding route numbers.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lowest_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nresults</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[Tuple[float, int]]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of `(cost, routeno)` tuples with up to the `nresult`</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">lowest_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nresults</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[Tuple[float, int]]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a list of `(cost, routeno)` tuples with up to the `nresult`</span>
 <span class="sd">    lowest costs and their corresponding route numbers.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3344,14 +3344,14 @@ lowest costs and their corresponding route numbers.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of `(cost, routeno)` tuples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="s2">&quot;Mappings.lowest_costs() requires numpy.</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;Install it with</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;    pip install numpy&quot;</span>
+            <span class="s2">"Mappings.lowest_costs() requires numpy.</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="s2">"Install it with</span><span class="se">\n\n</span><span class="s2">"</span>
+            <span class="s2">"    pip install numpy"</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3374,7 +3374,7 @@ lowest costs and their corresponding route numbers.</p>
         <span class="c1"># The `results` list is extended with the cost array</span>
         <span class="c1"># for each toplevel route leading into this step.</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span>
-            <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="s2">&quot;cost,routeno&quot;</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="s2">&quot;f8,i8&quot;</span>
+            <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="s2">"cost,routeno"</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="s2">"f8,i8"</span>
         <span class="p">)</span>
         <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -3403,7 +3403,7 @@ lowest costs and their corresponding route numbers.</p>
                 <span class="n">base</span><span class="o">.</span><span class="n">cost</span> <span class="o">+=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cost</span>
 
         <span class="c1"># Reduce the length of base (makes probably only sense in</span>
-        <span class="c1"># the case self.cost is a callable, but it doesn&#39;t hurt...)</span>
+        <span class="c1"># the case self.cost is a callable, but it doesn't hurt...)</span>
         <span class="n">base</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="p">[:</span><span class="n">nresults</span><span class="p">]</span>
         <span class="n">base</span><span class="o">.</span><span class="n">routeno</span> <span class="o">+=</span> <span class="n">n</span>
@@ -3472,11 +3472,11 @@ lowest costs and their corresponding route numbers.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">number_of_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Total number of routes to this mapping step.</span>
+<span class="w">    </span><span class="sd">"""Total number of routes to this mapping step.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Total number of routes to this mapping step.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
         <span class="n">n</span> <span class="o">+=</span> <span class="n">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
@@ -3554,11 +3554,11 @@ internal use).</p></td>
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">routeno</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the mapping routes to this step.</span>
+<span class="w">    </span><span class="sd">"""Returns a string representation of the mapping routes to this step.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        routeno: show given route.  The default is to show all routes.</span>
@@ -3568,38 +3568,38 @@ internal use).</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        String representation of the mapping routes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">"Step"</span><span class="si">}</span><span class="s1">:'</span><span class="p">)</span>
     <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  steptype: &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  steptype: "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">steptype</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  output_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  output_unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  output_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  output_unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_unit</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">routeno</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;  routes:&quot;</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"  routes:"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">inputs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_routes</span><span class="p">:</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="n">input_</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name_</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">name_</span><span class="p">,</span> <span class="n">input_</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;    - &quot;</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"    - "</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;  inputs:&quot;</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"  inputs:"</span><span class="p">)</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">routeno</span><span class="p">)</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">input_</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">routeno</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name_</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">name_</span><span class="p">,</span> <span class="n">input_</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">&quot;    - &quot;</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="s2">"    - "</span> <span class="o">+</span> <span class="n">t</span><span class="p">[</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:])</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3613,7 +3613,7 @@ internal use).</p></td>
 
 
 <h3 id="tripper.mappings.mappings.MappingStep.visualise" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">visualise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="n">dot</span><span class="o">=</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">visualise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routeno</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'png'</span><span class="p">,</span> <span class="n">dot</span><span class="o">=</span><span class="s1">'dot'</span><span class="p">)</span></code>
 
 
 <a href="#tripper.mappings.mappings.MappingStep.visualise" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -3679,11 +3679,11 @@ internal use).</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">visualise</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">output</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
-    <span class="n">dot</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="s2">"png"</span><span class="p">,</span>
+    <span class="n">dot</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dot"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Greate a Graphviz visualisation of a given mapping route.</span>
+<span class="w">    </span><span class="sd">"""Greate a Graphviz visualisation of a given mapping route.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        routeno: Number of mapping route to visualise.</span>
@@ -3693,15 +3693,15 @@ internal use).</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        String representation of the graph in dot format.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;digraph G {&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span><span class="n">routeno</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">))</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
-    <span class="n">graph</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"digraph G {"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visualise</span><span class="p">(</span><span class="n">routeno</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">))</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"}"</span><span class="p">)</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
         <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">dot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-T</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">dot</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"-T</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"-o"</span><span class="p">,</span> <span class="n">output</span><span class="p">],</span>
             <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># nosec: B603</span>
             <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="nb">input</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span>
@@ -3745,7 +3745,7 @@ MissingRelationError            (<a class="autorefs autorefs-internal" title="tr
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MissingRelationError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;There are missing relations in RDF triples.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""There are missing relations in RDF triples."""</span>
 </code></pre></div>
         </details>
 
@@ -3776,7 +3776,7 @@ StepType            (<span title="enum.Enum">Enum</span>)
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StepType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Type of mapping step when going from the output to the inputs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Type of mapping step when going from the output to the inputs."""</span>
 
     <span class="n">UNSPECIFIED</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">MAPSTO</span> <span class="o">=</span> <span class="mi">1</span>
@@ -3839,7 +3839,7 @@ UnknownUnitError            (<a class="autorefs autorefs-internal" title="trippe
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UnknownUnitError</span><span class="p">(</span><span class="n">MappingError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A unit does not exists in the pint unit registry.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A unit does not exists in the pint unit registry."""</span>
 </code></pre></div>
         </details>
 
@@ -3913,7 +3913,7 @@ instance of.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Value</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the value of an instance property.</span>
+<span class="w">    </span><span class="sd">"""Represents the value of an instance property.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        value: Property value.</span>
@@ -3922,17 +3922,17 @@ instance of.</p></td>
 <span class="sd">        property_iri: IRI of datamodel property that this value is an</span>
 <span class="sd">            instance of.</span>
 <span class="sd">        cost: Cost of accessing this value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-few-public-methods</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">property_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cost</span><span class="p">:</span> <span class="s2">&quot;Union[float, Callable]&quot;</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">:</span> <span class="s2">"Any"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">property_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost</span><span class="p">:</span> <span class="s2">"Union[float, Callable]"</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
@@ -3941,29 +3941,29 @@ instance of.</p></td>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:value_</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:value_</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span> <span class="o">=</span> <span class="n">property_iri</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
 
     <span class="n">value</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span>
         <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Value of property.&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">"Value of property."</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;, unit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">", unit=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;, iri=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">", iri=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;, property_iri=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">", property_iri=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">:</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;, cost=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Value(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="si">!r}{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">", cost=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Value(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="si">!r}{</span><span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the evaluated value of given input route number.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns the evaluated value of given input route number.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            unit: return the result in the given unit.</span>
@@ -3974,7 +3974,7 @@ instance of.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">quantity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">quantity</span> <span class="o">=</span> <span class="n">Quantity</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
@@ -3989,12 +3989,12 @@ instance of.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">routeno</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="c1"># pylint: disable=unused-argument</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the Value.</span>
+<span class="w">        </span><span class="sd">"""Returns a string representation of the Value.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            routeno: Unused.  The argument exists for consistency with</span>
@@ -4004,16 +4004,16 @@ instance of.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            String representation of the value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  property_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  value: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">indent</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">"Value"</span><span class="si">}</span><span class="s1">:'</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  property_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  value: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -4118,8 +4118,8 @@ value (with no unit).</p></td>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the evaluated value of given input route number.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns the evaluated value of given input route number.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        unit: return the result in the given unit.</span>
@@ -4130,7 +4130,7 @@ value (with no unit).</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">quantity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">quantity</span> <span class="o">=</span> <span class="n">Quantity</span>
     <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">()</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
@@ -4215,12 +4215,12 @@ the corresponding method in Step.</p></td>
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">routeno</span><span class="p">:</span> <span class="s2">&quot;Optional[int]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">routeno</span><span class="p">:</span> <span class="s2">"Optional[int]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="c1"># pylint: disable=unused-argument</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string representation of the Value.</span>
+<span class="w">    </span><span class="sd">"""Returns a string representation of the Value.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        routeno: Unused.  The argument exists for consistency with</span>
@@ -4230,16 +4230,16 @@ the corresponding method in Step.</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        String representation of the value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  property_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;  value: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">indent</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">"Value"</span><span class="si">}</span><span class="s1">:'</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  property_iri: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">property_iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">"  value: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4279,15 +4279,15 @@ the corresponding method in Step.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">emmo_mapper</span><span class="p">(</span><span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, list]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds all function definitions in `triplestore` based on EMMO.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">emmo_mapper</span><span class="p">(</span><span class="n">triplestore</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Dict[str, list]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Finds all function definitions in `triplestore` based on EMMO.</span>
 
 <span class="sd">    Return a dict mapping output IRIs to a list of</span>
 
 <span class="sd">        (function_iri, [input_iris, ...])</span>
 
 <span class="sd">    tuples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">Task</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_4299e344_a321_4ef2_a744_bacfcce80afc</span>
     <span class="n">hasInput</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_36e69413_8c59_4799_946c_10b05d266e22</span>
     <span class="n">hasOutput</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">EMMO_c4bace1d_4db0_4cd3_87e9_18122bae2840</span>
@@ -4361,8 +4361,8 @@ ontololy (FNO).</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fno_mapper</span><span class="p">(</span><span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dict[str, list]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds all function definitions in `triplestore` based on the function</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fno_mapper</span><span class="p">(</span><span class="n">triplestore</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Dict[str, list]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Finds all function definitions in `triplestore` based on the function</span>
 <span class="sd">    ontololy (FNO).</span>
 
 <span class="sd">    Arguments:</span>
@@ -4374,7 +4374,7 @@ ontololy (FNO).</p>
 <span class="sd">            (function_iri, [input_iris, ...])</span>
 
 <span class="sd">        tuples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=too-many-branches</span>
 
     <span class="c1"># Temporary dicts for fast lookup</span>
@@ -4473,15 +4473,15 @@ ontololy (FNO).</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning the number of routes for an input dict.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_nroutes</span><span class="p">(</span><span class="n">inputs</span><span class="p">:</span> <span class="s2">"Inputs"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Help function returning the number of routes for an input dict.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        inputs: Input dictionary.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Number of routes in the `inputs` input dictionary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">nroutes</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">MappingStep</span><span class="p">):</span>
@@ -4500,7 +4500,7 @@ ontololy (FNO).</p>
 
 
 <h2 id="tripper.mappings.mappings.get_values" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_values</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">routeno</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">&#39;</span><span class="nc">pint</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">Quantity</span><span class="s1">&#39;&gt;, magnitudes=False)</span></code>
+<code class="highlight language-python"><span class="n">get_values</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">routeno</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=&lt;</span><span class="k">class</span><span class="w"> </span><span class="err">'</span><span class="nc">pint</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">Quantity</span><span class="s1">'&gt;, magnitudes=False)</span></code>
 
 
 <a href="#tripper.mappings.mappings.get_values" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -4569,12 +4569,12 @@ value (with no unit).</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span>
-    <span class="n">inputs</span><span class="p">:</span> <span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">,</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="s2">"dict[str, Any]"</span><span class="p">,</span>
     <span class="n">routeno</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">quantity</span><span class="p">:</span> <span class="s2">&quot;Type[Quantity]&quot;</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="s2">"Type[Quantity]"</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">,</span>
     <span class="n">magnitudes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;dict[str, Any]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Help function returning a dict mapping the input names to actual value</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"dict[str, Any]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Help function returning a dict mapping the input names to actual value</span>
 <span class="sd">    of expected input unit.</span>
 
 <span class="sd">    There exists `get_nroutes(inputs)` routes to populate `inputs`.</span>
@@ -4590,7 +4590,7 @@ value (with no unit).</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A mapping between input names and values of expected input unit.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -4605,8 +4605,8 @@ value (with no unit).</p></td>
             <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">unit</span> <span class="k">else</span> <span class="n">quantity</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Expected values in inputs to be either `MappingStep` or &quot;</span>
-                <span class="s2">&quot;`Value` objects.&quot;</span>
+                <span class="s2">"Expected values in inputs to be either `MappingStep` or "</span>
+                <span class="s2">"`Value` objects."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">magnitudes</span><span class="p">:</span>
@@ -4629,7 +4629,7 @@ value (with no unit).</p></td>
 
 
 <h2 id="tripper.mappings.mappings.mapping_routes" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">emmo_mapper</span> <span class="n">at</span> <span class="mh">0x7fd01bf4ec00</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7fd01bf4eca0</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">&#39;function&#39;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mapsTo&#39;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;instanceOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;subClassOf&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">value_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mappingstep_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">&#39;https://w3id.org/emmo/domain/mappings#mapsTo&#39;</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">&#39;https://w3id.org/emmo/domain/datamodel#instanceOf&#39;</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#subClassOf&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#label&#39;</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">&#39;https://w3id.org/emmo/domain/datamodel#hasUnit&#39;</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">&#39;https://w3id.org/emmo/domain/datamodel#hasCost&#39;</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="o">=</span><span class="s1">&#39;https://w3id.org/emmo#hasAccessFunction&#39;</span><span class="p">,</span> <span class="n">hasDataValue</span><span class="o">=</span><span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#value&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">mapping_routes</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">triplestore</span><span class="p">,</span> <span class="n">function_repo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">function_mappers</span><span class="o">=</span><span class="p">(</span><span class="o">&lt;</span><span class="n">function</span> <span class="n">emmo_mapper</span> <span class="n">at</span> <span class="mh">0x7f76b31f2b60</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">fno_mapper</span> <span class="n">at</span> <span class="mh">0x7f76b31f2c00</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">default_costs</span><span class="o">=</span><span class="p">((</span><span class="s1">'function'</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">'mapsTo'</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">'instanceOf'</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">'subClassOf'</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="s1">'value'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span> <span class="n">value_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mappingstep_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mapsTo</span><span class="o">=</span><span class="s1">'https://w3id.org/emmo/domain/mappings#mapsTo'</span><span class="p">,</span> <span class="n">instanceOf</span><span class="o">=</span><span class="s1">'https://w3id.org/emmo/domain/datamodel#instanceOf'</span><span class="p">,</span> <span class="n">subClassOf</span><span class="o">=</span><span class="s1">'http://www.w3.org/2000/01/rdf-schema#subClassOf'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'http://www.w3.org/2000/01/rdf-schema#label'</span><span class="p">,</span> <span class="n">hasUnit</span><span class="o">=</span><span class="s1">'https://w3id.org/emmo/domain/datamodel#hasUnit'</span><span class="p">,</span> <span class="n">hasCost</span><span class="o">=</span><span class="s1">'https://w3id.org/emmo/domain/datamodel#hasCost'</span><span class="p">,</span> <span class="n">hasAccessFunction</span><span class="o">=</span><span class="s1">'https://w3id.org/emmo#hasAccessFunction'</span><span class="p">,</span> <span class="n">hasDataValue</span><span class="o">=</span><span class="s1">'http://www.w3.org/1999/02/22-rdf-syntax-ns#value'</span><span class="p">)</span></code>
 
 
 <a href="#tripper.mappings.mappings.mapping_routes" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -4724,22 +4724,22 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
           <summary>Source code in <code>tripper/mappings/mappings.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mapping_routes</span><span class="p">(</span>
     <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">sources</span><span class="p">:</span> <span class="s2">&quot;Union[Dict[str, Union[Value, None]], Sequence[str]]&quot;</span><span class="p">,</span>
-    <span class="n">triplestore</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
-    <span class="n">function_repo</span><span class="p">:</span> <span class="s2">&quot;Optional[dict]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">function_mappers</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence[Callable]]&quot;</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">sources</span><span class="p">:</span> <span class="s2">"Union[Dict[str, Union[Value, None]], Sequence[str]]"</span><span class="p">,</span>
+    <span class="n">triplestore</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
+    <span class="n">function_repo</span><span class="p">:</span> <span class="s2">"Optional[dict]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">function_mappers</span><span class="p">:</span> <span class="s2">"Union[str, Sequence[Callable]]"</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">emmo_mapper</span><span class="p">,</span>
         <span class="n">fno_mapper</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="n">default_costs</span><span class="p">:</span> <span class="s2">&quot;Tuple&quot;</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;mapsTo&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;instanceOf&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;subClassOf&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+    <span class="n">default_costs</span><span class="p">:</span> <span class="s2">"Tuple"</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">"function"</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"mapsTo"</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"instanceOf"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"subClassOf"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
     <span class="p">),</span>
-    <span class="n">value_class</span><span class="p">:</span> <span class="s2">&quot;Optional[Type[Value]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">mappingstep_class</span><span class="p">:</span> <span class="s2">&quot;Optional[Type[MappingStep]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">value_class</span><span class="p">:</span> <span class="s2">"Optional[Type[Value]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mappingstep_class</span><span class="p">:</span> <span class="s2">"Optional[Type[MappingStep]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mapsTo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MAP</span><span class="o">.</span><span class="n">mapsTo</span><span class="p">,</span>
     <span class="n">instanceOf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DM</span><span class="o">.</span><span class="n">instanceOf</span><span class="p">,</span>
     <span class="n">subClassOf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span>
@@ -4750,7 +4750,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
     <span class="n">hasAccessFunction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">hasAccessFunction</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-outer-name</span>
     <span class="n">hasDataValue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">hasDataValue</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-outer-name</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Input</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find routes of mappings from any source in `sources` to `target`.</span>
+<span class="w">    </span><span class="sd">"""Find routes of mappings from any source in `sources` to `target`.</span>
 
 <span class="sd">    This implementation supports functions (using FnO) and subclass</span>
 <span class="sd">    relations.  It also correctly handles transitivity of `mapsTo` and</span>
@@ -4765,39 +4765,39 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
 <span class="sd">    Additional arguments for fine-grained tuning:</span>
 <span class="sd">        function_repo: Dict mapping function IRIs to corresponding Python</span>
 <span class="sd">            function.  Default is to use `triplestore.function_repo`.</span>
-<span class="sd">        function_mappers: Name of mapping standard: &quot;emmo&quot; or &quot;fno&quot;.</span>
+<span class="sd">        function_mappers: Name of mapping standard: "emmo" or "fno".</span>
 <span class="sd">            Alternatively, a sequence of mapping functions that takes</span>
 <span class="sd">            `triplestore` as argument and return a dict mapping output IRIs</span>
 <span class="sd">            to a list of `(function_iri, [input_iris, ...])` tuples.</span>
 <span class="sd">        default_costs: A dict providing default costs of different types</span>
-<span class="sd">            of mapping steps (&quot;function&quot;, &quot;mapsTo&quot;, &quot;instanceOf&quot;,</span>
-<span class="sd">            &quot;subClassOf&quot;, and &quot;value&quot;).  These costs can be overridden with</span>
-<span class="sd">            &#39;hasCost&#39; relations in the ontology.</span>
+<span class="sd">            of mapping steps ("function", "mapsTo", "instanceOf",</span>
+<span class="sd">            "subClassOf", and "value").  These costs can be overridden with</span>
+<span class="sd">            'hasCost' relations in the ontology.</span>
 <span class="sd">        value_class: Optional `Value` subclass to use instead of `Value` when</span>
 <span class="sd">            creating the returned mapping route.</span>
 <span class="sd">        mappingstep_class: Optional `MappingStep` subclass to use instead of</span>
 <span class="sd">            `MappingStep` when creating the returned mapping route.</span>
-<span class="sd">        mapsTo: IRI of &#39;mapsTo&#39; in `triplestore`.</span>
-<span class="sd">        instanceOf: IRI of &#39;instanceOf&#39; in `triplestore`.</span>
-<span class="sd">        subClassOf: IRI of &#39;subClassOf&#39; in `triples`.  Set it to None if</span>
+<span class="sd">        mapsTo: IRI of 'mapsTo' in `triplestore`.</span>
+<span class="sd">        instanceOf: IRI of 'instanceOf' in `triplestore`.</span>
+<span class="sd">        subClassOf: IRI of 'subClassOf' in `triples`.  Set it to None if</span>
 <span class="sd">            subclasses should not be considered.</span>
-<span class="sd">        label: IRI of &#39;label&#39; in `triplestore`.  Used for naming function</span>
+<span class="sd">        label: IRI of 'label' in `triplestore`.  Used for naming function</span>
 <span class="sd">            input parameters.  The default is to use rdfs:label.</span>
-<span class="sd">        hasUnit: IRI of &#39;hasUnit&#39; in `triplestore`.  Can be used to explicit</span>
+<span class="sd">        hasUnit: IRI of 'hasUnit' in `triplestore`.  Can be used to explicit</span>
 <span class="sd">            specify the unit of a quantity.</span>
-<span class="sd">        hasCost: IRI of &#39;hasCost&#39; in `triplestore`.  Used for associating a</span>
+<span class="sd">        hasCost: IRI of 'hasCost' in `triplestore`.  Used for associating a</span>
 <span class="sd">            user-defined cost or cost function with instantiation of a</span>
 <span class="sd">            property.</span>
-<span class="sd">        hasAccessFunction: IRI of &#39;hasAccessFunction&#39;.  Used to associate a</span>
+<span class="sd">        hasAccessFunction: IRI of 'hasAccessFunction'.  Used to associate a</span>
 <span class="sd">            data source to a function that retrieves the data.</span>
-<span class="sd">        hasDataValue: IRI of &#39;hasDataValue&#39;.  Used to associate a data source</span>
+<span class="sd">        hasDataValue: IRI of 'hasDataValue'.  Used to associate a data source</span>
 <span class="sd">            with its literal value.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A MappingStep instance.  This is a root of a nested tree of</span>
 <span class="sd">        MappingStep instances providing an (efficient) internal description</span>
 <span class="sd">        of all possible mapping routes from `sources` to `target`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=too-many-arguments,too-many-locals,too-many-statements</span>
 
     <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
@@ -4810,8 +4810,8 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
         <span class="n">function_repo</span> <span class="o">=</span> <span class="n">triplestore</span><span class="o">.</span><span class="n">function_repo</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function_mappers</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">fmd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;emmo&quot;</span><span class="p">:</span> <span class="n">emmo_mapper</span><span class="p">,</span> <span class="s2">&quot;fno&quot;</span><span class="p">:</span> <span class="n">fno_mapper</span><span class="p">}</span>
-        <span class="n">function_mappers</span> <span class="o">=</span> <span class="p">[</span><span class="n">fmd</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">function_mappers</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="n">fmd</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"emmo"</span><span class="p">:</span> <span class="n">emmo_mapper</span><span class="p">,</span> <span class="s2">"fno"</span><span class="p">:</span> <span class="n">fno_mapper</span><span class="p">}</span>
+        <span class="n">function_mappers</span> <span class="o">=</span> <span class="p">[</span><span class="n">fmd</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">function_mappers</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)]</span>
 
     <span class="n">default_costs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">default_costs</span><span class="p">)</span>
 
@@ -4841,8 +4841,8 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triplestore</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">instanceOf</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">soInst</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InconsistentTriplesError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The same individual can only relate to one datamodel &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;property via </span><span class="si">{</span><span class="n">instanceOf</span><span class="si">}</span><span class="s2"> relations.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The same individual can only relate to one datamodel "</span>
+                <span class="sa">f</span><span class="s2">"property via </span><span class="si">{</span><span class="n">instanceOf</span><span class="si">}</span><span class="s2"> relations."</span>
             <span class="p">)</span>
         <span class="n">soInst</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span>
         <span class="n">osInst</span><span class="p">[</span><span class="n">o</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -4853,8 +4853,8 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
     <span class="n">soDVal</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">triplestore</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">hasDataValue</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">getfunc</span><span class="p">(</span><span class="n">func_iri</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns callable function corresponding to `func_iri`.</span>
-<span class="sd">        Raises CannotGetFunctionError if func_iri cannot be found.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns callable function corresponding to `func_iri`.</span>
+<span class="sd">        Raises CannotGetFunctionError if func_iri cannot be found."""</span>
         <span class="k">if</span> <span class="n">func_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">func_iri</span> <span class="ow">in</span> <span class="n">function_repo</span> <span class="ow">and</span> <span class="n">function_repo</span><span class="p">[</span><span class="n">func_iri</span><span class="p">]:</span>
@@ -4869,15 +4869,15 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
             <span class="k">return</span> <span class="n">default</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">getcost</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">stepname</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the cost assigned to IRI `target` for a mapping step</span>
-<span class="sd">        of type `stepname`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the cost assigned to IRI `target` for a mapping step</span>
+<span class="sd">        of type `stepname`."""</span>
         <span class="n">cost</span> <span class="o">=</span> <span class="n">soCost</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">default_costs</span><span class="p">[</span><span class="n">stepname</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">cost</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">cost</span>
         <span class="k">return</span> <span class="n">getfunc</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">parse_literal</span><span class="p">(</span><span class="n">cost</span><span class="p">)))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Walk backward in rdf graph from `node` to sources.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Walk backward in rdf graph from `node` to sources."""</span>
         <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
@@ -4893,7 +4893,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
                     <span class="n">unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
                     <span class="n">iri</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                     <span class="n">property_iri</span><span class="o">=</span><span class="n">soInst</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
-                    <span class="n">cost</span><span class="o">=</span><span class="n">getcost</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+                    <span class="n">cost</span><span class="o">=</span><span class="n">getcost</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">soDVal</span><span class="p">:</span>
@@ -4903,7 +4903,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
                     <span class="n">unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
                     <span class="n">iri</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                     <span class="n">property_iri</span><span class="o">=</span><span class="n">soInst</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
-                    <span class="n">cost</span><span class="o">=</span><span class="n">getcost</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+                    <span class="n">cost</span><span class="o">=</span><span class="n">getcost</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
@@ -4912,7 +4912,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
                     <span class="n">unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
                     <span class="n">iri</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                     <span class="n">property_iri</span><span class="o">=</span><span class="n">soInst</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
-                    <span class="n">cost</span><span class="o">=</span><span class="n">getcost</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+                    <span class="n">cost</span><span class="o">=</span><span class="n">getcost</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">soName</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -4925,21 +4925,21 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
                 <span class="n">walk</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">prevstep</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">osInst</span><span class="p">[</span><span class="n">target</span><span class="p">]:</span>
-            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INV_INSTANCEOF</span><span class="p">,</span> <span class="s2">&quot;instanceOf&quot;</span><span class="p">)</span>
+            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INV_INSTANCEOF</span><span class="p">,</span> <span class="s2">"instanceOf"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">soMaps</span><span class="p">[</span><span class="n">target</span><span class="p">]:</span>
-            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">MAPSTO</span><span class="p">,</span> <span class="s2">&quot;mapsTo&quot;</span><span class="p">)</span>
+            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">MAPSTO</span><span class="p">,</span> <span class="s2">"mapsTo"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">osMaps</span><span class="p">[</span><span class="n">target</span><span class="p">]:</span>
-            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INV_MAPSTO</span><span class="p">,</span> <span class="s2">&quot;mapsTo&quot;</span><span class="p">)</span>
+            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INV_MAPSTO</span><span class="p">,</span> <span class="s2">"mapsTo"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">osSubcl</span><span class="p">[</span><span class="n">target</span><span class="p">]:</span>
-            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INV_SUBCLASSOF</span><span class="p">,</span> <span class="s2">&quot;subClassOf&quot;</span><span class="p">)</span>
+            <span class="n">addnode</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INV_SUBCLASSOF</span><span class="p">,</span> <span class="s2">"subClassOf"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">fmap</span> <span class="ow">in</span> <span class="n">function_mappers</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">func_iri</span><span class="p">,</span> <span class="n">input_iris</span> <span class="ow">in</span> <span class="n">fmap</span><span class="p">(</span><span class="n">triplestore</span><span class="p">)[</span><span class="n">target</span><span class="p">]:</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">FUNCTION</span>
-                <span class="n">step</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">getcost</span><span class="p">(</span><span class="n">func_iri</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span>
+                <span class="n">step</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">getcost</span><span class="p">(</span><span class="n">func_iri</span><span class="p">,</span> <span class="s2">"function"</span><span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">function</span> <span class="o">=</span> <span class="n">getfunc</span><span class="p">(</span><span class="n">func_iri</span><span class="p">)</span>
                 <span class="n">step</span><span class="o">.</span><span class="n">join_mode</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">for</span> <span class="n">input_iri</span> <span class="ow">in</span> <span class="n">input_iris</span><span class="p">:</span>
@@ -4962,10 +4962,10 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
         <span class="c1"># It is only initially we want to follow instanceOf in forward</span>
         <span class="c1"># direction.  Later on we will only follow mapsTo and instanceOf in</span>
         <span class="c1"># backward direction.</span>
-        <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>  <span class="c1"># do we really wan&#39;t this?  Yes, I think so...</span>
+        <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>  <span class="c1"># do we really wan't this?  Yes, I think so...</span>
         <span class="n">source</span> <span class="o">=</span> <span class="n">soInst</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
         <span class="n">step</span><span class="o">.</span><span class="n">steptype</span> <span class="o">=</span> <span class="n">StepType</span><span class="o">.</span><span class="n">INSTANCEOF</span>
-        <span class="n">step</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">getcost</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;instanceOf&quot;</span><span class="p">)</span>
+        <span class="n">step</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">getcost</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">"instanceOf"</span><span class="p">)</span>
         <span class="n">step0</span> <span class="o">=</span> <span class="n">mappingstep_class</span><span class="p">(</span>
             <span class="n">output_iri</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
             <span class="n">output_unit</span><span class="o">=</span><span class="n">soUnit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
@@ -4976,7 +4976,7 @@ of all possible mapping routes from <code>sources</code> to <code>target</code>.
         <span class="n">target</span> <span class="o">=</span> <span class="n">source</span>
 
     <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">soMaps</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">MissingRelationError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Missing &quot;mapsTo&quot; relation on: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">MissingRelationError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Missing "mapsTo" relation on: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="n">walk</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">step</span>

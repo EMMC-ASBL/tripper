@@ -1757,21 +1757,21 @@
 <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">DCTERMS</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Triplestore</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">tripper.convert</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_container</span><span class="p">,</span> <span class="n">save_container</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">save_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">&quot;:data_indv&quot;</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;:data_indv&quot;</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dataset</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">save_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="s2">":data_indv"</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">":data_indv"</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
 
 <span class="c1"># Add additional context to our data individual</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="s2">&quot;:data_indv&quot;</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">&quot;My wonderful data&quot;</span><span class="p">)))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">ts</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="s2">":data_indv"</span><span class="p">,</span> <span class="n">DCTERMS</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="s2">"My wonderful data"</span><span class="p">)))</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;:data_indv&quot;</span><span class="p">)</span>  <span class="c1"># doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">":data_indv"</span><span class="p">)</span>  <span class="c1"># doctest: +IGNORE_EXCEPTION_DETAIL</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-<span class="ne">ValueError</span><span class="p">:</span> <span class="n">Unrecognised</span> <span class="n">predicate</span> <span class="s1">&#39;http://purl.org/dc/terms/title&#39;</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span> <span class="p">:</span><span class="n">data_indv</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">Unrecognised</span> <span class="n">predicate</span> <span class="s1">'http://purl.org/dc/terms/title'</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span> <span class="p">:</span><span class="n">data_indv</span>
 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;:data_indv&quot;</span><span class="p">,</span> <span class="n">ignore_unrecognised</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">":data_indv"</span><span class="p">,</span> <span class="n">ignore_unrecognised</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
 </code></pre></div>
 
 
@@ -1791,7 +1791,7 @@
 
 
 <h2 id="tripper.convert.convert.from_container" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_container</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">from_container</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">'en'</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a href="#tripper.convert.convert.from_container" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -1874,13 +1874,13 @@ a triple.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/convert/convert.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_container</span><span class="p">(</span>
-    <span class="n">container</span><span class="p">:</span> <span class="s2">&quot;Union[Mapping[str, Any], Sequence[Any]]&quot;</span><span class="p">,</span>
+    <span class="n">container</span><span class="p">:</span> <span class="s2">"Union[Mapping[str, Any], Sequence[Any]]"</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
-    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"en"</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">"Optional[Union[Dict, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise a basic Python container type (mapping or sequence) as RDF.</span>
+<span class="w">    </span><span class="sd">"""Serialise a basic Python container type (mapping or sequence) as RDF.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        container: The container to be saved.  Should be a mapping or</span>
@@ -1890,7 +1890,7 @@ a triple.</p>
 <span class="sd">        lang: Language to use for mapping keys.</span>
 <span class="sd">        recognised_keys: An optional dict that maps mapping keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
-<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            If set to the special string "basic", the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
 <span class="sd">        keep: Whether to keep the key-value pair representation for</span>
 <span class="sd">            mapping items serialised with recognised_keys.  Note that this</span>
@@ -1903,23 +1903,23 @@ a triple.</p>
 <span class="sd">        `container` should not be an empty sequence.  The reason for this</span>
 <span class="sd">        is that is represented with rdf:nil, which is a single IRI and not</span>
 <span class="sd">        a triple.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">"basic"</span><span class="p">:</span>
         <span class="n">recognised_keys</span> <span class="o">=</span> <span class="n">BASIC_RECOGNISED_KEYS</span>
 
     <span class="n">rdf</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_obj_iri</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return IRI for Python object `obj`.  The `uuid` argument is</span>
-<span class="sd">        appended to blank nodes for uniques.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return IRI for Python object `obj`.  The `uuid` argument is</span>
+<span class="sd">        appended to blank nodes for uniques."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span>
-            <span class="n">obj_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:dict_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">obj_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:dict_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">RDF</span><span class="o">.</span><span class="n">List</span>
-            <span class="n">obj_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:list_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">obj_iri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:list_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">elif</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Nothing</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1939,14 +1939,14 @@ a triple.</p>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># nosec</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">container</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;empty sequence is not supported&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"empty sequence is not supported"</span><span class="p">)</span>
 
         <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">List</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">container</span><span class="p">):</span>
             <span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
             <span class="n">first_iri</span> <span class="o">=</span> <span class="n">get_obj_iri</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
-            <span class="n">rest_iri</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">container</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;_:rest_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">rest_iri</span> <span class="o">=</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">container</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"_:rest_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">"</span>
             <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">first</span><span class="p">,</span> <span class="n">first_iri</span><span class="p">))</span>
             <span class="n">rdf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">rest</span><span class="p">,</span> <span class="n">rest_iri</span><span class="p">))</span>
             <span class="n">iri</span> <span class="o">=</span> <span class="n">rest_iri</span>
@@ -1963,9 +1963,9 @@ a triple.</p>
                     <span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value_iri</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">recognised</span> <span class="ow">or</span> <span class="n">keep</span><span class="p">:</span>
-                <span class="n">key_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:key_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="n">value_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:value_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="n">pair</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_:pair_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">key_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:key_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">value_indv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:value_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">pair</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"_:pair_</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">"</span>
                 <span class="n">rdf</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                     <span class="p">[</span>
                         <span class="p">(</span><span class="n">key_indv</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">DictionaryKey</span><span class="p">),</span>
@@ -1983,7 +1983,7 @@ a triple.</p>
                     <span class="p">]</span>
                 <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;container must be a mapping or sequence&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"container must be a mapping or sequence"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">rdf</span>
 </code></pre></div>
@@ -1999,7 +1999,7 @@ a triple.</p>
 
 
 <h2 id="tripper.convert.convert.from_dict" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">'en'</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a href="#tripper.convert.convert.from_dict" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2082,12 +2082,12 @@ will duplicate potential large literal values.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span>
     <span class="n">dct</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">bases</span><span class="p">:</span> <span class="s2">&quot;Optional[Sequence]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
-    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bases</span><span class="p">:</span> <span class="s2">"Optional[Sequence]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"en"</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">"Optional[Union[Dict, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise a dict as RDF.</span>
+<span class="w">    </span><span class="sd">"""Serialise a dict as RDF.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        dct: The dict to be saved.</span>
@@ -2096,7 +2096,7 @@ will duplicate potential large literal values.</p></td>
 <span class="sd">        lang: Language to use for keys.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
-<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            If set to the special string "basic", the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
 <span class="sd">        keep: Whether to keep the key-value pair representation for</span>
 <span class="sd">            items serialised with recognised_keys.  Note that this</span>
@@ -2104,10 +2104,10 @@ will duplicate potential large literal values.</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List of RDF triples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">del</span> <span class="n">bases</span>  <span class="c1"># silence pylint about unused variable</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;from_dict() is deprecated.  Use from_container() instead&quot;</span><span class="p">,</span>
+        <span class="s2">"from_dict() is deprecated.  Use from_container() instead"</span><span class="p">,</span>
         <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2196,19 +2196,19 @@ or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/convert/convert.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_container</span><span class="p">(</span>
-    <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">"Optional[Union[Dict, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ignore_unrecognised</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deserialise a Python container object from a triplestore.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[dict, list]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Deserialise a Python container object from a triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore from which to fetch the dict.</span>
 <span class="sd">        iri: IRI of individual that stands for the dict to fetch.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
-<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            If set to the special string "basic", the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
 <span class="sd">        ignore_unrecognised: Ignore relations that has `iri` as subject and</span>
 <span class="sd">            a predicate that is not among the values of `recognised_keys`</span>
@@ -2216,12 +2216,12 @@ or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A Python container object corresponding to `iri`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=too-many-branches</span>
     <span class="k">if</span> <span class="n">iri</span> <span class="o">==</span> <span class="n">RDF</span><span class="o">.</span><span class="n">nil</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">&quot;basic&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">recognised_keys</span> <span class="o">==</span> <span class="s2">"basic"</span><span class="p">:</span>
         <span class="n">recognised_keys</span> <span class="o">=</span> <span class="n">BASIC_RECOGNISED_KEYS</span>
 
     <span class="n">recognised_iris</span> <span class="o">=</span> <span class="p">(</span>
@@ -2232,7 +2232,7 @@ or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
     <span class="n">parents</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_obj</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Python object for `value`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return Python object for `value`."""</span>
         <span class="n">value_type</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">value_type</span> <span class="o">==</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">load_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="n">recognised_keys</span><span class="p">)</span>
@@ -2258,7 +2258,7 @@ or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
                 <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unrecognised predicate &#39;</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">&#39; in dict: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Unrecognised predicate '</span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">' in dict: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
         <span class="c1"># Recognised IRIs</span>
@@ -2285,7 +2285,7 @@ or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;iri &#39;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&#39; should be either a rdf:List or an oteio:Dictionary&quot;</span>
+            <span class="sa">f</span><span class="s2">"iri '</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">' should be either a rdf:List or an oteio:Dictionary"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">container</span>
@@ -2363,25 +2363,25 @@ If set to the special string "basic", the
         <details class="quote">
           <summary>Source code in <code>tripper/convert/convert.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_dict</span><span class="p">(</span>
-    <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Deserialise a dict from an RDF triplestore.</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">"Optional[Union[Dict, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[dict, list]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Deserialise a dict from an RDF triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore from which to fetch the dict.</span>
 <span class="sd">        iri: IRI of individual that stands for the dict to fetch.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
-<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            If set to the special string "basic", the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A dict corresponding to `iri`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;load_dict() is deprecated.  Use load_container() instead&quot;</span><span class="p">,</span>
+        <span class="s2">"load_dict() is deprecated.  Use load_container() instead"</span><span class="p">,</span>
         <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2399,7 +2399,7 @@ If set to the special string "basic", the
 
 
 <h2 id="tripper.convert.convert.save_container" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_container</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">'en'</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a href="#tripper.convert.convert.save_container" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2465,14 +2465,14 @@ will duplicate potential large literal values.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/convert/convert.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_container</span><span class="p">(</span>
-    <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
-    <span class="n">container</span><span class="p">:</span> <span class="s2">&quot;Union[Mapping[str, Any], Sequence[Any]]&quot;</span><span class="p">,</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
+    <span class="n">container</span><span class="p">:</span> <span class="s2">"Union[Mapping[str, Any], Sequence[Any]]"</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
-    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"en"</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">"Optional[Union[Dict, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a basic Python container object to a triplestore.</span>
+<span class="w">    </span><span class="sd">"""Save a basic Python container object to a triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to which to write the container object.</span>
@@ -2481,20 +2481,20 @@ will duplicate potential large literal values.</p></td>
 <span class="sd">        lang: Language to use for keys.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict mapping that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
-<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            If set to the special string "basic", the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
 <span class="sd">        keep: Whether to keep the key-value pair representation for</span>
 <span class="sd">            items serialised with recognised_keys.  Note that this</span>
 <span class="sd">            will duplicate potential large literal values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;rdf&quot;</span><span class="p">,</span> <span class="n">RDF</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;dcat&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;dcat&quot;</span><span class="p">,</span> <span class="n">DCAT</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;emmo&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;emmo&quot;</span><span class="p">,</span> <span class="n">EMMO</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;oteio&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
-        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;oteio&quot;</span><span class="p">,</span> <span class="n">OTEIO</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="s2">"rdf"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"rdf"</span><span class="p">,</span> <span class="n">RDF</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"dcat"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"dcat"</span><span class="p">,</span> <span class="n">DCAT</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"emmo"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"emmo"</span><span class="p">,</span> <span class="n">EMMO</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"oteio"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">"oteio"</span><span class="p">,</span> <span class="n">OTEIO</span><span class="p">)</span>
 
     <span class="n">ts</span><span class="o">.</span><span class="n">add_triples</span><span class="p">(</span>
         <span class="n">from_container</span><span class="p">(</span>
@@ -2518,7 +2518,7 @@ will duplicate potential large literal values.</p></td>
 
 
 <h2 id="tripper.convert.convert.save_dict" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">save_dict</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">dct</span><span class="p">,</span> <span class="n">iri</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">'en'</span><span class="p">,</span> <span class="n">recognised_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 
 <a href="#tripper.convert.convert.save_dict" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -2590,15 +2590,15 @@ will duplicate potential large literal values.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/convert/convert.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_dict</span><span class="p">(</span>
-    <span class="n">ts</span><span class="p">:</span> <span class="s2">&quot;Triplestore&quot;</span><span class="p">,</span>
-    <span class="n">dct</span><span class="p">:</span> <span class="s2">&quot;Mapping[str, Any]&quot;</span><span class="p">,</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="s2">"Triplestore"</span><span class="p">,</span>
+    <span class="n">dct</span><span class="p">:</span> <span class="s2">"Mapping[str, Any]"</span><span class="p">,</span>
     <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">bases</span><span class="p">:</span> <span class="s2">&quot;Optional[Sequence]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
-    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">&quot;Optional[Union[Dict, str]]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bases</span><span class="p">:</span> <span class="s2">"Optional[Sequence]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"en"</span><span class="p">,</span>
+    <span class="n">recognised_keys</span><span class="p">:</span> <span class="s2">"Optional[Union[Dict, str]]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">keep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a dict to a triplestore.</span>
+<span class="w">    </span><span class="sd">"""Save a dict to a triplestore.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        ts: Triplestore to which to write the dict.</span>
@@ -2608,15 +2608,15 @@ will duplicate potential large literal values.</p></td>
 <span class="sd">        lang: Language to use for keys.</span>
 <span class="sd">        recognised_keys: An optional dict that maps dict keys that</span>
 <span class="sd">            correspond to IRIs of recognised RDF properties.</span>
-<span class="sd">            If set to the special string &quot;basic&quot;, the</span>
+<span class="sd">            If set to the special string "basic", the</span>
 <span class="sd">            `BASIC_RECOGNISED_KEYS` module will be used.</span>
 <span class="sd">        keep: Whether to keep the key-value pair representation for</span>
 <span class="sd">            items serialised with recognised_keys.  Note that this</span>
 <span class="sd">            will duplicate potential large literal values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">del</span> <span class="n">bases</span>  <span class="c1"># silence pylint about unused variable</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;save_dict() is deprecated.  Use save_container() instead&quot;</span><span class="p">,</span>
+        <span class="s2">"save_dict() is deprecated.  Use save_container() instead"</span><span class="p">,</span>
         <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>

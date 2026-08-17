@@ -1879,11 +1879,11 @@ ontology with the given <code>base_iri</code>.</p></td>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OntopyStrategy</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Triplestore strategy for EMMOntoPy.</span>
+<span class="w">    </span><span class="sd">"""Triplestore strategy for EMMOntoPy.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        base_iri: The base iri of the ontology.</span>
-<span class="sd">            Default to &quot;http://example.com/onto#&quot; if `onto` is not given.</span>
+<span class="sd">            Default to "http://example.com/onto#" if `onto` is not given.</span>
 <span class="sd">        database: Unused - ontopy does not support multiple databases.</span>
 <span class="sd">        onto: Ontology to initiate the triplestore from.  Defaults to an new</span>
 <span class="sd">            ontology with the given `base_iri`.</span>
@@ -1891,37 +1891,37 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">        kwargs: Keyword arguments passed to the ontology load() method.</span>
 
 <span class="sd">    Either the `base_iri` or `onto` argument must be provided.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">prefer_sparql</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">onto</span><span class="p">:</span> <span class="s2">&quot;Optional[Ontology]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">base_iri</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">database</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">onto</span><span class="p">:</span> <span class="s2">"Optional[Ontology]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># pylint: disable=unused-argument</span>
         <span class="k">if</span> <span class="n">onto</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">base_iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">base_iri</span> <span class="o">=</span> <span class="s2">&quot;http://example.com/onto#&quot;</span>
+                <span class="n">base_iri</span> <span class="o">=</span> <span class="s2">"http://example.com/onto#"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span> <span class="o">=</span> <span class="n">get_ontology</span><span class="p">(</span><span class="n">base_iri</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">onto</span><span class="p">,</span> <span class="n">Ontology</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span> <span class="o">=</span> <span class="n">onto</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`onto` must be either an ontology or None&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"`onto` must be either an ontology or None"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">load</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns a generator over matching triples."""</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">to_literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Returns a literal from (o, datatype).&quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">"""Returns a literal from (o, datatype)."""</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"@"</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">datatype</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
@@ -1938,7 +1938,7 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_data_triples_spod_spod</span><span class="p">(</span>
-            <span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+            <span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">""</span>
         <span class="p">):</span>
             <span class="k">yield</span> <span class="p">(</span>
                 <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
@@ -1946,16 +1946,16 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="n">to_literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">datatype</span><span class="p">),</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Sequence[Triple]"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Add a sequence of triples."""</span>
         <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Union[int, str]&quot;</span>
+            <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Union[int, str]"</span>
         <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
-                    <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">elif</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
-                    <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;^^</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"^^</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">datatype</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_add_data_triple_spod</span><span class="p">(</span>
@@ -1971,8 +1971,8 @@ ontology with the given <code>base_iri</code>.</p></td>
                     <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_abbreviate</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Remove all matching triples from the backend."""</span>
         <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
         <span class="n">to_remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_triples_spod_spod</span><span class="p">(</span>
@@ -1997,7 +1997,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">        </span><span class="sd">"""Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">        The source is specified using one of `source`, `location` or `data`.</span>
 
@@ -2008,7 +2008,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">            format: Needed if format can not be inferred from source.</span>
 <span class="sd">            encoding: Encoding argument to io.open().</span>
 <span class="sd">            kwargs: Additional keyword arguments passed to Ontology.load().</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">source</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">location</span><span class="p">:</span>
@@ -2017,12 +2017,12 @@ ontology with the given <code>base_iri</code>.</p></td>
             <span class="c1"># s = io.StringIO(data)</span>
             <span class="c1"># self.onto.load(filename=s, format=format, **kwargs)</span>
 
-            <span class="c1"># Could have been done much nicer if it hasn&#39;t been for Windows</span>
+            <span class="c1"># Could have been done much nicer if it hasn't been for Windows</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">tmpfile_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+                <span class="n">tmpfile_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"delete"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">tmpfile_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w+t&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+                    <span class="n">tmpfile_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"w+t"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="o">**</span><span class="n">tmpfile_options</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                     <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                     <span class="n">filename</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span>
@@ -2033,16 +2033,16 @@ ontology with the given <code>base_iri</code>.</p></td>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;either `source`, `location` or `data` must be given&quot;</span>
+                <span class="s2">"either `source`, `location` or `data` must be given"</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Serialise to destination.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            destination: File name or object to write to.  If None, the</span>
@@ -2053,7 +2053,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Serialised string if `destination` is None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">destination</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2063,7 +2063,7 @@ ontology with the given <code>base_iri</code>.</p></td>
                 <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                     <span class="n">filename</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
@@ -2072,8 +2072,8 @@ ontology with the given <code>base_iri</code>.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List, Result]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            query_object: String with the SPARQL query.</span>
@@ -2083,9 +2083,9 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">        Returns:</span>
 <span class="sd">            SPARQL query results.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">res</span><span class="p">:</span> <span class="s2">&quot;Union[List, Result]&quot;</span>
+            <span class="n">res</span><span class="p">:</span> <span class="s2">"Union[List, Result]"</span>
 
         <span class="k">if</span> <span class="n">native</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">sparql</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
@@ -2096,7 +2096,7 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="k">return</span> <span class="n">res</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">        </span><span class="sd">"""Update triplestore with SPARQL.</span>
 
 <span class="sd">        Parameters:</span>
 <span class="sd">            update_object: String with the SPARQL query.</span>
@@ -2107,7 +2107,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">            This method is intended for INSERT and DELETE queries. Use</span>
 <span class="sd">            the query() method for SELECT queries.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">native</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">sparql</span><span class="p">(</span><span class="n">update_object</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2146,16 +2146,16 @@ ontology with the given <code>base_iri</code>.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">&quot;Sequence[Triple]&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a sequence of triples.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triples</span><span class="p">:</span> <span class="s2">"Sequence[Triple]"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Add a sequence of triples."""</span>
     <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">datatype</span><span class="p">:</span> <span class="s2">&quot;Union[int, str]&quot;</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="s2">"Union[int, str]"</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">triples</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">lang</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">elif</span> <span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;^^</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"^^</span><span class="si">{</span><span class="n">o</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">datatype</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_add_data_triple_spod</span><span class="p">(</span>
@@ -2253,7 +2253,7 @@ ontology with the given <code>base_iri</code>.</p></td>
     <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse source and add the resulting triples to triplestore.</span>
+<span class="w">    </span><span class="sd">"""Parse source and add the resulting triples to triplestore.</span>
 
 <span class="sd">    The source is specified using one of `source`, `location` or `data`.</span>
 
@@ -2264,7 +2264,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">        format: Needed if format can not be inferred from source.</span>
 <span class="sd">        encoding: Encoding argument to io.open().</span>
 <span class="sd">        kwargs: Additional keyword arguments passed to Ontology.load().</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">source</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">location</span><span class="p">:</span>
@@ -2273,12 +2273,12 @@ ontology with the given <code>base_iri</code>.</p></td>
         <span class="c1"># s = io.StringIO(data)</span>
         <span class="c1"># self.onto.load(filename=s, format=format, **kwargs)</span>
 
-        <span class="c1"># Could have been done much nicer if it hasn&#39;t been for Windows</span>
+        <span class="c1"># Could have been done much nicer if it hasn't been for Windows</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">tmpfile_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;delete&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+            <span class="n">tmpfile_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"delete"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">tmpfile_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w+t&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="n">tmpfile_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"w+t"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="o">**</span><span class="n">tmpfile_options</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                 <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span>
@@ -2289,7 +2289,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;either `source`, `location` or `data` must be given&quot;</span>
+            <span class="s2">"either `source`, `location` or `data` must be given"</span>
         <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2363,8 +2363,8 @@ ontology with the given <code>base_iri</code>.</p></td>
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[List, Result]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SPARQL query.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List, Result]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        query_object: String with the SPARQL query.</span>
@@ -2374,9 +2374,9 @@ ontology with the given <code>base_iri</code>.</p></td>
 <span class="sd">    Returns:</span>
 <span class="sd">        SPARQL query results.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">res</span><span class="p">:</span> <span class="s2">&quot;Union[List, Result]&quot;</span>
+        <span class="n">res</span><span class="p">:</span> <span class="s2">"Union[List, Result]"</span>
 
     <span class="k">if</span> <span class="n">native</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">sparql</span><span class="p">(</span><span class="n">query_object</span><span class="p">)</span>
@@ -2409,8 +2409,8 @@ ontology with the given <code>base_iri</code>.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all matching triples from the backend.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Remove all matching triples from the backend."""</span>
     <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">triple</span>
     <span class="n">to_remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_triples_spod_spod</span><span class="p">(</span>
@@ -2437,7 +2437,7 @@ ontology with the given <code>base_iri</code>.</p></td>
 
 
 <h3 id="tripper.backends.ontopy.OntopyStrategy.serialize" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'turtle'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 
 <a href="#tripper.backends.ontopy.OntopyStrategy.serialize" class="headerlink" title="Permanent link">&para;</a></h3>
@@ -2499,10 +2499,10 @@ the backend.</p></td>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">destination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[None, str]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialise to destination.</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[None, str]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Serialise to destination.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        destination: File name or object to write to.  If None, the</span>
@@ -2513,7 +2513,7 @@ the backend.</p></td>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Serialised string if `destination` is None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">destination</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2523,7 +2523,7 @@ the backend.</p></td>
             <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">name</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
@@ -2553,12 +2553,12 @@ the backend.</p></td>
 
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">&quot;Triple&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator[Triple, None, None]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a generator over matching triples.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">triples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triple</span><span class="p">:</span> <span class="s2">"Triple"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Triple, None, None]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a generator over matching triples."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a literal from (o, datatype).&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns a literal from (o, datatype)."""</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"@"</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">datatype</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
@@ -2575,7 +2575,7 @@ the backend.</p></td>
             <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">o</span><span class="p">),</span>
         <span class="p">)</span>
     <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">_get_data_triples_spod_spod</span><span class="p">(</span>
-        <span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="o">*</span><span class="n">abb</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="s2">""</span>
     <span class="p">):</span>
         <span class="k">yield</span> <span class="p">(</span>
             <span class="n">_unabbreviate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span>
@@ -2643,7 +2643,7 @@ the query() method for SELECT queries.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/ontopy.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_object</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update triplestore with SPARQL.</span>
+<span class="w">    </span><span class="sd">"""Update triplestore with SPARQL.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        update_object: String with the SPARQL query.</span>
@@ -2654,7 +2654,7 @@ the query() method for SELECT queries.</p>
 <span class="sd">        This method is intended for INSERT and DELETE queries. Use</span>
 <span class="sd">        the query() method for SELECT queries.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">native</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onto</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">sparql</span><span class="p">(</span><span class="n">update_object</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

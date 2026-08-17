@@ -1820,14 +1820,14 @@ are not duplicated.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Append key-value pair to dict `d`.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">"Any"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Append key-value pair to dict `d`.</span>
 
 <span class="sd">    If `key` already exists in `d`, its value is converted to a list</span>
 <span class="sd">    and `value` is appended to it.  `value` may also be a list. Values</span>
 <span class="sd">    are not duplicated.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
         <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1847,7 +1847,7 @@ are not duplicated.</p>
                 <span class="c1"># Sort dicts at end, by representing them with a huge</span>
                 <span class="c1"># unicode character</span>
                 <span class="n">v</span><span class="p">,</span>
-                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uffff</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">"</span><span class="se">\uffff</span><span class="s2">"</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 </code></pre></div>
@@ -1878,19 +1878,19 @@ to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict 
 
 <p><strong>Examples:</strong></p>
     <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">&quot;a.b.c&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span>
-<span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">}}}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">addnested</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"a.b.c"</span><span class="p">,</span> <span class="s2">"val"</span><span class="p">)</span>
+<span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'b'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'c'</span><span class="p">:</span> <span class="s1">'val'</span><span class="p">}}}</span>
 </code></pre></div>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addnested</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">:</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">,</span>
+    <span class="n">d</span><span class="p">:</span> <span class="s2">"Union[dict, list]"</span><span class="p">,</span>
     <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span>
-    <span class="bp">cls</span><span class="p">:</span> <span class="s2">&quot;Optional[type]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Union[dict, list]&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like add(), but allows `key` to be a dot-separated list of sub-keys.</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">"Any"</span><span class="p">,</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="s2">"Optional[type]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[dict, list]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Like add(), but allows `key` to be a dot-separated list of sub-keys.</span>
 <span class="sd">    Returns the updated `d`.</span>
 
 <span class="sd">    Each sub-key will be added to `d` as a corresponding sub-dict.</span>
@@ -1901,18 +1901,18 @@ to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict 
 <span class="sd">    Example:</span>
 
 <span class="sd">        &gt;&gt;&gt; d = {}</span>
-<span class="sd">        &gt;&gt;&gt; addnested(d, &quot;a.b.c&quot;, &quot;val&quot;)</span>
-<span class="sd">        {&#39;a&#39;: {&#39;b&#39;: {&#39;c&#39;: &#39;val&#39;}}}</span>
+<span class="sd">        &gt;&gt;&gt; addnested(d, "a.b.c", "val")</span>
+<span class="sd">        {'a': {'b': {'c': 'val'}}}</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=too-many-branches</span>
     <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span>
 
-    <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[a-z][a-z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+    <span class="n">IRI_CHECK</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^[a-z][a-z0-9+.-]*://"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">IRI_CHECK</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-        <span class="n">first</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">IRI_CHECK</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"."</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">first</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -1958,8 +1958,8 @@ to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict 
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asseq</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">&quot;Union[str, Sequence, None]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Sequence&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a string or sequence as an iterable.&quot;&quot;&quot;</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">asseq</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="s2">"Union[str, Sequence, None]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Sequence"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Returns a string or sequence as an iterable."""</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="p">[]</span>
 </code></pre></div>
         </details>
@@ -1989,15 +1989,15 @@ to the same type as <code>d</code> if <code>d</code> is a mapping, or to a dict 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
-    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">aslist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Any&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like `d.get(key, default)` but returns the value as a list if</span>
+    <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="s2">"Any"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">aslist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Like `d.get(key, default)` but returns the value as a list if</span>
 <span class="sd">    `aslist` is True and value is not already a list.</span>
 
 <span class="sd">    An empty list is returned in the special case that `key` is not in</span>
 <span class="sd">    `d` and `default` is None.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">aslist</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -2049,8 +2049,8 @@ precedense, from high to low) will be interpreted as a label:
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="s2">&quot;Optional[str]&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return label from a JSON-LD dict `d`.</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getlabel</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="s2">"Optional[str]"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return label from a JSON-LD dict `d`.</span>
 
 <span class="sd">    Any of the following keys in `d` (listed in the order of</span>
 <span class="sd">    precedense, from high to low) will be interpreted as a label:</span>
@@ -2060,32 +2060,32 @@ precedense, from high to low) will be interpreted as a label:
 <span class="sd">    - label</span>
 
 <span class="sd">    If `d` has none of the above keys and `default` is not None,</span>
-<span class="sd">    `default` is returned. Otherwise `iriname(d[&quot;@id&quot;])` is returned.</span>
+<span class="sd">    `default` is returned. Otherwise `iriname(d["@id"])` is returned.</span>
 
 <span class="sd">    Example:</span>
 
-<span class="sd">    &gt;&gt;&gt; getlabel({&quot;@id&quot;: &quot;ex:A&quot;, &quot;label&quot;: &quot;a&quot;})</span>
-<span class="sd">    &#39;a&#39;</span>
+<span class="sd">    &gt;&gt;&gt; getlabel({"@id": "ex:A", "label": "a"})</span>
+<span class="sd">    'a'</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span>
         <span class="c1"># The order is by purpose. prefLabel has precedense over label.</span>
         <span class="c1"># But qualified IRIs has precedence over keywords.</span>
         <span class="n">SKOS</span><span class="o">.</span><span class="n">prefLabel</span><span class="p">,</span>
-        <span class="s2">&quot;skos:prefLabel&quot;</span><span class="p">,</span>
+        <span class="s2">"skos:prefLabel"</span><span class="p">,</span>
         <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-        <span class="s2">&quot;rdfs:label&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;prefLabel&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;label&quot;</span><span class="p">,</span>
+        <span class="s2">"rdfs:label"</span><span class="p">,</span>
+        <span class="s2">"prefLabel"</span><span class="p">,</span>
+        <span class="s2">"label"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">default</span>
-    <span class="k">if</span> <span class="s2">&quot;@id&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">iriname</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;@id&quot;</span><span class="p">])</span>
-    <span class="k">raise</span> <span class="n">InvalidDatadocError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot infer label from JSON-LD dict: </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">iriname</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">])</span>
+    <span class="k">raise</span> <span class="n">InvalidDatadocError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot infer label from JSON-LD dict: </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2135,34 +2135,34 @@ Valid names
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">iriname</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the name part of an IRI or CURIE.</span>
+<span class="w">    </span><span class="sd">"""Return the name part of an IRI or CURIE.</span>
 
 <span class="sd">    Rules:</span>
-<span class="sd">    - If value has no &quot;:&quot;, return it as-is.</span>
-<span class="sd">    - If value contains &quot;#&quot;, return everything after the last &quot;#&quot;.</span>
+<span class="sd">    - If value has no ":", return it as-is.</span>
+<span class="sd">    - If value contains "#", return everything after the last "#".</span>
 <span class="sd">    - If value does not start with http:// or https://, return</span>
-<span class="sd">      everything after the last &quot;:&quot;.</span>
-<span class="sd">    - Otherwise, return everything after the last &quot;/&quot;.</span>
+<span class="sd">      everything after the last ":".</span>
+<span class="sd">    - Otherwise, return everything after the last "/".</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the inferred name is empty or is invalid.</span>
 <span class="sd">            Valid names</span>
 <span class="sd">            - start with A-Z, a-z or _</span>
 <span class="sd">            - the rest may in addition contain 0-9, ., +, -, or /</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="s2">":"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">value</span>
-    <span class="k">elif</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[a-zA-Z][a-zA-Z0-9+.-]*://&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">"#"</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"#"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">"^[a-zA-Z][a-zA-Z0-9+.-]*://"</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_NAME_RE</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Cannot infer name of IRI: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (getting invalid name &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+            <span class="sa">f</span><span class="s2">"Cannot infer name of IRI: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (getting invalid name "</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">')"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">name</span>
@@ -2214,8 +2214,8 @@ the result will be a list with the unique strings from <code>a</code> and <code>
 
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="s2">&quot;MergeType&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="s2">&quot;MergeType&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MergeType&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the merged result of `a` and `b`, where `a` and `b` can be</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="s2">"MergeType"</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="s2">"MergeType"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"MergeType"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the merged result of `a` and `b`, where `a` and `b` can be</span>
 <span class="sd">    None, string or a sequence of strings.</span>
 
 <span class="sd">    The result will be None if both `a` and `b` are None and a string if one</span>
@@ -2225,22 +2225,22 @@ the result will be a list with the unique strings from <code>a</code> and <code>
 <span class="sd">    Examples:</span>
 <span class="sd">    &gt;&gt;&gt; merge(None, None)</span>
 
-<span class="sd">    &gt;&gt;&gt; merge(&quot;a&quot;, None)</span>
-<span class="sd">    &#39;a&#39;</span>
+<span class="sd">    &gt;&gt;&gt; merge("a", None)</span>
+<span class="sd">    'a'</span>
 
-<span class="sd">    &gt;&gt;&gt; merge(None, &quot;b&quot;)</span>
-<span class="sd">    &#39;b&#39;</span>
+<span class="sd">    &gt;&gt;&gt; merge(None, "b")</span>
+<span class="sd">    'b'</span>
 
-<span class="sd">    &gt;&gt;&gt; merge(&quot;a&quot;, &quot;b&quot;)</span>
-<span class="sd">    [&#39;a&#39;, &#39;b&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; merge("a", "b")</span>
+<span class="sd">    ['a', 'b']</span>
 
-<span class="sd">    &gt;&gt;&gt; merge(&quot;a&quot;, [&quot;c&quot;, &quot;b&quot;, &quot;a&quot;])</span>
-<span class="sd">    [&#39;a&#39;, &#39;c&#39;, &#39;b&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; merge("a", ["c", "b", "a"])</span>
+<span class="sd">    ['a', 'c', 'b']</span>
 
-<span class="sd">    &gt;&gt;&gt; merge([&quot;a&quot;, &quot;d&quot;], [&quot;c&quot;, &quot;b&quot;, &quot;a&quot;])</span>
-<span class="sd">    [&#39;a&#39;, &#39;d&#39;, &#39;c&#39;, &#39;b&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; merge(["a", "d"], ["c", "b", "a"])</span>
+<span class="sd">    ['a', 'd', 'c', 'b']</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># pylint: disable=too-many-return-statements</span>
     <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -2256,7 +2256,7 @@ the result will be a list with the unique strings from <code>a</code> and <code>
         <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">b</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">a</span><span class="p">]</span>
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input must be None, string or a sequence&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"input must be None, string or a sequence"</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -2296,18 +2296,18 @@ stripnested(d)
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/utils.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stripnested</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Strip off brackets from keys in nested dicts.</span>
+<span class="w">    </span><span class="sd">"""Strip off brackets from keys in nested dicts.</span>
 
 <span class="sd">    This function is intended for post-processing the result of a</span>
 <span class="sd">    series of calls to addnested().</span>
 
 <span class="sd">    Example:</span>
 
-<span class="sd">    &gt;&gt;&gt; d = {&quot;a[1]&quot;: {&quot;x&quot;: 1, &quot;y&quot;: 2}, &quot;a[2]&quot;: {&quot;x&quot;: 3}}</span>
+<span class="sd">    &gt;&gt;&gt; d = {"a[1]": {"x": 1, "y": 2}, "a[2]": {"x": 3}}</span>
 <span class="sd">    &gt;&gt;&gt; stripnested(d)</span>
-<span class="sd">    {&#39;a&#39;: [{&#39;x&#39;: 1, &#39;y&#39;: 2}, {&#39;x&#39;: 3}]}</span>
+<span class="sd">    {'a': [{'x': 1, 'y': 2}, {'x': 3}]}</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)()</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
@@ -2315,7 +2315,7 @@ stripnested(d)
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)()</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">add</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">add</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"["</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">new</span> <span class="o">=</span> <span class="n">d</span>
     <span class="k">return</span> <span class="n">new</span>

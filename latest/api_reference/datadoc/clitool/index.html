@@ -1782,7 +1782,7 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Main function."""</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="n">maincommand</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
 </code></pre></div>
@@ -1810,247 +1810,247 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">maincommand</span><span class="p">(</span><span class="n">argv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main command.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Main command."""</span>
     <span class="c1"># pylint: disable=too-many-statements</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Tool for data documentation.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;It allows populating and searching a triplestore for existing &quot;</span>
-            <span class="s2">&quot;documentation.&quot;</span>
+            <span class="s2">"Tool for data documentation.</span><span class="se">\n\n</span><span class="s2">"</span>
+            <span class="s2">"It allows populating and searching a triplestore for existing "</span>
+            <span class="s2">"documentation."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
-    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Subcommands:&quot;</span><span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Subcommands:"</span><span class="p">)</span>
 
     <span class="c1"># Subcommand: add</span>
     <span class="n">parser_add</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;add&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Populate the triplestore with data documentation.&quot;</span><span class="p">,</span>
+        <span class="s2">"add"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Populate the triplestore with data documentation."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">subcommand_add</span><span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+        <span class="s2">"input"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Path or URL to the input the triplestore should be populated &quot;</span>
-            <span class="s2">&quot;from.&quot;</span>
+            <span class="s2">"Path or URL to the input the triplestore should be populated "</span>
+            <span class="s2">"from."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--input-format&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">],</span>
+        <span class="s2">"--input-format"</span><span class="p">,</span>
+        <span class="s2">"-i"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"yaml"</span><span class="p">,</span> <span class="s2">"csv"</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Input format. By default it is inferred from the file &quot;</span>
-            <span class="s2">&quot;extension of the `input` argument.&quot;</span>
+            <span class="s2">"Input format. By default it is inferred from the file "</span>
+            <span class="s2">"extension of the `input` argument."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--csv-option&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;OPTION=VALUE&quot;</span><span class="p">,</span>
+        <span class="s2">"--csv-option"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"OPTION=VALUE"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Options describing the CSV dialect for --input-format=csv. &quot;</span>
-            <span class="s2">&quot;Common options are &#39;dialect&#39;, &#39;delimiter&#39; and &#39;quotechar&#39;. &quot;</span>
-            <span class="s2">&quot;This option may be provided multiple times.&quot;</span>
+            <span class="s2">"Options describing the CSV dialect for --input-format=csv. "</span>
+            <span class="s2">"Common options are 'dialect', 'delimiter' and 'quotechar'. "</span>
+            <span class="s2">"This option may be provided multiple times."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--context&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path or URL to custom JSON-LD context for the input.&quot;</span><span class="p">,</span>
+        <span class="s2">"--context"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path or URL to custom JSON-LD context for the input."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dump&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;File to dump the populated triplestore to.&quot;</span><span class="p">,</span>
+        <span class="s2">"--dump"</span><span class="p">,</span>
+        <span class="s2">"-d"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FILENAME"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"File to dump the populated triplestore to."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Format to use with `--dump`.  Default is &quot;turtle&quot;.&#39;</span><span class="p">,</span>
+        <span class="s2">"--format"</span><span class="p">,</span>
+        <span class="s2">"-f"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"turtle"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Format to use with `--dump`.  Default is "turtle".'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--keywords&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path or URL to custom keywords file for the input.&quot;</span><span class="p">,</span>
+        <span class="s2">"--keywords"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Path or URL to custom keywords file for the input."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--type&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Add this type to rows.&quot;</span><span class="p">,</span>
+        <span class="s2">"--type"</span><span class="p">,</span>
+        <span class="s2">"-t"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Add this type to rows."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--redefine&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="s2">&quot;skip&quot;</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;How to handle redifinition of existing keywords.&quot;</span><span class="p">,</span>
+        <span class="s2">"--redefine"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"allow"</span><span class="p">,</span> <span class="s2">"skip"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"How to handle redifinition of existing keywords."</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--base-iri&quot;</span><span class="p">,</span>
+        <span class="s2">"--base-iri"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Base IRI to resolve relative IRIs. &quot;</span>
-            <span class="s2">&quot;An error will be raised if relative IRIs are &quot;</span>
-            <span class="s2">&quot;encountered without this option.&quot;</span>
+            <span class="s2">"Base IRI to resolve relative IRIs. "</span>
+            <span class="s2">"An error will be raised if relative IRIs are "</span>
+            <span class="s2">"encountered without this option."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># Subcommand: delete</span>
     <span class="n">parser_delete</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delete matching resources in the triplestore.&quot;</span>
+        <span class="s2">"delete"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Delete matching resources in the triplestore."</span>
     <span class="p">)</span>
     <span class="n">parser_delete</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">subcommand_delete</span><span class="p">)</span>
     <span class="n">parser_delete</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--type&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">"--type"</span><span class="p">,</span>
+        <span class="s2">"-t"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s1">&#39;Either a resource type (ex: &quot;Dataset&quot;, &quot;Distribution&quot;, ...) &#39;</span>
-            <span class="s2">&quot;or the IRI of a class to limit the search to.&quot;</span>
+            <span class="s1">'Either a resource type (ex: "Dataset", "Distribution", ...) '</span>
+            <span class="s2">"or the IRI of a class to limit the search to."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_delete</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--criteria&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;IRI=VALUE&quot;</span><span class="p">,</span>
+        <span class="s2">"--criteria"</span><span class="p">,</span>
+        <span class="s2">"-c"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"IRI=VALUE"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Matching criteria for resources to delete. The IRI may be &quot;</span>
-            <span class="s1">&#39;written with namespace prefix, like `dcterms:title=&quot;My title&quot;`. &#39;</span>
-            <span class="s1">&#39;Writing the criteria with the &quot;=&quot; operator, corresponds to &#39;</span>
-            <span class="s2">&quot;exact match. &quot;</span>
-            <span class="s1">&#39;If the operator is written &quot;=~&quot;, regular expression matching &#39;</span>
-            <span class="s2">&quot;will be used instead. This option can be given multiple times.&quot;</span>
+            <span class="s2">"Matching criteria for resources to delete. The IRI may be "</span>
+            <span class="s1">'written with namespace prefix, like `dcterms:title="My title"`. '</span>
+            <span class="s1">'Writing the criteria with the "=" operator, corresponds to '</span>
+            <span class="s2">"exact match. "</span>
+            <span class="s1">'If the operator is written "=~", regular expression matching '</span>
+            <span class="s2">"will be used instead. This option can be given multiple times."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># Subcommand: find</span>
     <span class="n">parser_find</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;find&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Find documented resources in the triplestore.&quot;</span>
+        <span class="s2">"find"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Find documented resources in the triplestore."</span>
     <span class="p">)</span>
     <span class="n">parser_find</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">subcommand_find</span><span class="p">)</span>
     <span class="n">parser_find</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--type&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">"--type"</span><span class="p">,</span>
+        <span class="s2">"-t"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s1">&#39;Either a resource type (ex: &quot;dataset&quot;, &quot;distribution&quot;, ...) &#39;</span>
-            <span class="s2">&quot;or the IRI of a class to limit the search to.&quot;</span>
+            <span class="s1">'Either a resource type (ex: "dataset", "distribution", ...) '</span>
+            <span class="s2">"or the IRI of a class to limit the search to."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_find</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--criteria&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;IRI=VALUE&quot;</span><span class="p">,</span>
+        <span class="s2">"--criteria"</span><span class="p">,</span>
+        <span class="s2">"-c"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"IRI=VALUE"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Matching criteria for resources to find. The IRI may be written &quot;</span>
-            <span class="s1">&#39;using a namespace prefix, like `dcterms:title=&quot;My title&quot;`. &#39;</span>
-            <span class="s1">&#39;Writing the criteria with the &quot;=&quot; operator, corresponds to &#39;</span>
-            <span class="s2">&quot;exact match. &quot;</span>
-            <span class="s1">&#39;If the operator is written &quot;=~&quot;, regular expression matching &#39;</span>
-            <span class="s2">&quot;will be used instead. This option can be given multiple times.&quot;</span>
+            <span class="s2">"Matching criteria for resources to find. The IRI may be written "</span>
+            <span class="s1">'using a namespace prefix, like `dcterms:title="My title"`. '</span>
+            <span class="s1">'Writing the criteria with the "=" operator, corresponds to '</span>
+            <span class="s2">"exact match. "</span>
+            <span class="s1">'If the operator is written "=~", regular expression matching '</span>
+            <span class="s2">"will be used instead. This option can be given multiple times."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_find</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
+        <span class="s2">"--output"</span><span class="p">,</span>
+        <span class="s2">"-o"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FILENAME"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Write matching output to the given file. The default is to &quot;</span>
-            <span class="s2">&quot;write to standard output.&quot;</span>
+            <span class="s2">"Write matching output to the given file. The default is to "</span>
+            <span class="s2">"write to standard output."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser_find</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;iris&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;iris&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;turtle&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">],</span>
+        <span class="s2">"--format"</span><span class="p">,</span>
+        <span class="s2">"-f"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"iris"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"iris"</span><span class="p">,</span> <span class="s2">"json"</span><span class="p">,</span> <span class="s2">"turtle"</span><span class="p">,</span> <span class="s2">"csv"</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Output format to list the matched resources. The default is &quot;</span>
-            <span class="s2">&quot;to infer from the file extension if --output is given. &quot;</span>
-            <span class="s1">&#39;Otherwise it defaults to &quot;iris&quot;.&#39;</span>
+            <span class="s2">"Output format to list the matched resources. The default is "</span>
+            <span class="s2">"to infer from the file extension if --output is given. "</span>
+            <span class="s1">'Otherwise it defaults to "iris".'</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># Subcommand: fetch</span>
     <span class="n">parser_fetch</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s2">&quot;fetch&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Fetch documented dataset from a storage.&quot;</span>
+        <span class="s2">"fetch"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Fetch documented dataset from a storage."</span>
     <span class="p">)</span>
     <span class="n">parser_fetch</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">subcommand_fetch</span><span class="p">)</span>
     <span class="n">parser_fetch</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;iri&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;IRI of dataset to fetch.&quot;</span><span class="p">,</span>
+        <span class="s2">"iri"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"IRI of dataset to fetch."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_fetch</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span><span class="p">,</span>
+        <span class="s2">"--output"</span><span class="p">,</span>
+        <span class="s2">"-o"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FILENAME"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Write the dataset to the given file. The default is to write &quot;</span>
-            <span class="s2">&quot;to standard output.&quot;</span>
+            <span class="s2">"Write the dataset to the given file. The default is to write "</span>
+            <span class="s2">"to standard output."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="c1"># General: options</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--config&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Session configuration file.&quot;</span><span class="p">,</span>
+        <span class="s2">"--config"</span><span class="p">,</span>
+        <span class="s2">"-c"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Session configuration file."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show Python traceback on error.&quot;</span>
+        <span class="s2">"--debug"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Show Python traceback on error."</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--triplestore&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">"--triplestore"</span><span class="p">,</span>
+        <span class="s2">"-t"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Name of triplestore to connect to. The name should be defined &quot;</span>
-            <span class="s2">&quot;in the session configuration file.&quot;</span>
+            <span class="s2">"Name of triplestore to connect to. The name should be defined "</span>
+            <span class="s2">"in the session configuration file."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--backend&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;rdflib&quot;</span><span class="p">,</span>
+        <span class="s2">"--backend"</span><span class="p">,</span>
+        <span class="s2">"-b"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"rdflib"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s1">&#39;Triplestore backend to use. Defaults to &quot;rdflib&quot; - an &#39;</span>
-            <span class="s2">&quot;in-memory rdflib triplestore, that can be pre-loaded with &quot;</span>
-            <span class="s2">&quot;--parse.&quot;</span>
+            <span class="s1">'Triplestore backend to use. Defaults to "rdflib" - an '</span>
+            <span class="s2">"in-memory rdflib triplestore, that can be pre-loaded with "</span>
+            <span class="s2">"--parse."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--base-iri&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-B&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Base IRI of the triplestore.&quot;</span><span class="p">,</span>
+        <span class="s2">"--base-iri"</span><span class="p">,</span>
+        <span class="s2">"-B"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Base IRI of the triplestore."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--database&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of database to connect to (for backends supporting it).&quot;</span><span class="p">,</span>
+        <span class="s2">"--database"</span><span class="p">,</span>
+        <span class="s2">"-d"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Name of database to connect to (for backends supporting it)."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--package&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Only needed when `backend` is a relative module.&quot;</span><span class="p">,</span>
+        <span class="s2">"--package"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Only needed when `backend` is a relative module."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--parse&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;LOCATION&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Load triplestore from this location.&quot;</span><span class="p">,</span>
+        <span class="s2">"--parse"</span><span class="p">,</span>
+        <span class="s2">"-p"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"LOCATION"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Load triplestore from this location."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--parse-format&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-F&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Used with `--parse`. Format to use when parsing triplestore.&quot;</span><span class="p">,</span>
+        <span class="s2">"--parse-format"</span><span class="p">,</span>
+        <span class="s2">"-F"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Used with `--parse`. Format to use when parsing triplestore."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--prefix&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-P&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;PREFIX=URL&quot;</span><span class="p">,</span>
+        <span class="s2">"--prefix"</span><span class="p">,</span>
+        <span class="s2">"-P"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"PREFIX=URL"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Namespace prefix to bind to the triplestore. &quot;</span>
-            <span class="s2">&quot;This option can be given multiple times.&quot;</span>
+            <span class="s2">"Namespace prefix to bind to the triplestore. "</span>
+            <span class="s2">"This option can be given multiple times."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
@@ -2072,7 +2072,7 @@
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
     <span class="c1"># Call subcommand handler</span>
@@ -2081,7 +2081,7 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
             <span class="k">raise</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">exc</span>
 </code></pre></div>
         </details>
@@ -2108,18 +2108,18 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subcommand_add</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subcommand for populating the triplestore&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Subcommand for populating the triplestore"""</span>
     <span class="n">infile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
     <span class="n">extension</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input_format</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">input_format</span> <span class="k">else</span> <span class="n">infile</span><span class="o">.</span><span class="n">suffix</span>
-    <span class="n">fmt</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;yml&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"yml"</span><span class="p">,</span> <span class="s2">"yaml"</span><span class="p">):</span>
         <span class="n">save_datadoc</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,):</span>
+    <span class="k">elif</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"csv"</span><span class="p">,):</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">csv_option</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">csv_option</span><span class="p">:</span>
-                <span class="n">option</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">option</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">kw</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">td</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">parse_csv</span><span class="p">(</span>
             <span class="n">infile</span><span class="p">,</span>
@@ -2132,7 +2132,7 @@
         <span class="p">)</span>
         <span class="n">td</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown input format: </span><span class="si">{</span><span class="n">fmt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown input format: </span><span class="si">{</span><span class="n">fmt</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dump</span><span class="p">:</span>
         <span class="n">ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dump</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
@@ -2161,16 +2161,16 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subcommand_delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subcommand for removing matching entries in the triplestore.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Subcommand for removing matching entries in the triplestore."""</span>
     <span class="n">criteria</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">regex</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">crit</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;=~&quot;</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=~&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"=~"</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"=~"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">regex</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">criteria</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
     <span class="n">delete</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
 </code></pre></div>
@@ -2198,11 +2198,11 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subcommand_fetch</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subcommand for fetching a documented dataset from a storage.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Subcommand for fetching a documented dataset from a storage."""</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">iri</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -2233,16 +2233,16 @@
         <details class="quote">
           <summary>Source code in <code>tripper/datadoc/clitool.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">subcommand_find</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subcommand for finding IRIs in the triplestore.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Subcommand for finding IRIs in the triplestore."""</span>
     <span class="n">criteria</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">regex</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">crit</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;=~&quot;</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=~&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"=~"</span> <span class="ow">in</span> <span class="n">crit</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"=~"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">regex</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">crit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">criteria</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="n">iris</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
@@ -2251,35 +2251,35 @@
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="p">:</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="n">fmt</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;iris&quot;</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s2">"iris"</span>
 
     <span class="c1"># Create output</span>
-    <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;iris&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"iris"</span><span class="p">,</span> <span class="s2">"txt"</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_:&quot;</span><span class="p">)],</span>
+            <span class="p">[</span><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_:"</span><span class="p">)],</span>
             <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;turtle&quot;</span><span class="p">,</span> <span class="s2">&quot;ttl&quot;</span><span class="p">):</span>
-        <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">&quot;rdflib&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"turtle"</span><span class="p">,</span> <span class="s2">"ttl"</span><span class="p">):</span>
+        <span class="n">ts2</span> <span class="o">=</span> <span class="n">Triplestore</span><span class="p">(</span><span class="s2">"rdflib"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span>
             <span class="n">store</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s2">"csv"</span><span class="p">:</span>
         <span class="n">dicts</span> <span class="o">=</span> <span class="p">[</span><span class="n">acquire</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">iri</span><span class="p">)</span> <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">iris</span><span class="p">]</span>
         <span class="n">td</span> <span class="o">=</span> <span class="n">TableDoc</span><span class="o">.</span><span class="n">fromdicts</span><span class="p">(</span><span class="n">dicts</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">td</span><span class="o">.</span><span class="n">write_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">)</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown format: </span><span class="si">{</span><span class="n">fmt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown format: </span><span class="si">{</span><span class="n">fmt</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
