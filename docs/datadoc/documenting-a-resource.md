@@ -228,6 +228,19 @@ Specifying a separator:
 |-----------|--------------|--------------------|
 | ex:mydata | emmo:Dataset | geology;stone;cave |
 
+Combining label ('temsample') and unit ('unit=mm'):
+
+| @id       | @type        | diameter[temsample?unit=mm] |
+|-----------|--------------|-----------------------------|
+| ex:mydata | emmo:Dataset | 3.0                         |
+
+Same as above, but with sample being a blank node (labeled 'temsample') with property `diameter` (with unit mm).
+In this case, we put the label on the `hasSample` property and the unit on the `diameter` property:
+
+| @id       | @type        | hasSample[temsample].diameter[unit=mm] |
+|-----------|--------------|----------------------------------------|
+| ex:mydata | emmo:Dataset | 3.0                                    |
+
 
 ### Complete example
 For example, the table
