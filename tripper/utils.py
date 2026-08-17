@@ -753,7 +753,10 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     if match:
         prefix, name, _ = match.groups()
         if prefix in prefixes:
-            return f"{prefixes[prefix]}{name}"
+            namespace = prefixes[prefix]
+            if isinstance(namespace, Namespace):
+                return namespace[name]
+            return f"{namespace}{name}"
         if strict:
             raise NamespaceError(f'Undefined prefix "{prefix}" in IRI: {iri}')
         # warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
