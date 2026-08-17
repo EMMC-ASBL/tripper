@@ -601,7 +601,7 @@ class Column:
     # pylint: disable=too-few-public-methods
 
     def __init__(self, header, context=None, strip=True):
-        # pylint: disable=line-too-long
+        # pylint: disable=line-too-long,too-many-branches
         """Initialise a column opject.
 
         Arguments:
@@ -623,10 +623,18 @@ class Column:
 
         label = fields[0][2].split("?", 1)[0]
         spec = fields[-1][2].split("?", 1)
+        opts = spec[1] if len(spec) == 2 else ""
+
+        # Special rule. If `label` contains an equal sign (=), it is treated
+        # to be the first part of `opts`.
+        # This allows the user to omit the ?-sign if there is no label, e.g.
+        # writing "length[unit=m]" instead of "length[?unit=m]"
+        if "=" in label:
+            label, opts = "", f"{label}&{opts}" if opts else label
 
         options = {}
-        if len(spec) == 2:
-            for opt in spec[1].split("&"):
+        if opts:
+            for opt in opts.split("&"):
                 k, v = opt.split("=", 1)
                 options[k] = v
 
