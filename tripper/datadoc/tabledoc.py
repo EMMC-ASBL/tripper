@@ -625,7 +625,7 @@ class Column:
         spec = fields[-1][2].split("?", 1)
         opts = spec[1] if len(spec) == 2 else ""
 
-        # Special rule. If `label` contain an equal sign (=), it is treated
+        # Special rule. If `label` contains an equal sign (=), it is treated
         # to be the first part of `opts`.
         # This allows the user to omit the ?-sign if there is no label, e.g.
         # writing "length[unit=m]" instead of "length[?unit=m]"
