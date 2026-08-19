@@ -747,8 +747,40 @@ def extend_namespace(
 
 
 def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
-    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-    returned."""
+    """Expand `iri` if it is prefixed and return it.
+
+    Argsuments:
+        iri: IRI to expand.  It may be either a full IRI or prefixed IRI
+            (a.k.a. a compact URI (CURIE)).
+        prefixes: Dict mapping prefixes to namespaces.  The namespace may
+            either be specified as a string or as a Namespace object.
+            If it is a Namespace object,
+        strict: Whether to raise a NamespaceError if a prefix is not found
+            in `prefixes`.
+
+    Returns:
+        The expanded IRI.
+
+    Examples:
+
+        ```python
+        >>> prefixes = {"dcterms": "http://purl.org/dc/terms/"}
+        >>> expand_iri("dcterms:creator", prefixes=prefixes)
+        'http://purl.org/dc/terms/creator'
+
+        # If `iri` is already a full IRI, it is returned as-is.
+        >>> expand_iri("http://purl.org/dc/terms/creator", prefixes=prefixes)
+        'http://purl.org/dc/terms/creator'
+
+        # If prefixes maps to a namespace object that is configured to do
+        # annotation lookup, it will be used for the expansion.
+        >>> from tripper import EMMO
+        >>> prefixes = {"emmo": EMMO}
+        >>> expand_iri("emmo:Atom", prefixes=prefixes)
+
+
+        ```
+    """
     match = re.match(MATCH_PREFIXED_IRI, iri)
     if match:
         prefix, name, _ = match.groups()
@@ -759,12 +791,11 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
             return f"{namespace}{name}"
         if strict:
             raise NamespaceError(f'Undefined prefix "{prefix}" in IRI: {iri}')
-        # warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
     return iri
 
 
 def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
-    """Return prefixed IRI.
+    """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
 
