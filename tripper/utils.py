@@ -17,7 +17,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, cast
 
-from tripper.errors import NamespaceError
+from tripper.errors import NamespaceError, NoSuchIRIError
 from tripper.literal import Literal
 from tripper.namespace import XSD, Namespace
 
@@ -748,7 +748,15 @@ def extend_namespace(
 
 def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-    returned."""
+    returned.
+
+    If `iri` is already a full IRI whose base matches a `Namespace`
+    instance in `prefixes` that supports label lookup, the trailing
+    part is resolved through that namespace as well.  This allows
+    e.g. a full IRI like ``https://example.com/onto#SomeLabel`` (using
+    a prefLabel/altLabel/rdfs:label instead of the "real" name) to be
+    resolved to the actual IRI.
+    """
     match = re.match(MATCH_PREFIXED_IRI, iri)
     if match:
         prefix, name, _ = match.groups()
@@ -759,7 +767,16 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
             return f"{namespace}{name}"
         if strict:
             raise NamespaceError(f'Undefined prefix "{prefix}" in IRI: {iri}')
-        # warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+        return iri
+
+    for namespace in prefixes.values():
+        if isinstance(namespace, Namespace) and iri.startswith(str(namespace)):
+            name = iri[len(str(namespace)) :]
+            try:
+                return namespace[name]
+            except NoSuchIRIError:
+                continue
+
     return iri
 
 
