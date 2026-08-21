@@ -113,7 +113,7 @@ def test_fromdicts():
     ]
 
 
-def test_csv():
+def test_csv():  # pylint: disable=too-many-locals
     """Test parsing a csv file."""
     import io
 
@@ -121,15 +121,40 @@ def test_csv():
 
     pytest.importorskip("rdflib")
 
-    from tripper import Triplestore
-    from tripper.datadoc import TableDoc
+    from tripper import OWL, Namespace, Triplestore
+    from tripper.datadoc import TableDoc, acquire
     from tripper.datadoc.context import get_context
+    from tripper.literal import Literal
+
+    exp_ontology = Triplestore(backend="rdflib")
+    exp_ontology.add(
+        (
+            "https://w3id.org/emmo/exp/EXP_12345",
+            "http://www.w3.org/2004/02/skos/core#prefLabel",
+            Literal("ScanningElectronMicroscopyMeasurement"),
+        )
+    )
+    exp_ontology.add(
+        (
+            "https://w3id.org/emmo/exp/EXP_12345",
+            "http://www.w3.org/2004/02/skos/core#altLabel",
+            Literal("SEMMeasurement"),
+        )
+    )
+    EXP = Namespace(
+        "https://w3id.org/emmo/exp/",
+        label_annotations=True,
+        triplestore=exp_ontology,
+        reload=False,
+    )
 
     context = get_context(theme="ddoc:datadoc")
     context.add_context(
         {
             "ssbd": "https://w3id.org/ssbd/",
             "prov": "http://www.w3.org/ns/prov#",
+            "exp": "https://w3id.org/emmo/exp/",
+            "owl": "http://www.w3.org/2002/07/owl#",
             "wasDerivedFrom": {
                 # should be "prov:wasDerivedFrom" in the table header
                 "@id": "prov:wasDerivedFrom",
@@ -140,6 +165,10 @@ def test_csv():
                 # in the table header
                 "@id": "ssbd:wasDerivedFrom",
                 "@type": "@id",
+            },
+            "SEMMeasurement": {
+                "@id": "exp:EXP_12345",
+                "@type": "owl:Class",
             },
         }
     )
@@ -158,6 +187,7 @@ def test_csv():
             "gen": "http://sintef.no/dlite/generator#",
             "prov": "http://www.w3.org/ns/prov#",
             "dcterms": "http://purl.org/dc/terms/",
+            "exp": EXP,
         },
     )
 
@@ -175,6 +205,11 @@ def test_csv():
         "https://github.com/EMMC-ASBL/tripper/raw/refs/heads/master/"
         "tests/input/77600-23-001_5kV_400x_m001.tif"
     )
+
+    assert EXP.ScanningElectronMicroscopyMeasurement == (
+        "https://w3id.org/emmo/exp/EXP_12345"
+    )
+    assert EXP.SEMMeasurement == "https://w3id.org/emmo/exp/EXP_12345"
 
     # Write the table to a new csv file
     td.write_csv(outdir / "semdata.csv")
@@ -198,6 +233,7 @@ def test_csv():
                 "dm": "http://onto-ns.com/meta/characterisation/0.1/SEMImage#",
                 "par": "http://sintef.no/dlite/parser#",
                 "gen": "http://sintef.no/dlite/generator#",
+                "exp": EXP,
             },
         )
     assert td2.headers == td.headers
@@ -212,6 +248,40 @@ def test_csv():
     # Test that prefixes are included in the serialisation
     content = (outdir / "semdata.ttl").read_text()
     assert "sem:SEMImageSeries" in content
+    expected_restriction = {
+        OWL.onProperty: "https://w3id.org/emmo#EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461",  # pylint: disable=line-too-long
+        "@type": OWL.Restriction,
+        OWL.someValuesFrom: EXP.EXP_12345,
+    }
+    sources = (
+        "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001",
+        "semdata:SEM_cement_batch2/77600-23-001",
+        "semdata:SEM_cement_batch2",
+    )
+    for source in sources:
+        info = acquire(ts, source)
+        restrictions = [
+            entry
+            for entry in info["@type"]
+            if isinstance(entry, dict)
+            and entry.get("@type") == OWL.Restriction
+        ]
+        assert len(restrictions) == 1
+        assert {
+            key: restrictions[0][key] for key in expected_restriction
+        } == expected_restriction
+
+    sample = acquire(ts, "sample:SEM_cement_batch2/77600-23-001")
+    assert not [
+        entry
+        for entry in sample["@type"]
+        if isinstance(entry, dict) and entry.get("@type") == OWL.Restriction
+    ]
+    assert (
+        "https://he-matchmaker.eu/sample/SEM_cement_batch2/77600-23-001",
+        "https://w3id.org/emmo#EMMO_2bb50428_568d_46e8_b8bf_59a4c5656461",
+        EXP.preparation_process_1234,
+    ) in set(ts.triples())
 
     assert (
         "ssbd:wasDerivedFrom "
