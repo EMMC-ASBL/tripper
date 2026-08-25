@@ -17,7 +17,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, cast
 
-from tripper.errors import NamespaceError
+from tripper.errors import NamespaceError, NoSuchIRIError
 from tripper.literal import Literal
 from tripper.namespace import XSD, Namespace
 
@@ -747,21 +747,82 @@ def extend_namespace(
 
 
 def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
-    """Return the full IRI if `iri` is prefixed.  Otherwise `iri` is
-    returned."""
+    """Expand `iri` if it is prefixed and return it.
+
+    Arguments:
+        iri: IRI to expand.  It may be either a full IRI or prefixed IRI
+            (a.k.a. a compact URI (CURIE)).
+        prefixes: Dict mapping prefixes to namespaces.  The namespace may
+            either be specified as a string or as a Namespace object.
+            If it is a Namespace object with label lookup enabled, `iri`
+            will also be resolved against it when `iri` is already a full
+            IRI whose base matches the namespace, allowing e.g. a full
+            IRI that uses a prefLabel/altLabel/rdfs:label instead of the
+            "real" name to be resolved to the actual IRI.
+        strict: Whether to raise a NamespaceError if a prefix is not found
+            in `prefixes`.
+
+    Returns:
+        The expanded IRI.
+
+    Examples:
+
+        ```python
+        >>> prefixes = {"dcterms": "http://purl.org/dc/terms/"}
+        >>> expand_iri("dcterms:creator", prefixes=prefixes)
+        'http://purl.org/dc/terms/creator'
+
+        # If `iri` is already a full IRI, it is returned as-is.
+        >>> expand_iri("http://purl.org/dc/terms/creator", prefixes=prefixes)
+        'http://purl.org/dc/terms/creator'
+
+        # If the prefix maps to a Namespace object with label lookup
+        # enabled, names (and full IRIs using a label instead of the
+        # "real" name) are resolved via the underlying ontology.
+        >>> from tripper import Triplestore, Namespace
+        >>> from tripper.literal import Literal
+        >>> ts = Triplestore(backend="rdflib")
+        >>> ts.add((
+        ...     "http://example.com/onto#EMMO_123",
+        ...     "http://www.w3.org/1999/02/22-rdf-syntax-ns#label",
+        ...     Literal("DFTComputation"),
+        ... ))
+        >>> onto = Namespace(
+        ...     "http://example.com/onto#",
+        ...     label_annotations=True,
+        ...     triplestore=ts,
+        ... )
+        >>> prefixes = {"onto": onto}
+        >>> expand_iri("onto:DFTComputation", prefixes=prefixes)
+        'http://example.com/onto#EMMO_123'
+
+        ```
+    """
     match = re.match(MATCH_PREFIXED_IRI, iri)
     if match:
         prefix, name, _ = match.groups()
         if prefix in prefixes:
-            return f"{prefixes[prefix]}{name}"
+            namespace = prefixes[prefix]
+            if isinstance(namespace, Namespace):
+                return namespace[name]
+            return f"{namespace}{name}"
         if strict:
             raise NamespaceError(f'Undefined prefix "{prefix}" in IRI: {iri}')
-        # warnings.warn(f'Undefined prefix "{prefix}" in IRI: {iri}')
+        return iri
+
+    for namespace in prefixes.values():
+        if isinstance(namespace, Namespace) and iri.startswith(str(namespace)):
+            name = iri[len(str(namespace)) :]
+            try:
+                return namespace[name]
+            except NoSuchIRIError:
+                continue
+
     return iri
 
 
 def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
-    """Return prefixed IRI.
+    """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
 

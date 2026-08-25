@@ -11,11 +11,17 @@ from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
 
-from tripper import OWL, RDF, RDFS, Triplestore
+from tripper import OWL, RDF, RDFS, Namespace, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.utils import asseq
 from tripper.errors import NamespaceError, NamespaceWarning
-from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
+from tripper.utils import (
+    MATCH_IRI,
+    MATCH_PREFIXED_IRI,
+    expand_iri,
+    openfile,
+    prefix_iri,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
@@ -36,7 +42,7 @@ def get_context(
     copy: bool = False,
     timeout: float = 3,
 ) -> "Context":
-    """A convinient function that returns an Context instance.
+    """A convenience function that returns a Context instance.
 
     Arguments:
         context: Input context.  Several types are supported:
@@ -46,9 +52,12 @@ def get_context(
             - str: If a valid URI, the context is loaded from this URI,
               otherwise it is assumed to be a file path to load.
             - sequence: A sequence of the above.
-        theme: Load initial context for this theme.
-        default_theme: Initialise context for this theme if neither
-            `context` nor `theme` are provided.
+        theme: IRI (or list of IRIs) of theme(s) to load initial context
+            for.  Built-in themes:
+            - ``"ddoc:datadoc"`` (default) — basic data documentation.
+            - ``"ddoc:process"`` — basic documentation of processes.
+        default_theme: Theme used when neither `context`, `theme`, nor
+            `keywords` are provided.  Defaults to ``"ddoc:datadoc"``.
         keywords: Initialise from this keywords instance.
         prefixes: Optional dict with additional prefixes.
         processingMode: Either "json-ld-1.0" or "json-ld-1.1".
@@ -76,7 +85,7 @@ def get_context(
             timeout=timeout,
         )
     if prefixes:
-        context.add_context({k: str(v) for k, v in prefixes.items()})
+        context.add_prefixes(prefixes)
     return context
 
 
@@ -101,7 +110,12 @@ class Context:
                 - str: If a valid URI, the context is loaded from this URI,
                   otherwise it is assumed to be a file path to load.
                 - sequence: A sequence of the above.
-            theme: Load initial context for this theme.
+            theme: IRI (or list of IRIs) of theme(s) to load initial
+                context for.  Built-in themes:
+                - ``"ddoc:datadoc"`` (default) — basic data documentation.
+                - ``"ddoc:process"`` — basic documentation of processes.
+                Additional themes can be registered by third-party packages
+                via the ``tripper.keywords`` entry-point group.
             keywords: Initialise from this keywords instance.
             processingMode: Either "json-ld-1.0" or "json-ld-1.1".
             timeout: Timeout when accessing remote files.
@@ -118,6 +132,7 @@ class Context:
         self._expanded: dict = {}
         self._prefixed: dict = {}
         self._shortnamed: dict = {}
+        self._namespace_prefixes: dict = {}
 
         if keywords is not None:
             if theme:
@@ -157,7 +172,22 @@ class Context:
         """Return a copy of this context."""
         copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
+        # pylint: disable=protected-access
+        copy._namespace_prefixes = self._namespace_prefixes.copy()
         return copy
+
+    def add_prefixes(self, prefixes: dict) -> None:
+        """Add prefixes, retaining Namespace objects for label lookup."""
+        self._namespace_prefixes.update(
+            {
+                prefix: namespace
+                for prefix, namespace in prefixes.items()
+                if isinstance(namespace, Namespace)
+            }
+        )
+        self.add_context(
+            {prefix: str(namespace) for prefix, namespace in prefixes.items()}
+        )
 
     def add_context(self, context: "ContextType") -> None:
         """Add a context to this object."""
@@ -351,6 +381,13 @@ class Context:
         'http://www.w3.org/ns/dcat#Dataset'
 
         """
+        expanded = expand_iri(
+            name,
+            {**self.get_prefixes(), **self._namespace_prefixes},
+            strict=strict,
+        )
+        if expanded != name:
+            return expanded
         # Check cache
         if self._expanded and name in self._expanded:
             return self._expanded[name]
@@ -385,6 +422,7 @@ class Context:
         'dcat:Dataset'
 
         """
+        name = self.expand(name, strict=False)
         if not self._prefixed:
             self._create_caches()
         if name in self._prefixed:
@@ -501,6 +539,7 @@ class Context:
 
     def is_class(self, name: str) -> bool:
         """Returns whether `name` appears to be a class."""
+        name = self.expand(name)
         return name in self and self.getdef(name).get("@type") in (
             RDFS.Class,
             OWL.Class,
@@ -630,9 +669,25 @@ class Context:
         self._shortnamed[RDF.type] = "@type"
         self._shortnamed["rdf:type"] = "@type"
         self._shortnamed["@type"] = "@type"
+        # Build a reverse map: IRI -> all prefixed aliases (e.g. both
+        # "dcterms:license" and "term:license" when two prefixes share an IRI)
+        aliases: "dict[str, list[str]]" = {}
+        for pfx, ns in prefixes.items():
+            for expanded in mappings.values():
+                if expanded.startswith(ns):
+                    local = expanded[len(ns) :]
+                    aliases.setdefault(expanded, []).append(f"{pfx}:{local}")
+
         for key, expanded in mappings.items():
             prefixed = prefix_iri(expanded, prefixes)
             self._update_caches(key, prefixed, expanded)
+            # Also register every alias prefixed form so that e.g.
+            # "dcterms:license" is found even when "term" is the canonical
+            # prefix for http://purl.org/dc/terms/.
+            for alias in aliases.get(expanded, []):
+                if alias not in self._shortnamed:
+                    self._shortnamed[alias] = key
+                    self._expanded[alias] = expanded
 
     def _update_caches(self, shortname, prefixed, expanded):
         self._expanded[shortname] = expanded

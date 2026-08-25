@@ -105,10 +105,19 @@ class TableDoc:
         self.strip = strip
         self.baseiri = baseiri
 
-    def save(self, ts: Triplestore) -> dict:
+    def save(self, ts: Triplestore, unknown_key: str = "raise") -> dict:
         """Save tabular datadocumentation to triplestore.
 
-        Returns a dict with the JSON-LD written to the triplestore.
+        Args:
+            ts: Triplestore to populate with individuals from the table.
+            unknown_key: How to handle unknown keywords and relations.
+                    Possible values are:
+                    - "raise": Raise a `ValidateError` if an unknown keyword is
+                        encountered (default).
+                    - "warn": Drop unknown keywords and emit an
+                        `UnknownKeywordWarning`.
+                    - "ignore": Drop unknown keywords silently.
+                Returns a dict with the JSON-LD written to the triplestore.
         """
         self.context.add_context(
             {prefix: str(ns) for prefix, ns in ts.namespaces.items()}
@@ -124,6 +133,7 @@ class TableDoc:
             keywords=self.keywords,
             context=self.context,
             baseiri=self.baseiri,
+            unknown_key=unknown_key,
         )
 
     def asdicts(self) -> "List[dict]":
@@ -591,7 +601,7 @@ class Column:
     # pylint: disable=too-few-public-methods
 
     def __init__(self, header, context=None, strip=True):
-        # pylint: disable=line-too-long
+        # pylint: disable=line-too-long,too-many-branches
         """Initialise a column opject.
 
         Arguments:
@@ -613,10 +623,18 @@ class Column:
 
         label = fields[0][2].split("?", 1)[0]
         spec = fields[-1][2].split("?", 1)
+        opts = spec[1] if len(spec) == 2 else ""
+
+        # Special rule. If `label` contains an equal sign (=), it is treated
+        # to be the first part of `opts`.
+        # This allows the user to omit the ?-sign if there is no label, e.g.
+        # writing "length[unit=m]" instead of "length[?unit=m]"
+        if "=" in label:
+            label, opts = "", f"{label}&{opts}" if opts else label
 
         options = {}
-        if len(spec) == 2:
-            for opt in spec[1].split("&"):
+        if opts:
+            for opt in opts.split("&"):
                 k, v = opt.split("=", 1)
                 options[k] = v
 

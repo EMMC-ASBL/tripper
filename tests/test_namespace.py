@@ -77,6 +77,39 @@ def test_namespaces() -> None:
     assert "foot" not in FAM
 
 
+def test_namespace_label_precedence() -> None:
+    """A real IRI in the ontology should take precedence over a
+    clashing label on a different IRI."""
+    pytest.importorskip("rdflib")
+    from tripper import Namespace, Triplestore
+    from tripper.literal import Literal
+
+    base = "http://example.com/onto-precedence#"
+    ts = Triplestore(backend="rdflib")
+    # "somethingElse" is labelled "DFT", clashing with the real "DFT" IRI.
+    ts.add(
+        (
+            base + "somethingElse",
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#label",
+            Literal("DFT"),
+        )
+    )
+    ts.add(
+        (
+            base + "DFT",
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#label",
+            Literal("Density Functional Theory"),
+        )
+    )
+
+    onto = Namespace(base, label_annotations=True, triplestore=ts, reload=True)
+
+    assert onto.DFT == base + "DFT"
+    assert onto["DFT"] == base + "DFT"
+    assert onto["Density Functional Theory"] == base + "DFT"
+    assert onto["somethingElse"] == base + "somethingElse"
+
+
 def test_neg():
     """Test negation and plus operators."""
     from tripper import DCTERMS, RDF
