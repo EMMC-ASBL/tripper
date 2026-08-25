@@ -111,7 +111,6 @@ def save(
         raise TypeError(
             "if given, `dataset` should be either a string or dict"
         )
-    dataset: dict  # Tell mypy that this now is a dict
 
     if distribution is None:
         if "distribution" in dataset:
@@ -146,7 +145,6 @@ def save(
         raise TypeError(
             "if given, `distribution` should be either a string or dict"
         )
-    distribution: dict  # Tell mypy that this now is a dict
 
     if isinstance(generator, str):
         gen = get(distribution, "generator")
@@ -154,7 +152,7 @@ def save(
             gen = [gen]
         for g in gen:
             if isinstance(g, dict):
-                if gen.get("@id") == generator:
+                if g.get("@id") == generator:
                     break
             else:
                 break  # ???
@@ -186,7 +184,11 @@ def save(
         f"{scheme}://{p.netloc}{p.path}" if p.netloc else f"{scheme}:{p.path}"
     )
     options = [p.query] if p.query else []
-    if gen and "configuration" in gen and "options" in gen.configuration:
+    if (
+        isinstance(gen, AttrDict)
+        and "configuration" in gen
+        and "options" in gen.configuration
+    ):
         # __TODO__: allow options to also be a dict
         options.append(gen.configuration["options"])
     id = (
