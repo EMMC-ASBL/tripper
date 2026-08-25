@@ -55,6 +55,7 @@ from tripper.datadoc.errors import (
     IRIExistsError,
     IRIExistsWarning,
     NoSuchTypeError,
+    UnknownKeywordWarning,
     ValidateError,
 )
 from tripper.datadoc.keywords import Keywords, get_keywords
@@ -390,7 +391,7 @@ def _told(
     return d
 
 
-def store(
+def store(  # pylint: disable=too-many-arguments
     ts: Triplestore,
     source: "Union[dict, list]",
     type: "Optional[str]" = None,
@@ -401,6 +402,7 @@ def store(
     method: str = "raise",
     restrictions: "Optional[dict]" = None,
     baseiri: "Optional[str]" = None,
+    unknown_key: str = "raise",
 ) -> dict:
     # pylint: disable=line-too-long,too-many-branches
     """Store documentation of a resource to a triplestore.
@@ -428,6 +430,13 @@ def store(
               is unwanted, merge manually and use "overwrite".
             - "ignore": If the IRI of `source` already exists, do nothing but
               issueing an `IRIExistsWarning`.
+        unknown_key: How to handle unknown keywords and relations in `source`.
+                Possible values are:
+                - "raise": Raise a `ValidateError` if an unknown keyword is
+                    encountered (default).
+                - "warn": Drop unknown keywords and emit an
+                    `UnknownKeywordWarning`.
+                - "ignore": Drop unknown keywords silently.
         restrictions: A dict describing how properties of classes in
             `source` should be mapped to restrictions.  The default is
             to call `infer_restriction_types()`.
@@ -463,6 +472,13 @@ def store(
     )
     update_context(doc, context)
 
+    _handle_unknown_keywords(
+        doc,
+        keywords,
+        context,
+        unknown_key=unknown_key,
+    )
+
     docs = doc if isinstance(doc, list) else doc.get("@graph", [doc])
     for d in docs:
         iri = d["@id"]
@@ -487,11 +503,8 @@ def store(
 
     update_restrictions(doc, context=context, restrictions=restrictions)
 
-    # add(doc, "@context", context.get_context_dict())
-
-    # Validate
-    # TODO: reenable validation
-    # validate(doc, type=type, keywords=keywords)
+    # Validate the final JSON-LD before writing it to the triplestore.
+    validate(doc, type=type, keywords=keywords, context=context)
 
     context.to_triplestore(ts, doc, baseiri=baseiri)
 
@@ -509,6 +522,7 @@ def save_dict(
     keywords: "Optional[Keywords]" = None,
     prefixes: "Optional[dict]" = None,
     method: str = "merge",
+    unknown_key: str = "raise",
     # The unnecessary strictness of the "build documentation" CI enforces us
     # to add a `restrictions` argument to save_dict(), although this argument
     # came after that save_dict() was renamed.
@@ -529,6 +543,7 @@ def save_dict(
         keywords=keywords,
         prefixes=prefixes,
         method=method,
+        unknown_key=unknown_key,
         restrictions=restrictions,
     )
 
@@ -1173,6 +1188,7 @@ def save_datadoc(
     keywords: "Optional[Keywords]" = None,
     context: "Optional[Context]" = None,
     baseiri: "Optional[str]" = None,
+    unknown_key: str = "raise",
 ) -> dict:
     """Populate triplestore with data documentation.
 
@@ -1206,10 +1222,80 @@ def save_datadoc(
             keywords=keywords, context=context, theme=d["theme"]
         )
 
-    return store(ts, d, keywords=keywords, context=context, baseiri=baseiri)
+    return store(
+        ts,
+        d,
+        keywords=keywords,
+        context=context,
+        baseiri=baseiri,
+        unknown_key=unknown_key,
+    )
 
 
-def validate(
+def _handle_unknown_keywords(
+    source: "Union[dict, list]",
+    keywords: "Keywords",
+    context: "Context",
+    unknown_key: str = "raise",
+) -> None:
+    """Handle unknown keys in a JSON-LD document in place."""
+
+    if unknown_key not in {"raise", "warn", "ignore"}:
+        raise ValueError(
+            f"Invalid unknown-key handling mode: '{unknown_key}'. "
+            "Should be one of: 'raise', 'warn' or 'ignore'"
+        )
+
+    def recurse(value):
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+            return
+
+        if not isinstance(value, dict):
+            return
+
+        for key in list(value.keys()):
+            if key == "@context":
+                continue
+            item = value[key]
+            if key in keywords:
+                if "datatype" in keywords[key]:
+                    continue
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+                continue
+            if key in context:
+                if context.is_object_property(key) and isinstance(
+                    item, (dict, list)
+                ):
+                    recurse(item)
+                continue
+            if re.match(MATCH_IRI, key):
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+                continue
+            if key.startswith("@"):
+                if isinstance(item, (dict, list)):
+                    recurse(item)
+                continue
+
+            msg = f"unknown keyword: '{key}'"
+            if unknown_key == "raise":
+                raise ValidateError(msg)
+            if unknown_key == "warn":
+                warnings.warn(
+                    msg,
+                    category=UnknownKeywordWarning,
+                    stacklevel=3,
+                )
+            del value[key]
+
+    recurse(source)
+
+
+def validate(  # pylint: disable=too-many-statements
     dct: dict,
     type: "Optional[str]" = None,
     context: "Optional[Context]" = None,
@@ -1231,17 +1317,31 @@ def validate(
     if context is None:
         context = Context(keywords=keywords)
 
-    if type is None and "@type" in dct:
-        try:
-            type = keywords.typename(dct["@type"])
-        except NoSuchTypeError:
-            pass
+    effective_type: "Optional[Union[str, Sequence[str]]]" = type
+
+    if effective_type is None and "@type" in dct:
+        detected_type = dct["@type"]
+        if isinstance(detected_type, list):
+            effective_type = detected_type
+        else:
+            try:
+                effective_type = keywords.typename(detected_type)
+            except NoSuchTypeError:
+                pass
+
+    # Resolve datatypes using prefixes from the active context only.
+    prefixes = {k: str(v) for k, v in context.get_prefixes().items()}
 
     resources = keywords.data.resources
 
     def check_keyword(keyword, type):
         """Check that the resource type `type` has keyword `keyword`."""
-        typename = keywords.typename(type)
+        if isinstance(type, list):
+            return any(check_keyword(keyword, item) for item in type)
+        try:
+            typename = keywords.typename(type)
+        except NoSuchTypeError:
+            return False
         name = keywords.shortname(keyword)
         if (
             "keywords" in resources[typename]
@@ -1257,7 +1357,7 @@ def validate(
         if k in keywords:
             r = keywords[k]
             if "datatype" in r:
-                datatype = expand_iri(r.datatype, keywords.data.prefixes)
+                datatype = expand_iri(r.datatype, prefixes)
                 literal = parse_literal(v)
                 tr = {}
                 for t, seq in Literal.datatypes.items():
@@ -1275,6 +1375,8 @@ def validate(
                     _check_keywords(k, it)
             elif r.range != "rdfs:Literal" and not re.match(MATCH_IRI, v):
                 raise ValidateError(f"value of '{k}' is an invalid IRI: '{v}'")
+        elif re.match(MATCH_IRI, k):
+            pass
         elif k not in context:
             raise ValidateError(f"unknown keyword: '{k}'")
 
@@ -1284,21 +1386,43 @@ def validate(
             continue
         _check_keywords(k, v)
 
-    if type:
-        typename = keywords.typename(type)
+    if effective_type:
+        keyword_check_type: "Union[str, Sequence[str]]"
+        if isinstance(effective_type, list):
+            typename = None
+            for t in effective_type:
+                try:
+                    typename = keywords.typename(t)
+                    break
+                except NoSuchTypeError:
+                    continue
+            if typename is None:
+                return
+            keyword_check_type = effective_type
+        else:
+            try:
+                typename = keywords.typename(effective_type)
+            except NoSuchTypeError:
+                return
+            keyword_check_type = typename
 
         for k in dct:
             if not k.startswith("@"):
-                if not check_keyword(k, typename):
+                if re.match(MATCH_IRI, k):
+                    continue
+                if not check_keyword(k, keyword_check_type):
                     logger.info(
-                        f"unexpected keyword '{k}' provided for type: '{type}'"
+                        "unexpected keyword '%s' provided for type: '%s'",
+                        k,
+                        effective_type,
                     )
 
         for kr, vr in resources[typename].items():
             if "conformance" in vr and vr.conformance == "mandatory":
                 if kr not in dct:
                     raise ValidateError(
-                        f"missing mandatory keyword '{kr}' for type: '{type}'"
+                        "missing mandatory keyword "
+                        f"'{kr}' for type: '{effective_type}'"
                     )
 
 
@@ -1541,14 +1665,18 @@ def make_query(
         else:
             if key in expanded:
                 key = expanded[key]
+
+            is_iri_value = False
             if v in expanded:
                 value = f"<{expanded[v]}>"
+                is_iri_value = True
             elif isinstance(v, str):
-                value = (
-                    f"<{v}>"
-                    if re.match("^[a-z][a-z0-9.+-]*://", v)
-                    else f'"{v}"'
-                )
+                expanded_v = ts.expand_iri(v)
+                if re.match("^[a-z][a-z0-9.+-]*://", expanded_v):
+                    value = f"<{expanded_v}>"
+                    is_iri_value = True
+                else:
+                    value = f'"{v}"'
             else:
                 value = v
             n += 1
@@ -1559,7 +1687,10 @@ def make_query(
                     f"FILTER REGEX(STR(?{var}), {value}{flags_arg}) ."
                 )
             else:
-                filters.append(f"FILTER(STR(?{var}) = {value}) .")
+                if is_iri_value:
+                    filters.append(f"FILTER(?{var} = {value}) .")
+                else:
+                    filters.append(f"FILTER(STR(?{var}) = {value}) .")
 
     for k, v in criteria.items():
         add_crit(k, v)

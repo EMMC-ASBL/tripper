@@ -500,6 +500,7 @@ def test_expand_iri():
 
     from tripper import CHAMEO, DCTERMS, OTEIO, RDF
     from tripper.errors import NamespaceError
+    from tripper.namespace import Namespace
     from tripper.utils import expand_iri
 
     prefixes = {
@@ -516,6 +517,32 @@ def test_expand_iri():
     assert expand_iri("xxx:type", prefixes) == "xxx:type"
     with pytest.raises(NamespaceError):
         expand_iri("xxx:type", prefixes, strict=True)
+
+    # A `Namespace` instance with label lookup should also resolve
+    # labels in full IRIs (not just prefixed names).
+    onto = Namespace("http://example.com/onto#")
+    # pylint: disable=protected-access
+    onto._iris = {
+        "DFTComputation": "http://example.com/onto#EMMO_123",
+        "EMMO_124": "http://example.com/onto#EMMO_124",
+    }
+    ns_prefixes = {"onto": onto}
+    assert (
+        expand_iri("onto:DFTComputation", ns_prefixes)
+        == "http://example.com/onto#EMMO_123"
+    )
+    assert (
+        expand_iri("http://example.com/onto#DFTComputation", ns_prefixes)
+        == "http://example.com/onto#EMMO_123"
+    )
+    assert (
+        expand_iri("http://example.com/onto#EMMO_124", ns_prefixes)
+        == "http://example.com/onto#EMMO_124"
+    )
+    assert (
+        expand_iri("http://unrelated.com/foo", ns_prefixes)
+        == "http://unrelated.com/foo"
+    )
 
 
 def test_prefix_iri():
