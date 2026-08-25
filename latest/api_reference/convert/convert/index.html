@@ -2243,7 +2243,7 @@ or <code>rdf:type</code>.  The default is to raise an exception.</p></td>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Literal</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span>
 
     <span class="k">if</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">Dictionary</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
-        <span class="n">container</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">container</span><span class="p">:</span> <span class="s2">"Dict[str, Any]"</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">pred</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">predicate_objects</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">pred</span> <span class="o">==</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasKeyValuePair</span><span class="p">:</span>
                 <span class="n">key_iri</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">OTEIO</span><span class="o">.</span><span class="n">hasDictionaryKey</span><span class="p">)</span>
