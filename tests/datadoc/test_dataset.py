@@ -998,7 +998,9 @@ def test_datadoc():
     ]
 
     # IRI-valued criteria must be compared as RDF terms rather than strings.
-    assert search(ts, criteria={"distribution.generator": GEN.sem_hitachi}) == [
+    assert search(
+        ts, criteria={"distribution.generator": GEN.sem_hitachi}
+    ) == [
         iri,
     ]
 
