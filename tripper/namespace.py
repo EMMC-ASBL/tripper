@@ -274,8 +274,8 @@ class Namespace:
 
     def __contains__(self, name):
         if self._iris is None:
-            return True
-        if self._iris == {}:
+            return True  # no checking - any name is allowed
+        if self._iris == {}:  # whether to update internal cache
             self._update_iris(
                 triplestore=self._triplestore,
                 reload=self._reload,
