@@ -55,13 +55,15 @@ def totriple(triple: "Triple"):
 
 
 def fromrdflib(
-    value: "Union[URIRef, rdflibLiteral, BNode]",
-) -> "Union[str, Literal]":
+    value: "Union[URIRef, rdflibLiteral, BNode, None]",
+) -> "Union[str, Literal, None]":
     """Help function converting an rdflib value to corresponding tripper value."""
     if isinstance(value, rdflibLiteral):
         return parse_literal(value)
     if isinstance(value, BNode) and not value.startswith("_:"):
         return f"_:{value}"
+    if value is None:
+        return value
     return str(value)
 
 
@@ -184,7 +186,7 @@ class RdflibStrategy:
 
     def query(
         self, query_object, **kwargs
-    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+    ) -> "Union[List[tuple], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
@@ -271,4 +273,4 @@ def _convert_triples_to_tripper(triples) -> "Generator[Triple, None, None]":
     """Help function that converts a iterator/generator of rdflib triples
     to tripper triples."""
     for s, p, o in triples:  # pylint: disable=not-an-iterable
-        yield (fromrdflib(s), str(p), fromrdflib(o))
+        yield (fromrdflib(s), str(p), fromrdflib(o))  # type: ignore
