@@ -9,7 +9,7 @@ import math
 import pickle  # nosec
 import re
 import warnings
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
@@ -38,7 +38,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 # Default EMMO version
-EMMO_VERSION = "1.0.0"
+EMMO_VERSION = "1.0.4"
 
 # Cached module variables
 _unit_ts = None  # Unit triplestore object
@@ -179,62 +179,82 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
-def load_emmo_quantity(ts: Triplestore, iri: str) -> "Tuple[float, str]":
+def get_unit_symbol(iri: str) -> str:
+    """Return symbol for emmo unit with given `iri`."""
+    units = Units()
+    return units._get_unit_symbols(iri)[0]  # pylint: disable=protected-access
+
+
+def load_emmo_quantity(ts: Triplestore, iri: str) -> tuple:
     """Return value and unit for EMMO quantity with given `iri`."""
     isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
-
-    def value_restriction_query(prop, target="hasValue", number=False):
-        """Return SPARQL query for value restriction for property `prop`."""
-        crit1 = f"?r owl:{target} ?qvalue ."
-        crit2 = f"?r owl:{target} ?v .\n  ?v <{EMMO.hasNumberValue}> ?qvalue ."
-        crit = crit2 if number else crit1
-        return f"""
-        PREFIX rdfs: <{RDFS}>
-        SELECT ?qvalue
-        WHERE {{
-          <{iri}> rdfs:subClassOf+ ?r .
-          # ?r a owl:Restriction .
-          ?r owl:onProperty <{prop}> .
-          {crit}
+    if isclass:
+        query = f"""
+        SELECT DISTINCT ?value ?unit WHERE {{
+          OPTIONAL {{
+            <{iri}> rdfs:subClassOf+ ?r1 .
+            ?r1 a owl:Restriction .
+            {{
+              ?r1 owl:onProperty ?dataprop .
+              ?r1 owl:hasValue ?value .
+            }} UNION {{
+              ?r1 owl:onProperty <{EMMO.hasNumericalPart}> .
+              ?r1 owl:hasValue ?v .
+              ?v ?dataprop ?value .
+            }}
+            ?dataprop rdfs:subPropertyOf* ?parentdataprop .
+            VALUES ?parentdataprop {{
+              <{EMMO.dataValue}> <{EMMO.numberValue}>
+            }}
+          }}
+          OPTIONAL {{
+            <{iri}> rdfs:subClassOf+ ?r2 .
+            ?r2 a owl:Restriction .
+            ?r2 owl:onProperty ?prop .
+            ?r2 owl:hasValue ?unit .
+            ?prop rdfs:subPropertyOf* ?parentprop .
+            VALUES ?parentprop {{
+              <{EMMO.hasMeasurementUnit}>
+              <{EMMO.hasMetrologicalReference}>
+              <{EMMO.hasReferencePart}>
+            }}
+          }}
         }}
         """
-
-    # Check for emmo:hasSIQuantityValue
-    if isclass:
-        result = ts.query(value_restriction_query(EMMO.hasSIQuantityValue))
-        qval = result[0][0] if result else None
     else:
-        result = ts.value(iri, EMMO.hasSIQuantityValue)
-        qval = str(result) if result else None
-
-    if qval:
-        m = re.match(
-            r"([+-]?[0-9]*\.?[0-9]*([eE][+-]?[0-9]+)?)[ *⋅]*(.*)?", qval
-        )
-        if m:
-            value, _, unit = m.groups()
-            return float(value), unit
-
-    # Check for emmo:hasNumericalPart/emmo:hasReferencePart
-    if isclass:
-        num = ts.query(
-            value_restriction_query(EMMO.hasNumericalPart, number=True)
-        )
-        ref = ts.query(
-            value_restriction_query(
-                EMMO.hasReferencePart, target="someValuesFrom"
-            )
-        )[0][0]
-    else:
-        num = ts.query(f"""
-        SELECT ?qvalue WHERE {{
-          <{iri}> <{EMMO.hasNumericalPart}> ?v .
-          ?v <{EMMO.hasNumberValue}> ?qvalue .
+        query = f"""
+        SELECT DISTINCT ?value ?unit WHERE {{
+          OPTIONAL {{
+            {{
+              <{iri}> ?dataprop ?value .
+            }} UNION {{
+              <{iri}> <{EMMO.hasNumericalPart}> ?numerical .
+              ?numerical ?dataprop ?value .
+            }}
+            ?dataprop rdfs:subPropertyOf* ?parentdataprop .
+            VALUES ?parentdataprop {{
+              <{EMMO.dataValue}> <{EMMO.numberValue}>
+            }}
+          }}
+          OPTIONAL {{
+            <{iri}> ?prop ?unit .
+            ?prop rdfs:subPropertyOf* ?parentprop .
+            VALUES ?parentprop {{
+              <{EMMO.hasMeasurementUnit}>
+              <{EMMO.hasMetrologicalReference}>
+              <{EMMO.hasReferencePart}>
+            }}
+          }}
         }}
-        """)
-        ref = ts.value(iri, EMMO.hasReferencePart)
-
-    return float(num[0][0]), ref
+        """
+    results = ts.query(query)
+    if results:
+        value, unit = results[0]
+        return (
+            float(value) if value is not None else None,
+            unit if unit else None,
+        )
+    return (None, None)
 
 
 def save_emmo_quantity(
@@ -414,22 +434,17 @@ class Units:
 
         If `include_prefixed` is true, also return prefixed units.
         """
-        prefixfilter = (
-            ""
-            if include_prefixed
-            else (
-                "FILTER NOT EXISTS "
-                f"{{ ?unit rdfs:subClassOf <{EMMO.PrefixedUnit}> . }}"
-            )
-        )
+        prefixfilter = f"""
+          FILTER NOT EXISTS {{
+            ?unit a ?prefixed .
+            ?prefixed rdfs:subClassOf* <{EMMO.PrefixedUnit}> .
+          }}
+        """
         query = f"""
-        PREFIX rdfs: <{RDFS}>
-        SELECT ?unit
-        WHERE {{
-          ?unit rdfs:subClassOf+ ?dimunit .
-          ?dimunit rdfs:subClassOf ?r .
-          ?r owl:onProperty <{EMMO.hasDimensionString}> .
-          {prefixfilter}
+        SELECT ?unit WHERE {{
+          ?unit a ?cls .
+          ?cls rdfs:subClassOf+ <{EMMO.MeasurementUnit}> .
+          {"" if include_prefixed else prefixfilter}
         }}
         """
         # Bug in mupy... seems to be fixed in master
@@ -441,27 +456,22 @@ class Units:
         If `constants` is true, only physical constants are returned,
         otherwise all quantities, but physical constants are returned.
         """
+        constantfilter = f"""
+          FILTER NOT EXISTS {{
+            ?q rdfs:subClassOf+ <{EMMO.PhysicalConstant}> .
+          }}
+        """
         # Note, we liberately do not include
         #
         #    ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
         #
         # in the query, since that makes it very slow.
-        constonly = "" if constants else "NOT"
         query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?q
-        WHERE {{
-          # {{
-          #   SELECT ?q WHERE {{
-          #     ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
-          #   }}
-          # }}
+        SELECT ?q WHERE {{
+          # ?q rdfs:subClassOf+ <{EMMO.Quantity}> .
           ?q rdfs:subClassOf* ?r .
           ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
-          FILTER {constonly} EXISTS {{
-            ?q rdfs:subClassOf+ <{EMMO.PhysicalConstant}> .
-          }}
+          {"" if constants else constantfilter}
           FILTER (!isBlank(?q))
         }}
         """
@@ -470,44 +480,42 @@ class Units:
 
     def _get_unit_symbols(self, iri: str) -> list:
         """Return a list with unit symbols for unit with the given IRI."""
+        query = f"""
+        SELECT DISTINCT ?symbol WHERE {{
+          <{iri}> (<{EMMO.unitSymbolValue}> | <{EMMO.unitSymbol}> |
+                   <{EMMO.ucumCode}> ) ?symbol .
+        }}
+        """
         symbols = []
-        for r in self.ts.restrictions(
-            iri, self.ns.unitSymbolValue, type="value"
-        ):
-            symbols.append(str(r["value"]))
-
-        for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None):
-            s = str(symbol)
-            symbols.append(f"1{s}" if s.startswith("/") else s)
-
+        results = self.ts.query(query)
+        if results:
+            for symbol in results[0]:
+                s = str(symbol)
+                symbols.append(f"1{s}" if s.startswith("/") else s)
         return symbols
 
     def _get_unit_dimension_string(self, iri: str) -> str:
         """Return the dimension string for unit with the given IRI."""
         query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?dimstr
-        WHERE {{
-          <{iri}> rdfs:subClassOf+ ?r .
+        SELECT DISTINCT ?dimstr WHERE {{
+          <{iri}> a ?unit .
+          ?unit rdfs:subClassOf* ?r .
+          ?r a owl:Restriction .
           ?r owl:onProperty <{EMMO.hasDimensionString}> .
           ?r owl:hasValue ?dimstr .
         }}
         """
-        result = self.ts.query(query)
-        if result:
+        results = self.ts.query(query)
+        if results:
             # Bug in mupy
-            return result[0][0]  # type: ignore
+            return results[0][0].value  # type: ignore
         raise MissingDimensionStringError(iri)
 
     def _get_quantity_dimension_string(self, iri: str) -> str:
         """Return the dimension string for quantity with the given IRI."""
         # Note, the use of subquery greately speeds up this SPARQL query
         query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?dimstr
-        WHERE {{
+        SELECT ?dimstr WHERE {{
           {{
             SELECT ?dimunit WHERE {{
               <{iri}> rdfs:subClassOf+ ?r .
@@ -523,7 +531,7 @@ class Units:
         result = self.ts.query(query)
         if result:
             # Bug in mupy
-            return result[0][0]  # type: ignore
+            return str(result[0][0])  # type: ignore
         raise MissingDimensionStringError(iri)
 
     def _parse_dimension_string(self, dimstr: str) -> "Any":
@@ -625,14 +633,8 @@ class Units:
                 description = self.ts.value(iri, EMMO.definition)
             dimstr = str(self._get_unit_dimension_string(iri))
             dimension = self._parse_dimension_string(dimstr)
-            mult = list(
-                self.ts.restrictions(
-                    iri, property=EMMO.hasSIConversionMultiplier
-                )
-            )
-            offset = list(
-                self.ts.restrictions(iri, property=EMMO.hasSIConversionOffset)
-            )
+            mult = self.ts.value(iri, EMMO.hasSIConversionMultiplier, any=True)
+            offset = self.ts.value(iri, EMMO.hasSIConversionOffset, any=True)
             qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
             omIRI = self.ts.value(iri, EMMO.omReference, any=True)
 
@@ -656,8 +658,8 @@ class Units:
                     str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
                 ],
                 unitCode=str(unitCode) if unitCode else None,
-                multiplier=float(mult[0]["value"]) if mult else None,
-                offset=float(offset[0]["value"]) if offset else None,
+                multiplier=float(mult) if mult else None,
+                offset=float(offset) if offset else None,
             )
         return d
 
@@ -679,7 +681,11 @@ class Units:
             description = self.ts.value(iri, EMMO.elucidation)
             if not description:
                 description = self.ts.value(iri, EMMO.definition)
-            dimstr = str(self._get_quantity_dimension_string(iri))
+            try:
+                dimstr = str(self._get_quantity_dimension_string(iri))
+            except MissingDimensionStringError:
+                # Skip general quantity classes with no dimension string
+                continue
             dimension = self._parse_dimension_string(dimstr)
             qudtIRI = self.ts.value(iri, EMMO.qudtReference, any=True)
             omIRI = self.ts.value(iri, EMMO.omReference, any=True)
@@ -781,7 +787,7 @@ class Units:
 
     def write_pint_units(self, filename: "Union[str, Path]") -> None:
         """Write Pint units definition to `filename`."""
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches,too-many-locals,too-many-statements
 
         # For now, include prefixes and base units...
         # TODO: infer from ontology
@@ -865,10 +871,43 @@ class Units:
             "Mole",
             "Candela",
         }
-        for unit in self.units.values():
+
+        # Ensure that unit symbols registered are unique
+        forbidden_chars = ".·/*-"
+        trans = {"[]": None, " {}": "_"}
+        table = str.maketrans({c: v for k, v in trans.items() for c in k})
+        symbolkeys: "dict[str, str]" = {}  # maps symbol to unit key
+
+        def addsymbol(symbol, key):
+            """Add symbol and key to symbolkeys dict."""
+            if not any(c in symbol for c in forbidden_chars):
+                s = symbol.translate(table)
+                symbolkeys.setdefault(s, key)
+
+        # Round 1: First element in symbols
+        for key, unit in self.units.items():
+            if unit.symbols:
+                addsymbol(unit.symbols[0], key)
+        # Round 2: Rest of symbols
+        for key, unit in self.units.items():
+            for symbol in unit.symbols[1:]:
+                addsymbol(symbol, key)
+        # Round 3: ucumCodes
+        for key, unit in self.units.items():
+            for symbol in unit.ucumCodes:
+                addsymbol(symbol, key)
+        # Round 4: unitCode
+        for key, unit in self.units.items():
+            for symbol in unit.ucumCodes:
+                addsymbol(symbol, key)
+        # Map unit keys to list of symbols
+        symbols = defaultdict(list)
+        for symbol, key in symbolkeys.items():
+            symbols[key].append(symbol)
+
+        for key, unit in self.units.items():
             if unit.name in skipunits:
                 continue
-
             baseexpr = base_unit_expression(unit.dimension)
             mult = f"{unit.multiplier} * " if unit.multiplier != 1.0 else ""
             if unit.multiplier or unit.offset:
@@ -888,26 +927,14 @@ class Units:
             else:
                 s = [f"{unit.name} = {baseexpr}"]
 
-            # table = str.maketrans({x: None for x in " .⋅·/*{}"})
-            table = str.maketrans({x: None for x in " ./*{}"})
-            symbols = [s for s in unit.symbols if s.translate(table) == s]
-            if symbols:
-                s.extend(f" = {symbol}" for symbol in symbols)
-            else:
-                s.append(" = _")
+            s.append(f" = {symbols[key][0] if symbols[key] else '_'}")
 
             snake = snake_pattern.sub("_", unit.name).lower()
             if snake != unit.name:
                 s.append(f" = {snake}")
 
-            for alias in unit.aliases:
-                if " " not in alias:
-                    s.append(f" = {alias}")
-
-            for code in [unit.unitCode] + unit.ucumCodes:
-                if code and f" = {code}" not in s:
-                    # code = re.sub(r"([a-zA-Z])([0-9+-])", r"\1^\2", code)
-                    s.append(f" = {code}")
+            for alias in symbols[key][1:]:
+                s.append(f" = {alias}")
 
             # IRIs cannot be added to unit registry since they contain
             # invalid characters like ':', '/' and '#'.
@@ -1037,19 +1064,22 @@ class Quantity(pint.Quantity):
 
             1. Find units with compatible physical dimensionality in the
                ontology.
-            2. Among these units, select the unit that minimises the absolute
-               value of the sum of the powers of each unit component.
+            2. Among these units, select the unit that:
+               - Is coherent with the SI system, i.e. minimises
+                 `log10(magnitude) % 1`, where `magnitude` is the magnitude
+                 of the quantity when expressed in SI base units.
+               - Minimises the absolute value of the sum of the powers of each
+                 unit component.
 
-               Example: among the units
+                 Example: among the units
 
-                   Pa = Pa^1       -> sum=1
-                   J/m^3 = J^1/m^3 -> sum=1+3=4
-                   N/m^2 = N^1/m^2 -> sum=1+2=3
+                     Pa = Pa^1       -> sum=1
+                     J/m^3 = J^1/m^3 -> sum=1+3=4
+                     N/m^2 = N^1/m^2 -> sum=1+2=3
 
-               Pa will be selected.
-            3. If two units have the same sum, the unit that minimises
-               `log10(magnitude/5)` is selected, where `magnitude` is the
-               magnitude of the quantity when expressed in SI base units.
+                 Pa will be selected.
+               - Minimises the absolute value of the magnitude, i.e. minimises
+                 `abs(log10(magnitude/5))`.
 
         """
         # pylint: disable=protected-access
@@ -1077,10 +1107,16 @@ class Quantity(pint.Quantity):
             # This function prioritise compact unit expression with
             # small exponents.  Lower priority is given to pre-factor
             # close to five.
-            _, m, (_, d) = x
-            return 100 * sum(abs(v) for v in d.values()) + abs(
-                math.log10(m / 5)
+            u, m, (_, d) = x
+            info = ureg.parse_expression(u).u.info
+            mult = info.multiplier if info.multiplier else 1
+            r = (
+                1000 * (math.log10(mult if mult else 1) % 1)
+                + 10 * sum(abs(v) for v in d.values())
+                + abs(math.log10(m / 5))
             )
+            print("***", x[0], m, r)
+            return r
 
         compatible_units.sort(key=sortkey)
         name, mult, _ = compatible_units[0]
