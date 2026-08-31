@@ -19,14 +19,13 @@ def test_sparql_select():
 
     # Get IRI and symbol of all length units
     query = f"""
-    PREFIX owl:  <http://www.w3.org/2002/07/owl#>
-    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
     SELECT ?unit ?symbol
     WHERE {{
-      ?unit rdf:type <{EMMO.LengthUnit}> .
-      ?unit <{EMMO.unitSymbolValue}> ?symbol .
+      ?unit rdfs:subClassOf <{EMMO.LengthUnit}> .
+      ?unit rdfs:subClassOf ?r .
+      ?r rdf:type owl:Restriction .
+      ?r owl:onProperty <{EMMO.unitSymbolValue}> .
+      ?r owl:hasValue ?symbol .
     }}
     """
     r = ts.query(query)
