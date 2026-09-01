@@ -679,7 +679,11 @@ class Column:
         if not cell:
             return
         if "sep" in self.options:
-            vals = cell.split(self.options["sep"])
+            # Sanitise `sep` by removing end-brackets (to not interfere with
+            # the regexp). End-brackets are explicitly disallowed in values,
+            # so this should not cause any problems.
+            s = self.options["sep"].replace("]", "")
+            vals = re.split(f"[{s}]+", cell)
         else:
             vals = [cell]
 
