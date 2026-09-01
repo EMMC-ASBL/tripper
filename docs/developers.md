@@ -71,7 +71,7 @@ Finally, press the "Publish release" button and ensure the release workflow succ
 ## Testing documentation locally
 To test the documentation locally, just install and run [mkdocs]:
 
-    pip install .[dev]
+    pip install '.[dev]'
     mkdocs build
     mkdocs serve
 
