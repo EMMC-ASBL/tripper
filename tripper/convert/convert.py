@@ -279,7 +279,7 @@ def load_container(
         return value.value if isinstance(value, Literal) else value
 
     if OTEIO.Dictionary in parents:
-        container = {}
+        container: "Dict[str, Any]" = {}
         for pred, obj in ts.predicate_objects(iri):
             if pred == OTEIO.hasKeyValuePair:
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)

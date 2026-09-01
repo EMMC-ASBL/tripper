@@ -11,11 +11,17 @@ from typing import TYPE_CHECKING, Sequence
 
 from pyld import jsonld
 
-from tripper import OWL, RDF, RDFS, Triplestore
+from tripper import OWL, RDF, RDFS, Namespace, Triplestore
 from tripper.datadoc.errors import InvalidContextError, PrefixMismatchError
 from tripper.datadoc.utils import asseq
 from tripper.errors import NamespaceError, NamespaceWarning
-from tripper.utils import MATCH_IRI, MATCH_PREFIXED_IRI, openfile, prefix_iri
+from tripper.utils import (
+    MATCH_IRI,
+    MATCH_PREFIXED_IRI,
+    expand_iri,
+    openfile,
+    prefix_iri,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import IO, Optional, Union
@@ -23,7 +29,9 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.datadoc.keywords import Keywords
 
     # Possible types for a JSON-LD context
-    ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
+    ContextType = Union[
+        str, dict, Path, Sequence[Union[str, dict, Path]], "Context"
+    ]
 
 
 def get_context(
@@ -79,7 +87,7 @@ def get_context(
             timeout=timeout,
         )
     if prefixes:
-        context.add_context({k: str(v) for k, v in prefixes.items()})
+        context.add_prefixes(prefixes)
     return context
 
 
@@ -126,6 +134,7 @@ class Context:
         self._expanded: dict = {}
         self._prefixed: dict = {}
         self._shortnamed: dict = {}
+        self._namespace_prefixes: dict = {}
 
         if keywords is not None:
             if theme:
@@ -165,13 +174,28 @@ class Context:
         """Return a copy of this context."""
         copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
+        # pylint: disable=protected-access
+        copy._namespace_prefixes = self._namespace_prefixes.copy()
         return copy
+
+    def add_prefixes(self, prefixes: dict) -> None:
+        """Add prefixes, retaining Namespace objects for label lookup."""
+        self._namespace_prefixes.update(
+            {
+                prefix: namespace
+                for prefix, namespace in prefixes.items()
+                if isinstance(namespace, Namespace)
+            }
+        )
+        self.add_context(
+            {prefix: str(namespace) for prefix, namespace in prefixes.items()}
+        )
 
     def add_context(self, context: "ContextType") -> None:
         """Add a context to this object."""
         if isinstance(context, Context):
             context = context.get_context_dict()
-        elif isinstance(context, str):
+        elif isinstance(context, (Path, str)):
             with openfile(context, "rt", timeout=self.timeout) as f:
                 context = json.load(f)
         elif isinstance(context, Sequence):
@@ -182,8 +206,8 @@ class Context:
             pass
         else:
             raise TypeError(
-                "`context` should be a dict, str, Context or a sequence of "
-                f"these.  Got: {type(context)}"
+                "`context` should be a dict, str, Path, Context or a sequence "
+                f"of these.  Got: {type(context)}"
             )
 
         if "@id" in context:
@@ -359,6 +383,13 @@ class Context:
         'http://www.w3.org/ns/dcat#Dataset'
 
         """
+        expanded = expand_iri(
+            name,
+            {**self.get_prefixes(), **self._namespace_prefixes},
+            strict=strict,
+        )
+        if expanded != name:
+            return expanded
         # Check cache
         if self._expanded and name in self._expanded:
             return self._expanded[name]
@@ -393,6 +424,7 @@ class Context:
         'dcat:Dataset'
 
         """
+        name = self.expand(name, strict=False)
         if not self._prefixed:
             self._create_caches()
         if name in self._prefixed:
@@ -509,6 +541,7 @@ class Context:
 
     def is_class(self, name: str) -> bool:
         """Returns whether `name` appears to be a class."""
+        name = self.expand(name)
         return name in self and self.getdef(name).get("@type") in (
             RDFS.Class,
             OWL.Class,
