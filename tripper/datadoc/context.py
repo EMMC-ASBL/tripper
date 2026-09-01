@@ -29,7 +29,9 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.datadoc.keywords import Keywords
 
     # Possible types for a JSON-LD context
-    ContextType = Union[str, dict, Sequence[Union[str, dict]], "Context"]
+    ContextType = Union[
+        str, dict, Path, Sequence[Union[str, dict, Path]], "Context"
+    ]
 
 
 def get_context(
@@ -193,7 +195,7 @@ class Context:
         """Add a context to this object."""
         if isinstance(context, Context):
             context = context.get_context_dict()
-        elif isinstance(context, str):
+        elif isinstance(context, (Path, str)):
             with openfile(context, "rt", timeout=self.timeout) as f:
                 context = json.load(f)
         elif isinstance(context, Sequence):
@@ -204,8 +206,8 @@ class Context:
             pass
         else:
             raise TypeError(
-                "`context` should be a dict, str, Context or a sequence of "
-                f"these.  Got: {type(context)}"
+                "`context` should be a dict, str, Path, Context or a sequence "
+                f"of these.  Got: {type(context)}"
             )
 
         if "@id" in context:
