@@ -2294,7 +2294,7 @@ Context        </code>
 <span class="w">        </span><span class="sd">"""Add a context to this object."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
             <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
@@ -2305,8 +2305,8 @@ Context        </code>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">"`context` should be a dict, str, Context or a sequence of "</span>
-                <span class="sa">f</span><span class="s2">"these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+                <span class="s2">"`context` should be a dict, str, Path, Context or a sequence "</span>
+                <span class="sa">f</span><span class="s2">"of these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
@@ -3029,7 +3029,7 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
 <span class="w">    </span><span class="sd">"""Add a context to this object."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Context</span><span class="p">):</span>
         <span class="n">context</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">get_context_dict</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
         <span class="k">with</span> <span class="n">openfile</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
@@ -3040,8 +3040,8 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">"`context` should be a dict, str, Context or a sequence of "</span>
-            <span class="sa">f</span><span class="s2">"these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="s2">"`context` should be a dict, str, Path, Context or a sequence "</span>
+            <span class="sa">f</span><span class="s2">"of these.  Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
