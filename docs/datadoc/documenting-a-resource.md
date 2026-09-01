@@ -198,7 +198,9 @@ where
 Currently recognised keys:
 
 - **`unit`**: A unit symbol. All numbers in this column have this unit.
-- **`sep`**: Separator character. A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify a separator character that can be used in this column.
+- **`sep`**: Separator character(s). A common user request when you have multiple values for a column, is to be able to provide multiple values in a single cell, instead of duplicating the column. This option makes it possible to specify one or more separator characters that can be used in this column.
+  **Note**: Consecutive separation characters are treated as one.
+  Ex. with `sep=, `, the cell "a,b, ,  c" would split the same way as "a, b, c".
 
 !!! warning
     The syntax for the square brackets is currently experimental and may change in the future.
@@ -224,9 +226,10 @@ Specifying unit:
 
 Specifying a separator:
 
-| @id       | @type        | keyword[sep=;]     |
-|-----------|--------------|--------------------|
-| ex:mydata | emmo:Dataset | geology;stone;cave |
+| @id       | @type        | keyword[?sep=; ]    |
+|-----------|--------------|---------------------|
+| ex:mydata | emmo:Dataset | geology;stone; cave |
+|           |              |                     |
 
 Combining label ('temsample') and unit ('unit=mm'):
 
