@@ -73,7 +73,9 @@ def test_namespaces() -> None:
     assert "Child" in dir(FAM)
 
     # Test __contains__() method
-    assert "family#" in FAM
+    assert "type" in RDF
+    assert "nonexisting" in RDF  # This is the best we can do...
+    assert "Son" in FAM
     assert "foot" not in FAM
 
 
