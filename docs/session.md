@@ -75,6 +75,11 @@ value is replaced with the password looked up using the [keyring] library.
     See the [keyring] documentation for improved security by using one of
     the recommended keyring backends for your system.
 
+    On Windows Subsystem for Linux (WSL) you may need to
+    `pip install `keyring-wincred` to store the password in Windows Credential
+    Manager.
+
+
 
 Example
 -------
