@@ -84,13 +84,13 @@ The requirements for the backends are listed in the table above, while sub-packa
 For example, the following command will install Tripper with the [tripper.datadoc] sub-package and the rdflib backend enabled:
 
 ```shell
-pip install tripper[datadoc] rdflib
+pip install 'tripper[datadoc]' rdflib
 ```
 
 Developers should install Tripper with the `dev` extras and enable [pre-commit]:
 
 ```shell
-pip install tripper[dev]
+pip install 'tripper[dev]'
 pre-commit install  # Enable pre-commit and installing hooks
 ```
 
