@@ -2110,7 +2110,7 @@ creating a new empty Graph object.</p></td>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[tuple], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">        Parameters:</span>
@@ -2503,7 +2503,7 @@ https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html#rdflib.query.Result<
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">query_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[List[tuple], bool, Generator[Triple, None, None]]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""SPARQL query.</span>
 
 <span class="sd">    Parameters:</span>
@@ -2802,13 +2802,15 @@ the query() method for SELECT queries.</p>
         <details class="quote">
           <summary>Source code in <code>tripper/backends/rdflib.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fromrdflib</span><span class="p">(</span>
-    <span class="n">value</span><span class="p">:</span> <span class="s2">"Union[URIRef, rdflibLiteral, BNode]"</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[str, Literal]"</span><span class="p">:</span>
+    <span class="n">value</span><span class="p">:</span> <span class="s2">"Union[URIRef, rdflibLiteral, BNode, None]"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Union[str, Literal, None]"</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Help function converting an rdflib value to corresponding tripper value."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rdflibLiteral</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">parse_literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BNode</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_:"</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">"_:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div>
         </details>
