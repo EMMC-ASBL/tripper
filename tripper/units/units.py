@@ -16,7 +16,6 @@ from urllib.parse import urlparse
 import pint
 
 from tripper import (
-    EMMO,
     OWL,
     RDF,
     RDFS,
@@ -41,8 +40,13 @@ if TYPE_CHECKING:  # pragma: no cover
 EMMO_VERSION = "1.0.4"
 
 # Cached module variables
-_unit_ts = None  # Unit triplestore object
-_unit_reg = None  # Default unit registry
+_cache = {
+    "ts": None,
+    "ureg": None,
+    "ns": None,
+}
+# _unit_ts = None  # Unit triplestore object
+# _unit_reg = None  # Default unit registry
 
 # Named tuple used to represent a dimension string
 # Note we use H instead of ϴ to represent the thermodynamic temperature
@@ -93,15 +97,11 @@ def get_ureg(*args, nocreate=False, **kwargs) -> "UnitRegistry":
     arguments.
 
     """
-    global _unit_reg  # pylint: disable=global-statement
-    if not _unit_reg:
+    if not _cache["ureg"]:
         if nocreate:
             raise NoDefaultUnitRegistryError("No default unit registry")
-        ureg = UnitRegistry(*args, **kwargs)
-        _unit_reg = ureg
-    else:
-        ureg = _unit_reg
-    return ureg
+        _cache["ureg"] = UnitRegistry(*args, **kwargs)
+    return _cache["ureg"]
 
 
 def _default_url_name(url, name) -> tuple:
@@ -135,21 +135,20 @@ def get_unit_triplestore(
             - None: Don't use cache.
 
     """
-    global _unit_ts  # pylint: disable=global-statement
-    if not _unit_ts:
-        _unit_ts = Triplestore("rdflib")
+    if not _cache["ts"]:
+        ts = Triplestore("rdflib")
         url, name = _default_url_name(url, name)
 
         cachefile = get_cachedir() / f"units-{name}.ntriples"
         if cache and cachefile.exists():
-            _unit_ts.parse(cachefile, format="ntriples")
+            ts.parse(cachefile, format="ntriples")
         else:
             print("* caching units triplestore... ", end="", flush=True)
-            _unit_ts.parse(url, format=format)
+            ts.parse(url, format=format)
             print("done")
             if cache is not None:
                 try:
-                    _unit_ts.serialize(
+                    ts.serialize(
                         cachefile, format="ntriples", encoding="utf-8"
                     )
                 except PermissionError as exc:
@@ -157,7 +156,62 @@ def get_unit_triplestore(
                         f"{exc}: {cachefile}",
                         category=PermissionWarning,
                     )
-    return _unit_ts
+        _cache["ts"] = ts
+    return _cache["ts"]
+
+
+def get_unit_namespace(
+    iri: "Optional[str]" = None,
+    label_annotations: "Union[Sequence, bool]" = (),
+    check: bool = False,
+    reload: "Optional[bool]" = None,
+    triplestore: "Optional[Union[Triplestore, str]]" = None,
+    format: "Optional[str]" = None,
+    name: "Optional[str]" = None,
+    cache: "Union[bool, None]" = True,
+) -> Namespace:
+    """Return, potentially cached, triplestore object that defines the units.
+
+    Arguments:
+        iri: IRI of namespace to represent.
+            Default: "https://w3id.org/emmo/{EMMO_VERSION}"
+        label_annotations: Sequence of label annotations. If given, check
+            the underlying ontology during attribute access if the name
+            correspond to a label. The label annotations should be ordered
+            from highest to lowest precedense.
+            If True is provided, `label_annotations` is set to
+            ``(SKOS.prefLabel, RDF.label, SKOS.altLabel)``.
+        check: Whether to check underlying ontology if the IRI exists during
+            attribute access.  If true, NoSuchIRIError will be raised if the
+            IRI does not exist in this namespace.
+        reload: Whether to reload the ontology (which is needed when
+            `label_annotations` or `check` are given) disregardless whether it
+            has been cached locally.
+        triplestore: Use this triplestore for label lookup and checking.
+            Can be either a Triplestore object or an URL to load from.
+            Defaults to `iri`.
+        format: Optional format of the source referred to by `iri`.
+        name: A (versioned) name for the triplestore. Used for caching.
+            Ex: "emmo-1.0.0".
+        cache: Whether to load from cache. If `cache` is:
+            - True: Load cache if it exists, otherwise create new cache.
+            - False: Don't load cache, but (over)write new cache.
+            - None: Don't use cache.
+
+    Returns:
+        Namespace object for units.
+    """
+    if iri is None:
+        iri = f"https://w3id.org/emmo/{EMMO_VERSION}"
+    ts = get_unit_triplestore(url=None, format=format, name=name, cache=cache)
+    ns = Namespace(
+        iri=iri,
+        label_annotations=label_annotations,
+        check=check,
+        reload=reload,
+        triplestore=ts,
+    )
+    return ns
 
 
 def base_unit_expression(dimension: Dimension) -> str:
@@ -1433,7 +1487,6 @@ class UnitRegistry(pint.UnitRegistry):
         This unit registry can then be accessed with `get_ureg()`.
 
         Returns the previous default unit registry."""
-        global _unit_reg  # pylint: disable=global-statement
-        old = _unit_reg
-        _unit_reg = self
+        old = _cache("ureg")
+        _cache["ureg"] = self
         return old

@@ -4,13 +4,16 @@ import sys
 
 import pytest
 
+# Import targeted version of EMMO
+from tripper.units import EMMO
+
 pytest.importorskip("pint")
 pytest.importorskip("rdflib")
 
 
 def test_get_unit_triplestore():
     """Test get_unit_triplestore()."""
-    from tripper import EMMO, units
+    from tripper import units
 
     ts = units.units.get_unit_triplestore()
     assert ts.has(EMMO.Atom)
@@ -30,7 +33,7 @@ def test_base_unit_expression():
 
 def test_load_emmo_quantity():
     """Test load_emmo_quantity()."""
-    from tripper import EMMO, OWL, RDF, RDFS, Literal, Triplestore
+    from tripper import OWL, RDF, RDFS, Literal, Triplestore
     from tripper.units.units import load_emmo_quantity
 
     ts = Triplestore(backend="rdflib")
@@ -81,7 +84,6 @@ def test_units():
 
     from pathlib import Path
 
-    from tripper import EMMO
     from tripper.units.units import Dimension, Units
 
     units = Units()
@@ -241,7 +243,7 @@ def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
     # pylint: disable=too-many-statements,too-many-locals
 
-    from tripper import EMMO, RDFS, Triplestore
+    from tripper import RDFS, Triplestore
     from tripper.units import UnitRegistry, get_ureg
     from tripper.units.units import (
         Dimension,
@@ -383,7 +385,6 @@ def test_unit_registry():
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_get_quantity():
     """Test ureg.get_quantity() method."""
-    from tripper import EMMO
     from tripper.units import get_ureg
     from tripper.units.units import MissingQuantityError
 
