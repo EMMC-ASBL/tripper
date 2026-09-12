@@ -171,7 +171,7 @@ def from_container(
                         (key_indv, RDF.type, OTEIO.DictionaryKey),
                         (
                             key_indv,
-                            EMMO.hasStringValue,
+                            EMMO.stringValue,
                             Literal(key, lang=lang),
                         ),
                         (value_indv, RDF.type, OTEIO.DictionaryValue),
@@ -283,7 +283,7 @@ def load_container(
         for pred, obj in ts.predicate_objects(iri):
             if pred == OTEIO.hasKeyValuePair:
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
-                key = ts.value(key_iri, EMMO.hasStringValue)
+                key = ts.value(key_iri, EMMO.stringValue)
                 value_iri = ts.value(obj, OTEIO.hasDictionaryValue)
                 value = ts.value(value_iri, EMMO.hasDataValue)
                 container[str(key)] = get_obj(value)
