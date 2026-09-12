@@ -997,6 +997,13 @@ def test_datadoc():
         SEMDATA.SEM_cement_batch2,
     ]
 
+    # IRI-valued criteria must be compared as RDF terms rather than strings.
+    assert search(
+        ts, criteria={"distribution.generator": GEN.sem_hitachi}
+    ) == [
+        iri,
+    ]
+
     title = "Nested series of SEM images of cement batch2"
     dset = [SEMDATA.SEM_cement_batch2]
     # Search with predefined keyword
