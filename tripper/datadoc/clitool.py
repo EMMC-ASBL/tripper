@@ -10,6 +10,7 @@ from pathlib import Path
 
 from tripper import Session, Triplestore
 from tripper.datadoc import (
+    Context,
     TableDoc,
     acquire,
     delete,
@@ -29,6 +30,9 @@ def subcommand_add(ts, args):
     if fmt in ("yml", "yaml"):
         save_datadoc(ts, infile)
     elif fmt in ("csv",):
+        context = Context(theme=args.theme)
+        for ctx in args.context:
+            context.add_context(ctx)
         kw = {}
         if args.csv_option:
             for token in args.csv_option:
@@ -38,7 +42,7 @@ def subcommand_add(ts, args):
             infile,
             type=args.type,
             keywords=args.keywords if args.keywords else None,
-            context=args.context,
+            context=context,
             redefine=args.redefine,
             baseiri=args.base_iri,
             **kw,
@@ -182,7 +186,15 @@ def maincommand(argv=None):
     )
     parser_add.add_argument(
         "--context",
-        help="Path or URL to custom JSON-LD context for the input.",
+        action="append",
+        help=(
+            "Path or URL to custom JSON-LD context for the input. "
+            "This option may be provided multiple times."
+        ),
+    )
+    parser_add.add_argument(
+        "--theme",
+        help="Initialise context from a theme (e.g. ddoc:datadoc).",
     )
     parser_add.add_argument(
         "--dump",
@@ -211,7 +223,6 @@ def maincommand(argv=None):
         choices=["raise", "allow", "skip"],
         help="How to handle redifinition of existing keywords.",
     )
-
     parser_add.add_argument(
         "--base-iri",
         help=(
