@@ -2170,7 +2170,15 @@
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">"--context"</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">"Path or URL to custom JSON-LD context for the input."</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Path or URL to custom JSON-LD context for the input. "</span>
+            <span class="s2">"This option may be provided multiple times."</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--theme"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Initialise context from a theme (e.g. ddoc:datadoc)."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">"--dump"</span><span class="p">,</span>
@@ -2199,7 +2207,6 @@
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"allow"</span><span class="p">,</span> <span class="s2">"skip"</span><span class="p">],</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">"How to handle redifinition of existing keywords."</span><span class="p">,</span>
     <span class="p">)</span>
-
     <span class="n">parser_add</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">"--base-iri"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
@@ -2429,6 +2436,9 @@
     <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"yml"</span><span class="p">,</span> <span class="s2">"yaml"</span><span class="p">):</span>
         <span class="n">save_datadoc</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">infile</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"csv"</span><span class="p">,):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">theme</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">theme</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
         <span class="n">kw</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">csv_option</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">csv_option</span><span class="p">:</span>
@@ -2438,7 +2448,7 @@
             <span class="n">infile</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
             <span class="n">keywords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">keywords</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">keywords</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">context</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">context</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
             <span class="n">redefine</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">redefine</span><span class="p">,</span>
             <span class="n">baseiri</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">base_iri</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kw</span><span class="p">,</span>
