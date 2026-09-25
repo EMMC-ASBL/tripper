@@ -72,6 +72,11 @@ BASIC_RECOGNISED_KEYS = {
     # "configuration": OTEIO.Configuration,
 }
 
+# EMMO 1.1.0 changes hasStringValue to stringValue
+stringValue = (
+    EMMO.stringValue if "stringValue" in EMMO else EMMO.hasStringValue
+)
+
 
 def from_container(
     container: "Union[Mapping[str, Any], Sequence[Any]]",
@@ -171,7 +176,7 @@ def from_container(
                         (key_indv, RDF.type, OTEIO.DictionaryKey),
                         (
                             key_indv,
-                            EMMO.hasStringValue,
+                            stringValue,
                             Literal(key, lang=lang),
                         ),
                         (value_indv, RDF.type, OTEIO.DictionaryValue),
@@ -283,7 +288,7 @@ def load_container(
         for pred, obj in ts.predicate_objects(iri):
             if pred == OTEIO.hasKeyValuePair:
                 key_iri = ts.value(obj, OTEIO.hasDictionaryKey)
-                key = ts.value(key_iri, EMMO.hasStringValue)
+                key = ts.value(key_iri, stringValue)
                 value_iri = ts.value(obj, OTEIO.hasDictionaryValue)
                 value = ts.value(value_iri, EMMO.hasDataValue)
                 container[str(key)] = get_obj(value)

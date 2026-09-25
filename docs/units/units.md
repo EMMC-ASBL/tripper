@@ -211,11 +211,11 @@ You can use to [to_ontology_units()] method (or its in-place variant [ito_ontolo
 ```python
 >>> duration.ito_ontology_units()
 >>> f"{duration:.1f}"  # avoid rounding errors
-'50.0 Day'
+'1200.0 Hour'
 
 # The unit now has a `info` property
 >>> duration.u.info.qudtIRI
-'http://qudt.org/vocab/unit/DAY'
+'http://qudt.org/vocab/unit/HR'
 
 ```
 
