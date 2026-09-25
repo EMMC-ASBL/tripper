@@ -38,8 +38,11 @@ units = [
 mappings = [
     "tripper[units]",
 ]
+search = [
+    "sparql-builder @ git+https://github.com/PINK-project/SPARQL-builder@master",
+]
 datadoc = [
-    "tripper[mappings]",
+    "tripper[mappings]",  # add requirement on search
     "keyring>=22.0.0,<25.6.1",
     "PyLD>=2.0.0,<3.0.0; python_version<'3.10'",
     "PyLD>=2.0.0,<3.0.1; python_version>='3.10'",
