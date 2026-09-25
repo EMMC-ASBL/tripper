@@ -474,14 +474,20 @@ def test_column_sep():
     from tripper.datadoc import TableDoc
 
     td = TableDoc(
-        headers=["@id", "@type[?sep=,]", "dcterms:title"],
-        data=[("kb:s1", "kb:T1,kb:T2", "A title, with a comma")],
+        headers=[
+            "@id",
+            "@type[?sep=,]",
+            "dcterms:title",
+            "dcat:keyword[?sep= ,]",
+        ],
+        data=[("kb:s1", "kb:T1,kb:T2", "A title, with a comma", "kw1, kw2")],
         prefixes={"kb": "http://example.com/kb#"},
     )
     (s1,) = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
     assert s1["@id"] == "kb:s1"
     assert s1["@type"] == ["kb:T1", "kb:T2"]
     assert s1["dcterms:title"] == "A title, with a comma"
+    assert s1["dcat:keyword"] == ["kw1", "kw2"]
 
 
 def test_unknown_header_full_iri():
