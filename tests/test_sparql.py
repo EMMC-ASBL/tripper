@@ -21,11 +21,8 @@ def test_sparql_select():
     query = f"""
     SELECT ?unit ?symbol
     WHERE {{
-      ?unit rdfs:subClassOf <{EMMO.LengthUnit}> .
-      ?unit rdfs:subClassOf ?r .
-      ?r rdf:type owl:Restriction .
-      ?r owl:onProperty <{EMMO.unitSymbolValue}> .
-      ?r owl:hasValue ?symbol .
+      ?unit rdf:type <{EMMO.LengthUnit}> .
+      ?unit <{EMMO.unitSymbolValue}> ?symbol .
     }}
     """
     r = ts.query(query)
@@ -33,7 +30,6 @@ def test_sparql_select():
     assert (EMMO.AstronomicalUnit, "au") in r
 
 
-# if True:
 def test_sparql_construct():
     """Test SPARQL construct query."""
     pytest.importorskip("rdflib")
@@ -186,7 +182,6 @@ def test_sparql_ask():
     assert r is True
 
 
-# if True:
 def test_sparql_describe():
     """Test SPARQL DESCRIBE query."""
     # From https://www.w3.org/TR/rdf-sparql-query/#describe

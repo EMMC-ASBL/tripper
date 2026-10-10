@@ -235,11 +235,8 @@ Note:
 ...
 ... SELECT ?unit ?symbol
 ... WHERE {{
-...   ?unit rdfs:subClassOf <{EMMO.LengthUnit}> .
-...   ?unit rdfs:subClassOf ?r .
-...   ?r rdf:type owl:Restriction .
-...   ?r owl:onProperty <{EMMO.unitSymbolValue}> .
-...   ?r owl:hasValue ?symbol .
+...   ?unit rdf:type <{EMMO.LengthUnit}> .
+...   ?unit <{EMMO.unitSymbolValue}> ?symbol .
 ... }}
 ... """
 >>> r = ts.query(query)
