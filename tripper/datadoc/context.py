@@ -190,6 +190,7 @@ class Context:
         self.add_context(
             {prefix: str(namespace) for prefix, namespace in prefixes.items()}
         )
+        self._create_caches()
 
     def add_context(self, context: "ContextType") -> None:
         """Add a context to this object."""
@@ -433,6 +434,10 @@ class Context:
             self._create_caches()
         if name in self._prefixed:
             return self._prefixed[name]
+        if pf := prefix_iri(name, self.get_prefixes(), strict=strict):
+            if strict:
+                self._prefixed[name] = pf
+            return pf
         if strict:
             raise NamespaceError(f"cannot prefix: {name}")
         return name

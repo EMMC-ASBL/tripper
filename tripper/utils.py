@@ -821,7 +821,9 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     return iri
 
 
-def prefix_iri(iri: str, prefixes: dict, strict: bool = False, ns_translate: bool = True) -> str:
+def prefix_iri(
+    iri: str, prefixes: dict, strict: bool = False, ns_translate: bool = True
+) -> str:
     """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
@@ -841,9 +843,9 @@ def prefix_iri(iri: str, prefixes: dict, strict: bool = False, ns_translate: boo
         prefix, name, _ = m.groups()
         if ns := prefixes.get(prefix):
             if ns_translate and isinstance(ns, Namespace):
-                m2 = MATCH_IRI.match(ns[name])
-                newname = m2.groups()[4]
-                return f"{prefix}:{newname}"
+                if m2 := MATCH_IRI.match(ns[name]):
+                    newname = m2.groups()[4]  # mypy: ignore[union-attr]
+                    return f"{prefix}:{newname}"
         return iri
     for prefix, ns in prefixes.items():
         if iri.startswith(str(ns)):

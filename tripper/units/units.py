@@ -1189,6 +1189,8 @@ class UnitRegistry(pint.UnitRegistry):
     def parse_units(  # pylint: disable=arguments-differ
         self, units, *args, **kwargs
     ):
+        """Parses a unit expression string and returns a UnitContainer object
+        with canonical unit names."""
         try:
             return super().parse_units(units, *args, **kwargs)
         except pint.UndefinedUnitError:
