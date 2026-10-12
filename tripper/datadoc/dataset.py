@@ -276,6 +276,10 @@ def _told(
                 add(d, "@type", keywords.superclasses(c))
             except NoSuchTypeError:
                 missing.append(prefix_iri(c, keywords.get_prefixes()))
+
+                if c == "emmo:Dataset":
+                    print("***", c)
+
                 add(d, "@type", c)
             if missing:
                 # Using logging.info() here, since warnings is too verbose

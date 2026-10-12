@@ -237,7 +237,10 @@ class Context:
                         )
                 if isinstance(v, dict):
                     d[k] = rec(v)
-            return d
+            return {
+                k: str(v) if isinstance(v, Namespace) else v
+                for k, v in d.items()
+            }
 
         try:
             self.ctx = self.ld.process_context(
@@ -293,6 +296,7 @@ class Context:
         for k, v in self.ctx["mappings"].items():
             if v.get("_prefix") and "@id" in v:
                 prefixes[k] = v["@id"]
+        prefixes.update(self._namespace_prefixes)
         return prefixes
 
     def get_properties(self) -> dict:
@@ -676,7 +680,7 @@ class Context:
         aliases: "dict[str, list[str]]" = {}
         for pfx, ns in prefixes.items():
             for expanded in mappings.values():
-                if expanded.startswith(ns):
+                if expanded.startswith(str(ns)):
                     local = expanded[len(ns) :]
                     aliases.setdefault(expanded, []).append(f"{pfx}:{local}")
 

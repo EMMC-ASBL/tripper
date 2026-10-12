@@ -139,7 +139,7 @@ def test_sync_prefixes():
 
 def test_expand():
     """Test expand() method."""
-    from tripper import DCAT, DCTERMS
+    from tripper import DCAT, DCTERMS, EMMO
     from tripper.errors import NamespaceError
 
     assert ctx.expand("mediaType") == DCAT.mediaType
@@ -148,6 +148,11 @@ def test_expand():
     assert ctx.expand(DCAT.mediaType) == DCAT.mediaType
     assert ctx.expand(DCAT.distribution) == DCAT.distribution
     assert ctx.expand("non-existing") == "non-existing"
+    assert ctx.expand("emmo:Atom") == "https://w3id.org/emmo#Atom"
+
+    # Perform namespace expansion as well
+    ctx.add_prefixes({"emmo": EMMO})
+    assert ctx.expand("emmo:Atom") == EMMO.Atom
 
     with pytest.raises(NamespaceError):
         ctx.expand("non-existing", strict=True)

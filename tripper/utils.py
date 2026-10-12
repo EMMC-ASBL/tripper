@@ -821,21 +821,35 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     return iri
 
 
-def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
+def prefix_iri(iri: str, prefixes: dict, strict: bool = False, ns_translate: bool = True) -> str:
     """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
 
+    See `expand_iri()` for the `prefixes` argument.
+
     If `strict` is true, a NamespaceError exception is raised
     if no prefix can be found.
 
+    If `ns_translate` is true, use the namespace to translate `iri`.
+    For example, if `prefixes` maps "emmo" to a Namespace object with
+    `label_annotations` set, then will "emmo:Dataset" be translated to
+    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a".
+
     """
-    if not re.match(MATCH_PREFIXED_IRI, iri):
-        for prefix, ns in prefixes.items():
-            if iri.startswith(str(ns)):
-                return f"{prefix}:{iri[len(str(ns)):]}"
-        if strict:
-            raise NamespaceError(f"No prefix defined for IRI: {iri}")
+    if m := MATCH_PREFIXED_IRI.match(iri):
+        prefix, name, _ = m.groups()
+        if ns := prefixes.get(prefix):
+            if ns_translate and isinstance(ns, Namespace):
+                m2 = MATCH_IRI.match(ns[name])
+                newname = m2.groups()[4]
+                return f"{prefix}:{newname}"
+        return iri
+    for prefix, ns in prefixes.items():
+        if iri.startswith(str(ns)):
+            return f"{prefix}:{iri[len(str(ns)):]}"
+    if strict:
+        raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
 
 

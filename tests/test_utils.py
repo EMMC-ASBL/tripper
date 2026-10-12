@@ -549,23 +549,36 @@ def test_prefix_iri():
     """Test prefix_iri()."""
     pytest.importorskip("rdflib")
 
-    from tripper import CHAMEO, DCTERMS, OTEIO, RDF
+    from tripper import CHAMEO, DCTERMS, EMMO, OTEIO, RDF
     from tripper.errors import NamespaceError
     from tripper.utils import prefix_iri
 
     prefixes = {
-        "chameo": str(CHAMEO),
-        "dcterms": str(DCTERMS),
-        "oteio": str(OTEIO),
-        "rdf": str(RDF),
+        "chameo": CHAMEO,
+        "dcterms": DCTERMS,
+        "emmo": EMMO,
+        "oteio": OTEIO,
+        "rdf": RDF,
     }
     assert prefix_iri(CHAMEO.Sample, prefixes) == "chameo:Sample"
     assert prefix_iri(DCTERMS.title, prefixes) == "dcterms:title"
     assert prefix_iri(OTEIO.Parser, prefixes) == "oteio:Parser"
     assert prefix_iri(RDF.type, prefixes) == "rdf:type"
+    assert prefix_iri("rdf:type", prefixes) == "rdf:type"
     assert prefix_iri("xxx", prefixes) == "xxx"
     with pytest.raises(NamespaceError):
         prefix_iri("xxx", prefixes, strict=True)
+
+    assert prefix_iri("emmo:Atom", prefixes) == (
+        "emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
+    )
+    assert prefix_iri(EMMO.Atom, prefixes) == (
+        "emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
+    )
+    assert prefix_iri("emmo:Atom", prefixes, ns_translate=False) == "emmo:Atom"
+    assert prefix_iri(EMMO.Atom, prefixes, ns_translate=False) == (
+        "emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
+    )
 
 
 def test_substitute_query():
