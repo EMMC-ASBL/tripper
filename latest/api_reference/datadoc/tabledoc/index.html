@@ -2307,10 +2307,16 @@ Column        </code>
         <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">leafname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"@"</span><span class="p">):</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">leafname</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-            <span class="c1"># If a full IRI or a prefixed name is used as header but the</span>
-            <span class="c1"># context does not define it, treat this as an error instead</span>
-            <span class="c1"># of silently accepting it.</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="p">:</span>
+            <span class="c1"># A header unknown to the context is an error, unless it is a</span>
+            <span class="c1"># real IRI: either a full IRI or a prefixed name whose prefix</span>
+            <span class="c1"># is known to the context.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">is_full_iri</span>
+                <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">is_prefixed</span>
+                    <span class="ow">and</span> <span class="n">leafname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"Unknown keyword/IRI in header: '</span><span class="si">{</span><span class="n">leafname</span><span class="si">}</span><span class="s2">'"</span>
                 <span class="p">)</span>
@@ -2476,10 +2482,16 @@ Column        </code>
     <span class="k">if</span> <span class="n">context</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">leafname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"@"</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">getdef</span><span class="p">(</span><span class="n">leafname</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="c1"># If a full IRI or a prefixed name is used as header but the</span>
-        <span class="c1"># context does not define it, treat this as an error instead</span>
-        <span class="c1"># of silently accepting it.</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">is_full_iri</span> <span class="ow">or</span> <span class="n">is_prefixed</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">df</span><span class="p">:</span>
+        <span class="c1"># A header unknown to the context is an error, unless it is a</span>
+        <span class="c1"># real IRI: either a full IRI or a prefixed name whose prefix</span>
+        <span class="c1"># is known to the context.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">is_full_iri</span>
+            <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">is_prefixed</span>
+                <span class="ow">and</span> <span class="n">leafname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="n">InvalidKeywordError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"Unknown keyword/IRI in header: '</span><span class="si">{</span><span class="n">leafname</span><span class="si">}</span><span class="s2">'"</span>
             <span class="p">)</span>

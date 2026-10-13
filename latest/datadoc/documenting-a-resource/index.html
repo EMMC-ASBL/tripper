@@ -2213,6 +2213,10 @@ Saving <a href="https://raw.githubusercontent.com/EMMC-ASBL/tripper/refs/heads/m
 Tripper allows multiple columns with the same keyword in the header.
 Nested fields may be specified as dot-separated keywords.
 Ex: <code>distribution.downloadURL</code>.</p>
+<p>A header that is not defined in the context raises an <code>InvalidKeywordError</code>.
+The exception is headers that are real IRIs, which are accepted even if they are not defined in the context.
+This includes full IRIs (e.g. <code>http://example.com/myproperty</code>) and prefixed names whose prefix is known to the context (e.g. <code>dcterms:myproperty</code>, or <code>ex:prop</code> if <code>ex</code> is provided with the <code>prefixes</code> argument).
+A prefixed name with an unknown prefix raises an <code>InvalidKeywordError</code>.</p>
 <p>The header keyword(s) may be followed by an optional square bracket with the following syntax (inspired by URL options):</p>
 <div class="language-text highlight"><pre><span></span><code>name[label?key1=value1&amp;key2=value2]
 </code></pre></div>
