@@ -651,10 +651,16 @@ class Column:
         if context and not leafname.startswith("@"):
             df = context.getdef(leafname, strict=False)
 
-            # If a full IRI or a prefixed name is used as header but the
-            # context does not define it, treat this as an error instead
-            # of silently accepting it.
-            if (is_full_iri or is_prefixed) and not df:
+            # A header unknown to the context is an error, unless it is a
+            # real IRI: either a full IRI or a prefixed name whose prefix
+            # is known to the context.
+            if not df and not (
+                is_full_iri
+                or (
+                    is_prefixed
+                    and leafname.split(":", 1)[0] in context.get_prefixes()
+                )
+            ):
                 raise InvalidKeywordError(
                     f"Unknown keyword/IRI in header: '{leafname}'"
                 )
