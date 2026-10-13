@@ -1,6 +1,6 @@
 """Utility functions."""
 
-# pylint: disable=invalid-name,redefined-builtin
+# pylint: disable=invalid-name,redefined-builtin,too-many-lines
 import datetime
 import hashlib
 import inspect
@@ -836,7 +836,35 @@ def prefix_iri(
     If `ns_translate` is true, use the namespace to translate `iri`.
     For example, if `prefixes` maps "emmo" to a Namespace object with
     `label_annotations` set, then will "emmo:Dataset" be translated to
-    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a".
+    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a":
+
+    Examples
+
+    >>> from tripper import DCTERMS, EMMO
+    >>> from tripper.utils import prefix_iri
+
+    >>> prefixes = {"dcterms": DCTERMS, "emmo": EMMO}
+
+    >>> prefix_iri(DCTERMS.creator, prefixes)
+    'dcterms:creator'
+
+    # If `iri` doesn't match a prefix, it is returned unmodified
+    >>> prefix_iri("http://example.org/something", prefixes)
+    'http://example.org/something'
+
+    # ...unless `strict=True`, in which case an NamespaceError is raised.
+    >>> prefix_iri("http://example.org/something", prefixes, strict=True)
+    ...
+    NamespaceError: No prefix defined for IRI: http://example.org/something
+
+    # If `ns_translate` is true (default), the namespace is used for
+    # translating human readable "pseudo" CURIEs:
+    >>> prefix_iri("emmo:Atom", prefixes)
+    'emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
+
+    # No such translation is done if `ns_translate` is false.
+    >>> prefix_iri("emmo:Atom", prefixes, ns_translate=False)
+    'emmo:Atom'
 
     """
     if m := MATCH_PREFIXED_IRI.match(iri):
