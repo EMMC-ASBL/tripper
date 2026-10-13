@@ -273,7 +273,15 @@ class Namespace:
         return self._iri + str(other)
 
     def __contains__(self, name):
-        return name in self._iri
+        if self._iris is None:
+            return True  # no checking - any name is allowed
+        if self._iris == {}:  # whether to update internal cache
+            self._update_iris(
+                triplestore=self._triplestore,
+                reload=self._reload,
+                format=self._format,
+            )
+        return name in self._iris
 
     def __hash__(self):
         return hash(self._iri)

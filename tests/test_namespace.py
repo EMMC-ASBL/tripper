@@ -73,7 +73,16 @@ def test_namespaces() -> None:
     assert "Child" in dir(FAM)
 
     # Test __contains__() method
-    assert "family#" in FAM
+    # The assesment `"nonexisting" in RDF` may require an explanation.
+    # Since the RDF namespace is not created with check=False, the
+    # namespace object is not doing any checking on the validity of
+    # the IRI. That means that if you write `RDF.nonexisting` it will
+    # return 'https://www.w3.org/1999/02/22-rdf-syntax-ns#nonexisting'.
+    # Hence, it behaves like "nonexisting" exists in the RDF namespace,
+    # which is why `"nonexisting" in RDF` should be true.
+    assert "type" in RDF
+    assert "nonexisting" in RDF  # Surprising? See explanation above
+    assert "Son" in FAM
     assert "foot" not in FAM
 
 
