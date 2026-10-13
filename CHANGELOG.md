@@ -1,5 +1,30 @@
 # Changelog
 
+## [v0.5.4](https://github.com/EMMC-ASBL/tripper/tree/v0.5.4) (2026-09-23)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.3...v0.5.4)
+
+**Merged pull requests:**
+
+- Made it possible to specify multiple contexts to the datadoc CLI tool. [\#572](https://github.com/EMMC-ASBL/tripper/pull/572) ([jesper-friis](https://github.com/jesper-friis))
+- Updated mkdocs due to safety issue [\#571](https://github.com/EMMC-ASBL/tripper/pull/571) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#569](https://github.com/EMMC-ASBL/tripper/pull/569) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Don't convert None returned by ts.query to string [\#567](https://github.com/EMMC-ASBL/tripper/pull/567) ([jesper-friis](https://github.com/jesper-friis))
+- Allow to parse a context from a path objet [\#565](https://github.com/EMMC-ASBL/tripper/pull/565) ([jesper-friis](https://github.com/jesper-friis))
+- test\(datadoc\): cover IRI-valued search criteria [\#564](https://github.com/EMMC-ASBL/tripper/pull/564) ([nyxst4ck](https://github.com/nyxst4ck))
+- Allow prefixes argument of expand\_iri\(\) to map to a Namespace object. [\#563](https://github.com/EMMC-ASBL/tripper/pull/563) ([jesper-friis](https://github.com/jesper-friis))
+- Simplify header syntax [\#562](https://github.com/EMMC-ASBL/tripper/pull/562) ([jesper-friis](https://github.com/jesper-friis))
+- Update documentation of available contexts in get\_context [\#561](https://github.com/EMMC-ASBL/tripper/pull/561) ([francescalb](https://github.com/francescalb))
+- Fix issue when the domain is a logical construct [\#560](https://github.com/EMMC-ASBL/tripper/pull/560) ([jesper-friis](https://github.com/jesper-friis))
+- Added option on how to consider keys that are unknown when storing [\#559](https://github.com/EMMC-ASBL/tripper/pull/559) ([francescalb](https://github.com/francescalb))
+- Fix context in doctest [\#555](https://github.com/EMMC-ASBL/tripper/pull/555) ([francescalb](https://github.com/francescalb))
+- table\_parse add header with prefix and as iris [\#553](https://github.com/EMMC-ASBL/tripper/pull/553) ([francescalb](https://github.com/francescalb))
+- Theme doc [\#551](https://github.com/EMMC-ASBL/tripper/pull/551) ([francescalb](https://github.com/francescalb))
+- prefLabel used as key first [\#550](https://github.com/EMMC-ASBL/tripper/pull/550) ([francescalb](https://github.com/francescalb))
+- Make `told()` accept numerical values [\#549](https://github.com/EMMC-ASBL/tripper/pull/549) ([jesper-friis](https://github.com/jesper-friis))
+- Allow tabledoc to have prefix in the header [\#548](https://github.com/EMMC-ASBL/tripper/pull/548) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#545](https://github.com/EMMC-ASBL/tripper/pull/545) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+
 ## [v0.5.3](https://github.com/EMMC-ASBL/tripper/tree/v0.5.3) (2026-05-13)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.2...v0.5.3)

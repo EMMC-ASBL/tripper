@@ -484,33 +484,63 @@ def test_column_sep():
     assert s1["dcterms:title"] == "A title, with a comma"
 
 
-def test_unknown_header_full_iri():
-    """Test that unknown full-IRI headers raise InvalidKeywordError."""
+def test_unknown_header():
+    """Test that unknown headers that are not IRIs raise InvalidKeywordError."""
 
     from tripper.datadoc import TableDoc
     from tripper.datadoc.errors import InvalidKeywordError
 
-    # Full IRI header not defined in context should raise
+    # Plain name not defined in context
+    td = TableDoc(headers=["@id", "unknown"], data=[("id1", "value1")])
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        td.asdicts()
+
+    # Prefixed name with a prefix that is unknown to the context
+    td = TableDoc(
+        headers=["@id", "unknown:property"], data=[("id1", "value1")]
+    )
+    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
+        td.asdicts()
+
+
+def test_extra_header_iri():
+    """Test that headers that are real IRIs are accepted even if they are
+    not defined in the context."""
+
+    from tripper.datadoc import TableDoc
+
+    # Full IRI
     td = TableDoc(
         headers=["@id", "http://example.com/unknown"],
         data=[("id1", "value1")],
     )
+    (d,) = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
+    assert d["http://example.com/unknown"] == "value1"
 
-    with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
-        td.asdicts()
+    # Prefixed name with a prefix known to the context
+    td = TableDoc(
+        headers=["@id", "dcterms:unknownproperty"], data=[("id1", "value1")]
+    )
+    (d,) = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
+    assert d["dcterms:unknownproperty"] == "value1"
+
+    # Prefixed name with a user-provided prefix
+    td = TableDoc(
+        headers=["@id", "ex:prop"],
+        data=[("id1", "value1")],
+        prefixes={"ex": "http://example.com/"},
+    )
+    (d,) = td.asdicts()  # pylint: disable=unbalanced-tuple-unpacking
+    assert d["ex:prop"] == "value1"
 
 
-def test_unknown_header_prefixed():
-    """Test that unknown prefixed headers raise InvalidKeywordError."""
+def test_unknown_header_csv(tmp_path):
+    """Test that parsing a csv file with an unknown header raises."""
 
     from tripper.datadoc import TableDoc
     from tripper.datadoc.errors import InvalidKeywordError
 
-    # Prefixed header not defined in context should raise
-    td = TableDoc(
-        headers=["@id", "unknown:property"],
-        data=[("id1", "value1")],
-    )
-
+    csvfile = tmp_path / "unknown.csv"
+    csvfile.write_text("@id,unknown\nid1,value1\n")
     with pytest.raises(InvalidKeywordError, match="Unknown keyword/IRI"):
-        td.asdicts()
+        TableDoc.parse_csv(csvfile).asdicts()
