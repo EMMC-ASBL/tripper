@@ -824,6 +824,7 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
 def prefix_iri(
     iri: str, prefixes: dict, strict: bool = False, ns_translate: bool = True
 ) -> str:
+    # pylint: disable=line-too-long
     """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
@@ -854,8 +855,9 @@ def prefix_iri(
 
     # ...unless `strict=True`, in which case an NamespaceError is raised.
     >>> prefix_iri("http://example.org/something", prefixes, strict=True)
-    ...
-    NamespaceError: No prefix defined for IRI: http://example.org/something
+    Traceback (most recent call last):
+        ...
+    tripper.errors.NamespaceError: No prefix defined for IRI: http://example.org/something
 
     # If `ns_translate` is true (default), the namespace is used for
     # translating human readable "pseudo" CURIEs:
