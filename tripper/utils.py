@@ -836,7 +836,7 @@ def prefix_iri(
 
     If `ns_translate` is true, use the namespace to translate `iri`.
     For example, if `prefixes` maps "emmo" to a Namespace object with
-    `label_annotations` set, then will "emmo:Dataset" be translated to
+    `label_annotations` set, then "emmo:Dataset" will be translated to
     "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a":
 
     Examples
