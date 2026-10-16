@@ -834,9 +834,16 @@ def prefix_iri(
     If `strict` is true, a NamespaceError exception is raised
     if no prefix can be found.
 
-    If `ns_translate` is true, use the namespace to translate `iri`.
-    For example, if `prefixes` maps "emmo" to a Namespace object with
-    `label_annotations` set, then "emmo:Dataset" will be translated to
+    If `ns_translate` is true, the namespace is used to translate `iri`
+    from an iri contructed from namespace + label to the real iri.
+    This is useful when it is easier to refer to a concept by prefix + label
+    than an unreadable alphanumeric IRI. It requires that the Namspace object
+    includes a specification of `label_annotations`.
+
+    For example, the "emmo" prefix is mapped to a Namespace object with
+    `label_annotations` set to `skos:prefLabel`. The concept
+    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a" in EMMO has
+    `prefLabel` "Dataset" and thus "emmo:Dataset" will be translated to
     "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a":
 
     Examples
