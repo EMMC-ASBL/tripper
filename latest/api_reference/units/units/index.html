@@ -2186,34 +2186,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="parse_units()">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tripper.units.units.UnitRegistry.parse_units--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tripper.units.units.UnitRegistry.parse_units--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Returns
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
         
           <li class="md-nav__item">
@@ -2974,34 +2946,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="parse_units()">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tripper.units.units.UnitRegistry.parse_units--parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tripper.units.units.UnitRegistry.parse_units--returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Returns
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -4107,6 +4051,8 @@ from ontologies.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_units</span><span class="p">(</span>  <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Parses a unit expression string and returns a UnitContainer object</span>
+<span class="sd">        with canonical unit names."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse_units</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">pint</span><span class="o">.</span><span class="n">UndefinedUnitError</span><span class="p">:</span>
@@ -5509,26 +5455,16 @@ and exception since it is defined without a value in the ontology.</p>
 
     <div class="doc doc-contents ">
 
-      <p>Parse a units expression and returns a UnitContainer with
-the canonical names.</p>
-<p>The expression can only contain products, ratios and powers of units.</p>
-<h5 id="tripper.units.units.UnitRegistry.parse_units--parameters">Parameters<a class="headerlink" href="#tripper.units.units.UnitRegistry.parse_units--parameters" title="Permanent link">&para;</a></h5>
-<p>input_string : str
-as_delta : bool or None
-    if the expression has multiple units, the parser will
-    interpret non multiplicative units as their <code>delta_</code> counterparts. (Default value = None)
-case_sensitive : bool or None
-    Control if unit parsing is case sensitive. Defaults to None, which uses the
-    registry's setting.</p>
-<h5 id="tripper.units.units.UnitRegistry.parse_units--returns">Returns<a class="headerlink" href="#tripper.units.units.UnitRegistry.parse_units--returns" title="Permanent link">&para;</a></h5>
-<div class="language-text highlight"><pre><span></span><code>pint.Unit
-</code></pre></div>
+      <p>Parses a unit expression string and returns a UnitContainer object
+with canonical unit names.</p>
 
         <details class="quote">
           <summary>Source code in <code>tripper/units/units.py</code></summary>
           <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parse_units</span><span class="p">(</span>  <span class="c1"># pylint: disable=arguments-differ</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Parses a unit expression string and returns a UnitContainer object</span>
+<span class="sd">    with canonical unit names."""</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse_units</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">pint</span><span class="o">.</span><span class="n">UndefinedUnitError</span><span class="p">:</span>

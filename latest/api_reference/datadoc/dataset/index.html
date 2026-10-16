@@ -4517,6 +4517,7 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
         <span class="n">default_theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># we are calling update_context() below</span>
     <span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">sync_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">told</span><span class="p">(</span>
         <span class="n">source</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
@@ -4553,8 +4554,6 @@ by the <code>context</code> or <code>keywords</code> arguments.</p>
                     <span class="s2">"Should be one of: 'overwrite', 'raise', 'ignore' or "</span>
                     <span class="s2">"'merge'"</span>
                 <span class="p">)</span>
-
-    <span class="n">context</span><span class="o">.</span><span class="n">sync_prefixes</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
 
     <span class="n">update_restrictions</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">restrictions</span><span class="o">=</span><span class="n">restrictions</span><span class="p">)</span>
 
@@ -4777,7 +4776,7 @@ or included in the JSON-LD context.</p></td>
         <span class="n">d</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span>
         <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span> <span class="k">if</span> <span class="n">context</span> <span class="k">else</span> <span class="p">{},</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
         <span class="n">root</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">hasid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>

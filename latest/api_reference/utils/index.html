@@ -1224,6 +1224,67 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="prefix_iri()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--if-iri-doesnt-match-a-prefix-it-is-returned-unmodified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If doesn't match a prefix, it is returned unmodified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--unless-stricttrue-in-which-case-an-namespaceerror-is-raised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ...unless , in which case an NamespaceError is raised.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--if-ns_translate-is-true-default-the-namespace-is-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If is true (default), the namespace is used for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--translating-human-readable-pseudo-curies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        translating human readable "pseudo" CURIEs:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--no-such-translation-is-done-if-ns_translate-is-false" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No such translation is done if is false.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2366,6 +2427,67 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="prefix_iri()">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--if-iri-doesnt-match-a-prefix-it-is-returned-unmodified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If doesn't match a prefix, it is returned unmodified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--unless-stricttrue-in-which-case-an-namespaceerror-is-raised" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ...unless , in which case an NamespaceError is raised.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--if-ns_translate-is-true-default-the-namespace-is-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If is true (default), the namespace is used for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--translating-human-readable-pseudo-curies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        translating human readable "pseudo" CURIEs:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tripper.utils.prefix_iri--no-such-translation-is-done-if-ns_translate-is-false" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No such translation is done if is false.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3902,7 +4024,7 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
 
 <h2 id="tripper.utils.prefix_iri" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ns_translate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 
 <a href="#tripper.utils.prefix_iri" class="headerlink" title="Permanent link">&para;</a></h2>
@@ -3911,26 +4033,141 @@ is that this function correctly interprets n3-encoded literal strings.</p>
 
       <p>Return prefixed IRI, a.k.a. a compact URI (CURIE).</p>
 <p>This is the reverse of expand_iri().</p>
+<p>See <code>expand_iri()</code> for the <code>prefixes</code> argument.</p>
 <p>If <code>strict</code> is true, a NamespaceError exception is raised
 if no prefix can be found.</p>
+<p>If <code>ns_translate</code> is true, the namespace is used to translate <code>iri</code>
+from an iri contructed from namespace + label to the real iri.
+This is useful when it is easier to refer to a concept by prefix + label
+than an unreadable alphanumeric IRI. It requires that the Namspace object
+includes a specification of <code>label_annotations</code>.</p>
+<p>For example, the "emmo" prefix is mapped to a Namespace object with
+<code>label_annotations</code> set to <code>skos:prefLabel</code>. The concept
+"emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a" in EMMO has
+<code>prefLabel</code> "Dataset" and thus "emmo:Dataset" will be translated to
+"emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a":</p>
+<p>Examples</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>from tripper import DCTERMS, EMMO
+from tripper.utils import prefix_iri</p>
+<p>prefixes = {"dcterms": DCTERMS, "emmo": EMMO}</p>
+<p>prefix_iri(DCTERMS.creator, prefixes)
+'dcterms:creator'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3 id="tripper.utils.prefix_iri--if-iri-doesnt-match-a-prefix-it-is-returned-unmodified">If <code>iri</code> doesn't match a prefix, it is returned unmodified<a class="headerlink" href="#tripper.utils.prefix_iri--if-iri-doesnt-match-a-prefix-it-is-returned-unmodified" title="Permanent link">&para;</a></h3>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>prefix_iri("http://example.org/something", prefixes)
+'http://example.org/something'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3 id="tripper.utils.prefix_iri--unless-stricttrue-in-which-case-an-namespaceerror-is-raised">...unless <code>strict=True</code>, in which case an NamespaceError is raised.<a class="headerlink" href="#tripper.utils.prefix_iri--unless-stricttrue-in-which-case-an-namespaceerror-is-raised" title="Permanent link">&para;</a></h3>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>prefix_iri("http://example.org/something", prefixes, strict=True)
+Traceback (most recent call last):
+    ...
+tripper.errors.NamespaceError: No prefix defined for IRI: http://example.org/something</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3 id="tripper.utils.prefix_iri--if-ns_translate-is-true-default-the-namespace-is-used-for">If <code>ns_translate</code> is true (default), the namespace is used for<a class="headerlink" href="#tripper.utils.prefix_iri--if-ns_translate-is-true-default-the-namespace-is-used-for" title="Permanent link">&para;</a></h3>
+<h3 id="tripper.utils.prefix_iri--translating-human-readable-pseudo-curies">translating human readable "pseudo" CURIEs:<a class="headerlink" href="#tripper.utils.prefix_iri--translating-human-readable-pseudo-curies" title="Permanent link">&para;</a></h3>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>prefix_iri("emmo:Atom", prefixes)
+'emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3 id="tripper.utils.prefix_iri--no-such-translation-is-done-if-ns_translate-is-false">No such translation is done if <code>ns_translate</code> is false.<a class="headerlink" href="#tripper.utils.prefix_iri--no-such-translation-is-done-if-ns_translate-is-false" title="Permanent link">&para;</a></h3>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>prefix_iri("emmo:Atom", prefixes, ns_translate=False)
+'emmo:Atom'</p>
+</blockquote>
+</blockquote>
+</blockquote>
 
         <details class="quote">
           <summary>Source code in <code>tripper/utils.py</code></summary>
-          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span><span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+          <div class="language-python highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prefix_iri</span><span class="p">(</span>
+    <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">ns_translate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">"""Return prefixed IRI, a.k.a. a compact URI (CURIE).</span>
 
 <span class="sd">    This is the reverse of expand_iri().</span>
 
+<span class="sd">    See `expand_iri()` for the `prefixes` argument.</span>
+
 <span class="sd">    If `strict` is true, a NamespaceError exception is raised</span>
 <span class="sd">    if no prefix can be found.</span>
 
+<span class="sd">    If `ns_translate` is true, the namespace is used to translate `iri`</span>
+<span class="sd">    from an iri contructed from namespace + label to the real iri.</span>
+<span class="sd">    This is useful when it is easier to refer to a concept by prefix + label</span>
+<span class="sd">    than an unreadable alphanumeric IRI. It requires that the Namspace object</span>
+<span class="sd">    includes a specification of `label_annotations`.</span>
+
+<span class="sd">    For example, the "emmo" prefix is mapped to a Namespace object with</span>
+<span class="sd">    `label_annotations` set to `skos:prefLabel`. The concept</span>
+<span class="sd">    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a" in EMMO has</span>
+<span class="sd">    `prefLabel` "Dataset" and thus "emmo:Dataset" will be translated to</span>
+<span class="sd">    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a":</span>
+
+<span class="sd">    Examples</span>
+
+<span class="sd">    &gt;&gt;&gt; from tripper import DCTERMS, EMMO</span>
+<span class="sd">    &gt;&gt;&gt; from tripper.utils import prefix_iri</span>
+
+<span class="sd">    &gt;&gt;&gt; prefixes = {"dcterms": DCTERMS, "emmo": EMMO}</span>
+
+<span class="sd">    &gt;&gt;&gt; prefix_iri(DCTERMS.creator, prefixes)</span>
+<span class="sd">    'dcterms:creator'</span>
+
+<span class="sd">    # If `iri` doesn't match a prefix, it is returned unmodified</span>
+<span class="sd">    &gt;&gt;&gt; prefix_iri("http://example.org/something", prefixes)</span>
+<span class="sd">    'http://example.org/something'</span>
+
+<span class="sd">    # ...unless `strict=True`, in which case an NamespaceError is raised.</span>
+<span class="sd">    &gt;&gt;&gt; prefix_iri("http://example.org/something", prefixes, strict=True)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    tripper.errors.NamespaceError: No prefix defined for IRI: http://example.org/something</span>
+
+<span class="sd">    # If `ns_translate` is true (default), the namespace is used for</span>
+<span class="sd">    # translating human readable "pseudo" CURIEs:</span>
+<span class="sd">    &gt;&gt;&gt; prefix_iri("emmo:Atom", prefixes)</span>
+<span class="sd">    'emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'</span>
+
+<span class="sd">    # No such translation is done if `ns_translate` is false.</span>
+<span class="sd">    &gt;&gt;&gt; prefix_iri("emmo:Atom", prefixes, ns_translate=False)</span>
+<span class="sd">    'emmo:Atom'</span>
+
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">MATCH_PREFIXED_IRI</span><span class="p">,</span> <span class="n">iri</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">"</span>
-        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No prefix defined for IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="o">:=</span> <span class="n">MATCH_PREFIXED_IRI</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
+        <span class="n">prefix</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="o">:=</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ns_translate</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">m2</span> <span class="o">:=</span> <span class="n">MATCH_IRI</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ns</span><span class="p">[</span><span class="n">name</span><span class="p">]):</span>
+                    <span class="n">newname</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># mypy: ignore[union-attr]</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">newname</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="n">iri</span>
+    <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">iri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">iri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):]</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No prefix defined for IRI: </span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">iri</span>
 </code></pre></div>
         </details>

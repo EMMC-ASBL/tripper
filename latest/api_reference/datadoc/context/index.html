@@ -2690,6 +2690,7 @@ Context        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
             <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="s2">"ContextType"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Add a context to this object."""</span>
@@ -2737,7 +2738,10 @@ Context        </code>
                         <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">d</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span>
@@ -2793,6 +2797,7 @@ Context        </code>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">"mappings"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_prefix"</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                 <span class="n">prefixes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span>
+        <span class="n">prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namespace_prefixes</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">prefixes</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -2929,6 +2934,10 @@ Context        </code>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pf</span> <span class="o">:=</span> <span class="n">prefix_iri</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pf</span>
+            <span class="k">return</span> <span class="n">pf</span>
         <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"cannot prefix: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">name</span>
@@ -3176,7 +3185,7 @@ Context        </code>
         <span class="n">aliases</span><span class="p">:</span> <span class="s2">"dict[str, list[str]]"</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">pfx</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">expanded</span> <span class="ow">in</span> <span class="n">mappings</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">expanded</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">ns</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">expanded</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
                     <span class="n">local</span> <span class="o">=</span> <span class="n">expanded</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="p">:]</span>
                     <span class="n">aliases</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">expanded</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pfx</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">local</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
@@ -3472,7 +3481,10 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
                     <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">d</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ld</span><span class="o">.</span><span class="n">process_context</span><span class="p">(</span>
@@ -3522,6 +3534,7 @@ via the <code>tripper.keywords</code> entry-point group.</p></td>
     <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span>
         <span class="p">{</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">namespace</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
 </code></pre></div>
         </details>
     </div>
@@ -3859,6 +3872,7 @@ context.expand("Dataset")
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">[</span><span class="s2">"mappings"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_prefix"</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"@id"</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
             <span class="n">prefixes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">"@id"</span><span class="p">]</span>
+    <span class="n">prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namespace_prefixes</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prefixes</span>
 </code></pre></div>
         </details>
@@ -4152,6 +4166,10 @@ context.prefixed("Dataset")
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_caches</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">pf</span> <span class="o">:=</span> <span class="n">prefix_iri</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pf</span>
+        <span class="k">return</span> <span class="n">pf</span>
     <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NamespaceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"cannot prefix: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span>
