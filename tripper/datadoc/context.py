@@ -190,6 +190,7 @@ class Context:
         self.add_context(
             {prefix: str(namespace) for prefix, namespace in prefixes.items()}
         )
+        self._create_caches()
 
     def add_context(self, context: "ContextType") -> None:
         """Add a context to this object."""
@@ -237,7 +238,10 @@ class Context:
                         )
                 if isinstance(v, dict):
                     d[k] = rec(v)
-            return d
+            return {
+                k: str(v) if isinstance(v, Namespace) else v
+                for k, v in d.items()
+            }
 
         try:
             self.ctx = self.ld.process_context(
@@ -293,6 +297,7 @@ class Context:
         for k, v in self.ctx["mappings"].items():
             if v.get("_prefix") and "@id" in v:
                 prefixes[k] = v["@id"]
+        prefixes.update(self._namespace_prefixes)
         return prefixes
 
     def get_properties(self) -> dict:
@@ -429,6 +434,10 @@ class Context:
             self._create_caches()
         if name in self._prefixed:
             return self._prefixed[name]
+        if pf := prefix_iri(name, self.get_prefixes(), strict=strict):
+            if strict:
+                self._prefixed[name] = pf
+            return pf
         if strict:
             raise NamespaceError(f"cannot prefix: {name}")
         return name
@@ -676,7 +685,7 @@ class Context:
         aliases: "dict[str, list[str]]" = {}
         for pfx, ns in prefixes.items():
             for expanded in mappings.values():
-                if expanded.startswith(ns):
+                if expanded.startswith(str(ns)):
                     local = expanded[len(ns) :]
                     aliases.setdefault(expanded, []).append(f"{pfx}:{local}")
 

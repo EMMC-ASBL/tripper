@@ -20,7 +20,7 @@ jobs:
       skip_pre-commit_hooks: "generate-context-and-doc"
 
       ## pylint & safety
-      python_version_pylint_safety: "3.11"
+      python_version_pylint_safety: "3.14"
 
       # pylint-specific settings
       run_pylint: true
@@ -33,13 +33,13 @@ jobs:
 
       ## Build package
       run_build_package: true
-      python_version_package: "3.11"
+      python_version_package: "3.14"
       build_libs: flit
       build_cmd: flit build
 
       ## Build documentation
       run_build_docs: true
-      python_version_docs: "3.11"
+      python_version_docs: "3.14"
       warnings_as_errors: true
       use_mkdocs: true
 

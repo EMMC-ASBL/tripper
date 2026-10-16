@@ -68,7 +68,6 @@ from tripper.utils import (
     is_uri,
     openfile,
     parse_literal,
-    prefix_iri,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -244,7 +243,7 @@ def told(
         d,
         type=type,
         keywords=keywords,
-        prefixes=context.get_prefixes() if context else {},
+        context=context,
         root=True,
         hasid=False,
     )
@@ -254,15 +253,12 @@ def _told(
     descr: "Union[dict, list, str]",
     type: "Optional[str]",
     keywords: "Keywords",
-    prefixes: "dict",
+    context: Context,
     root: bool = False,  # true at first recursive call
     hasid: bool = True,  # whether description has an @id
 ):
     """Recursive help function for told()."""
     # pylint: disable=too-many-statements
-
-    def expand(iri):
-        return expand_iri(iri, prefixes)
 
     def torange(kw):
         return keywords[kw].range if kw in keywords else None
@@ -272,11 +268,12 @@ def _told(
         classes = cls if isinstance(cls, list) else [cls]
         missing = []
         for c in classes:
+            prefixed = context.prefixed(c, strict=False)
             try:
                 add(d, "@type", keywords.superclasses(c))
             except NoSuchTypeError:
-                missing.append(prefix_iri(c, keywords.get_prefixes()))
-                add(d, "@type", c)
+                missing.append(prefixed)
+                add(d, "@type", prefixed)
             if missing:
                 # Using logging.info() here, since warnings is too verbose
                 # pylint: disable=logging-fstring-interpolation
@@ -295,7 +292,7 @@ def _told(
 
         uniq = {}
         for t in get(d, "@type"):
-            expanded = expand(t) if isinstance(t, str) else t
+            expanded = context.expand(t) if isinstance(t, str) else t
             if expanded not in uniq:
                 uniq[expanded] = t
             elif isinstance(t, str) and isinstance(uniq[expanded], str):
@@ -310,7 +307,7 @@ def _told(
         return descr
 
     if isinstance(descr, list):
-        lst = [_told(token, type, keywords, prefixes) for token in descr]
+        lst = [_told(token, type, keywords, context) for token in descr]
         return {"@graph": lst} if root else lst
 
     if not isinstance(descr, dict):
@@ -348,7 +345,7 @@ def _told(
         if k in ("@context", "@id", "@type"):
             pass
         elif k == "@graph":
-            d[k] = _told(v, type, keywords, prefixes)
+            d[k] = _told(v, type, keywords, context)
         elif k == "mappingURL":
             for url in get(descr, k):
                 with Triplestore("rdflib") as ts:
@@ -357,7 +354,7 @@ def _told(
         elif k in ("statements", "mappings"):
             lst = [
                 [
-                    expand(get(descr, e, e)[0] if e[0] == "@" else e)
+                    context.expand(get(descr, e, e)[0] if e[0] == "@" else e)
                     for e in spo
                 ]
                 for i, spo in enumerate(descr[k])
@@ -379,12 +376,12 @@ def _told(
         elif isinstance(v, (str, int, float, bool, None.__class__)):
             d[k] = v
         elif isinstance(v, list):
-            d[k] = _told(v, torange(k), keywords, prefixes)
+            d[k] = _told(v, torange(k), keywords, context)
         elif isinstance(v, dict):
             if k in keywords and "datatype" in keywords[k]:
                 d[k] = v
             else:
-                d[k] = _told(v, torange(k), keywords, prefixes)
+                d[k] = _told(v, torange(k), keywords, context)
 
     _deduplicate_types(d)
 
@@ -462,6 +459,7 @@ def store(  # pylint: disable=too-many-arguments
         default_theme=None,
         copy=True,  # we are calling update_context() below
     )
+    context.sync_prefixes(ts)
     doc = told(
         source,
         type=type,
@@ -498,8 +496,6 @@ def store(  # pylint: disable=too-many-arguments
                     "Should be one of: 'overwrite', 'raise', 'ignore' or "
                     "'merge'"
                 )
-
-    context.sync_prefixes(ts)
 
     update_restrictions(doc, context=context, restrictions=restrictions)
 

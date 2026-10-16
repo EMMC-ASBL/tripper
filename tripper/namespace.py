@@ -269,6 +269,9 @@ class Namespace:
     def __str__(self):
         return self._iri
 
+    def __len__(self):
+        return len(self._iri)
+
     def __add__(self, other):
         return self._iri + str(other)
 
