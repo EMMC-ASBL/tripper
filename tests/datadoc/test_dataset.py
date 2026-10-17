@@ -805,7 +805,7 @@ def test_literals_not_checked_in_context():
     from tripper.datadoc import get_context, told
     from tripper.datadoc.dataset import update_restrictions
 
-    prefixes = {"dummy": "https://dummypoject.eu/"}
+    prefixes = {"dummy": "https://dummyproject.eu/"}
     context = get_context()
 
     # Directly add the "missing" class in the context
@@ -1203,7 +1203,7 @@ def test_deprecated():
         },
     }
     with pytest.warns(DeprecationWarning):
-        save_dict(ts, d, type="Dataset")
+        save_dict(ts, d, type="Dataset", prefixes={"ex": EX})
 
     with pytest.warns(DeprecationWarning):
         d2 = load_dict(ts, EX.exdata)

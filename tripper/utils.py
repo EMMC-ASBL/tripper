@@ -1,6 +1,6 @@
 """Utility functions."""
 
-# pylint: disable=invalid-name,redefined-builtin
+# pylint: disable=invalid-name,redefined-builtin,too-many-lines
 import datetime
 import hashlib
 import inspect
@@ -821,21 +821,74 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
     return iri
 
 
-def prefix_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
+def prefix_iri(
+    iri: str, prefixes: dict, strict: bool = False, ns_translate: bool = True
+) -> str:
+    # pylint: disable=line-too-long
     """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
 
+    See `expand_iri()` for the `prefixes` argument.
+
     If `strict` is true, a NamespaceError exception is raised
     if no prefix can be found.
 
+    If `ns_translate` is true, the namespace is used to translate `iri`
+    from an iri contructed from namespace + label to the real iri.
+    This is useful when it is easier to refer to a concept by prefix + label
+    than an unreadable alphanumeric IRI. It requires that the Namspace object
+    includes a specification of `label_annotations`.
+
+    For example, the "emmo" prefix is mapped to a Namespace object with
+    `label_annotations` set to `skos:prefLabel`. The concept
+    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a" in EMMO has
+    `prefLabel` "Dataset" and thus "emmo:Dataset" will be translated to
+    "emmo:EMMO_194e367c_9783_4bf5_96d0_9ad597d48d9a":
+
+    Examples
+
+    >>> from tripper import DCTERMS, EMMO
+    >>> from tripper.utils import prefix_iri
+
+    >>> prefixes = {"dcterms": DCTERMS, "emmo": EMMO}
+
+    >>> prefix_iri(DCTERMS.creator, prefixes)
+    'dcterms:creator'
+
+    # If `iri` doesn't match a prefix, it is returned unmodified
+    >>> prefix_iri("http://example.org/something", prefixes)
+    'http://example.org/something'
+
+    # ...unless `strict=True`, in which case an NamespaceError is raised.
+    >>> prefix_iri("http://example.org/something", prefixes, strict=True)
+    Traceback (most recent call last):
+        ...
+    tripper.errors.NamespaceError: No prefix defined for IRI: http://example.org/something
+
+    # If `ns_translate` is true (default), the namespace is used for
+    # translating human readable "pseudo" CURIEs:
+    >>> prefix_iri("emmo:Atom", prefixes)
+    'emmo:EMMO_eb77076b_a104_42ac_a065_798b2d2809ad'
+
+    # No such translation is done if `ns_translate` is false.
+    >>> prefix_iri("emmo:Atom", prefixes, ns_translate=False)
+    'emmo:Atom'
+
     """
-    if not re.match(MATCH_PREFIXED_IRI, iri):
-        for prefix, ns in prefixes.items():
-            if iri.startswith(str(ns)):
-                return f"{prefix}:{iri[len(str(ns)):]}"
-        if strict:
-            raise NamespaceError(f"No prefix defined for IRI: {iri}")
+    if m := MATCH_PREFIXED_IRI.match(iri):
+        prefix, name, _ = m.groups()
+        if ns := prefixes.get(prefix):
+            if ns_translate and isinstance(ns, Namespace):
+                if m2 := MATCH_IRI.match(ns[name]):
+                    newname = m2.groups()[4]  # mypy: ignore[union-attr]
+                    return f"{prefix}:{newname}"
+        return iri
+    for prefix, ns in prefixes.items():
+        if iri.startswith(str(ns)):
+            return f"{prefix}:{iri[len(str(ns)):]}"
+    if strict:
+        raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
 
 
