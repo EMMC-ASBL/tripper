@@ -144,6 +144,9 @@ def test_call():
     with pytest.raises(NamespaceError):
         EMMO("https://w3id.org/emmo#xxx")
 
+    assert DCTERMS("a", default="b") == "b"
+    assert EMMO(EMMO.Atom + "x", default="y") == "y"
+
 
 def test_triplestore_arg() -> None:
     """Test triplestore argument of Namespace.__init__()."""

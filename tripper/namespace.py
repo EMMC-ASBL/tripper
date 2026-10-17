@@ -21,6 +21,10 @@ if TYPE_CHECKING:  # pragma: no cover
     from tripper.triplestore import Triplestore
 
 
+# Sentinel used for default arguments when None may be a valid value
+MISSING = object()
+
+
 class Namespace:
     """Represent a namespace.
 
@@ -334,9 +338,26 @@ class Namespace:
         """
         return self._iri
 
-    def __call__(self, iri):
-        """Returns the name or label associated with the given iri."""
+    def __call__(self, iri, default=MISSING):
+        # pylint: disable=line-too-long
+        """Returns the name or label associated with the given iri.
+
+        If `iri` is not in the namespace, a NamespaceError is raised, unless
+        `default` is given, in what case `default` is returned.
+
+        Examples:
+
+        >>> from tripper import EMMO, OWL
+        >>> OWL("http://www.w3.org/2002/07/owl#Thing")
+        'Thing'
+
+        >>> EMMO("https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad")
+        'Atom'
+
+        """
         if not iri.startswith(self._iri):
+            if default is not MISSING:
+                return default
             raise NamespaceError(
                 f"IRI '{iri}' is not in namespace '{self._iri}'"
             )
@@ -353,6 +374,8 @@ class Namespace:
                 iri: label for label, iri in reversed(self._iris.items())
             }
         if iri not in self._reviris:
+            if default is not MISSING:
+                return default
             cachefile = self._get_cachefile()
             raise NoSuchIRIError(
                 f"{iri}\n"
