@@ -21,9 +21,8 @@ except ImportError as exc:
         "rdflib is not installed.\nInstall it with:\n\n    pip install rdflib"
     ) from exc
 
-from rdflib import BNode, Graph
+from rdflib import BNode, Graph, URIRef
 from rdflib import Literal as rdflibLiteral
-from rdflib import URIRef
 from rdflib.util import guess_format
 
 from tripper import Literal
