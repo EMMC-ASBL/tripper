@@ -343,8 +343,8 @@ class Context:
         - None:  A PrefixMismatchError is raised.
 
         """
-        ns1 = self.get_prefixes()
-        ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}
+        ns1 = self.get_prefixes()  # context prefixes
+        ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}  # namespace prefixes
         if update is None:
             mismatch = [
                 p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]
