@@ -370,7 +370,7 @@ class Context:
 
         self.add_prefixes(prefixes)
         for prefix, ns in prefixes.items():
-            # The triplestore is bond to Namespace objects. Don't change them
+            # The triplestore is bound to Namespace objects. Don't change them
             # unless required
             if prefix not in ns2 or ns2[prefix] != ns:
                 ts.bind(prefix, ns)
