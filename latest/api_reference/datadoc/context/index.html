@@ -2843,8 +2843,10 @@ Context        </code>
 <span class="sd">        - None:  A PrefixMismatchError is raised.</span>
 
 <span class="sd">        """</span>
-        <span class="n">ns1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">ns2</span> <span class="o">=</span> <span class="p">{</span><span class="n">pf</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">ns1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>  <span class="c1"># context prefixes</span>
+        <span class="n">ns2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">pf</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>  <span class="c1"># namespace prefixes</span>
         <span class="k">if</span> <span class="n">update</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mismatch</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ns1</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span> <span class="k">if</span> <span class="n">ns1</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ns2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
@@ -2862,16 +2864,17 @@ Context        </code>
                 <span class="k">raise</span> <span class="n">PrefixMismatchError</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
-            <span class="n">ns1</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span>
-            <span class="n">ns2</span> <span class="o">=</span> <span class="n">ns1</span>
+            <span class="n">prefixes</span> <span class="o">=</span> <span class="n">ns1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">ns2</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns1</span><span class="p">)</span>
-            <span class="n">ns1</span> <span class="o">=</span> <span class="n">ns2</span>
+            <span class="n">prefixes</span> <span class="o">=</span> <span class="n">ns2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns1</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ns1</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_prefixes</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># The triplestore is bound to Namespace objects. Don't change them</span>
+            <span class="c1"># unless required</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ns2</span> <span class="ow">or</span> <span class="n">ns2</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ns</span><span class="p">:</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -4277,8 +4280,10 @@ If <code>update</code> is:</p>
 <span class="sd">    - None:  A PrefixMismatchError is raised.</span>
 
 <span class="sd">    """</span>
-    <span class="n">ns1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">ns2</span> <span class="o">=</span> <span class="p">{</span><span class="n">pf</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">ns1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prefixes</span><span class="p">()</span>  <span class="c1"># context prefixes</span>
+    <span class="n">ns2</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">pf</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="k">for</span> <span class="n">pf</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>  <span class="c1"># namespace prefixes</span>
     <span class="k">if</span> <span class="n">update</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">mismatch</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">ns1</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span> <span class="k">if</span> <span class="n">ns1</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ns2</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
@@ -4296,16 +4301,17 @@ If <code>update</code> is:</p>
             <span class="k">raise</span> <span class="n">PrefixMismatchError</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
-        <span class="n">ns1</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span>
-        <span class="n">ns2</span> <span class="o">=</span> <span class="n">ns1</span>
+        <span class="n">prefixes</span> <span class="o">=</span> <span class="n">ns1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">ns2</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns1</span><span class="p">)</span>
-        <span class="n">ns1</span> <span class="o">=</span> <span class="n">ns2</span>
+        <span class="n">prefixes</span> <span class="o">=</span> <span class="n">ns2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">prefixes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ns1</span><span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">add_context</span><span class="p">(</span><span class="n">ns2</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">ns1</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">add_prefixes</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># The triplestore is bound to Namespace objects. Don't change them</span>
+        <span class="c1"># unless required</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ns2</span> <span class="ow">or</span> <span class="n">ns2</span><span class="p">[</span><span class="n">prefix</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ns</span><span class="p">:</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">ns</span><span class="p">)</span>
 </code></pre></div>
         </details>
