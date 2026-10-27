@@ -208,14 +208,16 @@ class Triplestore:
         self.check_url = check_url if check_url else base_iri  # Deprecated
         self.kwargs = kwargs.copy()
         self.backend = cls(base_iri=base_iri, database=database, **kwargs)
-        if hasattr(self.backend, "namespaces"):
-            self.namespaces.update(self.backend.namespaces())
-
-        # Cache functions in the triplestore for fast access
-        self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
 
         for prefix, namespace in self.default_namespaces.items():
             self.bind(prefix, namespace)
+
+        if hasattr(self.backend, "namespaces"):
+            for prefix, ns in self.backend.namespaces().items():
+                self.bind(prefix, ns)
+
+        # Cache functions in the triplestore for fast access
+        self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
 
     def __enter__(self):
         return self
