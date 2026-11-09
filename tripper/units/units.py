@@ -10,7 +10,7 @@ import pickle  # nosec
 import re
 import sys
 import warnings
-from collections import namedtuple
+from collections import deque, namedtuple
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
@@ -33,7 +33,15 @@ from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path, PurePath
-    from typing import Any, Iterable, Mapping, Optional, Tuple, Union
+    from typing import (
+        Any,
+        Generator,
+        Iterable,
+        Mapping,
+        Optional,
+        Tuple,
+        Union,
+    )
 
     from pint.compat import TypeAlias
 
@@ -375,6 +383,9 @@ class Units:
                 url=url, format=format, name=name, cache=cache
             )
 
+        # Created on demand by _get_dimension_maps()
+        self._dimension_maps: "Optional[tuple[dict, dict, dict]]" = None
+
         self.ns = Namespace(
             iri="https://w3id.org/emmo#",
             label_annotations=True,
@@ -506,48 +517,80 @@ class Units:
         symbols.extend(f"1{s}" if s.startswith("/") else s for s in annotated)
         return symbols
 
+    def _get_dimension_maps(self) -> "tuple[dict, dict, dict]":
+        """Return dicts used for looking up dimension strings.
+
+        Returns a tuple of three dicts:
+            - parents: maps a class to a sorted list of its direct
+              superclasses (rdfs:subClassOf).
+            - dimstrs: maps a hasDimensionString restriction to its
+              dimension string.
+            - measurement_units: maps a hasMeasurementUnit restriction to
+              its unit (owl:someValuesFrom).
+
+        The dicts are created on first call by reading the triplestore
+        once.  This is much faster than doing a SPARQL query with a
+        `rdfs:subClassOf+` property path for every unit and quantity.
+        """
+        maps = self._dimension_maps
+        if maps is None:
+            parents: "dict[str, list]" = {}
+            for s, _, o in self.ts.triples(predicate=RDFS.subClassOf):
+                parents.setdefault(s, []).append(o)
+            for superclasses in parents.values():
+                superclasses.sort()
+
+            onprop = {
+                s: o for s, _, o in self.ts.triples(predicate=OWL.onProperty)
+            }
+            dimstr_prop = EMMO.hasDimensionString
+            dimstrs = {
+                s: o
+                for s, _, o in self.ts.triples(predicate=OWL.hasValue)
+                if onprop.get(s) == dimstr_prop
+            }
+            unit_prop = EMMO.hasMeasurementUnit
+            measurement_units = {
+                s: o
+                for s, _, o in self.ts.triples(predicate=OWL.someValuesFrom)
+                if onprop.get(s) == unit_prop
+            }
+            maps = (parents, dimstrs, measurement_units)
+            self._dimension_maps = maps
+        return maps
+
+    def _superclasses(self, iri: str) -> "Generator[str, None, None]":
+        """Generate all superclasses of `iri` (rdfs:subClassOf+) in
+        breadth-first order."""
+        parents = self._get_dimension_maps()[0]
+        visited = set()
+        queue = deque(parents.get(iri, ()))
+        while queue:
+            cls = queue.popleft()
+            if cls not in visited:
+                visited.add(cls)
+                yield cls
+                queue.extend(parents.get(cls, ()))
+
     def _get_unit_dimension_string(self, iri: str) -> str:
         """Return the dimension string for unit with the given IRI."""
-        query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?dimstr
-        WHERE {{
-          <{iri}> rdfs:subClassOf+ ?r .
-          ?r owl:onProperty <{EMMO.hasDimensionString}> .
-          ?r owl:hasValue ?dimstr .
-        }}
-        """
-        result = self.ts.query(query)
-        if result:
-            # Bug in mupy
-            return result[0][0]  # type: ignore
+        dimstrs = self._get_dimension_maps()[1]
+        for cls in self._superclasses(iri):
+            if cls in dimstrs:
+                return dimstrs[cls]
         raise MissingDimensionStringError(iri)
 
     def _get_quantity_dimension_string(self, iri: str) -> str:
         """Return the dimension string for quantity with the given IRI."""
-        # Note, the use of subquery greately speeds up this SPARQL query
-        query = f"""
-        PREFIX rdfs: <{RDFS}>
-        PREFIX owl: <{OWL}>
-        SELECT ?dimstr
-        WHERE {{
-          {{
-            SELECT ?dimunit WHERE {{
-              <{iri}> rdfs:subClassOf+ ?r .
-              ?r owl:onProperty <{EMMO.hasMeasurementUnit}> .
-              ?r owl:someValuesFrom ?dimunit .
-            }}
-          }}
-          ?dimunit rdfs:subClassOf+ ?rr .
-          ?rr owl:onProperty <{EMMO.hasDimensionString}> .
-          ?rr owl:hasValue ?dimstr .
-        }}
-        """  # nosec
-        result = self.ts.query(query)
-        if result:
-            # Bug in mupy
-            return result[0][0]  # type: ignore
+        measurement_units = self._get_dimension_maps()[2]
+        for cls in self._superclasses(iri):
+            if cls in measurement_units:
+                try:
+                    return self._get_unit_dimension_string(
+                        measurement_units[cls]
+                    )
+                except MissingDimensionStringError:
+                    pass
         raise MissingDimensionStringError(iri)
 
     def _parse_dimension_string(self, dimstr: str) -> "Any":
