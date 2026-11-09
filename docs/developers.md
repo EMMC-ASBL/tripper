@@ -67,6 +67,15 @@ with `@pytest.mark.xdist_group("triplestore")`, which makes them run in
 the same worker.  For debugging (e.g. with `--pdb` or `print()`), run
 without `-n`.
 
+The first time the tests are run, tripper creates a cache with e.g. the
+units table generated from EMMO.  To avoid that every worker creates it
+at the same time, you can create it before running the tests in
+parallel:
+
+```bash
+python tests/warm_cache.py
+```
+
 
 ### Running tests without internet access
 Tests that need internet access are marked with `network`.

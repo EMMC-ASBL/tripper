@@ -118,12 +118,20 @@ jobs:
         path: ~/.cache/tripper
         key: tripper-cache-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('tripper/units/**', 'tripper/context/**', 'pyproject.toml') }}
 
+    # Create the tripper cache once, instead of in every pytest-xdist
+    # worker.  Fast if the cache was restored.  On the coverage job, run
+    # it with coverage, which pytest appends to with --cov-append.
+    - name: Warm up tripper cache
+      env:
+        COVERAGE_CORE: sysmon
+      run: ${{ matrix.python-version == '3.14' && 'coverage run --source=tripper' || 'python' }} tests/warm_cache.py
+
     # Only measure coverage on the version that uploads to Codecov.
     # COVERAGE_CORE=sysmon uses the much faster sys.monitoring API (3.12+).
     - name: Test with pytest
       env:
         COVERAGE_CORE: sysmon
-      run: pytest -vvv -n auto --durations=20 ${{ matrix.python-version == '3.14' && '--cov-report=xml' || '--no-cov' }}
+      run: pytest -vvv -n auto --durations=20 ${{ matrix.python-version == '3.14' && '--cov-append --cov-report=xml' || '--no-cov' }}
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.14' && github.repository == 'EMMC-ASBL/tripper'
