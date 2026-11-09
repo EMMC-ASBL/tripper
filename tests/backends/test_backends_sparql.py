@@ -171,7 +171,7 @@ INSERT DATA {
 def test_graphdb(graphdb_available):
     """Test the sparqlwrapper backend using GraphDB."""
     if not graphdb_available:
-        pytest.skip("GraphDB service not available; skipping test.")
+        pytest.skip("GraphDB service or its 'test_repo' repository is missing")
     # Use service configured in tests/input/session.yaml
     populate_and_search("GraphDBTest")
 

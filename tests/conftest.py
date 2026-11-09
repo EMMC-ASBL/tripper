@@ -36,8 +36,11 @@ def fuseki_available() -> bool:
 @pytest.fixture(scope="session")
 def graphdb_available() -> bool:
     """Whether the GraphDB test service (see tests/input/session.yaml) is
-    running.  Checked once per test session."""
-    return _service_responds("http://localhost:7200/repositories")
+    running and has the "test_repo" repository.  Checked once per test
+    session."""
+    return _service_responds(
+        "http://localhost:7200/rest/repositories/test_repo"
+    )
 
 
 @pytest.fixture(scope="session")
