@@ -72,6 +72,7 @@ __all__ = (
     "substitute_query",
     "get_entry_points",
     "check_service_availability",
+    "service_responds",
 )
 
 MATCH_PREFIXED_IRI = re.compile(
@@ -1026,3 +1027,30 @@ def check_service_availability(
         if time.time() - start_time >= timeout:
             return False
         time.sleep(interval)
+
+
+def service_responds(url: str, timeout: float = 1.0) -> bool:
+    """Return whether the service with given URL responds with status 200.
+
+    Unlike `check_service_availability()`, this makes a single request
+    without retrying.  It is therefore fast when the service is not
+    running, but doesn't wait for a service that is starting up.
+
+    Arguments:
+        url: URL of the service to check.
+        timeout: Time in seconds to wait for a response.
+
+    Returns:
+        Returns true if the service responds with code 200, otherwise
+        false is returned.  False is also returned if `requests` is not
+        installed.
+    """
+    try:
+        import requests  # pylint: disable=import-outside-toplevel
+    except ImportError:
+        return False
+
+    try:
+        return requests.get(url, timeout=timeout).status_code == 200
+    except requests.exceptions.RequestException:
+        return False

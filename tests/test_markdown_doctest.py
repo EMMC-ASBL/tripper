@@ -46,13 +46,17 @@ markdown_files = sorted(
         for f in markdown_files
     ],
 )
-def test_markdown_doctest(relpath, fuseki_available):
+def test_markdown_doctest(relpath):
     """Runs doctest on a markdown file in the docs/ folder."""
     import doctest
 
+    from tripper.utils import service_responds
+
     path = docsdir / relpath
 
-    if path.name in fuseki_files and not fuseki_available:
+    if path.name in fuseki_files and not service_responds(
+        "http://localhost:3030"
+    ):
         pytest.skip("Fuseki is down, skipping doctest")
 
     result = doctest.testfile(str(path), module_relative=False)

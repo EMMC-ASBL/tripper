@@ -168,17 +168,23 @@ INSERT DATA {
     assert triples == [(EX.sub, EX.pred, EX.obj)]
 
 
-def test_graphdb(graphdb_available):
+def test_graphdb():
     """Test the sparqlwrapper backend using GraphDB."""
-    if not graphdb_available:
+    from tripper.utils import service_responds
+
+    if not service_responds(
+        "http://localhost:7200/rest/repositories/test_repo"
+    ):
         pytest.skip("GraphDB service or its 'test_repo' repository is missing")
     # Use service configured in tests/input/session.yaml
     populate_and_search("GraphDBTest")
 
 
-def test_fuseki(fuseki_available):
+def test_fuseki():
     """Test the sparqlwrapper backend using Fuseki."""
-    if not fuseki_available:
+    from tripper.utils import service_responds
+
+    if not service_responds("http://localhost:3030"):
         pytest.skip("Fuseki service not available; skipping test.")
     # Use service configured in tests/input/session.yaml
     populate_and_search("FusekiTest")

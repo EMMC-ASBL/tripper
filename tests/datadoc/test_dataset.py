@@ -1146,15 +1146,16 @@ def test_pipeline():
     pipeline.get()
 
 
-def test_fuseki(fuseki_available):
+def test_fuseki():
     """Test save and load dataset with Fuseki."""
     from dataset_paths import indir  # pylint: disable=import-error
 
     from tripper import Session
     from tripper.datadoc import acquire, delete, store
+    from tripper.utils import service_responds
 
     session = Session(indir / "session.yaml")
-    if not fuseki_available:
+    if not service_responds("http://localhost:3030"):
         pytest.skip("Cannot connect to Fuseki server")
     ts = session.get_triplestore("FusekiTest")
 
