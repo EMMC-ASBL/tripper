@@ -1,6 +1,19 @@
 # Changelog
 
-## [v0.5.4](https://github.com/EMMC-ASBL/tripper/tree/v0.5.4) (2026-09-23)
+## [v0.5.5](https://github.com/EMMC-ASBL/tripper/tree/v0.5.5) (2026-10-27)
+
+[Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.4...v0.5.5)
+
+**Merged pull requests:**
+
+- Corrected Context.sync\_prefixes\(\) [\#578](https://github.com/EMMC-ASBL/tripper/pull/578) ([jesper-friis](https://github.com/jesper-friis))
+- Include namespaces when loading an rdflib triplestore with `triplestore_url` argument [\#576](https://github.com/EMMC-ASBL/tripper/pull/576) ([jesper-friis](https://github.com/jesper-friis))
+- Changed datadoc-column to accept real IRIs in header [\#575](https://github.com/EMMC-ASBL/tripper/pull/575) ([francescalb](https://github.com/francescalb))
+- Translate namespace [\#574](https://github.com/EMMC-ASBL/tripper/pull/574) ([jesper-friis](https://github.com/jesper-friis))
+- \[pre-commit.ci\] pre-commit autoupdate [\#573](https://github.com/EMMC-ASBL/tripper/pull/573) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- Corrected Namespace.\_\_contains\_\_\(\) method [\#566](https://github.com/EMMC-ASBL/tripper/pull/566) ([jesper-friis](https://github.com/jesper-friis))
+
+## [v0.5.4](https://github.com/EMMC-ASBL/tripper/tree/v0.5.4) (2026-10-08)
 
 [Full Changelog](https://github.com/EMMC-ASBL/tripper/compare/v0.5.3...v0.5.4)
 

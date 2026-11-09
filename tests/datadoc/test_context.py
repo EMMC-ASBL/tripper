@@ -126,15 +126,29 @@ def test_sync_prefixes():
     from tripper import Triplestore
 
     ts = Triplestore("rdflib")
-    ns1 = ts.namespaces.copy()
-    pf1 = ctx.get_prefixes().copy()
     ctx.sync_prefixes(ts)
     ns2 = ts.namespaces.copy()
     pf2 = ctx.get_prefixes().copy()
-    assert len(ns2) > len(ns1)
-    assert len(pf2) >= len(pf1)
     # xml cannot be added to `ctx` since it doesn't end with a slash or hash
-    # assert pf2 == ns2
+    # Remove prefixes not ending with slash or hash from ns2
+    for prefix, ns in ns2.copy().items():
+        if str(ns)[-1] not in "/#":
+            del ns2[prefix]
+    assert pf2 == ns2
+
+    # Test update=False
+    ts.bind("ex", "http://example.com/")
+    ctx.add_prefixes({"ex": "http://www.ex.com/"})
+    ctx.sync_prefixes(ts, update=False)
+    assert str(ts.namespaces["ex"]) == "http://www.ex.com/"
+    assert ctx.get_prefixes()["ex"] == "http://www.ex.com/"
+
+    # Test update=True
+    ts.bind("ex", "http://example.com/")
+    ctx.add_prefixes({"ex": "http://www.ex.com/"})
+    ctx.sync_prefixes(ts, update=True)
+    assert str(ts.namespaces["ex"]) == "http://example.com/"
+    assert ctx.get_prefixes()["ex"] == "http://example.com/"
 
 
 def test_expand():
