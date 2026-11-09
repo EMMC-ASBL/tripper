@@ -343,8 +343,10 @@ class Context:
         - None:  A PrefixMismatchError is raised.
 
         """
-        ns1 = self.get_prefixes().copy()
-        ns2 = {pf: str(ns) for pf, ns in ts.namespaces.items()}
+        ns1 = self.get_prefixes()  # context prefixes
+        ns2 = {
+            pf: str(ns) for pf, ns in ts.namespaces.items()
+        }  # namespace prefixes
         if update is None:
             mismatch = [
                 p for p in set(ns1).intersection(ns2) if ns1[p] != ns2[p]
@@ -362,16 +364,17 @@ class Context:
                 raise PrefixMismatchError(os.linesep.join(msg))
 
         if update:
-            ns1.update(ns2)
-            ns2 = ns1
+            prefixes = ns1.copy()
+            prefixes.update(ns2)
         else:
-            ns2.update(ns1)
-            ns1 = ns2
+            prefixes = ns2.copy()
+            prefixes.update(ns1)
 
-        self.add_context(ns2)
-
-        for prefix, ns in ns1.items():
-            if prefix not in ts.namespaces:
+        self.add_prefixes(prefixes)
+        for prefix, ns in prefixes.items():
+            # The triplestore is bound to Namespace objects. Don't change them
+            # unless required
+            if prefix not in ns2 or ns2[prefix] != ns:
                 ts.bind(prefix, ns)
 
     def expand(self, name: str, strict: bool = False) -> str:
