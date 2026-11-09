@@ -77,9 +77,9 @@ jobs:
           - 3030:3030
         options: >-
           --health-cmd "curl -f http://localhost:3030 || exit 1"
-          --health-interval 10s
+          --health-interval 2s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 25
 
     strategy:
       fail-fast: false
