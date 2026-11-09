@@ -9,8 +9,6 @@ def test_sparqlwrapper_backend():
     """Test SPARQLwrapper backend."""
     import urllib
 
-    import pytest
-
     pytest.importorskip("SPARQLWrapper")
     requests = pytest.importorskip("requests")
 

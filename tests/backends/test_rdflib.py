@@ -83,13 +83,17 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     ts.add_mapsTo(
         EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost
     )
-    assert list(ts.function_repo.values())[0] == cost
+    assert (  # pylint: disable=comparison-with-callable
+        list(ts.function_repo.values())[0] == cost
+    )
 
     def func(parameter):
         return parameter + 1
 
     ts.add_function(func, expects=EX.Sum, returns=EX.OneMore, cost=cost)
-    assert list(ts.function_repo.values())[1] == func
+    assert (  # pylint: disable=comparison-with-callable
+        list(ts.function_repo.values())[1] == func
+    )
     assert len(ts.function_repo) == 2  # cost is only added once
 
     def func2(parameter):
