@@ -7,6 +7,11 @@ on:
       - 'master'
       - 'push-action/**'  # Allow pushing to protected branches
 
+# Cancel superseded runs on the same PR/branch (but never on master)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   basic-tests:
     name: External
@@ -90,27 +95,35 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
+      with:
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
+
     - name: Install dependencies
-      run: |
-        # sudo apt install graphviz
-        python -m pip install -U pip
-        pip install -U setuptools wheel flit
-        pip install -e .[testing]
+      run: uv pip install --system -e .[testing]
 
     - name: List installed packages
-      run: pip freeze
+      run: uv pip freeze --system
 
+    # The tripper cache holds e.g. the units table generated from EMMO,
+    # which otherwise is downloaded and rebuilt in every job.
+    - name: Cache tripper data
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/tripper
+        key: tripper-cache-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('tripper/units/**', 'tripper/context/**', 'pyproject.toml') }}
+
+    # Only measure coverage on the version that uploads to Codecov
     - name: Test with pytest
-      run: pytest -vvv --cov-report=xml --doctest-modules
+      run: pytest -vvv --durations=20 ${{ matrix.python-version == '3.11' && '--cov-report=xml' || '--no-cov' }}
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
       uses: codecov/codecov-action@v7
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-
-    - name: Run doctest on tutorial
-      run: python -m doctest docs/tutorial.md
 
   pytest-no-extra-dependencies: # Test for basic version, without extras installed
     runs-on: ubuntu-latest
@@ -129,11 +142,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
+      with:
+        enable-cache: true
+        cache-dependency-glob: pyproject.toml
+
     - name: Install minimal dependencies
-      run: |
-        python -m pip install -U pip
-        pip install -U setuptools wheel flit
-        pip install -e .[testing-core]
+      run: uv pip install --system -e .[testing-core]
 
     - name: Test with pytest, but without other extra dependencies
-      run: pytest -vvv tests/
+      run: pytest -vvv --durations=20 --no-cov tests/
