@@ -120,7 +120,7 @@ jobs:
 
     # Only measure coverage on the version that uploads to Codecov
     - name: Test with pytest
-      run: pytest -vvv --durations=20 ${{ matrix.python-version == '3.11' && '--cov-report=xml' || '--no-cov' }}
+      run: pytest -vvv -n auto --durations=20 ${{ matrix.python-version == '3.11' && '--cov-report=xml' || '--no-cov' }}
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11' && github.repository == 'EMMC-ASBL/tripper'
@@ -155,4 +155,4 @@ jobs:
       run: uv pip install --system -e .[testing-core]
 
     - name: Test with pytest, but without other extra dependencies
-      run: pytest -vvv --durations=20 --no-cov tests/
+      run: pytest -vvv -n auto --durations=20 --no-cov tests/

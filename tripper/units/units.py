@@ -8,6 +8,7 @@ Pint is used for programatic unit conversions.
 import math
 import pickle  # nosec
 import re
+import sys
 import warnings
 from collections import namedtuple
 from typing import TYPE_CHECKING
@@ -27,7 +28,7 @@ from tripper import (
     Triplestore,
 )
 from tripper.errors import IRIExistsError, PermissionWarning, TripperError
-from tripper.namespace import get_cachedir
+from tripper.namespace import atomic_write, get_cachedir
 from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -144,14 +145,20 @@ def get_unit_triplestore(
         if cache and cachefile.exists():
             _unit_ts.parse(cachefile, format="ntriples")
         else:
-            print("* caching units triplestore... ", end="", flush=True)
+            print(
+                "* caching units triplestore... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             _unit_ts.parse(url, format=format)
-            print("done")
+            print("done", file=sys.stderr)
             if cache is not None:
                 try:
-                    _unit_ts.serialize(
-                        cachefile, format="ntriples", encoding="utf-8"
-                    )
+                    with atomic_write(cachefile) as tmp:
+                        _unit_ts.serialize(
+                            tmp, format="ntriples", encoding="utf-8"
+                        )
                 except PermissionError as exc:
                     warnings.warn(
                         f"{exc}: {cachefile}",
@@ -386,22 +393,33 @@ class Units:
                 self.quantities = d["quantities"]
                 self.constants = d["constants"]
         else:
-            print("* caching units... ", end="", flush=True)
+            print("* caching units... ", end="", flush=True, file=sys.stderr)
             self.units = self._parse_units(include_prefixed=include_prefixed)
-            print("done\n* caching quantities... ", end="", flush=True)
+            print(
+                "done\n* caching quantities... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             self.quantities = self._parse_quantities(constants=False)
-            print("done\n* caching constants... ", end="", flush=True)
+            print(
+                "done\n* caching constants... ",
+                end="",
+                flush=True,
+                file=sys.stderr,
+            )
             self.constants = self._parse_quantities(constants=True)
-            print("done")
+            print("done", file=sys.stderr)
 
-        if cache is not None:
-            with open(cachefile, "wb") as f:
+            if cache is not None:
                 d = {
                     "units": self.units,
                     "quantities": self.quantities,
                     "constants": self.constants,
                 }
-                pickle.dump(d, f)
+                with atomic_write(cachefile) as tmp:
+                    with open(tmp, "wb") as f:
+                        pickle.dump(d, f)
 
         self.url = url
         self.name = name
@@ -1179,7 +1197,8 @@ class UnitRegistry(pint.UnitRegistry):
             kwargs["filename"] = unitsfile
             if not unitsfile.exists():
                 units = self._get_tripper_units()
-                units.write_pint_units(unitsfile)
+                with atomic_write(unitsfile) as tmp:
+                    units.write_pint_units(tmp)
 
         if cache:
             kwargs.setdefault("cache_folder", self._tripper_cachedir)

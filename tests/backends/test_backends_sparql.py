@@ -15,6 +15,11 @@ from tripper import Session
 
 pytest.importorskip("pyld")
 
+# Tests using the shared Fuseki/GraphDB "test_repo" datasets must not run
+# concurrently.  With `pytest -n auto`, the "triplestore" group runs in a
+# single worker (requires `--dist=loadgroup`, set in pyproject.toml).
+pytestmark = pytest.mark.xdist_group("triplestore")
+
 thisdir = Path(__file__).resolve().parent
 indir = thisdir.parent / "input"
 

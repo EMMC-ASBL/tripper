@@ -14,6 +14,11 @@ from tripper.utils import (  # pylint: disable=wrong-import-position
     service_responds,
 )
 
+# Tests using the shared Fuseki/GraphDB "test_repo" datasets must not run
+# concurrently.  With `pytest -n auto`, the "triplestore" group runs in a
+# single worker (requires `--dist=loadgroup`, set in pyproject.toml).
+pytestmark = pytest.mark.xdist_group("triplestore")
+
 # Skip all tests if Fuseki is not available
 if not service_responds("http://localhost:3030"):
     pytest.skip("Fuseki service is not available", allow_module_level=True)
@@ -86,7 +91,7 @@ def test_add():
         "add",
         f"--context={indir/'semdata-context-ext.json'}",
         "--type=dcat:Dataset",
-        f"--dump={outdir/'semdata.ttl'}",
+        f"--dump={outdir/'datadoc-cli-semdata.ttl'}",
         f"{indir/'semdata.csv'}",
     ]
     maincommand(cmd)
