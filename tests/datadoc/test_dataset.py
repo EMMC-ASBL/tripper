@@ -262,6 +262,7 @@ def test_told():
     assert d10["n"] == 3
 
 
+@pytest.mark.network
 def test_get_jsonld_context():
     """Test get_context()."""
     import warnings
@@ -844,6 +845,7 @@ def test_literals_not_checked_in_context():
     )
 
 
+@pytest.mark.network
 def test_datadoc():
     """Test save_datadoc() and acquire()/store()."""
     # pylint: disable=too-many-statements
@@ -1144,7 +1146,7 @@ def test_pipeline():
     pipeline.get()
 
 
-def test_fuseki():
+def test_fuseki(fuseki_available):
     """Test save and load dataset with Fuseki."""
     from dataset_paths import indir  # pylint: disable=import-error
 
@@ -1152,9 +1154,9 @@ def test_fuseki():
     from tripper.datadoc import acquire, delete, store
 
     session = Session(indir / "session.yaml")
-    ts = session.get_triplestore("FusekiTest")
-    if not ts.is_available():
+    if not fuseki_available:
         pytest.skip("Cannot connect to Fuseki server")
+    ts = session.get_triplestore("FusekiTest")
 
     EX = ts.bind("ex", "http://example.com/ex#")
     d = {

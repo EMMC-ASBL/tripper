@@ -142,6 +142,9 @@ addopts = """-rs --cov=tripper --cov-report=term \
     --doctest-modules --doctest-ignore-import-errors \
     --ignore-glob=**/old/
     """
+markers = [
+    "network: needs internet access (deselect with '-m \"not network\"')",
+]
 filterwarnings = [
     "ignore:.*imp module.*:DeprecationWarning",
     "ignore:ConjunctiveGraph.*:DeprecationWarning",  # in pyld

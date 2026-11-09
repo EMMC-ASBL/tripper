@@ -10,14 +10,13 @@ pytest.importorskip("pyld")
 from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
     maincommand,
 )
-from tripper.utils import (  # pylint: disable=wrong-import-position
-    check_service_availability,
-)
 
-# Skip all tests if Fuseki is not available
-available = check_service_availability("http://localhost:3030", timeout=1)
-if not available:
-    pytest.skip("Fuseki service is not available", allow_module_level=True)
+
+@pytest.fixture(autouse=True)
+def _require_fuseki(fuseki_available):
+    """Skip all tests in this module if Fuseki is not available."""
+    if not fuseki_available:
+        pytest.skip("Fuseki service is not available")
 
 
 def test_delete():

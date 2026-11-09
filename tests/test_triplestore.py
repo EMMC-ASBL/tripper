@@ -288,7 +288,7 @@ def test_availability():
         "sparqlwrapper",
         base_iri="http://example.no:3030/norepo",
     )
-    assert not ts.is_available()
+    assert not ts.is_available(timeout=0.5, interval=0.1)
 
 
 def test_backend_rdflib(expected_function_triplestore: str) -> None:
@@ -430,6 +430,7 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
     ts.bind("food", FOOD)
     with open(ontopath_food, "rt", encoding="utf8") as handle:
         ts.parse(data=handle.read())
+
 
 @pytest.mark.skip("sparql endpoint is not responding")
 def test_backend_sparqlwrapper() -> None:

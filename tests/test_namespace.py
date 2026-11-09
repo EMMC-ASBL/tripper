@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from typing import Callable
 
 
+@pytest.mark.network
 def test_namespaces() -> None:
     """Test namespaces."""
     pytest.importorskip("rdflib")

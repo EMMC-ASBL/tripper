@@ -123,6 +123,7 @@ def test_openfile():
             pass
 
 
+@pytest.mark.network
 def test_openfile_http():
     """Test openfile()."""
     from tripper.utils import openfile
@@ -494,6 +495,7 @@ def test_extend_namespace():
         extend_namespace(EX, {"Item": EX + "Item"})
 
 
+@pytest.mark.network
 def test_expand_iri():
     """Test expand_iri()."""
     pytest.importorskip("rdflib")
@@ -545,6 +547,7 @@ def test_expand_iri():
     )
 
 
+@pytest.mark.network
 def test_prefix_iri():
     """Test prefix_iri()."""
     pytest.importorskip("rdflib")

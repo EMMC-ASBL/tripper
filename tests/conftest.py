@@ -9,6 +9,37 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
 
+def _service_responds(url: str, timeout: float = 1.0) -> bool:
+    """Return whether `url` responds with status 200.
+
+    Unlike `tripper.utils.check_service_availability()`, this makes a
+    single request without retrying, so that tests don't have to wait
+    for the full timeout when a service is not running.
+    """
+    try:
+        import requests
+    except ImportError:
+        return False
+    try:
+        return requests.get(url, timeout=timeout).status_code == 200
+    except requests.exceptions.RequestException:
+        return False
+
+
+@pytest.fixture(scope="session")
+def fuseki_available() -> bool:
+    """Whether the Fuseki test service (see tests/input/session.yaml) is
+    running.  Checked once per test session."""
+    return _service_responds("http://localhost:3030")
+
+
+@pytest.fixture(scope="session")
+def graphdb_available() -> bool:
+    """Whether the GraphDB test service (see tests/input/session.yaml) is
+    running.  Checked once per test session."""
+    return _service_responds("http://localhost:7200/repositories")
+
+
 @pytest.fixture(scope="session")
 def get_ontology_path() -> "Callable[[str], Path]":
     """Return a function to retrieve a Path object to a Turtle file used

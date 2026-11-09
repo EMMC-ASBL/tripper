@@ -1,13 +1,14 @@
 """Test SPARQLwrapper backend."""
 
+import pytest
+
 # pylint: disable=invalid-name
 
 
+@pytest.mark.network
 def test_sparqlwrapper_backend():
     """Test SPARQLwrapper backend."""
     import urllib
-
-    import pytest
 
     pytest.importorskip("SPARQLWrapper")
     requests = pytest.importorskip("requests")
