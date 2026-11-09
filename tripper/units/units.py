@@ -487,17 +487,23 @@ class Units:
         return [iri for iri, in self.ts.query(query)]  # type: ignore
 
     def _get_unit_symbols(self, iri: str) -> list:
-        """Return a list with unit symbols for unit with the given IRI."""
-        symbols = []
-        for r in self.ts.restrictions(
-            iri, self.ns.unitSymbolValue, type="value"
-        ):
-            symbols.append(str(r["value"]))
+        """Return a list with unit symbols for unit with the given IRI.
 
-        for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None):
-            s = str(symbol)
-            symbols.append(f"1{s}" if s.startswith("/") else s)
-
+        Symbols from restrictions come first, followed by symbols from
+        annotations.  Within each group, symbols are sorted, since the
+        iteration order of the triplestore may differ between processes.
+        """
+        symbols = sorted(
+            str(r["value"])
+            for r in self.ts.restrictions(
+                iri, self.ns.unitSymbolValue, type="value"
+            )
+        )
+        annotated = sorted(
+            str(symbol)
+            for symbol in self.ts.value(iri, self.ns.unitSymbol, any=None)
+        )
+        symbols.extend(f"1{s}" if s.startswith("/") else s for s in annotated)
         return symbols
 
     def _get_unit_dimension_string(self, iri: str) -> str:
@@ -662,17 +668,19 @@ class Units:
             d[name] = AttrDict(
                 name=name,
                 description=description,
-                aliases=[
+                # Sort, since the iteration order of the triplestore may
+                # differ between processes
+                aliases=sorted(
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
-                ],
+                ),
                 symbols=self._get_unit_symbols(iri),
                 dimension=dimension,
                 emmoIRI=iri,
                 qudtIRI=str(qudtIRI) if qudtIRI else None,
                 omIRI=str(omIRI) if omIRI else None,
-                ucumCodes=[
+                ucumCodes=sorted(
                     str(s) for s in self.ts.value(iri, EMMO.ucumCode, any=None)
-                ],
+                ),
                 unitCode=str(unitCode) if unitCode else None,
                 multiplier=float(mult[0]["value"]) if mult else None,
                 offset=float(offset[0]["value"]) if offset else None,
@@ -707,9 +715,11 @@ class Units:
             d[name] = AttrDict(
                 name=name,
                 description=description,
-                aliases=[
+                # Sort, since the iteration order of the triplestore may
+                # differ between processes
+                aliases=sorted(
                     str(s) for s in self.ts.value(iri, SKOS.altLabel, any=None)
-                ],
+                ),
                 dimension=dimension,
                 emmoIRI=iri,
                 qudtIRI=str(qudtIRI) if qudtIRI else None,
