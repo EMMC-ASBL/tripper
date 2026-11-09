@@ -1,4 +1,5 @@
 """Test SPARQLwrapper backend."""
+
 import pytest
 
 from tripper import Namespace, Triplestore
