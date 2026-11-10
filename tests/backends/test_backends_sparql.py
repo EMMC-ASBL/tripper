@@ -33,8 +33,6 @@ def populate_and_search(sessionName):  # pylint: disable=too-many-statements
     from tripper.datadoc import acquire, save_datadoc, search
 
     ts = session.get_triplestore(sessionName)
-    if not ts.is_available(timeout=1):
-        pytest.skip(f"{sessionName} service not available; skipping test.")
 
     datasetinput = thisdir / "datadocumentation_sample.yaml"
     datasetinput2 = thisdir / "datadocumentation_sample2.yaml"
@@ -172,12 +170,22 @@ INSERT DATA {
 
 def test_graphdb():
     """Test the sparqlwrapper backend using GraphDB."""
+    from tripper.utils import service_responds
+
+    if not service_responds(
+        "http://localhost:7200/rest/repositories/test_repo"
+    ):
+        pytest.skip("GraphDB service or its 'test_repo' repository is missing")
     # Use service configured in tests/input/session.yaml
     populate_and_search("GraphDBTest")
 
 
 def test_fuseki():
     """Test the sparqlwrapper backend using Fuseki."""
+    from tripper.utils import service_responds
+
+    if not service_responds("http://localhost:3030"):
+        pytest.skip("Fuseki service not available; skipping test.")
     # Use service configured in tests/input/session.yaml
     populate_and_search("FusekiTest")
 

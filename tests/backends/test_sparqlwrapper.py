@@ -1,10 +1,11 @@
 """Test SPARQLwrapper backend."""
 
-# pylint: disable=invalid-name
-
 import pytest
 
+# pylint: disable=invalid-name
 
+
+@pytest.mark.network
 def test_sparqlwrapper_backend():
     """Test SPARQLwrapper backend."""
     import urllib

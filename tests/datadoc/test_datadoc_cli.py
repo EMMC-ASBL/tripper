@@ -11,12 +11,11 @@ from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
     maincommand,
 )
 from tripper.utils import (  # pylint: disable=wrong-import-position
-    check_service_availability,
+    service_responds,
 )
 
 # Skip all tests if Fuseki is not available
-available = check_service_availability("http://localhost:3030", timeout=1)
-if not available:
+if not service_responds("http://localhost:3030"):
     pytest.skip("Fuseki service is not available", allow_module_level=True)
 
 

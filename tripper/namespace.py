@@ -225,6 +225,12 @@ class Namespace:
             return False
 
     def __getattr__(self, name):
+        # Never treat dunder names as ontology concepts.  Tools like doctest,
+        # pytest, copy and pickle probe for attributes like `__wrapped__`,
+        # which would otherwise trigger loading (and possibly downloading)
+        # the ontology.
+        if name.startswith("__") and name.endswith("__"):
+            raise AttributeError(name)
         if self._iris and name in self._iris:
             return self._iris[name]
         if self._iris == {}:
@@ -236,12 +242,6 @@ class Namespace:
             if name in self._iris:
                 return self._iris[name]
         if self._check:
-
-            # Hack to work around a pytest bug.  During its collection
-            # phase pytest tries to mock namespace objects with an
-            # attribute `__wrapped__`.
-            if name == "__wrapped__":
-                return super().__getattr__(self, name)
 
             msg = ""
             try:

@@ -7,34 +7,40 @@ See [interface.py], which defines the interface of a backend and may serve as a 
 
 ## Setting up local GraphDB and Fuseki services for testing
 Tripper comes with an inbuilt backend to the SPARQLWrapper. In order
-to test this properly a real triplestore is needed. This is not done in the
-automatic workflows on github. However, local graphDB and Fuseki services
-can be setup as described below and tested with
-`tests/backends/test_sparqlwrapper_graphdb_fuseki.py`.
+to test this properly a real triplestore is needed. The automatic
+workflows on GitHub run the tests against a Fuseki service, but not
+against GraphDB. Local GraphDB and Fuseki services can be set up as
+described below and tested with `tests/backends/test_backends_sparql.py`.
 
 The backend configurations corresponding to the local GraphDB and Fuseki services
-can be found in `[tests/input/session.yaml]`.
+can be found in [tests/input/session.yaml].
+
+Tests that need a service which is not running are skipped.
 
 
 ### Setting up GraphDB service
-To create the local instance of graphdb:
+To create the local instance of GraphDB:
 ```bash
 docker pull ontotext/graphdb:10.8.3 # latest tag 17.02.2025
 docker run -d -p 7200:7200 --name graphdb ontotext/graphdb:10.8.3
 ```
 
-Then go to [http://localhost:7200/](http://localhost:7200/) in your browser.
-You can add a new repository by pressing `create new reposotory` in the bottom right corner.
-Choose `GraphDB Reposotory` and write "test_repo" as repository ID.
-Tick off `Enable full-text search` and leave the rest as predefined.
-Click `Create`.
+GraphDB needs some time to start up.
+When it is up, create the "test_repo" repository (with full-text search
+enabled) from the configuration in [tests/input/graphdb-test_repo-config.ttl]:
 
-Go to `Setup` and select `Repositories`.
-Activating "test_repo" by clicking the pin icon (Set as default repository) and then the restart icon (Restart repository test_repo).
+```bash
+curl -X POST -F "config=@tests/input/graphdb-test_repo-config.ttl" \
+    http://localhost:7200/rest/repositories
+```
 
-You can now run the test test_sparqlwrapper_graphdb_fuseki.py with graphdb.
+Alternatively, go to [http://localhost:7200/](http://localhost:7200/) in your
+browser, press `Create new repository`, choose `GraphDB Repository`, write
+"test_repo" as repository ID, tick off `Enable full-text search` and click
+`Create`.
 
-Note that if the graphdb instance is not found the test will just be skipped.
+The GraphDB tests are skipped if GraphDB is not running or the "test_repo"
+repository does not exist.
 
 
 ### Setting up Fuseki service
@@ -45,9 +51,16 @@ docker pull stain/jena-fuseki
 docker run -d --name fuseki -p 3030:3030 -e ADMIN_PASSWORD=admin0 -e=FUSEKI_DATASET_1=test_repo stain/jena-fuseki
 ```
 
-You can now run the test `test_sparqlwrapper_graphdb_fuseki.py` with fuseki.
+The Fuseki tests are skipped if Fuseki is not running.
 
-Note that if the fuseki instance is not found the test will just be skipped.
+
+### Running tests without internet access
+Tests that need internet access are marked with `network`.
+A faster, offline test run can be done with
+
+```bash
+pytest -m "not network"
+```
 
 
 
@@ -100,4 +113,5 @@ See https://pypi.org/project/pytest-profiling/ for more information.
 
 [interface.py]: https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py
 [mkdocs]: https://www.mkdocs.org/
-[tests/input/session.yaml]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml)
+[tests/input/session.yaml]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml
+[tests/input/graphdb-test_repo-config.ttl]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/graphdb-test_repo-config.ttl

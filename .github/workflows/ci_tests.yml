@@ -109,7 +109,10 @@ jobs:
 
     # The tripper cache holds e.g. the units table generated from EMMO,
     # which otherwise is downloaded and rebuilt in every job.
+    # Not used on Python 3.11, which measures coverage, since the code
+    # that creates the cache would otherwise not be covered.
     - name: Cache tripper data
+      if: matrix.python-version != '3.11'
       uses: actions/cache@v6
       with:
         path: ~/.cache/tripper

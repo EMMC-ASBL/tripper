@@ -288,7 +288,7 @@ def test_availability():
         "sparqlwrapper",
         base_iri="http://example.no:3030/norepo",
     )
-    assert not ts.is_available()
+    assert not ts.is_available(timeout=0.5, interval=0.1)
 
 
 def test_find_literal_triples() -> None:

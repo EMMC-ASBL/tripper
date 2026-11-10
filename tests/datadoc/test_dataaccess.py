@@ -9,6 +9,7 @@ pytest.importorskip("requests")
 pytest.importorskip("pyld")
 
 
+@pytest.mark.network
 def test_save_and_load():
     """Test save() and load()."""
     # pylint: disable=too-many-statements
