@@ -1,7 +1,6 @@
 # For developers
 
 ## Adding new backends
-
 See [interface.py], which defines the interface of a backend and may serve as a template for creating new backends.
 
 
@@ -17,6 +16,23 @@ can be found in [tests/input/session.yaml].
 
 Tests that need a service which is not running are skipped.
 
+
+### Starting GraphDB and Fuseki services
+Start all services from the root of the repository with
+
+    docker compose -f test-services/compose.yaml up -d
+
+or only some of them, e.g.
+
+    docker compose -f test-services/compose.yaml up -d fuseki
+
+Add `--wait` to wait until the services are healthy.  Stop them again with
+
+    docker compose -f test-services/compose.yaml down
+
+
+<details>
+  <summary>▶ Manually start the services with docker</summary>
 
 ### Setting up GraphDB service
 To create the local instance of GraphDB:
@@ -50,8 +66,9 @@ Similarly a jena-fuseki instance can be tested locally as follows:
 docker pull stain/jena-fuseki
 docker run -d --name fuseki -p 3030:3030 -e ADMIN_PASSWORD=admin0 -e=FUSEKI_DATASET_1=test_repo stain/jena-fuseki
 ```
+</details>
 
-The Fuseki tests are skipped if Fuseki is not running.
+Tests that need a service which is not running are skipped.
 
 
 ### Running tests without internet access
@@ -61,7 +78,6 @@ A faster, offline test run can be done with
 ```bash
 pytest -m "not network"
 ```
-
 
 
 ## Creating new release

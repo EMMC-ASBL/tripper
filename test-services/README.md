@@ -2,13 +2,13 @@ Test services
 =============
 
 This directory contains a [compose.yaml](compose.yaml) file that starts
-the external services used by the DLite tests.  It works with both
+the external services used by the Tripper tests.  It works with both
 `docker compose` and `podman compose`.
 
-| Service    | Port(s)    | Used by                                         |
-|------------|------------|-------------------------------------------------|
-| `fuseki`   | 3030       | tripper tests (not used by DLite yet)           |
-| `graphdb`  | 7200       | tripper tests (not used by DLite yet)           |
+| Service   | Port |
+|-----------|------|
+| `fuseki`  | 3030 |
+| `graphdb` | 7200 |
 
 
 Usage
@@ -21,13 +21,12 @@ or only some of them, e.g.
 
     docker compose -f test-services/compose.yaml up -d fuseki
 
-Add `--wait` to wait until the services are healthy.  Stop them again
-with
+Add `--wait` to wait until the services are healthy.  Stop them again with
 
     docker compose -f test-services/compose.yaml down
 
-The compose project has the fixed name `dlite-test-services`, so the
-services can also be managed with `docker compose -p dlite-test-services
+The compose project has the fixed name `tripper-test-services`, so the
+services can also be managed with `docker compose -p tripper-test-services
 ...` from any directory.
 
 Tests that need a service which is not running are skipped.
@@ -43,16 +42,16 @@ defaults in `TEST_SERVICES` in
 [bindings/python/testutils.py](../bindings/python/testutils.py) (and
 [storages/python/tests-c/pgtestconf.h](../storages/python/tests-c/pgtestconf.h)).
 They can be changed by setting environment variables named
-`DLITE_TEST_<SERVICE>_<KEY>`, both when starting the services and when
+`TRIPPER_TEST_<SERVICE>_<KEY>`, both when starting the services and when
 running the tests, e.g.
 
-    export DLITE_TEST_POSTGRESQL_PASSWORD=my-secret
+    export TRIPPER_TEST_POSTGRESQL_PASSWORD=my-secret
 
 
-Testing DLite and tripper together
+Testing Tripper and tripper together
 ----------------------------------
 The fuseki and graphdb services are configured as expected by the
-tripper tests, so the same services can be used when developing DLite
+tripper tests, so the same services can be used when developing Tripper
 and tripper together.  Tripper only needs fuseki and graphdb:
 
     docker compose -f test-services/compose.yaml up -d fuseki graphdb
@@ -68,4 +67,4 @@ and tripper together.  Tripper only needs fuseki and graphdb:
 Continuous integration
 ----------------------
 The [CI tests](../.github/workflows/ci_tests.yml) workflow starts the
-services needed by the DLite tests from the same compose file.
+services needed by the Tripper tests from the same compose file.
