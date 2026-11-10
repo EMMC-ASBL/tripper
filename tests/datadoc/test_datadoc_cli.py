@@ -10,7 +10,7 @@ pytest.importorskip("pyld")
 from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
     maincommand,
 )
-from tripper.utils import (  # pylint: disable=wrong-import-position
+from tripper.testutils import (  # pylint: disable=wrong-import-position
     service_responds,
 )
 

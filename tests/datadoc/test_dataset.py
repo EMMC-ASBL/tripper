@@ -1152,7 +1152,7 @@ def test_fuseki():
 
     from tripper import Session
     from tripper.datadoc import acquire, delete, store
-    from tripper.utils import service_responds
+    from tripper.testutils import service_responds
 
     session = Session(indir / "session.yaml")
     if not service_responds("http://localhost:3030"):

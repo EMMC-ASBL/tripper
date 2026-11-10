@@ -1,4 +1,7 @@
-"""Some utilities for testing."""
+"""Some utilities for testing.
+
+This module is not intended to be imported by users of Tripper.
+"""
 
 import os
 import socket
