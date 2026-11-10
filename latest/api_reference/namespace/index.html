@@ -2390,6 +2390,12 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c1"># Never treat dunder names as ontology concepts.  Tools like doctest,</span>
+        <span class="c1"># pytest, copy and pickle probe for attributes like `__wrapped__`,</span>
+        <span class="c1"># which would otherwise trigger loading (and possibly downloading)</span>
+        <span class="c1"># the ontology.</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"__"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"__"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="o">==</span> <span class="p">{}:</span>
@@ -2401,12 +2407,6 @@ corresponding to <code>reload=True</code>).</p></td>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">:</span>
-
-            <span class="c1"># Hack to work around a pytest bug.  During its collection</span>
-            <span class="c1"># phase pytest tries to mock namespace objects with an</span>
-            <span class="c1"># attribute `__wrapped__`.</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"__wrapped__"</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="k">try</span><span class="p">:</span>
