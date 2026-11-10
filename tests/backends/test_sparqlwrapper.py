@@ -4,8 +4,6 @@ import pytest
 
 # pylint: disable=invalid-name
 
-import pytest
-
 
 @pytest.mark.network
 def test_sparqlwrapper_backend():
