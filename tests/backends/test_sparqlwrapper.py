@@ -44,3 +44,34 @@ WHERE
         else:
             raise
     assert res == [("http://www.wikidata.org/entity/Q20", "Norway")]
+
+
+def test_backend_sparqlwrapper() -> None:
+    """Specifically test the SPARQLWrapper backend Triplestore."""
+    import urllib
+
+    from tripper import SKOS, Triplestore
+    from tripper.errors import UnknownDatatypeWarning
+
+    SPARQLWrapper = pytest.importorskip("SPARQLWrapper")
+
+    pytest.importorskip("SPARQLWrapper")
+    ts = Triplestore(
+        backend="sparqlwrapper",
+        base_iri="http://vocabs.ardc.edu.au/repository/api/sparql/"
+        "csiro_international-chronostratigraphic-chart_geologic-"
+        "time-scale-2020",
+    )
+    with pytest.warns(UnknownDatatypeWarning, match="unknown datatype"):
+        try:
+            for s, p, o in ts.triples(predicate=SKOS.notation):
+                assert s
+                assert p
+                assert o
+        except urllib.error.URLError as exc:
+            if "[Errno 110] Connection timed out" in str(exc):
+                pytest.skip(str(exc))
+            else:
+                raise
+        except SPARQLWrapper.SPARQLExceptions.EndPointNotFound as exc:
+            pytest.skip(str(exc))
