@@ -66,21 +66,6 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
 
-
-    services:
-      fuseki:
-        image: stain/jena-fuseki
-        env:
-          ADMIN_PASSWORD: admin0
-          FUSEKI_DATASET_1: test_repo
-        ports:
-          - 3030:3030
-        options: >-
-          --health-cmd "curl -f http://localhost:3030 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     strategy:
       fail-fast: false
       matrix:
@@ -89,6 +74,17 @@ jobs:
     steps:
     - name: Checkout tripper
       uses: actions/checkout@v7
+
+    - name: Start services
+      run: |
+        docker compose -f test-services/compose.yaml up -d --wait
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v7
@@ -156,3 +152,11 @@ jobs:
 
     - name: Test with pytest, but without other extra dependencies
       run: pytest -vvv --durations=20 --no-cov tests/
+
+    - name: Show service logs
+      if: failure()
+      run: docker compose -f test-services/compose.yaml logs
+
+    - name: Stop services
+      if: always()
+      run: docker compose -f test-services/compose.yaml down
