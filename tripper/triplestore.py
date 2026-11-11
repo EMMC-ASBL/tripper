@@ -58,15 +58,10 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Generator, Iterable, Mapping
     from typing import (
         Any,
         Callable,
-        Dict,
-        Generator,
-        Iterable,
-        Mapping,
-        Optional,
-        Union,
     )
 
     # Ideally `RestrictionType` should be defined as
@@ -125,10 +120,10 @@ class Triplestore:
     def __init__(
         self,
         backend: str,
-        base_iri: "Optional[str]" = None,
-        database: "Optional[str]" = None,
-        package: "Optional[str]" = None,
-        check_url: "Optional[str]" = None,  # Deprecated
+        base_iri: str | None = None,
+        database: str | None = None,
+        package: str | None = None,
+        check_url: str | None = None,  # Deprecated
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
@@ -194,7 +189,7 @@ class Triplestore:
         module = self._load_backend(backend, package)
         cls = getattr(module, f"{backend_name.title()}Strategy")
         self.base_iri = base_iri
-        self.namespaces: "Dict[str, Namespace]" = {}
+        self.namespaces: dict[str, Namespace] = {}
         self.closed = False
         self.backend_name = backend_name
         self.database = database
@@ -211,7 +206,7 @@ class Triplestore:
                 self.bind(prefix, ns)
 
         # Cache functions in the triplestore for fast access
-        self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
+        self.function_repo: dict[str, float | Callable | None] = {}
 
     def __enter__(self):
         return self
@@ -220,7 +215,7 @@ class Triplestore:
         self.close()
 
     @classmethod
-    def _load_backend(cls, backend: str, package: "Optional[str]" = None):
+    def _load_backend(cls, backend: str, package: str | None = None):
         """Load and return backend module.  The arguments has the same meaning
         as corresponding arguments to __init__().
 
@@ -259,11 +254,11 @@ class Triplestore:
     # ------------------------------
     def triples(
         self,
-        subject: "Optional[Union[str, Triple]]" = None,
-        predicate: "Optional[str]" = None,
-        object: "Optional[Union[str, Literal]]" = None,
-        triple: "Optional[Triple]" = None,
-    ) -> "Generator[Triple, None, None]":
+        subject: str | Triple | None = None,
+        predicate: str | None = None,
+        object: str | Literal | None = None,
+        triple: Triple | None = None,
+    ) -> Generator[Triple, None, None]:
         """Returns a generator over matching triples.
 
         Arguments:
@@ -292,7 +287,7 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(self, triples: "Iterable[Triple]") -> None:
+    def add_triples(self, triples: Iterable[Triple]) -> None:
         """Add a sequence of triples.
 
         Arguments:
@@ -303,10 +298,10 @@ class Triplestore:
 
     def remove(
         self,
-        subject: "Optional[Union[str, Triple]]" = None,
-        predicate: "Optional[str]" = None,
-        object: "Optional[Union[str, Literal]]" = None,
-        triple: "Optional[Triple]" = None,
+        subject: str | Triple | None = None,
+        predicate: str | None = None,
+        object: str | Literal | None = None,
+        triple: Triple | None = None,
     ) -> None:
         """Remove all matching triples from the backend.
 
@@ -394,7 +389,7 @@ class Triplestore:
         fallback_backend="rdflib",
         fallback_backend_kwargs=None,
         **kwargs,
-    ) -> "Union[None, str]":
+    ) -> None | str:
         """Serialise triplestore.
 
         Arguments:
@@ -428,10 +423,10 @@ class Triplestore:
     def query(
         self,
         query: str,
-        iris: "Optional[dict]" = None,
-        literals: "Optional[dict]" = None,
+        iris: dict | None = None,
+        literals: dict | None = None,
         **kwargs,
-    ) -> "Any":
+    ) -> Any:
         """SPARQL query.
 
         The `query` argument may contain variables for IRIs and literals,
@@ -495,8 +490,8 @@ class Triplestore:
     def update(
         self,
         query: str,
-        iris: "Optional[dict]" = None,
-        literals: "Optional[dict]" = None,
+        iris: dict | None = None,
+        literals: dict | None = None,
         **kwargs,
     ) -> None:
         """Update triplestore with SPARQL.
@@ -528,9 +523,9 @@ class Triplestore:
     def bind(
         self,
         prefix: str,
-        namespace: "Union[str, Namespace, Triplestore]",
+        namespace: str | Namespace | Triplestore,
         **kwargs,
-    ) -> "Namespace": ...
+    ) -> Namespace: ...
 
     @overload
     def bind(
@@ -543,9 +538,9 @@ class Triplestore:
     def bind(
         self,
         prefix: str,
-        namespace: "Union[str, Namespace, Triplestore, None]" = "",
+        namespace: str | Namespace | Triplestore | None = "",
         **kwargs,
-    ) -> "Union[Namespace, None]":
+    ) -> Namespace | None:
         """Bind prefix to namespace and return the new Namespace object.
 
         Arguments:
@@ -697,7 +692,7 @@ class Triplestore:
             )
 
     @classmethod
-    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
+    def _get_backend(cls, backend: str, package: str | None = None):
         """Returns the class implementing the given backend."""
         module = cls._load_backend(backend, package=package)
         return getattr(module, f"{backend.title()}Strategy")
@@ -706,7 +701,7 @@ class Triplestore:
         """Check that backend implements the given method."""
         self._check_backend_method(self.backend_name, name)
 
-    def add(self, triple: "Triple"):
+    def add(self, triple: Triple):
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
@@ -718,7 +713,7 @@ class Triplestore:
         default=None,
         any=False,
         lang=None,
-    ) -> "Union[str, Literal]":
+    ) -> str | Literal:
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
@@ -920,9 +915,9 @@ class Triplestore:
         self,
         cls: str,
         property: str,
-        value: "Union[str, Literal]",
-        type: "RestrictionType",
-        cardinality: "Optional[int]" = None,
+        value: str | Literal,
+        type: RestrictionType,
+        cardinality: int | None = None,
         hashlength: int = 16,
     ) -> str:
         """Add a restriction to a class in the triplestore.
@@ -980,13 +975,13 @@ class Triplestore:
 
     def restrictions(
         self,
-        cls: "Optional[str]" = None,
-        property: "Optional[str]" = None,
-        value: "Optional[Union[str, Literal]]" = None,
-        type: "Optional[RestrictionType]" = None,
-        cardinality: "Optional[int]" = None,
+        cls: str | None = None,
+        property: str | None = None,
+        value: str | Literal | None = None,
+        type: RestrictionType | None = None,
+        cardinality: int | None = None,
         asdict: bool = True,
-    ) -> "Generator[dict, None, None]":
+    ) -> Generator[dict, None, None]:
         """Returns a generator over matching restrictions.
 
         Arguments:
@@ -1123,7 +1118,7 @@ class Triplestore:
         self,
         source: str,
         target: str,
-        cost: "Optional[Union[float, Callable]]" = None,
+        cost: float | Callable | None = None,
         target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to the triplestore.
@@ -1152,8 +1147,8 @@ class Triplestore:
         self,
         target: str,
         source: str,
-        property_name: "Optional[str]" = None,
-        cost: "Optional[Union[float, Callable]]" = None,
+        property_name: str | None = None,
+        cost: float | Callable | None = None,
         target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to triplestore.
@@ -1267,7 +1262,7 @@ class Triplestore:
 
         return func
 
-    def eval_function(self, func_iri, args=(), kwargs=None) -> "Any":
+    def eval_function(self, func_iri, args=(), kwargs=None) -> Any:
         """Evaluate mapping function and return the result.
 
         Arguments:
@@ -1294,16 +1289,16 @@ class Triplestore:
 
     def add_function(
         self,
-        func: "Union[Callable, str]",
-        expects: "Union[str, Sequence, Mapping]" = (),
-        returns: "Union[str, Sequence]" = (),
-        base_iri: "Optional[str]" = None,
+        func: Callable | str,
+        expects: str | Sequence | Mapping = (),
+        returns: str | Sequence = (),
+        base_iri: str | None = None,
         standard: str = "emmo",
-        cost: "Optional[Union[float, Callable]]" = None,
-        func_name: "Optional[str]" = None,
-        module_name: "Optional[str]" = None,
-        package_name: "Optional[str]" = None,
-        pypi_package_name: "Optional[str]" = None,
+        cost: float | Callable | None = None,
+        func_name: str | None = None,
+        module_name: str | None = None,
+        package_name: str | None = None,
+        pypi_package_name: str | None = None,
     ):
         """Inspect function and add triples describing it to the triplestore.
 
@@ -1368,12 +1363,12 @@ class Triplestore:
 
     def _add_function_doc(
         self,
-        func_iri: "str",
-        func: "Optional[Callable]" = None,
-        func_name: "Optional[str]" = None,
-        module_name: "Optional[str]" = None,
-        package_name: "Optional[str]" = None,
-        pypi_package_name: "Optional[str]" = None,
+        func_iri: str,
+        func: Callable | None = None,
+        func_name: str | None = None,
+        module_name: str | None = None,
+        package_name: str | None = None,
+        pypi_package_name: str | None = None,
     ):
         """Add standard-independent documentation of how to access the
         function.
@@ -1450,7 +1445,7 @@ class Triplestore:
 
     def _add_cost(
         self,
-        cost: "Union[float, Callable]",
+        cost: float | Callable,
         dest_iri,
         base_iri=None,
         pypi_package_name=None,

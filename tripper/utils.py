@@ -27,24 +27,20 @@ except ImportError:
     from importlib_metadata import entry_points  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Generator, Iterable, Iterator
     from typing import (
         Callable,
-        Generator,
-        Iterable,
-        Iterator,
-        List,
         Optional,
-        Tuple,
         Union,
     )
 
     from tripper.triplestore import Triplestore
 
     # Additional types
-    OptionalTriple = Tuple[
+    OptionalTriple = tuple[
         Union[str, None], Union[str, None], Union[str, Any, None]
     ]
-    Triple = Tuple[str, str, Union[str, Any]]
+    Triple = tuple[str, str, Union[str, Any]]
 
 
 __all__ = (
@@ -209,7 +205,7 @@ def _dicttype(s, cls):
 
 def recursive_update(
     d: dict,
-    other: "Union[dict, List[Union[dict, list]]]",
+    other: "Union[dict, list[Union[dict, list]]]",
     append: bool = True,
     cls: "Optional[type]" = None,
 ):
@@ -287,7 +283,7 @@ def openfile(
             f.write(r.content)
 
     elif re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*://", url):
-        raise IOError(f"unknown scheme: {url.split(':', 1)[0]}")
+        raise OSError(f"unknown scheme: {url.split(':', 1)[0]}")
 
     else:
         fname = url
@@ -352,7 +348,7 @@ def infer_iri(obj):
     return str(iri)
 
 
-def split_iri(iri: str) -> "Tuple[str, str]":
+def split_iri(iri: str) -> "tuple[str, str]":
     """Split iri into namespace and name parts and return them as a tuple.
 
     Parameters:

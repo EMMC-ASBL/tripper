@@ -14,8 +14,9 @@ from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import subprocess
 from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Mapping, Sequence
+from typing import TYPE_CHECKING
 
 from pint import Quantity  # remove
 
@@ -25,13 +26,13 @@ from tripper.triplestore import hasAccessFunction, hasDataValue
 from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
+    from typing import Any, Callable, Union
 
     from tripper import Triplestore
 
     # Add some specialised types for convinience
     Input = Union["MappingStep", "Value"]
-    Inputs = Dict[str, Input]
+    Inputs = dict[str, Input]
 
 
 class MappingError(Exception):
@@ -89,11 +90,11 @@ class Value:
 
     def __init__(
         self,
-        value: "Any" = None,
-        unit: "Optional[str]" = None,
-        iri: "Optional[str]" = None,
-        property_iri: "Optional[str]" = None,
-        cost: "Union[float, Callable]" = 0.0,
+        value: Any = None,
+        unit: str | None = None,
+        iri: str | None = None,
+        property_iri: str | None = None,
+        cost: float | Callable = 0.0,
     ):
         self._value = value
         self.unit = unit
@@ -123,7 +124,7 @@ class Value:
             args.append(f", cost={self.cost}")
         return f"Value({self._value!r}{''.join(args)})"
 
-    def get_value(self, unit=None, magnitude=False, quantity=None) -> "Any":
+    def get_value(self, unit=None, magnitude=False, quantity=None) -> Any:
         """Returns the evaluated value of given input route number.
 
         Arguments:
@@ -150,8 +151,8 @@ class Value:
 
     def show(
         self,
-        routeno: "Optional[int]" = None,
-        name: "Optional[str]" = None,
+        routeno: int | None = None,
+        name: str | None = None,
         indent: int = 0,
     ) -> str:
         """Returns a string representation of the Value.
@@ -201,11 +202,11 @@ class MappingStep:
     def __init__(
         self,
         output_iri: str,
-        steptype: "StepType" = StepType.UNSPECIFIED,
-        function: "Optional[Callable]" = None,
-        cost: "Union[float, Callable]" = 1.0,
-        output_unit: "Optional[str]" = None,
-        triplestore: "Optional[Triplestore]" = None,
+        steptype: StepType = StepType.UNSPECIFIED,
+        function: Callable | None = None,
+        cost: float | Callable = 1.0,
+        output_unit: str | None = None,
+        triplestore: Triplestore | None = None,
     ) -> None:
         self.output_iri = output_iri
         self.steptype = steptype
@@ -213,16 +214,16 @@ class MappingStep:
         self.cost = cost
         self.triplestore = triplestore
         self.output_unit = output_unit
-        self.input_routes: "List[dict]" = []  # list of inputs dicts
+        self.input_routes: list[dict] = []  # list of inputs dicts
         self.join_mode = False  # whether to join upcoming input
-        self.joined_input: "Inputs" = {}
+        self.joined_input: Inputs = {}
 
-    def add_inputs(self, inputs: "Inputs") -> None:
+    def add_inputs(self, inputs: Inputs) -> None:
         """Add input Mapping (e.g., dict) for an input route."""
         assert isinstance(inputs, Mapping)  # noqa: S101
         self.input_routes.append(inputs)
 
-    def add_input(self, input: "Input", name: "Optional[str]" = None) -> None:
+    def add_input(self, input: Input, name: str | None = None) -> None:
         """Add an input (MappingStep or Value), where `name` is the name
         assigned to the argument.
 
@@ -254,11 +255,11 @@ class MappingStep:
 
     def eval(
         self,
-        routeno: "Optional[int]" = None,
-        unit: "Optional[str]" = None,
+        routeno: int | None = None,
+        unit: str | None = None,
         magnitude: bool = False,
-        quantity: "Optional[Type[Quantity]]" = None,
-    ) -> "Any":
+        quantity: type[Quantity] | None = None,
+    ) -> Any:
         """Returns the evaluated value of given input route number.
 
         Arguments:
@@ -303,7 +304,7 @@ class MappingStep:
             )
         return value
 
-    def get_inputs(self, routeno: int) -> "Tuple[Inputs, int]":
+    def get_inputs(self, routeno: int) -> tuple[Inputs, int]:
         """Returns input and input index `(inputs, idx)` for route number
         `routeno`.
 
@@ -322,7 +323,7 @@ class MappingStep:
                 return inputs, routeno - n0
         raise ValueError(f"routeno={routeno} exceeds number of routes")
 
-    def get_input_iris(self, routeno: int) -> "Dict[str, Optional[str]]":
+    def get_input_iris(self, routeno: int) -> dict[str, str | None]:
         """Returns a dict mapping input names to iris for the given route
         number.
 
@@ -350,7 +351,7 @@ class MappingStep:
             n += get_nroutes(inputs)
         return n
 
-    def lowest_costs(self, nresults: int = 5) -> "List[Tuple[float, int]]":
+    def lowest_costs(self, nresults: int = 5) -> list[tuple[float, int]]:
         """Returns a list of `(cost, routeno)` tuples with up to the `nresult`
         lowest costs and their corresponding route numbers.
 
@@ -450,8 +451,8 @@ class MappingStep:
 
     def show(
         self,
-        routeno: "Optional[int]" = None,
-        name: "Optional[str]" = None,
+        routeno: int | None = None,
+        name: str | None = None,
         indent: int = 0,
     ) -> str:
         """Returns a string representation of the mapping routes to this step.
@@ -577,8 +578,8 @@ class MappingStep:
     def visualise(
         self,
         routeno: int,
-        output: "Optional[str]" = None,
-        format: "Optional[str]" = "png",
+        output: str | None = None,
+        format: str | None = "png",
         dot: str = "dot",
     ) -> str:
         """Greate a Graphviz visualisation of a given mapping route.
@@ -607,7 +608,7 @@ class MappingStep:
         return graph
 
 
-def get_nroutes(inputs: "Inputs") -> int:
+def get_nroutes(inputs: Inputs) -> int:
     """Help function returning the number of routes for an input dict.
 
     Arguments:
@@ -624,11 +625,11 @@ def get_nroutes(inputs: "Inputs") -> int:
 
 
 def get_values(
-    inputs: "dict[str, Any]",
+    inputs: dict[str, Any],
     routeno: int,
-    quantity: "Type[Quantity]" = Quantity,
+    quantity: type[Quantity] = Quantity,
     magnitudes: bool = False,
-) -> "dict[str, Any]":
+) -> dict[str, Any]:
     """Help function returning a dict mapping the input names to actual value
     of expected input unit.
 
@@ -673,7 +674,7 @@ def get_values(
     return values
 
 
-def emmo_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
+def emmo_mapper(triplestore: Triplestore) -> dict[str, list]:
     """Finds all function definitions in `triplestore` based on EMMO.
 
     Return a dict mapping output IRIs to a list of
@@ -695,7 +696,7 @@ def emmo_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
     return d
 
 
-def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
+def fno_mapper(triplestore: Triplestore) -> dict[str, list]:
     """Finds all function definitions in `triplestore` based on the function
     ontololy (FNO).
 
@@ -752,22 +753,22 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
 
 def mapping_routes(
     target: str,
-    sources: "Union[Dict[str, Union[Value, None]], Sequence[str]]",
-    triplestore: "Triplestore",
-    function_repo: "Optional[dict]" = None,
-    function_mappers: "Union[str, Sequence[Callable]]" = (
+    sources: dict[str, Value | None] | Sequence[str],
+    triplestore: Triplestore,
+    function_repo: dict | None = None,
+    function_mappers: str | Sequence[Callable] = (
         emmo_mapper,
         fno_mapper,
     ),
-    default_costs: "Tuple" = (
+    default_costs: tuple = (
         ("function", 10.0),
         ("mapsTo", 2.0),
         ("instanceOf", 1.0),
         ("subClassOf", 1.0),
         ("value", 0.0),
     ),
-    value_class: "Optional[Type[Value]]" = None,
-    mappingstep_class: "Optional[Type[MappingStep]]" = None,
+    value_class: type[Value] | None = None,
+    mappingstep_class: type[MappingStep] | None = None,
     mapsTo: str = MAP.mapsTo,
     instanceOf: str = DM.instanceOf,
     subClassOf: str = RDFS.subClassOf,

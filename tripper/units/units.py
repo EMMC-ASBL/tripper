@@ -30,7 +30,7 @@ from tripper.utils import AttrDict, bnode_iri
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
-    from typing import Any, Optional, Tuple, Union
+    from typing import Any, Optional, Union
 
     from pint.compat import TypeAlias
 
@@ -177,7 +177,7 @@ def base_unit_expression(dimension: Dimension) -> str:
     return " * ".join(expr) if expr else "1"
 
 
-def load_emmo_quantity(ts: Triplestore, iri: str) -> "Tuple[float, str]":
+def load_emmo_quantity(ts: Triplestore, iri: str) -> "tuple[float, str]":
     """Return value and unit for EMMO quantity with given `iri`."""
     isclass = ts.query(f"ASK {{<{iri}> a owl:Class}}")
 
@@ -536,7 +536,7 @@ class Units:
             return Dimension(*[int(d) for d in m.groups()])
         raise InvalidDimensionStringError(dimstr)
 
-    def _parse_unitname(self, unitname: str) -> "Tuple[float, dict]":
+    def _parse_unitname(self, unitname: str) -> "tuple[float, dict]":
         """Parse CamelCase unit name and return a multiplication factor (from
         prefixes) and a dict mapping each unit component to its power.
 
@@ -947,7 +947,7 @@ class Units:
             ]
         )
 
-        with open(filename, "wt", encoding="utf-8") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(content) + "\n")
 
     def clear_cache(self) -> None:

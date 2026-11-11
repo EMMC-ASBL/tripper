@@ -103,12 +103,12 @@ line-length = 79
 [tool.ruff.lint]
 # E/F = standard syntax errors/style (defaults)
 # I = import sorting (isort replacement)
+# UP = modern Python syntax upgrades
 # B = common design flaws, code smells, and subtle bugs
 # SIM = simplification opportunities
 # S = security (bandit replacement)
 # T20 = debugging statement checks (debug-statements replacement)
-# TODO: Add UP (modern Python syntax upgrades) in a separate PR
-select = ["E", "F", "I", "B", "SIM", "S", "T20"]
+select = ["E", "F", "I", "UP", "B", "SIM", "S", "T20"]
 # TODO: Enable B028 (no explicit stacklevel in warnings.warn()) in a
 # separate PR, since it changes the location reported by the warnings
 ignore = ["B028"]

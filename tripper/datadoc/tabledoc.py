@@ -15,7 +15,8 @@ from tripper.literal import Literal
 from tripper.utils import AttrDict, openfile
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Iterable, List, Optional, Protocol, Sequence, Union
+    from collections.abc import Iterable, Sequence
+    from typing import Optional, Protocol, Union
 
     from tripper.datadoc.context import ContextType
     from tripper.datadoc.keywords import KeywordsType
@@ -129,7 +130,7 @@ class TableDoc:
             unknown_key=unknown_key,
         )
 
-    def asdicts(self) -> "List[dict]":
+    def asdicts(self) -> "list[dict]":
         """Return the table as a list of dicts."""
         # Parse column headers. Follow the syntax defined in
         # https://emmc-asbl.github.io/tripper/latest/datadoc/documenting-a-resource/#documenting-as-table
@@ -400,7 +401,7 @@ class TableDoc:
                 writer.writerow(row)
 
         if isinstance(csvfile, (str, Path)):
-            with open(csvfile, mode="wt", encoding=encoding) as f:
+            with open(csvfile, mode="w", encoding=encoding) as f:
                 write(f)
         else:
             write(csvfile)

@@ -308,7 +308,7 @@ def test_save_table():
     kw = get_keywords()
     kw.save_table(outdir / "keywords.csv")
 
-    with open(outdir / "keywords.csv", "rt", encoding="utf-8") as f:
+    with open(outdir / "keywords.csv", encoding="utf-8") as f:
         cr = csv.reader(f)
         header = next(cr)
         row1 = next(cr)
@@ -694,11 +694,10 @@ def test_save_context():
     kw.save_context(outdir / "context.json")
     with open(
         rootdir / "tripper" / "context" / "0.3" / "context.json",
-        mode="rt",
         encoding="utf-8",
     ) as f:
         d1 = json.load(f)
-    with open(outdir / "context.json", "rt", encoding="utf-8") as f:
+    with open(outdir / "context.json", encoding="utf-8") as f:
         d2 = json.load(f)
     assert d2 == d1, (
         "Tips: if this fails, try to run .hooks/generate-context-and-doc.sh "

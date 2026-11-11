@@ -44,7 +44,7 @@ class Session:
         if config is None:
             config = get_configdir() / "session.yaml"
 
-        with open(config, "rt", encoding="utf-8") as f:
+        with open(config, encoding="utf-8") as f:
             self.sessions = yaml.safe_load(f)
 
     def _get_config(self, name: str, password: "Optional[str]" = None) -> dict:

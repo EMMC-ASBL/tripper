@@ -41,5 +41,5 @@ def test_backend_ontopy(get_ontology_path: "Callable[[str], Path]") -> None:
         base_iri="http://onto-ns.com/ontologies/examples/food",
     )
     ts.bind("food", FOOD)
-    with open(ontopath_food, "rt", encoding="utf8") as handle:
+    with open(ontopath_food, encoding="utf8") as handle:
         ts.parse(data=handle.read())

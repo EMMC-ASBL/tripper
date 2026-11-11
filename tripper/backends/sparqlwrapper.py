@@ -19,8 +19,8 @@ except ImportError as exc:
     ) from exc
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Sequence
-    from typing import Generator, List, Optional, Tuple, Union
+    from collections.abc import Generator, Sequence
+    from typing import Optional, Union
 
     from SPARQLWrapper import QueryResult
     from triplestore import Triple
@@ -82,7 +82,7 @@ class SparqlwrapperStrategy:
         self,
         query_object: str,
         **kwargs,
-    ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
+    ) -> "Union[list[tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:

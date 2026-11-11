@@ -11,7 +11,8 @@ for more details.
 """
 
 import warnings
-from typing import TYPE_CHECKING, Generator
+from collections.abc import Generator
+from typing import TYPE_CHECKING
 
 try:
     import rdflib  # noqa: F401
@@ -30,7 +31,7 @@ from tripper.utils import parse_literal
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import List, Optional, Union
+    from typing import Optional, Union
 
     from tripper.triplestore import Triple
 
@@ -185,7 +186,7 @@ class RdflibStrategy:
 
     def query(
         self, query_object, **kwargs
-    ) -> "Union[List[tuple], bool, Generator[Triple, None, None]]":
+    ) -> "Union[list[tuple], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
         Parameters:
