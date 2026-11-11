@@ -1,6 +1,5 @@
 """A module that adds additional functionality to triplestore"""
 
-# pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import uuid
@@ -149,7 +148,7 @@ class Tripper(Triplestore):
         Returns:
             The value of the individual.
         """
-        from tripper.mappings import (  # pylint: disable=import-outside-toplevel
+        from tripper.mappings import (
             Value,
             mapping_routes,
         )
@@ -177,7 +176,7 @@ class Tripper(Triplestore):
             if self.has(iri, hasAccessFunction):  # callable
                 func_iri = self.value(iri, hasAccessFunction)
                 func = self.function_repo[func_iri]
-                assert callable(func)  # nosec
+                assert callable(func)  # noqa: S101
                 retval = func()
                 if isinstance(retval, Value):
                     return retval.get_value(
@@ -209,7 +208,7 @@ class Tripper(Triplestore):
             quantity=quantity,
         )
 
-    def add_interpolation_source(  # pylint: disable=too-many-arguments
+    def add_interpolation_source(
         self,
         xcoord: str,
         ycoord: str,
@@ -259,7 +258,7 @@ class Tripper(Triplestore):
 
         """
         try:
-            import numpy as np  # pylint: disable=import-outside-toplevel
+            import numpy as np
         except ImportError as exc:
             raise RuntimeError(
                 "Triplestore.add_interpolation_source() requires numpy.\n"

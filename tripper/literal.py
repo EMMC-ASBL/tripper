@@ -102,8 +102,6 @@ class Literal(str):
 
     """
 
-    # pylint: disable=too-many-nested-blocks
-
     # Note that the order of datatypes matters - it is used by
     # utils.parse_literal() when inferring the datatype of a literal.
     datatypes = {
@@ -171,7 +169,6 @@ class Literal(str):
         lang: "Optional[str]" = None,
         datatype: "Optional[Union[str, type]]" = None,
     ):
-        # pylint: disable=too-many-branches,too-many-statements
         string = super().__new__(cls, value)
         string.lang = None
         string.datatype = None
@@ -203,7 +200,7 @@ class Literal(str):
             string.lang = None
             string.datatype = SIQuantityDatatype
         elif datatype:
-            assert isinstance(datatype, str)  # nosec
+            assert isinstance(datatype, str)  # noqa: S101
             # Create canonical representation of value for given datatype
             val = None
             for typ, names in cls.datatypes.items():
@@ -215,8 +212,8 @@ class Literal(str):
                             else:
                                 val = typ(value)
                             break
-                        except:  # pylint: disable=bare-except
-                            pass  # nosec
+                        except Exception:  # noqa: S110
+                            pass
                     if val:
                         break
             if val is not None:
@@ -272,13 +269,11 @@ class Literal(str):
 
         # Some consistency checking
         if (
-            string.datatype == XSD.nonPositiveInteger
-            and int(value) > 0  # type: ignore[arg-type]
+            string.datatype == XSD.nonPositiveInteger and int(value) > 0  # type: ignore[arg-type]
         ):
             raise TypeError(f"not a xsd:nonPositiveInteger: '{string}'")
         if (
-            string.datatype == XSD.nonNegativeInteger
-            and int(value) < 0  # type: ignore[arg-type]
+            string.datatype == XSD.nonNegativeInteger and int(value) < 0  # type: ignore[arg-type]
         ):
             raise TypeError(f"not a xsd:nonNegativeInteger: '{string}'")
         if (
@@ -307,7 +302,7 @@ class Literal(str):
     def __hash__(self):
         return hash((str(self), self.lang, self.datatype))
 
-    def __eq__(self, other):  # pylint: disable=too-many-return-statements
+    def __eq__(self, other):
         if not isinstance(other, Literal):
             if isinstance(other, str) and (
                 self.lang or self.datatype in self.datatypes[str]
@@ -327,9 +322,7 @@ class Literal(str):
         strings = set(self.datatypes[str] + (None,))
         if self.datatype is None and other.datatype not in strings:
             return False
-        if other.datatype is None and self.datatype not in strings:
-            return False
-        return True
+        return not (other.datatype is None and self.datatype not in strings)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -365,7 +358,6 @@ class Literal(str):
             value = json.loads(str(self))
         elif self.datatype == SIQuantityDatatype:
             if Quantity:
-                # pylint: disable=import-outside-toplevel,cyclic-import
                 from tripper.units import get_ureg
 
                 ureg = get_ureg()
@@ -381,7 +373,7 @@ class Literal(str):
 
         return value
 
-    def n3(self) -> str:  # pylint: disable=invalid-name
+    def n3(self) -> str:
         """Returns a representation in n3 format."""
 
         form = self.replace("\\", r"\\").replace('"', r"\"")

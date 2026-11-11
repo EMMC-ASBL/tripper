@@ -1,7 +1,5 @@
 """Dummy tripper backend for testing loading a custom backend."""
 
-# pylint: disable=unused-argument
-
 
 class DummyStrategy:
     """Dummy strategy."""

@@ -4,7 +4,6 @@ For developers: The usage of `s`, `p`, and `o` represent the different parts of
 an RDF Triple: subject, predicate, and object.
 """
 
-# pylint: disable=protected-access
 import os
 import tempfile
 from typing import TYPE_CHECKING
@@ -53,7 +52,6 @@ class OntopyStrategy:
         load: bool = False,
         **kwargs,
     ):
-        # pylint: disable=unused-argument
         if onto is None:
             if base_iri is None:
                 base_iri = "http://example.com/onto#"
@@ -143,7 +141,7 @@ class OntopyStrategy:
         source=None,
         location=None,
         data=None,
-        format=None,  # pylint: disable=redefined-builtin
+        format=None,
         encoding=None,
         **kwargs,
     ):
@@ -189,7 +187,7 @@ class OntopyStrategy:
     def serialize(
         self,
         destination=None,
-        format="turtle",  # pylint: disable=redefined-builtin
+        format="turtle",
         **kwargs,
     ) -> "Union[None, str]":
         """Serialise to destination.

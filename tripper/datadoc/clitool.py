@@ -1,7 +1,5 @@
 """A script for data documentation."""
 
-# pylint: disable=too-many-branches
-
 import argparse
 import io
 import json
@@ -140,7 +138,6 @@ def subcommand_fetch(ts, args):
 
 def maincommand(argv=None):
     """Main command."""
-    # pylint: disable=too-many-statements
 
     parser = argparse.ArgumentParser(
         description=(
@@ -414,7 +411,7 @@ def maincommand(argv=None):
     # Call subcommand handler
     try:
         return args.func(ts, args)
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:
         if args.debug:
             raise
         print(f"{exc.__class__.__name__}: {exc}")

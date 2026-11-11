@@ -10,10 +10,9 @@ with numpy.
 
 """
 
-# pylint: disable=invalid-name,redefined-builtin,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
-import subprocess  # nosec: B404
+import subprocess
 from collections import defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING, Mapping, Sequence
@@ -88,8 +87,6 @@ class Value:
         cost: Cost of accessing this value.
     """
 
-    # pylint: disable=too-few-public-methods
-
     def __init__(
         self,
         value: "Any" = None,
@@ -157,7 +154,6 @@ class Value:
         name: "Optional[str]" = None,
         indent: int = 0,
     ) -> str:
-        # pylint: disable=unused-argument
         """Returns a string representation of the Value.
 
         Arguments:
@@ -171,7 +167,7 @@ class Value:
         """
         strings = []
         ind = " " * indent
-        strings.append(ind + f'{name if name else "Value"}:')
+        strings.append(ind + f"{name if name else 'Value'}:")
         strings.append(ind + f"  iri: {self.output_iri}")
         strings.append(ind + f"  property_iri: {self.property_iri}")
         strings.append(ind + f"  unit: {self.unit}")
@@ -202,8 +198,6 @@ class MappingStep:
     The arguments can also be assigned as attributes.
     """
 
-    # pylint: disable=too-many-instance-attributes
-
     def __init__(
         self,
         output_iri: str,
@@ -225,7 +219,7 @@ class MappingStep:
 
     def add_inputs(self, inputs: "Inputs") -> None:
         """Add input Mapping (e.g., dict) for an input route."""
-        assert isinstance(inputs, Mapping)  # nosec B101
+        assert isinstance(inputs, Mapping)  # noqa: S101
         self.input_routes.append(inputs)
 
     def add_input(self, input: "Input", name: "Optional[str]" = None) -> None:
@@ -242,8 +236,8 @@ class MappingStep:
             input: A mapping step or a value.
             name: Name assigned to the argument.
         """
-        assert isinstance(input, (MappingStep, Value))  # nosec B101
-        argname = name if name else f"arg{len(self.joined_input)+1}"
+        assert isinstance(input, (MappingStep, Value))  # noqa: S101
+        argname = name if name else f"arg{len(self.joined_input) + 1}"
         if self.join_mode:
             self.joined_input[argname] = input
         else:
@@ -367,7 +361,7 @@ class MappingStep:
             A list of `(cost, routeno)` tuples.
         """
         try:
-            import numpy as np  # pylint: disable=import-outside-toplevel
+            import numpy as np
         except ImportError as exc:
             raise RuntimeError(
                 "Mappings.lowest_costs() requires numpy.\n"
@@ -473,7 +467,7 @@ class MappingStep:
         """
         strings = []
         ind = " " * indent
-        strings.append(ind + f'{name if name else "Step"}:')
+        strings.append(ind + f"{name if name else 'Step'}:")
         strings.append(
             ind + f"  steptype: "
             f"{self.steptype.name if self.steptype else None}"
@@ -548,7 +542,7 @@ class MappingStep:
                 )
             elif isinstance(input, MappingStep):
                 strings.append(
-                    input._visualise(  # pylint: disable=protected-access
+                    input._visualise(
                         routeno=idx,
                         next_iri=self.output_iri,
                         next_steptype=self.steptype,
@@ -604,9 +598,9 @@ class MappingStep:
         strings.append("}")
         graph = "\n".join(strings) + "\n"
         if output:
-            subprocess.run(
+            subprocess.run(  # noqa: S603
                 args=[dot, f"-T{format}", "-o", output],
-                shell=False,  # nosec: B603
+                shell=False,
                 check=True,
                 input=graph.encode(),
             )
@@ -715,7 +709,6 @@ def fno_mapper(triplestore: "Triplestore") -> "Dict[str, list]":
 
         tuples.
     """
-    # pylint: disable=too-many-branches
 
     # Temporary dicts for fast lookup
     Dfirst = dict(triplestore.subject_objects(RDF.first))
@@ -782,8 +775,8 @@ def mapping_routes(
     label: str = RDFS.label,
     hasUnit: str = DM.hasUnit,
     hasCost: str = DM.hasCost,  # TODO - add hasCost to the DM ontology
-    hasAccessFunction: str = hasAccessFunction,  # pylint: disable=redefined-outer-name
-    hasDataValue: str = hasDataValue,  # pylint: disable=redefined-outer-name
+    hasAccessFunction: str = hasAccessFunction,
+    hasDataValue: str = hasDataValue,
 ) -> Input:
     """Find routes of mappings from any source in `sources` to `target`.
 
@@ -833,7 +826,6 @@ def mapping_routes(
         MappingStep instances providing an (efficient) internal description
         of all possible mapping routes from `sources` to `target`.
     """
-    # pylint: disable=too-many-arguments,too-many-locals,too-many-statements
 
     if target in sources:
         return Value(iri=target)
@@ -895,11 +887,7 @@ def mapping_routes(
         if func_iri in function_repo and function_repo[func_iri]:
             return function_repo[func_iri]
         try:
-            return (
-                triplestore._get_function(  # pylint: disable=protected-access
-                    func_iri
-                )
-            )
+            return triplestore._get_function(func_iri)
         except CannotGetFunctionError:
             return default
 

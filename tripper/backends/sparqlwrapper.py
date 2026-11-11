@@ -20,7 +20,7 @@ except ImportError as exc:
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Dict, Generator, List, Optional, Tuple, Union
+    from typing import Generator, List, Optional, Tuple, Union
 
     from SPARQLWrapper import QueryResult
     from triplestore import Triple
@@ -81,7 +81,7 @@ class SparqlwrapperStrategy:
     def query(
         self,
         query_object: str,
-        **kwargs,  # pylint: disable=unused-argument
+        **kwargs,
     ) -> "Union[List[Tuple[str, ...]], bool, Generator[Triple, None, None]]":
         """SPARQL query.
 
@@ -162,7 +162,7 @@ class SparqlwrapperStrategy:
     def update(
         self,
         update_object: str,
-        **kwargs,  # pylint: disable=unused-argument
+        **kwargs,
     ) -> None:
         """Update triplestore with SPARQL query.
 
@@ -259,7 +259,9 @@ class SparqlwrapperStrategy:
                 (
                     value.n3()
                     if isinstance(value, Literal)
-                    else value if value.startswith("<") else f"<{value}>"
+                    else value
+                    if value.startswith("<")
+                    else f"<{value}>"
                 )
                 for value in triple
             )
@@ -283,7 +285,9 @@ class SparqlwrapperStrategy:
                 else (
                     value.n3()
                     if isinstance(value, Literal)
-                    else value if value.startswith("<") else f"<{value}>"
+                    else value
+                    if value.startswith("<")
+                    else f"<{value}>"
                 )
             )
             for name, value in zip("spo", triple)

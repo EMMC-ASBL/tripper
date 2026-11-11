@@ -2,7 +2,7 @@
 
 import hashlib
 import os
-import pickle  # nosec
+import pickle
 import sys
 import warnings
 from pathlib import Path
@@ -47,8 +47,6 @@ class Namespace:
         triplestore_url: Deprecated. Use the `triplestore` argument instead.
     """
 
-    # pylint: disable=too-many-instance-attributes
-
     __slots__ = (
         "_iri",  # Ontology IRI
         "_label_annotations",  # Recognised annotations for labels
@@ -71,7 +69,6 @@ class Namespace:
         cachemode: int = -1,
         triplestore_url: "Optional[str]" = None,
     ):
-        # pylint: disable=redefined-builtin
         if cachemode != -1:
             warnings.warn(
                 "The `cachemode` argument of Triplestore.__init__() is "
@@ -121,10 +118,9 @@ class Namespace:
             format: If `triplestore` is a tring or Path, parse it using this
                 format.
         """
-        # pylint: disable=redefined-builtin
 
         # Import Triplestore here to avoid cyclic import
-        from .triplestore import (  # pylint: disable=import-outside-toplevel,cyclic-import
+        from .triplestore import (
             Triplestore,
         )
 
@@ -170,7 +166,7 @@ class Namespace:
     def _get_labels(self, iri):
         """Return annotation labels corresponding to the given IRI."""
         self._update_iris()
-        if not ":" in iri:
+        if ":" not in iri:
             iri = self._iri + iri
         labels = [
             k
@@ -181,14 +177,12 @@ class Namespace:
 
     def _get_cachefile(self) -> Path:
         """Return path to cache file for this namespace."""
-        # pylint: disable=too-many-function-args
         name = self._iri.rstrip("#/").rsplit("/", 1)[-1]
         hashno = hashlib.shake_128(self._iri.encode()).hexdigest(5)
         return get_cachedir() / f"{name}-{hashno}.cache"
 
     def _save_cache(self):
         """Save current cache."""
-        # pylint: disable=invalid-name
         try:
             cachefile = self._get_cachefile()
             if self._iris and not sys.is_finalizing():
@@ -206,14 +200,13 @@ class Namespace:
 
         Returns true if there exists a cache file to load from.
         """
-        # pylint: disable=invalid-name
         try:
             cachefile = self._get_cachefile()
             if self._iris is None:
                 self._iris = {}
             if cachefile.exists():
                 with open(cachefile, "rb") as f:
-                    self._iris.update(pickle.load(f))  # nosec
+                    self._iris.update(pickle.load(f))  # noqa: S301
                 return True
             return False
         except OSError as exc:
@@ -242,7 +235,6 @@ class Namespace:
             if name in self._iris:
                 return self._iris[name]
         if self._check:
-
             msg = ""
             try:
                 cachefile = self._get_cachefile()
@@ -355,8 +347,7 @@ class Namespace:
         if iri not in self._reviris:
             cachefile = self._get_cachefile()
             raise NoSuchIRIError(
-                f"{iri}\n"
-                f"Maybe you have to remove the cache file: {cachefile}"
+                f"{iri}\nMaybe you have to remove the cache file: {cachefile}"
             )
         return self._reviris[iri]
 

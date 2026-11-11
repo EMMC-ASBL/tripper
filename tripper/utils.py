@@ -1,6 +1,5 @@
 """Utility functions."""
 
-# pylint: disable=invalid-name,redefined-builtin,too-many-lines
 import datetime
 import hashlib
 import inspect
@@ -12,7 +11,7 @@ import sys
 import tempfile
 import urllib.parse
 import warnings
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from copy import deepcopy
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, cast
@@ -124,7 +123,7 @@ class AttrDict(dict):
         s = ["AttrDict({"]
         for k, v in obj.items():
             val = self._pprint(v, n) if isinstance(v, AttrDict) else repr(v)
-            s.append(f"{' '*n}{k!r}: {val},")
+            s.append(f"{' ' * n}{k!r}: {val},")
         s.append(" " * indent + "})")
         return "\n".join(s)
 
@@ -136,7 +135,6 @@ class AttrDict(dict):
 def _rec(d, other, append, cls):
     """Recursive help function for recursive_update() that returns the
     updated version of d."""
-    # pylint: disable=too-many-nested-blocks,too-many-branches
 
     if other == d:
         return d
@@ -241,7 +239,6 @@ def recursive_update(
         {'a': 2}
 
     """
-    # pylint: disable=too-many-branches
     if cls is None:
         cls = d.__class__
 
@@ -280,7 +277,7 @@ def openfile(
         fname = url[7:] if u.startswith("file://") else url[5:]
 
     elif u.startswith("http://") or u.startswith("https://"):
-        import requests  # pylint: disable=import-outside-toplevel
+        import requests
 
         tmpfile = True
         r = requests.get(url, timeout=timeout)
@@ -296,8 +293,7 @@ def openfile(
         fname = url
 
     try:
-        # pylint: disable=unspecified-encoding
-        f = open(fname, mode=mode, **kwargs)  # type: ignore
+        f = open(fname, mode=mode, **kwargs)  # type: ignore  # noqa: SIM115
         yield f  # type: ignore
     finally:
         if f is not None:
@@ -388,9 +384,7 @@ def function_id(func: "Callable", length: int = 4) -> str:
     """
     source = inspect.getsource(func)
     doc = func.__doc__ if func.__doc__ else ""
-    return hashlib.shake_128(  # pylint: disable=too-many-function-args
-        (source + doc).encode()
-    ).hexdigest(length)
+    return hashlib.shake_128((source + doc).encode()).hexdigest(length)
 
 
 def bnode_iri(prefix: str = "", source: str = "", length: int = 5) -> str:
@@ -416,7 +410,8 @@ def bnode_iri(prefix: str = "", source: str = "", length: int = 5) -> str:
     else:
         # From Python 3.9 we can use random.randbytes(length).hex()
         hash = "".join(
-            hex(random.randint(0, 255))[2:] for i in range(length)  # nosec
+            hex(random.randint(0, 255))[2:]  # noqa: S311
+            for i in range(length)
         )
     return f"_:{prefix}{hash}"
 
@@ -461,7 +456,7 @@ def tfilter(
         yield s, p, o
 
 
-def en(value) -> "Literal":  # pylint: disable=invalid-name
+def en(value) -> "Literal":
     """Convenience function that returns value as a plain english literal.
 
     Equivalent to ``Literal(value, lang="en")``.
@@ -475,8 +470,6 @@ def parse_literal(literal: "Any") -> "Any":
     The main difference between this function and the Literal constructor,
     is that this function correctly interprets n3-encoded literal strings.
     """
-    # pylint: disable=invalid-name,too-many-branches,too-many-statements
-    # pylint: disable=too-many-return-statements
     lang, datatype = None, None
 
     if isinstance(literal, Literal):
@@ -516,7 +509,7 @@ def parse_literal(literal: "Any") -> "Any":
                         datatype = v[0]
                         break
                 else:
-                    assert False, "should never be reached"  # nosec
+                    raise AssertionError("should never be reached")
             return Literal(cast(Any, literal), lang=lang, datatype=datatype)
         raise TypeError(f"unsupported literal type: {type(literal)}")
 
@@ -555,10 +548,8 @@ def parse_literal(literal: "Any") -> "Any":
             type_ = types.get(datatype, str)
             if type_ is bool and value in ("False", "false", "0", 0, False):
                 return Literal(False)
-            try:
+            with suppress(TypeError):
                 value = type_(value)
-            except TypeError:
-                pass
         return Literal(value, lang=lang, datatype=datatype)
 
     for type_, datatypes in Literal.datatypes.items():
@@ -599,7 +590,6 @@ def parse_object(obj: "Union[str, Literal]") -> "Union[str, Any]":
         A string if `obj` is considered to be an IRI, otherwise a
         literal.
     """
-    # pylint: disable=too-many-return-statements
     if isinstance(obj, Literal):
         return obj
     if isinstance(obj, str):
@@ -710,7 +700,7 @@ def check_function(func: "Callable", s: str, exceptions) -> bool:
 def random_string(length=8):
     """Return a random string of the given length."""
     letters = string.ascii_letters + string.digits
-    return "".join(random.choice(letters) for i in range(length))  # nosec
+    return "".join(random.choice(letters) for i in range(length))  # noqa: S311
 
 
 def extend_namespace(
@@ -734,17 +724,15 @@ def extend_namespace(
               - dict: dict mapping new IRI names to their corresponding IRIs
         format: Format to use when loading from a triplestore.
     """
-    if namespace._iris is None:  # pylint: disable=protected-access
+    if namespace._iris is None:
         raise TypeError(
             "only namespaces created with `label_annotations` or `check` set "
             "to true can be extend"
         )
     if isinstance(triplestore, dict):
-        namespace._iris.update(triplestore)  # pylint: disable=protected-access
+        namespace._iris.update(triplestore)
     else:
-        namespace._update_iris(  # pylint: disable=protected-access
-            triplestore, reload=True, format=format
-        )
+        namespace._update_iris(triplestore, reload=True, format=format)
 
 
 def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
@@ -825,7 +813,6 @@ def expand_iri(iri: str, prefixes: dict, strict: bool = False) -> str:
 def prefix_iri(
     iri: str, prefixes: dict, strict: bool = False, ns_translate: bool = True
 ) -> str:
-    # pylint: disable=line-too-long
     """Return prefixed IRI, a.k.a. a compact URI (CURIE).
 
     This is the reverse of expand_iri().
@@ -879,15 +866,15 @@ def prefix_iri(
     """
     if m := MATCH_PREFIXED_IRI.match(iri):
         prefix, name, _ = m.groups()
-        if ns := prefixes.get(prefix):
-            if ns_translate and isinstance(ns, Namespace):
+        if ns := prefixes.get(prefix):  # noqa: SIM102
+            if ns_translate and isinstance(ns, Namespace):  # noqa: SIM102
                 if m2 := MATCH_IRI.match(ns[name]):
                     newname = m2.groups()[4]  # mypy: ignore[union-attr]
                     return f"{prefix}:{newname}"
         return iri
     for prefix, ns in prefixes.items():
         if iri.startswith(str(ns)):
-            return f"{prefix}:{iri[len(str(ns)):]}"
+            return f"{prefix}:{iri[len(str(ns)) :]}"
     if strict:
         raise NamespaceError(f"No prefix defined for IRI: {iri}")
     return iri
@@ -983,12 +970,10 @@ def get_entry_points(group: str):
     """
     if sys.version_info < (3, 10):
         # Fallback for Python < 3.10
-        eps = entry_points().get(group, ())  # pylint: disable=no-member
+        eps = entry_points().get(group, ())
     else:
         # New entry_point interface from Python 3.10+
-        eps = entry_points(  # pylint: disable=unexpected-keyword-arg
-            group=group
-        )
+        eps = entry_points(group=group)
     return eps
 
 
@@ -1007,9 +992,9 @@ def check_service_availability(
         Returns true if the service responds with code 200,
         otherwise false is returned.
     """
-    import time  # pylint: disable=import-outside-toplevel
+    import time
 
-    import requests  # pylint: disable=import-outside-toplevel
+    import requests
 
     # Interval should never be larger than timeout
     interval = min(interval, timeout)
@@ -1046,7 +1031,7 @@ def service_responds(url: str, timeout: float = 1.0) -> bool:
         installed.
     """
     try:
-        import requests  # pylint: disable=import-outside-toplevel
+        import requests
     except ImportError:
         return False
 

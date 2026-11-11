@@ -1,7 +1,5 @@
 """Test the dataset module."""
 
-# pylint: disable=invalid-name,too-many-locals,duplicate-code,too-many-lines
-
 import pytest
 
 pytest.importorskip("yaml")
@@ -20,7 +18,6 @@ def test__get_range():
 
 def test_told():
     """Test told()."""
-    # pylint: disable=too-many-statements
     from pathlib import Path
 
     from tripper import DCAT, DCTERMS, RDF, Triplestore
@@ -848,9 +845,8 @@ def test_literals_not_checked_in_context():
 @pytest.mark.network
 def test_datadoc():
     """Test save_datadoc() and acquire()/store()."""
-    # pylint: disable=too-many-statements
 
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import CHAMEO, DCAT, DCTERMS, EMMO, OTEIO, Triplestore
     from tripper.datadoc import acquire, save_datadoc, search, store
@@ -1021,7 +1017,7 @@ def test_datadoc():
         search(
             ts,
             criteria={
-                "https://w3id.org/emmo#isDescriptionOf": "https://he-matchmaker.eu/material/concrete1"  # pylint: disable=line-too-long
+                "https://w3id.org/emmo#isDescriptionOf": "https://he-matchmaker.eu/material/concrete1"
             },
         )
     ) == [
@@ -1032,7 +1028,7 @@ def test_datadoc():
 
 def test_custom_context():
     """Test saving YAML file with custom context to triplestore."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import Triplestore
     from tripper.datadoc import save_datadoc
@@ -1118,7 +1114,7 @@ def test_pipeline():
     from tripper import Triplestore
 
     otelib = pytest.importorskip("otelib")
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper.datadoc import get_partial_pipeline, save_datadoc
 
@@ -1148,7 +1144,7 @@ def test_pipeline():
 
 def test_fuseki():
     """Test save and load dataset with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper import Session
     from tripper.datadoc import acquire, delete, store

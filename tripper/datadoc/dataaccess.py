@@ -1,4 +1,3 @@
-# pylint: disable=redefined-builtin,invalid-name
 """A module for providing access to data based on data documentation
 from the datasets module.
 
@@ -25,7 +24,7 @@ from tripper.datadoc.dataset import acquire, add, get, store
 from tripper.utils import AttrDict
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Any, Iterable, List, Mapping, Optional, Sequence, Union
+    from typing import Optional, Sequence, Union
 
 
 def save(
@@ -82,10 +81,8 @@ def save(
         IRI of the dataset.
 
     """
-    # pylint: disable=too-many-locals,too-many-branches,too-many-statements
-    # pylint: disable=import-outside-toplevel,import-error
     # Use the Protocol plugin system from DLite.  Should we move it to tripper?
-    from dlite.protocol import Protocol  # pylint: disable=import-error
+    from dlite.protocol import Protocol
 
     triples = []
     save_dataset = save_distribution = False
@@ -242,7 +239,6 @@ def load(
     Note:
         For now this requires DLite.
     """
-    # pylint: disable=import-outside-toplevel,import-error
     # Use the Protocol plugin system from DLite.  Should we move it to tripper?
     import dlite
     from dlite.protocol import Protocol
@@ -281,10 +277,8 @@ def load(
                 try:
                     with Protocol(scheme, location, options=p.query) as pr:
                         return pr.load(id)
-                    # pylint: disable=no-member
                 except (dlite.DLiteProtocolError, dlite.DLiteIOError):
                     pass
-                # pylint: disable=broad-exception-caught
                 except Exception as exc:
                     if n < retries - 1:
                         time.sleep(1)

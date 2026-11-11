@@ -3,11 +3,15 @@
 Most of the rdflib backend is already tested in tests/test_triplestore.py.
 """
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-pytest.importorskip("rdflib")
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
+    from pathlib import Path
 
-# pylint: disable=invalid-name
+pytest.importorskip("rdflib")
 
 
 def test_rdflib_backend():
@@ -70,9 +74,7 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     from tripper.triplestore import RDFS, Triplestore
 
     ts = Triplestore("rdflib")
-    EX = ts.bind(
-        "ex", "http://example.com/onto#"
-    )  # pylint: disable=invalid-name
+    EX = ts.bind("ex", "http://example.com/onto#")
     ts.parse(format="turtle", data=expected_function_triplestore)
     assert ts.serialize(format="turtle") == expected_function_triplestore
     ts.set((EX.AnotherConcept, RDFS.subClassOf, EX.MyConcept))
@@ -83,17 +85,13 @@ def test_backend_rdflib(expected_function_triplestore: str) -> None:
     ts.add_mapsTo(
         EX.Sum, "http://onto-ns.com/meta/0.1/MyEntity#sum", cost=cost
     )
-    assert (  # pylint: disable=comparison-with-callable
-        list(ts.function_repo.values())[0] == cost
-    )
+    assert list(ts.function_repo.values())[0] == cost
 
     def func(parameter):
         return parameter + 1
 
     ts.add_function(func, expects=EX.Sum, returns=EX.OneMore, cost=cost)
-    assert (  # pylint: disable=comparison-with-callable
-        list(ts.function_repo.values())[1] == func
-    )
+    assert list(ts.function_repo.values())[1] == func
     assert len(ts.function_repo) == 2  # cost is only added once
 
     def func2(parameter):
@@ -128,9 +126,7 @@ def test_backend_rdflib_base_iri(
     shutil.copy(ontopath_family, tmp_onto)
 
     ts = Triplestore(backend="rdflib")
-    FAM = ts.bind(  # pylint: disable=invalid-name
-        "fam", "http://onto-ns.com/ontologies/examples/family#"
-    )
+    FAM = ts.bind("fam", "http://onto-ns.com/ontologies/examples/family#")
     ts.add_triples(
         [
             (":Nils", RDF.type, FAM.Father),

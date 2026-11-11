@@ -7,10 +7,10 @@ pytest.importorskip("rdflib")
 pytest.importorskip("SPARQLWrapper")
 pytest.importorskip("pyld")
 
-from tripper.datadoc.clitool import (  # pylint: disable=wrong-import-position
+from tripper.datadoc.clitool import (
     maincommand,
 )
-from tripper.utils import (  # pylint: disable=wrong-import-position
+from tripper.utils import (
     service_responds,
 )
 
@@ -21,14 +21,14 @@ if not service_responds("http://localhost:3030"):
 
 def test_delete():
     """Test `datadoc delete` with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     iri = "semdata:SEM_cement_batch2/77600-23-001/77600-23-001_5kV_400x_m001"
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "delete",
         f"--criteria=@id={iri}",
     ]
@@ -38,7 +38,7 @@ def test_delete():
     findcmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         f"--criteria=@id={iri}",
     ]
@@ -49,14 +49,14 @@ def test_delete():
 
 def test_delete_regex():
     """Test `datadoc delete` with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     iri_regexp = "https://he-matchmaker.eu/data/sem/.*"
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "delete",
         f"--criteria=@id=~{iri_regexp}",
     ]
@@ -66,7 +66,7 @@ def test_delete_regex():
     findcmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         f"--criteria=@id=~{iri_regexp}",
     ]
@@ -77,24 +77,24 @@ def test_delete_regex():
 
 def test_add():
     """Test `datadoc add` with Fuseki."""
-    from dataset_paths import indir, outdir  # pylint: disable=import-error
+    from dataset_paths import indir, outdir
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "add",
-        f"--context={indir/'semdata-context-ext.json'}",
+        f"--context={indir / 'semdata-context-ext.json'}",
         "--type=dcat:Dataset",
-        f"--dump={outdir/'semdata.ttl'}",
-        f"{indir/'semdata.csv'}",
+        f"--dump={outdir / 'semdata.ttl'}",
+        f"{indir / 'semdata.csv'}",
     ]
     maincommand(cmd)
 
     # Ensure that KB contains the added datasets
     findcmd = [
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         "--criteria=@id=~https://he-matchmaker.eu/data/sem/.*",
     ]
@@ -114,12 +114,12 @@ def test_add():
 
 def test_find():
     """Test `datadoc find` with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         "--criteria=creator.name=Sigurd Wenner",
     ]
@@ -141,12 +141,12 @@ def test_find_json():
     """Test `datadoc find` with Fuseki."""
     import json
 
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         "--criteria=creator.name=Sigurd Wenner",
         "--format=json",
@@ -160,12 +160,12 @@ def test_find_json():
 
 def test_find_turtle():
     """Test `datadoc find` with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         "--criteria=creator.name=Sigurd Wenner",
         "--format=turtle",
@@ -176,12 +176,12 @@ def test_find_turtle():
 
 def test_find_csv():
     """Test `datadoc find` with Fuseki."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "find",
         "--criteria=creator.name=Sigurd Wenner",
         "--format=csv",
@@ -196,7 +196,7 @@ def test_find_csv():
 
 def test_fetch():
     """Test `datadoc fetch` with Fuseki."""
-    from dataset_paths import indir, outdir  # pylint: disable=import-error
+    from dataset_paths import indir, outdir
 
     pytest.importorskip("dlite")
 
@@ -211,7 +211,7 @@ def test_fetch():
     cmd = [
         "--debug",
         "--triplestore=FusekiTest",
-        f"--config={indir/'session.yaml'}",
+        f"--config={indir / 'session.yaml'}",
         "fetch",
         iri,
         f"--output={outfile}",

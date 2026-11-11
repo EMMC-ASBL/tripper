@@ -53,6 +53,7 @@ Finally you can insert/append the sub-package with your backend to the `tripper.
 
 ```python
 import tripper
+
 tripper.backend_packages.append("mypackage.backends")
 ts = Triplestore(backend="mybackend")
 ```

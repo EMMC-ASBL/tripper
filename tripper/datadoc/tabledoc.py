@@ -1,7 +1,5 @@
 """Basic interface for tabular documentation of datasets."""
 
-# pylint: disable=too-many-locals
-
 import csv
 import re
 from pathlib import Path
@@ -24,8 +22,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
     class Writer(Protocol):
         """Prototype for a class with a write() method."""
-
-        # pylint: disable=too-few-public-methods,missing-function-docstring
 
         def write(self, data: str) -> None: ...
 
@@ -65,9 +61,6 @@ class TableDoc:
         baseiri: If given, it will be used as a base iri to
             resolve relative IRIs. (I.e. Not valid URLs).
     """
-
-    # pylint: disable=redefined-builtin,too-few-public-methods
-    # pylint: disable=too-many-arguments,too-many-instance-attributes
 
     def __init__(
         self,
@@ -277,7 +270,6 @@ class TableDoc:
         baseiri: "Optional[str]" = None,
         **kwargs,
     ) -> "TableDoc":
-        # pylint: disable=line-too-long
         """Parse a csv file using the standard library csv module.
 
         Arguments:
@@ -370,7 +362,6 @@ class TableDoc:
         prefixes: "Optional[dict]" = None,
         **kwargs,
     ) -> None:
-        # pylint: disable=line-too-long
         """Write the table to a csv file using the standard library csv module.
 
         Arguments:
@@ -397,7 +388,7 @@ class TableDoc:
                 for h in self.headers:
                     for prefix, ns in prefixes.items():
                         if h.startswith(str(ns)):
-                            headers.append(f"{prefix}:{h[len(str(ns)):]}")
+                            headers.append(f"{prefix}:{h[len(str(ns)) :]}")
                             break
                     else:
                         headers.append(h)
@@ -428,7 +419,6 @@ class TableDoc:
         redefine: str = "raise",
         baseiri: "Optional[str]" = None,
     ) -> "TableDoc":
-        # pylint: disable=line-too-long
         """Parse a csv file using the standard library csv module.
 
         Arguments:
@@ -445,7 +435,8 @@ class TableDoc:
             context: Dict with user-defined JSON-LD context.
             prefixes: Dict with prefixes in addition to those included in the
                 JSON-LD context.  Should map namespace prefixes to IRIs.
-            strip: Whether to strip leading and trailing whitespaces from cells.
+            strip: Whether to strip leading and trailing whitespaces from
+                cells.
             strict: Whether to raise an `InvalidKeywordError` exception if `d`
                 contains an unknown key.
             redefine: Determine how to handle redefinition of existing
@@ -462,7 +453,6 @@ class TableDoc:
             New TableDoc instance.
 
         """
-        # pylint: disable=import-outside-toplevel
         from openpyxl import load_workbook
 
         wb = load_workbook(
@@ -581,7 +571,6 @@ def csvsniff(sample):
     class dialect(csv.Dialect):
         """Custom dialect."""
 
-        # pylint: disable=too-few-public-methods
         _name = "sniffed"
         delimiter = delim
         doublequote = True  # quote chars inside quotes are duplicated
@@ -598,10 +587,7 @@ def csvsniff(sample):
 class Column:
     """Help class representing a column."""
 
-    # pylint: disable=too-few-public-methods
-
     def __init__(self, header, context=None, strip=True):
-        # pylint: disable=line-too-long,too-many-branches
         """Initialise a column opject.
 
         Arguments:
@@ -671,14 +657,17 @@ class Column:
             # defines it, ensure the exact header string is present in the
             # JSON-LD context as a synonym (so coercion like @type:@id
             # applies). Do NOT create entries for undefined terms.
-            if (is_full_iri or is_prefixed) and df:
-                if leafname not in context.get_context_dict():
-                    entry = {"@id": df["@id"]}
-                    if "@type" in df:
-                        entry["@type"] = df["@type"]
-                    elif "@language" in df:
-                        entry["@language"] = df["@language"]
-                    context.add_context({leafname: entry})
+            if (
+                (is_full_iri or is_prefixed)
+                and df
+                and leafname not in context.get_context_dict()
+            ):
+                entry = {"@id": df["@id"]}
+                if "@type" in df:
+                    entry["@type"] = df["@type"]
+                elif "@language" in df:
+                    entry["@language"] = df["@language"]
+                context.add_context({leafname: entry})
 
         self.header = header
         self.context = context

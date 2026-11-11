@@ -1,6 +1,5 @@
 """Backend for DLite collections."""
 
-# pylint: disable=protected-access,invalid-name
 from typing import TYPE_CHECKING
 
 from tripper.literal import Literal
@@ -8,7 +7,7 @@ from tripper.utils import parse_object
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Sequence
-    from typing import Generator, List, Optional, Union
+    from typing import Generator, Optional, Union
 
     import dlite
 
@@ -33,7 +32,6 @@ class CollectionStrategy:
         database: "Optional[str]" = None,
         collection: "Optional[Union[dlite.Collection, str]]" = None,
     ):
-        # pylint: disable=unused-argument,import-outside-toplevel,import-error
         import dlite
 
         if collection is None:
@@ -72,7 +70,9 @@ class CollectionStrategy:
             d = (
                 None
                 if not isinstance(v, Literal)
-                else f"@{v.lang}" if v.lang else v.datatype
+                else f"@{v.lang}"
+                if v.lang
+                else v.datatype
             )
             self.collection.add_relation(s, p, obj, d)
 
@@ -84,6 +84,8 @@ class CollectionStrategy:
         d = (
             None
             if not isinstance(v, Literal)
-            else f"@{v.lang}" if v.lang else v.datatype
+            else f"@{v.lang}"
+            if v.lang
+            else v.datatype
         )
         self.collection.remove_relations(s, p, obj, d)
