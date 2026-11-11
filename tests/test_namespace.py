@@ -1,14 +1,11 @@
 """Test namespaces."""
 
-# pylint: disable=invalid-name,duplicate-code,import-outside-toplevel
-
 from typing import TYPE_CHECKING
 
 import pytest
 
 if TYPE_CHECKING:
-    from pathlib import Path
-    from typing import Callable
+    pass
 
 
 @pytest.mark.network
@@ -52,22 +49,22 @@ def test_namespaces() -> None:
     assert FOOD2.Vegetable == FOOD2 + name
 
     with pytest.raises(NoSuchIRIError):
-        FAM.NonExisting  # pylint: disable=pointless-statement
+        FAM.NonExisting
 
     with pytest.raises(NoSuchIRIError):
-        FOOD.NonExisting  # pylint: disable=pointless-statement
+        FOOD.NonExisting
 
     assert FOOD2.NonExisting == FOOD2 + "NonExisting"
 
     # Save and reuse the cache
-    FOOD2._save_cache()  # pylint: disable=protected-access
+    FOOD2._save_cache()
     FOOD3 = Namespace(
         "http://onto-ns.com/ontologies/examples/food#", check=True
     )
     assert FOOD3[name] == FOOD3 + name
     assert FOOD3.Vegetable == FOOD3 + name
     with pytest.raises(NoSuchIRIError):
-        FOOD3.NonExisting  # pylint: disable=pointless-statement
+        FOOD3.NonExisting
 
     # Test __dir__() method
     assert "Age" in dir(FAM)
@@ -114,7 +111,7 @@ def test_namespace_label_precedence() -> None:
 
     onto = Namespace(base, label_annotations=True, triplestore=ts, reload=True)
 
-    assert onto.DFT == base + "DFT"
+    assert base + "DFT" == onto.DFT
     assert onto["DFT"] == base + "DFT"
     assert onto["Density Functional Theory"] == base + "DFT"
     assert onto["somethingElse"] == base + "somethingElse"
@@ -169,12 +166,12 @@ def test_triplestore_arg() -> None:
     assert FAM["Son"] == "http://onto-ns.com/ontologies/examples/family#Son"
     assert FAM + "Son" == "http://onto-ns.com/ontologies/examples/family#Son"
     with pytest.raises(NoSuchIRIError):
-        FAM.NonExisting  # pylint: disable=pointless-statement
+        FAM.NonExisting
 
     # Unresolvable namespace IRI fails lazily at attribute access time
     EX = Namespace("http://example.com", check=True, triplestore=Ellipsis)
     with pytest.raises(NamespaceError):
-        EX.Class  # pylint: disable=pointless-statement
+        EX.Class
 
 
 def test_namespace_emmo():
@@ -187,10 +184,9 @@ def test_namespace_emmo():
         "https://w3id.org/emmo#EMMO_eb77076b_a104_42ac_a065_798b2d2809ad"
     )
     with pytest.raises(NoSuchIRIError):
-        EMMO.NonExisting  # pylint: disable=pointless-statement
+        EMMO.NonExisting
 
     # Test _get_labels() method.
-    # pylint: disable=protected-access
     assert EMMO._get_labels(EMMO.Atom) == ["Atom"]
     assert EMMO._get_labels("EMMO_eb77076b_a104_42ac_a065_798b2d2809ad") == [
         "Atom"

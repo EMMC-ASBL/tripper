@@ -1,13 +1,12 @@
 """Parse and work with JSON-LD context."""
 
-# pylint: disable=too-many-branches,redefined-builtin
-
 import json
 import os
 import re
 import warnings
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING
 
 from pyld import jsonld
 
@@ -24,7 +23,7 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import IO, Optional, Union
+    from typing import Optional, Union
 
     from tripper.datadoc.keywords import Keywords
 
@@ -73,7 +72,7 @@ def get_context(
         if copy:
             context = context.copy()
         # if keywords or theme:
-        #    # pylint: disable=import-outside-toplevel
+        #
         #    from tripper.datadoc.keywords import get_keywords
         #
         #    kw = get_keywords(keywords=keywords, theme=theme)
@@ -123,7 +122,6 @@ class Context:
             timeout: Timeout when accessing remote files.
 
         """
-        # pylint: disable=import-outside-toplevel
         from tripper.datadoc.keywords import Keywords
 
         self.ld = jsonld.JsonLdProcessor()
@@ -174,7 +172,6 @@ class Context:
         """Return a copy of this context."""
         copy = Context(theme=None)
         copy.ctx = self.ctx  # frozendict - no need to copy
-        # pylint: disable=protected-access
         copy._namespace_prefixes = self._namespace_prefixes.copy()
         return copy
 
@@ -247,7 +244,7 @@ class Context:
             self.ctx = self.ld.process_context(
                 self.ctx, rec(context), options={}
             )
-        except jsonld.JsonLdError:  # pylint: disable=try-except-raise
+        except jsonld.JsonLdError:
             # TODO: convert error message to something more readable
             raise
 
@@ -685,7 +682,7 @@ class Context:
         self._shortnamed["@type"] = "@type"
         # Build a reverse map: IRI -> all prefixed aliases (e.g. both
         # "dcterms:license" and "term:license" when two prefixes share an IRI)
-        aliases: "dict[str, list[str]]" = {}
+        aliases: dict[str, list[str]] = {}
         for pfx, ns in prefixes.items():
             for expanded in mappings.values():
                 if expanded.startswith(str(ns)):

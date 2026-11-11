@@ -33,7 +33,7 @@ def service_responds(url: str, timeout: float = 1.0) -> bool:
         installed.
     """
     try:
-        import requests  # pylint: disable=import-outside-toplevel
+        import requests
     except ImportError:
         return False
 
@@ -52,7 +52,7 @@ def serverskip(
         with socket.create_connection((server, port), timeout=timeout):
             pass
     except OSError as exc:
-        print(
+        print(  # noqa: T201
             f"Server {server}:{port} seems to be down: {exc}", file=sys.stderr
         )
         sys.exit(exitcode)
@@ -71,7 +71,7 @@ TEST_SERVICES = {
         "host": "localhost",
         "port": 3030,
         "user": "admin",
-        "password": "admin0",  # nosec B105
+        "password": "admin0",
         "dataset": "test_repo",
     },
     "graphdb": {

@@ -11,6 +11,12 @@
       rep:repositoryType "graphdb:SailRepository" ;
       sr:sailImpl [
          sail:sailType "graphdb:Sail" ;
-         graphdb:enable-fts-index "true"
+         # The FTS indexes must be configured explicitly.  With only
+         # enable-fts-index, GraphDB 10.8 reports FTS as enabled, but
+         # onto:fts queries return no results.
+         graphdb:enable-fts-index "true" ;
+         graphdb:fts-indexes ("default" "iri") ;
+         graphdb:fts-string-literals-index "default" ;
+         graphdb:fts-iris-index "none"
       ]
    ] .

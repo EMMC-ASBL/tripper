@@ -1,7 +1,5 @@
 """Test Triplestore.add_function()"""
 
-# pylint: disable=invalid-name,import-outside-toplevel
-
 
 def test_add_function():
     """Test add_function()"""
@@ -26,7 +24,9 @@ def test_add_function():
         standard="fno",
     )
 
-    assert ts.serialize().strip() == f"""
+    assert (
+        ts.serialize().strip()
+        == f"""
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ex: <http://example.com/ex#> .
 @prefix fno: <https://w3id.org/function/ontology#> .
@@ -55,6 +55,7 @@ def test_add_function():
     rdfs:label "b"@en ;
     map:mapsTo ex:arg2 .
 """.strip()
+    )
 
     ts2 = Triplestore(backend="rdflib")
     EX = ts2.bind("ex", "http://example.com/ex#")
@@ -64,7 +65,9 @@ def test_add_function():
         returns=EX.sum,
         standard="emmo",
     )
-    assert ts2.serialize().strip() == f"""
+    assert (
+        ts2.serialize().strip()
+        == f"""
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <https://w3id.org/emmo#> .
 @prefix ex: <http://example.com/ex#> .
@@ -89,6 +92,7 @@ ex:arg2 a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a ;
 
 ex:sum a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a .
 """.strip()
+    )
 
     ts3 = Triplestore(backend="rdflib")
     EX = ts3.bind("ex", "http://example.com/ex#")
@@ -98,7 +102,9 @@ ex:sum a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a .
         returns=EX.sum,
         standard="emmo",
     )
-    assert ts3.serialize().strip() == f"""
+    assert (
+        ts3.serialize().strip()
+        == f"""
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix emmo: <https://w3id.org/emmo#> .
 @prefix ex: <http://example.com/ex#> .
@@ -123,3 +129,4 @@ ex:arg2 a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a ;
 
 ex:sum a emmo:EMMO_50d6236a_7667_4883_8ae1_9bb5d190423a .
 """.strip()
+    )

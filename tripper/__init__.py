@@ -6,7 +6,7 @@ See the README.md file for a description for how to use this package.
 
 # Import backends here to avoid defining new globals later
 # Needed for pytest+doctest to pass
-from . import backends  # pylint: disable=unused-import
+from . import backends
 from .literal import Literal
 from .namespace import (
     ADMS,

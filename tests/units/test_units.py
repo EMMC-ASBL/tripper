@@ -78,7 +78,6 @@ def test_load_emmo_quantity():
 
 def test_units():
     """Test the Units class."""
-    # pylint: disable=too-many-statements,protected-access
 
     from pathlib import Path
 
@@ -239,7 +238,6 @@ def test_units():
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="pint needs Python 3.9")
 def test_unit_registry():
     """Test tripper.units.UnitRegistry."""
-    # pylint: disable=too-many-statements,too-many-locals
 
     from tripper import EMMO, RDFS, Triplestore
     from tripper.units import UnitRegistry, get_ureg
@@ -271,7 +269,7 @@ def test_unit_registry():
 
     q = ureg.Quantity("3 kh")  # KiloHour does NOT exists in the ontology
     with pytest.raises(MissingUnitError):
-        q.u.info  # pylint: disable=pointless-statement
+        q.u.info
     assert q.dimension == Dimension(1, 0, 0, 0, 0, 0, 0)
     q2 = q.to_ontology_units()
     assert q2 == 3000 * ureg.Hour
@@ -370,7 +368,7 @@ def test_unit_registry():
     # reset the module variable holding the default ureg
     import tripper.units.units
 
-    tripper.units.units._unit_reg = None  # pylint: disable=protected-access
+    tripper.units.units._unit_reg = None
 
     with pytest.raises(NoDefaultUnitRegistryError):
         get_ureg(nocreate=True)
@@ -397,9 +395,7 @@ def test_get_quantity():
     assert ureg.get_quantity(iso80000Ref="5-20-1") == 1 * ureg.Joule  # Energy
     assert ureg.get_quantity(
         iri="https://doi.org/10.1351/goldbook.A00051"
-    ) == ureg(
-        "1 m/s²"
-    )  # Acceleration
+    ) == ureg("1 m/s²")  # Acceleration
 
     with pytest.raises(MissingQuantityError):
         ureg.get_quantity("non-existing-quantity-name")

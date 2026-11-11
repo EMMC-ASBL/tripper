@@ -13,12 +13,11 @@ parts of an RDF Triple: subject, predicate, and object.
 
 """
 
-# pylint: disable=invalid-name,too-many-public-methods,too-many-lines
 from __future__ import annotations  # Support Python 3.7 (PEP 585)
 
 import importlib
 import inspect
-import subprocess  # nosec
+import subprocess
 import sys
 import warnings
 from collections.abc import Sequence
@@ -59,17 +58,10 @@ from tripper.utils import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Generator, Iterable, Mapping
     from typing import (
         Any,
         Callable,
-        Dict,
-        Generator,
-        Iterable,
-        List,
-        Mapping,
-        Optional,
-        Tuple,
-        Union,
     )
 
     # Ideally `RestrictionType` should be defined as
@@ -83,8 +75,7 @@ if TYPE_CHECKING:  # pragma: no cover
     # For now we do it simple.
     RestrictionType = str
 
-    from tripper.mappings import Value
-    from tripper.utils import OptionalTriple, Triple
+    from tripper.utils import Triple
 
 
 # Default packages in which to look for tripper backends
@@ -110,8 +101,6 @@ hasCost = DM.hasCost
 class Triplestore:
     """Provides a common frontend to a range of triplestore backends."""
 
-    # pylint: disable=too-many-instance-attributes
-
     default_namespaces = {
         "xml": XML,
         "rdf": RDF,
@@ -131,10 +120,10 @@ class Triplestore:
     def __init__(
         self,
         backend: str,
-        base_iri: "Optional[str]" = None,
-        database: "Optional[str]" = None,
-        package: "Optional[str]" = None,
-        check_url: "Optional[str]" = None,  # Deprecated
+        base_iri: str | None = None,
+        database: str | None = None,
+        package: str | None = None,
+        check_url: str | None = None,  # Deprecated
         **kwargs,
     ) -> None:
         """Initialise triplestore using the backend with the given name.
@@ -200,7 +189,7 @@ class Triplestore:
         module = self._load_backend(backend, package)
         cls = getattr(module, f"{backend_name.title()}Strategy")
         self.base_iri = base_iri
-        self.namespaces: "Dict[str, Namespace]" = {}
+        self.namespaces: dict[str, Namespace] = {}
         self.closed = False
         self.backend_name = backend_name
         self.database = database
@@ -217,7 +206,7 @@ class Triplestore:
                 self.bind(prefix, ns)
 
         # Cache functions in the triplestore for fast access
-        self.function_repo: "Dict[str, Union[float, Callable, None]]" = {}
+        self.function_repo: dict[str, float | Callable | None] = {}
 
     def __enter__(self):
         return self
@@ -226,7 +215,7 @@ class Triplestore:
         self.close()
 
     @classmethod
-    def _load_backend(cls, backend: str, package: "Optional[str]" = None):
+    def _load_backend(cls, backend: str, package: str | None = None):
         """Load and return backend module.  The arguments has the same meaning
         as corresponding arguments to __init__().
 
@@ -263,13 +252,13 @@ class Triplestore:
 
     # Methods implemented by backend
     # ------------------------------
-    def triples(  # pylint: disable=redefined-builtin
+    def triples(
         self,
-        subject: "Optional[Union[str, Triple]]" = None,
-        predicate: "Optional[str]" = None,
-        object: "Optional[Union[str, Literal]]" = None,
-        triple: "Optional[Triple]" = None,
-    ) -> "Generator[Triple, None, None]":
+        subject: str | Triple | None = None,
+        predicate: str | None = None,
+        object: str | Literal | None = None,
+        triple: Triple | None = None,
+    ) -> Generator[Triple, None, None]:
         """Returns a generator over matching triples.
 
         Arguments:
@@ -298,7 +287,7 @@ class Triplestore:
 
         return self.backend.triples((subject, predicate, object))
 
-    def add_triples(self, triples: "Iterable[Triple]") -> None:
+    def add_triples(self, triples: Iterable[Triple]) -> None:
         """Add a sequence of triples.
 
         Arguments:
@@ -307,12 +296,12 @@ class Triplestore:
         """
         self.backend.add_triples(triples)
 
-    def remove(  # pylint: disable=redefined-builtin
+    def remove(
         self,
-        subject: "Optional[Union[str, Triple]]" = None,
-        predicate: "Optional[str]" = None,
-        object: "Optional[Union[str, Literal]]" = None,
-        triple: "Optional[Triple]" = None,
+        subject: str | Triple | None = None,
+        predicate: str | None = None,
+        object: str | Literal | None = None,
+        triple: Triple | None = None,
     ) -> None:
         """Remove all matching triples from the backend.
 
@@ -359,7 +348,7 @@ class Triplestore:
         format=None,
         fallback_backend="rdflib",
         fallback_backend_kwargs=None,
-        **kwargs,  # pylint: disable=redefined-builtin
+        **kwargs,
     ) -> None:
         """Parse source and add the resulting triples to triplestore.
 
@@ -396,11 +385,11 @@ class Triplestore:
     def serialize(
         self,
         destination=None,
-        format="turtle",  # pylint: disable=redefined-builtin
+        format="turtle",
         fallback_backend="rdflib",
         fallback_backend_kwargs=None,
         **kwargs,
-    ) -> "Union[None, str]":
+    ) -> None | str:
         """Serialise triplestore.
 
         Arguments:
@@ -434,10 +423,10 @@ class Triplestore:
     def query(
         self,
         query: str,
-        iris: "Optional[dict]" = None,
-        literals: "Optional[dict]" = None,
+        iris: dict | None = None,
+        literals: dict | None = None,
         **kwargs,
-    ) -> "Any":
+    ) -> Any:
         """SPARQL query.
 
         The `query` argument may contain variables for IRIs and literals,
@@ -501,8 +490,8 @@ class Triplestore:
     def update(
         self,
         query: str,
-        iris: "Optional[dict]" = None,
-        literals: "Optional[dict]" = None,
+        iris: dict | None = None,
+        literals: dict | None = None,
         **kwargs,
     ) -> None:
         """Update triplestore with SPARQL.
@@ -534,9 +523,9 @@ class Triplestore:
     def bind(
         self,
         prefix: str,
-        namespace: "Union[str, Namespace, Triplestore]",
+        namespace: str | Namespace | Triplestore,
         **kwargs,
-    ) -> "Namespace": ...
+    ) -> Namespace: ...
 
     @overload
     def bind(
@@ -549,9 +538,9 @@ class Triplestore:
     def bind(
         self,
         prefix: str,
-        namespace: "Union[str, Namespace, Triplestore, None]" = "",
+        namespace: str | Namespace | Triplestore | None = "",
         **kwargs,
-    ) -> "Union[Namespace, None]":
+    ) -> Namespace | None:
         """Bind prefix to namespace and return the new Namespace object.
 
         Arguments:
@@ -577,7 +566,6 @@ class Triplestore:
                 )
             ns = Namespace(namespace.base_iri, **kwargs)
         elif isinstance(namespace, Namespace):
-            # pylint: disable=protected-access
             ns = Namespace(namespace._iri, **kwargs)
         elif namespace is None:
             del self.namespaces[prefix]
@@ -589,7 +577,8 @@ class Triplestore:
 
         if hasattr(self.backend, "bind"):
             self.backend.bind(
-                prefix, ns._iri  # pylint: disable=protected-access
+                prefix,
+                ns._iri,
             )
 
         self.namespaces[prefix] = ns
@@ -703,7 +692,7 @@ class Triplestore:
             )
 
     @classmethod
-    def _get_backend(cls, backend: str, package: "Optional[str]" = None):
+    def _get_backend(cls, backend: str, package: str | None = None):
         """Returns the class implementing the given backend."""
         module = cls._load_backend(backend, package=package)
         return getattr(module, f"{backend.title()}Strategy")
@@ -712,11 +701,11 @@ class Triplestore:
         """Check that backend implements the given method."""
         self._check_backend_method(self.backend_name, name)
 
-    def add(self, triple: "Triple"):
+    def add(self, triple: Triple):
         """Add `triple` to triplestore."""
         self.add_triples([triple])
 
-    def value(  # pylint: disable=redefined-builtin
+    def value(
         self,
         subject=None,
         predicate=None,
@@ -724,7 +713,7 @@ class Triplestore:
         default=None,
         any=False,
         lang=None,
-    ) -> "Union[str, Literal]":
+    ) -> str | Literal:
         """Return the value for a pair of two criteria.
 
         Useful if one knows that there may only be one value.
@@ -763,8 +752,7 @@ class Triplestore:
             triples = (
                 t
                 for t in triples
-                if isinstance(t[idx], Literal)
-                and t[idx].lang == lang  # type: ignore
+                if isinstance(t[idx], Literal) and t[idx].lang == lang  # type: ignore
             )
 
         if any is None:
@@ -792,14 +780,18 @@ class Triplestore:
             yield o
 
     def predicates(
-        self, subject=None, object=None  # pylint: disable=redefined-builtin
+        self,
+        subject=None,
+        object=None,
     ):
         """Returns a generator of predicates for given subject and object."""
         for _, p, _ in self.triples(subject=subject, object=object):
             yield p
 
     def subjects(
-        self, predicate=None, object=None  # pylint: disable=redefined-builtin
+        self,
+        predicate=None,
+        object=None,
     ):
         """Returns a generator of subjects for given predicate and object."""
         for s, _, _ in self.triples(predicate=predicate, object=object):
@@ -817,17 +809,13 @@ class Triplestore:
         for s, _, o in self.triples(predicate=predicate):
             yield s, o
 
-    def subject_predicates(
-        self, object=None
-    ):  # pylint: disable=redefined-builtin
+    def subject_predicates(self, object=None):
         """Returns a generator of (subject, predicate) tuples for given
         object."""
         for s, p, _ in self.triples(object=object):
             yield s, p
 
-    def has(
-        self, subject=None, predicate=None, object=None
-    ):  # pylint: disable=redefined-builtin
+    def has(self, subject=None, predicate=None, object=None):
         """Returns true if the triplestore has any triple matching
         the give subject, predicate and/or object."""
         triple = self.triples(
@@ -882,7 +870,6 @@ class Triplestore:
         return expand_iri(iri, self.namespaces, strict=strict)
 
     def prefix_iri(self, iri: str, require_prefixed: bool = False):
-        # pylint: disable=line-too-long
         """Return prefixed IRI.
 
         This is the reverse of expand_iri().
@@ -924,13 +911,13 @@ class Triplestore:
         "value": (OWL.hasValue, None),
     }
 
-    def add_restriction(  # pylint: disable=redefined-builtin
+    def add_restriction(
         self,
         cls: str,
         property: str,
-        value: "Union[str, Literal]",
-        type: "RestrictionType",
-        cardinality: "Optional[int]" = None,
+        value: str | Literal,
+        type: RestrictionType,
+        cardinality: int | None = None,
         hashlength: int = 16,
     ) -> str:
         """Add a restriction to a class in the triplestore.
@@ -986,16 +973,15 @@ class Triplestore:
         self.add_triples(triples)
         return iri
 
-    def restrictions(  # pylint: disable=redefined-builtin
+    def restrictions(
         self,
-        cls: "Optional[str]" = None,
-        property: "Optional[str]" = None,
-        value: "Optional[Union[str, Literal]]" = None,
-        type: "Optional[RestrictionType]" = None,
-        cardinality: "Optional[int]" = None,
+        cls: str | None = None,
+        property: str | None = None,
+        value: str | Literal | None = None,
+        type: RestrictionType | None = None,
+        cardinality: int | None = None,
         asdict: bool = True,
-    ) -> "Generator[dict, None, None]":
-        # pylint: disable=too-many-boolean-expressions
+    ) -> Generator[dict, None, None]:
         """Returns a generator over matching restrictions.
 
         Arguments:
@@ -1145,7 +1131,7 @@ class Triplestore:
         self,
         source: str,
         target: str,
-        cost: "Optional[Union[float, Callable]]" = None,
+        cost: float | Callable | None = None,
         target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to the triplestore.
@@ -1174,8 +1160,8 @@ class Triplestore:
         self,
         target: str,
         source: str,
-        property_name: "Optional[str]" = None,
-        cost: "Optional[Union[float, Callable]]" = None,
+        property_name: str | None = None,
+        cost: float | Callable | None = None,
         target_cost: bool = True,
     ):
         """Add 'mapsTo' relation to triplestore.
@@ -1254,12 +1240,12 @@ class Triplestore:
             # package and try to import the module again
             pypi_package = self.value(func_iri, OTEIO.hasPypiPackageName)
             if not pypi_package:
-                raise CannotGetFunctionError(  # pylint: disable=raise-missing-from
+                raise CannotGetFunctionError(  # noqa: B904
                     f"PyPI package not documented for function: {func_iri}"
                 )
 
             try:
-                subprocess.run(  # nosec
+                subprocess.run(  # noqa: S603
                     args=[
                         sys.executable,
                         "-m",
@@ -1289,7 +1275,7 @@ class Triplestore:
 
         return func
 
-    def eval_function(self, func_iri, args=(), kwargs=None) -> "Any":
+    def eval_function(self, func_iri, args=(), kwargs=None) -> Any:
         """Evaluate mapping function and return the result.
 
         Arguments:
@@ -1316,18 +1302,17 @@ class Triplestore:
 
     def add_function(
         self,
-        func: "Union[Callable, str]",
-        expects: "Union[str, Sequence, Mapping]" = (),
-        returns: "Union[str, Sequence]" = (),
-        base_iri: "Optional[str]" = None,
+        func: Callable | str,
+        expects: str | Sequence | Mapping = (),
+        returns: str | Sequence = (),
+        base_iri: str | None = None,
         standard: str = "emmo",
-        cost: "Optional[Union[float, Callable]]" = None,
-        func_name: "Optional[str]" = None,
-        module_name: "Optional[str]" = None,
-        package_name: "Optional[str]" = None,
-        pypi_package_name: "Optional[str]" = None,
+        cost: float | Callable | None = None,
+        func_name: str | None = None,
+        module_name: str | None = None,
+        package_name: str | None = None,
+        pypi_package_name: str | None = None,
     ):
-        # pylint: disable=too-many-branches,too-many-arguments
         """Inspect function and add triples describing it to the triplestore.
 
         Arguments:
@@ -1391,12 +1376,12 @@ class Triplestore:
 
     def _add_function_doc(
         self,
-        func_iri: "str",
-        func: "Optional[Callable]" = None,
-        func_name: "Optional[str]" = None,
-        module_name: "Optional[str]" = None,
-        package_name: "Optional[str]" = None,
-        pypi_package_name: "Optional[str]" = None,
+        func_iri: str,
+        func: Callable | None = None,
+        func_name: str | None = None,
+        module_name: str | None = None,
+        package_name: str | None = None,
+        pypi_package_name: str | None = None,
     ):
         """Add standard-independent documentation of how to access the
         function.
@@ -1473,7 +1458,7 @@ class Triplestore:
 
     def _add_cost(
         self,
-        cost: "Union[float, Callable]",
+        cost: float | Callable,
         dest_iri,
         base_iri=None,
         pypi_package_name=None,
@@ -1524,7 +1509,6 @@ class Triplestore:
 
     def _add_function_fno(self, func, expects, returns, base_iri):
         """Implementing add_function() for FnO."""
-        # pylint: disable=too-many-locals,too-many-statements
         self.bind("fno", FNO)
         self.bind("dcterms", DCTERMS)
         self.bind("map", MAP)
@@ -1569,8 +1553,8 @@ class Triplestore:
 
         lst = parlist
         for i, (iri, parname) in enumerate(pars):
-            lst_next = f"{parlist}{i+2}" if i < len(pars) - 1 else RDF.nil
-            par = f"{func_iri}_parameter{i+1}_{parname}"
+            lst_next = f"{parlist}{i + 2}" if i < len(pars) - 1 else RDF.nil
+            par = f"{func_iri}_parameter{i + 1}_{parname}"
             self.add((par, RDF.type, FNO.Parameter))
             self.add((par, RDFS.label, en(parname)))
             self.add((par, MAP.mapsTo, iri))
@@ -1580,8 +1564,8 @@ class Triplestore:
 
         lst = outlist
         for i, iri in enumerate(returns):
-            lst_next = f"{outlist}{i+2}" if i < len(returns) - 1 else RDF.nil
-            val = f"{func_iri}_output{i+1}"
+            lst_next = f"{outlist}{i + 2}" if i < len(returns) - 1 else RDF.nil
+            val = f"{func_iri}_output{i + 1}"
             self.add((val, RDF.type, FNO.Output))
             self.add((val, MAP.mapsTo, iri))
             self.add((lst, RDF.first, val))
@@ -1592,7 +1576,6 @@ class Triplestore:
 
     def _add_function_emmo(self, func, expects, returns, base_iri):
         """Implementing add_function() method for the "emmo" standard."""
-        # pylint: disable=too-many-locals
         self.bind("emmo", EMMO)
         self.bind("dcterms", DCTERMS)
         self.bind("map", MAP)

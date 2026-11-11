@@ -1,7 +1,5 @@
 """Test the Keywords class."""
 
-# pylint: disable=too-many-statements,wrong-import-position
-
 import pytest
 
 pytest.importorskip("yaml")
@@ -17,7 +15,7 @@ def test_get_keywords():
     """Test get_keywords() function."""
     import warnings
 
-    from dataset_paths import testdir  # pylint: disable=import-error
+    from dataset_paths import testdir
 
     from tripper import DDOC, OWL, XSD
     from tripper.datadoc import get_context, get_keywords
@@ -139,7 +137,7 @@ def test_copy():
 
 def test_add():
     """Test add() method."""
-    from dataset_paths import indir, ontodir  # pylint: disable=import-error
+    from dataset_paths import indir, ontodir
 
     from tripper.datadoc import get_keywords
 
@@ -186,10 +184,12 @@ def test_add():
 
 
 def test_load_yaml():
-    """Test load_yaml() method. Most of it is already tested via get_keywords().
-    Only a few additional tests are added here.
+    """Test load_yaml() method.
+
+    Most of it is already tested via get_keywords().  Only a few
+    additional tests are added here.
     """
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper.datadoc.errors import (
         ParseError,
@@ -248,7 +248,7 @@ def test_load_yaml():
 
 def test_save_yaml():
     """Test save_yaml() method."""
-    from dataset_paths import outdir  # pylint: disable=import-error
+    from dataset_paths import outdir
 
     from tripper.datadoc import get_keywords
 
@@ -258,7 +258,7 @@ def test_save_yaml():
 
 def test_load_table():
     """Test load_table() method."""
-    from dataset_paths import indir  # pylint: disable=import-error
+    from dataset_paths import indir
 
     from tripper.datadoc import get_keywords
 
@@ -301,14 +301,14 @@ def test_save_table():
     """Test save_table() method."""
     import csv
 
-    from dataset_paths import outdir  # pylint: disable=import-error
+    from dataset_paths import outdir
 
     from tripper.datadoc import get_keywords
 
     kw = get_keywords()
     kw.save_table(outdir / "keywords.csv")
 
-    with open(outdir / "keywords.csv", "rt", encoding="utf-8") as f:
+    with open(outdir / "keywords.csv", encoding="utf-8") as f:
         cr = csv.reader(f)
         header = next(cr)
         row1 = next(cr)
@@ -489,7 +489,7 @@ def _default_keywords_turtle() -> str:
 
 def test_save_rdf():
     """Test save_rdf() method."""
-    from dataset_paths import outdir  # pylint: disable=import-error
+    from dataset_paths import outdir
 
     from tripper import Triplestore
 
@@ -562,7 +562,7 @@ def test_load_rdf():
 
 def test_load2():
     """Test load_rdf() on an ontology."""
-    from dataset_paths import ontodir  # pylint: disable=import-error
+    from dataset_paths import ontodir
 
     from tripper import Triplestore
     from tripper.datadoc import get_keywords
@@ -688,7 +688,7 @@ def test_save_context():
     """Test save JSON-LD context and documentation."""
     import json
 
-    from dataset_paths import outdir, rootdir  # pylint: disable=import-error
+    from dataset_paths import outdir, rootdir
 
     # from tripper.datadoc import get_keywords
 
@@ -698,11 +698,10 @@ def test_save_context():
     kw.save_context(outdir / "context.json")
     with open(
         rootdir / "tripper" / "context" / "0.3" / "context.json",
-        mode="rt",
         encoding="utf-8",
     ) as f:
         d1 = json.load(f)
-    with open(outdir / "context.json", "rt", encoding="utf-8") as f:
+    with open(outdir / "context.json", encoding="utf-8") as f:
         d2 = json.load(f)
     assert d2 == d1, (
         "Tips: if this fails, try to run .hooks/generate-context-and-doc.sh "
@@ -836,7 +835,6 @@ def test_typename():
 
 def test__keywords_list():
     """Test _keywords_list() method."""
-    # pylint: disable=protected-access
     kwset, clset, themeset = keywords._keywords_list()
     assert len(kwset) == len(keywords)
     assert isinstance(themeset, set)
