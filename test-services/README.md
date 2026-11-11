@@ -38,23 +38,12 @@ locally running server that uses the same port first.
 Credentials
 -----------
 The credentials are only meant for local testing.  They agree with the
-defaults in `TEST_SERVICES` in
-[bindings/python/testutils.py](../bindings/python/testutils.py) (and
-[storages/python/tests-c/pgtestconf.h](../storages/python/tests-c/pgtestconf.h)).
+defaults in `TEST_SERVICES` in [tripper/testutils.py](../tripper/testutils.py).
 They can be changed by setting environment variables named
 `TRIPPER_TEST_<SERVICE>_<KEY>`, both when starting the services and when
 running the tests, e.g.
 
-    export TRIPPER_TEST_POSTGRESQL_PASSWORD=my-secret
-
-
-Testing Tripper and tripper together
-----------------------------------
-The fuseki and graphdb services are configured as expected by the
-tripper tests, so the same services can be used when developing Tripper
-and tripper together.  Tripper only needs fuseki and graphdb:
-
-    docker compose -f test-services/compose.yaml up -d fuseki graphdb
+    export TRIPPER_TEST_FUSEKI_PASSWORD=my-secret
 
 - fuseki is started with admin password `admin0` and a `test_repo`
   dataset.
@@ -68,3 +57,9 @@ Continuous integration
 ----------------------
 The [CI tests](../.github/workflows/ci_tests.yml) workflow starts the
 services needed by the Tripper tests from the same compose file.
+
+To avoid the rate limit of Docker Hub, the `docker-images` job pulls the
+images once and stores them with `actions/cache`.  The pytest jobs load
+the images from the cache and start the services without pulling.  The
+cache key is a hash of [compose.yaml](compose.yaml), so keep the images
+pinned to fixed tags and change the tag to update an image.

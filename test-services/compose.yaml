@@ -6,31 +6,31 @@
 #
 # or only some of them, e.g.
 #
-#     docker compose -f test-services/compose.yaml up -d postgres redis
+#     docker compose -f test-services/compose.yaml up -d fuseki
 #
 # and stop them again with
 #
 #     docker compose -f test-services/compose.yaml down
 #
 # The credentials below are only meant for local testing.  They agree
-# with the defaults in TEST_SERVICES in bindings/python/testutils.py
+# with the defaults in TEST_SERVICES in tripper/testutils.py
 # and can be changed with environment variables named
 # TRIPPER_TEST_<SERVICE>_<KEY>.
 
 # Images are given with fully qualified names, which is required by podman.
+# Keep them pinned to fixed tags.  The CI workflow caches the images with
+# a key computed from this file, so a new tag invalidates the cache.
 
 # Fixed project name, so that the services are easy to recognise and
-# can be managed from any directory (e.g. when also testing tripper).
+# can be managed from any directory.
 name: tripper-test-services
 
 services:
 
-  # Not used by the Tripper tests yet.  Configured as expected by the
-  # tripper tests (admin password "admin0" and a "test_repo" dataset on
-  # port 3030), so that the same services can be used when developing
-  # Tripper and tripper together.
+  # Apache Jena Fuseki with admin password "admin0" and a "test_repo"
+  # dataset on port 3030.
   fuseki:
-    image: docker.io/stain/jena-fuseki
+    image: docker.io/stain/jena-fuseki:5.1.0
     environment:
       ADMIN_PASSWORD: ${TRIPPER_TEST_FUSEKI_PASSWORD:-admin0}
       FUSEKI_DATASET_1: ${TRIPPER_TEST_FUSEKI_DATASET:-test_repo}
@@ -42,9 +42,8 @@ services:
       timeout: 3s
       retries: 10
 
-  # Not used by the Tripper tests yet.  Configured as expected by the
-  # tripper tests (a "test_repo" repository with full-text search on
-  # port 7200).
+  # Ontotext GraphDB with a "test_repo" repository with full-text search
+  # on port 7200.
   graphdb:
     image: docker.io/ontotext/graphdb:10.8.3
     ports:
@@ -58,7 +57,7 @@ services:
   # One-shot service that creates the "test_repo" repository in graphdb
   # (if it doesn't already exist) when graphdb is up.
   graphdb-init:
-    image: docker.io/curlimages/curl
+    image: docker.io/curlimages/curl:8.23.0
     depends_on:
       graphdb:
         condition: service_healthy
