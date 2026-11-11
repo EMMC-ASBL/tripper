@@ -1146,6 +1146,8 @@ def test_pipeline():
     pipeline.get()
 
 
+# Uses the shared Fuseki "test_repo" dataset, see test_backends_sparql.py
+@pytest.mark.xdist_group("triplestore")
 def test_fuseki():
     """Test save and load dataset with Fuseki."""
     from dataset_paths import indir  # pylint: disable=import-error

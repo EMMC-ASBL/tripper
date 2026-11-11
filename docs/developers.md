@@ -54,6 +54,29 @@ docker run -d --name fuseki -p 3030:3030 -e ADMIN_PASSWORD=admin0 -e=FUSEKI_DATA
 The Fuseki tests are skipped if Fuseki is not running.
 
 
+### Running tests in parallel
+The tests can be run in parallel with [pytest-xdist], which is included
+in the `testing` extra:
+
+```bash
+pytest -n auto
+```
+
+Tests using the shared Fuseki and GraphDB "test_repo" datasets are marked
+with `@pytest.mark.xdist_group("triplestore")`, which makes them run in
+the same worker.  For debugging (e.g. with `--pdb` or `print()`), run
+without `-n`.
+
+The first time the tests are run, tripper creates a cache with e.g. the
+units table generated from EMMO.  To avoid that every worker creates it
+at the same time, you can create it before running the tests in
+parallel:
+
+```bash
+python tests/warm_cache.py
+```
+
+
 ### Running tests without internet access
 Tests that need internet access are marked with `network`.
 A faster, offline test run can be done with
@@ -112,6 +135,7 @@ See https://pypi.org/project/pytest-profiling/ for more information.
 
 
 [interface.py]: https://github.com/EMMC-ASBL/tripper/blob/master/tripper/interface.py
+[pytest-xdist]: https://pytest-xdist.readthedocs.io/
 [mkdocs]: https://www.mkdocs.org/
 [tests/input/session.yaml]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml
 [tests/input/graphdb-test_repo-config.ttl]: https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/graphdb-test_repo-config.ttl
