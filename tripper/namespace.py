@@ -4,7 +4,9 @@ import hashlib
 import os
 import pickle
 import sys
+import uuid
 import warnings
+from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -16,7 +18,7 @@ from tripper.errors import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
-    from collections.abc import Sequence
+    from collections.abc import Generator, Sequence
     from typing import Optional, Union
 
     from tripper.triplestore import Triplestore
@@ -187,7 +189,7 @@ class Namespace:
         try:
             cachefile = self._get_cachefile()
             if self._iris and not sys.is_finalizing():
-                with open(cachefile, "wb") as f:
+                with atomic_write(cachefile) as tmp, open(tmp, "wb") as f:
                     pickle.dump(self._iris, f)
         except OSError as exc:
             warnings.warn(
@@ -384,6 +386,36 @@ def get_cachedir(create=True) -> Path:
             )
 
     return cachedir
+
+
+@contextmanager
+def atomic_write(path: "Union[str, Path]") -> "Generator[Path, None, None]":
+    """Context manager for atomically writing a file.
+
+    Yields a temporary path in the same directory as `path`.  When the
+    context exits without an exception, the temporary file is renamed
+    to `path`.  Hence, concurrent processes (like pytest-xdist workers)
+    will either see the old file or the complete new file, never a
+    partly written file.
+
+    Example:
+
+        >>> import tempfile
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     with atomic_write(Path(tmpdir) / "file.txt") as tmp:
+        ...         _ = tmp.write_text("content")
+        ...     print((Path(tmpdir) / "file.txt").read_text())
+        content
+
+    """
+    path = Path(path)
+    tmp = path.with_name(f".{path.name}.{os.getpid()}-{uuid.uuid4().hex}.tmp")
+    try:
+        yield tmp
+        os.replace(tmp, path)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
 
 
 # Pre-defined namespaces (without label lookup or checking)
