@@ -3702,10 +3702,23 @@ Triplestore        </code>
         <span class="k">if</span> <span class="n">cardinality</span><span class="p">:</span>
             <span class="n">lcard</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cardinality</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">property</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="p">:</span>
+            <span class="c1"># Much faster than looping over all restrictions on `property`</span>
+            <span class="c1"># when the class is given, since a class typically only has</span>
+            <span class="c1"># a few direct superclasses</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">iri</span>
+                <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">property</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">property</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">cls</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
                 <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="p">(</span>
                     <span class="ow">not</span> <span class="n">card</span>
@@ -6711,10 +6724,23 @@ for types iterated over.</p></td>
     <span class="k">if</span> <span class="n">cardinality</span><span class="p">:</span>
         <span class="n">lcard</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cardinality</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">nonNegativeInteger</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">property</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="p">:</span>
+        <span class="c1"># Much faster than looping over all restrictions on `property`</span>
+        <span class="c1"># when the class is given, since a class typically only has</span>
+        <span class="c1"># a few direct superclasses</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">iri</span>
+            <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">property</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span>
+            <span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">object</span><span class="o">=</span><span class="nb">property</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">iri</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">cls</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">iri</span><span class="p">))</span>
             <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">)</span>
             <span class="ow">and</span> <span class="p">(</span>
                 <span class="ow">not</span> <span class="n">card</span>

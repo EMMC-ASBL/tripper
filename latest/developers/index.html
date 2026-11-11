@@ -1813,6 +1813,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#running-tests-in-parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running tests in parallel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#running-tests-without-internet-access" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2022,6 +2033,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#running-tests-in-parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running tests in parallel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#running-tests-without-internet-access" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2122,6 +2144,21 @@ repository does not exist.</p>
 docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>fuseki<span class="w"> </span>-p<span class="w"> </span><span class="m">3030</span>:3030<span class="w"> </span>-e<span class="w"> </span><span class="nv">ADMIN_PASSWORD</span><span class="o">=</span>admin0<span class="w"> </span>-e<span class="o">=</span><span class="nv">FUSEKI_DATASET_1</span><span class="o">=</span>test_repo<span class="w"> </span>stain/jena-fuseki
 </code></pre></div>
 <p>The Fuseki tests are skipped if Fuseki is not running.</p>
+<h3 id="running-tests-in-parallel">Running tests in parallel<a class="headerlink" href="#running-tests-in-parallel" title="Permanent link">&para;</a></h3>
+<p>The tests can be run in parallel with <a href="https://pytest-xdist.readthedocs.io/">pytest-xdist</a>, which is included
+in the <code>testing</code> extra:</p>
+<div class="language-bash highlight"><pre><span></span><code>pytest<span class="w"> </span>-n<span class="w"> </span>auto
+</code></pre></div>
+<p>Tests using the shared Fuseki and GraphDB "test_repo" datasets are marked
+with <code>@pytest.mark.xdist_group("triplestore")</code>, which makes them run in
+the same worker.  For debugging (e.g. with <code>--pdb</code> or <code>print()</code>), run
+without <code>-n</code>.</p>
+<p>The first time the tests are run, tripper creates a cache with e.g. the
+units table generated from EMMO.  To avoid that every worker creates it
+at the same time, you can create it before running the tests in
+parallel:</p>
+<div class="language-bash highlight"><pre><span></span><code>python<span class="w"> </span>tests/warm_cache.py
+</code></pre></div>
 <h3 id="running-tests-without-internet-access">Running tests without internet access<a class="headerlink" href="#running-tests-without-internet-access" title="Permanent link">&para;</a></h3>
 <p>Tests that need internet access are marked with <code>network</code>.
 A faster, offline test run can be done with</p>

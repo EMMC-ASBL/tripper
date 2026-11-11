@@ -961,6 +961,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.namespace.atomic_write" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        atomic_write()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.namespace.get_cachedir" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2018,6 +2029,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#tripper.namespace.atomic_write" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        atomic_write()
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tripper.namespace.get_cachedir" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2357,8 +2379,9 @@ corresponding to <code>reload=True</code>).</p></td>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cachefile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cachefile</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iris</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">is_finalizing</span><span class="p">():</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iris</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"Cannot access cache file: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">"</span>
@@ -2716,6 +2739,72 @@ iri.</p>
 
   </div>
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="tripper.namespace.atomic_write" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">atomic_write</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
+
+
+<a href="#tripper.namespace.atomic_write" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Context manager for atomically writing a file.</p>
+<p>Yields a temporary path in the same directory as <code>path</code>.  When the
+context exits without an exception, the temporary file is renamed
+to <code>path</code>.  Hence, concurrent processes (like pytest-xdist workers)
+will either see the old file or the complete new file, never a
+partly written file.</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="language-python highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+<span class="o">...</span>     <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"file.txt"</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+<span class="o">...</span>         <span class="n">_</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">"content"</span><span class="p">)</span>
+<span class="o">...</span>     <span class="nb">print</span><span class="p">((</span><span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"file.txt"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+<span class="n">content</span>
+</code></pre></div>
+
+        <details class="quote">
+          <summary>Source code in <code>tripper/namespace.py</code></summary>
+          <div class="language-python highlight"><pre><span></span><code><span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atomic_write</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="s2">"Union[str, Path]"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[Path, None, None]"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Context manager for atomically writing a file.</span>
+
+<span class="sd">    Yields a temporary path in the same directory as `path`.  When the</span>
+<span class="sd">    context exits without an exception, the temporary file is renamed</span>
+<span class="sd">    to `path`.  Hence, concurrent processes (like pytest-xdist workers)</span>
+<span class="sd">    will either see the old file or the complete new file, never a</span>
+<span class="sd">    partly written file.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; import tempfile</span>
+<span class="sd">        &gt;&gt;&gt; with tempfile.TemporaryDirectory() as tmpdir:</span>
+<span class="sd">        ...     with atomic_write(Path(tmpdir) / "file.txt") as tmp:</span>
+<span class="sd">        ...         _ = tmp.write_text("content")</span>
+<span class="sd">        ...     print((Path(tmpdir) / "file.txt").read_text())</span>
+<span class="sd">        content</span>
+
+<span class="sd">    """</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="si">}</span><span class="s2">.tmp"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">tmp</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tmp</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

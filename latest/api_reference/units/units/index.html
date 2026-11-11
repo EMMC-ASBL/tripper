@@ -4041,7 +4041,8 @@ from ontologies.</p>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">"filename"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unitsfile</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">unitsfile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                 <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
-                <span class="n">units</span><span class="o">.</span><span class="n">write_pint_units</span><span class="p">(</span><span class="n">unitsfile</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">unitsfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+                    <span class="n">units</span><span class="o">.</span><span class="n">write_pint_units</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">cache</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"cache_folder"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_cachedir</span><span class="p">)</span>
@@ -4953,7 +4954,8 @@ supported.</p></td>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">"filename"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unitsfile</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">unitsfile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tripper_units</span><span class="p">()</span>
-            <span class="n">units</span><span class="o">.</span><span class="n">write_pint_units</span><span class="p">(</span><span class="n">unitsfile</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">unitsfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+                <span class="n">units</span><span class="o">.</span><span class="n">write_pint_units</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">cache</span><span class="p">:</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"cache_folder"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tripper_cachedir</span><span class="p">)</span>
@@ -5704,6 +5706,9 @@ Units        </code>
                 <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span>
             <span class="p">)</span>
 
+        <span class="c1"># Created on demand by _get_dimension_maps()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span><span class="p">:</span> <span class="s2">"Optional[tuple[dict, dict, dict]]"</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
             <span class="n">iri</span><span class="o">=</span><span class="s2">"https://w3id.org/emmo#"</span><span class="p">,</span>
             <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -5722,22 +5727,33 @@ Units        </code>
                 <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"quantities"</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"constants"</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">include_prefixed</span><span class="o">=</span><span class="n">include_prefixed</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching quantities... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching quantities... "</span><span class="p">,</span>
+                <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching constants... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching constants... "</span><span class="p">,</span>
+                <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">"units"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
                     <span class="s2">"quantities"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">,</span>
                     <span class="s2">"constants"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constants</span><span class="p">,</span>
                 <span class="p">}</span>
-                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -5805,61 +5821,99 @@ Units        </code>
         <span class="k">return</span> <span class="p">[</span><span class="n">iri</span> <span class="k">for</span> <span class="n">iri</span><span class="p">,</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)]</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_unit_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return a list with unit symbols for unit with the given IRI."""</span>
-        <span class="n">symbols</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span>
-            <span class="n">iri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="o">.</span><span class="n">unitSymbolValue</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"value"</span>
-        <span class="p">):</span>
-            <span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]))</span>
+<span class="w">        </span><span class="sd">"""Return a list with unit symbols for unit with the given IRI.</span>
 
-        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="o">.</span><span class="n">unitSymbol</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
-            <span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"1</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span><span class="p">)</span>
-
+<span class="sd">        Symbols from restrictions come first, followed by symbols from</span>
+<span class="sd">        annotations.  Within each group, symbols are sorted, since the</span>
+<span class="sd">        iteration order of the triplestore may differ between processes.</span>
+<span class="sd">        """</span>
+        <span class="n">symbols</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"value"</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">restrictions</span><span class="p">(</span>
+                <span class="n">iri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="o">.</span><span class="n">unitSymbolValue</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"value"</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">annotated</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="o">.</span><span class="n">unitSymbol</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">symbols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="sa">f</span><span class="s2">"1</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">annotated</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">symbols</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dimension_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"tuple[dict, dict, dict]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return dicts used for looking up dimension strings.</span>
+
+<span class="sd">        Returns a tuple of three dicts:</span>
+<span class="sd">            - parents: maps a class to a sorted list of its direct</span>
+<span class="sd">              superclasses (rdfs:subClassOf).</span>
+<span class="sd">            - dimstrs: maps a hasDimensionString restriction to its</span>
+<span class="sd">              dimension string.</span>
+<span class="sd">            - measurement_units: maps a hasMeasurementUnit restriction to</span>
+<span class="sd">              its unit (owl:someValuesFrom).</span>
+
+<span class="sd">        The dicts are created on first call by reading the triplestore</span>
+<span class="sd">        once.  This is much faster than doing a SPARQL query with a</span>
+<span class="sd">        `rdfs:subClassOf+` property path for every unit and quantity.</span>
+<span class="sd">        """</span>
+        <span class="n">maps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span>
+        <span class="k">if</span> <span class="n">maps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parents</span><span class="p">:</span> <span class="s2">"dict[str, list]"</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">):</span>
+                <span class="n">parents</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">superclasses</span> <span class="ow">in</span> <span class="n">parents</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">superclasses</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+            <span class="n">onprop</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">:</span> <span class="n">o</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="n">dimstr_prop</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasDimensionString</span>
+            <span class="n">dimstrs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">:</span> <span class="n">o</span>
+                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">hasValue</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">onprop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="n">dimstr_prop</span>
+            <span class="p">}</span>
+            <span class="n">unit_prop</span> <span class="o">=</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">hasMeasurementUnit</span>
+            <span class="n">measurement_units</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">:</span> <span class="n">o</span>
+                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">triples</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">OWL</span><span class="o">.</span><span class="n">someValuesFrom</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">onprop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="n">unit_prop</span>
+            <span class="p">}</span>
+            <span class="n">maps</span> <span class="o">=</span> <span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">dimstrs</span><span class="p">,</span> <span class="n">measurement_units</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span> <span class="o">=</span> <span class="n">maps</span>
+        <span class="k">return</span> <span class="n">maps</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_superclasses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Generator[str, None, None]"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Generate all superclasses of `iri` (rdfs:subClassOf+) in</span>
+<span class="sd">        breadth-first order."""</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dimension_maps</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="p">()))</span>
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="bp">cls</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">()))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_unit_dimension_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the dimension string for unit with the given IRI."""</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
-<span class="s2">        PREFIX rdfs: &lt;</span><span class="si">{</span><span class="n">RDFS</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">        PREFIX owl: &lt;</span><span class="si">{</span><span class="n">OWL</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">        SELECT ?dimstr</span>
-<span class="s2">        WHERE </span><span class="se">{{</span>
-<span class="s2">          &lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt; rdfs:subClassOf+ ?r .</span>
-<span class="s2">          ?r owl:onProperty &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasDimensionString</span><span class="si">}</span><span class="s2">&gt; .</span>
-<span class="s2">          ?r owl:hasValue ?dimstr .</span>
-<span class="s2">        </span><span class="se">}}</span>
-<span class="s2">        """</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
-            <span class="c1"># Bug in mupy</span>
-            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">dimstrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dimension_maps</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_superclasses</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">dimstrs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dimstrs</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
         <span class="k">raise</span> <span class="n">MissingDimensionStringError</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_quantity_dimension_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the dimension string for quantity with the given IRI."""</span>
-        <span class="c1"># Note, the use of subquery greately speeds up this SPARQL query</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
-<span class="s2">        PREFIX rdfs: &lt;</span><span class="si">{</span><span class="n">RDFS</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">        PREFIX owl: &lt;</span><span class="si">{</span><span class="n">OWL</span><span class="si">}</span><span class="s2">&gt;</span>
-<span class="s2">        SELECT ?dimstr</span>
-<span class="s2">        WHERE </span><span class="se">{{</span>
-<span class="s2">          </span><span class="se">{{</span>
-<span class="s2">            SELECT ?dimunit WHERE </span><span class="se">{{</span>
-<span class="s2">              &lt;</span><span class="si">{</span><span class="n">iri</span><span class="si">}</span><span class="s2">&gt; rdfs:subClassOf+ ?r .</span>
-<span class="s2">              ?r owl:onProperty &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasMeasurementUnit</span><span class="si">}</span><span class="s2">&gt; .</span>
-<span class="s2">              ?r owl:someValuesFrom ?dimunit .</span>
-<span class="s2">            </span><span class="se">}}</span>
-<span class="s2">          </span><span class="se">}}</span>
-<span class="s2">          ?dimunit rdfs:subClassOf+ ?rr .</span>
-<span class="s2">          ?rr owl:onProperty &lt;</span><span class="si">{</span><span class="n">EMMO</span><span class="o">.</span><span class="n">hasDimensionString</span><span class="si">}</span><span class="s2">&gt; .</span>
-<span class="s2">          ?rr owl:hasValue ?dimstr .</span>
-<span class="s2">        </span><span class="se">}}</span>
-<span class="s2">        """</span>  <span class="c1"># nosec</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
-            <span class="c1"># Bug in mupy</span>
-            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">measurement_units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dimension_maps</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_superclasses</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">measurement_units</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_unit_dimension_string</span><span class="p">(</span>
+                        <span class="n">measurement_units</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="n">MissingDimensionStringError</span><span class="p">:</span>
+                    <span class="k">pass</span>
         <span class="k">raise</span> <span class="n">MissingDimensionStringError</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_dimension_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimstr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Any"</span><span class="p">:</span>
@@ -5980,17 +6034,19 @@ Units        </code>
             <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
-                <span class="n">aliases</span><span class="o">=</span><span class="p">[</span>
+                <span class="c1"># Sort, since the iteration order of the triplestore may</span>
+                <span class="c1"># differ between processes</span>
+                <span class="n">aliases</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">SKOS</span><span class="o">.</span><span class="n">altLabel</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-                <span class="p">],</span>
+                <span class="p">),</span>
                 <span class="n">symbols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_unit_symbols</span><span class="p">(</span><span class="n">iri</span><span class="p">),</span>
                 <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">,</span>
                 <span class="n">emmoIRI</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span>
                 <span class="n">qudtIRI</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">qudtIRI</span><span class="p">)</span> <span class="k">if</span> <span class="n">qudtIRI</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">omIRI</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">omIRI</span><span class="p">)</span> <span class="k">if</span> <span class="n">omIRI</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="n">ucumCodes</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ucumCodes</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">EMMO</span><span class="o">.</span><span class="n">ucumCode</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-                <span class="p">],</span>
+                <span class="p">),</span>
                 <span class="n">unitCode</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">unitCode</span><span class="p">)</span> <span class="k">if</span> <span class="n">unitCode</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">multiplier</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">mult</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"value"</span><span class="p">])</span> <span class="k">if</span> <span class="n">mult</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">offset</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"value"</span><span class="p">])</span> <span class="k">if</span> <span class="n">offset</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -6025,9 +6081,11 @@ Units        </code>
             <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">AttrDict</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
-                <span class="n">aliases</span><span class="o">=</span><span class="p">[</span>
+                <span class="c1"># Sort, since the iteration order of the triplestore may</span>
+                <span class="c1"># differ between processes</span>
+                <span class="n">aliases</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">SKOS</span><span class="o">.</span><span class="n">altLabel</span><span class="p">,</span> <span class="nb">any</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-                <span class="p">],</span>
+                <span class="p">),</span>
                 <span class="n">dimension</span><span class="o">=</span><span class="n">dimension</span><span class="p">,</span>
                 <span class="n">emmoIRI</span><span class="o">=</span><span class="n">iri</span><span class="p">,</span>
                 <span class="n">qudtIRI</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">qudtIRI</span><span class="p">)</span> <span class="k">if</span> <span class="n">qudtIRI</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -6438,6 +6496,9 @@ supported.</p></td>
             <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span>
         <span class="p">)</span>
 
+    <span class="c1"># Created on demand by _get_dimension_maps()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_maps</span><span class="p">:</span> <span class="s2">"Optional[tuple[dict, dict, dict]]"</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="bp">self</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span>
         <span class="n">iri</span><span class="o">=</span><span class="s2">"https://w3id.org/emmo#"</span><span class="p">,</span>
         <span class="n">label_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -6456,22 +6517,33 @@ supported.</p></td>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"quantities"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">"constants"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_units</span><span class="p">(</span><span class="n">include_prefixed</span><span class="o">=</span><span class="n">include_prefixed</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching quantities... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching quantities... "</span><span class="p">,</span>
+            <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+            <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching constants... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">"done</span><span class="se">\n</span><span class="s2">* caching constants... "</span><span class="p">,</span>
+            <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+            <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_quantities</span><span class="p">(</span><span class="n">constants</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">"units"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
                 <span class="s2">"quantities"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">,</span>
                 <span class="s2">"constants"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constants</span><span class="p">,</span>
             <span class="p">}</span>
-            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -7025,14 +7097,20 @@ Ex: "emmo-1.0.0".</p></td>
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">cachefile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">_unit_ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">cachefile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"ntriples"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"* caching units triplestore... "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"* caching units triplestore... "</span><span class="p">,</span>
+                <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">_unit_ts</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"done"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">_unit_ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                        <span class="n">cachefile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"ntriples"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>
-                    <span class="p">)</span>
+                    <span class="k">with</span> <span class="n">atomic_write</span><span class="p">(</span><span class="n">cachefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+                        <span class="n">_unit_ts</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+                            <span class="n">tmp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"ntriples"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>
+                        <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">cachefile</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
