@@ -1819,21 +1819,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#setting-up-graphdb-service" class="md-nav__link">
+  <a href="#starting-graphdb-and-fuseki-services" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setting up GraphDB service
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setting-up-fuseki-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setting up Fuseki service
+        Starting GraphDB and Fuseki services
       
     </span>
   </a>
@@ -2039,21 +2028,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#setting-up-graphdb-service" class="md-nav__link">
+  <a href="#starting-graphdb-and-fuseki-services" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setting up GraphDB service
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setting-up-fuseki-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setting up Fuseki service
+        Starting GraphDB and Fuseki services
       
     </span>
   </a>
@@ -2149,29 +2127,51 @@ described below and tested with <code>tests/backends/test_backends_sparql.py</co
 <p>The backend configurations corresponding to the local GraphDB and Fuseki services
 can be found in <a href="https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/session.yaml">tests/input/session.yaml</a>.</p>
 <p>Tests that need a service which is not running are skipped.</p>
-<h3 id="setting-up-graphdb-service">Setting up GraphDB service<a class="headerlink" href="#setting-up-graphdb-service" title="Permanent link">&para;</a></h3>
-<p>To create the local instance of GraphDB:
+<h3 id="starting-graphdb-and-fuseki-services">Starting GraphDB and Fuseki services<a class="headerlink" href="#starting-graphdb-and-fuseki-services" title="Permanent link">&para;</a></h3>
+<p>Start all services from the root of the repository with</p>
+<div class="language-text highlight"><pre><span></span><code>docker compose -f test-services/compose.yaml up -d
+</code></pre></div>
+<p>or only some of them, e.g.</p>
+<div class="language-text highlight"><pre><span></span><code>docker compose -f test-services/compose.yaml up -d fuseki
+</code></pre></div>
+<p>Add <code>--wait</code> to wait until the services are healthy.  Stop them again with</p>
+<div class="language-text highlight"><pre><span></span><code>docker compose -f test-services/compose.yaml down
+</code></pre></div>
+<details>
+  <summary>▶ Manually start the services with docker</summary>
+
+### Setting up GraphDB service
+To create the local instance of GraphDB:
 <div class="language-bash highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ontotext/graphdb:10.8.3<span class="w"> </span><span class="c1"># latest tag 17.02.2025</span>
 docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">7200</span>:7200<span class="w"> </span>--name<span class="w"> </span>graphdb<span class="w"> </span>ontotext/graphdb:10.8.3
-</code></pre></div></p>
-<p>GraphDB needs some time to start up.
+</code></pre></div>
+
+GraphDB needs some time to start up.
 When it is up, create the "test_repo" repository (with full-text search
-enabled) from the configuration in <a href="https://github.com/EMMC-ASBL/tripper/blob/master/tests/input/graphdb-test_repo-config.ttl">tests/input/graphdb-test_repo-config.ttl</a>:</p>
+enabled) from the configuration in [tests/input/graphdb-test_repo-config.ttl]:
+
 <div class="language-bash highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-F<span class="w"> </span><span class="s2">"config=@tests/input/graphdb-test_repo-config.ttl"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>http://localhost:7200/rest/repositories
 </code></pre></div>
-<p>Alternatively, go to <a href="http://localhost:7200/">http://localhost:7200/</a> in your
-browser, press <code>Create new repository</code>, choose <code>GraphDB Repository</code>, write
-"test_repo" as repository ID, tick off <code>Enable full-text search</code> and click
-<code>Create</code>.</p>
-<p>The GraphDB tests are skipped if GraphDB is not running or the "test_repo"
-repository does not exist.</p>
-<h3 id="setting-up-fuseki-service">Setting up Fuseki service<a class="headerlink" href="#setting-up-fuseki-service" title="Permanent link">&para;</a></h3>
-<p>Similarly a jena-fuseki instance can be tested locally as follows:</p>
+
+Alternatively, go to [http://localhost:7200/](http://localhost:7200/) in your
+browser, press `Create new repository`, choose `GraphDB Repository`, write
+"test_repo" as repository ID, tick off `Enable full-text search` and click
+`Create`.
+
+The GraphDB tests are skipped if GraphDB is not running or the "test_repo"
+repository does not exist.
+
+
+### Setting up Fuseki service
+Similarly a jena-fuseki instance can be tested locally as follows:
+
 <div class="language-bash highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>stain/jena-fuseki
 docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>fuseki<span class="w"> </span>-p<span class="w"> </span><span class="m">3030</span>:3030<span class="w"> </span>-e<span class="w"> </span><span class="nv">ADMIN_PASSWORD</span><span class="o">=</span>admin0<span class="w"> </span>-e<span class="o">=</span><span class="nv">FUSEKI_DATASET_1</span><span class="o">=</span>test_repo<span class="w"> </span>stain/jena-fuseki
 </code></pre></div>
-<p>The Fuseki tests are skipped if Fuseki is not running.</p>
+</details>
+
+<p>Tests that need a service which is not running are skipped.</p>
 <h3 id="running-tests-in-parallel">Running tests in parallel<a class="headerlink" href="#running-tests-in-parallel" title="Permanent link">&para;</a></h3>
 <p>The tests can be run in parallel with <a href="https://pytest-xdist.readthedocs.io/">pytest-xdist</a>, which is included
 in the <code>testing</code> extra:</p>
